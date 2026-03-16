@@ -17,6 +17,13 @@ archives/
 artifacts/healing/healing_events.jsonl
 # Runtime CI lane gate result (timing changes on every test run)
 artifacts/adg_ci_lane_gate_result.json
+# ADG artifacts (all except README.md - store on Google Drive, not GitHub)
+artifacts/adg/*.sqlite
+artifacts/adg/*.json
+artifacts/adg/*.zip
+artifacts/adg/*.tar.gz
+# Allow README.md to be tracked
+!artifacts/adg/README.md
 # ADG LATEST symlinks/copies (auto-generated, point to timestamped artifacts)
 artifacts/adg/adg_LATEST*.sqlite
 artifacts/adg/adg_LATEST*.json
