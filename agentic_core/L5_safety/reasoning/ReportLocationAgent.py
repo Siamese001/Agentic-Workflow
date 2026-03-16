@@ -27,6 +27,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 from agentic_core.runtime.lifecycle_trace_contract import (
@@ -211,7 +212,7 @@ class ReportLocationAgent(AtomicExecutionMixin):
         self.project_root = self.project_root.resolve()
 
         if self.backup_dir is None:
-            self.backup_dir = self.project_root / ".sovereign_healing_backup" / REPORTS_DIR
+            self.backup_dir = self.project_root / ARCHIVES_DIR / "healing_backups" / SSOT_REPORTS_DIR
 
         self.agent_name = "ReportLocationAgent"
         self._validator = ReportLocationValidator(self.project_root, self.dry_run)

@@ -1447,7 +1447,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     Logger.warning("    [FAIL] Move failed")
                     return False
             elif decision.action == "ARCHIVE":
-                archive_path = decision.target_path or ".healing_backups/cognitive_disposition"
+                archive_path = decision.target_path or "archives/healing_backups/cognitive_disposition"
                 Logger.info(f"    [COGNITIVE] Archiving {file_path.name} to {archive_path}")
                 gatekeeper = self._get_archival_gatekeeper()
                 result = gatekeeper.safe_move(

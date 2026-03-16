@@ -909,7 +909,7 @@ class GovernanceAgent(SovereignBaseAgent):
         """Initialize and return the backup directory for safe operations."""
         if self._backup_dir is None:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            self._backup_dir = self.root_dir / ".governance_healer_backups" / timestamp
+            self._backup_dir = self.root_dir / ARCHIVES_DIR / "healing_backups" / "governance" / timestamp
             _wg.ensure_dir(self._backup_dir)
         return self._backup_dir
 

@@ -362,6 +362,30 @@ def _write_artifact_integrity_json(trace_id: str, output_dir: Path) -> None:
     logger.info(f"[ARTIFACT-INTEGRITY] Wrote artifact_integrity.json with {len(artifacts)} artifact hashes")
 
 
+def _record_backup_archival_event(
+    state_mgr,
+    agent: str,
+    category: str,
+    count: int = 1,
+):
+    """Record a backup archival event: a violation that required archival instead of direct fix.
+
+    Appends to state_mgr.state["backup_archival_events"] so _fire_meta_learning_intake
+    can surface the signal: 'N violations of category X required archival by agent Y'.
+    This feeds the system learning pipeline with hard-to-heal violation patterns.
+    """
+    ts = datetime.now().isoformat()
+    event = {
+        "agent": agent,
+        "category": category,
+        "count": count,
+        "timestamp": ts,
+    }
+    if "backup_archival_events" not in state_mgr.state:
+        state_mgr.state["backup_archival_events"] = []
+    state_mgr.state["backup_archival_events"].append(event)
+
+
 def _record_healing_action(
     state_mgr,
     agent: str,

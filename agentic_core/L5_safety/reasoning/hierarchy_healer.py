@@ -243,8 +243,8 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         self.healing_enabled = healing_enabled
         self.ctx = ctx
         self.protected_folders = SOVEREIGN_EXCLUDED_FOLDERS
-        # [REFACTOR 2026-02-05] Changed from archives/ to .healing_backups/ (gitignored, not indexed)
-        self.archive_root = project_root / ".healing_backups" / "hierarchy_violations"
+        # [REFACTOR 2026-03-16] Canonical path: archives/healing_backups/ (gitignored via archives/ in .gitignore)
+        self.archive_root = project_root / ARCHIVES_DIR / "healing_backups" / "hierarchy_violations"
 
         # Initialize ArchivalGatekeeper for safe file operations
         # [PHASE 33j] Gatekeeper is the SINGLE POINT OF APPROVAL
@@ -1799,8 +1799,8 @@ class HierarchyHealerAgent(SovereignBaseAgent):
             results["message"] = "No root violations to heal"
             return results
 
-        # 1. Move .archived files to .healing_backups/root_archived/
-        archives_dir = self.project_root / ".healing_backups" / "root_archived"
+        # 1. Move .archived files to archives/healing_backups/root_archived/
+        archives_dir = self.project_root / ARCHIVES_DIR / "healing_backups" / "root_archived"
         if not dry_run:
             _wg.ensure_dir(archives_dir)
 

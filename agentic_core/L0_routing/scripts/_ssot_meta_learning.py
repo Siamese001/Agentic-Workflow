@@ -468,11 +468,19 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
             existing_vecs: list = ml_state.get("recent_failure_vectors", [])
             merged = existing_vecs + new_vectors
             ml_state["recent_failure_vectors"] = merged[-200:]
+        _backup_events = state_mgr.state.get("backup_archival_events", [])
+        _backup_total = sum(e.get("count", 0) for e in _backup_events)
+        _backup_by_cat: dict[str, int] = {}
+        for _be in _backup_events:
+            _cat = _be.get("category", "unknown")
+            _backup_by_cat[_cat] = _backup_by_cat.get(_cat, 0) + _be.get("count", 0)
         state_mgr.update_meta_learning(
             {
                 "meta_learning_schema": 1,
                 "total_experiences": store.count(),
                 "experience": f"intake: {store.count()} healing records persisted",
+                "backup_archival_total": _backup_total,
+                "backup_archival_by_category": _backup_by_cat,
             }
         )
         logging.info(

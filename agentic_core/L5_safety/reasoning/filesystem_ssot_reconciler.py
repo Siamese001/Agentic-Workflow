@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_authorize_and_execute,
@@ -296,7 +297,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
             }
 
     BLUEPRINT_PATH = Path("agentic_core/L5_safety/config/structure_blueprint_config.py")
-    ARCHIVE_ROOT = Path(".healing_backups/unmapped_drift/")
+    ARCHIVE_ROOT = Path(ARCHIVES_DIR) / "healing_backups" / "unmapped_drift"
 
     def __init__(self, project_root: Path, enforcement_mode: bool = True) -> None:
         """Initialize the instance."""

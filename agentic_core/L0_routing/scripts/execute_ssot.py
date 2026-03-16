@@ -135,7 +135,10 @@ from agentic_core.L0_routing.config.path_constants import (
     OPS_SCRIPTS_DIR,
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
+from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+    _record_backup_archival_event,
+    _record_healing_action,
+)
 
 
 def _get_sovereign_excluded_folders():
@@ -3398,6 +3401,15 @@ def execute_phase3_alignment_impl(agents, territory, decision_engine, state_mgr,
                 else 0
             )
             state_mgr.state["hierarchy_fixed"] = healed
+            _archived_root = 0
+            if isinstance(heal_result, dict):
+                _root_heal = heal_result.get("root_healing", {})
+                if isinstance(_root_heal, dict):
+                    _archived_root = _root_heal.get("archived_files_moved", 0)
+            if _archived_root > 0:
+                _record_backup_archival_event(
+                    state_mgr, "HierarchyHealerAgent", "hierarchy_violations", _archived_root
+                )
             state_mgr.complete_agent("HierarchyHealerAgent", True, f"Healed: {healed}")
             _record_healing_action(
                 state_mgr,

@@ -2851,7 +2851,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         Salvaged from LocationAgent.py during LCD+ decommission.
         """
         actions = []
-        archives_root = self.project_root / ".healing_backups"
+        archives_root = self.project_root / ARCHIVES_DIR / "healing_backups"
         affected_paths: list[Path] = []
         import_touched_paths: list[Path] = []
 
