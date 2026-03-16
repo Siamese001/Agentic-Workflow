@@ -12,7 +12,7 @@ from datetime import datetime
 from types import SimpleNamespace
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, emit_determinism_digest
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -21,6 +21,7 @@ BUFFER_SIZE = 8192
 BATCH_SIZE = 32
 
 emit_determinism_digest("p0", "rank_observability_components_util")
+_emit_records_execution_trace("p0", "evidence", "rank_observability_components_util")
 
 
 @dataclass

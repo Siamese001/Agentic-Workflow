@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 import pytest
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, emit_determinism_digest
 
 from system_learning.engines.cross_repo_system_learning_import import (
     EmbeddingImportRecord,
@@ -18,6 +18,7 @@ from system_learning.engines.cross_repo_system_learning_import import (
 
 pytestmark = pytest.mark.unit
 emit_determinism_digest("p0", "test_cross_repo_system_learning_import")
+_emit_records_execution_trace("p0", "evidence", "test_cross_repo_system_learning_import")
 
 
 def _write_text(path: Path, content: str) -> None:
