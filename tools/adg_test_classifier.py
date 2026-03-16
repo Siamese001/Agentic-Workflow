@@ -67,10 +67,8 @@ from __future__ import annotations
 import ast
 import json
 import re
-import sys
 from collections import defaultdict, deque
 from pathlib import Path
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 # ── repo root ─────────────────────────────────────────────────────────────────
 REPO = Path(__file__).resolve().parent.parent

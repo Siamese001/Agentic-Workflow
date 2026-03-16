@@ -26,15 +26,26 @@ from dataclasses import dataclass, field
 from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 from agentic_core.runtime.lifecycle_trace_contract import (
-    _emit_reads_through,
     _emit_pulls_context,
+    _emit_reads_through,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
     emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "architecture_gap_analyzer", "uwg_governed_write")
 _emit_writes_through("p1", "architecture_gap_analyzer", "uwg_governed_write_2")
 _emit_pulls_context("p1", "architecture_gap_analyzer", "context_retrieval")
@@ -223,7 +234,7 @@ class ASTAnalyzer:
     def scan_repository(self) -> None:
         """Scan entire repository for Python files."""
         for py_file in self.repo_root.rglob('*.py'):
-            if any((skip in str(py_file) for skip in ['.venv', 'node_modules', '__pycache__', '.git'])):
+            if any(skip in str(py_file) for skip in ['.venv', 'node_modules', '__pycache__', '.git']):
                 continue
             tree = self.parse_file(py_file)
             if tree:
@@ -275,7 +286,7 @@ class ArchitectureGapAnalyzer:
             coverage = best_impl.match_score * 100
             gaps = []
             for cap in component.required_capabilities:
-                if not any((cap in impl.matched_capabilities for impl in implementations[:3])):
+                if not any(cap in impl.matched_capabilities for impl in implementations[:3]):
                     gaps.append(f'Missing capability: {cap}')
         else:
             coverage = 0

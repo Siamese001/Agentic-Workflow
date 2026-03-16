@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 '\nSwarmScheduler - L3 Task Scheduling System\n\nManages Task scheduling and execution across the agentic swarm.\nOptimizes resource utilization and ensures fair Task distribution.\n'
 import asyncio
 import logging
@@ -7,14 +8,25 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 from agentic_core.runtime.lifecycle_trace_contract import (
-    _emit_reads_through,
     _emit_pulls_context,
+    _emit_reads_through,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
     emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "swarm_scheduler", "uwg_governed_write")
 _emit_writes_through("p1", "swarm_scheduler", "uwg_governed_write_2")
 _emit_pulls_context("p1", "swarm_scheduler", "context_retrieval")
@@ -178,7 +190,7 @@ class TaskQueue:
 
     def get_pending_count(self) -> int:
         """Get count of pending tasks."""
-        return sum((1 for t in self._tasks if t.status == TaskStatus.PENDING))
+        return sum(1 for t in self._tasks if t.status == TaskStatus.PENDING)
 
     def get_all_tasks(self) -> list[Task]:
         """Get all tasks."""

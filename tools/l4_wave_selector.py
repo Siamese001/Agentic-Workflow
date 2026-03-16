@@ -1,6 +1,6 @@
 """Select wave targets for L4 memory authority hardening."""
-import sqlite3
 import pathlib
+import sqlite3
 import sys
 
 db_dir = pathlib.Path(r"C:\Git\Agentic-Workflow\artifacts\adg")

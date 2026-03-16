@@ -1,10 +1,22 @@
 from __future__ import annotations
+
 import ast
 import sys
 from pathlib import Path
 from typing import NamedTuple
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
 _emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_1")
 _emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_2")
 _emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_3")
@@ -60,7 +72,7 @@ class GatewayBypassVisitor(ast.NodeVisitor):
 
     def _is_exempt(self) -> bool:
         """Checks if the current file is in an allowed namespace."""
-        return any((self._current_namespace.startswith(ns) for ns in ALLOWED_NAMESPACES))
+        return any(self._current_namespace.startswith(ns) for ns in ALLOWED_NAMESPACES)
 
     def visit_Import(self, node: ast.Import) -> None:
         if self._is_exempt():

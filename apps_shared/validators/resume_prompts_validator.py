@@ -92,7 +92,6 @@ _emit_reads_through("l4", "resume_prompts_validator", "urg_read_85")
 if TYPE_CHECKING:
     from apps_shared.rag.hardening.models import MasterResumeIndex, RAGMission, ThematicAnalysis
     from config.config import CompetitiveAnalysisConfig
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 try:
     prompts_path = DATA_DIR / "prompts.json"
     with open(prompts_path, encoding="utf-8") as f:

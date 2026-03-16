@@ -33,7 +33,6 @@ import ast
 import json
 import sys
 from pathlib import Path
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
@@ -165,10 +164,10 @@ def generate_adg_stub(mod_path: str, symbols: dict) -> str:
 
     lines = [
         f'"""ADG importability contract for {mod_path}.',
-        f'',
-        f'Auto-generated stub — covers GT_covers edge for ADG reachability.',
+        '',
+        'Auto-generated stub — covers GT_covers edge for ADG reachability.',
         f'Behavioral tests belong in test_{stem}.py (no _adg suffix).',
-        f'"""',
+        '"""',
         "from __future__ import annotations",
         "",
         "import pytest",

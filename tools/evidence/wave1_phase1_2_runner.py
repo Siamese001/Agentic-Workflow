@@ -5,19 +5,21 @@ Usage:
   seal:   python tools/evidence/wave1_phase1_2_runner.py --code-commit <SHA> --evidence-commit <SHA>
 """
 from __future__ import annotations
+
 import argparse
 import re
 import subprocess
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 from agentic_core.runtime.lifecycle_trace_contract import (
-    _emit_reads_through,
     _emit_pulls_context,
+    _emit_reads_through,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
     emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "wave1_phase1_2_runner", "uwg_governed_write")
 _emit_writes_through("p1", "wave1_phase1_2_runner", "uwg_governed_write_2")
 _emit_pulls_context("p1", "wave1_phase1_2_runner", "context_retrieval")

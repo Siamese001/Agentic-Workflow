@@ -38,12 +38,24 @@ _emit_reads_through("l4", "_fix_zero_assert_and_silent_except", "urg_read_32")
 Strategy: AST-parse to find exact function / handler locations, then patch source lines.
 """
 from __future__ import annotations
+
 import ast
 import pathlib
 import sys
 from collections import defaultdict
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SCAN_DIRS = [TESTS_DIR]
 GUARDIAN = '  # guardian: allow-silent-swallower'
@@ -78,8 +90,8 @@ def _silent_except_lines(func: ast.FunctionDef | ast.AsyncFunctionDef, source_li
         for handler in node.handlers:
             if _has_guardian(source_lines[handler.lineno - 1]):
                 continue
-            has_raise = any((isinstance(s, ast.Raise) for s in ast.walk(handler)))
-            has_fail = any((isinstance(s, ast.Call) and isinstance(s.func, ast.Attribute) and (s.func.attr == 'fail') and isinstance(s.func.value, ast.Name) and (s.func.value.id == 'pytest') for s in ast.walk(handler)))
+            has_raise = any(isinstance(s, ast.Raise) for s in ast.walk(handler))
+            has_fail = any(isinstance(s, ast.Call) and isinstance(s.func, ast.Attribute) and (s.func.attr == 'fail') and isinstance(s.func.value, ast.Name) and (s.func.value.id == 'pytest') for s in ast.walk(handler))
             if not has_raise and (not has_fail):
                 bad.append(handler.lineno)
     return bad

@@ -6,23 +6,40 @@ Comprehensive repair + fix script:
 Run: python ops_scripts/ci/_repair_and_fix_all.py
 """
 from __future__ import annotations
+
 import ast
 import pathlib
 import re
 import sys
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-from agentic_core.L5_safety.config.structure_blueprint.ssot import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 from agentic_core.runtime.lifecycle_trace_contract import (
-    _emit_reads_through,
     _emit_pulls_context,
+    _emit_reads_through,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
     emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "_repair_and_fix_all", "uwg_governed_write")
 _emit_writes_through("p1", "_repair_and_fix_all", "uwg_governed_write_2")
 _emit_pulls_context("p1", "_repair_and_fix_all", "context_retrieval")
@@ -259,7 +276,7 @@ def main() -> int:
     print(f'\nfixed_order={fixed_order}, fixed_literal={fixed_literal}, errors={errors}')
     syntax_errors = []
     for p in sorted(ROOT.rglob('*.py')):
-        if any((part in SKIP_DIRS for part in p.parts)):
+        if any(part in SKIP_DIRS for part in p.parts):
             continue
         try:
             src = p.read_text(encoding='utf-8', errors='replace')

@@ -20,6 +20,7 @@ Naming convention:
 from __future__ import annotations
 
 from typing import Literal
+
 from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 ADG_NS = "ADG"

@@ -5,19 +5,21 @@ Usage:
   seal:   python tools/evidence/wave1_phase1_runner.py --code-commit <SHA> --evidence-commit <SHA>
 """
 from __future__ import annotations
+
 import argparse
 import re
 import subprocess
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 from agentic_core.runtime.lifecycle_trace_contract import (
-    _emit_reads_through,
     _emit_pulls_context,
+    _emit_reads_through,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
     emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "wave1_phase1_runner", "uwg_governed_write")
 _emit_writes_through("p1", "wave1_phase1_runner", "uwg_governed_write_2")
 _emit_pulls_context("p1", "wave1_phase1_runner", "context_retrieval")
@@ -113,7 +115,7 @@ def main() -> None:
     h()
     parse_check = ['python', '-c', "import ast, sys\nfiles = [\n    'agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py',\n    'agentic_core/L0_routing/scripts/forensic_discovery_prep.py',\n    'agentic_core/L0_routing/scripts/run_guardian_hierarchy_compliance.py',\n]\nok = True\nfor f in files:\n    try:\n        ast.parse(open(f, encoding='utf-8').read())\n        print('OK:', f)\n    except SyntaxError as e:\n        print('FAIL:', f, str(e))\n        ok = False\nsys.exit(0 if ok else 1)\n"]
     out, rc = _run(parse_check)
-    h(f"$ python -c '<ast parse 3 files>'")
+    h("$ python -c '<ast parse 3 files>'")
     h('```')
     h(out)
     h('```')

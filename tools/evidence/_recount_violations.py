@@ -1,8 +1,11 @@
 """Recount current fan_in>=3 violations after skeleton generation."""
 from __future__ import annotations
-import ast, sys
+
+import ast
+import sys
 from collections import defaultdict
 from pathlib import Path
+
 from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 _emit_reads_through("l4", "_recount_violations", "urg_read_1")

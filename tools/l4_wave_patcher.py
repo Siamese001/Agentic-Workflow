@@ -230,7 +230,7 @@ def main():
     wt = baseline.get("writes_to", 0)
     wth = baseline.get("writes_through", 0)
     ratio = wth / wt if wt > 0 else 0
-    print(f"\n1. BASELINE COUNTS")
+    print("\n1. BASELINE COUNTS")
     print(f"   writes_to      = {wt:,}")
     print(f"   writes_through = {wth:,}")
     print(f"\n2. CURRENT WRITE RATIO = {ratio:.1%}")
@@ -245,7 +245,7 @@ def main():
 
     total_added = 0
     patched_modules = []
-    print(f"\n4. WRITE SURFACES CONVERTED:")
+    print("\n4. WRITE SURFACES CONVERTED:")
     for source_file, wt_count, wth_count in targets:
         filepath = ROOT / source_file
         module_short = source_file.rsplit("/", 1)[-1].replace(".py", "")
@@ -260,7 +260,7 @@ def main():
     target_count = int(wt * 0.90)
     gap = max(0, target_count - new_wth)
 
-    print(f"\n5. POST-WAVE COUNTS (expected)")
+    print("\n5. POST-WAVE COUNTS (expected)")
     print(f"   writes_to      = {wt:,}")
     print(f"   writes_through = {wth:,} + {total_added} = {new_wth:,}")
 
@@ -268,7 +268,7 @@ def main():
 
     print(f"\n7. REMAINING GAP = {gap:,}")
 
-    print(f"\n--- Summary ---")
+    print("\n--- Summary ---")
     print(f"Modules patched: {len(patched_modules)}")
     print(f"Total writes_through added: {total_added}")
     for sf, added in patched_modules:

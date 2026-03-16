@@ -31,10 +31,9 @@ Two coverage modes:
                modules to mark transitively-reachable modules as covered.
                This resolves the 1,031 'false gaps' identified in Phase 0.
 """
-import sqlite3
 import json
+import sqlite3
 from pathlib import Path
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 DB = Path(__file__).parent.parent.parent / "artifacts" / "adg" / "adg_indexed_03122026.sqlite"
 OUT = Path(__file__).parent / "coverage_gaps.json"
@@ -177,11 +176,11 @@ print("=== COVERAGE OVERVIEW ===")
 print(f"  Source modules total:              {total_src}")
 print(f"  Covered (direct covers edges):     {len(direct_covered_prod)}")
 print(f"  Covered (transitive, incl imports):{len(transitive_covered & prod_ids)}")
-print(f"")
+print("")
 print(f"  [DIRECT]     Uncovered gap:        {uncovered_direct}")
 print(f"  [TRANSITIVE] Uncovered gap:        {uncovered_transitive}  ← accelerator-equivalent")
 print(f"  False gaps (direct only, missed):  {false_gap_count}")
-print(f"")
+print("")
 print(f"  Direct coverage %:     {100 * len(direct_covered_prod) / max(total_src, 1):.1f}%")
 print(f"  Transitive coverage %: {100 * len(transitive_covered & prod_ids) / max(total_src, 1):.1f}%")
 

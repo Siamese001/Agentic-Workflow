@@ -1,6 +1,6 @@
 """L4 Memory Authority baseline check - writes_through vs writes_to."""
-import sqlite3
 import pathlib
+import sqlite3
 import sys
 
 db = pathlib.Path(r"C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_03162026_1534.sqlite")
@@ -31,7 +31,7 @@ gap = max(0, target - wth)
 print(f"writes_to      = {wt:,}")
 print(f"writes_through = {wth:,}")
 print(f"current_ratio  = {ratio:.1%}")
-print(f"target_ratio   = 90.0%")
+print("target_ratio   = 90.0%")
 print(f"target_count   = {target:,}")
 print(f"gap_remaining  = {gap:,}")
 
@@ -75,6 +75,7 @@ rows3 = conn.execute("""
 """).fetchall()
 
 from collections import defaultdict
+
 grouped = defaultdict(dict)
 for dg, rt, cnt in rows3:
     grouped[dg][rt] = cnt

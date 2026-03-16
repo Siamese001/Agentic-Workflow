@@ -54,6 +54,7 @@ import glob
 import os
 import sqlite3
 import sys
+
 from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 # ---------------------------------------------------------------------------

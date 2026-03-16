@@ -50,12 +50,24 @@ Phase thresholds:
     P4: COMPLIANT >= 87
 """
 from __future__ import annotations
+
 import argparse
 import json
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
 DEFAULT_GAP_JSON = Path('docs/reports/plans/v15_gap_analysis.json')
 CANONICAL_LAYER_KEYS = frozenset({'A_TYPES_DEFINED', 'B_CONTRACT_ENFORCER', 'C_TEST_COVERAGE', 'D_RUNTIME_WIRED', 'E_CI_ENFORCED'})
 
@@ -106,7 +118,7 @@ def compute_scoreboard(data: dict, *, allow_legacy: bool=False) -> dict:
         for sub in cap.get('sub_capabilities', []):
             schema_errors.extend(validate_sub_capability_schema(sub, allow_legacy=allow_legacy))
     if schema_errors:
-        raise SchemaValidationError(f'{len(schema_errors)} schema error(s):\n' + '\n'.join((f'  {e}' for e in schema_errors)))
+        raise SchemaValidationError(f'{len(schema_errors)} schema error(s):\n' + '\n'.join(f'  {e}' for e in schema_errors))
     status_counts: dict[str, int] = {}
     layer_totals: dict[str, int] = dict.fromkeys(CANONICAL_LAYER_KEYS, 0)
     layer_true: dict[str, int] = dict.fromkeys(CANONICAL_LAYER_KEYS, 0)

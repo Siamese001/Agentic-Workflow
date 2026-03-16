@@ -41,8 +41,7 @@ Shared helper for consolidated evidence runners that enforces:
 import argparse
 import subprocess
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
 
 class EvidenceContractV2:
     """Evidence Contract v2 helper for consolidated runners."""
@@ -62,7 +61,7 @@ class EvidenceContractV2:
         """Validate that commit hash is 40-character hex."""
         if len(commit_hash) != 40:
             raise ValueError(f'Commit hash must be 40 characters: {commit_hash}')
-        if not all((c in '0123456789abcdefABCDEF' for c in commit_hash)):
+        if not all(c in '0123456789abcdefABCDEF' for c in commit_hash):
             raise ValueError(f'Commit hash must be hex: {commit_hash}')
 
     def run_cmd(self, args: list[str], cwd: Path | None=None) -> tuple[int, str, str]:
@@ -105,10 +104,10 @@ class EvidenceContractV2:
         """Validate that all changed files are within allowed prefixes."""
         violations = []
         for file_path in files:
-            if not any((file_path.startswith(prefix) for prefix in self.allowed_prefixes)):
+            if not any(file_path.startswith(prefix) for prefix in self.allowed_prefixes):
                 violations.append(file_path)
         if violations:
-            raise ValueError(f'Scope violation in {phase_name}: Files outside allowed prefixes detected:\n' + '\n'.join((f'  - {v}' for v in violations)) + f'\nAllowed prefixes: {sorted(self.allowed_prefixes)}')
+            raise ValueError(f'Scope violation in {phase_name}: Files outside allowed prefixes detected:\n' + '\n'.join(f'  - {v}' for v in violations) + f'\nAllowed prefixes: {sorted(self.allowed_prefixes)}')
 
     def validate_evidence_contract_structure(self, code_commit: str, evidence_commit: str | None=None, require_evidence_commit: bool=False) -> None:
         """Validate evidence contract structure and requirements."""

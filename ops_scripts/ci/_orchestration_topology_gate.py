@@ -58,6 +58,7 @@ from __future__ import annotations
 import glob
 import sqlite3
 import sys
+
 from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 NON_TEST = (

@@ -46,18 +46,42 @@ with the SSOT union expression, adding the required import.
 Usage: python ops_scripts/ci/_fix_hardcoded_dirs_inline.py [--dry-run]
 """
 from __future__ import annotations
+
 import ast
 import pathlib
 import re
 import sys
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-from agentic_core.L5_safety.config.structure_blueprint.ssot import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, APPS_SHARED_DIR, OPS_SCRIPTS_DIR, APPS_LIC_DIR, APPS_RG_DIR, TESTS_DIR
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    TESTS_DIR,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
 SSOT_DIR_NAMES: frozenset[str] = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 MIN_OVERLAP = 2
 DRY_RUN = '--dry-run' in sys.argv
@@ -82,11 +106,11 @@ def _string_literals_in_node(node: ast.AST) -> list[str]:
 
 def _needed_ssot(overlap: list[str]) -> list[str]:
     needed = []
-    if any((s in GLOBAL_EXCLUDED_DIRS for s in overlap)):
+    if any(s in GLOBAL_EXCLUDED_DIRS for s in overlap):
         needed.append('GLOBAL_EXCLUDED_DIRS')
-    if any((s in SOVEREIGN_EXCLUDED_FOLDERS for s in overlap)):
+    if any(s in SOVEREIGN_EXCLUDED_FOLDERS for s in overlap):
         needed.append('SOVEREIGN_EXCLUDED_FOLDERS')
-    if any((s in DISCOVERY_EXCLUDED_TERRITORIES for s in overlap)):
+    if any(s in DISCOVERY_EXCLUDED_TERRITORIES for s in overlap):
         needed.append('DISCOVERY_EXCLUDED_TERRITORIES')
     return needed
 
@@ -117,7 +141,7 @@ def _insert_ssot_import(lines: list[str], to_add: list[str]) -> list[str]:
             last_import_idx = i
             if s.startswith('from ') and '(' in line and (')' not in line):
                 in_multi = True
-    block = 'from agentic_core.L5_safety.config.structure_blueprint.ssot import (\n' + ''.join((f'    {n},\n' for n in sorted(to_add))) + ')\n'
+    block = 'from agentic_core.L5_safety.config.structure_blueprint.ssot import (\n' + ''.join(f'    {n},\n' for n in sorted(to_add)) + ')\n'
     lines.insert(last_import_idx + 1, block)
     return lines
 

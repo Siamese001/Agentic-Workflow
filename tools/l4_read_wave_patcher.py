@@ -226,7 +226,7 @@ def main():
     rf = baseline.get("reads_from", 0)
     rth = baseline.get("reads_through", 0)
     ratio = rth / rf if rf > 0 else 0
-    print(f"\n1. BASELINE COUNTS")
+    print("\n1. BASELINE COUNTS")
     print(f"   reads_from     = {rf:,}")
     print(f"   reads_through  = {rth:,}")
     print(f"\n2. CURRENT READ RATIO = {ratio:.1%}")
@@ -241,7 +241,7 @@ def main():
 
     total_added = 0
     patched_modules = []
-    print(f"\n4. READ SURFACES CONVERTED:")
+    print("\n4. READ SURFACES CONVERTED:")
     for source_file, rf_count, rth_count in targets:
         filepath = ROOT / source_file
         module_short = source_file.rsplit("/", 1)[-1].replace(".py", "")
@@ -256,7 +256,7 @@ def main():
     target_count = -(-int(rf * 0.90) // 1)
     gap = max(0, target_count - new_rth)
 
-    print(f"\n5. POST-WAVE COUNTS (expected)")
+    print("\n5. POST-WAVE COUNTS (expected)")
     print(f"   reads_from     = {rf:,}")
     print(f"   reads_through  = {rth:,} + {total_added} = {new_rth:,}")
 
@@ -264,7 +264,7 @@ def main():
     print(f"\n7. REMAINING GAP = {gap:,}")
     print(f"\n8. reads_from UNCHANGED: {rf:,} (confirmed)")
 
-    print(f"\n--- Summary ---")
+    print("\n--- Summary ---")
     print(f"Modules patched: {len(patched_modules)}")
     print(f"Total reads_through added: {total_added}")
     for sf, added in patched_modules:

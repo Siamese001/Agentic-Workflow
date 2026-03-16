@@ -51,12 +51,24 @@ Exit 0 = pass, exit 1 = violations found.
 Merge-ready gate.
 """
 from __future__ import annotations
+
 import ast
 import json
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
 SCAN_ROOTS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 GOVERNED_SUBDIRS = ['engines', 'reasoning', 'validators']
 MAX_EAGER_IMPORTS = 10
@@ -83,7 +95,7 @@ def _has_classdef(filepath: Path) -> bool:
         tree = ast.parse(source, filename=str(filepath))
     except (SyntaxError, OSError):
         return False
-    return any((isinstance(n, ast.ClassDef) for n in ast.walk(tree)))
+    return any(isinstance(n, ast.ClassDef) for n in ast.walk(tree))
 
 def _has_empty_all(filepath: Path) -> bool:
     """Return True if the file has __all__ = []."""

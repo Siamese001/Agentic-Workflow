@@ -51,7 +51,6 @@ import json
 import sqlite3
 import sys
 from pathlib import Path
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:

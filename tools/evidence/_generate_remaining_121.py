@@ -50,7 +50,6 @@ import ast
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
@@ -321,11 +320,11 @@ def generate(mod_path: str, info: ModuleInfo, fan_in: int) -> str:
     lines: list[str] = []
     lines += [
         f'"""Foundational behavioral tests for {mod_path}.',
-        f'',
+        '',
         f'fan_in={fan_in} — imported by {fan_in} other modules.',
         f'ADG import-hygiene is covered separately by test_{stem}_adg.py.',
-        f'This file covers behavioral invariants and public API contracts.',
-        f'"""',
+        'This file covers behavioral invariants and public API contracts.',
+        '"""',
         "from __future__ import annotations",
         "",
         "import pytest",
@@ -368,9 +367,9 @@ def generate(mod_path: str, info: ModuleInfo, fan_in: int) -> str:
                 m0 = ci.enum_members[0]
                 cl += [
                     "",
-                    f"def test_member_values_accessible(self):",
+                    "def test_member_values_accessible(self):",
                     f"    for m in {ci.name}:",
-                    f"        assert m.value is not None or m.value is None",
+                    "        assert m.value is not None or m.value is None",
                     "",
                     f"def test_known_member_{m0.lower()}_present(self):",
                     f"    assert hasattr({ci.name}, {repr(m0)})",
@@ -379,9 +378,9 @@ def generate(mod_path: str, info: ModuleInfo, fan_in: int) -> str:
                     m1 = ci.enum_members[1]
                     cl += [
                         "",
-                        f"def test_members_are_unique(self):",
+                        "def test_members_are_unique(self):",
                         f"    values = [m.value for m in {ci.name}]",
-                        f"    assert len(values) == len(set(values))",
+                        "    assert len(values) == len(set(values))",
                     ]
         elif ci.is_dataclass:
             cl += [
@@ -429,7 +428,7 @@ def generate(mod_path: str, info: ModuleInfo, fan_in: int) -> str:
                     "",
                     "def test_public_api_surface_non_empty(self):",
                     f"    pub = [m for m in dir({ci.name}) if not m.startswith('_')]",
-                    f"    assert len(pub) >= 1",
+                    "    assert len(pub) >= 1",
                 ]
         lines.extend(_ind(cl))
 
@@ -446,7 +445,7 @@ def generate(mod_path: str, info: ModuleInfo, fan_in: int) -> str:
                 "def test_has_return_annotation(self):",
                 "    import inspect",
                 f"    sig = inspect.signature({fn.name})",
-                f"    assert sig.return_annotation is not inspect.Parameter.empty",
+                "    assert sig.return_annotation is not inspect.Parameter.empty",
             ]
         lines.extend(_ind(fl))
 
@@ -503,7 +502,7 @@ def generate(mod_path: str, info: ModuleInfo, fan_in: int) -> str:
             "    assert src.stat().st_size > 0",
         ]))
 
-    lines += ["", "", f"def test_module_importable():",
+    lines += ["", "", "def test_module_importable():",
               f'    """Smoke: {stem} importable or gracefully unavailable."""',
               "    assert True", ""]
 

@@ -44,13 +44,15 @@ import os
 import sys
 import tempfile
 from pathlib import Path
+
 from agentic_core.runtime.lifecycle_trace_contract import (
-    _emit_reads_through,
     _emit_pulls_context,
+    _emit_reads_through,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
     emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "_adg_ci_gates", "uwg_governed_write")
 _emit_writes_through("p1", "_adg_ci_gates", "uwg_governed_write_2")
 _emit_pulls_context("p1", "_adg_ci_gates", "context_retrieval")

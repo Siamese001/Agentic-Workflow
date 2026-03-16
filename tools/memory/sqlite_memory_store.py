@@ -95,7 +95,6 @@ import time
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Generator
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 _DEFAULT_DB = Path(r"C:\Git\Agentic-Workflow\artifacts\memory\knowledge_graph.sqlite")
 

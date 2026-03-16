@@ -33,9 +33,20 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Set, Tuple
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
 
 class FunctionalAreaExtractor(ast.NodeVisitor):
     """Extract functional areas from AST nodes."""

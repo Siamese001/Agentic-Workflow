@@ -9,8 +9,8 @@ preventing downstream agents from hallucinating non-existent keys.
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0

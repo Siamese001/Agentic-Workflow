@@ -1,8 +1,8 @@
 """L4 gap analysis — count remaining modules needing writes_through."""
-import sqlite3
 import re
-from pathlib import Path
+import sqlite3
 from collections import defaultdict
+from pathlib import Path
 
 ROOT = Path(r"C:\Git\Agentic-Workflow")
 ADG_DIR = ROOT / "artifacts" / "adg"

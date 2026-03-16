@@ -129,7 +129,6 @@ from typing import Any
 
 import redis as _redis_lib
 from mcp.server.fastmcp import FastMCP
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 # ---------------------------------------------------------------------------
 # Configuration — all overridable via env vars

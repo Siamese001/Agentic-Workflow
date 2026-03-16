@@ -36,17 +36,41 @@ constant should be used instead.
 Usage: python ops_scripts/ci/_find_hardcoded_dirs.py
 """
 from __future__ import annotations
+
 import ast
 import pathlib
 import sys
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-from agentic_core.L5_safety.config.structure_blueprint.ssot import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, APPS_SHARED_DIR, OPS_SCRIPTS_DIR, APPS_LIC_DIR, APPS_RG_DIR, TESTS_DIR
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    TESTS_DIR,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
 SSOT_DIR_NAMES: frozenset[str] = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 MIN_OVERLAP = 2
 SSOT_PATHS = {'agentic_core/L5_safety/config/structure_blueprint/ssot.py', 'agentic_core/L5_safety/config/structure_blueprint/_constants.py', 'agentic_core/L5_safety/config/structure_blueprint/_verify.py'}
@@ -109,9 +133,9 @@ def scan_file(path: pathlib.Path) -> list[tuple[int, str, list[str], str]]:
     return findings
 
 def _suggest_ssot(overlap: list[str]) -> str:
-    in_global = sum((1 for s in overlap if s in GLOBAL_EXCLUDED_DIRS))
-    in_sovereign = sum((1 for s in overlap if s in SOVEREIGN_EXCLUDED_FOLDERS))
-    in_discovery = sum((1 for s in overlap if s in DISCOVERY_EXCLUDED_TERRITORIES))
+    in_global = sum(1 for s in overlap if s in GLOBAL_EXCLUDED_DIRS)
+    in_sovereign = sum(1 for s in overlap if s in SOVEREIGN_EXCLUDED_FOLDERS)
+    in_discovery = sum(1 for s in overlap if s in DISCOVERY_EXCLUDED_TERRITORIES)
     parts = []
     if in_global:
         parts.append('GLOBAL_EXCLUDED_DIRS')

@@ -36,7 +36,6 @@ import sqlite3
 import sys
 from pathlib import Path
 from typing import NamedTuple
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 

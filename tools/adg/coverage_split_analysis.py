@@ -32,7 +32,6 @@ import glob
 import sqlite3
 from collections import defaultdict
 from pathlib import Path
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 
 def main() -> None:

@@ -6,6 +6,7 @@ from enum import Enum
 from typing import ClassVar
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+
 from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 

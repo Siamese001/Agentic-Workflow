@@ -1,9 +1,21 @@
 """Same as _find_hardcoded_dirs.py but writes full output to a report file."""
 from __future__ import annotations
+
 import ast
 import pathlib
 import sys
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 _emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_1")
 _emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_2")
 _emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_3")
@@ -51,9 +63,22 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-from agentic_core.L5_safety.config.structure_blueprint.ssot import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS, REPORTS_DIR
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, APPS_SHARED_DIR, OPS_SCRIPTS_DIR, APPS_LIC_DIR, APPS_RG_DIR, TESTS_DIR
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    TESTS_DIR,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    REPORTS_DIR,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
 SSOT_DIR_NAMES: frozenset[str] = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 MIN_OVERLAP = 2
 SSOT_PATHS = {'agentic_core/L5_safety/config/structure_blueprint/ssot.py', 'agentic_core/L5_safety/config/structure_blueprint/_constants.py', 'agentic_core/L5_safety/config/structure_blueprint/_verify.py'}
@@ -79,11 +104,11 @@ def _string_literals_in_node(node: ast.AST) -> list[str]:
 
 def _suggest_ssot(overlap: list[str]) -> str:
     parts = []
-    if any((s in GLOBAL_EXCLUDED_DIRS for s in overlap)):
+    if any(s in GLOBAL_EXCLUDED_DIRS for s in overlap):
         parts.append('GLOBAL_EXCLUDED_DIRS')
-    if any((s in SOVEREIGN_EXCLUDED_FOLDERS for s in overlap)):
+    if any(s in SOVEREIGN_EXCLUDED_FOLDERS for s in overlap):
         parts.append('SOVEREIGN_EXCLUDED_FOLDERS')
-    if any((s in DISCOVERY_EXCLUDED_TERRITORIES for s in overlap)):
+    if any(s in DISCOVERY_EXCLUDED_TERRITORIES for s in overlap):
         parts.append('DISCOVERY_EXCLUDED_TERRITORIES')
     return ' | '.join(parts) if parts else 'SSOT constant'
 

@@ -18,17 +18,17 @@ from __future__ import annotations
 
 import ast
 import os
-import re
 import sys
-import uuid
 from pathlib import Path
+
 from agentic_core.runtime.lifecycle_trace_contract import (
-    _emit_reads_through,
     _emit_pulls_context,
+    _emit_reads_through,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
     emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "mega_wire_adg", "uwg_governed_write")
 _emit_writes_through("p1", "mega_wire_adg", "uwg_governed_write_2")
 _emit_pulls_context("p1", "mega_wire_adg", "context_retrieval")
@@ -435,11 +435,11 @@ def main():
     print(f"\n{'=' * 60}")
     print(f"Total files:   {total_files}")
     print(f"Total methods: {total_methods}")
-    print(f"\nBy layer:")
+    print("\nBy layer:")
     for layer, count in sorted(total_by_layer.items()):
         print(f"  {layer}: {count}")
 
-    print(f"\nEdge types increased:")
+    print("\nEdge types increased:")
     print(f"  records_execution_trace: +{total_methods}")
     signs = sum(1 for _, _, _, ex in all_targets if "signs_trace" in ex)
     replay = sum(1 for _, _, _, ex in all_targets if "replay_key" in ex)
@@ -459,8 +459,8 @@ def main():
             print(f"  ... and {len(skipped_files) - 20} more")
 
     if dry_run:
-        print(f"\n=== DRY RUN COMPLETE — run with --apply to execute ===")
-        print(f"\nFirst 30 targets:")
+        print("\n=== DRY RUN COMPLETE — run with --apply to execute ===")
+        print("\nFirst 30 targets:")
         for rel, label, layer, extras in all_targets[:30]:
             extra_str = f" +{','.join(extras)}" if extras else ""
             print(f"  {rel} :: {label} [{layer}]{extra_str}")

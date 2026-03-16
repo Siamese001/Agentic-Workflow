@@ -69,8 +69,19 @@ import hashlib
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
 APPS_DIRS = [APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR]
 SKIP_FILES = {'__init__.py', 'conftest.py'}
 
@@ -160,7 +171,7 @@ def analyze_file(file_path: Path) -> FileInfo | None:
         elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
             if not node.name.startswith('_'):
                 functions.append(analyze_function(node, str(file_path), source_lines))
-    has_docstrings = sum((1 for c in classes if c.has_docstring)) + sum((1 for f in functions if f.has_docstring))
+    has_docstrings = sum(1 for c in classes if c.has_docstring) + sum(1 for f in functions if f.has_docstring)
     total_entities = len(classes) + len(functions)
     docstring_ratio = has_docstrings / max(total_entities, 1)
     has_types = 'typing' in content or ': ' in content
@@ -226,8 +237,8 @@ def main():
             if file_info:
                 all_files.append(file_info)
     print(f'  Scanned {len(all_files)} files')
-    total_classes = sum((len(f.classes) for f in all_files))
-    total_functions = sum((len(f.functions) for f in all_files))
+    total_classes = sum(len(f.classes) for f in all_files)
+    total_functions = sum(len(f.functions) for f in all_files)
     print(f'  Found {total_classes} classes, {total_functions} functions')
     print('\n[2/4] Finding duplicates...')
     dup_classes = find_duplicate_classes(all_files)

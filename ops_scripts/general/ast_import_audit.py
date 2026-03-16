@@ -49,22 +49,24 @@ import json
 import sys
 import sysconfig
 from collections import defaultdict
+
 _FIXED_TS = "2026-01-01T00:00:00Z"
 from pathlib import Path
 
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     DISCOVERY_EXCLUDED_TERRITORIES,
     GLOBAL_EXCLUDED_DIRS,
-    SOVEREIGN_EXCLUDED_FOLDERS,
     REPORTS_DIR,
+    SOVEREIGN_EXCLUDED_FOLDERS,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
-    _emit_reads_through,
     _emit_pulls_context,
+    _emit_reads_through,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
     emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "ast_import_audit", "uwg_governed_write")
 _emit_writes_through("p1", "ast_import_audit", "uwg_governed_write_2")
 _emit_pulls_context("p1", "ast_import_audit", "context_retrieval")

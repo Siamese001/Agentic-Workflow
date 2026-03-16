@@ -1,7 +1,7 @@
 """L4 Phase 2 — reads_from / reads_through baseline check."""
 import sqlite3
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
 
 ROOT = Path(r"C:\Git\Agentic-Workflow")
 ADG_DIR = ROOT / "artifacts" / "adg"
@@ -27,7 +27,7 @@ uncovered = rf - rt
 print(f"reads_from     = {rf:,}")
 print(f"reads_through  = {rt:,}")
 print(f"current_ratio  = {ratio:.1%}")
-print(f"target_ratio   = 90.0%")
+print("target_ratio   = 90.0%")
 print(f"target_count   = {target:,}")
 print(f"gap_remaining  = {gap:,}")
 print(f"uncovered_reads= {uncovered:,}")

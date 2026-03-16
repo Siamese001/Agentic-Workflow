@@ -43,15 +43,27 @@ Exit 0 = pass, exit 1 = violations found.
 Merge-ready gate.
 """
 from __future__ import annotations
+
 import ast
 import json
 import os
 import sys
 from collections import defaultdict
 from pathlib import Path
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
 SCAN_ROOTS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 GENERAL_CEILING = 15
 ALLOWLIST: dict[str, int] = {'agentic_core.base_agents.SovereignBaseAgent': 200, 'agentic_core.L5_safety.config.structure_blueprint_config': 200, 'agentic_core.utils.decorators': 120, 'agentic_core.utils.timeout_decorator_util': 80, 'agentic_core.mixins.subatomic_testing_mixin': 60, 'agentic_core.mixins.atomic_execution_mixin': 40, 'agentic_core.L5_safety.enforcement.archival_gatekeeper_gate': 20, 'agentic_core.L5_safety.reasoning.hierarchy_healer': 20, 'apps_rg.utils.RGAgentBase': 20, 'agentic_core.mixins.mcp_hardened_mixin': 20, 'agentic_core.L0_routing.scripts.full_agent_discovery': 20, 'agentic_core.L3_orchestration.reasoning.UnifiedAgent': 20, 'agentic_core.L5_safety.reasoning.FileClassificationAgent': 20, 'agentic_core.L5_safety.reasoning.CodeHealerAgent': 20, 'agentic_core.L5_safety.types.healing_orchestration_types': 20, 'agentic_core.L5_safety.config.structure_blueprint.enforcement.types': 20, 'agentic_core.L5_safety.reasoning.CodeValidatorAgent': 20, 'apps_shared.utils.ConfigurationService': 20, 'apps_lic.utils.LICAgentBase': 20}
