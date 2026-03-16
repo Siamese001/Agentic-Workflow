@@ -238,3 +238,16 @@ class MetaLearningBus:
             return None
         result = apply_fn(pkg)
         return (pkg, result)
+
+
+_PROCESS_BUS: MetaLearningBus = MetaLearningBus()
+
+
+def get_process_bus() -> MetaLearningBus:
+    """Return the process-level singleton MetaLearningBus.
+
+    All components that publish real-time healing outcomes via
+    DefaultMetaOutcomeBusHook should share this instance so that
+    drain_and_apply() in _fire_meta_learning_intake can flush them.
+    """
+    return _PROCESS_BUS

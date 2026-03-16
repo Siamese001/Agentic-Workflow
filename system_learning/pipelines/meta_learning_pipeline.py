@@ -846,6 +846,7 @@ def run_pipeline(
     _emit_verifies_policy(str(uuid.uuid4()), "Module.run_pipeline", "L4_STATE")
     _emit_observes_runtime_state(str(uuid.uuid4()), "Module.run_pipeline", "L4_STATE")
     import uuid  # noqa: PLC0415
+
     _emit_snapshots_state(str(uuid.uuid4()), "Module.run_pipeline", "L4_STATE")
     if window_start_utc >= window_end_utc:
         raise PipelineError(f"Invalid window: start={window_start_utc} >= end={window_end_utc}")
@@ -873,7 +874,7 @@ def run_pipeline(
         semantic_clock_bytes=b"placeholder",
         semantic_clock=semantic_clock,
     )
-    from system_learning.engines.rca_engine import analyze_failures
+    from system_learning.engines.rca_engine import analyze_failures_and_persist as analyze_failures
 
     rca_report = analyze_failures(
         snapshot_id=snapshot.snapshot_id,
@@ -1128,6 +1129,15 @@ def run_pipeline(
             if hasattr(deps.l4_state_writer, "read_latest_drift_snapshot"):
                 _drift_snapshot_bytes = deps.l4_state_writer.read_latest_drift_snapshot()
         _8_5_aggregate_snapshot = aggregate_snapshot
+        try:
+            from system_learning.adapters.system_learning_memory_bridge import (
+                get_sl_memory_bridge as _get_sl_bridge_agg,
+            )
+
+            _get_sl_bridge_agg().persist_healing_aggregate_snapshot(aggregate_snapshot, ts=str(now_utc))
+        # guardian: allow-silent-swallow -- MCP aggregate persist is non-critical telemetry; pipeline output unaffected by bridge failure
+        except Exception:
+            pass
     else:
         _8_5_aggregate_snapshot = None
     _detection_signal_bytes_86: bytes | None = None
@@ -1156,6 +1166,15 @@ def run_pipeline(
         )
         if drift_summary is not None:
             drift_summary.emit_digest()
+            try:
+                from system_learning.adapters.system_learning_memory_bridge import (
+                    get_sl_memory_bridge as _get_sl_bridge_drift,
+                )
+
+                _get_sl_bridge_drift().persist_drift_summary(drift_summary)
+            # guardian: allow-silent-swallow -- MCP drift-summary persist is non-critical telemetry; digest already emitted above
+            except Exception:
+                pass
         policy_recommendation = _generate_policy_recommendation_and_write(
             drift_summary=drift_summary,
             active_profile=active_profile,
@@ -1164,6 +1183,15 @@ def run_pipeline(
         )
         if policy_recommendation is not None:
             policy_recommendation.emit_digest()
+            try:
+                from system_learning.adapters.system_learning_memory_bridge import (
+                    get_sl_memory_bridge as _get_sl_bridge_pol,
+                )
+
+                _get_sl_bridge_pol().persist_policy_recommendation(policy_recommendation)
+            # guardian: allow-silent-swallow -- MCP policy-rec persist is non-critical telemetry; digest already emitted above
+            except Exception:
+                pass
         profile_proposal = _create_proposal_and_write(
             policy_recommendation=policy_recommendation,
             active_profile=active_profile,

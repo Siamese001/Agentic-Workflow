@@ -2698,6 +2698,15 @@ class RuntimeStateManager:
                 _get_sr_init().import_state(_prior_sr_state)
             except (ImportError, AttributeError, KeyError):
                 pass
+        try:
+            from system_learning.engines.healing_success_rate_store import get_default_store as _get_sr_mcp
+
+            _get_sr_mcp().restore_from_memory()
+        except (
+            ImportError,
+            AttributeError,
+        ):  # guardian: allow-silent-degradation -- restore_from_memory is optional warm-start; bridge unavailable is non-fatal startup path
+            pass
         self.state = {
             "status": "idle",
             "start_time": None,

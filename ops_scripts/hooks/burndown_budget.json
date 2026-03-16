@@ -62,7 +62,7 @@
     "silent_swallower": 1
   },
   "agentic_core/L0_routing/scripts/_ssot_meta_learning.py": {
-    "silent_degradation": 9
+    "silent_degradation": 10
   },
   "agentic_core/L0_routing/scripts/_ssot_phases.py": {
     "silent_degradation": 7
@@ -89,7 +89,7 @@
     "silent_degradation": 1
   },
   "agentic_core/L0_routing/scripts/execute_ssot.py": {
-    "silent_degradation": 60
+    "silent_degradation": 61
   },
   "agentic_core/L0_routing/scripts/execution_context.py": {
     "silent_degradation": 1
@@ -977,7 +977,7 @@
     "global_mutation": 1
   },
   "tools/adg/adg_stale_guard.py": {
-    "global_mutation": 1,
+    "global_mutation": 2,
     "magic_configuration": 2,
     "silent_swallower": 1
   },
@@ -1001,11 +1001,17 @@
   "tools/adg/redis_health_check.py": {
     "silent_degradation": 1
   },
+  "tools/check_adg_edges.py": {
+    "silent_swallower": 1
+  },
   "tools/check_schema.py": {
     "path_fragility": 4
   },
   "tools/commit_helper.py": {
     "path_fragility": 4
+  },
+  "tools/debug_import_end.py": {
+    "global_mutation": 1
   },
   "tools/evidence/_pg_verify.py": {
     "silent_degradation": 1

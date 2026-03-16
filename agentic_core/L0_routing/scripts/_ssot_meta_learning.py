@@ -294,6 +294,19 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
             state_mgr.state.setdefault("meta_learning", {})["success_rate_store"] = _sr_store.export_state()
         except (ImportError, AttributeError, KeyError) as _sr_err:
             logging.warning("[MetaLearning] Wave1 success_rate_store failed (non-fatal): %s", _sr_err)
+        try:
+            from agentic_core.L0_routing.meta_control.meta_learning_bus import (
+                get_process_bus as _get_proc_bus,
+            )
+            from system_learning.engines.bus_consumer import drain_and_apply as _drain_apply
+            from system_learning.engines.healing_success_rate_store import get_default_store as _get_bus_store
+
+            _drain_apply(_get_proc_bus(), _get_bus_store())
+        except (
+            ImportError,
+            AttributeError,
+        ) as _bus_err:  # guardian: allow-silent-degradation -- bus drain is optional; failure logged at DEBUG; pipeline output unaffected
+            logging.debug("[MetaLearning] MetaLearningBus drain skipped (non-fatal): %s", _bus_err)
         store = InMemoryHealingOutcomeIntakeStore()
         adapter = HealingOutcomeIntakeAdapter(store=store)
         if healing_actions:
@@ -413,8 +426,21 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
                 _all_metas = _prior_metas + _faiss_metas
                 _MAX_FAISS_VECS = 1000
                 if len(_all_vecs) > _MAX_FAISS_VECS:
-                    _all_vecs = _all_vecs[-_MAX_FAISS_VECS:]
-                    _all_metas = _all_metas[-_MAX_FAISS_VECS:]
+                    import random as _random_faiss
+
+                    _n_new = len(_faiss_vectors)
+                    _n_prior = len(_prior_vecs)
+                    _keep_prior = max(0, _MAX_FAISS_VECS - _n_new)
+                    if _keep_prior <= 0:
+                        _all_vecs = _faiss_vectors[-_MAX_FAISS_VECS:]
+                        _all_metas = _faiss_metas[-_MAX_FAISS_VECS:]
+                    elif _n_prior > _keep_prior:
+                        _rng_faiss = _random_faiss.Random(0)
+                        _sampled_idx = sorted(_rng_faiss.sample(range(_n_prior), _keep_prior))
+                        _prior_vecs_s = [_prior_vecs[_i] for _i in _sampled_idx]
+                        _prior_metas_s = [_prior_metas[_i] for _i in _sampled_idx]
+                        _all_vecs = _prior_vecs_s + _faiss_vectors
+                        _all_metas = _prior_metas_s + _faiss_metas
                 _faiss_writer = _FAISSStore(base_path=_faiss_base)
                 _faiss_writer.begin_build(_faiss_idx, _dim, seed=0)
                 _faiss_writer.add_vectors(_faiss_idx, _all_vecs, _all_metas)

@@ -23,6 +23,12 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(
+        0, str(_REPO_ROOT)
+    )  # guardian: allow-global-mutation -- pre-commit bootstrap requires repo root on path before agentic_core imports
+
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,

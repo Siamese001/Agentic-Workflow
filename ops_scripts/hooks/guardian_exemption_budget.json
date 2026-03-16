@@ -2269,7 +2269,7 @@
   },
   "system_learning/pipelines/meta_learning_pipeline.py": {
     "magic-config": 1,
-    "silent-swallow": 3
+    "silent-swallow": 6
   },
   "system_learning/pipelines/pipeline_factory.py": {
     "magic-config": 3
