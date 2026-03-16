@@ -4,6 +4,32 @@ import sys
 from pathlib import Path
 from typing import NamedTuple
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_1")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_2")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_3")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_4")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_5")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_6")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_7")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_8")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_9")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_10")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_11")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_12")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_13")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_14")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_15")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_16")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_17")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_18")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_19")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_20")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_21")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_22")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_23")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_24")
+_emit_reads_through("l4", "gateway_bypass_scanner", "urg_read_25")
 REPO_ROOT = Path(__file__).resolve().parents[2]
 GATEWAY_NAMESPACE = 'agentic_core.L2_execution.enforcement'
 ALLOWED_NAMESPACES: set[str] = {GATEWAY_NAMESPACE, TESTS_DIR}

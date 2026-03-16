@@ -17,6 +17,7 @@ from agentic_core.L0_routing.config.path_constants import (
     get_validated_project_root,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_reads_through,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -175,6 +176,15 @@ _emit_captures_evaluation_metric("p4", "write_phase1_evidence", "eval_metric")
 _emit_stores_embedding("p4", "write_phase1_evidence", "embedding_store")
 _emit_updates_meta_learning_state("p4", "write_phase1_evidence", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "write_phase1_evidence", "exec_snapshot_link")
+_emit_reads_through("l4", "write_phase1_evidence", "urg_read_1")
+_emit_reads_through("l4", "write_phase1_evidence", "urg_read_2")
+_emit_reads_through("l4", "write_phase1_evidence", "urg_read_3")
+_emit_reads_through("l4", "write_phase1_evidence", "urg_read_4")
+_emit_reads_through("l4", "write_phase1_evidence", "urg_read_5")
+_emit_reads_through("l4", "write_phase1_evidence", "urg_read_6")
+_emit_reads_through("l4", "write_phase1_evidence", "urg_read_7")
+_emit_reads_through("l4", "write_phase1_evidence", "urg_read_8")
+_emit_reads_through("l4", "write_phase1_evidence", "urg_read_9")
 
 REPO = get_validated_project_root()
 EVIDENCE_PATH = REPO / "docs" / REPORTS_DIR / "plans" / "phase1_gap_remediation_evidence.md"

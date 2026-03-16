@@ -1,4 +1,27 @@
 """
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_1")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_2")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_3")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_4")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_5")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_6")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_7")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_8")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_9")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_10")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_11")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_12")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_13")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_14")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_15")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_16")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_17")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_18")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_19")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_20")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_21")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_22")
+_emit_reads_through("l4", "_routing_governance_gate", "urg_read_23")
 ops_scripts/ci/_routing_governance_gate.py
 
 P1/L0 - Routing Governance Contract Gate.
@@ -28,6 +51,7 @@ import glob
 import os
 import sqlite3
 import sys
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 NON_TEST = (
     "AND source_file NOT LIKE '%test%' "

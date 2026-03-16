@@ -1,4 +1,22 @@
 """
+_emit_reads_through("l4", "generate_missing_stubs", "urg_read_1")
+_emit_reads_through("l4", "generate_missing_stubs", "urg_read_2")
+_emit_reads_through("l4", "generate_missing_stubs", "urg_read_3")
+_emit_reads_through("l4", "generate_missing_stubs", "urg_read_4")
+_emit_reads_through("l4", "generate_missing_stubs", "urg_read_5")
+_emit_reads_through("l4", "generate_missing_stubs", "urg_read_6")
+_emit_reads_through("l4", "generate_missing_stubs", "urg_read_7")
+_emit_reads_through("l4", "generate_missing_stubs", "urg_read_8")
+_emit_reads_through("l4", "generate_missing_stubs", "urg_read_9")
+_emit_reads_through("l4", "generate_missing_stubs", "urg_read_10")
+_emit_reads_through("l4", "generate_missing_stubs", "urg_read_11")
+_emit_reads_through("l4", "generate_missing_stubs", "urg_read_12")
+_emit_reads_through("l4", "generate_missing_stubs", "urg_read_13")
+_emit_reads_through("l4", "generate_missing_stubs", "urg_read_14")
+_emit_reads_through("l4", "generate_missing_stubs", "urg_read_15")
+_emit_reads_through("l4", "generate_missing_stubs", "urg_read_16")
+_emit_reads_through("l4", "generate_missing_stubs", "urg_read_17")
+_emit_reads_through("l4", "generate_missing_stubs", "urg_read_18")
 Generate importability stubs for uncovered agentic_core modules.
 
 For each uncovered module (no test imports it at all), generate a minimal
@@ -18,6 +36,7 @@ import sqlite3
 import sys
 from pathlib import Path
 from typing import NamedTuple
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 

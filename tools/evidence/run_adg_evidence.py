@@ -23,6 +23,7 @@ import sys
 from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_reads_through,
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
@@ -35,6 +36,21 @@ _emit_pulls_context("p1", "run_adg_evidence", "context_retrieval_2")
 emit_determinism_digest("trace_run_adg_evidence", "run_adg_evidence_dispatch")
 emit_determinism_digest("trace_run_adg_evidence", "run_adg_evidence_complete")
 _emit_validated_by_safety_plane("p1", "run_adg_evidence", "safety_validation")
+_emit_reads_through("l4", "run_adg_evidence", "urg_read_1")
+_emit_reads_through("l4", "run_adg_evidence", "urg_read_2")
+_emit_reads_through("l4", "run_adg_evidence", "urg_read_3")
+_emit_reads_through("l4", "run_adg_evidence", "urg_read_4")
+_emit_reads_through("l4", "run_adg_evidence", "urg_read_5")
+_emit_reads_through("l4", "run_adg_evidence", "urg_read_6")
+_emit_reads_through("l4", "run_adg_evidence", "urg_read_7")
+_emit_reads_through("l4", "run_adg_evidence", "urg_read_8")
+_emit_reads_through("l4", "run_adg_evidence", "urg_read_9")
+_emit_reads_through("l4", "run_adg_evidence", "urg_read_10")
+_emit_reads_through("l4", "run_adg_evidence", "urg_read_11")
+_emit_reads_through("l4", "run_adg_evidence", "urg_read_12")
+_emit_reads_through("l4", "run_adg_evidence", "urg_read_13")
+_emit_reads_through("l4", "run_adg_evidence", "urg_read_14")
+_emit_reads_through("l4", "run_adg_evidence", "urg_read_15")
 REPO_ROOT = Path(__file__).parent.parent.parent
 EVIDENCE_PATH = REPO_ROOT / 'docs' / REPORTS_DIR / 'plans' / 'adg_implementation_evidence.md'
 PHASE_TITLE = 'ADG System Implementation'

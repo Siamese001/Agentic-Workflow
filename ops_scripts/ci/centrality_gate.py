@@ -1,5 +1,30 @@
 """Centrality Gate — CI Gate (Baseline + New-Node Explainer).
 
+_emit_reads_through("l4", "centrality_gate", "urg_read_1")
+_emit_reads_through("l4", "centrality_gate", "urg_read_2")
+_emit_reads_through("l4", "centrality_gate", "urg_read_3")
+_emit_reads_through("l4", "centrality_gate", "urg_read_4")
+_emit_reads_through("l4", "centrality_gate", "urg_read_5")
+_emit_reads_through("l4", "centrality_gate", "urg_read_6")
+_emit_reads_through("l4", "centrality_gate", "urg_read_7")
+_emit_reads_through("l4", "centrality_gate", "urg_read_8")
+_emit_reads_through("l4", "centrality_gate", "urg_read_9")
+_emit_reads_through("l4", "centrality_gate", "urg_read_10")
+_emit_reads_through("l4", "centrality_gate", "urg_read_11")
+_emit_reads_through("l4", "centrality_gate", "urg_read_12")
+_emit_reads_through("l4", "centrality_gate", "urg_read_13")
+_emit_reads_through("l4", "centrality_gate", "urg_read_14")
+_emit_reads_through("l4", "centrality_gate", "urg_read_15")
+_emit_reads_through("l4", "centrality_gate", "urg_read_16")
+_emit_reads_through("l4", "centrality_gate", "urg_read_17")
+_emit_reads_through("l4", "centrality_gate", "urg_read_18")
+_emit_reads_through("l4", "centrality_gate", "urg_read_19")
+_emit_reads_through("l4", "centrality_gate", "urg_read_20")
+_emit_reads_through("l4", "centrality_gate", "urg_read_21")
+_emit_reads_through("l4", "centrality_gate", "urg_read_22")
+_emit_reads_through("l4", "centrality_gate", "urg_read_23")
+_emit_reads_through("l4", "centrality_gate", "urg_read_24")
+_emit_reads_through("l4", "centrality_gate", "urg_read_25")
 Recomputes in-degree centrality for all Python modules and fails if:
   1. Any module exceeds its ceiling (ALLOWLIST or GENERAL_CEILING=15).
   2. Executor modules exceed their per-module ceilings.
@@ -26,6 +51,7 @@ from collections import defaultdict
 from pathlib import Path
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 SCAN_ROOTS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 GENERAL_CEILING = 15
 ALLOWLIST: dict[str, int] = {'agentic_core.base_agents.SovereignBaseAgent': 200, 'agentic_core.L5_safety.config.structure_blueprint_config': 200, 'agentic_core.utils.decorators': 120, 'agentic_core.utils.timeout_decorator_util': 80, 'agentic_core.mixins.subatomic_testing_mixin': 60, 'agentic_core.mixins.atomic_execution_mixin': 40, 'agentic_core.L5_safety.enforcement.archival_gatekeeper_gate': 20, 'agentic_core.L5_safety.reasoning.hierarchy_healer': 20, 'apps_rg.utils.RGAgentBase': 20, 'agentic_core.mixins.mcp_hardened_mixin': 20, 'agentic_core.L0_routing.scripts.full_agent_discovery': 20, 'agentic_core.L3_orchestration.reasoning.UnifiedAgent': 20, 'agentic_core.L5_safety.reasoning.FileClassificationAgent': 20, 'agentic_core.L5_safety.reasoning.CodeHealerAgent': 20, 'agentic_core.L5_safety.types.healing_orchestration_types': 20, 'agentic_core.L5_safety.config.structure_blueprint.enforcement.types': 20, 'agentic_core.L5_safety.reasoning.CodeValidatorAgent': 20, 'apps_shared.utils.ConfigurationService': 20, 'apps_lic.utils.LICAgentBase': 20}

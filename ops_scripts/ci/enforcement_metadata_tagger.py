@@ -1,4 +1,57 @@
 """
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_1")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_2")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_3")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_4")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_5")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_6")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_7")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_8")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_9")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_10")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_11")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_12")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_13")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_14")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_15")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_16")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_17")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_18")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_19")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_20")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_21")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_22")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_23")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_24")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_25")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_26")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_27")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_28")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_29")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_30")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_31")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_32")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_33")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_34")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_35")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_36")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_37")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_38")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_39")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_40")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_41")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_42")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_43")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_44")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_45")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_46")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_47")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_48")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_49")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_50")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_51")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_52")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_53")
 Phase W-FINAL Phase 1: Enforcement Metadata Tagger
 
 Parses Agentic Master Requirements corpus, classifies each requirement with:
@@ -29,6 +82,7 @@ import re
 import sys
 from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 CORPUS_PATH = Path(__file__).resolve().parents[2] / 'docs' / REPORTS_DIR / 'plans' / 'Agentic Master Requirements.md'
 REPORT_PATH = Path(__file__).resolve().parents[2] / 'docs' / REPORTS_DIR / 'plans' / 'EnforcementMetadataTaggingReport.json'
 LAYER_PATTERNS: list[tuple[str, re.Pattern[str]]] = [('AST', re.compile('\\b(?:AST|[Ss]tatic(?:\\s+\\w+)?\\s*(?:scan|file|inspection|analysis)?|[Ss]tatic)\\b')), ('Runtime', re.compile('\\b(?:[Rr]untime|[Rr]un[\\s-]?time|[Gg]ate|[Gg]uard(?!ian)|[Bb]oundary|[Ii]nterception|[Ii]nvariant|[Cc]heck|[Ee]nforcement|[Vv]alidation|[Vv]erification|[Ii]nspection|[Cc]ompliance|[Ss]cope[\\s_]validator|[Kk]ey[\\s_]mgmt|[Pp]romotion[\\s_]guard|[Pp]hase[\\s_]gate|[Vv]ersionStore|[Hh]ealth|[Aa]pproval|[Aa]udit|[Rr]edaction|[Rr]outing|[Dd]ispatch|[Ee]gress|[Oo]utput)\\b')), ('CI', re.compile('\\b(?:CI|[Cc]ompliance[\\s_]calculation|[Cc]onfig)\\b')), ('Replay', re.compile('\\b(?:[Rr]eplay|[Dd]eterminism[\\s_]?(?:test|check)?|[Tt]amper)\\b')), ('Guardian', re.compile('\\b[Gg]uardian\\b')), ('Schema', re.compile('\\b(?:[Ss]chema|[Ss]erialization)\\b')), ('Signature', re.compile('\\b(?:[Ss]ignature|HMAC|[Ss]ig(?:nature)?[\\s_]verif)\\b'))]

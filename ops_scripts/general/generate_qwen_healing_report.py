@@ -1,5 +1,31 @@
 #!/usr/bin/env python3
 """
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_1")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_2")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_3")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_4")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_5")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_6")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_7")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_8")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_9")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_10")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_11")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_12")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_13")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_14")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_15")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_16")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_17")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_18")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_19")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_20")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_21")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_22")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_23")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_24")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_25")
+_emit_reads_through("l4", "generate_qwen_healing_report", "urg_read_26")
 generate_qwen_healing_report.py
 
 Scans all 190 agents via AST, classifies each as QWEN_VLLM / DETERMINISTIC / HYBRID,
@@ -352,6 +378,7 @@ _BMG_HELPER = '''\
             return [m["metadata"] for m in results.get("matches", [])]
         except Exception as exc:  # noqa: BLE001
             import logging
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
             logging.getLogger(__name__).warning("BMG retrieval failed: %s", exc)
             return []
 '''

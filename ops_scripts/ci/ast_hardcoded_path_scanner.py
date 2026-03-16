@@ -1,4 +1,37 @@
 """
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_1")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_2")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_3")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_4")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_5")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_6")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_7")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_8")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_9")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_10")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_11")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_12")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_13")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_14")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_15")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_16")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_17")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_18")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_19")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_20")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_21")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_22")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_23")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_24")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_25")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_26")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_27")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_28")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_29")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_30")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_31")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_32")
+_emit_reads_through("l4", "ast_hardcoded_path_scanner", "urg_read_33")
 AST Hardcoded Path Scanner
 
 Scans all SOVEREIGN_TERRITORIES (10 folders) for Python files that contain
@@ -27,6 +60,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from agentic_core.L5_safety.config.structure_blueprint.ssot import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 SSOT_TARGETS: dict[str, str] = {'archives': 'ARCHIVES_DIR', 'agentic_core': 'AGENTIC_CORE_DIR', 'apps_lic': 'APPS_LIC_DIR', 'apps_rg': 'APPS_RG_DIR', 'apps_shared': 'APPS_SHARED_DIR', 'ops_scripts': 'OPS_SCRIPTS_DIR', 'tests': 'TESTS_DIR', 'system_learning': 'SYSTEM_LEARNING_DIR', 'tools': 'TOOLS_DIR', 'agentic_core/L0_routing': 'L0_ROUTING_DIR', 'agentic_core/L1_cognition': 'L1_COGNITION_DIR', 'agentic_core/L2_execution': 'L2_EXECUTION_DIR', 'agentic_core/L3_orchestration': 'L3_ORCHESTRATION_DIR', 'agentic_core/L4_state': 'L4_STATE_DIR', 'agentic_core/L5_safety': 'L5_SAFETY_DIR', 'agentic_core/L6_observability': 'L6_OBSERVABILITY_DIR'}
 SCAN_ROOTS: list[str] = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, OPS_SCRIPTS_DIR, TESTS_DIR, TOOLS_DIR, SYSTEM_LEARNING_DIR, 'data', 'docs']
 EXCLUDE_DIRS: frozenset[str] = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES

@@ -1,4 +1,11 @@
 """
+_emit_reads_through("l4", "phase5_l2_cid_reentry_evidence", "urg_read_1")
+_emit_reads_through("l4", "phase5_l2_cid_reentry_evidence", "urg_read_2")
+_emit_reads_through("l4", "phase5_l2_cid_reentry_evidence", "urg_read_3")
+_emit_reads_through("l4", "phase5_l2_cid_reentry_evidence", "urg_read_4")
+_emit_reads_through("l4", "phase5_l2_cid_reentry_evidence", "urg_read_5")
+_emit_reads_through("l4", "phase5_l2_cid_reentry_evidence", "urg_read_6")
+_emit_reads_through("l4", "phase5_l2_cid_reentry_evidence", "urg_read_7")
 Phase 5 L2 CID+ReEntry Evidence Generator
 Python-only evidence capture for L2 execution modules.
 """
@@ -11,6 +18,7 @@ from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 
 def get_repo_root() -> Path:

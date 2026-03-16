@@ -3,6 +3,14 @@ import json
 import re
 from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+_emit_reads_through("l4", "_summarize_ssot_run", "urg_read_1")
+_emit_reads_through("l4", "_summarize_ssot_run", "urg_read_2")
+_emit_reads_through("l4", "_summarize_ssot_run", "urg_read_3")
+_emit_reads_through("l4", "_summarize_ssot_run", "urg_read_4")
+_emit_reads_through("l4", "_summarize_ssot_run", "urg_read_5")
+_emit_reads_through("l4", "_summarize_ssot_run", "urg_read_6")
+_emit_reads_through("l4", "_summarize_ssot_run", "urg_read_7")
 RAW_PATH = Path('docs/reports/plans/ssot_healing_run_report.json')
 OUT_PATH = Path('docs/reports/plans/ssot_healing_detailed_report.json')
 

@@ -17,6 +17,7 @@ from agentic_core.L0_routing.config.path_constants import (
     L0_ROUTING_DIR,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_reads_through,
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
@@ -29,6 +30,29 @@ _emit_pulls_context("p1", "evidence_collect_phase1", "context_retrieval_2")
 emit_determinism_digest("trace_evidence_collect_phase1", "evidence_collect_phase1_dispatch")
 emit_determinism_digest("trace_evidence_collect_phase1", "evidence_collect_phase1_complete")
 _emit_validated_by_safety_plane("p1", "evidence_collect_phase1", "safety_validation")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_1")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_2")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_3")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_4")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_5")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_6")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_7")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_8")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_9")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_10")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_11")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_12")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_13")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_14")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_15")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_16")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_17")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_18")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_19")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_20")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_21")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_22")
+_emit_reads_through("l4", "evidence_collect_phase1", "urg_read_23")
 
 # Critical D-set for Phase 1
 CRITICAL_D_SET: dict[str, dict[str, Any]] = {

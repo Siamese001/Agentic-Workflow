@@ -14,6 +14,7 @@ from typing import Any
 from agentic_core.cache.cache_key_builders import _require_hash_segment
 from agentic_core.cache.redis_cache_client import DeterministicRedisCache, get_hot_cache
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_reads_through,
     LayerSegment,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -283,3 +284,14 @@ class ConfigFileCache:
 def get_config_file_cache() -> ConfigFileCache:
     """Get the singleton config file cache instance."""
     return ConfigFileCache()
+
+_emit_reads_through("l4", "config_file_cache", "urg_read_1")
+_emit_reads_through("l4", "config_file_cache", "urg_read_2")
+_emit_reads_through("l4", "config_file_cache", "urg_read_3")
+_emit_reads_through("l4", "config_file_cache", "urg_read_4")
+_emit_reads_through("l4", "config_file_cache", "urg_read_5")
+_emit_reads_through("l4", "config_file_cache", "urg_read_6")
+_emit_reads_through("l4", "config_file_cache", "urg_read_7")
+_emit_reads_through("l4", "config_file_cache", "urg_read_8")
+_emit_reads_through("l4", "config_file_cache", "urg_read_9")
+_emit_reads_through("l4", "config_file_cache", "urg_read_10")

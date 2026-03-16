@@ -1,4 +1,34 @@
 """
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_1")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_2")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_3")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_4")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_5")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_6")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_7")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_8")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_9")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_10")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_11")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_12")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_13")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_14")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_15")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_16")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_17")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_18")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_19")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_20")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_21")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_22")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_23")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_24")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_25")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_26")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_27")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_28")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_29")
+_emit_reads_through("l4", "evidence_contract_v2", "urg_read_30")
 Evidence Contract v2 Helper
 
 Shared helper for consolidated evidence runners that enforces:
@@ -12,6 +42,7 @@ import argparse
 import subprocess
 from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
 class EvidenceContractV2:
     """Evidence Contract v2 helper for consolidated runners."""

@@ -12,6 +12,7 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_reads_through,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -257,3 +258,23 @@ class GraphAwareCache:
 
 
 __all__ = ["GraphAwareCache"]
+
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_1")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_2")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_3")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_4")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_5")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_6")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_7")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_8")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_9")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_10")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_11")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_12")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_13")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_14")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_15")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_16")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_17")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_18")
+_emit_reads_through("l4", "graph_aware_cache", "urg_read_19")

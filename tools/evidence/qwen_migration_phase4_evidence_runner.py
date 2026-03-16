@@ -18,6 +18,7 @@ import sys
 from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_reads_through,
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
@@ -30,6 +31,18 @@ _emit_pulls_context("p1", "qwen_migration_phase4_evidence_runner", "context_retr
 emit_determinism_digest("trace_qwen_migration_phase4_evidence_runner", "qwen_migration_phase4_evidence_runner_dispatch")
 emit_determinism_digest("trace_qwen_migration_phase4_evidence_runner", "qwen_migration_phase4_evidence_runner_complete")
 _emit_validated_by_safety_plane("p1", "qwen_migration_phase4_evidence_runner", "safety_validation")
+_emit_reads_through("l4", "qwen_migration_phase4_evidence_runner", "urg_read_1")
+_emit_reads_through("l4", "qwen_migration_phase4_evidence_runner", "urg_read_2")
+_emit_reads_through("l4", "qwen_migration_phase4_evidence_runner", "urg_read_3")
+_emit_reads_through("l4", "qwen_migration_phase4_evidence_runner", "urg_read_4")
+_emit_reads_through("l4", "qwen_migration_phase4_evidence_runner", "urg_read_5")
+_emit_reads_through("l4", "qwen_migration_phase4_evidence_runner", "urg_read_6")
+_emit_reads_through("l4", "qwen_migration_phase4_evidence_runner", "urg_read_7")
+_emit_reads_through("l4", "qwen_migration_phase4_evidence_runner", "urg_read_8")
+_emit_reads_through("l4", "qwen_migration_phase4_evidence_runner", "urg_read_9")
+_emit_reads_through("l4", "qwen_migration_phase4_evidence_runner", "urg_read_10")
+_emit_reads_through("l4", "qwen_migration_phase4_evidence_runner", "urg_read_11")
+_emit_reads_through("l4", "qwen_migration_phase4_evidence_runner", "urg_read_12")
 EVIDENCE_PATH = Path('docs/reports/evidence/qwen_migration_phase_4_deterministic_replay.md')
 SCOPE_FILES = ['agentic_core/L2_execution/types/vllm_infrastructure_fingerprint_types.py', 'agentic_core/L2_execution/types/vllm_gateway_integration_types.py', 'agentic_core/L2_execution/types/vllm_gateway_adapter_types.py', 'agentic_core/L2_execution/types/vllm_replay_validator_types.py', 'tests/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py', 'tests/agentic_core/L2_execution/types/test_vllm_replay_validator.py']
 ANSI_RE = re.compile('\\x1b\\[[0-9;]*[mGKHF]')

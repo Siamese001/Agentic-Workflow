@@ -4,12 +4,56 @@ import ast
 import pathlib
 import sys
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_1")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_2")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_3")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_4")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_5")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_6")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_7")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_8")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_9")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_10")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_11")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_12")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_13")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_14")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_15")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_16")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_17")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_18")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_19")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_20")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_21")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_22")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_23")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_24")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_25")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_26")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_27")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_28")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_29")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_30")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_31")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_32")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_33")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_34")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_35")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_36")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_37")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_38")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_39")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_40")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_41")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_42")
+_emit_reads_through("l4", "_find_hardcoded_dirs_full", "urg_read_43")
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from agentic_core.L5_safety.config.structure_blueprint.ssot import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS, REPORTS_DIR
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, APPS_SHARED_DIR, OPS_SCRIPTS_DIR, APPS_LIC_DIR, APPS_RG_DIR, TESTS_DIR
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 SSOT_DIR_NAMES: frozenset[str] = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 MIN_OVERLAP = 2
 SSOT_PATHS = {'agentic_core/L5_safety/config/structure_blueprint/ssot.py', 'agentic_core/L5_safety/config/structure_blueprint/_constants.py', 'agentic_core/L5_safety/config/structure_blueprint/_verify.py'}

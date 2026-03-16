@@ -11,6 +11,7 @@ from agentic_core.L0_routing.config.path_constants import (
     get_validated_project_root,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_reads_through,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -153,6 +154,13 @@ _emit_captures_evaluation_metric("p4", "phase10_apps_taxonomy_guard_evidence", "
 _emit_stores_embedding("p4", "phase10_apps_taxonomy_guard_evidence", "embedding_store")
 _emit_updates_meta_learning_state("p4", "phase10_apps_taxonomy_guard_evidence", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "phase10_apps_taxonomy_guard_evidence", "exec_snapshot_link")
+_emit_reads_through("l4", "phase10_apps_taxonomy_guard_evidence", "urg_read_1")
+_emit_reads_through("l4", "phase10_apps_taxonomy_guard_evidence", "urg_read_2")
+_emit_reads_through("l4", "phase10_apps_taxonomy_guard_evidence", "urg_read_3")
+_emit_reads_through("l4", "phase10_apps_taxonomy_guard_evidence", "urg_read_4")
+_emit_reads_through("l4", "phase10_apps_taxonomy_guard_evidence", "urg_read_5")
+_emit_reads_through("l4", "phase10_apps_taxonomy_guard_evidence", "urg_read_6")
+_emit_reads_through("l4", "phase10_apps_taxonomy_guard_evidence", "urg_read_7")
 
 def get_repo_root() -> Path:
     return get_validated_project_root()

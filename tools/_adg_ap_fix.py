@@ -17,6 +17,7 @@ import subprocess
 import sys
 from pathlib import Path
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_reads_through,
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
@@ -29,6 +30,31 @@ _emit_pulls_context("p1", "_adg_ap_fix", "context_retrieval_2")
 emit_determinism_digest("trace__adg_ap_fix", "_adg_ap_fix_dispatch")
 emit_determinism_digest("trace__adg_ap_fix", "_adg_ap_fix_complete")
 _emit_validated_by_safety_plane("p1", "_adg_ap_fix", "safety_validation")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_1")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_2")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_3")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_4")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_5")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_6")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_7")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_8")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_9")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_10")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_11")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_12")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_13")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_14")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_15")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_16")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_17")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_18")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_19")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_20")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_21")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_22")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_23")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_24")
+_emit_reads_through("l4", "_adg_ap_fix", "urg_read_25")
 
 REPO = Path(__file__).resolve().parent.parent
 SKIP_DIRS = {".git", ".venv", "venv", "__pycache__", ".pytest_cache", "archives", ".nox"}

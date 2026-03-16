@@ -12,6 +12,7 @@ import sys
 from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_reads_through,
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
@@ -24,6 +25,15 @@ _emit_pulls_context("p1", "wave3_phase3_3_runner", "context_retrieval_2")
 emit_determinism_digest("trace_wave3_phase3_3_runner", "wave3_phase3_3_runner_dispatch")
 emit_determinism_digest("trace_wave3_phase3_3_runner", "wave3_phase3_3_runner_complete")
 _emit_validated_by_safety_plane("p1", "wave3_phase3_3_runner", "safety_validation")
+_emit_reads_through("l4", "wave3_phase3_3_runner", "urg_read_1")
+_emit_reads_through("l4", "wave3_phase3_3_runner", "urg_read_2")
+_emit_reads_through("l4", "wave3_phase3_3_runner", "urg_read_3")
+_emit_reads_through("l4", "wave3_phase3_3_runner", "urg_read_4")
+_emit_reads_through("l4", "wave3_phase3_3_runner", "urg_read_5")
+_emit_reads_through("l4", "wave3_phase3_3_runner", "urg_read_6")
+_emit_reads_through("l4", "wave3_phase3_3_runner", "urg_read_7")
+_emit_reads_through("l4", "wave3_phase3_3_runner", "urg_read_8")
+_emit_reads_through("l4", "wave3_phase3_3_runner", "urg_read_9")
 REPO_ROOT = Path(__file__).resolve().parents[2]
 EVIDENCE_PATH = REPO_ROOT / 'docs' / REPORTS_DIR / 'plans' / 'wave3_phase3_3_evidence.md'
 SCOPE_FILES = ['tests/architecture/test_wave3_phase3_3_finalization.py']

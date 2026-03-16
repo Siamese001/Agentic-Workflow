@@ -32,6 +32,7 @@ import sys
 from pathlib import Path
 
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_reads_through,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -202,6 +203,36 @@ _emit_verifies_boundary("p1", "fix_test_quality_vacuous", "boundary_check")
 _emit_transcripts_response("p1", "fix_test_quality_vacuous", "transcript")
 _emit_hard_fails_untranscripted("p1", "fix_test_quality_vacuous")
 _emit_gated_by_confidence("p1", "fix_test_quality_vacuous", "confidence_gate")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_1")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_2")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_3")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_4")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_5")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_6")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_7")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_8")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_9")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_10")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_11")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_12")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_13")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_14")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_15")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_16")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_17")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_18")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_19")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_20")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_21")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_22")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_23")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_24")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_25")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_26")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_27")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_28")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_29")
+_emit_reads_through("l4", "fix_test_quality_vacuous", "urg_read_30")
 
 # Matches: assert True [# comment]  OR  assert True, "message"
 _ASSERT_TRUE_RE = re.compile(r'^(\s*)assert\s+True\s*(?:[,#][^\n]*)?\n?$')

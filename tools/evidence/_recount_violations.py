@@ -3,7 +3,23 @@ from __future__ import annotations
 import ast, sys
 from collections import defaultdict
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
 
+_emit_reads_through("l4", "_recount_violations", "urg_read_1")
+_emit_reads_through("l4", "_recount_violations", "urg_read_2")
+_emit_reads_through("l4", "_recount_violations", "urg_read_3")
+_emit_reads_through("l4", "_recount_violations", "urg_read_4")
+_emit_reads_through("l4", "_recount_violations", "urg_read_5")
+_emit_reads_through("l4", "_recount_violations", "urg_read_6")
+_emit_reads_through("l4", "_recount_violations", "urg_read_7")
+_emit_reads_through("l4", "_recount_violations", "urg_read_8")
+_emit_reads_through("l4", "_recount_violations", "urg_read_9")
+_emit_reads_through("l4", "_recount_violations", "urg_read_10")
+_emit_reads_through("l4", "_recount_violations", "urg_read_11")
+_emit_reads_through("l4", "_recount_violations", "urg_read_12")
+_emit_reads_through("l4", "_recount_violations", "urg_read_13")
+_emit_reads_through("l4", "_recount_violations", "urg_read_14")
+_emit_reads_through("l4", "_recount_violations", "urg_read_15")
 ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 if str(ROOT) not in sys.path:

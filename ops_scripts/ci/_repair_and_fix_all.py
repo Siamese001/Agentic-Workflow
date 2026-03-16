@@ -17,6 +17,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from agentic_core.L5_safety.config.structure_blueprint.ssot import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_reads_through,
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
@@ -29,6 +30,33 @@ _emit_pulls_context("p1", "_repair_and_fix_all", "context_retrieval_2")
 emit_determinism_digest("trace__repair_and_fix_all", "_repair_and_fix_all_dispatch")
 emit_determinism_digest("trace__repair_and_fix_all", "_repair_and_fix_all_complete")
 _emit_validated_by_safety_plane("p1", "_repair_and_fix_all", "safety_validation")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_1")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_2")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_3")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_4")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_5")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_6")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_7")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_8")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_9")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_10")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_11")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_12")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_13")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_14")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_15")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_16")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_17")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_18")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_19")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_20")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_21")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_22")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_23")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_24")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_25")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_26")
+_emit_reads_through("l4", "_repair_and_fix_all", "urg_read_27")
 SKIP_DIRS: frozenset[str] = frozenset({'.venv', 'venv', '__pycache__', ARCHIVES_DIR, 'node_modules', '.healing_backups', '.sovereign_healing_backup'})
 SSOT_IMPORT_BLOCK = 'from agentic_core.L5_safety.config.structure_blueprint.ssot import (\n    DISCOVERY_EXCLUDED_TERRITORIES,\n    GLOBAL_EXCLUDED_DIRS,\n    SOVEREIGN_EXCLUDED_FOLDERS,\n)'
 SSOT_UNION = 'GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES'
