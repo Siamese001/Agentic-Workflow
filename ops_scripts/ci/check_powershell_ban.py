@@ -16,14 +16,32 @@ Exit codes:
 """
 
 import argparse
+
+# Force UTF-8 encoding for Windows compatibility
+import io
 import json
 import re
 import sys
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import Any, Dict, List
 
-# Force UTF-8 encoding for Windows compatibility
-import io
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "check_powershell_ban")
+_emit_applies_guardrail("p0", "check_powershell_ban", "p0_governance")
+_emit_reads_policy_state("p0", "check_powershell_ban", "policy_binding")
+_emit_snapshots_state("p0", "check_powershell_ban", "state_snapshot")
+emit_replay_key("p0", "check_powershell_ban")
+emit_determinism_digest("p0", "check_powershell_ban")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 if sys.platform == "win32":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
@@ -97,11 +115,11 @@ class PowerShellBanChecker:
     }
 
     def __init__(self):
-        self.violations: List[Dict[str, Any]] = []
+        self.violations: list[dict[str, Any]] = []
         self.compiled_patterns = [re.compile(pattern, re.IGNORECASE | re.MULTILINE) for pattern in self.POWERSHELL_PATTERNS]
 
     # guardian: allow-magic-config
-    def check_repository(self, max_files: int = 1000) -> List[Dict[str, Any]]:
+    def check_repository(self, max_files: int = 1000) -> list[dict[str, Any]]:
         """Check repository for PowerShell usage with file limit."""
         self.violations = []
         files_checked = 0
@@ -332,7 +350,7 @@ class PowerShellBanChecker:
         print()
         print("📖 Reference: User preference - NEVER use PowerShell")
 
-    def get_statistics(self) -> Dict[str, Any]:
+    def get_statistics(self) -> dict[str, Any]:
         """Get statistics about PowerShell usage violations."""
         if not self.violations:
             return {"total": 0}
@@ -395,7 +413,7 @@ def main() -> int:
         print("Build FAILED - PowerShell usage violates user preference")
         return 1
     else:
-        print(f"\n✅ POWERSHELL BAN GUARDRAIL: No violations found")
+        print("\n✅ POWERSHELL BAN GUARDRAIL: No violations found")
         return 0
 
 

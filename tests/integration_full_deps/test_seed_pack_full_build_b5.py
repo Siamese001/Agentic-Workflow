@@ -14,6 +14,15 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.engines.openai_embedder import OpenAIEmbedder
 from system_learning.engines.seed_embedding_pack_builder import (
     DeterministicHashEmbedder,
@@ -22,6 +31,14 @@ from system_learning.engines.seed_embedding_pack_builder import (
 from system_learning.types.seed_embedding_pack_types import (
     SeedEmbeddingPackConfig,
 )
+
+_emit_records_execution_trace("p0", "evidence", "test_seed_pack_full_build_b5")
+_emit_applies_guardrail("p0", "test_seed_pack_full_build_b5", "p0_governance")
+_emit_reads_policy_state("p0", "test_seed_pack_full_build_b5", "policy_binding")
+_emit_snapshots_state("p0", "test_seed_pack_full_build_b5", "state_snapshot")
+emit_replay_key("p0", "test_seed_pack_full_build_b5")
+emit_determinism_digest("p0", "test_seed_pack_full_build_b5")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 
 def has_openai_key() -> bool:

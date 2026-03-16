@@ -32,6 +32,23 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "check_spine_bypass")
+_emit_applies_guardrail("p0", "check_spine_bypass", "p0_governance")
+_emit_reads_policy_state("p0", "check_spine_bypass", "policy_binding")
+_emit_snapshots_state("p0", "check_spine_bypass", "state_snapshot")
+emit_replay_key("p0", "check_spine_bypass")
+emit_determinism_digest("p0", "check_spine_bypass")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 PROJECT_ROOT = get_validated_project_root()
 BASELINE_FILE = PROJECT_ROOT / OPS_SCRIPTS_DIR / "hooks" / "spine_bypass_baseline.txt"

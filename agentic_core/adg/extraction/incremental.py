@@ -38,6 +38,23 @@ from typing import TYPE_CHECKING
 
 from agentic_core.adg.artifact.normalizer import NormalizedGraph
 from agentic_core.adg.extraction.scan_cache import ScanCache, file_hash
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "incremental")
+_emit_applies_guardrail("p0", "incremental", "p0_governance")
+_emit_reads_policy_state("p0", "incremental", "policy_binding")
+_emit_snapshots_state("p0", "incremental", "state_snapshot")
+emit_replay_key("p0", "incremental")
+emit_determinism_digest("p0", "incremental")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult

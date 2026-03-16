@@ -30,7 +30,24 @@ import pathlib
 import sys
 import time
 from collections import defaultdict
-from typing import Iterator
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "adg_test_accelerator")
+_emit_applies_guardrail("p0", "adg_test_accelerator", "p0_governance")
+_emit_reads_policy_state("p0", "adg_test_accelerator", "policy_binding")
+_emit_snapshots_state("p0", "adg_test_accelerator", "state_snapshot")
+emit_replay_key("p0", "adg_test_accelerator")
+emit_determinism_digest("p0", "adg_test_accelerator")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 _ROOT = pathlib.Path(__file__).resolve().parents[1]
 # guardian: allow-global-mutation

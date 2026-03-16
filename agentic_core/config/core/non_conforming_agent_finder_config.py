@@ -16,6 +16,22 @@ Finds all Python classes in agentic_core that:
 
 import warnings
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "non_conforming_agent_finder_config", "p0_governance")
+_emit_reads_policy_state("p0", "non_conforming_agent_finder_config", "policy_binding")
+_emit_snapshots_state("p0", "non_conforming_agent_finder_config", "state_snapshot")
+emit_replay_key("p0", "non_conforming_agent_finder_config")
+emit_determinism_digest("p0", "non_conforming_agent_finder_config")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 
 def _get_ssot_exclusions():
     from agentic_core.L5_safety.config.structure_blueprint.ssot import (

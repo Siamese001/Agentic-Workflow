@@ -31,7 +31,12 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,
     _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
+
+emit_replay_key("p0", "oscillation_firewall_gate")
+emit_determinism_digest("p0", "oscillation_firewall_gate")
 
 _emit_dispatches_healing_run("p1", "oscillation_firewall_gate", "L5")
 _emit_routes_through("p1", "oscillation_firewall_gate", "L5")

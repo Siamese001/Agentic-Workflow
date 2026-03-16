@@ -16,9 +16,27 @@ from __future__ import annotations
 import json
 import logging
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "change_impact_engine")
+_emit_applies_guardrail("p0", "change_impact_engine", "p0_governance")
+_emit_reads_policy_state("p0", "change_impact_engine", "policy_binding")
+_emit_snapshots_state("p0", "change_impact_engine", "state_snapshot")
+emit_replay_key("p0", "change_impact_engine")
+emit_determinism_digest("p0", "change_impact_engine")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult
@@ -209,7 +227,7 @@ class ChangeImpactEngine:
 
         # Scope widening events (modules from different layers than changed files)
         scope_widening: list[str] = []
-        from agentic_core.adg.schema import module_path_to_layer, ALLOWED_LAYER_EDGES
+        from agentic_core.adg.schema import module_path_to_layer
 
         changed_layers = {module_path_to_layer(p) for p in norm_changed if p in module_set}
         for rel in impacted_rel:

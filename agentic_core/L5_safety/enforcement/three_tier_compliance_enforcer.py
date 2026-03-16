@@ -39,16 +39,21 @@ from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_applies_guardrail,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_dispatches_healing_run,  # noqa: E402
     _emit_escalates_to_human,  # noqa: E402
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_execution_trace,
+    _emit_reads_policy_state,  # noqa: E402  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
     _emit_routes_through,  # noqa: E402
-    _emit_signs_execution_trace,
-    _emit_snapshots_state,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402  # noqa: E402
     _emit_verifies_policy,
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
+
+emit_replay_key("p0", "three_tier_compliance_enforcer")
+emit_determinism_digest("p0", "three_tier_compliance_enforcer")
 
 _emit_dispatches_healing_run("p1", "three_tier_compliance_enforcer", "L5")
 _emit_routes_through("p1", "three_tier_compliance_enforcer", "L5")

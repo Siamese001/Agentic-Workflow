@@ -17,7 +17,16 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
 from .quality.signal_enhancer import QualityThresholds, SignalQuality, get_signal_enhancer
 from .reflection_engine import (
     STANDARD_CRITERIA,
@@ -35,6 +44,12 @@ from .resilience.circuit_breaker import (
 from .security.secure_checkpoint import CheckpointIntegrityError, CheckpointManagerFactory
 from .service_container import ServiceContainer, get_default_container
 from .shared_models import HopState, MicroCheckpoint, MicroStage, RetryPolicy, StageTransition
+
+_emit_applies_guardrail("p0", "subatomic_hop_util", "p0_governance")
+_emit_snapshots_state("p0", "subatomic_hop_util", "state_snapshot")
+emit_replay_key("p0", "subatomic_hop_util")
+emit_determinism_digest("p0", "subatomic_hop_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 logger = logging.getLogger(__name__)
 

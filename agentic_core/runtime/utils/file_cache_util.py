@@ -1,5 +1,21 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "file_cache_util", "p0_governance")
+_emit_reads_policy_state("p0", "file_cache_util", "policy_binding")
+_emit_snapshots_state("p0", "file_cache_util", "state_snapshot")
+emit_replay_key("p0", "file_cache_util")
+emit_determinism_digest("p0", "file_cache_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 "\nFileCache: Singleton-based file discovery cache for reducing I/O overhead.\n\nThis module provides a centralized, cached file discovery mechanism to eliminate\nredundant rglob/glob calls across the codebase. All agents should use this cache\ninstead of direct path.rglob() calls.\n\nOpportunity #3: rglob Scan Proliferation\n- Consolidates 100+ redundant rglob calls into single cached SSOT\n- Lazy loading: only scans disk on first request\n- Built-in filtering for *.py and *.md extensions\n- Automatic exclusion of .git, __pycache__, .sovereign_healing_backup\n- Invalidation method for healer agents that modify files\n- Uses os.walk with directory pruning for performance (not rglob)\n\nUsage:\n\n    cache = FileCache.get_instance()\n    all_py_files = cache.get_files_by_extension('.py')\n    all_files = cache.get_all_files()\n\n    # After file modifications (healers):\n    cache.invalidate()\n"
 import logging
 import os

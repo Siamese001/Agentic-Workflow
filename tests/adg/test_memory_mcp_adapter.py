@@ -22,6 +22,23 @@ from agentic_core.cache.namespace_builder import (
     key_prefix,
     parse_key,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_memory_mcp_adapter")
+_emit_applies_guardrail("p0", "test_memory_mcp_adapter", "p0_governance")
+_emit_reads_policy_state("p0", "test_memory_mcp_adapter", "policy_binding")
+_emit_snapshots_state("p0", "test_memory_mcp_adapter", "state_snapshot")
+emit_replay_key("p0", "test_memory_mcp_adapter")
+emit_determinism_digest("p0", "test_memory_mcp_adapter")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # ---------------------------------------------------------------------------
 # _infer_layer
@@ -281,6 +298,7 @@ class TestADGMemoryAdapter:
         """
         import sqlite3
         from dataclasses import dataclass, field
+
         from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
 
         db = tmp_path / "kg_adapter_test.sqlite"
@@ -325,6 +343,7 @@ class TestADGMemoryAdapter:
         """ADGSnapshot entity must be queryable after ingest_snapshot completes."""
         import sqlite3
         from dataclasses import dataclass, field
+
         from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
 
         db = tmp_path / "kg_snapshot_test.sqlite"

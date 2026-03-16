@@ -9,6 +9,24 @@ import os
 import unittest
 from unittest.mock import MagicMock, patch
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_sovereign_semantic_cache_query")
+_emit_applies_guardrail("p0", "test_sovereign_semantic_cache_query", "p0_governance")
+_emit_reads_policy_state("p0", "test_sovereign_semantic_cache_query", "policy_binding")
+_emit_snapshots_state("p0", "test_sovereign_semantic_cache_query", "state_snapshot")
+emit_replay_key("p0", "test_sovereign_semantic_cache_query")
+emit_determinism_digest("p0", "test_sovereign_semantic_cache_query")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 
 def _make_memory_item(key: str, vector: list[float], metadata: dict, namespace: str = ""):
     """Build a MemoryItem for injection into InMemoryVectorStore._storage."""

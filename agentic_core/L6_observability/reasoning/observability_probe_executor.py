@@ -22,8 +22,13 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,
     _emit_snapshots_state,
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
+
+emit_replay_key("p0", "observability_probe_executor")
+emit_determinism_digest("p0", "observability_probe_executor")
 
 _emit_dispatches_healing_run("p1", "observability_probe_executor", "L6")
 _emit_routes_through("p1", "observability_probe_executor", "L6")

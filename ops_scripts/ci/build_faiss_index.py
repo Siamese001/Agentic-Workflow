@@ -7,16 +7,46 @@ builds a LocalFAISSStore IndexFlatIP index, and persists the 3-file artifact
 After this runs, verify_indexes_at_boot() will find and verify the artifact.
 """
 from __future__ import annotations
+
 import json
 import pathlib
 import sys
 import time
+
 import numpy as np
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "build_faiss_index")
+_emit_applies_guardrail("p0", "build_faiss_index", "p0_governance")
+_emit_reads_policy_state("p0", "build_faiss_index", "policy_binding")
+_emit_snapshots_state("p0", "build_faiss_index", "state_snapshot")
+emit_replay_key("p0", "build_faiss_index")
+emit_determinism_digest("p0", "build_faiss_index")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 sys.path.insert(0, str(ROOT))
 from system_learning.engines.local_faiss_store import LocalFAISSStore
+
 SEED_PACK = pathlib.Path('C:/AgenticEmbeddings/seed_packs/healing_contexts/5d94b5b12ec92312d0240be9984ff92b9478f74ed6f1335511a202c5351520d9')
 INDEX_OUT = pathlib.Path('C:/AgenticEmbeddings/indexes')
 INDEX_ID = 'healing_contexts'

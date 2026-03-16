@@ -5,8 +5,35 @@ Compare mock data structure vs real data structure to identify mismatch
 """
 import json
 import re
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 from agentic_core.L5_safety.config.structure_blueprint import DASHBOARD_DIR, get_validated_project_root
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "rca_table_rendering_util")
+_emit_applies_guardrail("p0", "rca_table_rendering_util", "p0_governance")
+_emit_reads_policy_state("p0", "rca_table_rendering_util", "policy_binding")
+_emit_snapshots_state("p0", "rca_table_rendering_util", "state_snapshot")
+emit_replay_key("p0", "rca_table_rendering_util")
+emit_determinism_digest("p0", "rca_table_rendering_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 def rca_table_rendering():
     """Root cause analysis for table rendering failure."""

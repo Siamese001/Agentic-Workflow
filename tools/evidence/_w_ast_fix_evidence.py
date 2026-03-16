@@ -4,12 +4,34 @@ Captures all 7 required transcript entries into a single markdown evidence file
 under artifacts/windsurf/.
 """
 from __future__ import annotations
+
 import os
 import subprocess
 import sys
 from datetime import datetime, timezone
-from agentic_core.L0_routing.config.path_constants import TOOLS_DIR, get_validated_project_root
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    DEFAULT_TIMEOUT,
+    TOOLS_DIR,
+    get_validated_project_root,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "_w_ast_fix_evidence")
+_emit_applies_guardrail("p0", "_w_ast_fix_evidence", "p0_governance")
+_emit_reads_policy_state("p0", "_w_ast_fix_evidence", "policy_binding")
+_emit_snapshots_state("p0", "_w_ast_fix_evidence", "state_snapshot")
+emit_replay_key("p0", "_w_ast_fix_evidence")
+emit_determinism_digest("p0", "_w_ast_fix_evidence")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 REPO = get_validated_project_root()
 OUT = REPO / 'artifacts' / 'windsurf' / 'W-AST-FIX-evidence.md'
 PY = sys.executable
@@ -26,7 +48,7 @@ def run(argv, cwd=None, timeout=DEFAULT_TIMEOUT):
         return ('', str(e), -1)
 
 def cmd_str(argv):
-    return ' '.join((str(a) for a in argv))
+    return ' '.join(str(a) for a in argv)
 
 def main():
     lines = []

@@ -53,6 +53,23 @@ import pytest
 from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_tests_support_phantom_subdirs")
+_emit_applies_guardrail("p0", "test_tests_support_phantom_subdirs", "p0_governance")
+_emit_reads_policy_state("p0", "test_tests_support_phantom_subdirs", "policy_binding")
+_emit_snapshots_state("p0", "test_tests_support_phantom_subdirs", "state_snapshot")
+emit_replay_key("p0", "test_tests_support_phantom_subdirs")
+emit_determinism_digest("p0", "test_tests_support_phantom_subdirs")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 _Mapping = (dict, MappingProxyType)
 

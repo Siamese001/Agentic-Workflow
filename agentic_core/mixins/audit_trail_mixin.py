@@ -1,5 +1,21 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "audit_trail_mixin", "p0_governance")
+_emit_reads_policy_state("p0", "audit_trail_mixin", "policy_binding")
+_emit_snapshots_state("p0", "audit_trail_mixin", "state_snapshot")
+emit_replay_key("p0", "audit_trail_mixin")
+emit_determinism_digest("p0", "audit_trail_mixin")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 '\n[PHASE 24] AuditTrailMixin - Sovereign Black Box with Cryptographic Chain-of-Custody.\n\nProvides tamper-evident audit logging using SHA-256 hash chaining PLUS\nJSON-structured Black Box logging for forensic analysis.\n\nKey Design Decisions:\n1. JSON-structured logging for machine ingestion (Black Box)\n2. Cryptographic hash chaining for tamper evidence\n3. Does NOT write to Redis directly - injects audit_proof into EventEmission payload\n4. Synchronous hash generation (fast enough for main thread)\n5. Async event emission via event_emission_mixin dependency\n6. Session salt for chain isolation between agent instances\n\nBlack Box Format:\n{\n    "timestamp": "2026-01-24T14:57:00.000Z",\n    "agent_id": "CampaignPlannerAgent",\n    "domain": "apps_rg",\n    "session": "20260124-145700",\n    "action": "BOOT",\n    "details": {"status": "initialized", "mode": "hardened"},\n    "integrity_status": "VERIFIED"\n}\n\nUsage:\n    class MyAgent(AuditTrailMixin, event_emission_mixin, SovereignBaseAgent):\n        async def execute_action(self, action):\n            await self.emit_auditable_action("EXECUTE", {"action_id": action.id})\n            # Also logs to Black Box\n            self.log_sovereign_event("EXECUTE", {"action_id": action.id})\n            result = await self._do_execute(action)\n            return result\n\n[SSOT] Audit trail implementation for L6 observability.\n'
 import hashlib
 import json

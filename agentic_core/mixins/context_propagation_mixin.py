@@ -3,7 +3,24 @@ import logging
 import uuid
 import weakref
 from functools import wraps
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "context_propagation_mixin", "p0_governance")
+_emit_reads_policy_state("p0", "context_propagation_mixin", "policy_binding")
+_emit_snapshots_state("p0", "context_propagation_mixin", "state_snapshot")
+emit_replay_key("p0", "context_propagation_mixin")
+emit_determinism_digest("p0", "context_propagation_mixin")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 trace_id_var = contextvars.ContextVar("trace_id", default=None)
 span_id_var = contextvars.ContextVar("span_id", default=None)

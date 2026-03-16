@@ -10,9 +10,25 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from apps_lic.utils.lic_engine_validation_capability_util import LICEngineValidationCapability
 from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
+
+_emit_applies_guardrail("p0", "LICValidationExecutor", "p0_governance")
+_emit_reads_policy_state("p0", "LICValidationExecutor", "policy_binding")
+_emit_snapshots_state("p0", "LICValidationExecutor", "state_snapshot")
+emit_replay_key("p0", "LICValidationExecutor")
+emit_determinism_digest("p0", "LICValidationExecutor")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 
 @dataclass

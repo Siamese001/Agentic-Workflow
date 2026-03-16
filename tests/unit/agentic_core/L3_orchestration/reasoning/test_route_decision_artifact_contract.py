@@ -22,6 +22,23 @@ from agentic_core.L0_routing.types.routing_artifact_types import (
     RoutePath,
     RoutingRationale,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_route_decision_artifact_contract")
+_emit_applies_guardrail("p0", "test_route_decision_artifact_contract", "p0_governance")
+_emit_reads_policy_state("p0", "test_route_decision_artifact_contract", "policy_binding")
+_emit_snapshots_state("p0", "test_route_decision_artifact_contract", "state_snapshot")
+emit_replay_key("p0", "test_route_decision_artifact_contract")
+emit_determinism_digest("p0", "test_route_decision_artifact_contract")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # Required keys are the field names of RouteDecisionArtifact
 REQUIRED_KEYS = {f.name for f in dc_fields(RouteDecisionArtifact)}

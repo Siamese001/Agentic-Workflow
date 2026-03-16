@@ -12,10 +12,26 @@ import struct
 from pathlib import Path
 from typing import Any, Protocol
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
 from system_learning.engines.retrieval_profile import RetrievalProfile
 from system_learning.types.embedding_artifact import EmbeddingArtifact
+
+_emit_applies_guardrail("p0", "meta_learning_embedding_service", "p0_governance")
+_emit_reads_policy_state("p0", "meta_learning_embedding_service", "policy_binding")
+_emit_snapshots_state("p0", "meta_learning_embedding_service", "state_snapshot")
+emit_replay_key("p0", "meta_learning_embedding_service")
+emit_determinism_digest("p0", "meta_learning_embedding_service")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 
 class Embedder(Protocol):

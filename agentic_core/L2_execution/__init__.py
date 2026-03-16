@@ -82,6 +82,8 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
 
 from .contracts.typed_tool_contract import (  # noqa: F401
@@ -91,6 +93,9 @@ from .contracts.typed_tool_contract import (  # noqa: F401
     TypedToolRegistry,
     invoke_typed_tool,
 )
+
+emit_replay_key("p0", "__init__")
+emit_determinism_digest("p0", "__init__")
 
 _emit_dispatches_healing_run("p1", "__init__", "L2")
 _emit_routes_through("p1", "__init__", "L2")

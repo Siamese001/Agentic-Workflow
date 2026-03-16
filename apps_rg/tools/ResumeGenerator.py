@@ -10,7 +10,17 @@ from typing import Any
 from runtime.shared.multi_provider_clients import Provider, get_client
 
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_reads_policy_state("p0", "ResumeGenerator", "policy_binding")
+_emit_snapshots_state("p0", "ResumeGenerator", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 Logger = logging.getLogger(__name__)
 

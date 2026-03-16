@@ -1,9 +1,25 @@
 """Healing Outcome Intake Adapter - persist-only adapter for meta-learning intake."""
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
 from system_learning.ports.healing_outcome_intake_store import HealingOutcomeIntakeStore
 from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
+
+_emit_applies_guardrail("p0", "healing_outcome_intake_adapter", "p0_governance")
+_emit_reads_policy_state("p0", "healing_outcome_intake_adapter", "policy_binding")
+_emit_snapshots_state("p0", "healing_outcome_intake_adapter", "state_snapshot")
+emit_replay_key("p0", "healing_outcome_intake_adapter")
+emit_determinism_digest("p0", "healing_outcome_intake_adapter")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 
 class HealingOutcomeIntakeAdapter:

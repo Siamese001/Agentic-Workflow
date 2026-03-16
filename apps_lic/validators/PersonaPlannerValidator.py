@@ -2,8 +2,25 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from typing import Any
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "PersonaPlannerValidator", "p0_governance")
+_emit_reads_policy_state("p0", "PersonaPlannerValidator", "policy_binding")
+_emit_snapshots_state("p0", "PersonaPlannerValidator", "state_snapshot")
+emit_replay_key("p0", "PersonaPlannerValidator")
+emit_determinism_digest("p0", "PersonaPlannerValidator")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 "Persona Planner - L1 planning for persona parameters and messaging approaches.\n\nIncorporated from L1 lic_persona_planner.py to provide deterministic persona\nplanning that maps Archetype and profile analysis to specific messaging parameters\nincluding tone style, detail level, risk tolerance, and drift thresholds.\n\nThis is a foundational L1 planning component that feeds into the hop-based\nK1-K7 execution pipeline for persona-driven message generation.\n"
 Logger: Any = logging.getLogger(__name__)

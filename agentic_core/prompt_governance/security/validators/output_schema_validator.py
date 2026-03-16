@@ -16,6 +16,24 @@ import json
 import logging
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "output_schema_validator")
+_emit_applies_guardrail("p0", "output_schema_validator", "p0_governance")
+_emit_reads_policy_state("p0", "output_schema_validator", "policy_binding")
+_emit_snapshots_state("p0", "output_schema_validator", "state_snapshot")
+emit_replay_key("p0", "output_schema_validator")
+emit_determinism_digest("p0", "output_schema_validator")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 Logger = logging.getLogger(__name__)
 _PRIMITIVE_TYPES = {
     "string": str,

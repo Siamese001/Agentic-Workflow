@@ -11,7 +11,21 @@ Model-driven:  none — this is a pure evaluation harness.
 
 from __future__ import annotations
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "scenario_runner", "p0_governance")
+_emit_snapshots_state("p0", "scenario_runner", "state_snapshot")
+emit_replay_key("p0", "scenario_runner")
+emit_determinism_digest("p0", "scenario_runner")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # Common exception types for scenario error handling
 _SCENARIO_EXCEPTIONS = (ValueError, TypeError, AttributeError, RuntimeError, OSError)

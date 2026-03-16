@@ -20,9 +20,24 @@ Test philosophy
 from __future__ import annotations
 
 import threading
-from typing import Any
 
 import pytest
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_policy_guardrail_embedder")
+_emit_applies_guardrail("p0", "test_policy_guardrail_embedder", "p0_governance")
+_emit_snapshots_state("p0", "test_policy_guardrail_embedder", "state_snapshot")
+emit_replay_key("p0", "test_policy_guardrail_embedder")
+emit_determinism_digest("p0", "test_policy_guardrail_embedder")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -43,7 +58,7 @@ def _make_case(
     strictness: str = "HIGH",
     trace_id: str = "tr-001",
     ts: int = _TS,
-) -> "PolicyGuardrailCase":
+) -> PolicyGuardrailCase:
     from system_learning.types.semantic_memory_types import PolicyGuardrailCase
 
     return PolicyGuardrailCase(
@@ -59,7 +74,7 @@ def _make_case(
     )
 
 
-def _make_embedder(max_buffer: int = 100) -> "PolicyGuardrailEmbedder":
+def _make_embedder(max_buffer: int = 100) -> PolicyGuardrailEmbedder:
     from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
 
     return PolicyGuardrailEmbedder(max_buffer=max_buffer)

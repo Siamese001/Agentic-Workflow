@@ -1,4 +1,22 @@
 from __future__ import annotations
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "mock_subatomic_hop")
+_emit_applies_guardrail("p0", "mock_subatomic_hop", "p0_governance")
+_emit_reads_policy_state("p0", "mock_subatomic_hop", "policy_binding")
+_emit_snapshots_state("p0", "mock_subatomic_hop", "state_snapshot")
+emit_replay_key("p0", "mock_subatomic_hop")
+emit_determinism_digest("p0", "mock_subatomic_hop")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 'Swarm Pipeline Orchestration - Main entry point demonstrating full parallel workflow.\n\nThis script demonstrates the complete optimized pipeline using all 4 phases:\n- Phase 1: IDE optimization (.codeiumignore)\n- Phase 2: Batch embeddings + in-memory vector cache\n- Phase 3: Parallel HOP execution (SubatomicSwarm)\n- Phase 4: Multi-process resume generation (ResumeSwarm)\n\nExpected speedup: 10-30x end-to-end improvement\n'
 import asyncio
 import logging
@@ -6,7 +24,18 @@ import sys
 import time
 from pathlib import Path
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 project_root: Any = Path(__file__).parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
@@ -14,6 +43,7 @@ from ops_scripts.runtime.core.SubatomicSwarm import create_subatomic_swarm
 from ops_scripts.runtime.shared.batch_embeddings import create_batch_embedding_service
 from ops_scripts.runtime.shared.memory_vector_store import create_memory_vector_cache
 from ops_scripts.runtime.shared.ResumeSwarm import create_resume_swarm
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 Logger: Any = logging.getLogger(__name__)
 

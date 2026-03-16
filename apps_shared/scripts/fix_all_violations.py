@@ -6,6 +6,24 @@ from pathlib import Path
 
 from apps_shared.utils.ConfigurationService import ConfigurationService
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "fix_all_violations")
+_emit_applies_guardrail("p0", "fix_all_violations", "p0_governance")
+_emit_reads_policy_state("p0", "fix_all_violations", "policy_binding")
+_emit_snapshots_state("p0", "fix_all_violations", "state_snapshot")
+emit_replay_key("p0", "fix_all_violations")
+emit_determinism_digest("p0", "fix_all_violations")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 
 def fix_micro_fragments() -> Any:
     """Docstring."""

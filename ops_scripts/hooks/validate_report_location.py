@@ -15,13 +15,43 @@ Options:
     --staged-only   Only check staged files (for pre-commit)
 """
 from __future__ import annotations
+
 import argparse
 import json
 import subprocess
 import sys
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "validate_report_location")
+_emit_applies_guardrail("p0", "validate_report_location", "p0_governance")
+_emit_reads_policy_state("p0", "validate_report_location", "policy_binding")
+_emit_snapshots_state("p0", "validate_report_location", "state_snapshot")
+emit_replay_key("p0", "validate_report_location")
+emit_determinism_digest("p0", "validate_report_location")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 _FIXED_TS = "2026-01-01T00:00:00"
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 SYMBOL_OK = '[OK]'
 SYMBOL_WARN = '[WARN]'
 SYMBOL_ERROR = '[ERROR]'
@@ -30,7 +60,11 @@ SYMBOL_MOVE = '->'
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
-from agentic_core.L5_safety.validators.report_location_validator import SSOT_REPORTS_DIR, ReportLocationValidator
+from agentic_core.L5_safety.validators.report_location_validator import (
+    SSOT_REPORTS_DIR,
+    ReportLocationValidator,
+)
+
 COMPLIANCE_LOG_DIR = PROJECT_ROOT / 'agentic_core' / 'L0_routing' / 'logs' / 'compliance_reports'
 
 def get_staged_files() -> list[Path]:

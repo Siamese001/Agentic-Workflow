@@ -20,6 +20,8 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
 
 from .tool_contract import (
@@ -28,6 +30,9 @@ from .tool_contract import (
     canonical_json,
     hash_result_data,
 )
+
+emit_replay_key("p0", "tool_invoker")
+emit_determinism_digest("p0", "tool_invoker")
 
 _emit_dispatches_healing_run("p1", "tool_invoker", "L3")
 _emit_routes_through("p1", "tool_invoker", "L3")

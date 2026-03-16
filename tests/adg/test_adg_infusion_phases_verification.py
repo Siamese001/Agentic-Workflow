@@ -22,6 +22,22 @@ from __future__ import annotations
 import sys
 import types as _types
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_adg_infusion_phases_verification")
+_emit_applies_guardrail("p0", "test_adg_infusion_phases_verification", "p0_governance")
+_emit_snapshots_state("p0", "test_adg_infusion_phases_verification", "state_snapshot")
+emit_replay_key("p0", "test_adg_infusion_phases_verification")
+emit_determinism_digest("p0", "test_adg_infusion_phases_verification")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 
 def _make_stub_module(name: str) -> _types.ModuleType:
     mod = _types.ModuleType(name)

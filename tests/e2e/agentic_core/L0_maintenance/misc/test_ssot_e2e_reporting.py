@@ -11,6 +11,24 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_ssot_e2e_reporting")
+_emit_applies_guardrail("p0", "test_ssot_e2e_reporting", "p0_governance")
+_emit_reads_policy_state("p0", "test_ssot_e2e_reporting", "policy_binding")
+_emit_snapshots_state("p0", "test_ssot_e2e_reporting", "state_snapshot")
+emit_replay_key("p0", "test_ssot_e2e_reporting")
+emit_determinism_digest("p0", "test_ssot_e2e_reporting")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))

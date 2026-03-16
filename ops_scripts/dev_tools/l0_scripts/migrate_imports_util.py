@@ -1,12 +1,42 @@
 from __future__ import annotations
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "migrate_imports_util")
+_emit_applies_guardrail("p0", "migrate_imports_util", "p0_governance")
+_emit_reads_policy_state("p0", "migrate_imports_util", "policy_binding")
+_emit_snapshots_state("p0", "migrate_imports_util", "state_snapshot")
+emit_replay_key("p0", "migrate_imports_util")
+emit_determinism_digest("p0", "migrate_imports_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 '\nUtility to automate the migration from deep imports to clean SSOT paths.\n\nPhase 5: Repository-Wide Import Migration\n\nThis script updates imports across the codebase to use the new SSOT patterns:\n- agentic_core.config for constants/registry\n- agentic_core.unified for unified agents\n- agentic_core.utils.core_extensions.healer_mixin for HealerMixin\n\nUsage:\n    python -m agentic_core.L0_routing.scripts.migrate_imports --dry-run\n    python -m agentic_core.L0_routing.scripts.migrate_imports --apply\n'
 import argparse
 import re
 from pathlib import Path
+
 from agentic_core.utils.file_utils_validator import safe_read_file, safe_write_file
 from agentic_core.utils.project_root import get_project_root
 from agentic_core.utils.ssot_discovery_validator import get_python_files
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 MIGRATION_MAP: dict[str, str] = {'from agentic_core\\.L5_safety\\.validators\\.structure_blueprint_config import': 'from agentic_core.config import', 'from agentic_core\\.L5_safety\\.unified\\.code_validation_types import CodeValidatorAgent': 'from agentic_core.unified import CodeValidatorAgent', 'from agentic_core\\.L5_safety\\.unified\\.StructureValidatorAgent import StructureValidatorAgent': 'from agentic_core.unified import StructureValidatorAgent', 'from agentic_core\\.L5_safety\\.unified\\.code_enforcement_types import CodeEnforcerAgent': 'from agentic_core.unified import CodeEnforcerAgent', 'from agentic_core\\.L5_safety\\.unified\\.structure_enforcement_types import StructureEnforcerAgent': 'from agentic_core.unified import StructureEnforcerAgent', 'from agentic_core\\.L5_safety\\.unified\\.resource_types import ResourceManagerAgent': 'from agentic_core.unified import ResourceManagerAgent', 'from agentic_core\\.L5_safety\\.validators\\.healer_mixin import': 'from agentic_core.mixins.healer_mixin import', 'from agentic_core\\.L5_safety\\.guardrails\\.healer_mixin import': 'from agentic_core.mixins.healer_mixin import', 'from agentic_core\\.common\\.healing\\.healer_mixin import': 'from agentic_core.mixins.healer_mixin import'}
 SKIP_FILES = {'migrate_imports_util.py', 'test_phase5_migration.py', '__init__.py'}
 

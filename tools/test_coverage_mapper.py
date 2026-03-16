@@ -23,6 +23,24 @@ import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_coverage_mapper")
+_emit_applies_guardrail("p0", "test_coverage_mapper", "p0_governance")
+_emit_reads_policy_state("p0", "test_coverage_mapper", "policy_binding")
+_emit_snapshots_state("p0", "test_coverage_mapper", "state_snapshot")
+emit_replay_key("p0", "test_coverage_mapper")
+emit_determinism_digest("p0", "test_coverage_mapper")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult
 
@@ -52,7 +70,7 @@ class TestCoverageMapper:
         self._test_modules: set[str] = set()
         self._built = False
 
-    def build(self) -> "TestCoverageMapper":
+    def build(self) -> TestCoverageMapper:
         """Build both indexes. Idempotent."""
         if self._built:
             return self

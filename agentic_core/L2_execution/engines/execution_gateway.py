@@ -29,7 +29,12 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_signs_execution_trace,
     _emit_snapshots_state,  # noqa: E402
     _emit_verifies_boundary,
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
+
+emit_replay_key("p0", "execution_gateway")
+emit_determinism_digest("p0", "execution_gateway")
 
 _emit_dispatches_healing_run("p1", "execution_gateway", "L2")
 _emit_routes_through("p1", "execution_gateway", "L2")

@@ -34,6 +34,21 @@ import pytest
 
 # Force register SL bridge so patch() can resolve it regardless of test ordering
 import system_learning.adapters.system_learning_memory_bridge as _sl_bridge_mod  # noqa: F401
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_execute_ssot_adg_surfaces")
+_emit_applies_guardrail("p0", "test_execute_ssot_adg_surfaces", "p0_governance")
+_emit_snapshots_state("p0", "test_execute_ssot_adg_surfaces", "state_snapshot")
+emit_replay_key("p0", "test_execute_ssot_adg_surfaces")
+emit_determinism_digest("p0", "test_execute_ssot_adg_surfaces")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 _SL_BRIDGE_PATCH = "system_learning.adapters.system_learning_memory_bridge.get_sl_memory_bridge"
 

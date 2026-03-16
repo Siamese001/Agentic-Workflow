@@ -11,7 +11,24 @@ import json
 import logging
 import time
 from pathlib import Path
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "checkpoint_integrity_error_validator", "p0_governance")
+_emit_reads_policy_state("p0", "checkpoint_integrity_error_validator", "policy_binding")
+_emit_snapshots_state("p0", "checkpoint_integrity_error_validator", "state_snapshot")
+emit_replay_key("p0", "checkpoint_integrity_error_validator")
+emit_determinism_digest("p0", "checkpoint_integrity_error_validator")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 logger = logging.getLogger(__name__)
 

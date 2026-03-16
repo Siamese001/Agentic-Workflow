@@ -14,6 +14,15 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.engines.seed_embedding_pack_builder import (
     DeterministicHashEmbedder,
     build_seed_embedding_pack,
@@ -21,6 +30,14 @@ from system_learning.engines.seed_embedding_pack_builder import (
 from system_learning.types.seed_embedding_pack_types import (
     SeedEmbeddingPackConfig,
 )
+
+_emit_records_execution_trace("p0", "evidence", "test_seed_embedding_pack_b0")
+_emit_applies_guardrail("p0", "test_seed_embedding_pack_b0", "p0_governance")
+_emit_reads_policy_state("p0", "test_seed_embedding_pack_b0", "policy_binding")
+_emit_snapshots_state("p0", "test_seed_embedding_pack_b0", "state_snapshot")
+emit_replay_key("p0", "test_seed_embedding_pack_b0")
+emit_determinism_digest("p0", "test_seed_embedding_pack_b0")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 pytestmark = pytest.mark.unit_min_deps
 

@@ -13,8 +13,24 @@ import ast
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from textwrap import dedent
-from typing import Optional
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "_generate_adg_gap_tests")
+_emit_applies_guardrail("p0", "_generate_adg_gap_tests", "p0_governance")
+_emit_reads_policy_state("p0", "_generate_adg_gap_tests", "policy_binding")
+_emit_snapshots_state("p0", "_generate_adg_gap_tests", "state_snapshot")
+emit_replay_key("p0", "_generate_adg_gap_tests")
+emit_determinism_digest("p0", "_generate_adg_gap_tests")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
@@ -197,26 +213,26 @@ def generate_test_content(module_path: str, info: SymbolInfo, fan_in: int = 0) -
         lines.append(f"@pytest.mark.skipif(not _AVAILABLE, reason=\"{mod_short} deps unavailable\")")
         lines.append(f"class Test{name}:")
         if is_enum:
-            lines.append(f"    def test_is_enum(self):")
-            lines.append(f"        import enum")
+            lines.append("    def test_is_enum(self):")
+            lines.append("        import enum")
             lines.append(f"        assert issubclass({name}, enum.Enum)")
-            lines.append(f"    def test_has_members(self):")
+            lines.append("    def test_has_members(self):")
             lines.append(f"        assert len(list({name})) >= 1")
-            lines.append(f"    def test_importable(self):")
+            lines.append("    def test_importable(self):")
             lines.append(f"        assert {name} is not None")
         elif is_dc:
-            lines.append(f"    def test_is_dataclass(self):")
-            lines.append(f"        import dataclasses")
+            lines.append("    def test_is_dataclass(self):")
+            lines.append("        import dataclasses")
             lines.append(f"        assert dataclasses.is_dataclass({name})")
             if is_frozen:
-                lines.append(f"    def test_is_frozen(self):")
+                lines.append("    def test_is_frozen(self):")
                 lines.append(f"        assert {name}.__dataclass_params__.frozen is True")
-            lines.append(f"    def test_importable(self):")
+            lines.append("    def test_importable(self):")
             lines.append(f"        assert {name} is not None")
         else:
-            lines.append(f"    def test_is_class(self):")
+            lines.append("    def test_is_class(self):")
             lines.append(f"        assert isinstance({name}, type)")
-            lines.append(f"    def test_importable(self):")
+            lines.append("    def test_importable(self):")
             lines.append(f"        assert {name} is not None")
 
     # Per-function tests
@@ -224,7 +240,7 @@ def generate_test_content(module_path: str, info: SymbolInfo, fan_in: int = 0) -
         lines.append("")
         lines.append(f"@pytest.mark.skipif(not _AVAILABLE, reason=\"{mod_short} deps unavailable\")")
         lines.append(f"class Test{fn.replace('_', ' ').title().replace(' ', '')}:")
-        lines.append(f"    def test_is_callable(self):")
+        lines.append("    def test_is_callable(self):")
         lines.append(f"        assert callable({fn})")
 
     # Per-constant tests
@@ -233,7 +249,7 @@ def generate_test_content(module_path: str, info: SymbolInfo, fan_in: int = 0) -
         lines.append("")
         lines.append(f"@pytest.mark.skipif(not _AVAILABLE, reason=\"{mod_short} deps unavailable\")")
         lines.append(f"class Test{title}Constant:")
-        lines.append(f"    def test_is_not_none(self):")
+        lines.append("    def test_is_not_none(self):")
         lines.append(f"        assert {const} is not None")
 
     # Final module importable
@@ -259,9 +275,9 @@ def main() -> None:
     args = parser.parse_args()
 
     # Use accelerator to get authoritative gap list
+    from agentic_core.adg.analysis.hotspot_index import HotspotIndex
     from agentic_core.adg.analysis.test_gap import detect_test_gaps
     from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
-    from agentic_core.adg.analysis.hotspot_index import HotspotIndex
 
     print("[GEN] Scanning ADG for gap modules...")
     scanner = ADGStaticScanner(repo_root=ROOT, include_tests=True)
@@ -334,7 +350,7 @@ def main() -> None:
         if created % 50 == 0:
             print(f"  [GEN] {created} tests written so far...")
 
-    print(f"\n[GEN] Done.")
+    print("\n[GEN] Done.")
     print(f"  Created:          {created}")
     print(f"  Skipped (exists): {skipped_exists}")
     print(f"  Skipped (no src): {skipped_no_src}")

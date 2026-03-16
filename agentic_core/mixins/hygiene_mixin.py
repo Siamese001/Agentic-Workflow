@@ -10,8 +10,24 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.runtime.exceptions.SovereignError import HygieneError
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from agentic_core.utils.decorators_compat_util import standard_heal
+
+_emit_applies_guardrail("p0", "hygiene_mixin", "p0_governance")
+_emit_reads_policy_state("p0", "hygiene_mixin", "policy_binding")
+_emit_snapshots_state("p0", "hygiene_mixin", "state_snapshot")
+emit_replay_key("p0", "hygiene_mixin")
+emit_determinism_digest("p0", "hygiene_mixin")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 
 @dataclass

@@ -16,6 +16,24 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "verify_stack_runtime")
+_emit_applies_guardrail("p0", "verify_stack_runtime", "p0_governance")
+_emit_reads_policy_state("p0", "verify_stack_runtime", "policy_binding")
+_emit_snapshots_state("p0", "verify_stack_runtime", "state_snapshot")
+emit_replay_key("p0", "verify_stack_runtime")
+emit_determinism_digest("p0", "verify_stack_runtime")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 # Add project root to path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation

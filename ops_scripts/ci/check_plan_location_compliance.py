@@ -10,12 +10,30 @@ Usage:
 """
 
 import argparse
+
+# Force UTF-8 encoding for Windows compatibility
+import io
 import json
 import sys
 from pathlib import Path
 
-# Force UTF-8 encoding for Windows compatibility
-import io
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "check_plan_location_compliance")
+_emit_applies_guardrail("p0", "check_plan_location_compliance", "p0_governance")
+_emit_reads_policy_state("p0", "check_plan_location_compliance", "policy_binding")
+_emit_snapshots_state("p0", "check_plan_location_compliance", "state_snapshot")
+emit_replay_key("p0", "check_plan_location_compliance")
+emit_determinism_digest("p0", "check_plan_location_compliance")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 if sys.platform == "win32":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")

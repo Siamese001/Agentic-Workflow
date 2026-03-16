@@ -14,6 +14,16 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from apps_rg.engines.ats_compatibility_engine import ATSCompatibilityEngine
 from apps_rg.engines.base_rg_engine import BaseRGEngine
 from apps_rg.engines.clerk_extraction_engine import ClerkExtractionEngine
@@ -23,7 +33,13 @@ from apps_rg.engines.data_enrichment_engine import DataEnrichmentEngine
 from apps_rg.engines.gap_closure_engine import GapClosureEngine
 from apps_rg.engines.section_ranker_engine import SectionRankerEngine
 from apps_rg.types.trace_registry_types import TraceRegistry
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+_emit_applies_guardrail("p0", "resume_orchestrator_engine", "p0_governance")
+_emit_reads_policy_state("p0", "resume_orchestrator_engine", "policy_binding")
+_emit_snapshots_state("p0", "resume_orchestrator_engine", "state_snapshot")
+emit_replay_key("p0", "resume_orchestrator_engine")
+emit_determinism_digest("p0", "resume_orchestrator_engine")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 Logger = logging.getLogger(__name__)
 

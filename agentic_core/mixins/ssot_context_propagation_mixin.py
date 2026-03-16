@@ -17,7 +17,21 @@ import logging
 from contextlib import contextmanager
 from typing import Any, Generator
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "ssot_context_propagation_mixin", "p0_governance")
+_emit_snapshots_state("p0", "ssot_context_propagation_mixin", "state_snapshot")
+emit_replay_key("p0", "ssot_context_propagation_mixin")
+emit_determinism_digest("p0", "ssot_context_propagation_mixin")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 _logger = logging.getLogger("SSOTContextPropagation")
 _TRACE_ID_VAR: contextvars.ContextVar[str] = contextvars.ContextVar("ssot_trace_id", default="unknown")

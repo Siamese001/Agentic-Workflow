@@ -14,6 +14,15 @@ from dataclasses import dataclass
 from typing import Any, Literal
 
 from agentic_core.interfaces.determinism_types import SemanticClockSnapshot
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.enforcement.determinism import deterministic_json
 from system_learning.types.app_signal_types import (
     AppSignalAggregateArtifact,
@@ -36,6 +45,14 @@ from system_learning.types.rollout_types import (
     MetaLearningRolloutPlanArtifact,
     build_meta_learning_rollout_plan,
 )
+
+_emit_records_execution_trace("p0", "evidence", "offline_replay_types")
+_emit_applies_guardrail("p0", "offline_replay_types", "p0_governance")
+_emit_reads_policy_state("p0", "offline_replay_types", "policy_binding")
+_emit_snapshots_state("p0", "offline_replay_types", "state_snapshot")
+emit_replay_key("p0", "offline_replay_types")
+emit_determinism_digest("p0", "offline_replay_types")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # =============================================================================
 # §Wave7.0.13 — Replay: Signals → Aggregate

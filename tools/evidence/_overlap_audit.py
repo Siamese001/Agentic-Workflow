@@ -14,13 +14,30 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "_overlap_audit")
+_emit_applies_guardrail("p0", "_overlap_audit", "p0_governance")
+_emit_reads_policy_state("p0", "_overlap_audit", "policy_binding")
+_emit_snapshots_state("p0", "_overlap_audit", "state_snapshot")
+emit_replay_key("p0", "_overlap_audit")
+emit_determinism_digest("p0", "_overlap_audit")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
-
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -47,8 +64,8 @@ def is_production(path: str) -> bool:
     return (
         not p.startswith("tests/")
         and not p.startswith("tools/")
-        and not "ops_scripts" in p
-        and not "__pycache__" in p
+        and "ops_scripts" not in p
+        and "__pycache__" not in p
         and p.endswith(".py")
     )
 
@@ -179,7 +196,7 @@ for mod_path in sorted(prod_paths):
 
 # ── Print results ─────────────────────────────────────────────────────────────
 
-print(f"\n=== OVERLAP AUDIT RESULTS ===")
+print("\n=== OVERLAP AUDIT RESULTS ===")
 print(f"  Total production modules   : {len(prod_paths)}")
 print(f"  ADG + Foundational (BOTH)  : {len(overlap_both)}")
 print(f"  ADG only                   : {len(adg_only)}")
@@ -204,12 +221,12 @@ print(f"  True deep overlap (both >=5 asserts): {len(both_deep)}")
 adg_only_deep = [e for e in adg_only if e["adg_asserts"] >= 5]
 print(f"  ADG-only with >=5 asserts (ADG is primary): {len(adg_only_deep)}")
 
-print(f"\n=== TOP 20 REDUNDANT ADG STUBS (safe to remove) ===")
+print("\n=== TOP 20 REDUNDANT ADG STUBS (safe to remove) ===")
 for e in sorted(redundant, key=lambda x: -x["foundational_asserts"])[:20]:
     print(f"  fan_in={e['fan_in']:>3}  adg={e['adg_asserts']:>3} asserts  "
           f"found={e['foundational_asserts']:>4} asserts  {e['module']}")
 
-print(f"\n=== FAN_IN DISTRIBUTION ===")
+print("\n=== FAN_IN DISTRIBUTION ===")
 all_fi = list(fan_in.values()) + [0] * (len(prod_paths) - len(fan_in))
 buckets = {0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, "6-10": 0, "11-20": 0, "21+": 0}
 for fi_val in all_fi:
@@ -226,7 +243,7 @@ total = len(all_fi)
 for k, v in buckets.items():
     print(f"  fan_in={k:>5}: {v:>4} modules  ({100*v/total:4.1f}%)")
 
-print(f"\n=== THRESHOLD ANALYSIS (impact of requiring foundational test) ===")
+print("\n=== THRESHOLD ANALYSIS (impact of requiring foundational test) ===")
 print(f"  {'threshold':>10}  {'modules':>8}  {'%total':>7}  {'have_found':>11}  {'gap':>6}")
 for threshold in [1, 2, 3, 5, 10]:
     above = [m for m in prod_paths if fan_in.get(m, 0) >= threshold]
@@ -235,7 +252,7 @@ for threshold in [1, 2, 3, 5, 10]:
     print(f"  {threshold:>10}  {len(above):>8}  {100*len(above)/total:>6.1f}%  "
           f"{len(have_f):>11}  {gap:>6}")
 
-print(f"\n=== HIGH FAN_IN, ADG-ONLY (top 30 — need foundational tests) ===")
+print("\n=== HIGH FAN_IN, ADG-ONLY (top 30 — need foundational tests) ===")
 needs_foundational = sorted(
     [e for e in adg_only if e["fan_in"] >= 3],
     key=lambda x: (-x["fan_in"], x["module"])

@@ -22,8 +22,25 @@ from collections.abc import Callable
 from typing import Any
 
 from agentic_core.mixins.meta_learning_contract_mixin import BaseMetaLearner
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from agentic_core.utils.meta_learning_engine_util import MetaLearningEngine
 from agentic_core.utils.meta_learning_storage_util import MetaLearningStorage
+
+_emit_records_execution_trace("p0", "evidence", "meta_learning_mixin")
+_emit_applies_guardrail("p0", "meta_learning_mixin", "p0_governance")
+_emit_reads_policy_state("p0", "meta_learning_mixin", "policy_binding")
+_emit_snapshots_state("p0", "meta_learning_mixin", "state_snapshot")
+emit_replay_key("p0", "meta_learning_mixin")
+emit_determinism_digest("p0", "meta_learning_mixin")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 Logger = logging.getLogger(__name__)
 

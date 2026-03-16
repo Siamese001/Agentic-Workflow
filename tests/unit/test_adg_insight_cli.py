@@ -18,6 +18,15 @@ import pytest
 
 from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
 from agentic_core.adg.schema import canonical_name
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from tools.adg_insight_cli import (
     cmd_blast_radius,
     cmd_config_reads,
@@ -27,6 +36,14 @@ from tools.adg_insight_cli import (
     cmd_unresolved,
     cmd_who_uses,
 )
+
+_emit_records_execution_trace("p0", "evidence", "test_adg_insight_cli")
+_emit_applies_guardrail("p0", "test_adg_insight_cli", "p0_governance")
+_emit_reads_policy_state("p0", "test_adg_insight_cli", "policy_binding")
+_emit_snapshots_state("p0", "test_adg_insight_cli", "state_snapshot")
+emit_replay_key("p0", "test_adg_insight_cli")
+emit_determinism_digest("p0", "test_adg_insight_cli")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 

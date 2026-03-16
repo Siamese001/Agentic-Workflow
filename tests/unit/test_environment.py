@@ -9,6 +9,15 @@ from unittest.mock import patch
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from apps_shared.config.environment_config import (
     EnvironmentConfig,
 )
@@ -17,6 +26,14 @@ from apps_shared.utils.environment_util import (
     get_environment_config,
     validate_environment,
 )
+
+_emit_records_execution_trace("p0", "evidence", "test_environment")
+_emit_applies_guardrail("p0", "test_environment", "p0_governance")
+_emit_reads_policy_state("p0", "test_environment", "policy_binding")
+_emit_snapshots_state("p0", "test_environment", "state_snapshot")
+emit_replay_key("p0", "test_environment")
+emit_determinism_digest("p0", "test_environment")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0

@@ -18,6 +18,23 @@ from agentic_core.L0_routing.config.path_constants import (
     LAYER_ROOTS,
     get_validated_project_root,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "_ssot_dry_run_isolated")
+_emit_applies_guardrail("p0", "_ssot_dry_run_isolated", "p0_governance")
+_emit_reads_policy_state("p0", "_ssot_dry_run_isolated", "policy_binding")
+_emit_snapshots_state("p0", "_ssot_dry_run_isolated", "state_snapshot")
+emit_replay_key("p0", "_ssot_dry_run_isolated")
+emit_determinism_digest("p0", "_ssot_dry_run_isolated")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 PROJECT_ROOT = get_validated_project_root()
 # guardian: allow-global-mutation

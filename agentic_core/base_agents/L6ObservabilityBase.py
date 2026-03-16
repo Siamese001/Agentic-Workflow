@@ -1,5 +1,21 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "L6ObservabilityBase", "p0_governance")
+_emit_reads_policy_state("p0", "L6ObservabilityBase", "policy_binding")
+_emit_snapshots_state("p0", "L6ObservabilityBase", "state_snapshot")
+emit_replay_key("p0", "L6ObservabilityBase")
+emit_determinism_digest("p0", "L6ObservabilityBase")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 "\nL6ObservabilityBase - Consolidated Base for L6 Observability Agents\n\nLayer: L6 - Observability\nResponsibilities:\n- Dashboard operations\n- Telemetry collection\n- Logging coordination\n- Metrics aggregation\n\nMRO HARDENING:\n- Inheritance order: SovereignBaseAgent (root)\n- All L6 agents inherit from this base for consistent observability capabilities\n"
 from dataclasses import dataclass
 from typing import Any

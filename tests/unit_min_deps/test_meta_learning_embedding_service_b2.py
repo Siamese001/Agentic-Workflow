@@ -12,6 +12,15 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.engines.meta_learning_embedding_service import (
     IntegrityError,
     MetaLearningEmbeddingService,
@@ -21,6 +30,14 @@ from system_learning.engines.seed_embedding_pack_builder import (
     build_seed_embedding_pack,
 )
 from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+
+_emit_records_execution_trace("p0", "evidence", "test_meta_learning_embedding_service_b2")
+_emit_applies_guardrail("p0", "test_meta_learning_embedding_service_b2", "p0_governance")
+_emit_reads_policy_state("p0", "test_meta_learning_embedding_service_b2", "policy_binding")
+_emit_snapshots_state("p0", "test_meta_learning_embedding_service_b2", "state_snapshot")
+emit_replay_key("p0", "test_meta_learning_embedding_service_b2")
+emit_determinism_digest("p0", "test_meta_learning_embedding_service_b2")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 pytestmark = pytest.mark.unit_min_deps
 

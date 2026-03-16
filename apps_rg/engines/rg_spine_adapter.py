@@ -26,10 +26,23 @@ from agentic_core.interfaces.spine import (
 )
 from agentic_core.L0_routing.meta_control.meta_learning_bus import MetaLearningBus
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
 from apps_shared.spine.base_spine_adapter import BaseSpineAdapter
 from apps_shared.spine.d0_engine_adapter import D0EngineAdapter
 from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
 from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
+
+_emit_records_execution_trace("p0", "evidence", "rg_spine_adapter")
+_emit_applies_guardrail("p0", "rg_spine_adapter", "p0_governance")
+_emit_reads_policy_state("p0", "rg_spine_adapter", "policy_binding")
+_emit_snapshots_state("p0", "rg_spine_adapter", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # Default maximum re-entry attempts for the RG spine.
 _DEFAULT_MAX_REENTRY_ATTEMPTS: int = 3

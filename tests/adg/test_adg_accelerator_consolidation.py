@@ -21,6 +21,24 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_adg_accelerator_consolidation")
+_emit_applies_guardrail("p0", "test_adg_accelerator_consolidation", "p0_governance")
+_emit_reads_policy_state("p0", "test_adg_accelerator_consolidation", "policy_binding")
+_emit_snapshots_state("p0", "test_adg_accelerator_consolidation", "state_snapshot")
+emit_replay_key("p0", "test_adg_accelerator_consolidation")
+emit_determinism_digest("p0", "test_adg_accelerator_consolidation")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -339,10 +357,10 @@ class TestGuardianExemptionGateLogic:
     @classmethod
     def _import(cls):
         from ops_scripts.ci.guardian_exemption_gate import (
+            _ANY_GUARDIAN_RE,
             _CANONICAL_RE,
             _GENERIC_TOKENS,
             _NO_JUSTIFICATION_RE,
-            _ANY_GUARDIAN_RE,
             _is_generic_justification,
             _ratchet_total,
         )
@@ -519,8 +537,8 @@ class TestProductionSkipFileProtection:
     def test_agentic_core_has_no_skip_file_directive(self) -> None:
         offenders = self._scan_dir_for_skip_file("agentic_core")
         assert not offenders, (
-            f"Production code in agentic_core/ must NOT have '# adg-grep-ban: skip-file'.\n"
-            f"Offending files:\n" + "\n".join(f"  {p}" for p in offenders)
+            "Production code in agentic_core/ must NOT have '# adg-grep-ban: skip-file'.\n"
+            "Offending files:\n" + "\n".join(f"  {p}" for p in offenders)
         )
 
     def test_apps_dirs_have_no_skip_file_directive(self) -> None:
@@ -528,15 +546,15 @@ class TestProductionSkipFileProtection:
         for d in ["apps_lic", "apps_rg", "apps_shared", "apps_exec", "apps_eval", "apps_rfp", "apps_research"]:
             all_offenders.extend(self._scan_dir_for_skip_file(d))
         assert not all_offenders, (
-            f"Production apps_* dirs must NOT have '# adg-grep-ban: skip-file'.\n"
-            f"Offending files:\n" + "\n".join(f"  {p}" for p in all_offenders)
+            "Production apps_* dirs must NOT have '# adg-grep-ban: skip-file'.\n"
+            "Offending files:\n" + "\n".join(f"  {p}" for p in all_offenders)
         )
 
     def test_system_learning_has_no_skip_file_directive(self) -> None:
         offenders = self._scan_dir_for_skip_file("system_learning")
         assert not offenders, (
-            f"Production code in system_learning/ must NOT have '# adg-grep-ban: skip-file'.\n"
-            f"Offending files:\n" + "\n".join(f"  {p}" for p in offenders)
+            "Production code in system_learning/ must NOT have '# adg-grep-ban: skip-file'.\n"
+            "Offending files:\n" + "\n".join(f"  {p}" for p in offenders)
         )
 
     def test_skip_file_is_allowed_in_tests(self) -> None:
@@ -574,7 +592,7 @@ class TestProductionSkipFileProtection:
             except OSError:
                 pass
         assert not offenders, (
-            f"CI gate files in ops_scripts/ci/ must NOT have the skip-file directive:\n"
+            "CI gate files in ops_scripts/ci/ must NOT have the skip-file directive:\n"
             + "\n".join(f"  {p}" for p in offenders)
         )
 
@@ -712,6 +730,7 @@ class TestFailClosedChainEnforcement:
 
     def test_connection_error_propagates_through_adg_query_session(self) -> None:
         import redis
+
         from tools.adg.adg_redis_query import ADGQuerySession
         from tools.adg.adg_stale_guard import ADGStalenessChecker
 

@@ -23,18 +23,56 @@ Usage:
   python ops_scripts/ci/import_resolution_guardian.py --verbose
 """
 from __future__ import annotations
+
 import ast
 import json
 import os
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "import_resolution_guardian")
+_emit_applies_guardrail("p0", "import_resolution_guardian", "p0_governance")
+_emit_reads_policy_state("p0", "import_resolution_guardian", "policy_binding")
+_emit_snapshots_state("p0", "import_resolution_guardian", "state_snapshot")
+emit_replay_key("p0", "import_resolution_guardian")
+emit_determinism_digest("p0", "import_resolution_guardian")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
-from agentic_core.L5_safety.config.structure_blueprint.ssot import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, APPS_SHARED_DIR, APPS_LIC_DIR, APPS_RG_DIR
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 SCAN_ROOTS: tuple[str, ...] = (AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR)
 INTERNAL_ROOTS: frozenset[str] = frozenset(SCAN_ROOTS)
 WALK_EXCLUDES: frozenset[str] = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
@@ -123,7 +161,7 @@ def _parse_file_imports(root: Path, fpath: Path, rel: str, *, verbose: bool=Fals
             top = node.module.split('.')[0]
             if top not in INTERNAL_ROOTS:
                 continue
-            names = tuple((a.name for a in node.names or []))
+            names = tuple(a.name for a in node.names or [])
             if resolve_module_path(root, node.module) is None:
                 unresolved.append(UnresolvedImport(source_file=rel, target_module=node.module, lineno=node.lineno, imported_names=names))
                 if verbose:

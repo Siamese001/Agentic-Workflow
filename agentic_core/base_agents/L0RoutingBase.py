@@ -1,5 +1,21 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "L0RoutingBase", "p0_governance")
+_emit_reads_policy_state("p0", "L0RoutingBase", "policy_binding")
+_emit_snapshots_state("p0", "L0RoutingBase", "state_snapshot")
+emit_replay_key("p0", "L0RoutingBase")
+emit_determinism_digest("p0", "L0RoutingBase")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 "\nL0RoutingBase - Consolidated Base for L0 Routing Agents\n\nZero-Ambiguity Standard: Renamed from L0RoutingBase to L0RoutingBase\nto clarify this is a CLASS (blueprint), not an active worker agent.\n\nCapabilities:\n- HealerMixin: heal_repository() for self-repair\n- MCPHardenedMixin: Hardened MCP via SovereignBaseAgent (root injection)\n- L0DelegationTestingMixin: Delegates testing to higher layers (boot-time safety)\n\nL0 agents run at boot time, so they delegate testing rather than self-test.\n\nMRO HARDENING:\n- Inheritance order: Specialized Mixins -> SovereignBaseAgent (includes MCP)\n- MCPHardenedMixin is now in SovereignBaseAgent - DO NOT add it here\n- MRO: HealerMixin -> L0DelegationTestingMixin -> SovereignBaseAgent -> MCPHardenedMixin -> object\n"
 from dataclasses import dataclass
 from typing import Any

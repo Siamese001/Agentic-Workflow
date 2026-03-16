@@ -17,6 +17,17 @@ from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
 from .claim_confidence import ClaimConfidenceScorer, analyze_claims
 from .core.checkpoint_manager import CheckpointConfig, CheckpointManager, get_checkpoint_manager
 from .core.envelope import EnvelopeFactory, PipelineStageStatus, SignalEnvelope
@@ -24,9 +35,15 @@ from .hyde_processor import HyDEProcessor
 from .prompt_optimizer import PromptOptimizer, optimize_prompt
 from .rag_components import KnowledgeGraphInjector, SelfRAGProcessor, semantic_cache
 from .signal_infrastructure import DomainConfig, EngineType, get_shared_infrastructure
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from .signal_quality_pipeline import SignalQualityPipeline
 from .tone_model import ToneModel, adapt_tone
+
+_emit_applies_guardrail("p0", "unified_signal_pipeline_util", "p0_governance")
+_emit_reads_policy_state("p0", "unified_signal_pipeline_util", "policy_binding")
+_emit_snapshots_state("p0", "unified_signal_pipeline_util", "state_snapshot")
+emit_replay_key("p0", "unified_signal_pipeline_util")
+emit_determinism_digest("p0", "unified_signal_pipeline_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 logger = logging.getLogger(__name__)
 

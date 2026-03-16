@@ -1,11 +1,42 @@
 from __future__ import annotations
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "workflow_review_pending_merge_util")
+_emit_applies_guardrail("p0", "workflow_review_pending_merge_util", "p0_governance")
+_emit_reads_policy_state("p0", "workflow_review_pending_merge_util", "policy_binding")
+_emit_snapshots_state("p0", "workflow_review_pending_merge_util", "state_snapshot")
+emit_replay_key("p0", "workflow_review_pending_merge_util")
+emit_determinism_digest("p0", "workflow_review_pending_merge_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 '\nDeep comparison of review_pending files vs approved files.\nDetermine if any review_pending files have MORE content than approved versions.\n'
 import logging
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 Logger: Any = logging.getLogger(__name__)
 from pathlib import Path
+
 from agentic_core.L5_safety.config.structure_blueprint import AGENTIC_CORE_DIR, SCRIPTS_DIR
+
 repo: Any = Path('c:/Git/Agentic-Workflow')
 review_pending: Any = REPO / 'config/review_pending'
 approved_folders: Any = [AGENTIC_CORE_DIR, 'schemas', 'runtime', 'prompt_governance', 'config', 'observability', SCRIPTS_DIR, '09_apps', 'shared', 'shared_engine_ops']

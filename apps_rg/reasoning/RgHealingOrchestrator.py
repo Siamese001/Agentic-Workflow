@@ -18,9 +18,25 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from apps_rg.reasoning.healing_cycle import HealingCycle
 from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+_emit_applies_guardrail("p0", "RgHealingOrchestrator", "p0_governance")
+_emit_reads_policy_state("p0", "RgHealingOrchestrator", "policy_binding")
+_emit_snapshots_state("p0", "RgHealingOrchestrator", "state_snapshot")
+emit_replay_key("p0", "RgHealingOrchestrator")
+emit_determinism_digest("p0", "RgHealingOrchestrator")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 Logger = logging.getLogger(__name__)
 

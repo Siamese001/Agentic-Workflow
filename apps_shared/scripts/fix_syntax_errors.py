@@ -12,6 +12,23 @@ from typing import Any
 from apps_shared.utils.ConfigurationService import ConfigurationService
 
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "fix_syntax_errors")
+_emit_applies_guardrail("p0", "fix_syntax_errors", "p0_governance")
+_emit_reads_policy_state("p0", "fix_syntax_errors", "policy_binding")
+_emit_snapshots_state("p0", "fix_syntax_errors", "state_snapshot")
+emit_replay_key("p0", "fix_syntax_errors")
+emit_determinism_digest("p0", "fix_syntax_errors")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 Logger: Any = logging.getLogger(__name__)
 

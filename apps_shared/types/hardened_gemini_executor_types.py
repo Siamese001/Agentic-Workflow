@@ -13,14 +13,28 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
-
 from tenacity import (
     retry,
     retry_if_exception_type,
     stop_after_attempt,
     wait_exponential,
 )
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_reads_policy_state("p0", "hardened_gemini_executor_types", "policy_binding")
+_emit_snapshots_state("p0", "hardened_gemini_executor_types", "state_snapshot")
+emit_replay_key("p0", "hardened_gemini_executor_types")
+emit_determinism_digest("p0", "hardened_gemini_executor_types")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 try:
     from .agent_executor import AgentExecutor, AgentMessage

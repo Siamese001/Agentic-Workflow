@@ -11,7 +11,24 @@ from pathlib import Path
 
 import numpy as np
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
+
+_emit_records_execution_trace("p0", "evidence", "w1_strong_determinism_test")
+_emit_applies_guardrail("p0", "w1_strong_determinism_test", "p0_governance")
+_emit_reads_policy_state("p0", "w1_strong_determinism_test", "policy_binding")
+_emit_snapshots_state("p0", "w1_strong_determinism_test", "state_snapshot")
+emit_replay_key("p0", "w1_strong_determinism_test")
+emit_determinism_digest("p0", "w1_strong_determinism_test")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 
 MAX_RETRIES = 3

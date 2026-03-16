@@ -5,6 +5,23 @@ from agentic_core.agents.types.agent_execution_profile_types import (
     ExecutionMode,
     ReasoningIntensity,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "agent_registry")
+_emit_applies_guardrail("p0", "agent_registry", "p0_governance")
+_emit_reads_policy_state("p0", "agent_registry", "policy_binding")
+_emit_snapshots_state("p0", "agent_registry", "state_snapshot")
+emit_replay_key("p0", "agent_registry")
+emit_determinism_digest("p0", "agent_registry")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 AGENT_REGISTRY: dict[str, AgentExecutionProfile] = {
     "reconciler": AgentExecutionProfile(

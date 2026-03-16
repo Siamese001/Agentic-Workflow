@@ -5,9 +5,37 @@ Runs find_duplicate_agents.py internally and processes output.
 import json
 from datetime import datetime
 from pathlib import Path
-from agentic_core.L5_safety.core_kernel.classification_kernel import is_agent_file as _kernel_is_agent
+
 from agentic_core.utils.security_util import safe_execute
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+from agentic_core.L5_safety.core_kernel.classification_kernel import is_agent_file as _kernel_is_agent
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "generate_agent_table_simple_util")
+_emit_applies_guardrail("p0", "generate_agent_table_simple_util", "p0_governance")
+_emit_reads_policy_state("p0", "generate_agent_table_simple_util", "policy_binding")
+_emit_snapshots_state("p0", "generate_agent_table_simple_util", "state_snapshot")
+emit_replay_key("p0", "generate_agent_table_simple_util")
+emit_determinism_digest("p0", "generate_agent_table_simple_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 def is_agent_file(path: str) -> bool:
     """Check if path is an actual agent file (not test).
@@ -72,8 +100,8 @@ def main():
         f.write('# Duplicated Agents Table\n')
         f.write(f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
         f.write(f'**Total Duplicates:** {len(results)}\n\n')
-        delete_count = sum((1 for r in results if r['action'] == 'DELETE'))
-        review_count = sum((1 for r in results if r['action'] == 'REVIEW'))
+        delete_count = sum(1 for r in results if r['action'] == 'DELETE')
+        review_count = sum(1 for r in results if r['action'] == 'REVIEW')
         f.write(f'**Action Summary:** {delete_count} auto-delete, {review_count} manual review\n\n')
         f.write('| Agent Name | Canonical Path | Duplicate Path | Action | Quality (C/D) | Rationale |\n')
         f.write('| --- | --- | --- | --- | --- | --- |\n')

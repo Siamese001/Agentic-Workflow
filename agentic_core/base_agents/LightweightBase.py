@@ -41,7 +41,23 @@ from agentic_core.mixins.context_management_mixin import ContextManagementMixin
 from agentic_core.mixins.cost_mixin import CostGuardrailMixin
 from agentic_core.mixins.metrics_mixin import MetricsMixin
 from agentic_core.mixins.tracing_mixin import TracingMixin
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "LightweightBase", "p0_governance")
+_emit_reads_policy_state("p0", "LightweightBase", "policy_binding")
+_emit_snapshots_state("p0", "LightweightBase", "state_snapshot")
+emit_replay_key("p0", "LightweightBase")
+emit_determinism_digest("p0", "LightweightBase")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 Logger = logging.getLogger(__name__)
 

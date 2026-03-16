@@ -40,6 +40,24 @@ from textwrap import dedent
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_wave1_phase1_3_governance")
+_emit_applies_guardrail("p0", "test_wave1_phase1_3_governance", "p0_governance")
+_emit_reads_policy_state("p0", "test_wave1_phase1_3_governance", "policy_binding")
+_emit_snapshots_state("p0", "test_wave1_phase1_3_governance", "state_snapshot")
+emit_replay_key("p0", "test_wave1_phase1_3_governance")
+emit_determinism_digest("p0", "test_wave1_phase1_3_governance")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -53,6 +71,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 from tools.semantic_gap_analyzer import (
     AGENTIC_CORE,
     ELEVATOR_SHAFT_HINTS,
@@ -64,7 +83,6 @@ from tools.semantic_gap_analyzer import (
     SemanticGapAnalyzer,
     _has_any_marker,
 )
-from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 
 def _ok_analysis(file_path: Path, **kwargs) -> FileAnalysis:

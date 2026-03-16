@@ -6,7 +6,16 @@ No IO except optional store; no config/routing/L4 writes.
 
 from __future__ import annotations
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
 from system_learning.types.healing_outcome_scoring_types import (
     ScoredRecommendation,
@@ -15,6 +24,13 @@ from system_learning.types.healing_outcome_scoring_types import (
     _stable_round,
 )
 from system_learning.types.healing_outcome_types import HealingOutcomeProposal
+
+_emit_applies_guardrail("p0", "offline_healing_outcome_evaluator", "p0_governance")
+_emit_reads_policy_state("p0", "offline_healing_outcome_evaluator", "policy_binding")
+_emit_snapshots_state("p0", "offline_healing_outcome_evaluator", "state_snapshot")
+emit_replay_key("p0", "offline_healing_outcome_evaluator")
+emit_determinism_digest("p0", "offline_healing_outcome_evaluator")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 
 class OfflineHealingOutcomeEvaluator:

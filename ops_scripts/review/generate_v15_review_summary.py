@@ -12,13 +12,43 @@ Exit codes:
     1 — ALL input files missing (nothing to summarize)
 """
 from __future__ import annotations
+
 import argparse
 import json
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, REPORTS_DIR, get_validated_project_root
+
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    REPORTS_DIR,
+    THRESHOLD,
+    get_validated_project_root,
+)
 from agentic_core.L0_routing.types.integration_contract_types import Finding, ResultEnvelope
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "generate_v15_review_summary")
+_emit_applies_guardrail("p0", "generate_v15_review_summary", "p0_governance")
+_emit_reads_policy_state("p0", "generate_v15_review_summary", "policy_binding")
+_emit_snapshots_state("p0", "generate_v15_review_summary", "state_snapshot")
+emit_replay_key("p0", "generate_v15_review_summary")
+emit_determinism_digest("p0", "generate_v15_review_summary")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 REPO_ROOT = get_validated_project_root()
 EVIDENCE_FILES = {'P3': REPO_ROOT / 'docs' / REPORTS_DIR / 'plans' / 'v15_p3_evidence.json', 'P4': REPO_ROOT / 'docs' / REPORTS_DIR / 'plans' / 'v15_p4_evidence.json', 'P5': REPO_ROOT / 'docs' / REPORTS_DIR / 'plans' / 'v15_p5_evidence.json', 'P6': REPO_ROOT / 'docs' / REPORTS_DIR / 'plans' / 'v15_p6_evidence.json'}
 GUARDIAN_REPORT_PATHS = [REPO_ROOT / 'docs' / REPORTS_DIR / 'plans' / 'guardian_report.json', REPO_ROOT / AGENTIC_CORE_DIR / 'L0_routing' / 'logs' / 'guardian_report.json']
@@ -60,7 +90,7 @@ def generate_summary(evidence_files: dict[str, Path] | None=None, guardian_repor
         guardian = _load_json(p)
         if guardian is not None:
             break
-    all_evidence_missing = all((v is None for v in evidence.values()))
+    all_evidence_missing = all(v is None for v in evidence.values())
     if all_evidence_missing and guardian is None:
         return ('', 1)
     lines: list[str] = []
@@ -177,7 +207,7 @@ def _build_envelope(exit_code: int, evidence_files: dict[str, Path], guardian_re
     env = ResultEnvelope(tool='review_summary', exit_code=exit_code)
     for phase, path in sorted(evidence_files.items()):
         env.inputs[f'evidence_{phase.lower()}'] = {'path': path.name, 'present': path.is_file()}
-    guardian_present = any((p.is_file() for p in guardian_report_paths))
+    guardian_present = any(p.is_file() for p in guardian_report_paths)
     env.inputs['guardian_report'] = {'path': guardian_report_paths[0].name if guardian_report_paths else 'guardian_report.json', 'present': guardian_present}
     if out_path:
         env.outputs['markdown'] = {'path': Path(out_path).name}

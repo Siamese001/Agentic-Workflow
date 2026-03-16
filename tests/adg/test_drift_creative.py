@@ -22,10 +22,27 @@ import math
 import time
 from copy import deepcopy
 from dataclasses import fields
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_drift_creative")
+_emit_applies_guardrail("p0", "test_drift_creative", "p0_governance")
+_emit_reads_policy_state("p0", "test_drift_creative", "policy_binding")
+_emit_snapshots_state("p0", "test_drift_creative", "state_snapshot")
+emit_replay_key("p0", "test_drift_creative")
+emit_determinism_digest("p0", "test_drift_creative")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # hypothesis is optional — skip property tests gracefully if not installed
 try:
@@ -39,7 +56,18 @@ except ImportError:
 # ---------------------------------------------------------------------------
 # Modules under test
 # ---------------------------------------------------------------------------
+import ops_scripts.ci.drift_ratchet_gate as ratchet
+import ops_scripts.ci.drift_scoped_test_runner as runner
 import tools.adg.drift_lifecycle as lifecycle
+from ops_scripts.ci.drift_ratchet_gate import (
+    EPSILON,
+    _read_baseline,
+    _write_baseline,
+    check,
+)
+from ops_scripts.ci.drift_scoped_test_runner import (
+    run,
+)
 from tools.adg.drift_lifecycle import (
     DRIFT_THRESHOLD,
     WORK_BUDGET,
@@ -55,21 +83,6 @@ from tools.adg.drift_lifecycle import (
     _write_work_queue,
 )
 from tools.adg.drift_score import WEIGHTS
-
-import ops_scripts.ci.drift_ratchet_gate as ratchet
-from ops_scripts.ci.drift_ratchet_gate import (
-    EPSILON,
-    _read_baseline,
-    _write_baseline,
-    check,
-)
-
-import ops_scripts.ci.drift_scoped_test_runner as runner
-from ops_scripts.ci.drift_scoped_test_runner import (
-    _changed_prod_files,
-    _resolve_test_paths_for_module,
-    run,
-)
 
 # ---------------------------------------------------------------------------
 # Shared helpers

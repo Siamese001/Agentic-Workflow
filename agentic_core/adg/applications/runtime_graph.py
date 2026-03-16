@@ -30,6 +30,23 @@ from agentic_core.adg.schema import (
     LAYER_PREFIXES,
     module_path_to_layer,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "runtime_graph")
+_emit_applies_guardrail("p0", "runtime_graph", "p0_governance")
+_emit_reads_policy_state("p0", "runtime_graph", "policy_binding")
+_emit_snapshots_state("p0", "runtime_graph", "state_snapshot")
+emit_replay_key("p0", "runtime_graph")
+emit_determinism_digest("p0", "runtime_graph")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult

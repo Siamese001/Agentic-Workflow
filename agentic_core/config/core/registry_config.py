@@ -8,6 +8,24 @@ Do NOT add territory definitions here — add them to _constants.py instead.
 
 import os
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "registry_config")
+_emit_applies_guardrail("p0", "registry_config", "p0_governance")
+_emit_reads_policy_state("p0", "registry_config", "policy_binding")
+_emit_snapshots_state("p0", "registry_config", "state_snapshot")
+emit_replay_key("p0", "registry_config")
+emit_determinism_digest("p0", "registry_config")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -26,16 +44,22 @@ def _derive_registry() -> dict:
     LocationHealerAgent._autonomous_void_violation_resolution().
     """
     from agentic_core.L5_safety.config.structure_blueprint import (
+        CORE_SUBFOLDER_MAP,
         DEPTH_RULES,
         PROJECT_ROOT_WHITELIST,
     )
     from agentic_core.L5_safety.config.structure_blueprint.derived import (
         APPS_LIC_SUBFOLDER_MAP as apps_lic_map,
+    )
+    from agentic_core.L5_safety.config.structure_blueprint.derived import (
         APPS_RG_SUBFOLDER_MAP as apps_rg_map,
+    )
+    from agentic_core.L5_safety.config.structure_blueprint.derived import (
         APPS_SHARED_SUBFOLDER_MAP as apps_shared_map,
+    )
+    from agentic_core.L5_safety.config.structure_blueprint.derived import (
         TESTS_SUBFOLDER_MAP as tests_map,
     )
-    from agentic_core.L5_safety.config.structure_blueprint import CORE_SUBFOLDER_MAP
 
     subfolder_maps: dict = {
         "agentic_core": list(CORE_SUBFOLDER_MAP.keys()),

@@ -14,13 +14,31 @@ Exit codes:
 """
 
 import argparse
+
+# Force UTF-8 encoding for Windows compatibility
+import io
 import json
 import sys
 from pathlib import Path
 from typing import List
 
-# Force UTF-8 encoding for Windows compatibility
-import io
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "check_utility_silent_swallowers")
+_emit_applies_guardrail("p0", "check_utility_silent_swallowers", "p0_governance")
+_emit_reads_policy_state("p0", "check_utility_silent_swallowers", "policy_binding")
+_emit_snapshots_state("p0", "check_utility_silent_swallowers", "state_snapshot")
+emit_replay_key("p0", "check_utility_silent_swallowers")
+emit_determinism_digest("p0", "check_utility_silent_swallowers")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 if sys.platform == "win32":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
@@ -96,7 +114,7 @@ def main() -> int:
         return 0
 
 
-def get_governance_files() -> List[Path]:
+def get_governance_files() -> list[Path]:
     """Get all Python files in governance-critical paths."""
     governance_paths = [
         "ops_scripts/ci",
@@ -119,7 +137,7 @@ def get_governance_files() -> List[Path]:
     return sorted(files)
 
 
-def report_text(violations: List, verbose: bool = False) -> None:
+def report_text(violations: list, verbose: bool = False) -> None:
     """Report violations in text format."""
     if not violations:
         print("✅ No utility silent swallower violations found")
@@ -147,7 +165,7 @@ def report_text(violations: List, verbose: bool = False) -> None:
         print()
 
 
-def report_json(violations: List, verbose: bool = False) -> None:
+def report_json(violations: list, verbose: bool = False) -> None:
     """Report violations in JSON format."""
     report_data = {
         "status": "failed" if violations else "passed",

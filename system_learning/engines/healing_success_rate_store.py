@@ -26,9 +26,20 @@ from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
+
+_emit_applies_guardrail("p0", "healing_success_rate_store", "p0_governance")
+_emit_reads_policy_state("p0", "healing_success_rate_store", "policy_binding")
+emit_replay_key("p0", "healing_success_rate_store")
+emit_determinism_digest("p0", "healing_success_rate_store")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 logger = logging.getLogger(__name__)
 _NEUTRAL_PRIOR: float = 0.5

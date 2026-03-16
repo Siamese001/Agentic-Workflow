@@ -1,5 +1,21 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "sovereign_scan_util", "p0_governance")
+_emit_reads_policy_state("p0", "sovereign_scan_util", "policy_binding")
+_emit_snapshots_state("p0", "sovereign_scan_util", "state_snapshot")
+emit_replay_key("p0", "sovereign_scan_util")
+emit_determinism_digest("p0", "sovereign_scan_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 'SovereignScanner - Centralized single-pass repository mapper.\n\n[Phase 5] Provides shared intelligence layer for L5 agents.\nReduces I/O by sharing a single scan result across all agents.\n\nUsage:\n    scanner = SovereignScanner(project_root)\n    repo_map = scanner.scan_repository()\n\n    # Get files for a specific territory\n    agentic_core_files = scanner.get_root_files("agentic_core")\n'
 import logging
 from pathlib import Path

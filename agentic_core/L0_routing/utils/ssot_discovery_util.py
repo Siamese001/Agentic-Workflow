@@ -35,15 +35,20 @@ from agentic_core.L0_routing.config import (
     get_validated_project_root,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
-    _emit_applies_guardrail,  # noqa: E402
+    _emit_applies_guardrail,  # noqa: E402  # noqa: E402
     _emit_dispatches_healing_run,  # noqa: E402
     _emit_escalates_to_human,  # noqa: E402
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_execution_trace,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402  # noqa: E402
     _emit_routes_through,  # noqa: E402
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
+
+emit_replay_key("p0", "ssot_discovery_util")
+emit_determinism_digest("p0", "ssot_discovery_util")
 
 _emit_dispatches_healing_run("p1", "ssot_discovery_util", "L0")
 _emit_routes_through("p1", "ssot_discovery_util", "L0")

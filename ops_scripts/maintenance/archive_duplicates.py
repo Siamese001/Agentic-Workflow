@@ -1,8 +1,35 @@
 import argparse
 import os
 from pathlib import Path
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "archive_duplicates")
+_emit_applies_guardrail("p0", "archive_duplicates", "p0_governance")
+_emit_reads_policy_state("p0", "archive_duplicates", "policy_binding")
+_emit_snapshots_state("p0", "archive_duplicates", "state_snapshot")
+emit_replay_key("p0", "archive_duplicates")
+emit_determinism_digest("p0", "archive_duplicates")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 TARGETS = ['agentic_core/L5_safety/enforcement/CodeDetectorAgent.py', 'agentic_core/L5_safety/enforcement/CodeEnforcerAgent.py', 'agentic_core/L5_safety/enforcement/CodeHealerAgent.py', 'agentic_core/L5_safety/enforcement/CodeValidatorAgent.py', 'agentic_core/L5_safety/enforcement/ResourceManagerAgent.py', 'agentic_core/L5_safety/enforcement/SafetyDetectorAgent.py', 'agentic_core/L5_safety/enforcement/SafetyExecutorAgent.py', 'agentic_core/L5_safety/enforcement/SecurityManagerAgent.py', 'agentic_core/L5_safety/enforcement/StructureEnforcerAgent.py', 'agentic_core/L5_safety/enforcement/StructureHealerAgent.py', 'agentic_core/L5_safety/enforcement/StructureValidatorAgent.py', 'agentic_core/L2_execution/reasoning/ModelRouterAgent.py', 'apps_shared/base_agents/HygieneGuardianAgent.py']
 

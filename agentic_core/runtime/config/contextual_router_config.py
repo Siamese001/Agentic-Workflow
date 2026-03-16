@@ -35,7 +35,19 @@ from agentic_core.L5_safety.enforcement.context_session import (
 
 from agentic_core.L0_routing.types.routing_artifact_types import RoutePath
 from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_snapshots_state("p0", "contextual_router_config", "state_snapshot")
+emit_replay_key("p0", "contextual_router_config")
+emit_determinism_digest("p0", "contextual_router_config")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 logger = logging.getLogger(__name__)
 

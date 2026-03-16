@@ -54,6 +54,20 @@ import uuid
 from dataclasses import dataclass
 from typing import Any, Protocol
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "meta_learning_pipeline")
+_emit_applies_guardrail("p0", "meta_learning_pipeline", "p0_governance")
+emit_replay_key("p0", "meta_learning_pipeline")
+emit_determinism_digest("p0", "meta_learning_pipeline")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 logger = logging.getLogger(__name__)
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_observes_runtime_state,

@@ -2,7 +2,22 @@
 
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from apps_lic.engines.control_plane import ControlPlane, PolicyAction
+
+_emit_records_execution_trace("p0", "evidence", "test_control_plane")
+_emit_applies_guardrail("p0", "test_control_plane", "p0_governance")
+_emit_snapshots_state("p0", "test_control_plane", "state_snapshot")
+emit_replay_key("p0", "test_control_plane")
+emit_determinism_digest("p0", "test_control_plane")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 
 MAX_RETRIES = 3

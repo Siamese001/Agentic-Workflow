@@ -1,5 +1,23 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "L2ExecutionBase")
+_emit_applies_guardrail("p0", "L2ExecutionBase", "p0_governance")
+_emit_reads_policy_state("p0", "L2ExecutionBase", "policy_binding")
+_emit_snapshots_state("p0", "L2ExecutionBase", "state_snapshot")
+emit_replay_key("p0", "L2ExecutionBase")
+emit_determinism_digest("p0", "L2ExecutionBase")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 "\nL2ExecutionBase - Consolidated Base for L2 Execution Agents\n\nLayer: L2 - Execution\nResponsibilities:\n- Tool registry operations\n- MCP (Model Context Protocol) handling\n- Action execution and coordination\n- External API interactions\n\nMRO HARDENING:\n- Inheritance order: SovereignBaseAgent (root)\n- All L2 agents inherit from this base for consistent execution capabilities\n"
 from dataclasses import dataclass
 from typing import Any

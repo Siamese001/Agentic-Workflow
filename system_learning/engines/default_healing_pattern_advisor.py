@@ -16,12 +16,28 @@ from __future__ import annotations
 import logging
 from typing import Any, NotRequired, TypedDict
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.ports.healing_pattern_advisor import (
     _MAX_PATTERN_BOOST,
     NullHealingPatternAdvisor,
     PatternAdvice,
 )
+
+_emit_applies_guardrail("p0", "default_healing_pattern_advisor", "p0_governance")
+_emit_reads_policy_state("p0", "default_healing_pattern_advisor", "policy_binding")
+_emit_snapshots_state("p0", "default_healing_pattern_advisor", "state_snapshot")
+emit_replay_key("p0", "default_healing_pattern_advisor")
+emit_determinism_digest("p0", "default_healing_pattern_advisor")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # MetaLearningClient import removed until implemented
 # Optional: from system_learning.ports.meta_learning_client import MetaLearningClient

@@ -34,7 +34,12 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
+
+emit_replay_key("p0", "mutation_prohibition")
+emit_determinism_digest("p0", "mutation_prohibition")
 
 _emit_dispatches_healing_run("p1", "mutation_prohibition", "L0")
 _emit_routes_through("p1", "mutation_prohibition", "L0")

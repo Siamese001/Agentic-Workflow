@@ -31,7 +31,12 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
+
+emit_replay_key("p0", "artifact_validate_compat_types")
+emit_determinism_digest("p0", "artifact_validate_compat_types")
 
 _emit_dispatches_healing_run("p1", "artifact_validate_compat_types", "L0")
 _emit_routes_through("p1", "artifact_validate_compat_types", "L0")

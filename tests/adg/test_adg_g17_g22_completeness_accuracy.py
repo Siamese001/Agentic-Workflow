@@ -22,6 +22,22 @@ from typing import get_args
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_adg_g17_g22_completeness_accuracy")
+_emit_applies_guardrail("p0", "test_adg_g17_g22_completeness_accuracy", "p0_governance")
+_emit_snapshots_state("p0", "test_adg_g17_g22_completeness_accuracy", "state_snapshot")
+emit_replay_key("p0", "test_adg_g17_g22_completeness_accuracy")
+emit_determinism_digest("p0", "test_adg_g17_g22_completeness_accuracy")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 RUNTIME_ROOT = REPO_ROOT / "agentic_core" / "adg" / "runtime"
 

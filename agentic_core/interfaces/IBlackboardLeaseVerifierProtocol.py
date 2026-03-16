@@ -1,5 +1,23 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "IBlackboardLeaseVerifierProtocol")
+_emit_applies_guardrail("p0", "IBlackboardLeaseVerifierProtocol", "p0_governance")
+_emit_reads_policy_state("p0", "IBlackboardLeaseVerifierProtocol", "policy_binding")
+_emit_snapshots_state("p0", "IBlackboardLeaseVerifierProtocol", "state_snapshot")
+emit_replay_key("p0", "IBlackboardLeaseVerifierProtocol")
+emit_determinism_digest("p0", "IBlackboardLeaseVerifierProtocol")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 "\nSecure Filesystem Operations - Sandboxed File I/O with Blackboard Integration\nPrevents path traversal, protects critical directories, and integrates with HealingLease.\n\nDELEGATION NOTICE (2026-01-21):\n- move_file() and delete_file() now delegate to ArchivalGatekeeper\n- This ensures all destructive operations go through the governance layer\n- Direct shutil/os operations have been removed for security\n"
 import os
 import warnings

@@ -7,6 +7,24 @@ using CST-based transformers while preserving comments and formatting.
 
 import ast
 import tempfile
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_code_healer_canon_cst")
+_emit_applies_guardrail("p0", "test_code_healer_canon_cst", "p0_governance")
+_emit_reads_policy_state("p0", "test_code_healer_canon_cst", "policy_binding")
+_emit_snapshots_state("p0", "test_code_healer_canon_cst", "state_snapshot")
+emit_replay_key("p0", "test_code_healer_canon_cst")
+emit_determinism_digest("p0", "test_code_healer_canon_cst")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 _FIXED_TS = "2026-01-01T00:00:00"
 from pathlib import Path
 

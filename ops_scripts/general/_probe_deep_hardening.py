@@ -1,17 +1,54 @@
 """Deep hardening probe — run standalone, produces findings to stdout."""
 from __future__ import annotations
+
 import os
 import sys
 import threading
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "_probe_deep_hardening")
+_emit_applies_guardrail("p0", "_probe_deep_hardening", "p0_governance")
+_emit_reads_policy_state("p0", "_probe_deep_hardening", "policy_binding")
+_emit_snapshots_state("p0", "_probe_deep_hardening", "state_snapshot")
+emit_replay_key("p0", "_probe_deep_hardening")
+emit_determinism_digest("p0", "_probe_deep_hardening")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 # guardian: allow-global-mutation
 sys.path.insert(0, 'c:/Git/Agentic-Workflow')
 # guardian: allow-global-mutation
 os.environ['HIVE_MIND_STRICT_MODE'] = 'false'
 from agentic_core.L4_state.memory.semantic_cache_manager import PII_Sanitizer, SemanticCacheManager
+
 SemanticCacheManager.reset_instance()
 import apps_shared.enforcement.GlobalcacheStrategy as _mod
-from apps_shared.enforcement.GlobalcacheStrategy import GlobalCache, cache_get, cache_put, cache_search_semantic, cached, get_global_cache
+from apps_shared.enforcement.GlobalcacheStrategy import (
+    GlobalCache,
+    cache_get,
+    cache_put,
+    cache_search_semantic,
+    cached,
+    get_global_cache,
+)
+
 
 def reset():
     SemanticCacheManager.reset_instance()

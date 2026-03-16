@@ -23,6 +23,24 @@ from unittest.mock import patch
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_semantic_cache_deep")
+_emit_applies_guardrail("p0", "test_semantic_cache_deep", "p0_governance")
+_emit_reads_policy_state("p0", "test_semantic_cache_deep", "policy_binding")
+_emit_snapshots_state("p0", "test_semantic_cache_deep", "state_snapshot")
+emit_replay_key("p0", "test_semantic_cache_deep")
+emit_determinism_digest("p0", "test_semantic_cache_deep")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 os.environ.setdefault("HIVE_MIND_STRICT_MODE", "false")
 
 

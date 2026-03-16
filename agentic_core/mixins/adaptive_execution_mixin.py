@@ -1,5 +1,21 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "adaptive_execution_mixin", "p0_governance")
+_emit_reads_policy_state("p0", "adaptive_execution_mixin", "policy_binding")
+_emit_snapshots_state("p0", "adaptive_execution_mixin", "state_snapshot")
+emit_replay_key("p0", "adaptive_execution_mixin")
+emit_determinism_digest("p0", "adaptive_execution_mixin")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 "\nAdaptiveExecutionMixin – Sovereign Agent Role Mixin (Phase 29 – Dec 30, 2025)\n\nPurpose:\n  Enable agents to dynamically select execution mode based on real-time context:\n    - standard: normal operation\n    - conservative: high failure rate → safer, more verification\n    - aggressive: urgent → faster, riskier\n    - minimal: high system load → skip non-essential work\n\nConstitutional Alignment:\n  - Prevents resource exhaustion\n  - Adapts to sovereignty health\n  - Enables self-preservation under stress\n"
 import logging
 from typing import Any

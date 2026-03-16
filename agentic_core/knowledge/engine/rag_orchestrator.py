@@ -1,5 +1,21 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "rag_orchestrator", "p0_governance")
+_emit_reads_policy_state("p0", "rag_orchestrator", "policy_binding")
+_emit_snapshots_state("p0", "rag_orchestrator", "state_snapshot")
+emit_replay_key("p0", "rag_orchestrator")
+emit_determinism_digest("p0", "rag_orchestrator")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 "\nSovereign RAG Orchestrator\n\nZero-Ambiguity Standard: Renamed from SovereignRAGManager.py to SovereignRagOrchestrator.py\nCategory: ORCHESTRATOR (Manages RAG pipeline)\n\nTerritory: agentic_core/knowledge (cross-subfolder orchestrator)\nCanon Key 9 - Retrieval-Augmented Generation integration\n"
 import json
 from pathlib import Path

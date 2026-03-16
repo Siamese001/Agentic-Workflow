@@ -7,6 +7,24 @@ import asyncio
 import sys
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_run_grand_unification_tests")
+_emit_applies_guardrail("p0", "test_run_grand_unification_tests", "p0_governance")
+_emit_reads_policy_state("p0", "test_run_grand_unification_tests", "policy_binding")
+_emit_snapshots_state("p0", "test_run_grand_unification_tests", "state_snapshot")
+emit_replay_key("p0", "test_run_grand_unification_tests")
+emit_determinism_digest("p0", "test_run_grand_unification_tests")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95

@@ -19,6 +19,22 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_confidence_routing_consolidation")
+_emit_applies_guardrail("p0", "test_confidence_routing_consolidation", "p0_governance")
+_emit_snapshots_state("p0", "test_confidence_routing_consolidation", "state_snapshot")
+emit_replay_key("p0", "test_confidence_routing_consolidation")
+emit_determinism_digest("p0", "test_confidence_routing_consolidation")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 pytestmark = pytest.mark.unit
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
@@ -151,13 +167,13 @@ class TestRouteByConfidence:
 
 class TestHealPolicyTypesThresholdDelegation:
     def test_score_threshold_det_matches_config(self):
-        from agentic_core.L5_safety.types.heal_policy_types import SCORE_THRESHOLD_DET
         from agentic_core.L2_execution.healers.healing_tier_config import SSOT_SCORE_THRESHOLD_DET
+        from agentic_core.L5_safety.types.heal_policy_types import SCORE_THRESHOLD_DET
         assert SCORE_THRESHOLD_DET == SSOT_SCORE_THRESHOLD_DET
 
     def test_score_threshold_qwen_matches_config(self):
-        from agentic_core.L5_safety.types.heal_policy_types import SCORE_THRESHOLD_QWEN
         from agentic_core.L2_execution.healers.healing_tier_config import SSOT_SCORE_THRESHOLD_QWEN
+        from agentic_core.L5_safety.types.heal_policy_types import SCORE_THRESHOLD_QWEN
         assert SCORE_THRESHOLD_QWEN == SSOT_SCORE_THRESHOLD_QWEN
 
     def test_no_bare_literals_in_source(self):
@@ -174,7 +190,12 @@ class TestHealPolicyTypesThresholdDelegation:
 
     def test_sentinel_constants_importable(self):
         from agentic_core.L5_safety.types.heal_policy_types import (
-            MAX_RETRIES, DEFAULT_SLEEP, THRESHOLD, BUFFER_SIZE, BATCH_SIZE, MAX_DEPTH,
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_DEPTH,
+            MAX_RETRIES,
+            THRESHOLD,
         )
         assert all(v is not None for v in [MAX_RETRIES, DEFAULT_SLEEP, THRESHOLD, BUFFER_SIZE, BATCH_SIZE, MAX_DEPTH])
 
@@ -213,7 +234,10 @@ class TestConfidenceScoreNoEnvVar:
 
     def test_is_medium_confidence_bounded(self):
         from agentic_core.L0_routing.scripts._ssot_types import ConfidenceScore
-        from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_X, HEALING_CONFIDENCE_Y
+        from agentic_core.L2_execution.healers.healing_tier_config import (
+            HEALING_CONFIDENCE_X,
+            HEALING_CONFIDENCE_Y,
+        )
         mid = (HEALING_CONFIDENCE_X + HEALING_CONFIDENCE_Y) / 2.0
         cs = ConfidenceScore(value=mid, reasoning="test")
         assert cs.is_medium_confidence is True
@@ -258,7 +282,7 @@ class TestSsotRoutingNoHardcodedLiterals:
 
     def test_compute_routing_decision_uses_constants(self):
         from agentic_core.L0_routing.scripts._ssot_routing import compute_routing_decision
-        from agentic_core.L0_routing.scripts._ssot_types import RoutingInputs, RoutingTier, FailureType
+        from agentic_core.L0_routing.scripts._ssot_types import FailureType, RoutingInputs, RoutingTier
         # S = 3*1+4*1+3*0+2*0+4*1 = 11 → DETERMINISTIC (below _SCORE_DET=13)
         det_inputs = RoutingInputs(
             failure_type=FailureType.LAYER_VIOLATION,
@@ -332,7 +356,12 @@ class TestTieredBatchUtilThreshold:
 
     def test_sentinel_constants_importable(self):
         from agentic_core.L5_safety.utils.tiered_batch_util import (
-            MAX_RETRIES, DEFAULT_SLEEP, THRESHOLD, BUFFER_SIZE, BATCH_SIZE, MAX_DEPTH,
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_DEPTH,
+            MAX_RETRIES,
+            THRESHOLD,
         )
         assert all(v is not None for v in [MAX_RETRIES, DEFAULT_SLEEP, THRESHOLD, BUFFER_SIZE, BATCH_SIZE, MAX_DEPTH])
 
@@ -354,11 +383,11 @@ class TestQwenMetaLearningNoXYReexport:
 
     def test_functional_exports_still_present(self):
         from agentic_core.L2_execution.healers.qwen_meta_learning import (
+            clear_historical_success_rates,
             get_historical_success_rate,
             set_historical_success_rate,
             update_qwen_confidence_prior,
             validate_threshold_immutability,
-            clear_historical_success_rates,
         )
         assert all(callable(f) for f in [
             get_historical_success_rate, set_historical_success_rate,
@@ -408,8 +437,8 @@ class TestDecoratorsUtilUsesCanonicalRouter:
         assert callable(route_fn), "_get_heal_policy_types() must return route_by_confidence as first element"
 
     def test_route_by_confidence_is_the_returned_fn(self):
-        from agentic_core.utils.decorators_util import _get_heal_policy_types
         from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+        from agentic_core.utils.decorators_util import _get_heal_policy_types
         returned_fn, _ = _get_heal_policy_types()
         assert returned_fn is route_by_confidence
 
@@ -449,8 +478,11 @@ class TestSingleSourceOfTruth:
         assert result.tier == HealingTier.GEMINI_2_5_PRO
 
     def test_score_thresholds_same_object_in_heal_policy_types_and_config(self):
+        from agentic_core.L2_execution.healers.healing_tier_config import (
+            SSOT_SCORE_THRESHOLD_DET,
+            SSOT_SCORE_THRESHOLD_QWEN,
+        )
         from agentic_core.L5_safety.types.heal_policy_types import SCORE_THRESHOLD_DET, SCORE_THRESHOLD_QWEN
-        from agentic_core.L2_execution.healers.healing_tier_config import SSOT_SCORE_THRESHOLD_DET, SSOT_SCORE_THRESHOLD_QWEN
         assert SCORE_THRESHOLD_DET is SSOT_SCORE_THRESHOLD_DET or SCORE_THRESHOLD_DET == SSOT_SCORE_THRESHOLD_DET
         assert SCORE_THRESHOLD_QWEN is SSOT_SCORE_THRESHOLD_QWEN or SCORE_THRESHOLD_QWEN == SSOT_SCORE_THRESHOLD_QWEN
 

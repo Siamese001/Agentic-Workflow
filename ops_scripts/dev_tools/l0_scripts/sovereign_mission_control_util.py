@@ -3,6 +3,19 @@ from __future__ import annotations
 import asyncio
 
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "sovereign_mission_control_util")
+_emit_applies_guardrail("p0", "sovereign_mission_control_util", "p0_governance")
+_emit_reads_policy_state("p0", "sovereign_mission_control_util", "policy_binding")
+_emit_snapshots_state("p0", "sovereign_mission_control_util", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 "Brief description of functionality and purpose."
 "Brief description of functionality and purpose."

@@ -13,6 +13,24 @@ Exit codes:
 import sys
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "agent_validation")
+_emit_applies_guardrail("p0", "agent_validation", "p0_governance")
+_emit_reads_policy_state("p0", "agent_validation", "policy_binding")
+_emit_snapshots_state("p0", "agent_validation", "state_snapshot")
+emit_replay_key("p0", "agent_validation")
+emit_determinism_digest("p0", "agent_validation")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
 # guardian: allow-global-mutation

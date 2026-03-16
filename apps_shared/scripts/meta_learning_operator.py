@@ -29,6 +29,18 @@ from agentic_core.interfaces.meta_control import (
     apply_with_invariants,
     load_current,
 )
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.types.app_signal_types import (
     AppSignalEventArtifact,
     aggregate_app_signals,
@@ -44,9 +56,14 @@ from system_learning.types.offline_replay_types import (
 from system_learning.types.rollout_types import (
     MetaLearningRollbackArtifact,
 )
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
-)
+
+_emit_records_execution_trace("p0", "evidence", "meta_learning_operator")
+_emit_applies_guardrail("p0", "meta_learning_operator", "p0_governance")
+_emit_reads_policy_state("p0", "meta_learning_operator", "policy_binding")
+_emit_snapshots_state("p0", "meta_learning_operator", "state_snapshot")
+emit_replay_key("p0", "meta_learning_operator")
+emit_determinism_digest("p0", "meta_learning_operator")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # Default store root for config_store reads.
 _DEFAULT_STORE_ROOT = (

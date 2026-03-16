@@ -51,6 +51,16 @@ from typing import Any
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "test_adg_g7_g16_creative_extensions", "p0_governance")
+_emit_reads_policy_state("p0", "test_adg_g7_g16_creative_extensions", "policy_binding")
+_emit_snapshots_state("p0", "test_adg_g7_g16_creative_extensions", "state_snapshot")
+
 ROOT = Path(__file__).resolve().parents[2]
 
 # ---------------------------------------------------------------------------

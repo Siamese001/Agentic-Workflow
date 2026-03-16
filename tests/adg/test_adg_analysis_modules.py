@@ -16,6 +16,24 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_adg_analysis_modules")
+_emit_applies_guardrail("p0", "test_adg_analysis_modules", "p0_governance")
+_emit_reads_policy_state("p0", "test_adg_analysis_modules", "policy_binding")
+_emit_snapshots_state("p0", "test_adg_analysis_modules", "state_snapshot")
+emit_replay_key("p0", "test_adg_analysis_modules")
+emit_determinism_digest("p0", "test_adg_analysis_modules")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 
 # ---------------------------------------------------------------------------
 # Shared stubs
@@ -275,9 +293,9 @@ class TestGraphDiff:
     """Unit tests for diff_snapshots() and GraphDiff."""
 
     def _snap(self, edges: list[tuple[str, str, str]], violations: int = 0) -> object:
-        from agentic_core.adg.analysis.snapshot import CanonicalSnapshot
-
         import hashlib
+
+        from agentic_core.adg.analysis.snapshot import CanonicalSnapshot
 
         edge_text = "\n".join(f"{f}|{r}|{t}" for f, r, t in sorted(edges))
         h = hashlib.sha256(edge_text.encode()).hexdigest()

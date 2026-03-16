@@ -1,12 +1,41 @@
 from __future__ import annotations
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "rescue_reviewer")
+_emit_applies_guardrail("p0", "rescue_reviewer", "p0_governance")
+_emit_reads_policy_state("p0", "rescue_reviewer", "policy_binding")
+_emit_snapshots_state("p0", "rescue_reviewer", "state_snapshot")
+emit_replay_key("p0", "rescue_reviewer")
+emit_determinism_digest("p0", "rescue_reviewer")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 '\nSovereign Rescue & Review (SRR)\n'
 import hashlib
 import json
 import os
 from pathlib import Path
 from typing import Any
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 def _get_redis_sovereign_agent():
     """Lazy load RedisSovereignAgent to avoid L0 → L4 dependency."""
@@ -64,7 +93,11 @@ class RescueReviewer:
             return
         print(f'\n--- SOVEREIGN ARCHIVE REVIEW (Auto-Home: {auto_home}) ---')
         from agentic_core.utils.ssot_discovery_validator import get_python_files
-        from agentic_core.L5_safety.config.structure_blueprint import CANON_SIGNALS, DEFAULT_CORE_HEALING_TERRITORY
+
+        from agentic_core.L5_safety.config.structure_blueprint import (
+            CANON_SIGNALS,
+            DEFAULT_CORE_HEALING_TERRITORY,
+        )
         for arch_file in get_python_files(self.archive_path):
             rel: Any = arch_file.relative_to(self.archive_path)
             content: Any = arch_file.read_text(encoding='utf-8', errors='ignore')
@@ -88,7 +121,7 @@ class RescueReviewer:
                 territory: Any = match['metadata']['territory']
                 conf: Any = match['score']
                 suggested_territory = DEFAULT_CORE_HEALING_TERRITORY
-                sig_count = sum((1 for s in CANON_SIGNALS if s in content.lower()))
+                sig_count = sum(1 for s in CANON_SIGNALS if s in content.lower())
                 print(f'         SUGGESTION: {territory} (Conf: {conf:.2f}) -> {suggested_territory}')
                 Verdict: Any = 'MANUAL_REVIEW'
                 if auto_home and conf >= self.auto_home_threshold and (sig_count >= self.auto_home_min_signals):

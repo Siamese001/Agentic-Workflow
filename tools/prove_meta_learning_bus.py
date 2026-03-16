@@ -8,11 +8,32 @@ Exercises the exact code path that execute_ssot fires at line ~4964:
 No mocks. Uses real classes from system_learning.
 """
 from __future__ import annotations
+
 import sys
 import time
 import traceback
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    THRESHOLD,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "prove_meta_learning_bus")
+_emit_applies_guardrail("p0", "prove_meta_learning_bus", "p0_governance")
+_emit_reads_policy_state("p0", "prove_meta_learning_bus", "policy_binding")
+_emit_snapshots_state("p0", "prove_meta_learning_bus", "state_snapshot")
+emit_replay_key("p0", "prove_meta_learning_bus")
+emit_determinism_digest("p0", "prove_meta_learning_bus")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 REPO_ROOT = Path(__file__).resolve().parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(REPO_ROOT))
@@ -44,7 +65,9 @@ except ImportError as e:
     import_results['HealingOutcomeIntakeAdapter'] = False
     print(f'  {FAIL} HealingOutcomeIntakeAdapter: {e}')
 try:
-    from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+    from system_learning.engines.in_memory_healing_outcome_intake_store import (
+        InMemoryHealingOutcomeIntakeStore,
+    )
     import_results['InMemoryHealingOutcomeIntakeStore'] = True
     print(f'  {PASS} InMemoryHealingOutcomeIntakeStore imported')
 except ImportError as e:
@@ -121,6 +144,7 @@ print('\n' + '=' * 72)
 print('STAGE 5: _fire_meta_learning_intake (exact production code path)')
 print('=' * 72)
 import logging
+
 logging.basicConfig(level=logging.DEBUG, format='  [%(levelname)s] %(message)s')
 try:
     from agentic_core.L0_routing.scripts.execute_ssot import RuntimeStateManager, _fire_meta_learning_intake

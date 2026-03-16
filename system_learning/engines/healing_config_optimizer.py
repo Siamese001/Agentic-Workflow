@@ -12,8 +12,14 @@ from dataclasses import dataclass, field
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_gated_by_confidence,
+    _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
 from system_learning.types.healing_outcome_learning_types import (
     HealingOutcomeAggregate,
@@ -23,6 +29,13 @@ from system_learning.types.healing_outcome_learning_types import (
 from system_learning.types.pattern_analysis_types import (
     PatternFindingReport,
 )
+
+_emit_applies_guardrail("p0", "healing_config_optimizer", "p0_governance")
+_emit_reads_policy_state("p0", "healing_config_optimizer", "policy_binding")
+_emit_snapshots_state("p0", "healing_config_optimizer", "state_snapshot")
+emit_replay_key("p0", "healing_config_optimizer")
+emit_determinism_digest("p0", "healing_config_optimizer")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 
 class HealingConfigOptimizer:

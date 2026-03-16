@@ -5,7 +5,12 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_escalates_to_human,  # noqa: E402
     _emit_reads_policy_state,  # noqa: E402
     _emit_routes_through,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
+
+emit_replay_key("p0", "chunk_type")
+emit_determinism_digest("p0", "chunk_type")
 
 _emit_dispatches_healing_run("p1", "chunk_type", "L0")
 _emit_routes_through("p1", "chunk_type", "L0")

@@ -6,6 +6,24 @@ Call validate_invariant_registry() explicitly to verify schema integrity.
 
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "invariant_registry")
+_emit_applies_guardrail("p0", "invariant_registry", "p0_governance")
+_emit_reads_policy_state("p0", "invariant_registry", "policy_binding")
+_emit_snapshots_state("p0", "invariant_registry", "state_snapshot")
+emit_replay_key("p0", "invariant_registry")
+emit_determinism_digest("p0", "invariant_registry")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 READ_ONLY_ISOLATION: dict = {
     "forbidden_verbs": ["write", "modify", "update", "delete"],
     "scope": "retrieval_context",

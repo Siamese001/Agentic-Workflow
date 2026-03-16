@@ -40,6 +40,24 @@ from __future__ import annotations
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_structure_blueprint_hardened")
+_emit_applies_guardrail("p0", "test_structure_blueprint_hardened", "p0_governance")
+_emit_reads_policy_state("p0", "test_structure_blueprint_hardened", "policy_binding")
+_emit_snapshots_state("p0", "test_structure_blueprint_hardened", "state_snapshot")
+emit_replay_key("p0", "test_structure_blueprint_hardened")
+emit_determinism_digest("p0", "test_structure_blueprint_hardened")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -52,6 +70,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.guardian
 
+from agentic_core.L0_routing.config.path_constants import SYSTEM_LEARNING_DIR
 from agentic_core.L5_safety.config.structure_blueprint.sovereign_kernel import (
     MODULAR_EXTENSIONS,
     SOVEREIGN_KERNEL_COMPONENTS,
@@ -59,7 +78,6 @@ from agentic_core.L5_safety.config.structure_blueprint.sovereign_kernel import (
     is_modular_extension,
     validate_boundary,
 )
-from agentic_core.L0_routing.config.path_constants import SYSTEM_LEARNING_DIR
 
 # ---------------------------------------------------------------------------
 # 1. is_kernel_component() — exact, prefix, no-match

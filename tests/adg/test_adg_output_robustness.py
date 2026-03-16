@@ -26,6 +26,24 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_adg_output_robustness")
+_emit_applies_guardrail("p0", "test_adg_output_robustness", "p0_governance")
+_emit_reads_policy_state("p0", "test_adg_output_robustness", "policy_binding")
+_emit_snapshots_state("p0", "test_adg_output_robustness", "state_snapshot")
+emit_replay_key("p0", "test_adg_output_robustness")
+emit_determinism_digest("p0", "test_adg_output_robustness")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -170,9 +188,10 @@ class TestLayerSplitterEdgeCases:
 
     def test_unknown_rel_type_dropped_from_all_planes(self):
         """An edge with an unrecognised relation_type is silently dropped (not routed anywhere)."""
-        from agentic_core.adg.artifact.builder import ADGArtifact, BlindSpotReport, StructuralMetrics
         from agentic_core.adg.artifact.layer_splitter import (
-            _FILE_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS, _SYMBOL_GRAPH_RELS,
+            _FILE_GRAPH_RELS,
+            _GOVERNANCE_GRAPH_RELS,
+            _SYMBOL_GRAPH_RELS,
             split_artifact,
         )
         a = _minimal_artifact()
@@ -254,7 +273,9 @@ class TestLayerSplitterEdgeCases:
     def test_in_cycle_route_to_file_graph_not_gov(self):
         """in_cycle canonical home is file_graph — must not appear in governance_graph."""
         from agentic_core.adg.artifact.layer_splitter import (
-            _FILE_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS, _SYMBOL_GRAPH_RELS,
+            _FILE_GRAPH_RELS,
+            _GOVERNANCE_GRAPH_RELS,
+            _SYMBOL_GRAPH_RELS,
         )
         assert "in_cycle" in _FILE_GRAPH_RELS
         assert "in_cycle" not in _GOVERNANCE_GRAPH_RELS
@@ -318,7 +339,9 @@ class TestLayerSplitterZeroOverlapInvariant:
 
     def test_all_three_rel_sets_pairwise_disjoint(self):
         from agentic_core.adg.artifact.layer_splitter import (
-            _FILE_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS, _SYMBOL_GRAPH_RELS,
+            _FILE_GRAPH_RELS,
+            _GOVERNANCE_GRAPH_RELS,
+            _SYMBOL_GRAPH_RELS,
         )
         assert not (_FILE_GRAPH_RELS & _SYMBOL_GRAPH_RELS), \
             f"FILE∩SYMBOL: {_FILE_GRAPH_RELS & _SYMBOL_GRAPH_RELS}"
@@ -330,7 +353,9 @@ class TestLayerSplitterZeroOverlapInvariant:
     def test_rel_sets_are_frozensets(self):
         """Constants must be frozensets — immutable, not accidentally mutated."""
         from agentic_core.adg.artifact.layer_splitter import (
-            _FILE_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS, _SYMBOL_GRAPH_RELS,
+            _FILE_GRAPH_RELS,
+            _GOVERNANCE_GRAPH_RELS,
+            _SYMBOL_GRAPH_RELS,
         )
         assert isinstance(_FILE_GRAPH_RELS, frozenset)
         assert isinstance(_SYMBOL_GRAPH_RELS, frozenset)
@@ -345,7 +370,9 @@ class TestLayerSplitterZeroOverlapInvariant:
     def test_no_edge_type_in_zero_planes(self):
         """Every relation type found in a live split must be assigned to exactly one plane."""
         from agentic_core.adg.artifact.layer_splitter import (
-            _FILE_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS, _SYMBOL_GRAPH_RELS,
+            _FILE_GRAPH_RELS,
+            _GOVERNANCE_GRAPH_RELS,
+            _SYMBOL_GRAPH_RELS,
             split_artifact,
         )
         a = _full_artifact()
@@ -734,8 +761,9 @@ class TestRegressionGuards:
 
     def test_split_artifact_result_has_no_test_graph_field(self):
         """SplitArtifact.__dataclass_fields__ must not contain 'test_graph'."""
-        from agentic_core.adg.artifact.layer_splitter import SplitArtifact
         import dataclasses
+
+        from agentic_core.adg.artifact.layer_splitter import SplitArtifact
         field_names = {f.name for f in dataclasses.fields(SplitArtifact)}
         assert "test_graph" not in field_names
         assert "file_graph" in field_names

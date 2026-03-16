@@ -19,6 +19,14 @@ from dataclasses import dataclass
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.adapters.system_learning_memory_bridge import (
     SystemLearningMemoryBridge,
     get_sl_memory_bridge,
@@ -30,6 +38,13 @@ from system_learning.engines.healing_success_rate_store import (
 from system_learning.engines.rca_engine import analyze_failures_and_persist
 from system_learning.engines.retrieval_profile import RetrievalProfile
 from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
+
+_emit_records_execution_trace("p0", "evidence", "test_system_learning_mcp_integration")
+_emit_applies_guardrail("p0", "test_system_learning_mcp_integration", "p0_governance")
+_emit_snapshots_state("p0", "test_system_learning_mcp_integration", "state_snapshot")
+emit_replay_key("p0", "test_system_learning_mcp_integration")
+emit_determinism_digest("p0", "test_system_learning_mcp_integration")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # ---------------------------------------------------------------------------
 # Fixtures

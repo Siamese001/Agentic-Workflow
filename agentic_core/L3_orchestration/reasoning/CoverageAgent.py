@@ -17,7 +17,12 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_escalates_to_human,  # noqa: E402
     _emit_reads_policy_state,  # noqa: E402
     _emit_routes_through,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
+
+emit_replay_key("p0", "CoverageAgent")
+emit_determinism_digest("p0", "CoverageAgent")
 
 _emit_dispatches_healing_run("p1", "CoverageAgent", "L3")
 _emit_routes_through("p1", "CoverageAgent", "L3")

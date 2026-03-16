@@ -2,6 +2,14 @@
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.validators.dampening import (
     CooldownPolicy,
     CooldownViolation,
@@ -10,6 +18,13 @@ from system_learning.validators.dampening import (
     assert_cooldown_ok,
     assert_min_sample_size,
 )
+
+_emit_records_execution_trace("p0", "evidence", "test_dampening")
+_emit_applies_guardrail("p0", "test_dampening", "p0_governance")
+_emit_snapshots_state("p0", "test_dampening", "state_snapshot")
+emit_replay_key("p0", "test_dampening")
+emit_determinism_digest("p0", "test_dampening")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 pytestmark = pytest.mark.unit_min_deps
 

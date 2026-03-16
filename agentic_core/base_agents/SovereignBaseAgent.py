@@ -65,7 +65,21 @@ from agentic_core.mixins.llm_provider_mixin import LLMProviderMixin
 from agentic_core.mixins.meta_learning_client_mixin import MetaLearningClientMixin
 from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
 from agentic_core.mixins.validator_mixin import ValidatorMixin
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "SovereignBaseAgent", "p0_governance")
+_emit_snapshots_state("p0", "SovereignBaseAgent", "state_snapshot")
+emit_replay_key("p0", "SovereignBaseAgent")
+emit_determinism_digest("p0", "SovereignBaseAgent")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 
 def _get_configuration_error():

@@ -8,6 +8,24 @@ import subprocess
 import sys
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "verify_universal_healing")
+_emit_applies_guardrail("p0", "verify_universal_healing", "p0_governance")
+_emit_reads_policy_state("p0", "verify_universal_healing", "policy_binding")
+_emit_snapshots_state("p0", "verify_universal_healing", "state_snapshot")
+emit_replay_key("p0", "verify_universal_healing")
+emit_determinism_digest("p0", "verify_universal_healing")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 
 def run_verification():
     """Run verification tests on the Universal Healing implementation."""

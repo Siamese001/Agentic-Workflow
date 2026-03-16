@@ -34,6 +34,24 @@ import re
 import sys
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "fix_test_silent_skips")
+_emit_applies_guardrail("p0", "fix_test_silent_skips", "p0_governance")
+_emit_reads_policy_state("p0", "fix_test_silent_skips", "policy_binding")
+_emit_snapshots_state("p0", "fix_test_silent_skips", "state_snapshot")
+emit_replay_key("p0", "fix_test_silent_skips")
+emit_determinism_digest("p0", "fix_test_silent_skips")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 if sys.platform == "win32":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")

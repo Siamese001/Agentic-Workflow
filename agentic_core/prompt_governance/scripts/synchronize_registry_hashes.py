@@ -9,7 +9,24 @@ import json
 import sys
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from agentic_core.utils.fs_util import calculate_file_hash
+
+_emit_records_execution_trace("p0", "evidence", "synchronize_registry_hashes")
+_emit_applies_guardrail("p0", "synchronize_registry_hashes", "p0_governance")
+_emit_reads_policy_state("p0", "synchronize_registry_hashes", "policy_binding")
+_emit_snapshots_state("p0", "synchronize_registry_hashes", "state_snapshot")
+emit_replay_key("p0", "synchronize_registry_hashes")
+emit_determinism_digest("p0", "synchronize_registry_hashes")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 
 def load_registry(registry_path: Path) -> dict:

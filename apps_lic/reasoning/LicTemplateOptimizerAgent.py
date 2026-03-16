@@ -2,7 +2,23 @@ from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "LicTemplateOptimizerAgent", "p0_governance")
+_emit_reads_policy_state("p0", "LicTemplateOptimizerAgent", "policy_binding")
+_emit_snapshots_state("p0", "LicTemplateOptimizerAgent", "state_snapshot")
+emit_replay_key("p0", "LicTemplateOptimizerAgent")
+emit_determinism_digest("p0", "LicTemplateOptimizerAgent")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 "\nRgTemplateOptimizerAgent - Extracted for one-class-per-file pattern.\n\nOriginally from: LeadQualityAgent.py\nExtracted: 2026-01-06 (Surgical Extraction)\n"
 

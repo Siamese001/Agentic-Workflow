@@ -6,9 +6,25 @@ Provides readback for test verification.
 
 from __future__ import annotations
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.ports.scoring_report_store import ScoringReportStore
 from system_learning.types.healing_outcome_scoring_types import ScoringReport
+
+_emit_applies_guardrail("p0", "in_memory_scoring_report_store", "p0_governance")
+_emit_reads_policy_state("p0", "in_memory_scoring_report_store", "policy_binding")
+_emit_snapshots_state("p0", "in_memory_scoring_report_store", "state_snapshot")
+emit_replay_key("p0", "in_memory_scoring_report_store")
+emit_determinism_digest("p0", "in_memory_scoring_report_store")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 
 class InMemoryScoringReportStore(ScoringReportStore):

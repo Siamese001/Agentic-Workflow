@@ -16,13 +16,31 @@ Usage:
 """
 
 import ast
-import sys
-from pathlib import Path
-from typing import Dict, List, Tuple
-import json
 
 # Force UTF-8 encoding for Windows compatibility
 import io
+import json
+import sys
+from pathlib import Path
+from typing import Dict, List, Tuple
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "classify_utility_scripts")
+_emit_applies_guardrail("p0", "classify_utility_scripts", "p0_governance")
+_emit_reads_policy_state("p0", "classify_utility_scripts", "policy_binding")
+_emit_snapshots_state("p0", "classify_utility_scripts", "state_snapshot")
+emit_replay_key("p0", "classify_utility_scripts")
+emit_determinism_digest("p0", "classify_utility_scripts")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 if sys.platform == "win32":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
@@ -36,8 +54,8 @@ if str(_REPO_ROOT) not in sys.path:
 
 from agentic_core.L0_routing.config.path_constants import get_validated_project_root
 from agentic_core.L5_safety.validators.utility_silent_swallower_validator import (
-    UtilitySilentSwallowerDetector,
     UtilityScriptClassifier,
+    UtilitySilentSwallowerDetector,
 )
 
 PROJECT_ROOT = get_validated_project_root()
@@ -50,7 +68,7 @@ class UtilityScriptAnalyzer:
         self.detector = UtilitySilentSwallowerDetector(PROJECT_ROOT)
         self.classifier = UtilityScriptClassifier()
 
-    def analyze_all_utility_scripts(self) -> Dict[str, List[Dict]]:
+    def analyze_all_utility_scripts(self) -> dict[str, list[dict]]:
         """Analyze all utility scripts and categorize findings."""
         utility_paths = [
             "ops_scripts",
@@ -111,7 +129,7 @@ class UtilityScriptAnalyzer:
 
         return True
 
-    def generate_remediation_plan(self, analysis: Dict[str, List[Dict]]) -> Dict:
+    def generate_remediation_plan(self, analysis: dict[str, list[dict]]) -> dict:
         """Generate prioritized remediation plan."""
         plan = {
             "priority_order": ["GOVERNANCE_CRITICAL", "DIAGNOSTIC_ONLY", "LOCAL_DEV_ONLY", "RUNTIME_CRITICAL"],
@@ -172,7 +190,7 @@ class UtilityScriptAnalyzer:
         }
         return descriptions.get(category, "Unknown category")
 
-    def print_report(self, analysis: Dict[str, List[Dict]], plan: Dict) -> None:
+    def print_report(self, analysis: dict[str, list[dict]], plan: dict) -> None:
         """Print comprehensive analysis report."""
         print("=" * 80)
         print("UTILITY SCRIPT SILENT SWALLOWER ANALYSIS")
@@ -207,7 +225,7 @@ class UtilityScriptAnalyzer:
             print(f"     Violations to resolve: {step['violations_to_resolve']}")
 
             if step["files"]:
-                print(f"     Top issues:")
+                print("     Top issues:")
                 for file_info in step["files"][:5]:
                     print(f"       - {file_info['file']} ({file_info['violations']} violations)")
             print()

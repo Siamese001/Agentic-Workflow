@@ -6,12 +6,29 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_LIC_DIR,
     APPS_RG_DIR,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from apps_shared.config.integration_config import (
     LIC_CONFIG,
     RG_CONFIG,
     IntegrationConfig,
     get_domain_config,
 )
+
+_emit_records_execution_trace("p0", "evidence", "test_integration_config")
+_emit_applies_guardrail("p0", "test_integration_config", "p0_governance")
+_emit_reads_policy_state("p0", "test_integration_config", "policy_binding")
+_emit_snapshots_state("p0", "test_integration_config", "state_snapshot")
+emit_replay_key("p0", "test_integration_config")
+emit_determinism_digest("p0", "test_integration_config")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0

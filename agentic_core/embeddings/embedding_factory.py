@@ -18,7 +18,23 @@ from typing import Any, Literal, Protocol, runtime_checkable
 from agentic_core.replay.replay_envelope import create_deterministic_cache_key
 
 from agentic_core.embeddings.embedding_input_guard import GuardedText
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "embedding_factory", "p0_governance")
+_emit_reads_policy_state("p0", "embedding_factory", "policy_binding")
+_emit_snapshots_state("p0", "embedding_factory", "state_snapshot")
+emit_replay_key("p0", "embedding_factory")
+emit_determinism_digest("p0", "embedding_factory")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 logger = logging.getLogger(__name__)
 

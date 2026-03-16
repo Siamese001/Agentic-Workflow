@@ -20,6 +20,8 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
+from agentic_core.utils.security_util import safe_execute
+
 from agentic_core.L5_safety.config.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
@@ -30,7 +32,23 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.utils.security_util import safe_execute
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "smart_discovery_util")
+_emit_applies_guardrail("p0", "smart_discovery_util", "p0_governance")
+_emit_reads_policy_state("p0", "smart_discovery_util", "policy_binding")
+_emit_snapshots_state("p0", "smart_discovery_util", "state_snapshot")
+emit_replay_key("p0", "smart_discovery_util")
+emit_determinism_digest("p0", "smart_discovery_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DISCOVERY_JSON = PROJECT_ROOT / AGENT_DISCOVERY_JSON
@@ -41,6 +59,7 @@ STALENESS_THRESHOLD = timedelta(hours=1)
 
 # Shared exclude logic with discovery
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR  # noqa: E402
+
 EXCLUDED_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 

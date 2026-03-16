@@ -13,8 +13,23 @@ from unittest.mock import patch
 import pytest
 
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.snapshots.snapshot_factory import create_snapshot
 from system_learning.types.snapshot_types import MetaLearningSnapshot
+
+_emit_records_execution_trace("p0", "evidence", "test_snapshot_determinism")
+_emit_applies_guardrail("p0", "test_snapshot_determinism", "p0_governance")
+_emit_snapshots_state("p0", "test_snapshot_determinism", "state_snapshot")
+emit_replay_key("p0", "test_snapshot_determinism")
+emit_determinism_digest("p0", "test_snapshot_determinism")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0

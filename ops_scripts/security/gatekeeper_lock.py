@@ -20,8 +20,35 @@ import os
 import subprocess
 import sys
 from pathlib import Path
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from agentic_core.utils.ast_fuzzy_util import normalize_path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+_emit_records_execution_trace("p0", "evidence", "gatekeeper_lock")
+_emit_applies_guardrail("p0", "gatekeeper_lock", "p0_governance")
+_emit_reads_policy_state("p0", "gatekeeper_lock", "policy_binding")
+_emit_snapshots_state("p0", "gatekeeper_lock", "state_snapshot")
+emit_replay_key("p0", "gatekeeper_lock")
+emit_determinism_digest("p0", "gatekeeper_lock")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 PROTECTED_FILES = ['agentic_core/L5_safety/enforcement/ArchivalGatekeeper.py']
 OVERRIDE_TOKEN = '[SECURITY-OVERRIDE]'
 BYPASS_ENV_VAR = 'GATEKEEPER_BYPASS'

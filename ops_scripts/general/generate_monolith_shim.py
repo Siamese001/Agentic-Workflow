@@ -5,10 +5,39 @@ Scans all 197 importers to find exactly which names they import from
 structure_blueprint_config, then generates a shim that re-exports them.
 """
 from __future__ import annotations
+
 import ast
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+    get_validated_project_root,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "generate_monolith_shim")
+_emit_applies_guardrail("p0", "generate_monolith_shim", "p0_governance")
+_emit_reads_policy_state("p0", "generate_monolith_shim", "policy_binding")
+_emit_snapshots_state("p0", "generate_monolith_shim", "state_snapshot")
+emit_replay_key("p0", "generate_monolith_shim")
+emit_determinism_digest("p0", "generate_monolith_shim")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 ROOT = get_validated_project_root()
 MONOLITH = ROOT / AGENTIC_CORE_DIR / 'L5_safety' / 'config' / 'structure_blueprint_config.py'
 MOD_DIR = ROOT / AGENTIC_CORE_DIR / 'L5_safety' / 'config' / 'structure_blueprint'

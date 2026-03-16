@@ -14,6 +14,24 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "_graph_overlap_audit")
+_emit_applies_guardrail("p0", "_graph_overlap_audit", "p0_governance")
+_emit_reads_policy_state("p0", "_graph_overlap_audit", "policy_binding")
+_emit_snapshots_state("p0", "_graph_overlap_audit", "state_snapshot")
+emit_replay_key("p0", "_graph_overlap_audit")
+emit_determinism_digest("p0", "_graph_overlap_audit")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 if str(ROOT) not in sys.path:

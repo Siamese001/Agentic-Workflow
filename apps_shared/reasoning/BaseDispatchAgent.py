@@ -14,7 +14,23 @@ from typing import Any, NamedTuple
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "BaseDispatchAgent", "p0_governance")
+_emit_reads_policy_state("p0", "BaseDispatchAgent", "policy_binding")
+_emit_snapshots_state("p0", "BaseDispatchAgent", "state_snapshot")
+emit_replay_key("p0", "BaseDispatchAgent")
+emit_determinism_digest("p0", "BaseDispatchAgent")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 Logger = logging.getLogger(__name__)
 _DEFAULT_TIMEOUT_S = 30.0

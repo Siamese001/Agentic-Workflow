@@ -10,7 +10,24 @@ VIOLATION: NO MAGIC STRINGS. ALL PROMPTS/CONFIGS MUST BE ACCESSED VIA THIS REGIS
 """
 
 from pydantic import BaseModel, Field, field_validator
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "PromptTemplate", "p0_governance")
+_emit_reads_policy_state("p0", "PromptTemplate", "policy_binding")
+_emit_snapshots_state("p0", "PromptTemplate", "state_snapshot")
+emit_replay_key("p0", "PromptTemplate")
+emit_determinism_digest("p0", "PromptTemplate")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 
 class PromptTemplate(BaseModel):

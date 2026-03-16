@@ -40,8 +40,13 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_validated_by_safety_plane,
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
+
+emit_replay_key("p0", "ComplexityAnalyzerAgent")
+emit_determinism_digest("p0", "ComplexityAnalyzerAgent")
 
 _emit_dispatches_healing_run("p1", "ComplexityAnalyzerAgent", "L5")
 _emit_routes_through("p1", "ComplexityAnalyzerAgent", "L5")

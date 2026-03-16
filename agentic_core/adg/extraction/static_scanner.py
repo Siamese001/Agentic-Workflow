@@ -113,7 +113,22 @@ from agentic_core.L0_routing.config.path_constants import (
     TOOLS_DIR,
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "static_scanner", "p0_governance")
+_emit_snapshots_state("p0", "static_scanner", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
+emit_replay_key("p0", "static_scanner")
+emit_determinism_digest("p0", "static_scanner")
 
 logger = logging.getLogger(__name__)
 
@@ -4057,6 +4072,9 @@ import os
 from pathlib import Path
 from some.external.sdk import SomeProvider
 import uuid
+from agentic_core.runtime.lifecycle_trace_contract import emit_replay_key  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace  # noqa: E402
 
 class BaseClass:
     pass

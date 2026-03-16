@@ -4,9 +4,25 @@ Covers: context_management_mixin, cost_mixin, metrics_mixin, tracing_mixin.
 """
 from __future__ import annotations
 
-import time
-
 import pytest
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_focused_mixins_adg")
+_emit_applies_guardrail("p0", "test_focused_mixins_adg", "p0_governance")
+_emit_reads_policy_state("p0", "test_focused_mixins_adg", "policy_binding")
+_emit_snapshots_state("p0", "test_focused_mixins_adg", "state_snapshot")
+emit_replay_key("p0", "test_focused_mixins_adg")
+emit_determinism_digest("p0", "test_focused_mixins_adg")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 pytestmark = pytest.mark.unit
 
@@ -15,7 +31,6 @@ pytestmark = pytest.mark.unit
 # context_management_mixin
 # ---------------------------------------------------------------------------
 from agentic_core.mixins.context_management_mixin import (
-    ContextConfig,
     ContextItem,
     ContextManagementMixin,
     ContextPriority,
@@ -223,7 +238,6 @@ class TestTracingMixinInterface:
         assert hasattr(TracingMixin, "start_span")
 
     def test_instance_start_span_is_context_manager(self):
-        from contextlib import _GeneratorContextManager
         mixin = TracingMixin.__new__(TracingMixin)
         TracingMixin.__init__(mixin, service_name="test_service")
         with mixin.start_span("test_operation"):

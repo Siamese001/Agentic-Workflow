@@ -12,6 +12,23 @@ from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
     get_validated_project_root,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "generate_all_agent_tests_util")
+_emit_applies_guardrail("p0", "generate_all_agent_tests_util", "p0_governance")
+_emit_reads_policy_state("p0", "generate_all_agent_tests_util", "policy_binding")
+_emit_snapshots_state("p0", "generate_all_agent_tests_util", "state_snapshot")
+emit_replay_key("p0", "generate_all_agent_tests_util")
+emit_determinism_digest("p0", "generate_all_agent_tests_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 _ROOT = get_validated_project_root()
 

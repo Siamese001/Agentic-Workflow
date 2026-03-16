@@ -12,6 +12,24 @@ from __future__ import annotations
 import logging
 import sys
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "__main__")
+_emit_applies_guardrail("p0", "__main__", "p0_governance")
+_emit_reads_policy_state("p0", "__main__", "policy_binding")
+_emit_snapshots_state("p0", "__main__", "state_snapshot")
+emit_replay_key("p0", "__main__")
+emit_determinism_digest("p0", "__main__")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
@@ -42,9 +60,9 @@ def _adg_bootstrap() -> None:
 
 def main() -> None:
     _adg_bootstrap()
-    from apps_lic.tools.run_workflow_lic import main as _run
-
     import asyncio
+
+    from apps_lic.tools.run_workflow_lic import main as _run
 
     asyncio.run(_run())
 

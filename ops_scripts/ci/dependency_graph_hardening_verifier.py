@@ -11,6 +11,7 @@ Outputs:
     docs/reports/plans/ast_gap_verification_report.md
 """
 from __future__ import annotations
+
 import ast
 import json
 import sys
@@ -18,14 +19,46 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "dependency_graph_hardening_verifier")
+_emit_applies_guardrail("p0", "dependency_graph_hardening_verifier", "p0_governance")
+_emit_reads_policy_state("p0", "dependency_graph_hardening_verifier", "policy_binding")
+_emit_snapshots_state("p0", "dependency_graph_hardening_verifier", "state_snapshot")
+emit_replay_key("p0", "dependency_graph_hardening_verifier")
+emit_determinism_digest("p0", "dependency_graph_hardening_verifier")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 # guardian: allow-global-mutation
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
-from agentic_core.L5_safety.config.structure_blueprint.ssot import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.L5_safety.enforcement.dependency_graph_enforcer import DependencyGraph
 from agentic_core.L0_routing.config.path_constants import APPS_LIC_DIR, APPS_RG_DIR
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+from agentic_core.L5_safety.enforcement.dependency_graph_enforcer import DependencyGraph
+
 EXCLUDED_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 @dataclass
@@ -125,7 +158,7 @@ class HardeningVerifier:
         """Collect all Python files excluding standard exclusions."""
         files = []
         for py_file in self.project_root.rglob('*.py'):
-            if any((excluded in py_file.parts for excluded in EXCLUDED_DIRS)):
+            if any(excluded in py_file.parts for excluded in EXCLUDED_DIRS):
                 continue
             files.append(py_file)
         return files
@@ -144,7 +177,7 @@ class HardeningVerifier:
         gap = GapVerification(gap_id='HEAL-GAP-01', claim='load_agents() search_paths hardcoded to [agentic_core/] only - apps_rg/apps_lic agents never discovered')
         execute_ssot_path = 'agentic_core/L0_routing/scripts/execute_ssot.py'
         imports = self.dep_graph.get_imports(execute_ssot_path)
-        apps_imported = any((APPS_RG_DIR in imp or APPS_LIC_DIR in imp for imp in imports))
+        apps_imported = any(APPS_RG_DIR in imp or APPS_LIC_DIR in imp for imp in imports)
         if apps_imported:
             gap.status = 'DISPROVEN'
             gap.evidence.append(f'apps_rg/apps_lic ARE imported in {execute_ssot_path}')
@@ -253,8 +286,8 @@ class HardeningVerifier:
                     lines.append(f'- {r}')
                 lines.append('')
             lines.append('---\n')
-        confirmed = sum((1 for v in self.verifications if v.status == 'CONFIRMED'))
-        disproven = sum((1 for v in self.verifications if v.status == 'DISPROVEN'))
+        confirmed = sum(1 for v in self.verifications if v.status == 'CONFIRMED')
+        disproven = sum(1 for v in self.verifications if v.status == 'DISPROVEN')
         lines.extend(['## Conclusion', '', f'- **{confirmed}** gaps CONFIRMED by AST analysis', f'- **{disproven}** gaps DISPROVEN by AST analysis', '', '**Next Steps:**', '1. Implement fixes for all CONFIRMED gaps', '2. Update plan to remove DISPROVEN gap claims', '3. Re-run verification after implementation', ''])
         return '\n'.join(lines)
 

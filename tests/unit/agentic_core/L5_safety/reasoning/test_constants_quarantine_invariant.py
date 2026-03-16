@@ -16,6 +16,24 @@ from __future__ import annotations
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_constants_quarantine_invariant")
+_emit_applies_guardrail("p0", "test_constants_quarantine_invariant", "p0_governance")
+_emit_reads_policy_state("p0", "test_constants_quarantine_invariant", "policy_binding")
+_emit_snapshots_state("p0", "test_constants_quarantine_invariant", "state_snapshot")
+emit_replay_key("p0", "test_constants_quarantine_invariant")
+emit_determinism_digest("p0", "test_constants_quarantine_invariant")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -87,7 +105,6 @@ class TestConstantsQuarantineInvariant:
 
     def test_sovereign_territories_not_plain_dict(self):
         """SOVEREIGN_TERRITORIES must be immutable (MappingProxyType), not a plain dict."""
-        import builtins
 
         import types
         assert isinstance(get_all_territories(), types.MappingProxyType), (

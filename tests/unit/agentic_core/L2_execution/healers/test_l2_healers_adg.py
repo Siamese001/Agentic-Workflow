@@ -5,21 +5,38 @@ Covers: architecture_governor_healer, file_classification_healer,
 """
 from __future__ import annotations
 
-from pathlib import Path
-
 import pytest
 
-pytestmark = pytest.mark.unit
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 
-from agentic_core.L2_execution.types.heal_contract_types import HealCheckResult, HealStatus
+_emit_records_execution_trace("p0", "evidence", "test_l2_healers_adg")
+_emit_applies_guardrail("p0", "test_l2_healers_adg", "p0_governance")
+_emit_reads_policy_state("p0", "test_l2_healers_adg", "policy_binding")
+_emit_snapshots_state("p0", "test_l2_healers_adg", "state_snapshot")
+emit_replay_key("p0", "test_l2_healers_adg")
+emit_determinism_digest("p0", "test_l2_healers_adg")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
+pytestmark = pytest.mark.unit
 
 # ---------------------------------------------------------------------------
 # architecture_governor_healer
 # ---------------------------------------------------------------------------
 from agentic_core.L2_execution.healers.architecture_governor_healer import (
     CHECK_ID as ARCH_CHECK_ID,
+)
+from agentic_core.L2_execution.healers.architecture_governor_healer import (
     heal_architecture_governance,
 )
+from agentic_core.L2_execution.types.heal_contract_types import HealCheckResult, HealStatus
 
 
 class TestArchitectureGovernorHealer:
@@ -54,6 +71,8 @@ class TestArchitectureGovernorHealer:
 # ---------------------------------------------------------------------------
 from agentic_core.L2_execution.healers.file_classification_healer import (
     CHECK_ID as FILE_CLASS_CHECK_ID,
+)
+from agentic_core.L2_execution.healers.file_classification_healer import (
     heal_file_classification,
 )
 
@@ -89,6 +108,8 @@ class TestFileClassificationHealer:
 # ---------------------------------------------------------------------------
 from agentic_core.L2_execution.healers.filesystem_ssot_healer import (
     CHECK_ID as FS_CHECK_ID,
+)
+from agentic_core.L2_execution.healers.filesystem_ssot_healer import (
     heal_filesystem_ssot_drift,
 )
 
@@ -122,6 +143,8 @@ class TestFilesystemSSOTHealer:
 # ---------------------------------------------------------------------------
 from agentic_core.L2_execution.healers.gravity_leak_healer import (
     CHECK_ID as GRAVITY_CHECK_ID,
+)
+from agentic_core.L2_execution.healers.gravity_leak_healer import (
     heal_gravity_violations,
 )
 

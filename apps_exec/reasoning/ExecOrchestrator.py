@@ -21,6 +21,16 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from apps_exec.engines.brief_assembly_engine import BriefAssemblyEngine
 from apps_exec.engines.capability_extraction_engine import CapabilityExtractionEngine
 from apps_exec.engines.ingestion_engine import IngestionEngine
@@ -31,7 +41,13 @@ from apps_exec.types.exec_types import (
     RunSummary,
 )
 from apps_exec.validators.style_gate_validator import StyleGateValidator
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+_emit_applies_guardrail("p0", "ExecOrchestrator", "p0_governance")
+_emit_reads_policy_state("p0", "ExecOrchestrator", "policy_binding")
+_emit_snapshots_state("p0", "ExecOrchestrator", "state_snapshot")
+emit_replay_key("p0", "ExecOrchestrator")
+emit_determinism_digest("p0", "ExecOrchestrator")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 _log = logging.getLogger(__name__)
 

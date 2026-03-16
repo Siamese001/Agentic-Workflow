@@ -36,6 +36,7 @@ Exit codes:
 The script uses AST-only analysis — no test execution, no imports.
 """
 from __future__ import annotations
+
 import ast
 import hashlib
 import json
@@ -44,15 +45,43 @@ import textwrap
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal
-from agentic_core.L0_routing.config.path_constants import TESTS_DIR, get_validated_project_root
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    TESTS_DIR,
+    THRESHOLD,
+    get_validated_project_root,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "assess_phase_wave_tests")
+_emit_applies_guardrail("p0", "assess_phase_wave_tests", "p0_governance")
+_emit_reads_policy_state("p0", "assess_phase_wave_tests", "policy_binding")
+_emit_snapshots_state("p0", "assess_phase_wave_tests", "state_snapshot")
+emit_replay_key("p0", "assess_phase_wave_tests")
+emit_determinism_digest("p0", "assess_phase_wave_tests")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 REPO_ROOT = get_validated_project_root()
 TESTS_ROOT = REPO_ROOT / TESTS_DIR
 _PHASE_WAVE_TOKENS = ('phase', 'wave')
 
 def _is_phase_wave_file(path: Path) -> bool:
     name_lower = path.stem.lower()
-    return any((tok in name_lower for tok in _PHASE_WAVE_TOKENS))
+    return any(tok in name_lower for tok in _PHASE_WAVE_TOKENS)
 
 def _find_phase_wave_files() -> list[Path]:
     found = []
@@ -249,7 +278,7 @@ class _FingerprintVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def visit_Compare(self, node: ast.Compare) -> None:
-        ops = ':'.join((type(op).__name__ for op in node.ops))
+        ops = ':'.join(type(op).__name__ for op in node.ops)
         self.tokens.append(f'Compare:{ops}')
         self.generic_visit(node)
 
@@ -495,15 +524,15 @@ class FileVerdict:
 
     @property
     def structural_dup_count(self) -> int:
-        return sum((1 for r in self.func_duplicate_results if r.has_structural_duplicate))
+        return sum(1 for r in self.func_duplicate_results if r.has_structural_duplicate)
 
     @property
     def name_dup_count(self) -> int:
-        return sum((1 for r in self.func_duplicate_results if r.has_name_duplicate))
+        return sum(1 for r in self.func_duplicate_results if r.has_name_duplicate)
 
     @property
     def unique_func_count(self) -> int:
-        return sum((1 for r in self.func_duplicate_results if not r.is_duplicate))
+        return sum(1 for r in self.func_duplicate_results if not r.is_duplicate)
 
 def _assess_file(path: Path, idx: CorpusIndex) -> FileVerdict:
     rel = str(path.relative_to(REPO_ROOT)).replace('\\', '/')
@@ -540,11 +569,11 @@ def _format_dup_results(results: list[FuncDuplicateResult], max_per_func: int=2)
     for r in results:
         if r.has_structural_duplicate:
             matches = r.structural_matches[:max_per_func]
-            refs = '; '.join((f'{e.func_name}@{e.rel_path}' for e in matches))
+            refs = '; '.join(f'{e.func_name}@{e.rel_path}' for e in matches)
             parts.append(f'STRUCTURAL: {r.func_name} → {refs}')
         elif r.has_name_duplicate:
             matches = r.name_matches[:max_per_func]
-            refs = '; '.join((f'{e.func_name}@{e.rel_path}' for e in matches))
+            refs = '; '.join(f'{e.func_name}@{e.rel_path}' for e in matches)
             parts.append(f'NAME-MATCH: {r.func_name} → {refs}')
     return ' | '.join(parts) if parts else ''
 
@@ -645,7 +674,7 @@ _VERDICT_SYMBOL = {'DELETE': 'DELETE', 'RENAME': 'RENAME', 'KEEP-AS-IS': 'KEEP-A
 
 def _print_report(verdicts: list[FileVerdict], idx: CorpusIndex) -> None:
     verdicts_sorted = sorted(verdicts, key=lambda v: (_VERDICT_ORDER[v.verdict], v.rel_path))
-    counts = {k: sum((1 for v in verdicts if v.verdict == k)) for k in _VERDICT_ORDER}
+    counts = {k: sum(1 for v in verdicts if v.verdict == k) for k in _VERDICT_ORDER}
     W = 100
     print('=' * W)
     print('PHASE/WAVE TEST FILE ASSESSMENT — AST STRUCTURAL DUPLICATE REPORT')
@@ -680,13 +709,13 @@ def _print_report(verdicts: list[FileVerdict], idx: CorpusIndex) -> None:
                     for r in dup_funcs[:8]:
                         kind = 'STRUCT' if r.has_structural_duplicate else 'NAME'
                         matches = r.structural_matches or r.name_matches
-                        match_str = '; '.join((f'{e.func_name} @ {e.rel_path}' for e in matches[:2]))
+                        match_str = '; '.join(f'{e.func_name} @ {e.rel_path}' for e in matches[:2])
                         print(f'         [{kind}] {r.func_name}')
                         print(f'                  → {match_str}')
                     if len(dup_funcs) > 8:
                         print(f'         ... (+{len(dup_funcs) - 8} more)')
                 if unique_funcs:
-                    names = ', '.join((r.func_name for r in unique_funcs[:6]))
+                    names = ', '.join(r.func_name for r in unique_funcs[:6])
                     if len(unique_funcs) > 6:
                         names += f' (+{len(unique_funcs) - 6} more)'
                     print(f'  UNIQ : {names}')
@@ -696,9 +725,9 @@ def _print_report(verdicts: list[FileVerdict], idx: CorpusIndex) -> None:
     print('SPRAWL SUMMARY')
     print('=' * W)
     active = [v for v in verdicts if '_quarantine' not in v.rel_path]
-    total_funcs = sum((v.total_funcs for v in active))
-    total_struct_dups = sum((v.structural_dup_count for v in active))
-    total_unique = sum((v.unique_func_count for v in active))
+    total_funcs = sum(v.total_funcs for v in active)
+    total_struct_dups = sum(v.structural_dup_count for v in active)
+    total_unique = sum(v.unique_func_count for v in active)
     print(f'  Active phase/wave files  : {len(active)}')
     print(f'  Total test functions     : {total_funcs}')
     print(f'  Structural duplicates    : {total_struct_dups}')

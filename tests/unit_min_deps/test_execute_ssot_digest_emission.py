@@ -20,11 +20,29 @@ from contextlib import redirect_stdout
 from unittest.mock import patch
 
 import pytest
+
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
-    SYSTEM_LEARNING_DIR,
     APPS_LIC_DIR,
+    SYSTEM_LEARNING_DIR,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_execute_ssot_digest_emission")
+_emit_applies_guardrail("p0", "test_execute_ssot_digest_emission", "p0_governance")
+_emit_reads_policy_state("p0", "test_execute_ssot_digest_emission", "policy_binding")
+_emit_snapshots_state("p0", "test_execute_ssot_digest_emission", "state_snapshot")
+emit_replay_key("p0", "test_execute_ssot_digest_emission")
+emit_determinism_digest("p0", "test_execute_ssot_digest_emission")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 pytestmark = pytest.mark.unit_min_deps
 

@@ -17,6 +17,14 @@ from agentic_core.interfaces.determinism_types import (
     SemanticClockSnapshot,
     validate_semantic_clock,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.enforcement.determinism import (
     deterministic_json,
     stable_sha256_json,
@@ -25,6 +33,13 @@ from system_learning.types.meta_learning_types import (
     MetaLearningChangePackageArtifact,
     _canonical_payload_json,
 )
+
+_emit_records_execution_trace("p0", "evidence", "rollout_types")
+_emit_applies_guardrail("p0", "rollout_types", "p0_governance")
+_emit_snapshots_state("p0", "rollout_types", "state_snapshot")
+emit_replay_key("p0", "rollout_types")
+emit_determinism_digest("p0", "rollout_types")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # =============================================================================
 # §Wave7.0.12 — MetaLearningRolloutPlanArtifact

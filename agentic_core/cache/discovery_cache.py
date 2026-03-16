@@ -13,7 +13,23 @@ from typing import Any
 
 from agentic_core.cache.cache_key_builders import _require_hash_segment
 from agentic_core.cache.redis_cache_client import DeterministicRedisCache, get_hot_cache
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "discovery_cache", "p0_governance")
+_emit_reads_policy_state("p0", "discovery_cache", "policy_binding")
+_emit_snapshots_state("p0", "discovery_cache", "state_snapshot")
+emit_replay_key("p0", "discovery_cache")
+emit_determinism_digest("p0", "discovery_cache")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 logger = logging.getLogger(__name__)
 _DEFAULT_DISCOVERY_TTL = 3600 * 24

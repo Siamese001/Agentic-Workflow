@@ -17,6 +17,24 @@ from dataclasses import dataclass, field
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_memory_persistence_e2e")
+_emit_applies_guardrail("p0", "test_memory_persistence_e2e", "p0_governance")
+_emit_reads_policy_state("p0", "test_memory_persistence_e2e", "policy_binding")
+_emit_snapshots_state("p0", "test_memory_persistence_e2e", "state_snapshot")
+emit_replay_key("p0", "test_memory_persistence_e2e")
+emit_determinism_digest("p0", "test_memory_persistence_e2e")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 pytestmark = pytest.mark.integration
 
 
@@ -152,8 +170,8 @@ class TestFullPersistencePipeline:
 
         This proves durability: data is in SQLite, not RAM.
         """
-        from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
         from agentic_core.adg.adapters.memory_mcp_adapter import ADGMemoryAdapter
+        from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
 
         db = tmp_path / "kg_durable.sqlite"
         monkeypatch.setenv("MEMORY_DB", str(db))
@@ -191,7 +209,6 @@ class TestFullPersistencePipeline:
 class TestViolationPersistence:
     def test_violation_edges_written(self, memory_env):
         """Violation edges (GV_violates) must be persisted as ADGViolation entities."""
-        from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
 
         adapter, db = memory_env
 

@@ -6,11 +6,28 @@ Analyzes remaining violations using dependency graph to identify
 fixable patterns and their blast radius.
 """
 
-import ast
 import json
 import sys
 from collections import defaultdict
 from pathlib import Path
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "adg_antipattern_analyzer")
+_emit_applies_guardrail("p0", "adg_antipattern_analyzer", "p0_governance")
+_emit_reads_policy_state("p0", "adg_antipattern_analyzer", "policy_binding")
+_emit_snapshots_state("p0", "adg_antipattern_analyzer", "state_snapshot")
+emit_replay_key("p0", "adg_antipattern_analyzer")
+emit_determinism_digest("p0", "adg_antipattern_analyzer")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 # guardian: allow-global-mutation
@@ -23,7 +40,7 @@ def analyze_violations_by_category(baseline_path: Path) -> dict:
     """Analyze violations grouped by category with file clustering."""
     violations = defaultdict(lambda: defaultdict(list))
 
-    with open(baseline_path, 'r', encoding='utf-8') as f:
+    with open(baseline_path, encoding='utf-8') as f:
         for line in f:
             parts = line.strip().split(':')
             if len(parts) < 4:
@@ -47,7 +64,7 @@ def analyze_silent_swallowers(violations: dict, adg_path: Path) -> dict:
     swallowers = violations.get('silent_swallower', {})
 
     # Load ADG for dependency analysis
-    with open(adg_path, 'r', encoding='utf-8') as f:
+    with open(adg_path, encoding='utf-8') as f:
         adg = json.load(f)
 
     # Categorize by pattern
@@ -152,7 +169,7 @@ def main():
     swallow_analysis = analyze_silent_swallowers(violations, adg_path)
     print(f"  Total violations: {swallow_analysis['total']}")
     print(f"  Affected files: {swallow_analysis['files']}")
-    print(f"  Patterns:")
+    print("  Patterns:")
     for pattern, count in swallow_analysis['patterns'].items():
         print(f"    - {pattern}: {count}")
 
@@ -161,7 +178,7 @@ def main():
     path_analysis = analyze_path_fragility(violations)
     print(f"  Total violations: {path_analysis['total']}")
     print(f"  Affected files: {path_analysis['files']}")
-    print(f"  Patterns:")
+    print("  Patterns:")
     for pattern, count in path_analysis['patterns'].items():
         print(f"    - {pattern}: {count}")
 
@@ -170,7 +187,7 @@ def main():
     mutation_analysis = analyze_global_mutation(violations)
     print(f"  Total violations: {mutation_analysis['total']}")
     print(f"  Affected files: {mutation_analysis['files']}")
-    print(f"  Patterns:")
+    print("  Patterns:")
     for pattern, count in mutation_analysis['patterns'].items():
         print(f"    - {pattern}: {count}")
 

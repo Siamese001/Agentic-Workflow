@@ -2,12 +2,29 @@
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
 from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
 from system_learning.engines.in_memory_healing_outcome_intake_store import (
     InMemoryHealingOutcomeIntakeStore,
 )
 from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+
+_emit_records_execution_trace("p0", "evidence", "test_adapter_get_recent_records")
+_emit_applies_guardrail("p0", "test_adapter_get_recent_records", "p0_governance")
+_emit_reads_policy_state("p0", "test_adapter_get_recent_records", "policy_binding")
+_emit_snapshots_state("p0", "test_adapter_get_recent_records", "state_snapshot")
+emit_replay_key("p0", "test_adapter_get_recent_records")
+emit_determinism_digest("p0", "test_adapter_get_recent_records")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 
 def _make_adapter():

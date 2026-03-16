@@ -13,7 +13,23 @@ COGNITIVE HARDENING (Feb 2026):
 import logging
 from typing import Any, Final
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "golden_context_mixin", "p0_governance")
+_emit_reads_policy_state("p0", "golden_context_mixin", "policy_binding")
+_emit_snapshots_state("p0", "golden_context_mixin", "state_snapshot")
+emit_replay_key("p0", "golden_context_mixin")
+emit_determinism_digest("p0", "golden_context_mixin")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 logger = logging.getLogger(__name__)
 GOLDEN_CONTEXT_SUMMARY: Final[str] = (

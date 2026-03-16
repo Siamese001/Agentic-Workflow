@@ -14,6 +14,23 @@ from agentic_core.L5_safety.validators.structure_drift_validator import (
     generate_structure_manifest,
     load_manifest,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "structure_drift_validator")
+_emit_applies_guardrail("p0", "structure_drift_validator", "p0_governance")
+_emit_reads_policy_state("p0", "structure_drift_validator", "policy_binding")
+_emit_snapshots_state("p0", "structure_drift_validator", "state_snapshot")
+emit_replay_key("p0", "structure_drift_validator")
+emit_determinism_digest("p0", "structure_drift_validator")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 
 def validate_structure_drift(golden_manifest_path: Path) -> bool:

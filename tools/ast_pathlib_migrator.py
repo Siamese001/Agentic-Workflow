@@ -15,7 +15,24 @@ Patterns to fix:
 import ast
 import sys
 from pathlib import Path
-from typing import Optional
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "ast_pathlib_migrator")
+_emit_applies_guardrail("p0", "ast_pathlib_migrator", "p0_governance")
+_emit_reads_policy_state("p0", "ast_pathlib_migrator", "policy_binding")
+_emit_snapshots_state("p0", "ast_pathlib_migrator", "state_snapshot")
+emit_replay_key("p0", "ast_pathlib_migrator")
+emit_determinism_digest("p0", "ast_pathlib_migrator")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 # guardian: allow-global-mutation
@@ -228,7 +245,7 @@ def main():
 
     # Load files with path_fragility violations
     violations = []
-    with open(baseline_file, 'r', encoding='utf-8') as f:
+    with open(baseline_file, encoding='utf-8') as f:
         for line in f:
             if 'path_fragility' in line:
                 file_path = line.split(':')[0]

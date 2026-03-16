@@ -10,18 +10,32 @@ Does NOT require any live MCP server — validates:
 6. All dispatch target function names follow mcp<N>_* naming convention
 """
 
-import ast
 import re
 import sys
 from pathlib import Path
 
-import pytest
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_mcp_dispatch_schema")
+_emit_applies_guardrail("p0", "test_mcp_dispatch_schema", "p0_governance")
+_emit_reads_policy_state("p0", "test_mcp_dispatch_schema", "policy_binding")
+_emit_snapshots_state("p0", "test_mcp_dispatch_schema", "state_snapshot")
+emit_replay_key("p0", "test_mcp_dispatch_schema")
+emit_determinism_digest("p0", "test_mcp_dispatch_schema")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 from agentic_core.L3_orchestration.reasoning.mcp_manager import _TOOL_DISPATCH, _resolve_tool  # noqa: E402
-
 
 # ---------------------------------------------------------------------------
 # 1. _TOOL_DISPATCH correctness
@@ -226,6 +240,6 @@ class TestNoWrongSchemaAnywhere:
             except Exception:
                 continue
         assert not bad_files, (
-            f"Wrong-schema sequential_thinking call sites found:\n"
+            "Wrong-schema sequential_thinking call sites found:\n"
             + "\n".join(f"  {f}" for f in bad_files)
         )

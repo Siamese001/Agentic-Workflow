@@ -26,12 +26,38 @@ Branch inventory:
     - negative: no component row should show "missing file"
 """
 from __future__ import annotations
-from agentic_core.L5_safety.enforcement.import_guard import get_import_guard
+
 import ast
 import sys
 from pathlib import Path
+
 import pytest
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, L0_ROUTING_DIR, L2_EXECUTION_DIR, SYSTEM_LEARNING_DIR, TOOLS_DIR
+
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+    L2_EXECUTION_DIR,
+    SYSTEM_LEARNING_DIR,
+    TOOLS_DIR,
+)
+from agentic_core.L5_safety.enforcement.import_guard import get_import_guard
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_wave1_phase1_parse_failures_and_ssot_paths")
+_emit_applies_guardrail("p0", "test_wave1_phase1_parse_failures_and_ssot_paths", "p0_governance")
+_emit_reads_policy_state("p0", "test_wave1_phase1_parse_failures_and_ssot_paths", "policy_binding")
+_emit_snapshots_state("p0", "test_wave1_phase1_parse_failures_and_ssot_paths", "state_snapshot")
+emit_replay_key("p0", "test_wave1_phase1_parse_failures_and_ssot_paths")
+emit_determinism_digest("p0", "test_wave1_phase1_parse_failures_and_ssot_paths")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 REPO_ROOT = Path(__file__).resolve().parents[2]
 AGENTIC_CORE = REPO_ROOT / AGENTIC_CORE_DIR
 PARSE_FAILURE_FILES = [AGENTIC_CORE / L0_ROUTING_DIR / 'reasoning' / 'SSOTFolderCleanupAgent.py', AGENTIC_CORE / L0_ROUTING_DIR / 'scripts' / 'forensic_discovery_prep.py', AGENTIC_CORE / L0_ROUTING_DIR / 'scripts' / 'run_guardian_hierarchy_compliance.py']
@@ -183,7 +209,7 @@ def test_analyzer_reports_no_missing_component_files():
     analyzer = analyzer_mod.SemanticGapAnalyzer()
     gaps = analyzer.analyze_architecture_component_presence()
     missing_gaps = [g for g in gaps if 'missing' in g.reality.lower() and 'missing file' in g.reality.lower()]
-    assert not missing_gaps, 'Analyzer still reports missing SSOT component files:\n' + '\n'.join((f'  {g.gap_id}: {g.reality}' for g in missing_gaps))
+    assert not missing_gaps, 'Analyzer still reports missing SSOT component files:\n' + '\n'.join(f'  {g.gap_id}: {g.reality}' for g in missing_gaps)
 
 @pytest.mark.architecture
 def test_analyzer_write_gateway_finding_shows_present():
@@ -221,7 +247,7 @@ def test_analyzer_no_component_finding_shows_missing_file():
     analyzer = analyzer_mod.SemanticGapAnalyzer()
     analyzer.analyze_architecture_component_presence()
     bad = [f for f in analyzer.architecture_component_findings if f['signals_present'] == 'missing file']
-    assert not bad, "Components still report 'missing file':\n" + '\n'.join((f"  {f['component']}: {f['file']}" for f in bad))
+    assert not bad, "Components still report 'missing file':\n" + '\n'.join(f"  {f['component']}: {f['file']}" for f in bad)
 
 @pytest.mark.architecture
 def test_ast_parse_ok_returns_true_for_valid_source():

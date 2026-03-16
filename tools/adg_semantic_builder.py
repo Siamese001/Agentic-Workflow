@@ -22,13 +22,30 @@ import ast
 import hashlib
 import json
 import logging
-import re
 import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "adg_semantic_builder")
+_emit_applies_guardrail("p0", "adg_semantic_builder", "p0_governance")
+_emit_reads_policy_state("p0", "adg_semantic_builder", "policy_binding")
+_emit_snapshots_state("p0", "adg_semantic_builder", "state_snapshot")
+emit_replay_key("p0", "adg_semantic_builder")
+emit_determinism_digest("p0", "adg_semantic_builder")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # guardian: allow-global_mutation
 _REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -640,15 +657,15 @@ def main() -> int:
     print(f"  FixtureNodes:      {sem_graph['counts']['fixtures']}")
     print(f"  ParametrizedTests: {sem_graph['counts']['parametrized']}")
     print(f"  Total edges:       {sem_graph['counts']['total_edges']}")
-    print(f"\n=== TEST SURFACE MAP ===")
+    print("\n=== TEST SURFACE MAP ===")
     print(f"  Symbols covered:   {surface_map['covered_symbol_count']}")
     print(f"  Modules covered:   {surface_map['covered_module_count']}")
-    print(f"\n=== TOP 10 RISK CLUSTERS ===")
+    print("\n=== TOP 10 RISK CLUSTERS ===")
     for c in clusters["top_clusters"][:10]:
         print(f"  {c['module']:<70} tests={c['test_surface_size']:>4}  risk={c['risk_score']:>6}")
-    print(f"\n=== VALIDATION ===")
+    print("\n=== VALIDATION ===")
     print(f"  passed={validation['validation_passed']}")
-    print(f"\nArtifacts written:")
+    print("\nArtifacts written:")
     print(f"  {val_path}")
     print(f"  {sem_path}")
     print(f"  {surf_path}")

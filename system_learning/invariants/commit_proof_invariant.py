@@ -18,7 +18,23 @@ import hashlib
 import re
 from dataclasses import dataclass
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "commit_proof_invariant", "p0_governance")
+_emit_reads_policy_state("p0", "commit_proof_invariant", "policy_binding")
+_emit_snapshots_state("p0", "commit_proof_invariant", "state_snapshot")
+emit_replay_key("p0", "commit_proof_invariant")
+emit_determinism_digest("p0", "commit_proof_invariant")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 _HEX_RE = re.compile("^[0-9a-f]+$")
 _EMPTY_CONTENT_HASH = hashlib.sha256(b"").hexdigest()

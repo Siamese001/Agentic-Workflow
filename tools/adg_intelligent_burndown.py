@@ -20,6 +20,24 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "adg_intelligent_burndown")
+_emit_applies_guardrail("p0", "adg_intelligent_burndown", "p0_governance")
+_emit_reads_policy_state("p0", "adg_intelligent_burndown", "policy_binding")
+_emit_snapshots_state("p0", "adg_intelligent_burndown", "state_snapshot")
+emit_replay_key("p0", "adg_intelligent_burndown")
+emit_determinism_digest("p0", "adg_intelligent_burndown")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 # guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -37,7 +55,7 @@ class IntelligentThresholdFixer:
 
         # Load ADG
         print("[INFO] Loading ADG dependency graph...")
-        with open(adg_path, 'r', encoding='utf-8') as f:
+        with open(adg_path, encoding='utf-8') as f:
             self.adg = json.load(f)
 
         # Build import graph
@@ -73,7 +91,7 @@ class IntelligentThresholdFixer:
         """Load violations from baseline, grouped by file."""
         violations = defaultdict(list)
 
-        with open(self.baseline_path, 'r', encoding='utf-8') as f:
+        with open(self.baseline_path, encoding='utf-8') as f:
             for line in f:
                 if 'threshold=0.95' not in line:
                     continue
@@ -182,7 +200,7 @@ class IntelligentThresholdFixer:
             reverse=True
         )[:20]
 
-        print(f"\nTop 20 files by violation count:")
+        print("\nTop 20 files by violation count:")
         for file_path, lines in sorted_files:
             analysis = self.analyze_file_dependencies(file_path)
             status = "✓ imports path_constants" if analysis['imports_path_constants'] else "✗ no import"
@@ -199,13 +217,13 @@ class IntelligentThresholdFixer:
             else:
                 needs_import.append(file_path)
 
-        print(f"\n[SUMMARY]")
+        print("\n[SUMMARY]")
         print(f"  Files already importing from path_constants: {len(has_import)}")
         print(f"  Files needing new import: {len(needs_import)}")
         print(f"  Total files with violations: {len(self.violations)}")
 
         # Show dependency clusters
-        print(f"\n[DEPENDENCY CLUSTERS]")
+        print("\n[DEPENDENCY CLUSTERS]")
         layer_counts = defaultdict(int)
         for file_path in self.violations.keys():
             if '/' in file_path:

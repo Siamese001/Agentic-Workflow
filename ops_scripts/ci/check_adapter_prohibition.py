@@ -9,11 +9,40 @@ Exit code 0 = no violations.
 Exit code 1 = violations found.
 """
 from __future__ import annotations
+
 import ast
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+    get_validated_project_root,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "check_adapter_prohibition")
+_emit_applies_guardrail("p0", "check_adapter_prohibition", "p0_governance")
+_emit_reads_policy_state("p0", "check_adapter_prohibition", "policy_binding")
+_emit_snapshots_state("p0", "check_adapter_prohibition", "state_snapshot")
+emit_replay_key("p0", "check_adapter_prohibition")
+emit_determinism_digest("p0", "check_adapter_prohibition")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 _ROOT = get_validated_project_root()
 SCAN_ROOTS = [_ROOT / AGENTIC_CORE_DIR]
 EXCLUDED_PREFIXES = (ARCHIVES_DIR, 'archives/deprecated')
@@ -22,7 +51,7 @@ PROHIBITED_NAMES = frozenset({'AdapterBase', 'HealingAdapter', 'AdapterBaseAdapt
 
 def _is_excluded(path: Path) -> bool:
     parts = path.as_posix()
-    return any((parts.startswith(prefix) for prefix in EXCLUDED_PREFIXES))
+    return any(parts.startswith(prefix) for prefix in EXCLUDED_PREFIXES)
 
 def scan_file(filepath: Path) -> list[str]:
     """Scan a single Python file for AdapterBase usage. Returns violation messages."""
@@ -45,7 +74,7 @@ def scan_file(filepath: Path) -> list[str]:
         elif isinstance(node, ast.Import):
             for alias in node.names:
                 name_parts = alias.name.split('.')
-                if any((part in PROHIBITED_NAMES for part in name_parts)):
+                if any(part in PROHIBITED_NAMES for part in name_parts):
                     violations.append(f"{filepath}:{node.lineno}: imports prohibited module '{alias.name}'")
         elif isinstance(node, ast.ClassDef):
             for base in node.bases:

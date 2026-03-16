@@ -15,6 +15,24 @@ import re
 from dataclasses import dataclass
 from typing import Protocol, runtime_checkable
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "llm_judge")
+_emit_applies_guardrail("p0", "llm_judge", "p0_governance")
+_emit_reads_policy_state("p0", "llm_judge", "policy_binding")
+_emit_snapshots_state("p0", "llm_judge", "state_snapshot")
+emit_replay_key("p0", "llm_judge")
+emit_determinism_digest("p0", "llm_judge")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 _RUBRIC = '\nYou are an expert evaluator for RAG (Retrieval-Augmented Generation) systems.\nScore the following on a scale of 1-5 (integers only):\n\n- faithfulness: Is every claim in the answer supported by the provided context?\n  1=completely unsupported, 5=every claim fully grounded.\n- answer_relevancy: Does the answer directly and completely address the query?\n  1=off-topic, 5=directly addresses every part.\n- context_precision: Is the retrieved context relevant to answering the query?\n  1=irrelevant, 5=all context highly relevant.\n- groundedness: Are the factual claims in the answer grounded in the context?\n  1=hallucinated, 5=fully grounded.\n\nProvide a short reasoning (≤2 sentences).\n\nRespond ONLY with valid JSON:\n{"faithfulness": <1-5>, "answer_relevancy": <1-5>,\n "context_precision": <1-5>, "groundedness": <1-5>,\n "reasoning": "<text>"}\n'
 
 

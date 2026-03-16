@@ -21,12 +21,29 @@ from __future__ import annotations
 import re
 import sys
 import textwrap
-import types
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 import yaml
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_ci_gap_enforcement")
+_emit_applies_guardrail("p0", "test_ci_gap_enforcement", "p0_governance")
+_emit_reads_policy_state("p0", "test_ci_gap_enforcement", "policy_binding")
+_emit_snapshots_state("p0", "test_ci_gap_enforcement", "state_snapshot")
+emit_replay_key("p0", "test_ci_gap_enforcement")
+emit_determinism_digest("p0", "test_ci_gap_enforcement")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
@@ -35,12 +52,13 @@ if str(ROOT) not in sys.path:
 # ---------------------------------------------------------------------------
 # Import subjects under test
 # ---------------------------------------------------------------------------
+from ops_scripts.ci.check_tooling_apps_boundary import ToolingAppsBoundaryChecker
 from ops_scripts.ci.guard_guardian_hitl import (
     _diff_adds_guardian_exemptions,
-    _get_staged_diff,
+)
+from ops_scripts.ci.guard_guardian_hitl import (
     main as hitl_main,
 )
-from ops_scripts.ci.check_tooling_apps_boundary import ToolingAppsBoundaryChecker
 
 WORKFLOWS = ROOT / ".github" / "workflows"
 PRE_COMMIT_CFG = ROOT / ".pre-commit-config.yaml"

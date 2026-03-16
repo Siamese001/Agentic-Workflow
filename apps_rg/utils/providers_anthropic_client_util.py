@@ -8,6 +8,17 @@ from __future__ import annotations
 import asyncio
 
 from agentic_core.L2_execution.providers import get_clock
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "providers_anthropic_client_util")
+_emit_reads_policy_state("p0", "providers_anthropic_client_util", "policy_binding")
+_emit_snapshots_state("p0", "providers_anthropic_client_util", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 
 def run_llm_anthropic(model: str, prompt: str, *, temperature: float, max_tokens: int, timeout_s: int) -> str:

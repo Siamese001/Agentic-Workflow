@@ -13,12 +13,41 @@ This ensures no CI script bypasses the SSOT active-set abstraction.
 Exit 0 = all governed, exit 1 = bypass detected.
 """
 from __future__ import annotations
+
 import ast
 import re
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import OPS_SCRIPTS_DIR, get_validated_project_root
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    OPS_SCRIPTS_DIR,
+    THRESHOLD,
+    get_validated_project_root,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "governance_coverage_check")
+_emit_applies_guardrail("p0", "governance_coverage_check", "p0_governance")
+_emit_reads_policy_state("p0", "governance_coverage_check", "policy_binding")
+_emit_snapshots_state("p0", "governance_coverage_check", "state_snapshot")
+emit_replay_key("p0", "governance_coverage_check")
+emit_determinism_digest("p0", "governance_coverage_check")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 _EXEMPT_SCRIPTS = frozenset({'__init__.py', 'active_set_helper.py', 'active_set_ssot_check.py', 'active_set_snapshot_check.py', 'gate_consistency_check.py', 'governance_coverage_check.py', 'mro_new_diamond_check.py'})
 _PROHIBITED_MODULES = frozenset({'ssot_discovery_util', 'full_agent_discovery'})
 _PROHIBITED_NAMES = frozenset({'load_agent_discovery', 'perform_deep_integrity_scan'})

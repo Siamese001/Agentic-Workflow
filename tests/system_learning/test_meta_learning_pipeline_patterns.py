@@ -13,6 +13,15 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
 from system_learning.engines.pattern_analysis_engine import (
     PatternAnalysisEngine,
@@ -21,6 +30,14 @@ from system_learning.engines.pattern_analysis_engine import (
 from system_learning.pipelines.meta_learning_pipeline import (
     _analyze_historical_patterns,
 )
+
+_emit_records_execution_trace("p0", "evidence", "test_meta_learning_pipeline_patterns")
+_emit_applies_guardrail("p0", "test_meta_learning_pipeline_patterns", "p0_governance")
+_emit_reads_policy_state("p0", "test_meta_learning_pipeline_patterns", "policy_binding")
+_emit_snapshots_state("p0", "test_meta_learning_pipeline_patterns", "state_snapshot")
+emit_replay_key("p0", "test_meta_learning_pipeline_patterns")
+emit_determinism_digest("p0", "test_meta_learning_pipeline_patterns")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 
 @pytest.mark.unit_min_deps

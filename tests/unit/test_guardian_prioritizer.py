@@ -17,12 +17,29 @@ from pathlib import Path
 import pytest
 
 from agentic_core.adg.applications.guardian_prioritizer import (
+    _GUARDIAN_ADG_SIGNALS,
     GuardianPrioritizer,
     PrioritizationResult,
-    _GUARDIAN_ADG_SIGNALS,
 )
 from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
 from agentic_core.adg.schema import canonical_name
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_guardian_prioritizer")
+_emit_applies_guardrail("p0", "test_guardian_prioritizer", "p0_governance")
+_emit_reads_policy_state("p0", "test_guardian_prioritizer", "policy_binding")
+_emit_snapshots_state("p0", "test_guardian_prioritizer", "state_snapshot")
+emit_replay_key("p0", "test_guardian_prioritizer")
+emit_determinism_digest("p0", "test_guardian_prioritizer")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -271,9 +288,8 @@ class TestEmbeddingViolationsFilterBySymbol:
     def test_non_embedding_symbol_on_instantiates_not_recorded(self) -> None:
         """A non-EMBEDDING_SYMBOLS symbol with edge_kind=embedding should NOT be in violations (bug was: no filter)."""
         from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
-        from agentic_core.adg.schema import EMBEDDING_SYMBOLS
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema import EMBEDDING_SYMBOLS, canonical_name
 
         # Pick a symbol definitively NOT in EMBEDDING_SYMBOLS
         non_emb_sym = "SomeRandomFactory"

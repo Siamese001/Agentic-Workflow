@@ -35,7 +35,12 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,
     _emit_snapshots_state,
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
+
+emit_replay_key("p0", "domain_manager")
+emit_determinism_digest("p0", "domain_manager")
 
 _emit_dispatches_healing_run("p1", "domain_manager", "L1")
 _emit_routes_through("p1", "domain_manager", "L1")

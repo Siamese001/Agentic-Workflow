@@ -31,7 +31,22 @@ from __future__ import annotations
 import hashlib
 from dataclasses import dataclass
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.enforcement.determinism import deterministic_json
+
+_emit_records_execution_trace("p0", "evidence", "prompt_artifact_types")
+_emit_applies_guardrail("p0", "prompt_artifact_types", "p0_governance")
+_emit_snapshots_state("p0", "prompt_artifact_types", "state_snapshot")
+emit_replay_key("p0", "prompt_artifact_types")
+emit_determinism_digest("p0", "prompt_artifact_types")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # ---------------------------------------------------------------------------
 # Outcome class literals (shared with trace_feature_types)
@@ -717,9 +732,9 @@ class PromptDriftSignal:
                 f"got {self.adg_relation!r}"
             )
         if self.baseline_window_size < 0:
-            raise ValueError(f"baseline_window_size must be >= 0")
+            raise ValueError("baseline_window_size must be >= 0")
         if self.current_window_size < 1:
-            raise ValueError(f"current_window_size must be >= 1")
+            raise ValueError("current_window_size must be >= 1")
         if self.affected_slot is not None and self.affected_slot not in _VALID_FAILURE_SLOTS:
             raise ValueError(
                 f"affected_slot must be one of {sorted(_VALID_FAILURE_SLOTS)} or None"

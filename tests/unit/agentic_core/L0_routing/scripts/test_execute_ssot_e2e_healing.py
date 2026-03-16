@@ -58,6 +58,23 @@ import pytest
 import system_learning.adapters.system_learning_memory_bridge as _sl_bridge_mod  # noqa: F401
 from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
 from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_execute_ssot_e2e_healing")
+_emit_applies_guardrail("p0", "test_execute_ssot_e2e_healing", "p0_governance")
+_emit_reads_policy_state("p0", "test_execute_ssot_e2e_healing", "policy_binding")
+_emit_snapshots_state("p0", "test_execute_ssot_e2e_healing", "state_snapshot")
+emit_replay_key("p0", "test_execute_ssot_e2e_healing")
+emit_determinism_digest("p0", "test_execute_ssot_e2e_healing")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 _SL_BRIDGE_PATCH = "system_learning.adapters.system_learning_memory_bridge.get_sl_memory_bridge"
 

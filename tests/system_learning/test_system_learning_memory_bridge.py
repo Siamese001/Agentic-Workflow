@@ -19,12 +19,27 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from unittest.mock import MagicMock, patch
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.adapters.system_learning_memory_bridge import (
     SystemLearningMemoryBridge,
     get_sl_memory_bridge,
 )
 from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
 from system_learning.engines.rca_engine import analyze_failures, analyze_failures_and_persist
+
+_emit_records_execution_trace("p0", "evidence", "test_system_learning_memory_bridge")
+_emit_applies_guardrail("p0", "test_system_learning_memory_bridge", "p0_governance")
+_emit_snapshots_state("p0", "test_system_learning_memory_bridge", "state_snapshot")
+emit_replay_key("p0", "test_system_learning_memory_bridge")
+emit_determinism_digest("p0", "test_system_learning_memory_bridge")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # ---------------------------------------------------------------------------
 # Helper stubs

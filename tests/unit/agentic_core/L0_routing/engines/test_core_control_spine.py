@@ -36,6 +36,21 @@ from agentic_core.L0_routing.types.routing_artifact_types import (
     RoutePath,
     RoutingRationale,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_core_control_spine")
+_emit_applies_guardrail("p0", "test_core_control_spine", "p0_governance")
+_emit_snapshots_state("p0", "test_core_control_spine", "state_snapshot")
+emit_replay_key("p0", "test_core_control_spine")
+emit_determinism_digest("p0", "test_core_control_spine")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # ---------------------------------------------------------------------------
 # Helpers

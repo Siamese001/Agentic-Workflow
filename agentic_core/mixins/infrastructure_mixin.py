@@ -68,7 +68,23 @@ from agentic_core.mixins.performance_mixin import PerformanceMixin
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.mixins.tool_reliability_mixin import ToolReliabilityMixin
 from agentic_core.mixins.tracing_mixin import TracingMixin
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "infrastructure_mixin", "p0_governance")
+_emit_reads_policy_state("p0", "infrastructure_mixin", "policy_binding")
+_emit_snapshots_state("p0", "infrastructure_mixin", "state_snapshot")
+emit_replay_key("p0", "infrastructure_mixin")
+emit_determinism_digest("p0", "infrastructure_mixin")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 Logger = logging.getLogger(__name__)
 

@@ -16,7 +16,12 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
+
+emit_replay_key("p0", "check_duplicate_filenames_util")
+emit_determinism_digest("p0", "check_duplicate_filenames_util")
 
 _emit_dispatches_healing_run("p1", "check_duplicate_filenames_util", "L0")
 _emit_routes_through("p1", "check_duplicate_filenames_util", "L0")

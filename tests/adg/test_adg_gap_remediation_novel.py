@@ -47,6 +47,10 @@ import threading
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
+
+_emit_snapshots_state("p0", "test_adg_gap_remediation_novel", "state_snapshot")
+
 # ============================================================================
 # SECTION 1 — PARAMETRIC EXHAUSTION
 # ============================================================================

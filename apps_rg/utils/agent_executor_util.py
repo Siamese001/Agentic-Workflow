@@ -14,7 +14,17 @@ from apps_shared.utils.observability_clients import create_span, record_exceptio
 from apps_shared.utils.Provider import Provider, get_client, get_instructor_client, get_litellm_completion
 
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_reads_policy_state("p0", "agent_executor_util", "policy_binding")
+_emit_snapshots_state("p0", "agent_executor_util", "state_snapshot")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 logger = logging.getLogger(__name__)
 

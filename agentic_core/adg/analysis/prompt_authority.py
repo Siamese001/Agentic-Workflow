@@ -38,6 +38,23 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Literal
 
 from agentic_core.adg.schema import PROMPT_SLOT_AUTHORITY, PROMPT_SLOT_TYPES
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "prompt_authority")
+_emit_applies_guardrail("p0", "prompt_authority", "p0_governance")
+_emit_reads_policy_state("p0", "prompt_authority", "policy_binding")
+_emit_snapshots_state("p0", "prompt_authority", "state_snapshot")
+emit_replay_key("p0", "prompt_authority")
+emit_determinism_digest("p0", "prompt_authority")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult

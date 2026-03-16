@@ -10,10 +10,38 @@ Verifies internal consistency across all CI gate artifacts:
 Exit 0 = all consistent, exit 1 = mismatch found.
 """
 from __future__ import annotations
+
 import json
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "gate_consistency_check")
+_emit_applies_guardrail("p0", "gate_consistency_check", "p0_governance")
+_emit_reads_policy_state("p0", "gate_consistency_check", "policy_binding")
+_emit_snapshots_state("p0", "gate_consistency_check", "state_snapshot")
+emit_replay_key("p0", "gate_consistency_check")
+emit_determinism_digest("p0", "gate_consistency_check")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 MRO_BASELINE_PATH = 'artifacts/consolidation/mro_diamond_baseline.json'
 SNAPSHOT_PATH = 'artifacts/consolidation/active_set_snapshot.json'
 CENTRALITY_BASELINE_PATH = 'artifacts/consolidation/centrality_baseline.json'

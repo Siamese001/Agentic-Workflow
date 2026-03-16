@@ -14,9 +14,29 @@ import re
 import subprocess
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import TESTS_DIR, get_validated_project_root
+
+from agentic_core.L0_routing.config.path_constants import (
+    TESTS_DIR,
+    get_validated_project_root,
+)
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "qwen_migration_phase6_evidence_runner")
+_emit_applies_guardrail("p0", "qwen_migration_phase6_evidence_runner", "p0_governance")
+_emit_reads_policy_state("p0", "qwen_migration_phase6_evidence_runner", "policy_binding")
+_emit_snapshots_state("p0", "qwen_migration_phase6_evidence_runner", "state_snapshot")
+emit_replay_key("p0", "qwen_migration_phase6_evidence_runner")
+emit_determinism_digest("p0", "qwen_migration_phase6_evidence_runner")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 _ROOT = get_validated_project_root()
 
 def run(argv):
@@ -124,10 +144,24 @@ def execute_proofs():
     """Execute PASS/FAIL/NEGATIVE CONTROL proofs with assertions."""
     from dataclasses import dataclass
     from unittest.mock import patch
-    from agentic_core.L2_execution.types.vllm_gateway_adapter_types import VLLMGatewayAdapter, reset_singletons
-    from agentic_core.L2_execution.types.vllm_gateway_integration_types import VLLMCircuitBreakerRegistry, VLLMGatewayCallResult, VLLMQueueController
-    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import VLLMInfrastructureFingerprint
-    from agentic_core.L2_execution.types.vllm_invariant_contract_types import InvariantId, InvariantSeverity, InvariantViolation
+
+    from agentic_core.L2_execution.types.vllm_gateway_adapter_types import (
+        VLLMGatewayAdapter,
+        reset_singletons,
+    )
+    from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
+        VLLMCircuitBreakerRegistry,
+        VLLMGatewayCallResult,
+        VLLMQueueController,
+    )
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
+        VLLMInfrastructureFingerprint,
+    )
+    from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
+        InvariantId,
+        InvariantSeverity,
+        InvariantViolation,
+    )
     from agentic_core.L2_execution.types.vllm_replay_validator_types import compute_replay_hash
 
     @dataclass
@@ -208,7 +242,10 @@ def execute_proofs():
 
     def canonical_response_hash_no_violations(result):
         """Test-only seam: canonical_response_hash without violations."""
-        from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import canonical_json, sha256_hex
+        from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
+            canonical_json,
+            sha256_hex,
+        )
         telemetry_dict = result.telemetry.as_dict()
         return sha256_hex(canonical_json(telemetry_dict))
     with patch('agentic_core.L2_execution.types.vllm_replay_validator_types.canonical_response_hash', canonical_response_hash_no_violations):

@@ -9,6 +9,23 @@ from agentic_core.L5_safety.static_checks.system_invariant_scanner import (
     SystemInvariantScanner,
     scan_repository_for_bypasses,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "check_scanner_violations")
+_emit_applies_guardrail("p0", "check_scanner_violations", "p0_governance")
+_emit_reads_policy_state("p0", "check_scanner_violations", "policy_binding")
+_emit_snapshots_state("p0", "check_scanner_violations", "state_snapshot")
+emit_replay_key("p0", "check_scanner_violations")
+emit_determinism_digest("p0", "check_scanner_violations")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # Test 1: gateway bypass code
 code = (

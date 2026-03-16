@@ -37,6 +37,20 @@ Design invariants
 
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "meta_learning_bus", "p0_governance")
+_emit_snapshots_state("p0", "meta_learning_bus", "state_snapshot")
+emit_replay_key("p0", "meta_learning_bus")
+emit_determinism_digest("p0", "meta_learning_bus")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 # Configuration constants
 DEFAULT_COMMIT_REWARD_THRESHOLD = 0.60
 

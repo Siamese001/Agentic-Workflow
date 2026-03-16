@@ -23,6 +23,22 @@ import argparse
 import sys
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "cli")
+_emit_applies_guardrail("p0", "cli", "p0_governance")
+_emit_snapshots_state("p0", "cli", "state_snapshot")
+emit_replay_key("p0", "cli")
+emit_determinism_digest("p0", "cli")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 
 def _cmd_scan(args: argparse.Namespace) -> int:
     import json
@@ -143,6 +159,7 @@ def _cmd_refactor(args: argparse.Namespace) -> int:
 
     if getattr(args, "analyze", None):
         from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
+
         from agentic_core.adg.analysis.hotspot_index import HotspotIndex
         from agentic_core.adg.analysis.test_gap import detect_test_gaps
         from agentic_core.adg.applications.placement_advisor import PlacementAdvisor
@@ -231,6 +248,7 @@ def _cmd_coupling(args: argparse.Namespace) -> int:
     import json
 
     from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
+
     from agentic_core.adg.runtime.cache_loader import load_or_scan
 
     repo_root = Path(args.repo_root)
@@ -394,7 +412,7 @@ def _cmd_policy_hash(args: argparse.Namespace) -> int:
 
 def _cmd_build_artifacts(args: argparse.Namespace) -> int:
     import json
-    from datetime import datetime, timezone, timedelta
+    from datetime import datetime, timedelta, timezone
 
     from agentic_core.adg.artifact.builder import build_artifact
     from agentic_core.adg.artifact.multi_writer import write_all_artifacts

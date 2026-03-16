@@ -7,13 +7,42 @@ import logging
 import sys
 from datetime import datetime
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+    get_validated_project_root,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "run_file_classification_heal_agentic_core")
+_emit_applies_guardrail("p0", "run_file_classification_heal_agentic_core", "p0_governance")
+_emit_reads_policy_state("p0", "run_file_classification_heal_agentic_core", "policy_binding")
+_emit_snapshots_state("p0", "run_file_classification_heal_agentic_core", "state_snapshot")
+emit_replay_key("p0", "run_file_classification_heal_agentic_core")
+emit_determinism_digest("p0", "run_file_classification_heal_agentic_core")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 project_root = get_validated_project_root()
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
-from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
 from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
+from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
+
 
 def run_healing_with_detailed_report():
     """Run FileClassificationAgent healing and generate detailed JSON report."""

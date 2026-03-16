@@ -11,10 +11,38 @@ Exit 0 = pass, exit 1 = violations found.
 Hardening V2 — Outcome A.
 """
 from __future__ import annotations
+
 import ast
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "discovery_registry_consistency_check")
+_emit_applies_guardrail("p0", "discovery_registry_consistency_check", "p0_governance")
+_emit_reads_policy_state("p0", "discovery_registry_consistency_check", "policy_binding")
+_emit_snapshots_state("p0", "discovery_registry_consistency_check", "state_snapshot")
+emit_replay_key("p0", "discovery_registry_consistency_check")
+emit_determinism_digest("p0", "discovery_registry_consistency_check")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 SCAN_ROOTS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 
 def _ast_classes_in_file(filepath: Path) -> set[str]:

@@ -22,6 +22,20 @@ Design invariants
 
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "prompt_provenance_builder", "p0_governance")
+_emit_snapshots_state("p0", "prompt_provenance_builder", "state_snapshot")
+emit_replay_key("p0", "prompt_provenance_builder")
+emit_determinism_digest("p0", "prompt_provenance_builder")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 # Configuration constants
 TOKEN_APPROXIMATION_RATIO = 4  # 1 token ≈ 4 chars
 

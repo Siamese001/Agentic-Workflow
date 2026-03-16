@@ -72,7 +72,12 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_escalates_to_human,  # noqa: E402
     _emit_reads_policy_state,  # noqa: E402
     _emit_routes_through,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
+
+emit_replay_key("p0", "full_agent_discovery")
+emit_determinism_digest("p0", "full_agent_discovery")
 
 _emit_dispatches_healing_run("p1", "full_agent_discovery", "L0")
 _emit_routes_through("p1", "full_agent_discovery", "L0")
@@ -104,10 +109,11 @@ def _get_safe_subprocess_check_output():
 classification_cache_context = get_classification_cache_context()
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
-    _emit_applies_guardrail,
-    _emit_records_execution_trace,
-    _emit_signs_execution_trace,
-    _emit_snapshots_state,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
 )
 from agentic_core.utils.ast_fuzzy_util import safe_unparse
 

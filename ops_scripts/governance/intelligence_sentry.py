@@ -11,11 +11,40 @@ description: |
 import shutil
 import sys
 from pathlib import Path
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "intelligence_sentry")
+_emit_applies_guardrail("p0", "intelligence_sentry", "p0_governance")
+_emit_reads_policy_state("p0", "intelligence_sentry", "policy_binding")
+_emit_snapshots_state("p0", "intelligence_sentry", "state_snapshot")
+emit_replay_key("p0", "intelligence_sentry")
+emit_determinism_digest("p0", "intelligence_sentry")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from agentic_core.L0_routing.config.path_constants import (
+    ARCHIVES_DIR,
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    OPS_SCRIPTS_DIR,
+    THRESHOLD,
+)
 from agentic_core.utils.project_root_util import get_project_root
-from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR, OPS_SCRIPTS_DIR
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 PROJECT_ROOT = get_project_root()
 SOURCE_ROOTS = [AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR]
 TEST_UNIT_ROOT = PROJECT_ROOT / TESTS_UNIT_DIR

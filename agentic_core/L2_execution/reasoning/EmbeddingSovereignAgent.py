@@ -25,7 +25,12 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_reads_policy_state,  # noqa: E402
     _emit_routes_through,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
+
+emit_replay_key("p0", "EmbeddingSovereignAgent")
+emit_determinism_digest("p0", "EmbeddingSovereignAgent")
 
 _emit_dispatches_healing_run("p1", "EmbeddingSovereignAgent", "L2")
 _emit_routes_through("p1", "EmbeddingSovereignAgent", "L2")

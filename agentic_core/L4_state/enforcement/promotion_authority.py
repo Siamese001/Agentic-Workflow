@@ -19,7 +19,12 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,
     _emit_snapshots_state,
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
+
+emit_replay_key("p0", "promotion_authority")
+emit_determinism_digest("p0", "promotion_authority")
 
 _emit_dispatches_healing_run("p1", "promotion_authority", "L4")
 _emit_routes_through("p1", "promotion_authority", "L4")

@@ -1,11 +1,40 @@
 from __future__ import annotations
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "toolbox_util")
+_emit_applies_guardrail("p0", "toolbox_util", "p0_governance")
+_emit_reads_policy_state("p0", "toolbox_util", "policy_binding")
+_emit_snapshots_state("p0", "toolbox_util", "state_snapshot")
+emit_replay_key("p0", "toolbox_util")
+emit_determinism_digest("p0", "toolbox_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 'Brief description of functionality and purpose.'
 'Brief description of functionality and purpose.'
 import logging
 import os
-from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 from pathlib import Path
+from typing import Any
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 Logger: Any = logging.getLogger('Toolbox')
 
 def repository_get_file_content(file_path: Any) -> Any:
@@ -26,6 +55,7 @@ def repository_list_files(directory: Any='.') -> Any:
         if '..' in directory:
             return 'Error: Cannot navigate up the directory tree.'
         from pathlib import Path
+
         from agentic_core.utils.ssot_discovery_validator import get_python_files
         return [str(f) for f in get_python_files(Path(directory))]
     # guardian: allow-silent-swallow

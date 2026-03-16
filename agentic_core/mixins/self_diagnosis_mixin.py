@@ -1,5 +1,21 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "self_diagnosis_mixin", "p0_governance")
+_emit_reads_policy_state("p0", "self_diagnosis_mixin", "policy_binding")
+_emit_snapshots_state("p0", "self_diagnosis_mixin", "state_snapshot")
+emit_replay_key("p0", "self_diagnosis_mixin")
+emit_determinism_digest("p0", "self_diagnosis_mixin")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 "\nSelfDiagnosisMixin – Sovereign Agent Role Mixin (Phase 31 – Dec 30, 2025)\n\nPurpose:\n  Enable critical agents (especially orchestrators) to autonomously monitor their own health.\n  Detects:\n    - Missing mandatory components\n    - Component health_check failures\n    - configuration drift\n  Critical for ComplianceOrchestratorAgent, HealingOrchestratorAgent, and future SovereignOrchestrator.\n\nConstitutional Alignment:\n  - Enables self-preservation without external monitoring\n  - Provides early warning of internal degradation\n  - Fully observable via structured diagnosis output\n"
 import logging
 from datetime import datetime

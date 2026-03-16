@@ -26,7 +26,24 @@ from typing import Any
 
 import redis
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from tools.adg.adg_redis_query import ADGRedisClient
+
+_emit_records_execution_trace("p0", "evidence", "drift_score")
+_emit_applies_guardrail("p0", "drift_score", "p0_governance")
+_emit_reads_policy_state("p0", "drift_score", "policy_binding")
+_emit_snapshots_state("p0", "drift_score", "state_snapshot")
+emit_replay_key("p0", "drift_score")
+emit_determinism_digest("p0", "drift_score")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # ---------------------------------------------------------------------------
 # Constants

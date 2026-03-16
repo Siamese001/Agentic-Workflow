@@ -14,11 +14,27 @@ Strategy:
 """
 
 import ast
-import json
-import re
 import sys
 from pathlib import Path
 from typing import Any
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "burndown_magic_config")
+_emit_applies_guardrail("p0", "burndown_magic_config", "p0_governance")
+_emit_reads_policy_state("p0", "burndown_magic_config", "policy_binding")
+_emit_snapshots_state("p0", "burndown_magic_config", "state_snapshot")
+emit_replay_key("p0", "burndown_magic_config")
+emit_determinism_digest("p0", "burndown_magic_config")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -105,7 +121,7 @@ def main():
 
     # Parse baseline for threshold=0.95 violations
     violations = []
-    with open(baseline_file, 'r', encoding='utf-8') as f:
+    with open(baseline_file, encoding='utf-8') as f:
         for line in f:
             if 'threshold=0.95' in line:
                 file_path = line.split(':')[0]
@@ -131,12 +147,12 @@ def main():
     has_import = [f for f in fixable_files if f['has_import']]
     needs_import = [f for f in fixable_files if not f['has_import']]
 
-    print(f"\n[ANALYSIS]")
+    print("\n[ANALYSIS]")
     print(f"  Already imports THRESHOLD: {len(has_import)} files")
     print(f"  Needs import added: {len(needs_import)} files")
 
     # Show top 10 files by violation count
-    print(f"\n[TOP VIOLATORS]")
+    print("\n[TOP VIOLATORS]")
     sorted_files = sorted(fixable_files, key=lambda x: x['violations'], reverse=True)[:10]
     for f in sorted_files:
         status = "✓ has import" if f['has_import'] else "✗ needs import"

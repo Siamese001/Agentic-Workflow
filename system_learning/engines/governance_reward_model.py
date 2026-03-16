@@ -32,13 +32,27 @@ import logging
 from dataclasses import dataclass
 from typing import Sequence
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.enforcement.determinism import deterministic_json
 from system_learning.types.optimization_types import (
     GovernanceRewardScore,
     GovernanceRewardSignal,
     OptimizationProposal,
 )
+
+_emit_applies_guardrail("p0", "governance_reward_model", "p0_governance")
+_emit_snapshots_state("p0", "governance_reward_model", "state_snapshot")
+emit_replay_key("p0", "governance_reward_model")
+emit_determinism_digest("p0", "governance_reward_model")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 logger = logging.getLogger(__name__)
 

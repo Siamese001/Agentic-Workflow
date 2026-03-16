@@ -8,11 +8,28 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
 from .cognitive_contracts import enforce_cognitive_contract, get_contract_manager
 from .few_shot_registry import get_few_shot_registry
 from .prompt_assembler import get_prompt_assembler
 from .prompt_injection_loader import InjectionMatch, get_injection_loader
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+_emit_applies_guardrail("p0", "prompt_enhancer_util", "p0_governance")
+_emit_reads_policy_state("p0", "prompt_enhancer_util", "policy_binding")
+_emit_snapshots_state("p0", "prompt_enhancer_util", "state_snapshot")
+emit_replay_key("p0", "prompt_enhancer_util")
+emit_determinism_digest("p0", "prompt_enhancer_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 logger = logging.getLogger(__name__)
 

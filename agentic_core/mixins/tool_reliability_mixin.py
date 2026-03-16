@@ -30,7 +30,21 @@ from agentic_core.L0_routing.enforcement.runtime_guard import (
     runtime_guard,
 )
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "tool_reliability_mixin", "p0_governance")
+_emit_snapshots_state("p0", "tool_reliability_mixin", "state_snapshot")
+emit_replay_key("p0", "tool_reliability_mixin")
+emit_determinism_digest("p0", "tool_reliability_mixin")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 Logger = logging.getLogger(__name__)
 

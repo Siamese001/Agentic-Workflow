@@ -9,12 +9,29 @@ from __future__ import annotations
 
 from typing import Protocol, runtime_checkable
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.enforcement.authority_invariants import (
     AuthorityContext,
     AuthorityViolation,  # re-exported for callers
     assert_read_only_audit_access,
     assert_zero_execution_authority,
 )
+
+_emit_records_execution_trace("p0", "evidence", "l4_audit_reader")
+_emit_applies_guardrail("p0", "l4_audit_reader", "p0_governance")
+_emit_reads_policy_state("p0", "l4_audit_reader", "policy_binding")
+_emit_snapshots_state("p0", "l4_audit_reader", "state_snapshot")
+emit_replay_key("p0", "l4_audit_reader")
+emit_determinism_digest("p0", "l4_audit_reader")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # =============================================================================
 # AuditStore protocol (read-only)

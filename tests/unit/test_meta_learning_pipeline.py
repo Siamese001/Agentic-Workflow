@@ -14,6 +14,14 @@ import math
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.arbitration.engine import ArbitrationEngine
 from system_learning.arbitration.types import (
     ArbitrationCandidate,
@@ -25,6 +33,13 @@ from system_learning.confidence.types import (
     HealingAttempt,
     HealingConfidenceReport,
 )
+
+_emit_records_execution_trace("p0", "evidence", "test_meta_learning_pipeline")
+_emit_applies_guardrail("p0", "test_meta_learning_pipeline", "p0_governance")
+_emit_snapshots_state("p0", "test_meta_learning_pipeline", "state_snapshot")
+emit_replay_key("p0", "test_meta_learning_pipeline")
+emit_determinism_digest("p0", "test_meta_learning_pipeline")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # ---------------------------------------------------------------------------
 # Helpers

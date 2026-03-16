@@ -14,11 +14,27 @@ from apps_rg.engines.HardenedAnthropicExecutor import HardenedAnthropicExecutor
 from apps_shared.utils.Provider import Provider
 
 from agentic_core.interfaces.observability import CircuitBreakerState, SystemTelemetry
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from apps_rg.engines.hardened_gemini_executor import HardenedGeminiExecutor
 from apps_rg.utils.agent_executor_util import AgentMessage, AgentResponse
 
 from .schema import DEFAULT_ROUTING_CONFIGS, RouteConfig, RoutingTier
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+_emit_applies_guardrail("p0", "AllProvidersDownError", "p0_governance")
+_emit_reads_policy_state("p0", "AllProvidersDownError", "policy_binding")
+_emit_snapshots_state("p0", "AllProvidersDownError", "state_snapshot")
+emit_replay_key("p0", "AllProvidersDownError")
+emit_determinism_digest("p0", "AllProvidersDownError")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 logger = logging.getLogger(__name__)
 

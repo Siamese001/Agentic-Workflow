@@ -29,6 +29,15 @@ from datetime import datetime, timezone
 import pytest
 
 from agentic_core.L5_safety.enforcement.import_guard import get_import_guard
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_creative_cross_context")
+_emit_reads_policy_state("p0", "test_creative_cross_context", "policy_binding")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 
 class TestW1MutationRecordCreative:

@@ -23,6 +23,21 @@ from agentic_core.L0_routing.types.governance_types import (
     HILOutcome,
     PolicyUpdateProposal,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_hil_policy_proposal_emission")
+_emit_applies_guardrail("p0", "test_hil_policy_proposal_emission", "p0_governance")
+_emit_snapshots_state("p0", "test_hil_policy_proposal_emission", "state_snapshot")
+emit_replay_key("p0", "test_hil_policy_proposal_emission")
+emit_determinism_digest("p0", "test_hil_policy_proposal_emission")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # =========================================================================
 # Unit tests — build_hil_policy_proposal construction

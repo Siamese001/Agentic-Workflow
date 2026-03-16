@@ -21,6 +21,16 @@ import textwrap
 import pytest
 
 # ---------------------------------------------------------------------------
+# G14: Execution proof
+# ---------------------------------------------------------------------------
+from agentic_core.adg.runtime.execution_proof import (
+    ExecutionProofRecorder,
+    ExecutionTrace,
+    ProofComparisonOutcome,
+    ReplayKey,
+)
+
+# ---------------------------------------------------------------------------
 # G10: Boundary verifier
 # ---------------------------------------------------------------------------
 from agentic_core.adg.runtime.boundary_verifier import (
@@ -59,16 +69,6 @@ from agentic_core.adg.runtime.eval_spine import (
     DriftAlert,
     EvalSpine,
     OptimizationStage,
-)
-
-# ---------------------------------------------------------------------------
-# G14: Execution proof
-# ---------------------------------------------------------------------------
-from agentic_core.adg.runtime.execution_proof import (
-    ExecutionProofRecorder,
-    ExecutionTrace,
-    ProofComparisonOutcome,
-    ReplayKey,
 )
 
 # ---------------------------------------------------------------------------
@@ -115,6 +115,15 @@ from agentic_core.adg.runtime.sandbox_airlock import (
     SandboxEnvelope,
     WorkContract,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "test_adg_gap_g7_g16", "p0_governance")
+_emit_reads_policy_state("p0", "test_adg_gap_g7_g16", "policy_binding")
+_emit_snapshots_state("p0", "test_adg_gap_g7_g16", "state_snapshot")
 
 # ===========================================================================
 # G7 — Sandbox Airlock

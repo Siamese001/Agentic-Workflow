@@ -16,7 +16,24 @@ import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "_generate_foundational_skeletons")
+_emit_applies_guardrail("p0", "_generate_foundational_skeletons", "p0_governance")
+_emit_reads_policy_state("p0", "_generate_foundational_skeletons", "policy_binding")
+_emit_snapshots_state("p0", "_generate_foundational_skeletons", "state_snapshot")
+emit_replay_key("p0", "_generate_foundational_skeletons")
+emit_determinism_digest("p0", "_generate_foundational_skeletons")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
@@ -61,7 +78,7 @@ class ModuleInfo:
     all_exports: list[str] = field(default_factory=list)
 
 
-def _annotation_str(node: Optional[ast.expr]) -> str:
+def _annotation_str(node: ast.expr | None) -> str:
     if node is None:
         return "Any"
     if isinstance(node, ast.Name):
@@ -207,11 +224,11 @@ def generate_foundational_test(module_path: str, info: ModuleInfo, fan_in: int) 
 
     lines: list[str] = []
     lines.append(f'"""Foundational behavioral tests for {module_path}.')
-    lines.append(f'')
+    lines.append('')
     lines.append(f'fan_in={fan_in} — this module is imported by {fan_in} other modules.')
     lines.append(f'ADG contract: import-hygiene is covered by test_{stem}_adg.py.')
-    lines.append(f'This file covers behavioral invariants and public API contracts.')
-    lines.append(f'"""')
+    lines.append('This file covers behavioral invariants and public API contracts.')
+    lines.append('"""')
     lines.append("from __future__ import annotations")
     lines.append("")
     lines.append("import pytest")
@@ -261,7 +278,7 @@ def generate_foundational_test(module_path: str, info: ModuleInfo, fan_in: int) 
                 class_lines.append("")
                 class_lines.append("def test_member_values_are_strings_or_ints(self):")
                 class_lines.append(f"    for member in {ci.name}:")
-                class_lines.append(f"        assert member.value is not None")
+                class_lines.append("        assert member.value is not None")
                 first_member = ci.enum_members[0]
                 class_lines.append("")
                 class_lines.append(f"def test_known_member_{first_member.lower()}_exists(self):")
@@ -285,12 +302,12 @@ def generate_foundational_test(module_path: str, info: ModuleInfo, fan_in: int) 
             if ci.is_frozen and ci.dc_fields:
                 class_lines.append("")
                 class_lines.append("def test_immutable_after_creation(self):")
-                class_lines.append(f"    import dataclasses")
+                class_lines.append("    import dataclasses")
                 class_lines.append(f"    fields = dataclasses.fields({ci.name})")
-                class_lines.append(f"    if not fields:")
-                class_lines.append(f"        pytest.skip('no fields to test immutability')")
-                class_lines.append(f"    # Verify frozen raises on setattr")
-                class_lines.append(f"    # (create requires knowing required fields — skip if args unknown)")
+                class_lines.append("    if not fields:")
+                class_lines.append("        pytest.skip('no fields to test immutability')")
+                class_lines.append("    # Verify frozen raises on setattr")
+                class_lines.append("    # (create requires knowing required fields — skip if args unknown)")
                 class_lines.append(f"    assert {ci.name}.__dataclass_params__.frozen is True")
 
         else:
@@ -322,7 +339,7 @@ def generate_foundational_test(module_path: str, info: ModuleInfo, fan_in: int) 
             fn_lines.append("def test_has_return_annotation(self):")
             fn_lines.append("    import inspect")
             fn_lines.append(f"    sig = inspect.signature({fi_fn.name})")
-            fn_lines.append(f"    assert sig.return_annotation is not inspect.Parameter.empty")
+            fn_lines.append("    assert sig.return_annotation is not inspect.Parameter.empty")
         lines.extend(_indent(fn_lines))
 
     # Per-constant
@@ -474,7 +491,7 @@ for mod_path in adg_only_high:
     if created % 25 == 0:
         print(f"  [GEN] {created} foundational skeletons written...")
 
-print(f"\n[GEN] Done.")
+print("\n[GEN] Done.")
 print(f"  Created:          {created}")
 print(f"  Skipped (exists): {skipped_exists}")
 print(f"  Skipped (no src): {skipped_no_src}")

@@ -14,9 +14,27 @@ import subprocess
 import sys
 import time
 from collections import Counter, defaultdict
+from pathlib import Path
+
 from agentic_core.L0_routing.config.path_constants import TOOLS_DIR, get_validated_project_root
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "gap_analysis_append_closure")
+_emit_applies_guardrail("p0", "gap_analysis_append_closure", "p0_governance")
+_emit_reads_policy_state("p0", "gap_analysis_append_closure", "policy_binding")
+_emit_snapshots_state("p0", "gap_analysis_append_closure", "state_snapshot")
+emit_replay_key("p0", "gap_analysis_append_closure")
+emit_determinism_digest("p0", "gap_analysis_append_closure")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 REPO = get_validated_project_root()
 EVIDENCE = REPO / 'docs' / REPORTS_DIR / 'plans' / 'requirements-gap-analysis-evidence.md'
 REQ_MD = REPO / 'docs' / REPORTS_DIR / 'plans' / 'Agentic Master Requirements.md'
@@ -24,7 +42,7 @@ PY = sys.executable
 SKIP = SOVEREIGN_EXCLUDED_FOLDERS
 
 def run(argv, timeout=DEFAULT_TIMEOUT):
-    cmd = ' '.join((str(a) for a in argv))
+    cmd = ' '.join(str(a) for a in argv)
     try:
         r = subprocess.run(argv, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=timeout, cwd=str(REPO), shell=False)
         return (cmd, r.stdout, r.stderr, r.returncode)
@@ -93,7 +111,7 @@ def parse_baseline():
     m_total = re.search('TOTAL_ROWS\\s*=\\s*(\\d+)', text)
     m_corpus = re.search('CORPUS_ROWS\\s*=\\s*(\\d+)', text)
     m_ext = re.search('EXT_ROWS\\s*=\\s*(\\d+)', text)
-    actual_table = sum((1 for l in text.splitlines() if l.strip().startswith('| REQ-')))
+    actual_table = sum(1 for l in text.splitlines() if l.strip().startswith('| REQ-'))
     pfx = Counter()
     for l in text.splitlines():
         s = l.strip()
@@ -157,10 +175,10 @@ def main():
     high_fail = sev_status['HIGH']['FAIL']
     med_pass = sev_status['MEDIUM']['PASS']
     med_partial = sev_status['MEDIUM']['PARTIAL']
-    total_pass = sum((c['PASS'] for c in sev_status.values()))
-    total_partial = sum((c['PARTIAL'] for c in sev_status.values()))
-    total_fail = sum((c['FAIL'] for c in sev_status.values()))
-    total_struct = sum((c['STRUCTURAL_ONLY'] for c in sev_status.values()))
+    total_pass = sum(c['PASS'] for c in sev_status.values())
+    total_partial = sum(c['PARTIAL'] for c in sev_status.values())
+    total_fail = sum(c['FAIL'] for c in sev_status.values())
+    total_struct = sum(c['STRUCTURAL_ONLY'] for c in sev_status.values())
     arith_sum = total_pass + total_partial + total_fail + total_struct
     print('Running dual-run determinism proof...', file=sys.stderr)
     det = run_determinism_proof()

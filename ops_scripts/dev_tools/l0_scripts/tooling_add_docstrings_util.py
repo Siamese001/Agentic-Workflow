@@ -1,12 +1,41 @@
 from __future__ import annotations
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "tooling_add_docstrings_util")
+_emit_applies_guardrail("p0", "tooling_add_docstrings_util", "p0_governance")
+_emit_reads_policy_state("p0", "tooling_add_docstrings_util", "policy_binding")
+_emit_snapshots_state("p0", "tooling_add_docstrings_util", "state_snapshot")
+emit_replay_key("p0", "tooling_add_docstrings_util")
+emit_determinism_digest("p0", "tooling_add_docstrings_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 'Add docstrings to functions/classes Missing them.'
 import ast
 import logging
 import os
 from pathlib import Path
 from typing import Any
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 from agentic_core.L5_safety.config.structure_blueprint import AGENTIC_CORE_DIR
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 _logger = logging.getLogger(__name__)
 sovereign_dirs: Any = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, 'schemas', 'prompt_governance', 'observability', 'config']
 
@@ -51,6 +80,7 @@ def process_file(pyfile: Path) -> bool:
     except (ValueError, TypeError, RuntimeError, OSError):
         return False
 from agentic_core.utils.ssot_discovery_validator import get_python_files
+
 for sdir in sovereign_dirs:
     # guardian: allow-path-string
     if not os.path.exists(sdir):

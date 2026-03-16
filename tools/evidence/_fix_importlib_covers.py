@@ -10,14 +10,32 @@ import re
 import sys
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "_fix_importlib_covers")
+_emit_applies_guardrail("p0", "_fix_importlib_covers", "p0_governance")
+_emit_reads_policy_state("p0", "_fix_importlib_covers", "policy_binding")
+_emit_snapshots_state("p0", "_fix_importlib_covers", "state_snapshot")
+emit_replay_key("p0", "_fix_importlib_covers")
+emit_determinism_digest("p0", "_fix_importlib_covers")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from agentic_core.adg.analysis.hotspot_index import HotspotIndex
 from agentic_core.adg.analysis.test_gap import detect_test_gaps
 from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
-from agentic_core.adg.analysis.hotspot_index import HotspotIndex
 
 
 def module_path_to_import(module_path: str) -> str:
@@ -144,7 +162,7 @@ def main() -> None:
         else:
             no_importlib += 1
 
-    print(f"\n[FIX] Done.")
+    print("\n[FIX] Done.")
     print(f"  Patched (importlib → direct import): {patched}")
     print(f"  Newly written stubs:                 {newly_written}")
     print(f"  No importlib pattern found:          {no_importlib}")

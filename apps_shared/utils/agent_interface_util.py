@@ -14,7 +14,24 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Generic, TypeVar
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "agent_interface_util", "p0_governance")
+_emit_reads_policy_state("p0", "agent_interface_util", "policy_binding")
+_emit_snapshots_state("p0", "agent_interface_util", "state_snapshot")
+emit_replay_key("p0", "agent_interface_util")
+emit_determinism_digest("p0", "agent_interface_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 logger = logging.getLogger(__name__)
 InputT = TypeVar("InputT")

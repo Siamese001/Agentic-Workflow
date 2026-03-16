@@ -5,10 +5,39 @@ into the modular structure_blueprint/ package.
 Uses AST parsing to find line ranges, then extracts source text.
 """
 from __future__ import annotations
+
 import ast
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+    get_validated_project_root,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "migrate_blueprint_to_modular")
+_emit_applies_guardrail("p0", "migrate_blueprint_to_modular", "p0_governance")
+_emit_reads_policy_state("p0", "migrate_blueprint_to_modular", "policy_binding")
+_emit_snapshots_state("p0", "migrate_blueprint_to_modular", "state_snapshot")
+emit_replay_key("p0", "migrate_blueprint_to_modular")
+emit_determinism_digest("p0", "migrate_blueprint_to_modular")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 ROOT = get_validated_project_root()
 MONOLITH = ROOT / AGENTIC_CORE_DIR / 'L5_safety' / 'config' / 'structure_blueprint_config.py'
 MOD_DIR = ROOT / AGENTIC_CORE_DIR / 'L5_safety' / 'config' / 'structure_blueprint'

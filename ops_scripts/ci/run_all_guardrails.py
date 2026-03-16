@@ -14,6 +14,24 @@ Exit codes:
 """
 from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "run_all_guardrails")
+_emit_applies_guardrail("p0", "run_all_guardrails", "p0_governance")
+_emit_reads_policy_state("p0", "run_all_guardrails", "policy_binding")
+_emit_snapshots_state("p0", "run_all_guardrails", "state_snapshot")
+emit_replay_key("p0", "run_all_guardrails")
+emit_determinism_digest("p0", "run_all_guardrails")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 # Configuration constants
 DEFAULT_TIMEOUT = 300
 DEFAULT_REPORT_INTERVAL = 30
@@ -25,18 +43,20 @@ import sys
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
-import json
+
 _FIXED_TS = '2026-01-01T00:00:00'
-from pathlib import Path
-from typing import List, Dict, Any, Optional
 import io
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
 if sys.platform == 'win32':
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(_REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(_REPO_ROOT))
-from ops_scripts.ci.ci_timeout_decorator import ci_timeout, generate_rca, ci_progress_reporter
+from ops_scripts.ci.ci_timeout_decorator import ci_progress_reporter, ci_timeout, generate_rca
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 @dataclass
@@ -49,14 +69,14 @@ class GuardrailResult:
     elapsed_time: float
     violations: int = 0
     output: str = ''
-    error: Optional[str] = None
+    error: str | None = None
     timeout: bool = False
-    rca_path: Optional[Path] = None
+    rca_path: Path | None = None
 
 @dataclass
 class GuardrailSuite:
     """Configuration for CI guardrail suite."""
-    guardrails: List[Dict[str, Any]] = field(default_factory=lambda: [{'name': 'Anti-Pattern Scanner', 'script': 'ops_scripts/ci/check_anti_patterns.py', 'timeout': 120, 'critical': True, 'description': 'Detects 6 categories of anti-patterns'}, {'name': 'Utility Silent Swallower Detection', 'script': 'ops_scripts/ci/check_utility_silent_swallowers.py', 'timeout': 180, 'critical': True, 'description': 'Prevents hidden failures in governance scripts'}, {'name': 'Plan Location Compliance', 'script': 'ops_scripts/ci/check_plan_location_compliance.py', 'timeout': 30, 'critical': True, 'description': 'Enforces Constitutional Rule #0'}, {'name': 'PowerShell Usage Ban', 'script': 'ops_scripts/ci/check_powershell_ban.py', 'timeout': 300, 'critical': False, 'description': 'Enforces Python-only subprocess operations'}])
+    guardrails: list[dict[str, Any]] = field(default_factory=lambda: [{'name': 'Anti-Pattern Scanner', 'script': 'ops_scripts/ci/check_anti_patterns.py', 'timeout': 120, 'critical': True, 'description': 'Detects 6 categories of anti-patterns'}, {'name': 'Utility Silent Swallower Detection', 'script': 'ops_scripts/ci/check_utility_silent_swallowers.py', 'timeout': 180, 'critical': True, 'description': 'Prevents hidden failures in governance scripts'}, {'name': 'Plan Location Compliance', 'script': 'ops_scripts/ci/check_plan_location_compliance.py', 'timeout': 30, 'critical': True, 'description': 'Enforces Constitutional Rule #0'}, {'name': 'PowerShell Usage Ban', 'script': 'ops_scripts/ci/check_powershell_ban.py', 'timeout': 300, 'critical': False, 'description': 'Enforces Python-only subprocess operations'}])
 
 class GuardrailOrchestrator:
     """Orchestrates CI guardrail execution with timeout and RCA."""
@@ -64,7 +84,7 @@ class GuardrailOrchestrator:
     def __init__(self, default_timeout: int=DEFAULT_TIMEOUT, verbose: bool=False):
         self.default_timeout = default_timeout
         self.verbose = verbose
-        self.results: List[GuardrailResult] = []
+        self.results: list[GuardrailResult] = []
         self.start_time = clock_provider.time()
 
     def run_all_guardrails(self, suite: GuardrailSuite) -> bool:
@@ -95,7 +115,7 @@ class GuardrailOrchestrator:
         self._print_summary()
         return all_passed
 
-    def _run_single_guardrail(self, config: Dict[str, Any]) -> GuardrailResult:
+    def _run_single_guardrail(self, config: dict[str, Any]) -> GuardrailResult:
         """Run a single guardrail with timeout protection."""
         name = config['name']
         script = config['script']
@@ -156,10 +176,10 @@ class GuardrailOrchestrator:
         print('\n' + '=' * 80)
         print('CI GUARDRAIL SUITE - SUMMARY')
         print('=' * 80)
-        passed_count = sum((1 for r in self.results if r.passed))
+        passed_count = sum(1 for r in self.results if r.passed)
         failed_count = len(self.results) - passed_count
-        timeout_count = sum((1 for r in self.results if r.timeout))
-        total_violations = sum((r.violations for r in self.results))
+        timeout_count = sum(1 for r in self.results if r.timeout)
+        total_violations = sum(r.violations for r in self.results)
         print(f'Total Guardrails: {len(self.results)}')
         print(f'✅ Passed: {passed_count}')
         print(f'❌ Failed: {failed_count}')
@@ -196,7 +216,7 @@ class GuardrailOrchestrator:
     def save_report(self, output_path: Path):
         """Save detailed JSON report."""
         # guardian: allow-global-mutation
-        report = {'timestamp': _FIXED_TS, 'total_elapsed': clock_provider.time() - self.start_time, 'summary': {'total': len(self.results), 'passed': sum((1 for r in self.results if r.passed)), 'failed': sum((1 for r in self.results if not r.passed)), 'timeouts': sum((1 for r in self.results if r.timeout)), 'total_violations': sum((r.violations for r in self.results))}, 'results': [{'name': r.name, 'script': r.script, 'passed': r.passed, 'exit_code': r.exit_code, 'elapsed_time': r.elapsed_time, 'violations': r.violations, 'timeout': r.timeout, 'error': r.error, 'rca_path': str(r.rca_path) if r.rca_path else None} for r in self.results]}
+        report = {'timestamp': _FIXED_TS, 'total_elapsed': clock_provider.time() - self.start_time, 'summary': {'total': len(self.results), 'passed': sum(1 for r in self.results if r.passed), 'failed': sum(1 for r in self.results if not r.passed), 'timeouts': sum(1 for r in self.results if r.timeout), 'total_violations': sum(r.violations for r in self.results)}, 'results': [{'name': r.name, 'script': r.script, 'passed': r.passed, 'exit_code': r.exit_code, 'elapsed_time': r.elapsed_time, 'violations': r.violations, 'timeout': r.timeout, 'error': r.error, 'rca_path': str(r.rca_path) if r.rca_path else None} for r in self.results]}
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(json.dumps(report, indent=2), encoding='utf-8')
         print(f'📊 Report saved: {output_path}')

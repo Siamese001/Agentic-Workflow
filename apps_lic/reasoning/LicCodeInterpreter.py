@@ -2,7 +2,23 @@ import uuid
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "LicCodeInterpreter", "p0_governance")
+_emit_reads_policy_state("p0", "LicCodeInterpreter", "policy_binding")
+_emit_snapshots_state("p0", "LicCodeInterpreter", "state_snapshot")
+emit_replay_key("p0", "LicCodeInterpreter")
+emit_determinism_digest("p0", "LicCodeInterpreter")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 "\nLIC Code Interpreter Tool - Fast loop for deterministic evaluation.\n\nPorted from: archives/legacy_lic/Agentic LIC/tools_LIC.py\n"
 

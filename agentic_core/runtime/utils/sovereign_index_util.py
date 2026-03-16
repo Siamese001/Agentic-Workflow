@@ -1,5 +1,21 @@
 from __future__ import annotations
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "sovereign_index_util", "p0_governance")
+_emit_reads_policy_state("p0", "sovereign_index_util", "policy_binding")
+_emit_snapshots_state("p0", "sovereign_index_util", "state_snapshot")
+emit_replay_key("p0", "sovereign_index_util")
+emit_determinism_digest("p0", "sovereign_index_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 '\nSovereignIndex - Cached File Indexer to Replace rglob Calls\n\nThis module provides a singleton file indexer that caches filesystem scans,\ndramatically reducing the performance impact of repeated rglob calls.\n\nUSAGE:\n\n    # Get the singleton instance\n    index = SovereignIndex.get_instance(project_root)\n\n    # Get files matching a pattern\n    python_files = index.get_files("*.py")\n    agent_files = index.get_files("*Agent.py")\n\n    # Force refresh if needed\n    index.refresh()\n\nPERFORMANCE:\n    - Initial scan: O(n) where n = number of files\n    - Subsequent queries: O(1) from cache\n    - Auto-invalidation: Checks mtime of project root\n\nSSOT PRINCIPLE:\n    All file discovery should use SovereignIndex instead of direct rglob calls.\n    This ensures consistent exclusion patterns and optimal performance.\n'
 import fnmatch
 import logging

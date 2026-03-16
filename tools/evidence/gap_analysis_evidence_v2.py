@@ -10,8 +10,26 @@ import sys
 import time
 from collections import Counter, defaultdict
 from pathlib import Path
+
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "gap_analysis_evidence_v2")
+_emit_applies_guardrail("p0", "gap_analysis_evidence_v2", "p0_governance")
+_emit_reads_policy_state("p0", "gap_analysis_evidence_v2", "policy_binding")
+_emit_snapshots_state("p0", "gap_analysis_evidence_v2", "state_snapshot")
+emit_replay_key("p0", "gap_analysis_evidence_v2")
+emit_determinism_digest("p0", "gap_analysis_evidence_v2")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 REPO = get_validated_project_root()
 REQ_MD = REPO / 'docs' / REPORTS_DIR / 'plans' / 'Agentic Master Requirements.md'
 OUT = REPO / 'docs' / REPORTS_DIR / 'plans' / 'requirements-gap-analysis-evidence.md'
@@ -20,7 +38,7 @@ SKIP = SOVEREIGN_EXCLUDED_FOLDERS
 
 def run_cmd(argv, cwd=None, timeout=DEFAULT_TIMEOUT):
     """Run command, return (cmd_string, stdout, stderr, exitcode)."""
-    cmd_str = ' '.join((str(a) for a in argv))
+    cmd_str = ' '.join(str(a) for a in argv)
     try:
         r = subprocess.run(argv, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=timeout, cwd=cwd or str(REPO), shell=False)
         return (cmd_str, r.stdout, r.stderr, r.returncode)
@@ -427,7 +445,7 @@ def _run_self_validation(ast_index, ci_index):
     results.append(('STRUCTURAL_WITH_AST_SCANNER', t1_pass, f'Found {len(scanner_files)} files with AST scanner signals'))
     enforcement_files = []
     for rec in ast_index.all_records.values():
-        if any((cls.endswith(_ENFORCEMENT_CLASS_SUFFIXES) for cls in rec.classes)):
+        if any(cls.endswith(_ENFORCEMENT_CLASS_SUFFIXES) for cls in rec.classes):
             enforcement_files.append(rec.path)
     t2_pass = len(enforcement_files) > 0
     results.append(('RUNTIME_ENFORCEMENT_EXISTS', t2_pass, f'Found {len(enforcement_files)} enforcement files'))
@@ -538,7 +556,7 @@ def classify(req, cmd_desc, raw_lines, match_count, matched_files, ast_index=Non
     prov['ast_predicates'] = {'Runtime': enf_reasons if enf_hit else ['has_core=True (production code exists)'] if has_core else [], 'AST': scan_reasons if scan_hit else ['has_core=True (production code exists)'] if has_core else [], 'Schema': schema_reasons, 'Replay': replay_reasons, 'Signature': sig_reasons, 'CI': ci_reasons}
     TEST_DOMAINS = {'Negative Control', 'Test Integrity', 'Guardian Meta'}
     test_keywords = ('negative control', 'xfail', 'test coverage', 'guardian test')
-    is_test_req = domain in TEST_DOMAINS or any((kw in req_text.lower() for kw in test_keywords))
+    is_test_req = domain in TEST_DOMAINS or any(kw in req_text.lower() for kw in test_keywords)
     if is_test_req and has_test:
         return ('PASS', '', summary, prov)
     if eclass == 'STRUCTURAL':
@@ -627,7 +645,7 @@ def main():
     w('```')
     w()
     w('## 1d. Numeric gap check REQ-001..REQ-417')
-    nums = sorted((int(m.group(1)) for r in rows if (m := re.match('^REQ-(\\d+)$', r['id']))))
+    nums = sorted(int(m.group(1)) for r in rows if (m := re.match('^REQ-(\\d+)$', r['id'])))
     expected = set(range(nums[0], nums[-1] + 1)) if nums else set()
     actual = set(nums)
     gaps = sorted(expected - actual)
@@ -649,7 +667,7 @@ def main():
     w('```')
     w()
     w('## 1f. Severity distribution')
-    sev = Counter((r['severity'] for r in rows))
+    sev = Counter(r['severity'] for r in rows)
     w('```')
     for s, c in sorted(sev.items()):
         w(f'  {s}: {c}')
@@ -728,7 +746,7 @@ def main():
     w()
     w('## 2f. AST Classifier Self-Validation')
     validation_results = _run_self_validation(ast_idx, ci_idx)
-    all_passed = all((v[1] for v in validation_results))
+    all_passed = all(v[1] for v in validation_results)
     w('```')
     for name, passed, detail in validation_results:
         w(f"  {('PASS' if passed else 'FAIL')}: {name} — {detail}")
@@ -916,7 +934,7 @@ def main():
     w('```')
     w()
     w('## CRITICAL Status Distribution')
-    crit_total = sum((1 for r in rows if r['severity'] == 'CRITICAL'))
+    crit_total = sum(1 for r in rows if r['severity'] == 'CRITICAL')
     w('```')
     w(f'Total CRITICAL: {crit_total}')
     for s, c in sorted(crit_ctr.items()):

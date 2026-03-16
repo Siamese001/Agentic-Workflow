@@ -11,6 +11,23 @@ import pytest
 
 from agentic_core.L4_state.memory.in_memory_vector_store import InMemoryVectorStore
 from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_semantic_cache_redis_hardening")
+_emit_applies_guardrail("p0", "test_semantic_cache_redis_hardening", "p0_governance")
+_emit_reads_policy_state("p0", "test_semantic_cache_redis_hardening", "policy_binding")
+_emit_snapshots_state("p0", "test_semantic_cache_redis_hardening", "state_snapshot")
+emit_replay_key("p0", "test_semantic_cache_redis_hardening")
+emit_determinism_digest("p0", "test_semantic_cache_redis_hardening")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 
 MAX_RETRIES = 3

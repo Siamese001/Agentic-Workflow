@@ -17,11 +17,26 @@ from __future__ import annotations
 import hashlib
 
 from agentic_core.interfaces.determinism_types import SemanticClockSnapshot
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.enforcement.authority_invariants import (
     AuthorityContext,
     assert_zero_execution_authority,
 )
 from system_learning.types.snapshot_types import MetaLearningSnapshot
+
+_emit_records_execution_trace("p0", "evidence", "snapshot_factory")
+_emit_applies_guardrail("p0", "snapshot_factory", "p0_governance")
+_emit_snapshots_state("p0", "snapshot_factory", "state_snapshot")
+emit_replay_key("p0", "snapshot_factory")
+emit_determinism_digest("p0", "snapshot_factory")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # Canonical delimiter between segments in snapshot_id computation.
 _SEGMENT_DELIMITER: bytes = b"\x1f"

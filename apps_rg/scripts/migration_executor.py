@@ -15,9 +15,25 @@ from pathlib import Path
 from agentic_core.L0_routing.config import (
     APPS_RG_DIR,
 )
-from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.L0_routing.config.path_constants import TOOLS_DIR
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "migration_executor", "p0_governance")
+_emit_reads_policy_state("p0", "migration_executor", "policy_binding")
+_emit_snapshots_state("p0", "migration_executor", "state_snapshot")
+emit_replay_key("p0", "migration_executor")
+emit_determinism_digest("p0", "migration_executor")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 # Configure logging
 logging.basicConfig(

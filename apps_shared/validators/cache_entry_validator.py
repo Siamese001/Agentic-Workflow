@@ -9,11 +9,28 @@ import logging
 import time
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "cache_entry_validator", "p0_governance")
+_emit_reads_policy_state("p0", "cache_entry_validator", "policy_binding")
+_emit_snapshots_state("p0", "cache_entry_validator", "state_snapshot")
+emit_replay_key("p0", "cache_entry_validator")
+emit_determinism_digest("p0", "cache_entry_validator")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 try:
     import numpy as np
 except ImportError as _err:
     raise ImportError("numpy is required for this module. Install with: pip install -e '.[infra]'") from _err
 from pydantic import BaseModel, Field, validator
+
 from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 
 logger = logging.getLogger(__name__)

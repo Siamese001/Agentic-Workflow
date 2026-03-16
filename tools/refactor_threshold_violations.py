@@ -11,7 +11,24 @@ Uses AST transformation to ensure syntactically correct refactoring.
 import ast
 import sys
 from pathlib import Path
-from typing import Optional
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "refactor_threshold_violations")
+_emit_applies_guardrail("p0", "refactor_threshold_violations", "p0_governance")
+_emit_reads_policy_state("p0", "refactor_threshold_violations", "policy_binding")
+_emit_snapshots_state("p0", "refactor_threshold_violations", "state_snapshot")
+emit_replay_key("p0", "refactor_threshold_violations")
+emit_determinism_digest("p0", "refactor_threshold_violations")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 # guardian: allow-global-mutation
@@ -27,7 +44,7 @@ class ThresholdReplacer(ast.NodeTransformer):
         self.modified = False
         self.nodes_to_remove = []
 
-    def visit_Assign(self, node: ast.Assign) -> Optional[ast.Assign]:
+    def visit_Assign(self, node: ast.Assign) -> ast.Assign | None:
         """Replace module-level threshold assignments."""
         if isinstance(node.value, ast.Constant) and node.value.value == 0.95:
             for target in node.targets:
@@ -167,7 +184,7 @@ def main():
 
     # Load violations
     violations = []
-    with open(baseline_file, 'r', encoding='utf-8') as f:
+    with open(baseline_file, encoding='utf-8') as f:
         for line in f:
             if 'threshold=0.95' in line:
                 file_path = line.split(':')[0]
@@ -200,7 +217,7 @@ def main():
     skipped = len([r for r in results if r['status'] == 'skipped'])
 
     print()
-    print(f"[SUMMARY]")
+    print("[SUMMARY]")
     print(f"  Success: {success}")
     print(f"  Errors: {errors}")
     print(f"  Skipped: {skipped}")

@@ -549,4 +549,20 @@ if __name__ == "__main__":
     import asyncio
 
     asyncio.run(example_enhanced_workflow())
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "enhanced_rg_flow_router_util", "p0_governance")
+_emit_reads_policy_state("p0", "enhanced_rg_flow_router_util", "policy_binding")
+_emit_snapshots_state("p0", "enhanced_rg_flow_router_util", "state_snapshot")
+emit_replay_key("p0", "enhanced_rg_flow_router_util")
+emit_determinism_digest("p0", "enhanced_rg_flow_router_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)

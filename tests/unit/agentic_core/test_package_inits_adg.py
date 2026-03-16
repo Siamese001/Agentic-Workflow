@@ -12,6 +12,24 @@ from __future__ import annotations
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_package_inits_adg")
+_emit_applies_guardrail("p0", "test_package_inits_adg", "p0_governance")
+_emit_reads_policy_state("p0", "test_package_inits_adg", "policy_binding")
+_emit_snapshots_state("p0", "test_package_inits_adg", "state_snapshot")
+emit_replay_key("p0", "test_package_inits_adg")
+emit_determinism_digest("p0", "test_package_inits_adg")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 pytestmark = pytest.mark.unit
 
 
@@ -22,7 +40,6 @@ class TestBaseAgentsPackage:
         import agentic_core.base_agents  # noqa: F401
 
     def test_package_is_package(self):
-        import agentic_core.base_agents as pkg
         import importlib
         spec = importlib.util.find_spec("agentic_core.base_agents")
         assert spec is not None
@@ -30,6 +47,7 @@ class TestBaseAgentsPackage:
     def test_base_agent_submodules_exist(self):
         """Verify at least one submodule the 11 callers depend on is accessible."""
         from pathlib import Path
+
         import agentic_core.base_agents as pkg
         pkg_path = Path(pkg.__file__).parent
         assert pkg_path.is_dir()
@@ -38,6 +56,7 @@ class TestBaseAgentsPackage:
 
     def test_no_import_error_on_reload(self):
         import importlib
+
         import agentic_core.base_agents as pkg
         importlib.reload(pkg)  # must not raise
 
@@ -62,6 +81,7 @@ class TestRuntimePackage:
 
     def test_no_import_error_on_reload(self):
         import importlib
+
         import agentic_core.runtime as pkg
         importlib.reload(pkg)
 
@@ -74,12 +94,14 @@ class TestL1CognitionReasoningPackage:
 
     def test_package_is_inside_l1(self):
         from pathlib import Path
+
         import agentic_core.L1_cognition.reasoning as pkg
         pkg_path = Path(pkg.__file__).parent
         assert "L1_cognition" in str(pkg_path)
 
     def test_reasoning_modules_discoverable(self):
         from pathlib import Path
+
         import agentic_core.L1_cognition.reasoning as pkg
         pkg_path = Path(pkg.__file__).parent
         py_files = [f for f in pkg_path.glob("*.py") if f.name != "__init__.py"]
@@ -94,12 +116,14 @@ class TestL2ExecutionEnforcementPackage:
 
     def test_package_is_inside_l2(self):
         from pathlib import Path
+
         import agentic_core.L2_execution.enforcement as pkg
         pkg_path = Path(pkg.__file__).parent
         assert "L2_execution" in str(pkg_path)
 
     def test_enforcement_modules_discoverable(self):
         from pathlib import Path
+
         import agentic_core.L2_execution.enforcement as pkg
         pkg_path = Path(pkg.__file__).parent
         py_files = [f for f in pkg_path.glob("*.py") if f.name != "__init__.py"]
@@ -114,12 +138,14 @@ class TestL5SafetyReasoningPackage:
 
     def test_package_is_inside_l5(self):
         from pathlib import Path
+
         import agentic_core.L5_safety.reasoning as pkg
         pkg_path = Path(pkg.__file__).parent
         assert "L5_safety" in str(pkg_path)
 
     def test_reasoning_agents_discoverable(self):
         from pathlib import Path
+
         import agentic_core.L5_safety.reasoning as pkg
         pkg_path = Path(pkg.__file__).parent
         py_files = [f for f in pkg_path.glob("*.py") if f.name != "__init__.py"]
@@ -127,6 +153,7 @@ class TestL5SafetyReasoningPackage:
 
     def test_architecture_governor_agent_in_package(self):
         from pathlib import Path
+
         import agentic_core.L5_safety.reasoning as pkg
         pkg_path = Path(pkg.__file__).parent
         assert (pkg_path / "ArchitectureGovernorAgent.py").exists()
@@ -144,11 +171,13 @@ class TestConfigPackage:
 
     def test_core_subpackage_present(self):
         from pathlib import Path
+
         import agentic_core.config as pkg
         assert (Path(pkg.__file__).parent / "core").is_dir()
 
     def test_no_import_error_on_reload(self):
         import importlib
+
         import agentic_core.config as pkg
         importlib.reload(pkg)
 
@@ -161,11 +190,13 @@ class TestL0RoutingPackage:
 
     def test_package_is_l0(self):
         from pathlib import Path
+
         import agentic_core.L0_routing as pkg
         assert "L0_routing" in str(Path(pkg.__file__).parent)
 
     def test_expected_subpackages_present(self):
         from pathlib import Path
+
         import agentic_core.L0_routing as pkg
         pkg_path = Path(pkg.__file__).parent
         for subpkg in ("config", "utils", "seams"):
@@ -180,11 +211,13 @@ class TestL0RoutingScriptsPackage:
 
     def test_scripts_in_l0(self):
         from pathlib import Path
+
         import agentic_core.L0_routing.scripts as pkg
         assert "L0_routing" in str(Path(pkg.__file__).parent)
 
     def test_scripts_discoverable(self):
         from pathlib import Path
+
         import agentic_core.L0_routing.scripts as pkg
         pkg_path = Path(pkg.__file__).parent
         py_files = [f for f in pkg_path.glob("*.py") if f.name != "__init__.py"]
@@ -199,11 +232,13 @@ class TestL3OrchestrationTypesPackage:
 
     def test_package_in_l3(self):
         from pathlib import Path
+
         import agentic_core.L3_orchestration.types as pkg
         assert "L3_orchestration" in str(Path(pkg.__file__).parent)
 
     def test_types_modules_discoverable(self):
         from pathlib import Path
+
         import agentic_core.L3_orchestration.types as pkg
         pkg_path = Path(pkg.__file__).parent
         py_files = [f for f in pkg_path.glob("*.py") if f.name != "__init__.py"]
@@ -211,6 +246,7 @@ class TestL3OrchestrationTypesPackage:
 
     def test_no_import_error_on_reload(self):
         import importlib
+
         import agentic_core.L3_orchestration.types as pkg
         importlib.reload(pkg)
 
@@ -223,11 +259,13 @@ class TestL0RoutingEnforcementPackage:
 
     def test_package_in_l0(self):
         from pathlib import Path
+
         import agentic_core.L0_routing.enforcement as pkg
         assert "L0_routing" in str(Path(pkg.__file__).parent)
 
     def test_enforcement_modules_discoverable(self):
         from pathlib import Path
+
         import agentic_core.L0_routing.enforcement as pkg
         pkg_path = Path(pkg.__file__).parent
         py_files = [f for f in pkg_path.glob("*.py") if f.name != "__init__.py"]
@@ -242,11 +280,13 @@ class TestL2ExecutionTypesPackage:
 
     def test_package_in_l2(self):
         from pathlib import Path
+
         import agentic_core.L2_execution.types as pkg
         assert "L2_execution" in str(Path(pkg.__file__).parent)
 
     def test_types_modules_discoverable(self):
         from pathlib import Path
+
         import agentic_core.L2_execution.types as pkg
         pkg_path = Path(pkg.__file__).parent
         py_files = [f for f in pkg_path.glob("*.py") if f.name != "__init__.py"]
@@ -261,11 +301,13 @@ class TestL6ObservabilityReasoningPackage:
 
     def test_package_in_l6(self):
         from pathlib import Path
+
         import agentic_core.L6_observability.reasoning as pkg
         assert "L6_observability" in str(Path(pkg.__file__).parent)
 
     def test_reasoning_modules_discoverable(self):
         from pathlib import Path
+
         import agentic_core.L6_observability.reasoning as pkg
         pkg_path = Path(pkg.__file__).parent
         py_files = [f for f in pkg_path.glob("*.py") if f.name != "__init__.py"]
@@ -273,6 +315,7 @@ class TestL6ObservabilityReasoningPackage:
 
     def test_no_import_error_on_reload(self):
         import importlib
+
         import agentic_core.L6_observability.reasoning as pkg
         importlib.reload(pkg)
 
@@ -289,6 +332,7 @@ class TestL4StatePackage:
 
     def test_expected_subpackages_present(self):
         from pathlib import Path
+
         import agentic_core.L4_state as pkg
         pkg_path = Path(pkg.__file__).parent
         assert pkg_path.is_dir()
@@ -297,6 +341,7 @@ class TestL4StatePackage:
 
     def test_no_import_error_on_reload(self):
         import importlib
+
         import agentic_core.L4_state as pkg
         importlib.reload(pkg)
 
@@ -309,6 +354,7 @@ class TestL3OrchestrationReasoningPackage:
 
     def test_package_is_inside_l3(self):
         from pathlib import Path
+
         import agentic_core.L3_orchestration.reasoning as pkg
         pkg_path = Path(pkg.__file__).parent
         assert "L3_orchestration" in str(pkg_path)
@@ -316,6 +362,7 @@ class TestL3OrchestrationReasoningPackage:
     def test_reasoning_agents_discoverable(self):
         """At least one agent module must live in the reasoning package."""
         from pathlib import Path
+
         import agentic_core.L3_orchestration.reasoning as pkg
         pkg_path = Path(pkg.__file__).parent
         py_files = [f for f in pkg_path.glob("*.py") if f.name != "__init__.py"]

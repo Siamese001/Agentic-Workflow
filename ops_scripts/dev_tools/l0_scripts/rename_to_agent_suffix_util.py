@@ -9,7 +9,34 @@ Run with --dry-run first to preview changes.
 import re
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "rename_to_agent_suffix_util")
+_emit_applies_guardrail("p0", "rename_to_agent_suffix_util", "p0_governance")
+_emit_reads_policy_state("p0", "rename_to_agent_suffix_util", "policy_binding")
+_emit_snapshots_state("p0", "rename_to_agent_suffix_util", "state_snapshot")
+emit_replay_key("p0", "rename_to_agent_suffix_util")
+emit_determinism_digest("p0", "rename_to_agent_suffix_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 RENAMES = {'SafeSystemCommandExecutorAgent': 'SafeSystemCommandExecutorAgent', 'ScriptToAgentClassifierAgent': 'ScriptToAgentClassifierAgent', 'ScriptsPlanningOrchestratorAgent': 'ScriptsPlanningOrchestratorAgent', 'SystemCommandExecutorAgent': 'SystemCommandExecutorAgent', 'WorkflowOrchestratorAgent': 'WorkflowOrchestratorAgent', 'AssertionInspector': 'AssertionInspectorAgent', 'BranchTracker': 'BranchTrackerAgent', 'CriticalPathAnalyzer': 'CriticalPathAnalyzerAgent', 'DecisionAnalyzer': 'DecisionAnalyzerAgent', 'DuplicateDetector': 'DuplicateDetectorAgent', 'DuplicateFunctionDetector': 'DuplicateFunctionDetectorAgent', 'ExceptionFlowAnalyzer': 'ExceptionFlowAnalyzerAgent', 'IntelligentOrchestratorAgent': 'IntelligentOrchestratorAgent', 'OrchestratorAgentAndScopeManagerAgent': 'OrchestratorAgentAndScopeManagerAgent', 'PatternEnforcerAgent': 'PatternEnforcerAgent', 'PrintStatementValidatorAgent': 'PrintStatementValidatorAgent', 'ReasoningRouterAgent': 'ReasoningRouterAgent', 'SafetyInspectorAgent': 'SafetyInspectorAgent', 'SemanticMapperAgent': 'SemanticMapperAgent', 'SovereignCognitivePlaneAgent': 'SovereignCognitivePlaneAgent', 'AuditTrailManager': 'AuditTrailManagerAgent', 'CircuitBreaker': 'CircuitBreakerAgent', 'CodeBlockValidator': 'CodeBlockValidatorAgent', 'DocumentHealer': 'DocumentHealerAgent', 'ImportHealerAgent': 'ImportHealerAgent', 'IntegrityGateExecutorAgent': 'IntegrityGateExecutorAgent', 'McpConnectionManagerAgent': 'McpConnectionManagerAgent', 'MemoryLeakDetectorAgent': 'MemoryLeakDetectorAgent', 'PeerIntelligenceAuditorAgent': 'PeerIntelligenceAuditorAgent', 'ProactiveResourceManagerAgent': 'ProactiveResourceManagerAgent', 'SovereignRedisOrchestrator': 'SovereignRedisOrchestrator', 'SovereigntyAuditorAgent': 'SovereigntyAuditorAgent', 'SprawlInspectorAgent': 'SprawlInspectorAgent', 'DeadlockDetectorAgent': 'DeadlockDetectorAgent', 'McpRouterAgent': 'McpRouterAgent', 'ModelRouterAgent': 'ModelRouterAgent', 'NervousSystemPhaseOrchestratorAgent': 'NervousSystemPhaseOrchestratorAgent', 'ResumeOrchestratorAgent': 'ResumeOrchestratorAgent', 'SelfRecoveringOrchestratorAgent': 'SelfRecoveringOrchestratorAgent', 'SovereignCanonAuditorAgent': 'SovereignCanonAuditorAgent', 'SovereignRagOrchestrator': 'SovereignRagOrchestrator', 'SubatomicOrchestratorAgent': 'SubatomicOrchestratorAgent', 'TaskMonitorAgent': 'TaskMonitorAgent', 'TerritoryChangeHandlerAgent': 'TerritoryChangeHandlerAgent', 'TokenBudgetInspectorAgent': 'TokenBudgetInspectorAgent', 'MemoryManagerAgent': 'MemoryManagerAgent', 'ValidationContextManagerAgent': 'ValidationContextManagerAgent', 'InputValidatorAgent': 'InputValidatorAgent', 'MethodChangeDetectorAgent': 'MethodChangeDetectorAgent', 'MultiProviderRouterAgent': 'MultiProviderRouterAgent', 'RedSentinelAgent': 'RedSentinelAgent', 'SecureCheckpointManagerAgent': 'SecureCheckpointManagerAgent', 'SecureConfigManagerAgent': 'SecureConfigManagerAgent', 'TypeHintFixerAgent': 'TypeHintFixerAgent', 'CapabilityMonitorAgent': 'CapabilityMonitorAgent', 'ConversationalRepairOrchestrator': 'ConversationalRepairOrchestratorAgent', 'MessageDiversityValidator': 'MessageDiversityValidator', 'OutreachCapabilityMonitorAgent': 'OutreachCapabilityMonitorAgent', 'OutreachHealingOrchestratorAgent': 'OutreachHealingOrchestratorAgent', 'OutreachPhase5Orchestrator': 'OutreachPhase5Orchestrator', 'OutreachSignalRouterAgent': 'OutreachSignalRouterAgent', 'OutreachValidationExecutorAgent': 'OutreachValidationExecutorAgent', 'Phase4OrchestratorAgent': 'Phase4OrchestratorAgent', 'Phase6OrchestratorAgent': 'Phase6OrchestratorAgent', 'Phase7OrchestratorAgent': 'Phase7OrchestratorAgent', 'PlaceholderDetectorAgent': 'PlaceholderDetectorAgent', 'SafetyExecutorAgent': 'SafetyExecutorAgent', 'SignalRouterAgent': 'SignalRouterAgent', 'StateValidatorAgent': 'StateValidatorAgent', 'StrategicPlannerAgent': 'StrategicPlannerAgent', 'StrictDocEnforcerAgent': 'StrictDocEnforcerAgent', 'TemplateOptimizerAgent': 'TemplateOptimizerAgent', 'Orchestrator': 'Orchestrator', 'Phase5Validator': 'Phase5ValidatorAgent', 'SystemValidator': 'SystemValidatorAgent', 'ValidationGateExecutor': 'ValidationGateExecutorAgent'}
 
 def rename_in_file(file_path: Path, renames: dict[str, str], dry_run: bool=True) -> list[tuple[str, str]]:

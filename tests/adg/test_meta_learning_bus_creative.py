@@ -33,6 +33,22 @@ import json
 
 import pytest
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "test_meta_learning_bus_creative")
+_emit_applies_guardrail("p0", "test_meta_learning_bus_creative", "p0_governance")
+_emit_snapshots_state("p0", "test_meta_learning_bus_creative", "state_snapshot")
+emit_replay_key("p0", "test_meta_learning_bus_creative")
+emit_determinism_digest("p0", "test_meta_learning_bus_creative")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
+
 # ---------------------------------------------------------------------------
 # Shared constants / helpers
 # ---------------------------------------------------------------------------
@@ -197,7 +213,7 @@ class TestHashCollisionResistance:
         assert b1.stable_hash() != b2.stable_hash()
 
     def test_rca_cluster_hashes_differ_by_member_list(self):
-        from system_learning.engines.rca_cluster_engine import RCAClusterEngine, RCAClusterConfig
+        from system_learning.engines.rca_cluster_engine import RCAClusterConfig, RCAClusterEngine
 
         eng = RCAClusterEngine(RCAClusterConfig(min_cluster_size=2))
         records_a = [_make_record(f"ta{i}", groundedness=0.2) for i in range(4)]
@@ -485,6 +501,7 @@ class TestClusterOrderingStability:
 
     def test_shuffled_record_order_same_cluster_ids(self):
         import random
+
         from system_learning.engines.rca_cluster_engine import cluster_records
 
         records = [_make_record(f"t{i}", groundedness=0.2) for i in range(10)]
@@ -526,8 +543,8 @@ class TestMultiGateSimultaneousFailure:
     """Proposals that fail multiple gates list ALL denial reasons."""
 
     def test_two_gates_fail_both_captured(self):
-        from system_learning.types.optimization_types import OptimizationProposal
         from system_learning.engines.proposal_validation_engine import validate_proposal
+        from system_learning.types.optimization_types import OptimizationProposal
 
         cid = _sha256("cluster")
         # proposal_id is NOT a valid hash → DETERMINISM fails
@@ -553,10 +570,11 @@ class TestMultiGateSimultaneousFailure:
         assert len(result.denial_reasons) >= 2
 
     def test_three_gates_fail_all_captured(self):
-        from system_learning.types.optimization_types import OptimizationProposal
         from system_learning.engines.proposal_validation_engine import (
-            ProposalValidationEngine, ValidationConfig,
+            ProposalValidationEngine,
+            ValidationConfig,
         )
+        from system_learning.types.optimization_types import OptimizationProposal
 
         cid = _sha256("cluster")
         # NOT_A_HASH → DETERMINISM fails
@@ -583,8 +601,8 @@ class TestMultiGateSimultaneousFailure:
         assert len(result.denial_reasons) >= 3
 
     def test_denial_reasons_are_deterministically_sorted(self):
-        from system_learning.types.optimization_types import OptimizationProposal
         from system_learning.engines.proposal_validation_engine import validate_proposal
+        from system_learning.types.optimization_types import OptimizationProposal
 
         cid = _sha256("cluster")
         p = OptimizationProposal(
@@ -654,8 +672,8 @@ class TestSignalPoisoning:
         assert score.human_approval_rate == pytest.approx(4 / 5, abs=1e-5)
 
     def test_empty_trace_id_signal_filtered_out(self):
-        from system_learning.types.optimization_types import GovernanceRewardSignal
         from system_learning.engines.governance_reward_model import score_proposal
+        from system_learning.types.optimization_types import GovernanceRewardSignal
 
         p = _make_proposal()
         valid = [_make_signal("t1")]
@@ -687,7 +705,7 @@ class TestMaxClustersCap:
     """RCA engine must not exceed max_clusters setting."""
 
     def test_max_clusters_2_trims_to_2(self):
-        from system_learning.engines.rca_cluster_engine import RCAClusterEngine, RCAClusterConfig
+        from system_learning.engines.rca_cluster_engine import RCAClusterConfig, RCAClusterEngine
 
         # Create records spread across many distinct patterns
         records = []
@@ -701,7 +719,7 @@ class TestMaxClustersCap:
         assert len(clusters) <= 2
 
     def test_max_clusters_enforced_after_singleton_merge(self):
-        from system_learning.engines.rca_cluster_engine import RCAClusterEngine, RCAClusterConfig
+        from system_learning.engines.rca_cluster_engine import RCAClusterConfig, RCAClusterEngine
 
         records = [_make_record(f"t{i}", groundedness=0.2) for i in range(50)]
         engine = RCAClusterEngine(RCAClusterConfig(max_clusters=1))
@@ -709,7 +727,7 @@ class TestMaxClustersCap:
         assert len(clusters) <= 1
 
     def test_max_clusters_cap_keeps_largest_clusters(self):
-        from system_learning.engines.rca_cluster_engine import RCAClusterEngine, RCAClusterConfig
+        from system_learning.engines.rca_cluster_engine import RCAClusterConfig, RCAClusterEngine
 
         # 10 LOW_GROUNDEDNESS + 2 HITL_ESCALATION
         records = (
@@ -732,8 +750,8 @@ class TestLineageTraceability:
     """cluster→proposal→commit chain is hash-provable."""
 
     def test_proposal_evidence_contains_cluster_hash(self):
-        from system_learning.engines.rca_cluster_engine import cluster_records
         from system_learning.engines.optimization_proposal_engine import generate_proposals
+        from system_learning.engines.rca_cluster_engine import cluster_records
 
         records = [_make_record(f"t{i}", groundedness=0.2) for i in range(6)]
         clusters = cluster_records(records, _TS)
@@ -748,8 +766,8 @@ class TestLineageTraceability:
             )
 
     def test_proposal_cluster_id_matches_originating_cluster(self):
-        from system_learning.engines.rca_cluster_engine import cluster_records
         from system_learning.engines.optimization_proposal_engine import generate_proposals
+        from system_learning.engines.rca_cluster_engine import cluster_records
 
         records = [_make_record(f"t{i}", groundedness=0.2) for i in range(6)]
         clusters = cluster_records(records, _TS)
@@ -889,7 +907,8 @@ class TestRewardInvariantFloorBoundary:
 
     def _score_at(self, gnd, policy, replay, floor=0.60, p_floor=0.80, r_floor=0.75):
         from system_learning.engines.governance_reward_model import (
-            GovernanceRewardModel, RewardModelConfig,
+            GovernanceRewardModel,
+            RewardModelConfig,
         )
 
         cfg = RewardModelConfig(
@@ -999,8 +1018,8 @@ class TestGateResultsCompleteness:
         assert gate_names == self._EXPECTED_GATES
 
     def test_failing_proposal_has_all_5_gates(self):
-        from system_learning.types.optimization_types import OptimizationProposal
         from system_learning.engines.proposal_validation_engine import validate_proposal
+        from system_learning.types.optimization_types import OptimizationProposal
 
         cid = _sha256("c")
         p = OptimizationProposal(
@@ -1176,7 +1195,6 @@ class TestFeatureBundleRoundTrip:
     def test_to_dict_and_to_json_consistent(self):
         import json as _json
         b = self._make_bundle()
-        from system_learning.enforcement.determinism import deterministic_json
         assert _json.loads(b.to_json()) == b.to_dict()
 
 

@@ -23,17 +23,48 @@ Usage
     python ops_scripts/ci/dump_adg_to_file.py --rebuild  # force full re-parse
 """
 from __future__ import annotations
+
 import argparse
 import json
 import sys
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "dump_adg_to_file")
+_emit_applies_guardrail("p0", "dump_adg_to_file", "p0_governance")
+_emit_reads_policy_state("p0", "dump_adg_to_file", "policy_binding")
+_emit_snapshots_state("p0", "dump_adg_to_file", "state_snapshot")
+emit_replay_key("p0", "dump_adg_to_file")
+emit_determinism_digest("p0", "dump_adg_to_file")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 _FIXED_TS = "2026-01-01T00:00:00Z"
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from tools.dep_graph_db import SSOT_DIRS, build
+
 OUT_DIR = ROOT / 'artifacts' / 'adg'
 
 def _dump(force_rebuild: bool) -> Path:

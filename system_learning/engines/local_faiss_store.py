@@ -16,8 +16,24 @@ import struct
 from pathlib import Path
 from typing import Any, Callable
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.types.index_build_metadata_types import IndexBuildMetadata
+
+_emit_applies_guardrail("p0", "local_faiss_store", "p0_governance")
+_emit_reads_policy_state("p0", "local_faiss_store", "policy_binding")
+_emit_snapshots_state("p0", "local_faiss_store", "state_snapshot")
+emit_replay_key("p0", "local_faiss_store")
+emit_determinism_digest("p0", "local_faiss_store")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 
 def _faiss_available() -> bool:

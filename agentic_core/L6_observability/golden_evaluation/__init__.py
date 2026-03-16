@@ -23,11 +23,16 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_routes_through,  # noqa: E402
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
 
 from .injection_regression_suite import evaluate_injection_regression
 from .resume_quality_evaluator import evaluate_resume_quality
 from .tool_use_ground_truth_evaluator import evaluate_tool_use_ground_truth
+
+emit_replay_key("p0", "__init__")
+emit_determinism_digest("p0", "__init__")
 
 _emit_dispatches_healing_run("p1", "__init__", "L6")
 _emit_routes_through("p1", "__init__", "L6")

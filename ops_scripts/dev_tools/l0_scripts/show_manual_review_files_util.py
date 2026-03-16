@@ -11,7 +11,24 @@ from pathlib import Path
 from agentic_core.L5_safety.config.structure_blueprint import (
     TESTS_DIR,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from agentic_core.utils.ast_fuzzy_util import compute_file_hash
+
+_emit_records_execution_trace("p0", "evidence", "show_manual_review_files_util")
+_emit_applies_guardrail("p0", "show_manual_review_files_util", "p0_governance")
+_emit_reads_policy_state("p0", "show_manual_review_files_util", "policy_binding")
+_emit_snapshots_state("p0", "show_manual_review_files_util", "state_snapshot")
+emit_replay_key("p0", "show_manual_review_files_util")
+emit_determinism_digest("p0", "show_manual_review_files_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 project_root = Path(__file__).parent.parent
 # guardian: allow-global-mutation

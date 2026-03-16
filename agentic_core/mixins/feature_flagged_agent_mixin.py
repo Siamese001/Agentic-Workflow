@@ -14,7 +14,15 @@ from typing import Any, TypeVar
 from agentic_core.utils.dependency_resolver import DynamicLoader
 from agentic_core.utils.feature_flags import FeatureFlagManager
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from agentic_core.utils.detection_protocol_util import (
     DetectionResult,
     DetectionSignalProtocol,
@@ -36,6 +44,12 @@ from agentic_core.utils.verification_types_util import (
     VerificationRequest,
     VerificationResult,
 )
+
+_emit_applies_guardrail("p0", "feature_flagged_agent_mixin", "p0_governance")
+_emit_snapshots_state("p0", "feature_flagged_agent_mixin", "state_snapshot")
+emit_replay_key("p0", "feature_flagged_agent_mixin")
+emit_determinism_digest("p0", "feature_flagged_agent_mixin")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 logger = logging.getLogger(__name__)
 

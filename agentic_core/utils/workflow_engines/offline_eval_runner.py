@@ -11,6 +11,17 @@ import uuid
 from datetime import datetime
 from typing import Any, Callable
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
 from ..metrics.answer_correctness import AnswerCorrectness
 from ..metrics.base import EvaluationMetric
 from ..metrics.groundedness import Groundedness
@@ -24,7 +35,13 @@ from ..schemas.evaluation_result_schema import (
     EvaluationResult,
     EvaluationSnapshot,
 )
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+_emit_applies_guardrail("p0", "offline_eval_runner", "p0_governance")
+_emit_reads_policy_state("p0", "offline_eval_runner", "policy_binding")
+_emit_snapshots_state("p0", "offline_eval_runner", "state_snapshot")
+emit_replay_key("p0", "offline_eval_runner")
+emit_determinism_digest("p0", "offline_eval_runner")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 RetrievalFn = Callable[[str], list[str]]
 GenerationFn = Callable[[str, list[str]], str]

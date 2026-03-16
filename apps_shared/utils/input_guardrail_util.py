@@ -4,17 +4,34 @@ This module provides security scanning for all inputs before they reach
 the RAG pipeline, protecting against prompt injection, jailbreaks,
 PII leakage, Unicode attacks, and encoded payloads.
 """
-from agentic_core.L5_safety.enforcement.eval_guard import get_eval_guard
-from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
 import base64
 import logging
 import re
-import time
 import unicodedata
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Final
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+
+from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
+from agentic_core.L5_safety.enforcement.eval_guard import get_eval_guard
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_applies_guardrail("p0", "input_guardrail_util", "p0_governance")
+_emit_reads_policy_state("p0", "input_guardrail_util", "policy_binding")
+_emit_snapshots_state("p0", "input_guardrail_util", "state_snapshot")
+emit_replay_key("p0", "input_guardrail_util")
+emit_determinism_digest("p0", "input_guardrail_util")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 logger = logging.getLogger(__name__)
 DEFAULT_RATE_LIMIT_PER_MINUTE: Final[int] = 60
 
@@ -222,9 +239,9 @@ class InputGuardrail:
             Confidence score (0.0 - 1.0)
         """
         text_lower = text.lower()
-        keyword_count = sum((1 for keyword in self.malicious_keywords if keyword in text_lower))
+        keyword_count = sum(1 for keyword in self.malicious_keywords if keyword in text_lower)
         confidence = min(keyword_count / len(self.malicious_keywords), 1.0)
-        injection_count = sum((1 for pattern in self.compiled_injection_patterns if pattern.search(text)))
+        injection_count = sum(1 for pattern in self.compiled_injection_patterns if pattern.search(text))
         if injection_count > 2:
             confidence = min(confidence + 0.3, 1.0)
         return confidence
@@ -282,7 +299,7 @@ class InputGuardrail:
             try:
                 decoded = base64.b64decode(match).decode('utf-8', errors='ignore')
                 decoded_lower = decoded.lower()
-                if any((keyword in decoded_lower for keyword in self.malicious_keywords)):
+                if any(keyword in decoded_lower for keyword in self.malicious_keywords):
                     return (True, f'Base64 payload with malicious content: {match[:20]}...')
                 for pattern in self.injection_patterns[:5]:
                     if re.search(pattern, decoded, re.IGNORECASE):
@@ -295,7 +312,7 @@ class InputGuardrail:
         for match in hex_matches:
             try:
                 decoded = bytes.fromhex(match).decode('utf-8', errors='ignore')
-                if any((keyword in decoded.lower() for keyword in self.malicious_keywords)):
+                if any(keyword in decoded.lower() for keyword in self.malicious_keywords):
                     return (True, 'Hex encoded payload with malicious content')
             except (ValueError, UnicodeDecodeError):
                 pass
@@ -307,7 +324,7 @@ class InputGuardrail:
         Returns:
             Dictionary with stats
         """
-        return {'injection_patterns_count': len(self.injection_patterns), 'pii_types_count': len(self.pii_patterns), 'malicious_keywords_count': len(self.malicious_keywords), 'unicode_homoglyphs_count': sum((len(homoglyphs) for homoglyphs in self.unicode_homoglyphs.values())), 'strict_mode': self.strict_mode, 'rate_limit_per_minute': self.rate_limit_per_minute, 'active_rate_limits': len(self._rate_limit_store), 'features_enabled': {'injection_detection': self.enable_injection_detection, 'pii_detection': self.enable_pii_detection, 'semantic_check': self.enable_semantic_check, 'unicode_check': self.enable_unicode_check, 'encoding_check': self.enable_encoding_check, 'rate_limit': self.enable_rate_limit}}
+        return {'injection_patterns_count': len(self.injection_patterns), 'pii_types_count': len(self.pii_patterns), 'malicious_keywords_count': len(self.malicious_keywords), 'unicode_homoglyphs_count': sum(len(homoglyphs) for homoglyphs in self.unicode_homoglyphs.values()), 'strict_mode': self.strict_mode, 'rate_limit_per_minute': self.rate_limit_per_minute, 'active_rate_limits': len(self._rate_limit_store), 'features_enabled': {'injection_detection': self.enable_injection_detection, 'pii_detection': self.enable_pii_detection, 'semantic_check': self.enable_semantic_check, 'unicode_check': self.enable_unicode_check, 'encoding_check': self.enable_encoding_check, 'rate_limit': self.enable_rate_limit}}
 _input_guardrail: InputGuardrail | None = None
 
 def get_input_guardrail(**kwargs) -> InputGuardrail:

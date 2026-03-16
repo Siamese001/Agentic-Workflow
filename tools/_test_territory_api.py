@@ -5,6 +5,23 @@ from agentic_core.L5_safety.config.structure_blueprint.territories import (
     get_territory_metadata,
     is_valid_root_folder,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
+
+_emit_records_execution_trace("p0", "evidence", "_test_territory_api")
+_emit_applies_guardrail("p0", "_test_territory_api", "p0_governance")
+_emit_reads_policy_state("p0", "_test_territory_api", "policy_binding")
+_emit_snapshots_state("p0", "_test_territory_api", "state_snapshot")
+emit_replay_key("p0", "_test_territory_api")
+emit_determinism_digest("p0", "_test_territory_api")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 print("=" * 60)
 print("Territory API Migration Verification")

@@ -56,10 +56,24 @@ import hashlib
 import logging
 from typing import Sequence
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 from system_learning.enforcement.determinism import deterministic_json
 from system_learning.types.prompt_artifact_types import PromptOutcomeRecord
 from system_learning.types.trace_feature_types import TraceFeatureRecord
+
+_emit_applies_guardrail("p0", "prompt_outcome_bus_adapter", "p0_governance")
+_emit_snapshots_state("p0", "prompt_outcome_bus_adapter", "state_snapshot")
+emit_replay_key("p0", "prompt_outcome_bus_adapter")
+emit_determinism_digest("p0", "prompt_outcome_bus_adapter")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 logger = logging.getLogger(__name__)
 

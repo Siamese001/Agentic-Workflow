@@ -10,10 +10,26 @@ from __future__ import annotations
 
 from typing import Any, Callable
 
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.runtime.lifecycle_trace_contract import (
+    LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 
 from .base import GenerationMetric
 from .groundedness import _token_f1, _tokenize
+
+_emit_applies_guardrail("p0", "answer_correctness", "p0_governance")
+_emit_reads_policy_state("p0", "answer_correctness", "policy_binding")
+_emit_snapshots_state("p0", "answer_correctness", "state_snapshot")
+emit_replay_key("p0", "answer_correctness")
+emit_determinism_digest("p0", "answer_correctness")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 
 class AnswerCorrectness(GenerationMetric):

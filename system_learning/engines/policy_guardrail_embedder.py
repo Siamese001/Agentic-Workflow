@@ -28,8 +28,13 @@ from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_applies_guardrail,  # noqa: E402
     _emit_records_execution_trace,
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
     _emit_verifies_policy,
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
 )
 from system_learning.config.semantic_memory_config import DEFAULT_EMBEDDER_BUFFER_SIZE
 from system_learning.engines.embedding_corpus_extraction import (
@@ -37,6 +42,12 @@ from system_learning.engines.embedding_corpus_extraction import (
     compute_content_hash,
 )
 from system_learning.types.semantic_memory_types import PolicyGuardrailCase
+
+_emit_applies_guardrail("p0", "policy_guardrail_embedder", "p0_governance")
+_emit_snapshots_state("p0", "policy_guardrail_embedder", "state_snapshot")
+emit_replay_key("p0", "policy_guardrail_embedder")
+emit_determinism_digest("p0", "policy_guardrail_embedder")
+_emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 logger = logging.getLogger(__name__)
 
