@@ -167,6 +167,7 @@ _emit_gated_by_confidence("p1", "check_mcp_config_sovereignty", "confidence_gate
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MCP_CONFIG_PATH = REPO_ROOT / "mcp_config.json"
 
+# guardian: allow-config-with-logic
 FORBIDDEN_OUT_OF_REPO_FRAGMENTS = [
     r"c:\users",
     r"c:/users",
@@ -175,12 +176,14 @@ FORBIDDEN_OUT_OF_REPO_FRAGMENTS = [
     ".windsurf/plans",
 ]
 
+# guardian: allow-config-with-logic
 DENOMINATOR_SENSITIVE_FILES = [
     "agentic_core/adg/schema.py",
     "agentic_core/adg/extraction/static_scanner.py",
     "agentic_core/runtime/lifecycle_trace_contract.py",
 ]
 
+# guardian: allow-config-with-logic
 SOVEREIGN_WRITE_TERRITORIES = [
     "docs/reports/plans/",
     "artifacts/adg/",
@@ -195,7 +198,7 @@ def _normalise(path_str: str) -> str:
     return path_str.replace("\\", "/").lower()
 
 
-def validate_mcp_config(config_path: Path) -> list[str]:
+def validate_mcp_sovereignty(config_path: Path) -> list[str]:
     """Return a list of violation strings. Empty list = fully compliant."""
     violations: list[str] = []
 
@@ -288,7 +291,7 @@ def validate_mcp_config(config_path: Path) -> list[str]:
 
 
 def main() -> int:
-    violations = validate_mcp_config(MCP_CONFIG_PATH)
+    violations = validate_mcp_sovereignty(MCP_CONFIG_PATH)
     if violations:
         print(f"[ERROR] MCP Config Sovereignty gate FAILED — {len(violations)} violation(s):")
         for v in violations:
