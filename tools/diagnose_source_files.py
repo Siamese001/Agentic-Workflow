@@ -25,13 +25,13 @@ for subdir in ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_lea
     )
     clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
     lines = clean.split("\n")
-    
+
     i = 0
     while i < len(lines):
         if "ERROR collecting" not in lines[i]:
             i += 1
             continue
-        
+
         # Scan the traceback block for source file and error
         src_file = None
         err_msg = None
@@ -44,13 +44,13 @@ for subdir in ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_lea
             if s.startswith("E   ") and ("Error" in s or "cannot import" in s or "No module" in s):
                 err_msg = s[4:].strip()[:150]
                 break
-        
+
         if src_file and err_msg:
             source_errors[src_file] += 1
             error_types[src_file] = err_msg
         elif err_msg:
             source_errors["unknown"] += 1
-            
+
         i += 1
 
 print(f"=== Top source files causing test collection errors ===\n")

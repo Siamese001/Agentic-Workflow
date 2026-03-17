@@ -120,20 +120,20 @@ has ZERO authority.                                                             
                                                                                                                                                                        | - CompletenessScore                         |
 C0 LIBRARY ANALOGY:                                                                                                                                                    | - SupportedAnswerRate                       |
 - A librarian temporarily stacking books on a desk                                                                                                                     +---------------------------------------------+
-- Not the archive (L4)                                                                                                                                                 
-- Not the librarian (L1)                                                                                                                                               
-- Not the workers (L2)                                                                                                                                                 
-                                                                                                                                                                       
-  [ 🧠 L1 INVOCATION ] ───────────────────────────────────────────┐                                                                                                    
-  | (Invokes C0)                                                  |                                                                                                    
-  |-----------------------------------------------|               |                                                                                                    
-  | [IN] L1 → C0                                  |               |                                                                                                    
-  | L1 asks: “What books exist on this topic?”    |               |                                                                                                    
-  | C0 = temporary reading stack assembly         |               |                                                                                                    
-  | NOT archive | NOT execution | NOT routing     |               |                                                                                                    
-  |-----------------------------------------------|               |                                                                                                    
-                                                                  v                                                                                                    
-                                              [ FROM 💾 L4 ARCHIVE ]                                                                                                   
+- Not the archive (L4)
+- Not the librarian (L1)
+- Not the workers (L2)
+
+  [ 🧠 L1 INVOCATION ] ───────────────────────────────────────────┐
+  | (Invokes C0)                                                  |
+  |-----------------------------------------------|               |
+  | [IN] L1 → C0                                  |               |
+  | L1 asks: “What books exist on this topic?”    |               |
+  | C0 = temporary reading stack assembly         |               |
+  | NOT archive | NOT execution | NOT routing     |               |
+  |-----------------------------------------------|               |
+                                                                  v
+                                              [ FROM 💾 L4 ARCHIVE ]
                                               |-----------------------------------------------|
                                               | [PULL] C0 reads ONLY from L4                  |
                                               | Deep archive lookup (read-only)               |

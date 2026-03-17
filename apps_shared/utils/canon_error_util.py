@@ -5,6 +5,8 @@ Defines specific exception types for the L5 Multi-Agent System
 to handle Canon violations and memory synchronization errors.
 """
 
+from __future__ import annotations
+
 
 class CanonError(Exception):
     """Base class for all Canon-related errors."""

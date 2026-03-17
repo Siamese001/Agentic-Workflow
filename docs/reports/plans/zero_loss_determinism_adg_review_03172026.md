@@ -34,7 +34,7 @@
    - `agentic_core/L2_execution/determinism/replay_guard.py` (primary)
    - `agentic_core/L1_cognition/types/react_trace_types.py` (reasoning)
    - `agentic_core/mixins/replay_guard_mixin.py` (base mixin)
-   
+
    Document correctly describes it as a context manager patching stdlib (lines 56-59).
 
 5. **UWG Chokepoint (5,133 writes_to edges)** — Document's description of UWG as "THE PRISON GUARD" (line 40) intercepting ALL writes is accurate. ADG shows 5,133 `writes_to` edges, all flowing through governance.
@@ -45,51 +45,51 @@
    - Legitimate (trace_id generation)?
    - Violations (non-deterministic ID generation)?
    - Captured in transcript?
-   
+
    **Recommendation**: Add explicit UUID policy section explaining when uuid is permitted (e.g., trace_id generation outside replay paths) vs forbidden (inside deterministic execution).
 
 2. **Credential Access (381 edges)** — ADG shows 381 `accesses_credential` edges. Document doesn't address:
    - Are credentials part of the determinism surface?
    - Do credential rotations break digest stability?
    - Should credentials be in ReplayEnvelope (line 145)?
-   
+
    **Recommendation**: Add section on credential handling in deterministic replay (likely: credentials are NOT part of digest, but credential USAGE must be transcripted).
 
 3. **Low Replay Key Count (21 edges)** — Document emphasizes `replay_key` as critical (lines 67, 143, 145), but ADG shows only 21 `emits_replay_key` edges vs 3,701 `emits_determinism_digest` edges.
-   
+
    **Possible explanations**:
    - Replay keys are emitted only at orchestration boundaries (not per-module)?
    - Digest emission is more granular than replay key emission?
-   
+
    **Recommendation**: Clarify the emission cardinality relationship between digest and replay_key. Is it 1:1 or N:1?
 
 4. **SemanticClock Implementation Fragmentation** — ADG shows multiple SemanticClock implementations:
    - `agentic_core/L0_routing/types/determinism_types.py` (canonical dataclass)
    - `agentic_core/adg/runtime/determinism_control.py` (runtime implementation)
    - `agentic_core/L6_observability/engines/semantic_clock_validator.py` (validator)
-   
-   Document presents SemanticClock as singular (line 48). 
-   
+
+   Document presents SemanticClock as singular (line 48).
+
    **Recommendation**: Add note that SemanticClock has multiple implementation layers (L0 type definition, L2 runtime, L6 validation) but all enforce the same "SOLE temporal authority" invariant.
 
 **❌ MISSING — Critical ADG signals not in document:**
 
 1. **Network I/O Transcript** — Document mentions "un-transcripted network calls -> HARD FAIL" (lines 54, 129) but doesn't show the positive case: HOW are network calls transcripted? What's the data structure?
-   
+
    **Recommendation**: Add NetworkTranscript contract showing captured fields (url, method, headers, request_body, response_body, timestamp_semantic).
 
 2. **Replay Mode Flag Propagation** — Document mentions `replay_mode = True` (lines 76, 134) but doesn't explain:
    - Where is this flag set?
    - How does it propagate through layers?
    - What happens if L2 is in replay mode but L3 isn't?
-   
+
    **Recommendation**: Add replay mode lifecycle diagram showing flag initialization (L3/L5), propagation (SandboxEnvelope), and enforcement (L2 UWG/ReplayGuard).
 
 3. **Digest Mismatch Recovery** — Document says "Mismatch => FAIL" (line 82) but doesn't specify:
    - What layer detects the mismatch?
    - Does it trigger L2.3 Healing Loop (mentioned line 44)?
    - Is there a DigestMismatchException type?
-   
+
    **Recommendation**: Add failure mode section explaining digest mismatch detection, exception type, and healing pathway.
 
 ## Document Quality Assessment

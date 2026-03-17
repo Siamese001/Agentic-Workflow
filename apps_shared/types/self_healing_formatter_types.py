@@ -5,6 +5,8 @@ repair common issues, and ensure the user always receives usable content even wh
 the LLM produces broken JSON, markdown wrappers, or missing fields.
 """
 
+from __future__ import annotations
+
 import json
 import logging
 import re

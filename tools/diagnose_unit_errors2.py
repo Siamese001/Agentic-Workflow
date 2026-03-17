@@ -31,7 +31,7 @@ categories = {}
 for el in error_lines:
     parts = el.split(" - ", 1)
     msg = parts[1].strip() if len(parts) > 1 else "no inline msg"
-    
+
     # Simplify message
     if "NameError" in msg:
         key = msg[:80]
@@ -49,7 +49,7 @@ for el in error_lines:
         key = "OSError"
     else:
         key = msg[:60] if msg else "Unknown"
-    
+
     categories.setdefault(key, []).append(parts[0].replace("ERROR ", ""))
 
 for key, files in sorted(categories.items(), key=lambda x: -len(x[1])):

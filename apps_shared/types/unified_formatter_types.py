@@ -4,6 +4,8 @@ This module provides a unified formatting system that both resume and outreach
 engines can use, eliminating the need for separate format_* modules.
 """
 
+from __future__ import annotations
+
 import json
 import logging
 from abc import ABC, abstractmethod

@@ -6,6 +6,8 @@ jitter, and circuit breaker integration to handle transient failures gracefully.
 
 import asyncio
 import logging
+from dataclasses import dataclass, field
+from enum import Enum
 import random
 import time
 from datetime import datetime

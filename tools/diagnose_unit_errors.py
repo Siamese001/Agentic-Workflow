@@ -20,7 +20,7 @@ for i, line in enumerate(lines):
         parts = line.strip().split(" - ", 1)
         test_file = parts[0].replace("ERROR ", "").strip()
         err_msg = parts[1].strip() if len(parts) > 1 else ""
-        
+
         # If no inline error, look for E   lines nearby
         if not err_msg:
             for j in range(max(0, i-5), min(len(lines), i+5)):
@@ -28,7 +28,7 @@ for i, line in enumerate(lines):
                 if s.startswith("E   ") and ("Error" in s or "cannot import" in s or "No module" in s):
                     err_msg = s[4:].strip()
                     break
-        
+
         errors.append((test_file, err_msg))
 
 # Categorize
@@ -51,7 +51,7 @@ for test_file, err_msg in errors:
         cat = "OSError"
     else:
         cat = err_msg[:80] if err_msg else "Unknown"
-    
+
     categories.setdefault(cat, []).append(test_file)
 
 print(f"=== {len(errors)} unit test collection errors ===\n")

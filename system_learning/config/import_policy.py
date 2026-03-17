@@ -17,6 +17,10 @@ Forbidden:
 
 from typing import Final
 
+APPS_LIC_DIR: Final[str] = "apps_lic"
+APPS_RG_DIR: Final[str] = "apps_rg"
+APPS_SHARED_DIR: Final[str] = "apps_shared"
+
 FORBIDDEN_IMPORT_PREFIXES: Final[frozenset] = frozenset(
     {
         APPS_LIC_DIR,

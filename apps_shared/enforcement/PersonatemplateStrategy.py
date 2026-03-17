@@ -5,6 +5,23 @@ This module provides sanitized prompt templates that use functional personas
 instead of numbered nodes. All references to K.X have been eliminated.
 """
 
+from __future__ import annotations
+from typing import Any
+from enum import Enum
+
+
+class AgentRole(Enum):
+    """Functional roles for agents."""
+    CONTEXT_GATHERER = "context_gatherer"
+    STRATEGIC_PLANNER = "strategic_planner"
+    CONTENT_DRAFTER = "content_drafter"
+    QUALITY_CRITIC = "quality_critic"
+    MESSAGE_CRAFTER = "message_crafter"
+    PROTOCOL_ENFORCER = "protocol_enforcer"
+    RESUME_BUILDER = "resume_builder"
+    QUALITY_REVIEWER = "quality_reviewer"
+    COMPLIANCE_CHECKER = "compliance_checker"
+
 
 class PersonaTemplate:
     """Template for functional persona prompts."""

@@ -29,6 +29,7 @@ Design invariants
 from __future__ import annotations
 
 import hashlib
+from pathlib import Path
 from dataclasses import dataclass
 
 from agentic_core.runtime.lifecycle_trace_contract import (

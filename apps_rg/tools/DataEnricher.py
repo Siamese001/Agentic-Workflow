@@ -5,6 +5,9 @@ Data enrichment for resume generation HOP-2.
 Enriches bullet pool with canonical verbs and deduplication.
 """
 
+from __future__ import annotations
+from typing import Any
+
 
 class DataEnricher:
     """HOP-2: Enrich bullet pool with canonical verbs, deduplication, etc."""

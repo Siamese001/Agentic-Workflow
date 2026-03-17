@@ -6,6 +6,9 @@ Follows the functional component pattern with proper logging.
 """
 
 import logging
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
 from datetime import datetime
 
 from agentic_core.runtime.lifecycle_trace_contract import (

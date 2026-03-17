@@ -124,15 +124,15 @@ C0 LIBRARY ANALOGY: A librarian temporarily stacking books on a desk | Not the a
 | CompletenessScore     | Context coverage                 |
 | SupportedAnswerRate   | Evidence grounding               |
 
-  [ 🧠 L1 INVOCATION ] ───────────────────────────────────────────┐                                                                                                    
-  |-----------------------------------------------|               |                                                                                                    
-  | [IN] L1 → C0                                  |               |                                                                                                    
-  | L1 asks: “What books exist on this topic?”    |               |                                                                                                    
-  | C0 = temporary reading stack assembly         |               |                                                                                                    
-  | NOT archive | NOT execution | NOT routing     |               |                                                                                                    
-  |-----------------------------------------------|               |                                                                                                    
-                                                                  v                                                                                                    
-                                              [ FROM 💾 L4 ARCHIVE ]                                                                                                   
+  [ 🧠 L1 INVOCATION ] ───────────────────────────────────────────┐
+  |-----------------------------------------------|               |
+  | [IN] L1 → C0                                  |               |
+  | L1 asks: “What books exist on this topic?”    |               |
+  | C0 = temporary reading stack assembly         |               |
+  | NOT archive | NOT execution | NOT routing     |               |
+  |-----------------------------------------------|               |
+                                                                  v
+                                              [ FROM 💾 L4 ARCHIVE ]
                                               |-----------------------------------------------|
                                               | [PULL] C0 reads ONLY from L4                  |
                                               | Deep archive lookup (read-only)               |

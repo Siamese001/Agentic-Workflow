@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import math
+from typing import Optional
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Literal

@@ -1,6 +1,6 @@
 """Fix files where batch wiring broke the module structure.
 
-The batch wiring scripts inserted lifecycle_trace_contract imports at the 
+The batch wiring scripts inserted lifecycle_trace_contract imports at the
 top of files, BEFORE the module docstring and standard library imports.
 This causes the docstring to become a bare string literal, and the real
 imports to appear after symbol usage.
@@ -40,7 +40,7 @@ for base_dir in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_l
                 continue
 
             lines = content.split("\n")
-            
+
             # Find the FIRST lifecycle_trace_contract import block
             ltc_block_start = -1
             ltc_block_end = -1
@@ -58,10 +58,10 @@ for base_dir in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_l
                     else:
                         ltc_block_end = i
                     break  # Only fix the FIRST block
-            
+
             if ltc_block_start < 0:
                 continue
-            
+
             # Check if there's a standard library import AFTER the LTC block
             # that should have been BEFORE it
             has_stdlib_after = False
@@ -82,10 +82,10 @@ for base_dir in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_l
                         has_stdlib_after = True
                         first_stdlib_after = i
                         break
-            
+
             if not has_stdlib_after:
                 continue
-            
+
             # Check if there's a bare string literal (broken docstring) before LTC block
             # or if the LTC import is before the module's actual docstring
             has_bare_string = False
@@ -94,13 +94,13 @@ for base_dir in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_l
                 if s.startswith('"""') or s.startswith("'") or s.startswith('"'):
                     has_bare_string = True
                     break
-            
+
             if not has_bare_string and first_stdlib_after <= ltc_block_end:
                 continue
-            
+
             # Extract the LTC block
             ltc_lines = lines[ltc_block_start:ltc_block_end + 1]
-            
+
             # Also extract any _emit_* call lines immediately after the block
             emit_calls_end = ltc_block_end + 1
             while emit_calls_end < len(lines):
@@ -109,12 +109,12 @@ for base_dir in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_l
                     emit_calls_end += 1
                 else:
                     break
-            
+
             emit_call_lines = lines[ltc_block_end + 1:emit_calls_end]
-            
+
             # Remove the LTC block + emit calls from their current position
             new_lines = lines[:ltc_block_start] + lines[emit_calls_end:]
-            
+
             # Find the last import line in the new content
             last_import = 0
             in_import = False
@@ -128,14 +128,14 @@ for base_dir in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_l
                     last_import = i
                     if s == ")":
                         in_import = False
-            
+
             # Insert LTC block after last import
             insert_pos = last_import + 1
             insert_block = [""] + ltc_lines + emit_call_lines
-            
+
             for k, il in enumerate(insert_block):
                 new_lines.insert(insert_pos + k, il)
-            
+
             new_content = "\n".join(new_lines)
             with open(fpath, "w", encoding="utf-8") as f:
                 f.write(new_content)

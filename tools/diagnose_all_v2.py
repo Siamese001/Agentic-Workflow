@@ -6,7 +6,7 @@ import os
 
 ROOT = r"C:\Git\Agentic-Workflow"
 
-dirs_with_errors = ["adg", "ci", "e2e", "guardian", "integration", "misc", 
+dirs_with_errors = ["adg", "ci", "e2e", "guardian", "integration", "misc",
                      "performance", "unit_min_deps"]
 
 categories = {}
@@ -19,7 +19,7 @@ for d in dirs_with_errors:
     )
     clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
     lines = clean.split("\n")
-    
+
     for i, line in enumerate(lines):
         if "ERROR collecting" not in line:
             continue
@@ -39,7 +39,7 @@ for d in dirs_with_errors:
                             break
                 else:
                     src = "unknown"
-                
+
                 # Simplify
                 if "NameError" in msg:
                     key = msg[:80]
@@ -53,7 +53,7 @@ for d in dirs_with_errors:
                     key = msg[:80]
                 else:
                     key = msg[:80]
-                
+
                 categories.setdefault(key, 0)
                 categories[key] += 1
                 source_files.setdefault(key, set())
@@ -72,7 +72,7 @@ for sd in sorted(os.listdir(unit_dir)):
     )
     clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
     lines = clean.split("\n")
-    
+
     for i, line in enumerate(lines):
         if "ERROR collecting" not in line:
             continue
@@ -90,7 +90,7 @@ for sd in sorted(os.listdir(unit_dir)):
                             break
                 else:
                     src = "unknown"
-                
+
                 if "NameError" in msg:
                     key = msg[:80]
                 elif "ModuleNotFoundError" in msg:
@@ -103,7 +103,7 @@ for sd in sorted(os.listdir(unit_dir)):
                     key = msg[:80]
                 else:
                     key = msg[:80]
-                
+
                 categories.setdefault(key, 0)
                 categories[key] += 1
                 source_files.setdefault(key, set())

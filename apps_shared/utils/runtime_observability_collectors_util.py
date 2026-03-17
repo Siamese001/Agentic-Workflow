@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,
@@ -7,7 +11,12 @@ from agentic_core.runtime.lifecycle_trace_contract import (
 emit_determinism_digest("runtime_observability_collectors_util", "runtime_observability_collectors_util_digest")
 record_execution_trace("runtime_observability_collectors_util", "runtime_observability_collectors_util_trace")
 
-# from archives.legacy_root_folders.core.models.models import TelemetryEvent  # DEPRECATED: Archive import removed to protect archives from validation edits
+
+@dataclass
+class TelemetryEvent:
+    """Stub telemetry event for runtime observability."""
+    name: str = ""
+    data: dict[str, Any] = field(default_factory=dict)
 
 
 _telemetry_buffer: list[TelemetryEvent] = []

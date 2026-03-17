@@ -10,7 +10,7 @@ for xml_file in sorted(os.listdir(xml_dir)):
         continue
     subdir = xml_file.replace(".xml", "")
     tree = ET.parse(os.path.join(xml_dir, xml_file))
-    
+
     failures = []
     errors = []
     for tc in tree.getroot().iter("testcase"):
@@ -23,7 +23,7 @@ for xml_file in sorted(os.listdir(xml_dir)):
         if err is not None:
             msg = err.get("message", "")[:120]
             errors.append(msg)
-    
+
     if failures or errors:
         print(f"\n=== {subdir} ({len(failures)} failures, {len(errors)} errors) ===")
         if errors:

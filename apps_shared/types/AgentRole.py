@@ -4,6 +4,8 @@ This module defines the functional capabilities that replace the legacy K-node
 numbered system. Agents are identified by their function, not by numbers.
 """
 
+from __future__ import annotations
+
 import logging
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -199,10 +201,10 @@ class AgentCapability:
 
     role: AgentRole
     display_name: str
-    description: str
-    primary_function: str
-    inputs: list[str]
-    outputs: list[str]
+    description: str = ""
+    primary_function: str = ""
+    inputs: list[str] = field(default_factory=list)
+    outputs: list[str] = field(default_factory=list)
     tools: list[str] = field(default_factory=list)
     constraints: list[str] = field(default_factory=list)
     system_prompt_template: str = ""

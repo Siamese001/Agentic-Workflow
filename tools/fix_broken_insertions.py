@@ -45,52 +45,52 @@ for scan_dir in SCAN_DIRS:
             #   _emit_reads_through,  # noqa: E402
             # that appear OUTSIDE an import block (i.e., not preceded by 'from ... import (')
             lines = content.split("\n")
-            
+
             # Track which syms are properly imported
             in_import_block = False
             import_block_start = -1
             properly_imported = set()
             broken_lines = []  # (line_index, sym) tuples
-            
+
             for i, line in enumerate(lines):
                 stripped = line.strip()
-                
+
                 # Detect start of import block
                 if "from " in line and "import (" in line:
                     in_import_block = True
                     import_block_start = i
                     continue
-                
+
                 # Detect end of import block
                 if in_import_block and stripped == ")":
                     in_import_block = False
                     continue
-                
+
                 # Inside import block - check if our syms are here
                 if in_import_block:
                     for sym in SYMS:
                         if sym in stripped and not stripped.startswith("#"):
                             properly_imported.add(sym)
                     continue
-                
+
                 # Outside import block - check for orphaned import lines
                 for sym in SYMS:
                     if stripped == f"{sym},  # noqa: E402" or stripped == f"{sym},":
                         broken_lines.append((i, sym))
-            
+
             if not broken_lines:
                 continue
-            
+
             # Remove broken lines
             lines_to_remove = set(idx for idx, _ in broken_lines)
             new_lines = [line for i, line in enumerate(lines) if i not in lines_to_remove]
-            
+
             # Check which syms still need importing
             still_needs = set()
             for _, sym in broken_lines:
                 if sym not in properly_imported:
                     still_needs.add(sym)
-            
+
             if still_needs:
                 # Find last lifecycle_trace_contract import block closing ')'
                 found_insert = False
@@ -112,7 +112,7 @@ for scan_dir in SCAN_DIRS:
                             j -= 1
                         if found_insert:
                             break
-            
+
             new_content = "\n".join(new_lines)
             with open(fpath, "w", encoding="utf-8") as f:
                 f.write(new_content)

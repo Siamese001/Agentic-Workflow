@@ -5,6 +5,8 @@ engines can use, eliminating duplicate execution logic while maintaining
 engine-specific optimizations.
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
 import logging

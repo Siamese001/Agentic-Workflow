@@ -3,11 +3,22 @@ Check depth violations using SSOT.
 [SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py
 """
 
+from __future__ import annotations
+
 from pathlib import Path
 from typing import Any
 
+SOVEREIGN_REGISTRY: dict[str, Any] = {
+    "agentic_core": {"depth": 8},
+}
 
-def check_depth(root_dir: Path) -> None:
+
+def get_python_files(root_dir: Path) -> list[Path]:
+    """Get all Python files in directory."""
+    return list(root_dir.rglob("*.py"))
+
+
+def check_depth(root_dir: Path) -> list[tuple[str, int]]:
     """Check depth of all Python files."""
     violations = []
     required_depth: Any = SOVEREIGN_REGISTRY["agentic_core"]["depth"]
@@ -16,17 +27,4 @@ def check_depth(root_dir: Path) -> None:
         depth: Any = len(rel_path.parts) - 1
         if depth > required_depth:
             violations.append((str(rel_path), depth))
-    print(f"Total violations: {len(violations)}")
-    print(f"[SSOT] agentic_core required depth: {required_depth}")
-    if violations:
-        print("\nFirst 20 violations:")
-        for path, depth in violations[:20]:
-            print(f"  Depth {depth}: {path}")
-
-
-root: Any = Path("c:/Git/Agentic-Workflow")
-check_depth(root)
-if violations:
-    print("\nFirst 20 violations:")
-    for path, depth in violations[:20]:
-        print(f"  Depth {depth}: {path}")
+    return violations

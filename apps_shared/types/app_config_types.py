@@ -425,7 +425,7 @@ class PromptsConfig:
     @classmethod
     def from_json(cls, json_path: Path = DATA_DIR / "prompts.json") -> "PromptsConfig":
         """Load PromptsConfig from JSON file."""
-        data = _load_json_config(str(json_path), "Prompts", required=True)
+        data = _load_json_config(str(json_path), "Prompts", required=False)
         return cls(prompts=data)
 
     def get_prompt(self, prompt_name: str, section: str = "default") -> str:

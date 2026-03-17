@@ -4,6 +4,8 @@ This module provides a secure checkpoint implementation that encrypts data at re
 validates integrity on load, and prevents tampering or unauthorized access.
 """
 
+from __future__ import annotations
+
 import base64
 import hashlib
 import hmac

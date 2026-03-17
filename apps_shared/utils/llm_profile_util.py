@@ -1,4 +1,15 @@
+from __future__ import annotations
+
+from enum import Enum
+
 from pydantic import BaseModel, Field
+
+
+class ReasoningMode(str, Enum):
+    """Reasoning mode for LLM profiles."""
+    COT = "chain_of_thought"
+    REACT = "react"
+    SIMPLE = "simple"
 
 
 class LLMProfile(BaseModel):

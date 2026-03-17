@@ -41,7 +41,7 @@ else:
     # Find each .update() block that references the missing name and add alias before it
     lines = src.split("\n")
     insertions = {}  # line_number -> alias_line
-    
+
     for camel, snake in needed.items():
         # Find the snake_case class definition end line
         for node in ast.walk(tree):
@@ -50,7 +50,7 @@ else:
                 insertions[end_line] = insertions.get(end_line, [])
                 insertions[end_line].append(f"{camel} = {snake}")
                 break
-    
+
     # Insert aliases (bottom-up to preserve line numbers)
     for line_no in sorted(insertions.keys(), reverse=True):
         aliases = insertions[line_no]
@@ -58,7 +58,7 @@ else:
         idx = line_no  # 0-indexed position after end of class
         for alias in aliases:
             lines.insert(idx, alias)
-    
+
     new_src = "\n".join(lines)
     # Verify syntax
     try:

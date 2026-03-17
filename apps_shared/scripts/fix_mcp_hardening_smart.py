@@ -7,10 +7,11 @@ import json
 import re
 from pathlib import Path
 
-data = json.load(open("agent_discovery_full.json"))
+try:
+    data = json.load(open("agent_discovery_full.json"))
+except FileNotFoundError:
+    data = []
 needs_hardening = [a for a in data if not a.get("mcp_hardened")]
-print(f"Found {len(needs_hardening)} agents needing MCP hardening")
-print()
 fixed_count = 0
 skipped_count = 0
 errors = []
@@ -123,11 +124,14 @@ if errors:
 total_agents = len(data)
 originally_hardened = sum(1 for a in data if a.get("mcp_hardened"))
 new_hardened = originally_hardened + fixed_count
-new_coverage = new_hardened / total_agents * 100
-print("MCP Hardening Coverage:")
-print(f"  Before: {originally_hardened}/{total_agents} ({originally_hardened / total_agents * 100:.1f}%)")
-print(f"  After:  {new_hardened}/{total_agents} ({new_coverage:.1f}%)")
-print(f"  Improvement: +{fixed_count} agents (+{fixed_count / total_agents * 100:.1f}%)")
+if total_agents > 0:
+    new_coverage = new_hardened / total_agents * 100
+    print("MCP Hardening Coverage:")
+    print(f"  Before: {originally_hardened}/{total_agents} ({originally_hardened / total_agents * 100:.1f}%)")
+    print(f"  After:  {new_hardened}/{total_agents} ({new_coverage:.1f}%)")
+    print(f"  Improvement: +{fixed_count} agents (+{fixed_count / total_agents * 100:.1f}%)")
+else:
+    print("MCP Hardening Coverage: No agents found (agent_discovery_full.json missing or empty)")
 print()
 print("Next step: Update discovery and regenerate dashboard")
 print("Command: python scripts/dashboard_e2e_pipeline_fast.py")

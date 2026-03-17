@@ -15,13 +15,13 @@ for sd in sorted(os.listdir(unit_dir)):
     sdp = os.path.join(unit_dir, sd)
     if not os.path.isdir(sdp) or sd.startswith("_"):
         continue
-    
+
     r = subprocess.run(
         ["python", "-m", "pytest", f"tests/unit/{sd}", "--co", "--tb=short", "-p", "no:logging", "-q"],
         capture_output=True, text=True, cwd=ROOT, timeout=60
     )
     out = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
-    
+
     # Parse error blocks
     lines = out.split("\n")
     i = 0
@@ -40,7 +40,7 @@ for sd in sorted(os.listdir(unit_dir)):
                 m = re.match(r"((?:agentic_core|apps_\w+|system_learning)[/\\].+\.py):(\d+)", s)
                 if m:
                     src_file = m.group(1).replace("\\", "/")
-            
+
             all_errors.append({
                 "subdir": sd,
                 "test_file": test_file,
@@ -68,7 +68,7 @@ for e in all_errors:
         cats["OSError: stdin"] += 1
     else:
         cats[msg[:60] if msg else "unknown"] += 1
-    
+
     if e["src_file"]:
         srcs[e["src_file"]] += 1
 

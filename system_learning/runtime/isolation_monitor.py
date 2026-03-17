@@ -11,6 +11,10 @@ from __future__ import annotations
 
 import sys
 
+APPS_LIC_DIR = "apps_lic"
+APPS_RG_DIR = "apps_rg"
+APPS_SHARED_DIR = "apps_shared"
+
 _FORBIDDEN = frozenset({APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR})
 _FORBIDDEN_LAYER_PREFIXES = (
     "agentic_core.L0_routing",

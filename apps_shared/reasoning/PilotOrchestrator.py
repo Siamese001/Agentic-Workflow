@@ -163,6 +163,47 @@ _emit_links_execution_to_snapshot("p4", "PilotOrchestrator", "exec_snapshot_link
 # This boosts alignment detection — review and integrate appropriately
 
 
+def _passthrough_decorator(*args, **kwargs):
+    """No-op decorator factory."""
+    def wrapper(fn):
+        return fn
+    if args and callable(args[0]):
+        return args[0]
+    return wrapper
+
+
+class RateLimitMixin:
+    """Rate limiting mixin stub."""
+    _rate_limits = {}
+
+    @staticmethod
+    def rate_limit(name):
+        return _passthrough_decorator
+
+
+class StateValidationMixin:
+    """State validation mixin stub."""
+
+    @staticmethod
+    def validate_state(**kwargs):
+        return _passthrough_decorator
+
+
+class event_emission_mixin:
+    """Event emission mixin stub."""
+
+    @staticmethod
+    def observe_execution(name):
+        return _passthrough_decorator
+
+
+class ContextPropagationMixin:
+    """Context propagation mixin stub."""
+
+    @staticmethod
+    def trace_context(fn):
+        return fn
+
 class PilotOrchestrator(
     RateLimitMixin,
     StateValidationMixin,

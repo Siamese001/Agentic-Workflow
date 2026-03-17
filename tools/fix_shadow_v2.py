@@ -19,7 +19,7 @@ def fix_shadow_in_file(filepath):
     global fixed_count
     src = open(filepath, "r", encoding="utf-8").read()
     lines = src.split("\n")
-    
+
     changed = False
     for i, line in enumerate(lines):
         stripped = line.strip()
@@ -31,11 +31,11 @@ def fix_shadow_in_file(filepath):
         # Skip if it's inside a function/class (check indent)
         if indent and len(indent) > 0:
             continue
-        
+
         new_var = f"_{var}_PATH"
         # Replace just this line
         lines[i] = f"{indent}{new_var} = {prefix} / {var}"
-        
+
         # Now replace subsequent uses of var that refer to this path
         # But only if they're NOT import statements and NOT the original constant
         for j in range(i+1, len(lines)):
@@ -50,12 +50,12 @@ def fix_shadow_in_file(filepath):
                 continue
             # Replace word-boundary matches
             lines[j] = re.sub(rf'\b{var}\b', new_var, lj)
-        
+
         changed = True
-    
+
     if not changed:
         return False
-    
+
     new_src = "\n".join(lines)
     try:
         ast.parse(new_src)
@@ -63,7 +63,7 @@ def fix_shadow_in_file(filepath):
         print(f"  SYNTAX ERROR: {os.path.relpath(filepath, ROOT)}: {e}")
         # Revert
         return False
-    
+
     open(filepath, "w", encoding="utf-8").write(new_src)
     fixed_count += 1
     return True

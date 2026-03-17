@@ -8,6 +8,7 @@ W2: Embedding-augmented scoring (C0-only, informational). Final closeout.
 from __future__ import annotations
 
 import uuid
+from typing import Any, Optional
 from dataclasses import dataclass, field
 
 from agentic_core.runtime.lifecycle_trace_contract import (

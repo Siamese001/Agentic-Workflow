@@ -5,6 +5,8 @@ Domain: resume
 Generated: 2025-12-07T13:28:54.250342
 """
 
+from __future__ import annotations
+
 import logging
 from collections.abc import Callable
 from typing import Any

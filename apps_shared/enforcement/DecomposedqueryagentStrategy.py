@@ -6,6 +6,8 @@ that can be answered by the retrieval system.
 
 import asyncio
 import logging
+from pydantic import BaseModel, Field, validator
+from typing import Any
 import re
 
 from agentic_core.runtime.lifecycle_trace_contract import (

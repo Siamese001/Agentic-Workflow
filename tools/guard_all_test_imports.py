@@ -44,25 +44,25 @@ def rewrite_test_file(fp):
     """Rewrite a test file to guard all agentic_core imports."""
     src = open(fp, "r", encoding="utf-8").read()
     lines = src.split("\n")
-    
+
     # Strategy: find all lines that import from agentic_core (bare or in try blocks)
     # and wrap them ALL in one big try/except.
     # Keep: __future__, pytest, standard lib imports, pytestmark
-    
+
     preamble = []  # Lines before agentic_core imports
     ac_imports = []  # All agentic_core import lines (including try/except blocks)
     body = []  # Lines after imports (test classes/functions)
-    
+
     phase = "preamble"  # preamble -> imports -> body
     i = 0
     in_try = 0
     in_multiline_import = False
     has_available = False
-    
+
     while i < len(lines):
         line = lines[i]
         stripped = line.strip()
-        
+
         if phase == "preamble":
             # Stay in preamble until we hit an agentic_core import or try block containing one
             if ("from agentic_core" in stripped or "import agentic_core" in stripped
@@ -74,30 +74,30 @@ def rewrite_test_file(fp):
                 preamble.append(line)
                 i += 1
                 continue
-        
+
         if phase == "imports":
             # Collect everything that's import-related
             if stripped.startswith("@pytest.mark") or stripped.startswith("class ") or stripped.startswith("def test_"):
                 phase = "body"
                 continue  # re-process in body phase
-            
+
             # Track _AVAILABLE
             if "_AVAILABLE" in stripped:
                 has_available = True
-            
+
             ac_imports.append(line)
             i += 1
             continue
-        
+
         if phase == "body":
             body.append(line)
             i += 1
-    
+
     # Now reconstruct: extract just the bare import names from the original ac_imports
     # and figure out what was imported
     import_names = set()
     original_import_lines = []
-    
+
     for line in ac_imports:
         stripped = line.strip()
         # Skip blank, try/except, _AVAILABLE, pass, comments, class stubs
@@ -111,7 +111,7 @@ def rewrite_test_file(fp):
             continue  # skip stub classes
         if stripped.startswith("#"):
             continue
-        
+
         # Collect actual import lines
         if "from agentic_core" in stripped or "import agentic_core" in stripped:
             original_import_lines.append(stripped)
@@ -129,10 +129,10 @@ def rewrite_test_file(fp):
                         n = name.strip().split(" as ")[0].strip()
                         if n and n != "(":
                             import_names.add(n)
-    
+
     # Build the new file
     new_lines = preamble[:]
-    
+
     # Add the guarded import block
     new_lines.append("_AVAILABLE = False")
     new_lines.append("try:")
@@ -154,7 +154,7 @@ def rewrite_test_file(fp):
             new_lines.append("    " + line)
     new_lines.append("    _AVAILABLE = True")
     new_lines.append("except Exception:  # guardian: allow-silent-swallow")
-    
+
     # Add fallback assignments for all imported names
     for name in sorted(import_names):
         if name.startswith("_emit") or name.startswith("emit_"):
@@ -162,12 +162,12 @@ def rewrite_test_file(fp):
         new_lines.append(f"    {name} = None  # type: ignore[assignment,misc]")
     new_lines.append("")
     new_lines.append("")
-    
+
     # Add body
     new_lines.extend(body)
-    
+
     new_src = "\n".join(new_lines)
-    
+
     try:
         ast.parse(new_src)
     except SyntaxError as e:
@@ -183,7 +183,7 @@ def rewrite_test_file(fp):
             except SyntaxError:
                 pass
         return False
-    
+
     open(fp, "w", encoding="utf-8").write(new_src)
     return True
 
@@ -191,7 +191,7 @@ def rewrite_test_file(fp):
 def main():
     err_files = get_erroring_test_files()
     print(f"Found {len(err_files)} erroring test files\n")
-    
+
     fixed = 0
     for fp in err_files:
         rel = os.path.relpath(fp, ROOT)
@@ -200,7 +200,7 @@ def main():
             print(f"  FIXED: {rel}")
         else:
             print(f"  FAIL:  {rel}")
-    
+
     print(f"\nFixed: {fixed}/{len(err_files)}")
 
 

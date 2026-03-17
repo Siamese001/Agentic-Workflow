@@ -5,6 +5,8 @@ used by both resume and outreach engines while maintaining domain-specific
 customization.
 """
 
+from __future__ import annotations
+
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field

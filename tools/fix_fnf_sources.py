@@ -50,15 +50,15 @@ def wrap_file_read_block(filepath, error_lineno):
     global fixed
     src = open(filepath, "r", encoding="utf-8").read()
     lines = src.split("\n")
-    
+
     if error_lineno <= 0 or error_lineno > len(lines):
         return False
-    
+
     # Find the start of the statement block containing the error line
     # Walk backwards to find the first line of the top-level statement
     idx = error_lineno - 1  # 0-indexed
     start = idx
-    
+
     # Walk back to find start of statement (non-indented, non-blank, non-comment)
     while start > 0:
         prev = lines[start - 1].strip()
@@ -71,7 +71,7 @@ def wrap_file_read_block(filepath, error_lineno):
             if not lines[start].startswith(" ") and not lines[start].startswith("\t"):
                 break
         start -= 1
-    
+
     # Find the end of the block
     end = idx + 1
     while end < len(lines):
@@ -85,22 +85,22 @@ def wrap_file_read_block(filepath, error_lineno):
             end += 1
         else:
             end += 1
-    
+
     # Wrap the block in try/except
     block = lines[start:end]
     if not block:
         return False
-    
+
     # Check if already wrapped
     if any("try:" in l and l.strip() == "try:" for l in lines[max(0, start-3):start]):
         return False
-    
+
     indented = ["    " + l for l in block]
     wrapped = ["try:"] + indented + ["except (FileNotFoundError, OSError, json.JSONDecodeError, KeyError, ValueError, AttributeError):  # guardian: allow-silent-swallow", "    pass"]
-    
+
     new_lines = lines[:start] + wrapped + lines[end:]
     new_src = "\n".join(new_lines)
-    
+
     try:
         ast.parse(new_src)
     except SyntaxError as e:
@@ -115,7 +115,7 @@ def wrap_file_read_block(filepath, error_lineno):
         except SyntaxError:
             print(f"  FAIL (syntax): {os.path.relpath(filepath, ROOT)}:{error_lineno}")
             return False
-    
+
     open(filepath, "w", encoding="utf-8").write(new_src)
     fixed += 1
     return True
@@ -125,14 +125,14 @@ def main():
     global fixed
     results = get_fnf_source_files()
     print(f"Found {len(results)} source files with FileNotFoundError\n")
-    
+
     for filepath, lineno, err in results:
         rel = os.path.relpath(filepath, ROOT)
         if wrap_file_read_block(filepath, lineno):
             print(f"  FIXED: {rel}:{lineno}")
         else:
             print(f"  SKIP:  {rel}:{lineno}")
-    
+
     print(f"\nTotal fixed: {fixed}")
 
 

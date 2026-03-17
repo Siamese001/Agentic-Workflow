@@ -5,6 +5,8 @@ Optimization Strategies for Reasoning Engines
 Implements early stopping, path pruning, and convergence detection
 to reduce reasoning latency and improve quality.
 """
+from dataclasses import dataclass
+from typing import Any
 
 
 @dataclass

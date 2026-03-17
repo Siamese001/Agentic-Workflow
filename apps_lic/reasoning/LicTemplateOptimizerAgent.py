@@ -1,7 +1,7 @@
 from dataclasses import dataclass
+from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,  # noqa: E402
@@ -166,7 +166,7 @@ _emit_links_execution_to_snapshot("p4", "LicTemplateOptimizerAgent", "exec_snaps
 
 
 @dataclass
-class LicTemplateOptimizerAgent(SubatomicTestingMixin, SovereignBaseAgent):
+class LicTemplateOptimizerAgent(SovereignBaseAgent):
     """Optimizes message templates for engagement."""
 
     async def execute(self) -> None:

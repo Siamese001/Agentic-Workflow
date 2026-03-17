@@ -5,6 +5,8 @@ Provenance Tracker, and Model router with the existing hardened
 infrastructure, ensuring all components work together seamlessly.
 """
 
+from __future__ import annotations
+
 import asyncio
 import logging
 from typing import Any

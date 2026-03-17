@@ -1,6 +1,8 @@
 # Ownership: apps_rg / L3_orchestration
 """Pure orchestration of resume generation using shared atoms."""
 
+from __future__ import annotations
+
 import uuid
 
 from agentic_core.runtime.lifecycle_trace_contract import (

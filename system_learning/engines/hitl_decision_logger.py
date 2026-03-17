@@ -13,6 +13,7 @@ Design constraints:
 from __future__ import annotations
 
 import logging
+from typing import Optional
 import os
 import threading
 from pathlib import Path
@@ -187,8 +188,7 @@ _decision_counter: int = 0
 _DEFAULT_EVIDENCE_PATH = Path('docs/reports/evidence/wave6_evidence.md')
 
 def _get_evidence_path() -> Path:
-    credential_guard.check(operation='credential_access', target='os.environ.get')
-    get_credential_guard().check(operation='credential_access', target='os.environ.get')
+    credential_guard().check(operation='credential_access', target='os.environ.get')
     env_val = os.environ.get('HITL_EVIDENCE_FILE')
     if env_val:
         return Path(env_val)

@@ -5,6 +5,7 @@ Provides deterministic loading and activation.
 """
 
 from __future__ import annotations
+from typing import Optional
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,

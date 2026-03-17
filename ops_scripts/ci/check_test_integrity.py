@@ -89,6 +89,7 @@ from agentic_core.L0_routing.config.path_constants import (
     MAX_DEPTH,
     MAX_FILES,
     MAX_RETRIES,
+    TESTS_DIR,
     THRESHOLD,
 )
 from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through

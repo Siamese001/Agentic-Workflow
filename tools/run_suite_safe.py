@@ -5,7 +5,7 @@ env = os.environ.copy()
 env["PYTHONDONTWRITEBYTECODE"] = "1"
 
 r = subprocess.run(
-    ["python", "-m", "pytest", "tests/unit/", 
+    ["python", "-m", "pytest", "tests/unit/",
      "--tb=no", "--no-header", "-q",
      "-p", "no:warnings",
      "--capture=no",

@@ -31,10 +31,10 @@ def fix_root_in_file(filepath):
     src = open(filepath, "r", encoding="utf-8").read()
     if re.search(r"^ROOT\s*=", src, re.MULTILINE):
         return False  # Already defined
-    
+
     # Check if pathlib.Path is imported
     has_path = "from pathlib import Path" in src or "import pathlib" in src
-    
+
     # Find the right insertion point — after all imports
     lines = src.split("\n")
     last_import = 0
@@ -45,24 +45,24 @@ def fix_root_in_file(filepath):
         # Also skip emit calls at module level
         if stripped.startswith("_emit_") or stripped.startswith("emit_"):
             last_import = i
-    
+
     # Insert ROOT definition
     insert_lines = []
     if not has_path:
         insert_lines.append("from pathlib import Path")
     insert_lines.append("ROOT = Path(__file__).resolve().parents[3]")
     insert_lines.append("")
-    
+
     lines.insert(last_import + 1, "\n".join(insert_lines))
     new_src = "\n".join(lines)
-    
+
     # Verify syntax
     try:
         ast.parse(new_src)
     except SyntaxError as e:
         print(f"  SYNTAX ERROR in {filepath}: {e}")
         return False
-    
+
     open(filepath, "w", encoding="utf-8").write(new_src)
     return True
 
@@ -72,7 +72,7 @@ def fix_global_excluded_dirs(filepath):
     src = open(filepath, "r", encoding="utf-8").read()
     if "GLOBAL_EXCLUDED_DIRS" in src and "=" in src.split("GLOBAL_EXCLUDED_DIRS")[0].split("\n")[-1]:
         return False  # Already defined somewhere
-    
+
     # Check what GLOBAL_EXCLUDED_DIRS is used for — it's usually a list of dirs to exclude
     # The easiest fix is to define it from SOVEREIGN_EXCLUDED_FOLDERS or as a constant
     lines = src.split("\n")
@@ -83,18 +83,18 @@ def fix_global_excluded_dirs(filepath):
             last_import = i
         if stripped.startswith("_emit_") or stripped.startswith("emit_"):
             last_import = i
-    
+
     # Add the import
     insert = "from agentic_core.L0_routing.config.path_constants import SOVEREIGN_EXCLUDED_FOLDERS as GLOBAL_EXCLUDED_DIRS"
     lines.insert(last_import + 1, insert)
     new_src = "\n".join(lines)
-    
+
     try:
         ast.parse(new_src)
     except SyntaxError as e:
         print(f"  SYNTAX ERROR in {filepath}: {e}")
         return False
-    
+
     open(filepath, "w", encoding="utf-8").write(new_src)
     return True
 

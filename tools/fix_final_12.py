@@ -17,12 +17,12 @@ def guard_test_import(test_file):
         print(f"  SKIP (missing): {test_file}")
         return
     src = open(fp, "r", encoding="utf-8").read()
-    
+
     # Already guarded?
     if "_AVAILABLE = False\ntry:" in src:
         print(f"  SKIP (already guarded): {test_file}")
         return
-    
+
     # Find the import block that causes the error
     # Pattern: try:\n    from agentic_core... import ...\n    _AVAILABLE = True
     # If this pattern exists but the outer except swallows it, add _AVAILABLE = False before
@@ -42,11 +42,11 @@ def guard_test_import(test_file):
     new_lines = []
     i = 0
     import_start = -1
-    
+
     while i < len(lines):
         line = lines[i]
         stripped = line.strip()
-        
+
         # Find bare import of agentic_core that's not in a try block
         if (stripped.startswith("from agentic_core") or stripped.startswith("import agentic_core")) and "noqa" not in stripped:
             # Check if already inside try
@@ -58,14 +58,14 @@ def guard_test_import(test_file):
                     if lines[j].strip() and lines[j].strip() != "":
                         # Not in try block - wrap it
                         break
-            
+
             # Find the end of this import block
             end = i + 1
             if "(" in stripped and ")" not in stripped:
                 while end < len(lines) and ")" not in lines[end]:
                     end += 1
                 end += 1  # include the closing paren line
-            
+
             # Wrap in try/except
             block = lines[i:end]
             new_lines.append("_AVAILABLE = False")
@@ -77,10 +77,10 @@ def guard_test_import(test_file):
             new_lines.append("    pass")
             i = end
             continue
-        
+
         new_lines.append(line)
         i += 1
-    
+
     new_src = "\n".join(new_lines)
     try:
         ast.parse(new_src)
@@ -101,7 +101,7 @@ def fix_source_import(source_file, import_line):
     src = open(fp, "r", encoding="utf-8").read()
     if import_line.split("import ")[-1].split(",")[0].strip().split(" ")[0] in src.split("\n")[0:5]:
         return False  # already there
-    
+
     # Find the right place to insert - before first usage
     lines = src.split("\n")
     # Add after last import line at module level
@@ -118,7 +118,7 @@ def fix_source_import(source_file, import_line):
             if "(" in s and ")" not in s:
                 in_ml = True
             last_import = i
-    
+
     lines.insert(last_import + 1, import_line)
     new_src = "\n".join(lines)
     try:
@@ -156,7 +156,7 @@ if "DiscoveredAgent = _get_DiscoveredAgent()" in src:
 else:
     # The function _get_DiscoveredAgent returns DiscoveredAgent class
     # But check_compliance uses it at module level
-    # Add: DiscoveredAgent = _get_DiscoveredAgent() 
+    # Add: DiscoveredAgent = _get_DiscoveredAgent()
     lines = src.split("\n")
     for i, line in enumerate(lines):
         if "def check_compliance" in line:

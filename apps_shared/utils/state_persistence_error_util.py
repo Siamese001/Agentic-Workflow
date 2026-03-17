@@ -6,7 +6,10 @@ Uses shadow files/keys for isolation and atomic swap operations.
 Phase 3 - Atomic State Persistence
 """
 
+from __future__ import annotations
+
 import logging
+from enum import Enum
 import os
 import time
 from pathlib import Path
@@ -172,6 +175,18 @@ _emit_updates_meta_learning_state("p4", "state_persistence_error_util", "meta_le
 _emit_links_execution_to_snapshot("p4", "state_persistence_error_util", "exec_snapshot_link")
 
 logger = logging.getLogger(__name__)
+
+
+class BackendType(Enum):
+    """Storage backend type."""
+    FILE = "file"
+    REDIS = "redis"
+    SQLITE = "sqlite"
+
+
+class SystemTelemetry:
+    """Stub telemetry collector."""
+    pass
 
 
 class StatePersistenceError(Exception):

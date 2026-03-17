@@ -17,6 +17,7 @@ import json
 import os
 import sys
 import time
+from typing import Optional
 from pathlib import Path
 from typing import Any
 

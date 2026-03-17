@@ -10,6 +10,8 @@ Executes comprehensive safety validation to ensure resume content
 meets security standards for job alignment.
 """
 
+from __future__ import annotations
+
 # from archives.legacy_root_folders.runtime.runtime_utils import invoke_model, SandboxConfig  # DEPRECATED: Archive import removed to protect archives from validation edits
 # from archives.legacy_root_folders.core.routing import RoutingPolicy  # DEPRECATED: Archive import removed to protect archives from validation edits
 # from archives.legacy_root_folders.core.models.models import ComplexityLevel  # DEPRECATED: Archive import removed to protect archives from validation edits

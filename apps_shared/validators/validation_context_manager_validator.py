@@ -2,6 +2,8 @@
 ValidationContextManager - L4 State Context with cache-First Reflex
 """
 
+from __future__ import annotations
+
 from pathlib import Path
 from typing import Any
 
@@ -164,6 +166,11 @@ _emit_captures_evaluation_metric("p4", "validation_context_manager_validator", "
 _emit_stores_embedding("p4", "validation_context_manager_validator", "embedding_store")
 _emit_updates_meta_learning_state("p4", "validation_context_manager_validator", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "validation_context_manager_validator", "exec_snapshot_link")
+
+
+class CachedStateLedger:
+    """Stub base class for cached state ledger."""
+    pass
 
 
 class ValidationContextManager(CachedStateLedger):

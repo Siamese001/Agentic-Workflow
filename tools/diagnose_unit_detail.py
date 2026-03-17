@@ -6,7 +6,7 @@ import os
 
 ROOT = r"C:\Git\Agentic-Workflow"
 
-# Process each error-having subdirectory  
+# Process each error-having subdirectory
 for subdir in ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_learning"]:
     path = f"tests/unit/{subdir}"
     r = subprocess.run(
@@ -14,7 +14,7 @@ for subdir in ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_lea
         capture_output=True, text=True, cwd=ROOT, timeout=60
     )
     clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
-    
+
     # Collect unique E   lines
     errors = set()
     for line in clean.split("\n"):
@@ -25,7 +25,7 @@ for subdir in ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_lea
             if msg.startswith("File "):
                 continue  # Skip traceback file references
             errors.add(msg[:150])
-    
+
     if errors:
         print(f"\n=== tests/unit/{subdir}/ ===")
         for e in sorted(errors):

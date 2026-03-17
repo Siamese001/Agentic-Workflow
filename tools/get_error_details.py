@@ -23,7 +23,7 @@ for line in lines:
         m = re.search(r"(tests/\S+\.py)", line)
         current_test = m.group(1) if m else "unknown"
     elif current_test and ("Error" in line or "error" in line.lower()):
-        if any(kw in line for kw in ["NameError", "FileNotFoundError", "ModuleNotFoundError", 
+        if any(kw in line for kw in ["NameError", "FileNotFoundError", "ModuleNotFoundError",
                                        "ImportError", "PydanticUserError", "OSError", "AttributeError"]):
             current_cause = line.strip()
             errors.append((current_test, current_cause))

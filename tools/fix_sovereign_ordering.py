@@ -81,16 +81,16 @@ if alias_marker is not None:
         if stripped and not re.match(r'^[A-Z]\w+\s*=\s*[a-z]\w+$', stripped):
             alias_end = i - 1
             break
-    
+
     # Insert registry blocks AFTER the alias block
     insert_pos = alias_end + 1
     insert_lines = ['', ''] + registry_block + [''] + core_alias_line
     if update_block:
         insert_lines += [''] + update_block
-    
+
     for j, line in enumerate(insert_lines):
         clean_lines.insert(insert_pos + j, line)
-    
+
     print(f"Moved registry blocks after aliases at line {insert_pos}")
 else:
     print("ERROR: Could not find alias block marker")

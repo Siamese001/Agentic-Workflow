@@ -19,6 +19,9 @@ Non-responsibilities:
 - Message body composition
 - Final assembly
 """
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

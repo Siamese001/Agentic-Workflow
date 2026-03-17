@@ -12,6 +12,7 @@ Invariants:
 from __future__ import annotations
 
 import decimal
+from typing import Optional
 from dataclasses import dataclass, field
 
 from agentic_core.runtime.lifecycle_trace_contract import (

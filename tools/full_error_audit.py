@@ -6,7 +6,7 @@ root = r"C:\Git\Agentic-Workflow"
 # Scan each testpath independently to avoid cross-collection
 test_dirs = [
     "tests/unit",
-    "tests/architecture", 
+    "tests/architecture",
     "tests/enforcement",
     "tests/governance",
     "tests/sovereign_hardening",
@@ -22,7 +22,7 @@ for td in test_dirs:
     full_path = os.path.join(root, td.replace("/", os.sep))
     if not os.path.isdir(full_path):
         continue
-    
+
     r = subprocess.run(
         ["python", "-m", "pytest", td, "--co", "--tb=short", "-q",
          "--override-ini=testpaths=" + td],
@@ -30,13 +30,13 @@ for td in test_dirs:
         encoding="utf-8", errors="replace"
     )
     out = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
-    
+
     # Parse collected/errors from last line
     m = re.search(r"(\d+) tests? collected(?:, (\d+) errors?)?", out)
     collected = int(m.group(1)) if m else 0
     nerr = int(m.group(2)) if m and m.group(2) else 0
     summary.append((td, collected, nerr))
-    
+
     # Parse individual errors
     lines = out.split("\n")
     i = 0

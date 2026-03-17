@@ -5,6 +5,8 @@ Defines the structure for routing tiers and provider fallback chains.
 Phase 2 - Resilient Routing Layer
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
 
@@ -178,6 +180,14 @@ MAX_DEPTH = 6
 MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
+
+class Provider(Enum):
+    """LLM provider."""
+    OPENAI = "openai"
+    ANTHROPIC = "anthropic"
+    GOOGLE = "google"
+    LOCAL = "local"
+
 
 class RoutingTier(str, Enum):
     """Predefined routing tiers for different use cases."""

@@ -27,14 +27,14 @@ def add_import_after_last_import(filepath, import_line):
     src = open(filepath, "r", encoding="utf-8").read()
     if import_line.split("import ")[-1].split(" as ")[0].strip() in src:
         return False  # Already imported
-    
+
     lines = src.split("\n")
     last_import = 0
     for i, line in enumerate(lines):
         stripped = line.strip()
         if (stripped.startswith("from ") and "import" in stripped) or stripped.startswith("import "):
             last_import = i
-    
+
     lines.insert(last_import + 1, import_line)
     new_src = "\n".join(lines)
     try:
@@ -128,11 +128,11 @@ for rel in APPS_LIC_FILES:
         # Already has an import from path_constants — add APPS_LIC_DIR to it
         # Or add a new import
         if "APPS_LIC_DIR" not in src.split("path_constants import")[0]:
-            add_import_after_last_import(fp, 
+            add_import_after_last_import(fp,
                 "from agentic_core.L0_routing.config.path_constants import APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, AGENTIC_CORE_DIR, OPS_SCRIPTS_DIR")
             print(f"  FIXED APPS_LIC_DIR import in {rel}")
     elif "APPS_LIC_DIR" in src:
-        add_import_after_last_import(fp, 
+        add_import_after_last_import(fp,
             "from agentic_core.L0_routing.config.path_constants import APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, AGENTIC_CORE_DIR, OPS_SCRIPTS_DIR")
         print(f"  FIXED APPS_LIC_DIR import in {rel}")
 
@@ -153,7 +153,7 @@ for rel in EWT_FILES:
 
 # ── Fix 5: Other individual fixes ──
 INDIVIDUAL_FIXES = {
-    "agentic_core/L3_orchestration/engines/dag_manager.py": 
+    "agentic_core/L3_orchestration/engines/dag_manager.py":
         ("HealerMixin", "from agentic_core.mixins.healer_mixin import HealerMixin"),
     "agentic_core/config/core/domain_constitution_config.py":
         ("L0_MAINTENANCE_DIR", None),  # Define inline

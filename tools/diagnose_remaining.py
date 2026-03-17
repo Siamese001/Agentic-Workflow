@@ -13,7 +13,7 @@ for d in dirs:
         capture_output=True, text=True, cwd=ROOT, timeout=60
     )
     clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
-    
+
     errors = []
     lines = clean.split("\n")
     i = 0
@@ -33,7 +33,7 @@ for d in dirs:
             i = j + 1
         else:
             i += 1
-    
+
     if errors:
         print(f"\n=== tests/{d}/ ({len(errors)} errors) ===")
         for err_file, err_msg in errors:

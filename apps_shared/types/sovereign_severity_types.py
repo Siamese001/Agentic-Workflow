@@ -3,13 +3,16 @@ Sovereign Core Contracts – Absolute SSOT for all Pydantic models and data sche
 No inline BaseModel definitions allowed outside schemas/.
 """
 
+from __future__ import annotations
+
 import logging
+from pydantic import ConfigDict
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator, validator
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 from agentic_core.runtime.lifecycle_trace_contract import (
@@ -99,6 +102,7 @@ class sovereign_severity(str, Enum):
     DEBUG = "DEBUG"
     "Detailed internal diagnostics — verbose"
 
+SovereignSeverity = sovereign_severity
 
 sovereign_severities = {e.value for e in sovereign_severity}
 severity_log_levels = {
@@ -192,6 +196,7 @@ class sovereign_event_type(str, Enum):
     MCP_INTEGRATION_FAILED = "MCP_INTEGRATION_FAILED"
     "MCP integration failed with error"
 
+SovereignEventType = sovereign_event_type
 
 sovereign_event_categories = {
     "GOVERNANCE": [
@@ -252,6 +257,7 @@ class sovereign_base_model_types(BaseModel):
 
     model_config = ConfigDict(strict=True, frozen=True)
 
+SovereignBaseModelTypes = sovereign_base_model_types
 
 class territory(sovereign_base_model_types):
     """Brief description of functionality and purpose."""
@@ -260,6 +266,7 @@ class territory(sovereign_base_model_types):
     depth: int
     path: str
     canon_key: int | None = None
+Territory = territory
 
 
 class agent_message(sovereign_base_model_types):
@@ -270,6 +277,7 @@ class agent_message(sovereign_base_model_types):
     content: str
     metadata: dict[str, Any] = Field(default_factory=dict)
 
+AgentMessage = agent_message
 
 class read_file_args(BaseModel):
     """Arguments for reading a file."""
@@ -282,6 +290,7 @@ class read_file_args(BaseModel):
             raise ValueError("Path must be relative to project root")
         return v
 
+ReadFileArgs = read_file_args
 
 class write_file_args(BaseModel):
     """Arguments for writing to a file."""
@@ -296,6 +305,7 @@ class write_file_args(BaseModel):
             raise ValueError("Path must be relative to project root")
         return v
 
+WriteFileArgs = write_file_args
 
 class move_file_args(BaseModel):
     """Arguments for moving/renaming a file."""
@@ -310,6 +320,7 @@ class move_file_args(BaseModel):
             raise ValueError("Paths must be relative to project root")
         return v
 
+MoveFileArgs = move_file_args
 
 class list_files_args(BaseModel):
     """Arguments for listing files in a directory."""
@@ -324,6 +335,7 @@ class list_files_args(BaseModel):
             raise ValueError("Path must be relative to project root")
         return v
 
+ListFilesArgs = list_files_args
 
 class execute_command_args(BaseModel):
     """Arguments for executing a shell command."""
@@ -348,6 +360,7 @@ class execute_command_args(BaseModel):
             raise ValueError("Working directory must be relative to project root")
         return v
 
+ExecuteCommandArgs = execute_command_args
 
 class delete_file_args(BaseModel):
     """Arguments for deleting a file."""
@@ -360,6 +373,7 @@ class delete_file_args(BaseModel):
             raise ValueError("Path must be relative to project root")
         return v
 
+DeleteFileArgs = delete_file_args
 
 class create_directory_args(BaseModel):
     """Arguments for creating a directory."""
@@ -373,6 +387,7 @@ class create_directory_args(BaseModel):
             raise ValueError("Path must be relative to project root")
         return v
 
+CreateDirectoryArgs = create_directory_args
 
 class agent_thought_process(BaseModel):
     """
@@ -405,6 +420,7 @@ class agent_thought_process(BaseModel):
             raise ValueError("Tool choice DELEGATE requires a 'subtask' argument.")
         return v
 
+AgentThoughtProcess = agent_thought_process
 
 class code_generation_result(BaseModel):
     """schema for code generation tasks."""
@@ -417,6 +433,7 @@ class code_generation_result(BaseModel):
         default_factory=list, description="Potential safety concerns or limitations"
     )
 
+CodeGenerationResult = code_generation_result
 
 class research_result(BaseModel):
     """schema for research tasks."""
@@ -431,6 +448,7 @@ class research_result(BaseModel):
         default_factory=list, description="Suggested follow-up research questions"
     )
 
+ResearchResult = research_result
 
 class consensus_verdict(BaseModel):
     """Result of a consensus deliberation."""
@@ -441,6 +459,7 @@ class consensus_verdict(BaseModel):
     reasoning: str
     safe_to_proceed: bool
 
+ConsensusVerdict = consensus_verdict
 
 class model_opinion(BaseModel):
     """Individual model's opinion on a plan."""
@@ -451,6 +470,7 @@ class model_opinion(BaseModel):
     risk_assessment: str
     confidence: float
 
+ModelOpinion = model_opinion
 
 class agent_plan(BaseModel):
     """Agent execution plan with reasoning and tool calls."""
@@ -458,6 +478,7 @@ class agent_plan(BaseModel):
     reasoning: str
     tool_calls: list[dict]
 
+AgentPlan = agent_plan
 
 class tone_type(str, Enum):
     """Primary tone types for communication style analysis."""
@@ -468,6 +489,7 @@ class tone_type(str, Enum):
     ENTHUSIASTIC = "enthusiastic"
     DIRECT = "direct"
 
+ToneType = tone_type
 
 class style_profile(BaseModel):
     """Profile defining a communication style."""
@@ -486,6 +508,7 @@ class style_profile(BaseModel):
 
         validate_assignment = True
 
+StyleProfile = style_profile
 
 class generation_config(BaseModel):
     """configuration for LLM generation based on tone profile."""
@@ -501,6 +524,7 @@ class generation_config(BaseModel):
         """Ensure temperature is within valid range."""
         return max(0.1, min(1.0, v))
 
+GenerationConfig = generation_config
 
 class micro_stage(Enum):
     """The 5 atomic micro-stages of a Subatomic Hop."""
@@ -511,6 +535,7 @@ class micro_stage(Enum):
     CRITIQUE = "critique"
     COMMIT = "commit"
 
+MicroStage = micro_stage
 
 class hop_state(Enum):
     """Overall state of a Subatomic Hop."""
@@ -521,6 +546,7 @@ class hop_state(Enum):
     FAILED = "failed"
     CANCELLED = "cancelled"
 
+HopState = hop_state
 
 class retry_policy(BaseModel):
     """Retry policy for micro-stages."""
@@ -532,6 +558,7 @@ class retry_policy(BaseModel):
         default=[micro_stage.THINK, micro_stage.ACT, micro_stage.CRITIQUE]
     )
 
+RetryPolicy = retry_policy
 
 class micro_checkpoint(BaseModel):
     """Checkpoint data for a micro-stage."""
@@ -543,6 +570,7 @@ class micro_checkpoint(BaseModel):
     data: dict[str, Any] = Field(default_factory=dict)
     error: str | None = None
 
+MicroCheckpoint = micro_checkpoint
 
 class stage_transition(BaseModel):
     """Record of a stage transition."""
@@ -552,6 +580,7 @@ class stage_transition(BaseModel):
     timestamp: float
     reason: str | None = None
 
+StageTransition = stage_transition
 
 class injection_type(Enum):
     """Types of prompt injections."""
@@ -564,6 +593,7 @@ class injection_type(Enum):
     SAFETY = "safety"
     OUTPUT = "output"
 
+InjectionType = injection_type
 
 class injection_scope(BaseModel):
     """Scope where injection should be applied."""
@@ -572,50 +602,30 @@ class injection_scope(BaseModel):
     stages: list[str] = Field(default_factory=list)
     contexts: dict[str, Any] = Field(default_factory=dict)
 
+InjectionScope = injection_scope
+
+
 
 class injection_pattern(BaseModel):
     """A single prompt injection pattern."""
 
     id: str
     name: str
-    type: InjectionType
+    type: injection_type
     description: str
     template: str
     variables: list[str] = Field(default_factory=list)
-    scope: InjectionScope = Field(default_factory=InjectionScope)
+    scope: injection_scope = Field(default_factory=injection_scope)
     priority: int = Field(default=0, ge=0, le=10)
     enabled: bool = True
 
+InjectionPattern = injection_pattern
 
-core_contracts_types_registry = {
-    "Territory": Territory,
-    "AgentMessage": AgentMessage,
-    "ReadFileArgs": ReadFileArgs,
-    "WriteFileArgs": WriteFileArgs,
-    "MoveFileArgs": MoveFileArgs,
-    "ListFilesArgs": ListFilesArgs,
-    "ExecuteCommandArgs": ExecuteCommandArgs,
-    "DeleteFileArgs": DeleteFileArgs,
-    "CreateDirectoryArgs": CreateDirectoryArgs,
-    "AgentThoughtProcess": AgentThoughtProcess,
-    "CodeGenerationResult": CodeGenerationResult,
-    "ResearchResult": ResearchResult,
-    "ConsensusVerdict": ConsensusVerdict,
-    "ModelOpinion": ModelOpinion,
-    "AgentPlan": AgentPlan,
-    "ToneType": ToneType,
-    "StyleProfile": StyleProfile,
-    "GenerationConfig": GenerationConfig,
-    "micro_stage": micro_stage,
-    "HopState": HopState,
-    "RetryPolicy": RetryPolicy,
-    "MicroCheckpoint": MicroCheckpoint,
-    "StageTransition": StageTransition,
-    "InjectionType": InjectionType,
-    "InjectionScope": InjectionScope,
-    "InjectionPattern": InjectionPattern,
-}
-CORE_CONTRACTS_REGISTRY = core_contracts_types_registry
+
+
+
+CORE_CONTRACTS_REGISTRY = {}
+
 import uuid
 from datetime import datetime
 
@@ -628,6 +638,9 @@ class thermal_profile(str, Enum):
     BALANCED = "balanced"
     STRUCTURED = "structured"
     PRECISION = "precision"
+
+ThermalProfile = thermal_profile
+
 
 
 @dataclass(frozen=True)
@@ -667,6 +680,7 @@ class hard_state:
             created_at=self.created_at,
         )
 
+HardState = hard_state
 
 @dataclass
 class soft_state:
@@ -701,6 +715,9 @@ class soft_state:
                 "timestamp": datetime.utcnow().isoformat(),
             }
         )
+
+SoftState = soft_state
+
 
 
 @dataclass
@@ -746,6 +763,7 @@ class thermal_config:
         }
         self.node_overrides[node_id] = profile_configs[profile]
 
+ThermalConfig = thermal_config
 
 @dataclass
 class signed_claim:
@@ -761,6 +779,7 @@ class signed_claim:
         if self.verified_at is None:
             self.verified_at = datetime.utcnow()
 
+SignedClaim = signed_claim
 
 class signal_context(BaseModel):
     """
@@ -770,7 +789,7 @@ class signal_context(BaseModel):
 
     hard_state: HardState = Field(default_factory=HardState)
     soft_state: SoftState = Field(default_factory=SoftState)
-    thermal_config: thermal_config = Field(default_factory=thermal_config)
+    thermal_config: ThermalConfig = Field(default_factory=ThermalConfig)
     signed_claims: list[signed_claim] = Field(default_factory=list)
     context_version: str = "1.0.0"
     created_at: datetime = Field(default_factory=datetime.utcnow)
@@ -790,6 +809,7 @@ class signal_context(BaseModel):
         signed_claim = signed_claim(claim=claim, source=source, confidence=confidence, evidence=evidence)
         self.signed_claims.append(signed_claim)
 
+SignalContext = signal_context
 
 class safety_profile_types(BaseModel):
     """Safety configuration profile used by execution profiles."""
@@ -799,7 +819,9 @@ class safety_profile_types(BaseModel):
     )
     pii_detection_enabled: bool = True
     policy_engine_enabled: bool = True
+SafetyProfile = safety_profile_types
 
+SafetyProfileTypes = safety_profile_types
 
 class sim_scenario(BaseModel):
     """Simulation scenario definition."""
@@ -810,6 +832,7 @@ class sim_scenario(BaseModel):
     execution_profile_name: str
     run_count: int
 
+SimScenario = sim_scenario
 
 class sim_outcome(BaseModel):
     """Simulation outcome results."""
@@ -819,6 +842,7 @@ class sim_outcome(BaseModel):
     safety_incidents: int
     agent_conflict_count: int
 
+SimOutcome = sim_outcome
 
 class hypothesis(BaseModel):
     """Lightweight hypothesis used by the metacognition layer."""
@@ -829,6 +853,7 @@ class hypothesis(BaseModel):
     confidence: float = 0.0
     evidence_ids: list[str] = Field(default_factory=list)
     rationale: str | None = None
+Hypothesis = hypothesis
 
 
 class metacognition_report(BaseModel):
@@ -839,6 +864,7 @@ class metacognition_report(BaseModel):
     uncertainty_score: float = 0.0
     issues_detected: list[str] = Field(default_factory=list)
 
+MetacognitionReport = metacognition_report
 
 @dataclass
 class golden_state_test_case:
@@ -849,6 +875,7 @@ class golden_state_test_case:
     expected_behavior: str
     metadata: dict[str, Any] = field(default_factory=dict)
 
+GoldenStateTestCase = golden_state_test_case
 
 @dataclass
 class judge_verdict:
@@ -858,6 +885,7 @@ class judge_verdict:
     rating: str
     explanation: str
 
+JudgeVerdict = judge_verdict
 
 @dataclass
 class eval_result:
@@ -868,6 +896,7 @@ class eval_result:
     raw_output: str
     reasoning_trace: list[dict[str, Any]] = field(default_factory=list)
 
+EvalResult = eval_result
 
 class golden_case(BaseModel):
     """Golden test case for evaluation."""
@@ -878,6 +907,7 @@ class golden_case(BaseModel):
     expected_keypoints: list[str]
     correctness_criteria: dict[str, Any]
 
+GoldenCase = golden_case
 
 class golden_output(BaseModel):
     """Golden test output results."""
@@ -889,6 +919,7 @@ class golden_output(BaseModel):
     metacognition_summary: dict[str, Any]
     final_verdict: Literal["pass", "fail", "borderline"]
 
+GoldenOutput = golden_output
 
 class budget_profile(BaseModel):
     """High-level budget profile for cost/latency envelopes."""
@@ -896,6 +927,7 @@ class budget_profile(BaseModel):
     max_cost_usd: float = Field(default=0.1, ge=0.0)
     max_latency_ms: int = Field(default=3000, ge=0)
 
+BudgetProfile = budget_profile
 
 CORE_CONTRACTS_REGISTRY.update(
     {
@@ -929,7 +961,9 @@ class llm_response:
     usage: dict[str, int] | None = None
     finish_reason: str | None = None
     metadata: dict[str, Any] | None = None
+LLMResponse = llm_response
 
+LlmResponse = llm_response
 
 class message_type(str, Enum):
     """Message types for agent communication."""
@@ -939,6 +973,7 @@ class message_type(str, Enum):
     ASSISTANT = "assistant"
     TOOL = "tool"
 
+MessageType = message_type
 
 @dataclass
 class residual_agent_message:
@@ -950,6 +985,7 @@ class residual_agent_message:
     tool_call_id: str | None = None
     metadata: dict[str, Any] | None = None
 
+ResidualAgentMessage = residual_agent_message
 
 @dataclass
 class agent_response:
@@ -961,6 +997,7 @@ class agent_response:
     usage: dict[str, int] | None = None
     metadata: dict[str, Any] | None = None
 
+AgentResponse = agent_response
 
 class residual_validation_result(BaseModel):
     """Validation result for data or operations (from runtime_shared_models.py)."""
@@ -970,6 +1007,7 @@ class residual_validation_result(BaseModel):
     warnings: list[str] = []
     metadata: dict[str, Any] = {}
 
+ResidualValidationResult = residual_validation_result
 
 class reasoning_config(BaseModel):
     """configuration for reasoning operations."""
@@ -981,6 +1019,7 @@ class reasoning_config(BaseModel):
     presence_penalty: float = 0.0
     stop_sequences: list[str] | None = None
 
+ReasoningConfig = reasoning_config
 
 class hop_status(str, Enum):
     """Status of hop execution."""
@@ -991,6 +1030,7 @@ class hop_status(str, Enum):
     FAILED = "failed"
     CANCELLED = "cancelled"
 
+HopStatus = hop_status
 
 class gate_decision(str, Enum):
     """Decision from validation gate."""
@@ -1000,6 +1040,7 @@ class gate_decision(str, Enum):
     WARN = "warn"
     SKIP = "skip"
 
+GateDecision = gate_decision
 
 class validation_severity(str, Enum):
     """Severity of validation issue."""
@@ -1009,6 +1050,7 @@ class validation_severity(str, Enum):
     ERROR = "error"
     CRITICAL = "critical"
 
+ValidationSeverity = validation_severity
 
 @dataclass
 class workflow_checkpoint:
@@ -1020,6 +1062,7 @@ class workflow_checkpoint:
     timestamp: str
     metadata: dict[str, Any] | None = None
 
+WorkflowCheckpoint = workflow_checkpoint
 
 @dataclass
 class thematic_analysis:
@@ -1030,6 +1073,7 @@ class thematic_analysis:
     keywords: list[str]
     sentiment: str | None = None
 
+ThematicAnalysis = thematic_analysis
 
 @dataclass
 class rag_state:
@@ -1040,7 +1084,9 @@ class rag_state:
     context: str
     response: str | None = None
     metadata: dict[str, Any] | None = None
+RAGState = rag_state
 
+RagState = rag_state
 
 class circuit_state(str, Enum):
     """Circuit breaker state."""
@@ -1049,6 +1095,7 @@ class circuit_state(str, Enum):
     OPEN = "open"
     HALF_OPEN = "half_open"
 
+CircuitState = circuit_state
 
 CORE_CONTRACTS_REGISTRY.update(
     {
@@ -1123,6 +1170,7 @@ class file_paths_config:
         / "prompts.json"
     )
 
+FilePathsConfig = file_paths_config
 
 @dataclass
 class artist_config:
@@ -1132,6 +1180,7 @@ class artist_config:
     bullet_word_count_ranges: dict = field(default_factory=dict)
     narrative_config: dict = field(default_factory=dict)
 
+ArtistConfig = artist_config
 
 @dataclass
 class validator_config:
@@ -1143,6 +1192,7 @@ class validator_config:
     provenance_split_targets: dict = field(default_factory=dict)
     pipeline_status_enum: list[str] = field(default_factory=list)
 
+ValidatorConfig = validator_config
 
 @dataclass
 class prompts_config:
@@ -1162,6 +1212,7 @@ class prompts_config:
         else:
             raise KeyError(f"Section '{section}' not found for prompt '{prompt_name}'")
 
+PromptsConfig = prompts_config
 
 @dataclass
 class web_rag_config:
@@ -1177,6 +1228,7 @@ class web_rag_config:
         }
     )
 
+WebRagConfig = web_rag_config
 
 @dataclass
 class enricher_config:
@@ -1197,6 +1249,7 @@ class enricher_config:
         }
     )
 
+EnricherConfig = enricher_config
 
 @dataclass
 class enforcement_rag_config:
@@ -1229,7 +1282,9 @@ class enforcement_rag_config:
             "LOCAL_NLP": 0.2,
         }
     )
+EnforcementRAGConfig = enforcement_rag_config
 
+EnforcementRagConfig = enforcement_rag_config
 
 @dataclass
 class enforcement_reasoning_config:
@@ -1242,6 +1297,7 @@ class enforcement_reasoning_config:
     REFLEXION: bool = True
     max_reflexion_loops: int = 3
 
+EnforcementReasoningConfig = enforcement_reasoning_config
 
 @dataclass
 class content_constraints_config:
@@ -1281,6 +1337,7 @@ class content_constraints_config:
     COVER_LETTER_P3_WORD_COUNT_MAX: int = 100
     COVER_LETTER_JD_RELEVANCE_THRESHOLD: float = 0.35
 
+ContentConstraintsConfig = content_constraints_config
 
 @dataclass
 class signal_control_config:
@@ -1290,6 +1347,7 @@ class signal_control_config:
     RESUME_MAX_JD_KEYWORDS: int = 16
     CL_MAX_JD_SIMILARITY: float = 0.65
 
+SignalControlConfig = signal_control_config
 
 @dataclass
 class prompt_addendum_config:
@@ -1298,6 +1356,7 @@ class prompt_addendum_config:
     HEADER: str = "\n\n**REASONING IMPLEMENTATION DIRECTIVES (v16.40):**\n\n"
     FOOTER: str = "\nAll directives MUST be followed in the output.\n"
 
+PromptAddendumConfig = prompt_addendum_config
 
 @dataclass
 class app_config:
@@ -1309,6 +1368,7 @@ class app_config:
     web_rag: WebRagConfig = field(default_factory=WebRagConfig)
     enricher: EnricherConfig = field(default_factory=EnricherConfig)
 
+AppConfig = app_config
 
 CORE_CONTRACTS_REGISTRY.update(
     {
@@ -1340,6 +1400,7 @@ class outreach_mission:
     prior_message_count: int = 0
     context: dict[str, Any] = field(default_factory=dict)
 
+OutreachMission = outreach_mission
 
 @dataclass
 class profile_analysis:
@@ -1351,6 +1412,7 @@ class profile_analysis:
     key_indicators: list[str]
     needs_manual_override: bool = False
 
+ProfileAnalysis = profile_analysis
 
 @dataclass
 class message_claim:
@@ -1361,6 +1423,7 @@ class message_claim:
     supporting_sources: list[str]
     source_weights: list[float]
 
+MessageClaim = message_claim
 
 @dataclass
 class rag_critique:
@@ -1371,7 +1434,9 @@ class rag_critique:
     refinement_tasks: list[str]
     reasoning: str
     is_sufficient: bool = False
+RAGCritique = rag_critique
 
+RagCritique = rag_critique
 
 @dataclass
 class enforcement_rag_result:
@@ -1385,7 +1450,9 @@ class enforcement_rag_result:
     age_days: int
     recipient_specific: bool
     CONFIDENCE: float = 1.0
+EnforcementRAGResult = enforcement_rag_result
 
+EnforcementRagResult = enforcement_rag_result
 
 @dataclass
 class sender_grounding_whitelists:
@@ -1397,6 +1464,7 @@ class sender_grounding_whitelists:
     quantifiable_achievements: list[str] = field(default_factory=list)
     raw_evidence: dict[str, list[str]] = field(default_factory=dict)
 
+SenderGroundingWhitelists = sender_grounding_whitelists
 
 @dataclass
 class research_context:
@@ -1409,6 +1477,7 @@ class research_context:
     sender_grounding: SenderGroundingWhitelists | None = None
     adversarial_findings: list[str] = field(default_factory=list)
 
+ResearchContext = research_context
 
 @dataclass
 class message_scaffold:
@@ -1420,6 +1489,7 @@ class message_scaffold:
     constraints: dict[str, Any]
     locked_sections: set[str] = field(default_factory=set)
 
+MessageScaffold = message_scaffold
 
 @dataclass
 class generated_message:
@@ -1434,6 +1504,7 @@ class generated_message:
     generation_attempts: int
     checksum: str
 
+GeneratedMessage = generated_message
 
 @dataclass
 class enforcement_validation_result:
@@ -1445,6 +1516,7 @@ class enforcement_validation_result:
     message: str
     details: dict[str, Any] | None = None
 
+EnforcementValidationResult = enforcement_validation_result
 
 @dataclass
 class qa_report:
@@ -1454,7 +1526,9 @@ class qa_report:
     validation_results: list["EnforcementValidationResult"]
     passed: bool
     timestamp: str
+QAReport = qa_report
 
+QaReport = qa_report
 
 CORE_CONTRACTS_REGISTRY.update(
     {
@@ -1483,6 +1557,7 @@ class executive_profile:
     strategic_focus: str | None = None
     linkedin_url: str | None = None
 
+ExecutiveProfile = executive_profile
 
 @dataclass
 class financial_metric:
@@ -1497,6 +1572,7 @@ class financial_metric:
     def validate(self) -> bool:
         return bool(self.metric_name and self.value and self.source_citation)
 
+FinancialMetric = financial_metric
 
 @dataclass
 class technical_implementation:
@@ -1510,6 +1586,7 @@ class technical_implementation:
     def validate(self) -> bool:
         return bool(self.technology_name and self.implementation_details and self.source_citation)
 
+TechnicalImplementation = technical_implementation
 
 @dataclass
 class strategic_layer:
@@ -1526,6 +1603,7 @@ class strategic_layer:
             return False
         return all(metric.validate() for metric in self.financial_proof_points)
 
+StrategicLayer = strategic_layer
 
 @dataclass
 class technical_layer:
@@ -1540,6 +1618,7 @@ class technical_layer:
             return False
         return all(tech.validate() for tech in self.key_technologies)
 
+TechnicalLayer = technical_layer
 
 @dataclass
 class leadership_layer:
@@ -1553,6 +1632,7 @@ class leadership_layer:
             return False
         return all(exec.name and exec.title and exec.ownership for exec in self.key_executives)
 
+LeadershipLayer = leadership_layer
 
 @dataclass
 class citation_map:
@@ -1569,6 +1649,7 @@ class citation_map:
     def validate(self) -> bool:
         return len(self.citations) >= 3
 
+CitationMap = citation_map
 
 @dataclass
 class deep_research_output:
@@ -1636,6 +1717,7 @@ class deep_research_output:
             "research_timestamp": self.research_timestamp,
         }
 
+DeepResearchOutput = deep_research_output
 
 @dataclass
 class research_hop_result:
@@ -1648,6 +1730,7 @@ class research_hop_result:
     success: bool = True
     error_message: str | None = None
 
+ResearchHopResult = research_hop_result
 
 @dataclass
 class integrity_gate_result:
@@ -1663,6 +1746,7 @@ class integrity_gate_result:
         self.detailed_violations.append(detail)
         self.passed = False
 
+IntegrityGateResult = integrity_gate_result
 
 CORE_CONTRACTS_REGISTRY.update(
     {
@@ -1688,6 +1772,7 @@ class subject_line_brief:
     tone: str
     forbidden_phrases: list[str] = field(default_factory=list)
 
+SubjectLineBrief = subject_line_brief
 
 @dataclass
 class message_body_brief:
@@ -1697,6 +1782,7 @@ class message_body_brief:
     jargon_level: str
     focus: str
 
+MessageBodyBrief = message_body_brief
 
 @dataclass
 class cta_brief:
@@ -1705,7 +1791,9 @@ class cta_brief:
     word_count: tuple[int, int]
     tone: str
     strategy: str | None = None
+CTABrief = cta_brief
 
+CtaBrief = cta_brief
 
 @dataclass
 class creative_brief:
@@ -1715,6 +1803,7 @@ class creative_brief:
     message_body: MessageBodyBrief
     cta: CTABrief
 
+CreativeBrief = creative_brief
 
 @dataclass
 class archetype_template:
@@ -1727,6 +1816,7 @@ class archetype_template:
     avoid: str
     creative_brief: CreativeBrief
 
+ArchetypeTemplate = archetype_template
 
 @dataclass
 class signature_template:
@@ -1736,6 +1826,7 @@ class signature_template:
     use_for: list[str]
     line_count: int
 
+SignatureTemplate = signature_template
 
 @dataclass
 class greeting_template:
@@ -1744,6 +1835,7 @@ class greeting_template:
     template: str
     note: str
 
+GreetingTemplate = greeting_template
 
 CORE_CONTRACTS_REGISTRY.update(
     {
@@ -1769,7 +1861,9 @@ class api_call_metrics:
     total_latency_ms: float = 0
     safety_blocks: int = 0
     rate_limits: int = 0
+APICallMetrics = api_call_metrics
 
+ApiCallMetrics = api_call_metrics
 
 @dataclass
 class immutable_staging_buffer:
@@ -1797,6 +1891,7 @@ class immutable_staging_buffer:
 
         return ImmutableStagingBuffer(_version=self.version + 1, _timestamp=datetime.utcnow().isoformat())
 
+ImmutableStagingBuffer = immutable_staging_buffer
 
 CORE_CONTRACTS_REGISTRY.update(
     {"APICallMetrics": APICallMetrics, "ImmutableStagingBuffer": ImmutableStagingBuffer}
@@ -1810,6 +1905,7 @@ class voice_type(str, Enum):
     THIRD_PERSON = "third_person"
     THIRD_PERSON_IMPLIED = "third_person_implied"
 
+VoiceType = voice_type
 
 class provenance_strategy(str, Enum):
     """Strategy for bullet provenance."""
@@ -1819,6 +1915,7 @@ class provenance_strategy(str, Enum):
     TOP_SKILLS = "top_skills"
     BALANCED = "balanced"
 
+ProvenanceStrategy = provenance_strategy
 
 class message_route(str, Enum):
     """Message route types for LinkedIn outreach."""
@@ -1828,6 +1925,7 @@ class message_route(str, Enum):
     FOLLOW_UP = "follow_up"
     DIRECT_MESSAGE = "direct_message"
 
+MessageRoute = message_route
 
 class recipient_archetype(str, Enum):
     """Recipient archetype classifications."""
@@ -1837,6 +1935,7 @@ class recipient_archetype(str, Enum):
     RECRUITER = "recruiter"
     PEER = "peer"
 
+RecipientArchetype = recipient_archetype
 
 class signature_format(str, Enum):
     """Signature format types."""
@@ -1846,6 +1945,7 @@ class signature_format(str, Enum):
     PROFESSIONAL = "professional"
     CASUAL = "casual"
 
+SignatureFormat = signature_format
 
 class cta_format(str, Enum):
     """Call-to-action format types."""
@@ -1854,7 +1954,9 @@ class cta_format(str, Enum):
     QUESTION = "question"
     DIRECT_ASK = "direct_ask"
     SOFT_CLOSE = "soft_close"
+CTAFormat = cta_format
 
+CtaFormat = cta_format
 
 CORE_CONTRACTS_REGISTRY.update(
     {
@@ -1884,6 +1986,7 @@ class word_count_constraint:
             return (False, f"Word count {word_count} above maximum {self.max_words}")
         return (True, "")
 
+WordCountConstraint = word_count_constraint
 
 @dataclass
 class char_count_constraint:
@@ -1898,6 +2001,7 @@ class char_count_constraint:
             return (False, f"Character count {char_count} above maximum {self.max_chars}")
         return (True, "")
 
+CharCountConstraint = char_count_constraint
 
 @dataclass
 class structure_constraint:
@@ -1907,6 +2011,7 @@ class structure_constraint:
     segment_word_limit: int | None = None
     exclusions: list[str] = field(default_factory=list)
 
+StructureConstraint = structure_constraint
 
 @dataclass
 class headline_brief:
@@ -1921,6 +2026,7 @@ class headline_brief:
     )
     GUIDANCE: str = "Must incorporate differentiator keywords from the Competitive Analysis."
 
+HeadlineBrief = headline_brief
 
 @dataclass
 class hop_input:
@@ -1930,6 +2036,7 @@ class hop_input:
     required: bool = True
     description: str = ""
 
+HopInput = hop_input
 
 @dataclass
 class hop_output:
@@ -1938,6 +2045,7 @@ class hop_output:
     artifact_id: str
     DESCRIPTION: str = ""
 
+HopOutput = hop_output
 
 @dataclass
 class hop_spec:
@@ -1951,6 +2059,7 @@ class hop_spec:
     retry_policy: RetryPolicy = field(default_factory=RetryPolicy)
     extra_args: list[str] = field(default_factory=list)
 
+HopSpec = hop_spec
 
 @dataclass
 class workflow_spec:
@@ -1960,6 +2069,7 @@ class workflow_spec:
     version: str
     hops: list[HopSpec]
 
+WorkflowSpec = workflow_spec
 
 CORE_CONTRACTS_REGISTRY.update(
     {
@@ -1993,6 +2103,7 @@ class experience_bullets_brief:
     k7_word_count: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(24, 30))
     GUIDANCE: str = "Must use standard technology terms (e.g., 'cloud data platform' instead of 'Snowflake')."
 
+ExperienceBulletsBrief = experience_bullets_brief
 
 @dataclass
 class leadership_competencies_brief:
@@ -2003,6 +2114,7 @@ class leadership_competencies_brief:
     COUNT: int = 6
     word_count_per_desc: WordCountConstraint = field(default_factory=lambda: WordCountConstraint(24, 30))
 
+LeadershipCompetenciesBrief = leadership_competencies_brief
 
 @dataclass
 class cover_letter_brief:
@@ -2016,6 +2128,7 @@ class cover_letter_brief:
     )
     signature_generation_policy: str = "DYNAMIC_FROM_OWNER_CONTACT"
 
+CoverLetterBrief = cover_letter_brief
 
 @dataclass
 class optimized_skills_brief:
@@ -2024,6 +2137,7 @@ class optimized_skills_brief:
     sourcing_strategy: ProvenanceStrategy = ProvenanceStrategy.TOP_SKILLS
     LOGIC: str = "1. Extract and rank the top 12 skills from the JD. 2. Cross-reference this list against the master resume's competencies and bullet points. 3. Prioritize and render the final list based on the intersection."
 
+OptimizedSkillsBrief = optimized_skills_brief
 
 @dataclass
 class rg_creative_brief:
@@ -2035,7 +2149,9 @@ class rg_creative_brief:
     leadership_competencies: LeadershipCompetenciesBrief = field(default_factory=LeadershipCompetenciesBrief)
     cover_letter: CoverLetterBrief = field(default_factory=CoverLetterBrief)
     optimized_skills: OptimizedSkillsBrief = field(default_factory=OptimizedSkillsBrief)
+RGCreativeBrief = rg_creative_brief
 
+RgCreativeBrief = rg_creative_brief
 
 @dataclass
 class executive_summary_brief:
@@ -2048,6 +2164,7 @@ class executive_summary_brief:
     )
     GUIDANCE: str = "Subtly incorporate the 'primary_theme' from the K.0 analysis, while strictly maintaining the narrative voice of a professional executive biography. Do not use phrasing from the job posting."
 
+ExecutiveSummaryBrief = executive_summary_brief
 
 CORE_CONTRACTS_REGISTRY.update(
     {
@@ -2070,6 +2187,7 @@ class route_conditions:
     prior_message_count_gt: int | None = None
     prior_message_count_gte: int | None = None
 
+RouteConditions = route_conditions
 
 @dataclass
 class route_constraints:
@@ -2084,6 +2202,7 @@ class route_constraints:
     cta_max_words: int | None = None
     greeting_format: str = "Hi {first_name},"
 
+RouteConstraints = route_constraints
 
 @dataclass
 class route_config:
@@ -2093,6 +2212,7 @@ class route_config:
     conditions: RouteConditions
     constraints: RouteConstraints
 
+RouteConfig = route_config
 
 @dataclass
 class archetone_config:
@@ -2104,6 +2224,7 @@ class archetone_config:
     formality: str
     focus: str
 
+ArchetoneConfig = archetone_config
 
 @dataclass
 class temperature_config:
@@ -2114,6 +2235,7 @@ class temperature_config:
     max_temperature: float = 0.95
     max_creative_retries: int = 3
 
+TemperatureConfig = temperature_config
 
 CORE_CONTRACTS_REGISTRY.update(
     {
@@ -3099,6 +3221,7 @@ class mission_priority(str, Enum):
     MEDIUM = "MEDIUM"
     LOW = "LOW"
 
+MissionPriority = mission_priority
 
 class mission_status(str, Enum):
     """Mission status values."""
@@ -3109,6 +3232,7 @@ class mission_status(str, Enum):
     FAILED = "FAILED"
     CANCELLED = "CANCELLED"
 
+MissionStatus = mission_status
 
 @dataclass(frozen=True)
 class mission_phase(sovereign_base_model_types):
@@ -3120,6 +3244,7 @@ class mission_phase(sovereign_base_model_types):
     status: str = "pending"
     result: dict[str, Any] | None = None
 
+MissionPhase = mission_phase
 
 @dataclass(frozen=True)
 class mission_plan(sovereign_base_model_types):
@@ -3239,6 +3364,7 @@ class mission_plan(sovereign_base_model_types):
                             f"Sovereignty Breach: Dependency cycle detected in MissionPlan {self._mission_id} involving phases: {list(rec_stack if rec_stack else graph.keys())}"
                         )
 
+MissionPlan = mission_plan
 
 @dataclass(frozen=True)
 class thinking_step(sovereign_base_model_types):
@@ -3249,6 +3375,7 @@ class thinking_step(sovereign_base_model_types):
     action: str
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
+ThinkingStep = thinking_step
 
 @dataclass(frozen=True)
 class revision_step(sovereign_base_model_types):
@@ -3260,6 +3387,7 @@ class revision_step(sovereign_base_model_types):
     reason: str
     timestamp: str = field(default_factory=lambda: datetime.utcnow().isoformat())
 
+RevisionStep = revision_step
 
 @dataclass(frozen=True)
 class thought_chain(sovereign_base_model_types):
@@ -3346,6 +3474,7 @@ class thought_chain(sovereign_base_model_types):
                 duration_seconds=self._duration_seconds,
             )
 
+ThoughtChain = thought_chain
 
 @dataclass(frozen=True)
 class constitutional_violation(sovereign_base_model_types):
@@ -3453,6 +3582,7 @@ class constitutional_violation(sovereign_base_model_types):
                 suggested_fix=self._suggested_fix,
             )
 
+ConstitutionalViolation = constitutional_violation
 
 @dataclass(frozen=True)
 class healing_action(sovereign_base_model_types):
@@ -3567,6 +3697,7 @@ class healing_action(sovereign_base_model_types):
                 transaction_id=self._transaction_id,
             )
 
+HealingAction = healing_action
 
 @dataclass(frozen=True)
 class healing_cycle(sovereign_base_model_types):
@@ -3654,6 +3785,7 @@ class healing_cycle(sovereign_base_model_types):
                 persistent_violations=persistent,
             )
 
+HealingCycle = healing_cycle
 
 @dataclass(frozen=True)
 class healing_report(sovereign_base_model_types):
@@ -3748,6 +3880,7 @@ class healing_report(sovereign_base_model_types):
                 healing_strategies_used=self._strategies_used.copy(),
             )
 
+HealingReport = healing_report
 
 @dataclass(frozen=True)
 class sovereign_event(sovereign_base_model_types):
@@ -3866,6 +3999,42 @@ class sovereign_event(sovereign_base_model_types):
                 payload=self._payload.copy(),
                 correlation_id=self._correlation_id,
             )
+
+SovereignEvent = sovereign_event
+
+
+
+
+
+
+core_contracts_types_registry = {
+    "Territory": Territory,
+    "AgentMessage": AgentMessage,
+    "ReadFileArgs": ReadFileArgs,
+    "WriteFileArgs": WriteFileArgs,
+    "MoveFileArgs": MoveFileArgs,
+    "ListFilesArgs": ListFilesArgs,
+    "ExecuteCommandArgs": ExecuteCommandArgs,
+    "DeleteFileArgs": DeleteFileArgs,
+    "CreateDirectoryArgs": CreateDirectoryArgs,
+    "AgentThoughtProcess": AgentThoughtProcess,
+    "CodeGenerationResult": CodeGenerationResult,
+    "ResearchResult": ResearchResult,
+    "ConsensusVerdict": ConsensusVerdict,
+    "ModelOpinion": ModelOpinion,
+    "AgentPlan": AgentPlan,
+    "ToneType": ToneType,
+    "StyleProfile": StyleProfile,
+    "GenerationConfig": GenerationConfig,
+    "micro_stage": micro_stage,
+    "HopState": HopState,
+    "RetryPolicy": RetryPolicy,
+    "MicroCheckpoint": MicroCheckpoint,
+    "StageTransition": StageTransition,
+    "InjectionType": InjectionType,
+    "InjectionScope": InjectionScope,
+    "InjectionPattern": InjectionPattern,
+}
 
 
 CORE_CONTRACTS_REGISTRY.update(

@@ -3,6 +3,8 @@ This file has fundamental architectural issues that require complete rewrite.
 Status: DEPRECATED - Do not use in production
 """
 
+from __future__ import annotations
+
 # LEGACY CODE BELOW - COMMENTED OUT
 # """Message Body Composer Agent - Core Message Generator (K.3)
 

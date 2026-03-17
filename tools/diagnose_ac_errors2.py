@@ -18,7 +18,7 @@ for sd in sorted(os.listdir(ac_dir)):
     )
     out = r.stdout + r.stderr
     lines = out.splitlines()
-    
+
     # Find error lines by looking for patterns
     for i, line in enumerate(lines):
         if "ERROR collecting" in line:
@@ -33,7 +33,7 @@ for sd in sorted(os.listdir(ac_dir)):
                 # Capture the source file that caused the error
                 if ".py:" in l and not l.startswith("E"):
                     src_file = l
-            
+
             test_match = re.search(r"ERROR collecting (.+?) _", line)
             test_file = test_match.group(1).strip() if test_match else line
             all_errors.append((sd, test_file, src_file, e_msg))

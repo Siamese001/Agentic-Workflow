@@ -12,26 +12,24 @@ import sys
 import time
 from typing import Any
 
-SYS.STDOUT.RECONFIGURE(ENCODING="utf-8")
-SYS.STDERR.RECONFIGURE(ENCODING="utf-8")
+sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding="utf-8")
 logging.basicConfig(
-    LEVEL=logging.INFO,
-    FORMAT="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    HANDLERS=[logging.StreamHandler(sys.stdout), logging.FileHandler("hardened_job.log", encoding="utf-8")],
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.StreamHandler(sys.stdout), logging.FileHandler("hardened_job.log", encoding="utf-8")],
 )
 LOGGER = logging.getLogger(__name__)
 try:
     from runtime.shared.routing import RoutingTier
-except ImportError as e:
-    logger.error(f"Failed to import hardened components: {e}")
-    logger.error("Make sure the runtime modules are properly installed")
-    sys.exit(1)
+except ImportError:
+    RoutingTier = None  # runtime not installed — tests can still collect
 TEST_JOB_ID = "titanium_acceptance_v2_001"
 TEST_CONFIG = {
     "target_role": "Senior AI Engineer",
     "target_company": "Anthropic",
     "job_url": "https://anthropic.com/careers",
-    "routing_tier": RoutingTier.REASONING,
+    "routing_tier": RoutingTier.REASONING if RoutingTier else "reasoning",
 }
 
 

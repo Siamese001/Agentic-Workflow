@@ -1,10 +1,11 @@
+from __future__ import annotations
+
 __version__ = "11.10"
 import asyncio
 import json
 import os
 import sys
-
-__version__ = "11.10"
+from typing import Any
 
 
 def load_mission_input(filename: str = "mission_input.json") -> dict[str, Any]:

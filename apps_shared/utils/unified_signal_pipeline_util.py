@@ -5,6 +5,8 @@ resume and outreach engines can use, eliminating duplication while
 maintaining domain-specific optimizations.
 """
 
+from __future__ import annotations
+
 import hashlib
 import json
 import logging

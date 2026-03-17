@@ -3,6 +3,7 @@
 import ast
 import logging
 from pathlib import Path
+from typing import Any
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
@@ -142,7 +143,7 @@ files_to_fix: Any = [
 ]
 root: Any = Path("c:/Git/Agentic-Workflow")
 for file_path in files_to_fix:
-    full_path: Any = ROOT / file_path
+    full_path: Any = root / file_path
     if full_path.exists():
         defs: Any = count_top_level_defs(full_path)
         if defs > 5:

@@ -5,7 +5,10 @@ Domain: outreach
 Generated: 2025-12-07T13:28:54.077849
 """
 
+from __future__ import annotations
+
 import logging
+from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,

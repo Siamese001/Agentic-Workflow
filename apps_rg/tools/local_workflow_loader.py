@@ -5,7 +5,10 @@ Domain: resume
 Generated: 2025-12-07T13:29:00.515392
 """
 
+from __future__ import annotations
+
 import logging
+from typing import Any
 import time
 
 from agentic_core.runtime.lifecycle_trace_contract import (

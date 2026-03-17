@@ -10,14 +10,14 @@ for sd in sorted(os.listdir(unit_dir)):
     sdp = os.path.join(unit_dir, sd)
     if not os.path.isdir(sdp) or sd.startswith("_"):
         continue
-    
+
     r = subprocess.run(
         ["python", "-m", "pytest", f"tests/unit/{sd}", "--co", "--tb=short", "-p", "no:logging", "-q"],
         capture_output=True, text=True, cwd=ROOT, timeout=60
     )
     out = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout)
     lines = out.split("\n")
-    
+
     i = 0
     while i < len(lines):
         if "ERROR collecting" in lines[i]:
@@ -36,7 +36,7 @@ for sd in sorted(os.listdir(unit_dir)):
                     if not msg.startswith("File "):
                         err_msg = msg
                         break
-            
+
             if err_msg:
                 print(f"TEST: {test_file}")
                 print(f"  SRC: {src_file}:{src_line}")

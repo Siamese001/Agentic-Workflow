@@ -500,7 +500,10 @@ class TokenBucketRateLimiter(RateLimiter):
                 except Exception as e:
                     logger.error(f"Rate limiter cleanup error: {e}")
 
-        self._cleanup_task = asyncio.create_task(cleanup_loop())
+        try:
+            self._cleanup_task = asyncio.create_task(cleanup_loop())
+        except RuntimeError:
+            self._cleanup_task = None  # no event loop — cleanup deferred
 
     async def stop(self) -> None:
         """Stop the rate limiter."""
@@ -798,6 +801,8 @@ def rate_limit(limiter_name: str, identifier_extractor: Callable | None = None):
 
     return decorator
 
+
+LIMIT = 1000  # Default rate limit
 
 # Predefined configurations
 RATE_LIMIT_CONFIGS = {

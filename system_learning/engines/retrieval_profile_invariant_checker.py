@@ -3,6 +3,7 @@ W4-F Retrieval Profile Invariant Checker
 
 Validates RetrievalProfile invariants before activation.
 """
+from typing import Optional
 
 from dataclasses import dataclass
 

@@ -5,6 +5,8 @@ Data ingestion pipeline for hydrating the hybrid cache with
 golden patterns from Pinecone to Redis.
 """
 
+from __future__ import annotations
+
 import logging
 import os
 from typing import Any

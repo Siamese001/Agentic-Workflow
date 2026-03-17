@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+from typing import Any
 from typing import Sequence
 
 from agentic_core.runtime.lifecycle_trace_contract import (

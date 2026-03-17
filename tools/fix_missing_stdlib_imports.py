@@ -93,7 +93,7 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
                         if f"import {sym}," in s or f"import {sym}" in s.rstrip(")"):
                             already_imported = True
                             break
-                    
+
                     # Also check multiline import blocks
                     in_block = False
                     for line in lines:

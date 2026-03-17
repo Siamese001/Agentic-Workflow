@@ -109,6 +109,7 @@ DEFAULT_COMMIT_REWARD_THRESHOLD = 0.60
 
 import hashlib
 import logging
+from typing import Optional
 import uuid
 from dataclasses import dataclass
 from typing import Any, Sequence

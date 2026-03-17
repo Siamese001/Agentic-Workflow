@@ -95,7 +95,7 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
 
             # Pattern A: file has LTC import block
             has_ltc = LTC in content
-            
+
             if has_ltc:
                 # Find the LAST LTC import block's closing ')'
                 best_close = -1
@@ -111,7 +111,7 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
                         i = j + 1 if j > i else i + 1
                     else:
                         i += 1
-                
+
                 if best_close >= 0:
                     insert = [f"    {e}," for e in sorted(missing)]
                     for k, il in enumerate(insert):

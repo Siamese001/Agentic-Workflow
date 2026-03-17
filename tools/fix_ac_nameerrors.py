@@ -62,48 +62,48 @@ def find_first_import_block_end(lines):
 def try_fix_file(filepath, missing_name):
     """Attempt to fix a missing name in a file."""
     src = open(filepath, "r", encoding="utf-8").read()
-    
+
     # Skip if already defined/imported
     if missing_name in IMPORT_FIXES:
         imp_target = IMPORT_FIXES[missing_name].split("import ")[-1].split(",")[0].strip()
         # Check if already imported
         if re.search(rf'\bimport\b.*\b{re.escape(imp_target)}\b', src):
             return False, "already imported"
-    
+
     lines = src.split("\n")
     insert_pos = find_first_import_block_end(lines) + 1
-    
+
     if missing_name in IMPORT_FIXES:
         insert_text = IMPORT_FIXES[missing_name]
     elif missing_name in STUB_FIXES:
         insert_text = "\n" + STUB_FIXES[missing_name]
     else:
         return False, f"no fix known for {missing_name}"
-    
+
     lines.insert(insert_pos, insert_text)
     new_src = "\n".join(lines)
-    
+
     try:
         ast.parse(new_src)
     except SyntaxError as e:
         return False, f"syntax error: {e}"
-    
+
     open(filepath, "w", encoding="utf-8").write(new_src)
     return True, "fixed"
 
 
 def main():
     import subprocess
-    
+
     ac_dir = os.path.join(ROOT, "tests", "unit", "agentic_core")
     fixed_total = 0
     skip_total = 0
-    
+
     for sd in sorted(os.listdir(ac_dir)):
         sdp = os.path.join(ac_dir, sd)
         if not os.path.isdir(sdp) or sd.startswith("_"):
             continue
-        
+
         r = subprocess.run(
             [sys.executable, "-m", "pytest", f"tests/unit/agentic_core/{sd}",
              "-c", "tools/pytest_minimal.ini", "--co", "--tb=short", "-p", "no:warnings"],
@@ -112,7 +112,7 @@ def main():
         )
         out = r.stdout + r.stderr
         lines = out.splitlines()
-        
+
         for i, line in enumerate(lines):
             if "NameError" not in line:
                 continue
@@ -121,7 +121,7 @@ def main():
             if not match:
                 continue
             missing_name = match.group(1)
-            
+
             # Find the source file from preceding lines
             src_file = None
             for j in range(max(0, i-10), i):
@@ -135,12 +135,12 @@ def main():
                     else:
                         src_file = os.path.join(ROOT, candidate)
                     break
-            
+
             if not src_file or not os.path.exists(src_file):
                 print(f"  SKIP [{sd}] {missing_name}: can't find source file")
                 skip_total += 1
                 continue
-            
+
             ok, msg = try_fix_file(src_file, missing_name)
             rel = os.path.relpath(src_file, ROOT)
             if ok:
@@ -149,7 +149,7 @@ def main():
             else:
                 print(f"  SKIP [{sd}] {missing_name} in {rel}: {msg}")
                 skip_total += 1
-    
+
     print(f"\nTotal: {fixed_total} fixed, {skip_total} skipped")
 
 

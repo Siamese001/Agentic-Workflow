@@ -4,6 +4,8 @@ Phase 1 - Pillar 6: Reasoning models (Structured Reasoning)
 Routes tasks to appropriate reasoning strategies (ReAct, CoT, etc.)
 """
 
+from __future__ import annotations
+
 import logging
 from enum import Enum
 from typing import Any
@@ -181,6 +183,14 @@ class TaskType(Enum):
     ANALYSIS = "analysis"
     PLANNING = "planning"
     UNKNOWN = "unknown"
+
+
+class ReasoningMode(Enum):
+    """Reasoning modes for strategy selection."""
+    REACT = "react"
+    COT = "chain_of_thought"
+    SIMPLE = "simple"
+    ADAPTIVE = "adaptive"
 
 
 class ReasoningRouter:

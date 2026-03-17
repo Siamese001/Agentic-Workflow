@@ -3,6 +3,8 @@ L3 Orchestration: Autonomous Sovereign Core
 Cross-layer orchestrator that coordinates autonomous responses across L1-L5.
 """
 
+from __future__ import annotations
+
 import asyncio
 from datetime import datetime
 from pathlib import Path
@@ -169,6 +171,11 @@ _emit_captures_evaluation_metric("p4", "autonomous_sovereign_core_util", "eval_m
 _emit_stores_embedding("p4", "autonomous_sovereign_core_util", "embedding_store")
 _emit_updates_meta_learning_state("p4", "autonomous_sovereign_core_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "autonomous_sovereign_core_util", "exec_snapshot_link")
+
+
+class FileSystemEventHandler:
+    """Stub for watchdog FileSystemEventHandler."""
+    pass
 
 
 class TerritoryWatcher(FileSystemEventHandler):

@@ -4,6 +4,7 @@ Integration Plan: Historical K-Node Patterns into apps_rg
 Step-by-step integration guide for incorporating proven patterns from 60+ legacy versions
 into the current apps_rg architecture.
 """
+from typing import Any, Dict, List
 
 # ============================================================================
 # INTEGRATION ROADMAP
@@ -72,6 +73,18 @@ Add K.0 thematic analysis as foundational dependency:
 """
 
 
+class RGFlowRouter:
+    """Stub base class."""
+    def __init__(self, config=None): self.config = config or {}
+
+
+class RGFlowOutput:
+    """Stub output type for flow router."""
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+
 class EnhancedRGFlowRouter(RGFlowRouter):
     """Enhanced flow router with K.0 thematic analysis integration."""
 
@@ -116,6 +129,23 @@ File: apps_rg/logic_nodes/resume_section_node.py (Enhanced)
 
 Add two-phase generation pattern for experience sections:
 """
+
+
+from collections import namedtuple
+
+CompetencyItem = namedtuple("CompetencyItem", ["title", "description", "word_count"])
+
+
+class ThematicAnalysisOutput:
+    """Stub output type for thematic analysis."""
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
+
+class ResumeSectionNode:
+    """Stub base class for resume section nodes."""
+    def __init__(self, config=None): self.config = config or {}
 
 
 class EnhancedResumeSectionNode(ResumeSectionNode):
@@ -182,6 +212,11 @@ File: apps_rg/engines/generation/k9_gap_closure_engine.py (Enhanced)
 
 Integrate K.0 thematic analysis for better competency generation:
 """
+
+
+class GapClosureEngine:
+    """Stub base class for gap closure engine."""
+    def __init__(self, ctx=None): self.ctx = ctx
 
 
 class EnhancedGapClosureEngine(GapClosureEngine):
@@ -290,6 +325,11 @@ File: apps_rg/engines/orchestration/resume_planning_engine.py (Enhanced)
 
 Update to use enhanced validation and thematic analysis:
 """
+
+
+class ResumePlanningEngine:
+    """Stub base class for resume planning engine."""
+    def __init__(self, ctx=None): self.ctx = ctx
 
 
 class EnhancedResumePlanningEngine(ResumePlanningEngine):

@@ -50,6 +50,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+from typing import Optional
 import uuid
 from dataclasses import dataclass
 from typing import Any, Protocol

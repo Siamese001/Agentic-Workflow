@@ -1,7 +1,7 @@
 from dataclasses import dataclass
+from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,  # noqa: E402
@@ -172,7 +172,7 @@ class HealerMixin:
 
 
 @dataclass
-class MessageDiversityValidator(SubatomicTestingMixin, SovereignBaseAgent):
+class MessageDiversityValidator(SovereignBaseAgent):
     """
     Prevent repetitive messages using cosine similarity
     FEATURE 1.3 from SUPREME_SPELL

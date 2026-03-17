@@ -5,6 +5,8 @@ to improve the quality and effectiveness of resume and message outputs
 in the Subatomic Hop system.
 """
 
+from __future__ import annotations
+
 
 def get_resume_injection_patterns() -> list[InjectionPattern]:
     """Get resume-specific injection patterns."""

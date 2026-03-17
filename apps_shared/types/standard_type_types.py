@@ -6,6 +6,8 @@ while allowing for domain-specific customizations.
 # guardian: allow-magic-config
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any

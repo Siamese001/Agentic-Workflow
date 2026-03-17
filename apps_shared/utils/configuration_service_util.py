@@ -769,877 +769,877 @@ class ConfigurationService:
 config = ConfigurationService()  # GLOBAL: Review if this should be constant
 
 # Legacy constant
-ABOVE = None
+ABOVE = "above"
 
 # Legacy constant
-ACTION = None
+ACTION = "action"
 
 # Legacy constant
-ADDENDUM = None
+ADDENDUM = "addendum"
 
 # Legacy constant
-ADJACENCY = None
+ADJACENCY = "adjacency"
 
 # Legacy constant
-AGENTS = None
+AGENTS = "agents"
 
 # Legacy constant
-AGENT_CAPABILITIES = None
+AGENT_CAPABILITIES = "agent_capabilities"
 
 # Legacy constant
-AGG = None
+AGG = "agg"
 
 # Legacy constant
-AGGREGATED = None
+AGGREGATED = "aggregated"
 
 # Legacy constant
-ALERT = None
+ALERT = "alert"
 
 # Legacy constant
-ANALYSIS = None
+ANALYSIS = "analysis"
 
 # Legacy constant
-ANALYSIS_DIR = None
+ANALYSIS_DIR = "analysis_dir"
 
 # Legacy constant
-APPROVED_FOLDERS = None
+APPROVED_FOLDERS = "approved_folders"
 
 # Legacy constant
-ARCHETYPE_TEMPLATES = None
+ARCHETYPE_TEMPLATES = "archetype_templates"
 
 # Legacy constant
-ARCHETYPE_TRANSITIONS = None
+ARCHETYPE_TRANSITIONS = "archetype_transitions"
 
 # Legacy constant
-ARCHIVE_DIR = None
+ARCHIVE_DIR = "archive_dir"
 
 # Legacy constant
-ARCHIVE_SOURCE_LIST = None
+ARCHIVE_SOURCE_LIST = "archive_source_list"
 
 # Legacy constant
-ASSIGNMENTS = None
+ASSIGNMENTS = "assignments"
 
 # Legacy constant
-ATTEMPTS = None
+ATTEMPTS = "attempts"
 
 # Legacy constant
-AVAILABLE = None
+AVAILABLE = "available"
 
 # Legacy constant
-AVERAGE = None
+AVERAGE = "average"
 
 # Legacy constant
-BASELINE = None
+BASELINE = "baseline"
 
 # Legacy constant
-BELOW = None
+BELOW = "below"
 
 # Legacy constant
-BEST = None
+BEST = "best"
 
 # Legacy constant
-BETTER = None
+BETTER = "better"
 
 # Legacy constant
-BODY = None
+BODY = "body"
 
 # Legacy constant
-BOLD = None
+BOLD = "bold"
 
 # Legacy constant
-BRANCHES = None
+BRANCHES = "branches"
 
 # Legacy constant
-BULLETS = None
+BULLETS = "bullets"
 
 # Legacy constant
-CACHE = None
+CACHE = "cache"
 
 # Legacy constant
-CACHE_DIR = None
+CACHE_DIR = "cache_dir"
 
 # Legacy constant
-CANDIDATES = None
+CANDIDATES = "candidates"
 
 # Legacy constant
-CARD = None
+CARD = "card"
 
 # Legacy constant
-CATEGORIES = None
+CATEGORIES = "categories"
 
 # Legacy constant
-CATEGORY = None
+CATEGORY = "category"
 
 # Legacy constant
-CFG = None
+CFG = "cfg"
 
 # Legacy constant
-CHECK = None
+CHECK = "check"
 
 # Legacy constant
-CHECKPOINTS = None
+CHECKPOINTS = "checkpoints"
 
 # Legacy constant
-CHOICE = None
+CHOICE = "choice"
 
 # Legacy constant
-CHUNKS = None
+CHUNKS = "chunks"
 
 # Legacy constant
-CLEANED = None
+CLEANED = "cleaned"
 
 # Legacy constant
-CLIENT = None
+CLIENT = "client"
 
 # Legacy constant
-CODE = None
+CODE = "code"
 
 # Legacy constant
-COMBINED = None
+COMBINED = "combined"
 
 # Legacy constant
-COMPETENCIES = None
+COMPETENCIES = "competencies"
 
 # Legacy constant
-COMPLETED = None
+COMPLETED = "completed"
 
 # Legacy constant
-COMPLETENESS = None
+COMPLETENESS = "completeness"
 
 # Legacy constant
-COMPRESSOR = None
+COMPRESSOR = "compressor"
 
 # Legacy constant
-CONFIDENCE = None
+CONFIDENCE = "confidence"
 
 # Legacy constant
-CONFIG = None
+CONFIG = "config"
 
 # Legacy constant
-CONN = None
+CONN = "conn"
 
 # Legacy constant
-CONSTRAINTS = None
+CONSTRAINTS = "constraints"
 
 # Legacy constant
-CONTENT = None
+CONTENT = "content"
 
 # Legacy constant
-CONTEXT = None
+CONTEXT = "context"
 
 # Legacy constant
-COSTS = None
+COSTS = "costs"
 
 # Legacy constant
-COUNCIL = None
+COUNCIL = "council"
 
 # Legacy constant
-COUNT = None
+COUNT = "count"
 
 # Legacy constant
-CREATED = None
+CREATED = "created"
 
 # Legacy constant
-CTX = None
+CTX = "ctx"
 
 # Legacy constant
-CURRENT = None
+CURRENT = "current"
 
 # Legacy constant
-CYAN = None
+CYAN = "cyan"
 
 # Legacy constant
-DATA = None
+DATA = "data"
 
 # Legacy constant
-DATA1 = None
+DATA1 = "data1"
 
 # Legacy constant
-DATA2 = None
+DATA2 = "data2"
 
 # Legacy constant
-DEFAULT_CONFIG = None
+DEFAULT_CONFIG = "default_config"
 
 # Legacy constant
-DEFAULT_MAX_RETRIES = None
+DEFAULT_MAX_RETRIES = "default_max_retries"
 
 # Legacy constant
-DEFAULT_MODELS = None
+DEFAULT_MODELS = "default_models"
 
 # Legacy constant
-DEFAULT_TIMEOUT = None
+DEFAULT_TIMEOUT = "default_timeout"
 
 # Legacy constant
-DENSE = None
+DENSE = "dense"
 
 # Legacy constant
-DEPTH = None
+DEPTH = "depth"
 
 # Legacy constant
-DESCRIPTION = None
+DESCRIPTION = "description"
 
 # Legacy constant
-DETAILS = None
+DETAILS = "details"
 
 # Legacy constant
-DISTRIBUTION = None
+DISTRIBUTION = "distribution"
 
 # Legacy constant
-DOCSTRING_DEBT = None
+DOCSTRING_DEBT = "docstring_debt"
 
 # Legacy constant
-DOCUMENT = None
+DOCUMENT = "document"
 
 # Legacy constant
-DOCUMENTS = None
+DOCUMENTS = "documents"
 
 # Legacy constant
-DOMAIN_TO_FOLDER = None
+DOMAIN_TO_FOLDER = "domain_to_folder"
 
 # Legacy constant
-EDGES = None
+EDGES = "edges"
 
 # Legacy constant
-ENCODER = None
+ENCODER = "encoder"
 
 # Legacy constant
-END = None
+END = "end"
 
 # Legacy constant
-ENRICHED = None
+ENRICHED = "enriched"
 
 # Legacy constant
-ENTITIES = None
+ENTITIES = "entities"
 
 # Legacy constant
-ENTRY = None
+ENTRY = "entry"
 
 # Legacy constant
-ENVIRONMENT = None
+ENVIRONMENT = "environment"
 
 # Legacy constant
-ERROR = None
+ERROR = "error"
 
 # Legacy constant
-ERRORS = None
+ERRORS = "errors"
 
 # Legacy constant
-ESTIMATE = None
+ESTIMATE = "estimate"
 
 # Legacy constant
-ESTIMATE1 = None
+ESTIMATE1 = "estimate1"
 
 # Legacy constant
-EVENTS = None
+EVENTS = "events"
 
 # Legacy constant
-EVT = None
+EVT = "evt"
 
 # Legacy constant
-EXAMPLES = None
+EXAMPLES = "examples"
 
 # Legacy constant
-EXCLUDED_DIRS = None
+EXCLUDED_DIRS = "excluded_dirs"
 
 # Legacy constant
-EXCLUDED_FILES = None
+EXCLUDED_FILES = "excluded_files"
 
 # Legacy constant
-EXCLUDE_DIRS = None
+EXCLUDE_DIRS = "exclude_dirs"
 
 # Legacy constant
-EXCLUDE_FILES = None
+EXCLUDE_FILES = "exclude_files"
 
 # Legacy constant
-EXECUTOR = None
+EXECUTOR = "executor"
 
 # Legacy constant
-EXPORT = None
+EXPORT = "export"
 
 # Legacy constant
-EXT = None
+EXT = "ext"
 
 # Legacy constant
-FACTORS = None
+FACTORS = "factors"
 
 # Legacy constant
-FAILURES = None
+FAILURES = "failures"
 
 # Legacy constant
-FILEPATH = None
+FILEPATH = "filepath"
 
 # Legacy constant
-FILES = None
+FILES = "files"
 
 # Legacy constant
-FILTERED = None
+FILTERED = "filtered"
 
 # Legacy constant
-FILTERS = None
+FILTERS = "filters"
 
 # Legacy constant
-FINDING = None
+FINDING = "finding"
 
 # Legacy constant
-FIRST = None
+FIRST = "first"
 
 # Legacy constant
-FIXED = None
+FIXED = "fixed"
 
 # Legacy constant
-FLAGS = None
+FLAGS = "flags"
 
 # Legacy constant
-FOUNDATION = None
+FOUNDATION = "foundation"
 
 # Legacy constant
-GENERATIVE_PATTERNS = None
+GENERATIVE_PATTERNS = "generative_patterns"
 
 # Legacy constant
-GRAPH = None
+GRAPH = "graph"
 
 # Legacy constant
-GREEN = None
+GREEN = "green"
 
 # Legacy constant
-HEALTH = None
+HEALTH = "health"
 
 # Legacy constant
-HEALTHY = None
+HEALTHY = "healthy"
 
 # Legacy constant
-HIGH = None
+HIGH = "high"
 
 # Legacy constant
-HISTORY = None
+HISTORY = "history"
 
 # Legacy constant
-HOST = None
+HOST = "host"
 
 # Legacy constant
-IDS = None
+IDS = "ids"
 
 # Legacy constant
-IMPLEMENTATION = None
+IMPLEMENTATION = "implementation"
 
 # Legacy constant
-IMPORTS = None
+IMPORTS = "imports"
 
 # Legacy constant
-INSIGHTS = None
+INSIGHTS = "insights"
 
 # Legacy constant
-INSTRUCTOR_AVAILABLE = None
+INSTRUCTOR_AVAILABLE = "instructor_available"
 
 # Legacy constant
-INTENT = None
+INTENT = "intent"
 
 # Legacy constant
-ISSUES = None
+ISSUES = "issues"
 
 # Legacy constant
-ITEM = None
+ITEM = "item"
 
 # Legacy constant
-ITEMS = None
+ITEMS = "items"
 
 # Legacy constant
-KEY = None
+KEY = "key"
 
 # Legacy constant
-KEY1 = None
+KEY1 = "key1"
 
 # Legacy constant
-KEY2 = None
+KEY2 = "key2"
 
 # Legacy constant
-LEGACY_MAPPING = None
+LEGACY_MAPPING = "legacy_mapping"
 
 # Legacy constant
-LEX = None
+LEX = "lex"
 
 # Legacy constant
-LIMITS = None
+LIMITS = "limits"
 
 # Legacy constant
-LINES = None
+LINES = "lines"
 
 # Legacy constant
-LOGGER = None
+LOGGER = "logger"
 
 # Legacy constant
-LOGS = None
+LOGS = "logs"
 
 # Legacy constant
-LOGS_DIR = None
+LOGS_DIR = "logs_dir"
 
 # Legacy constant
-LONG = None
+LONG = "long"
 
 # Legacy constant
-LOW = None
+LOW = "low"
 
 # Legacy constant
-MANAGER = None
+MANAGER = "manager"
 
 # Legacy constant
-MAPPING = None
+MAPPING = "mapping"
 
 # Legacy constant
-MATCH = None
+MATCH = "match"
 
 # Legacy constant
-MAX_COMPLEXITY = None
+MAX_COMPLEXITY = "max_complexity"
 
 # Legacy constant
-MAX_LINES = None
+MAX_LINES = "max_lines"
 
 # Legacy constant
-MCP = None
+MCP = "mcp"
 
 # Legacy constant
-MCP_AVAILABLE = None
+MCP_AVAILABLE = "mcp_available"
 
 # Legacy constant
-MEMORIES = None
+MEMORIES = "memories"
 
 # Legacy constant
-MEMORY = None
+MEMORY = "memory"
 
 # Legacy constant
-MERGED = None
+MERGED = "merged"
 
 # Legacy constant
-METADATA = None
+METADATA = "metadata"
 
 # Legacy constant
-METRIC = None
+METRIC = "metric"
 
 # Legacy constant
-METRICS = None
+METRICS = "metrics"
 
 # Legacy constant
-MODEL = None
+MODEL = "model"
 
 # Legacy constant
-MODULE_AUTHOR = None
+MODULE_AUTHOR = "module_author"
 
 # Legacy constant
-MODULE_VERSION = None
+MODULE_VERSION = "module_version"
 
 # Legacy constant
-MSG = None
+MSG = "msg"
 
 # Legacy constant
-NAME = None
+NAME = "name"
 
 # Legacy constant
-NEW = None
+NEW = "new"
 
 # Legacy constant
-NODES = None
+NODES = "nodes"
 
 # Legacy constant
-NORMALIZED = None
+NORMALIZED = "normalized"
 
 # Legacy constant
-OPERATIONS = None
+OPERATIONS = "operations"
 
 # Legacy constant
-OPERATORS = None
+OPERATORS = "operators"
 
 # Legacy constant
-OPINIONS = None
+OPINIONS = "opinions"
 
 # Legacy constant
-OPTIMIZATIONS = None
+OPTIMIZATIONS = "optimizations"
 
 # Legacy constant
-OPTIONAL = None
+OPTIONAL = "optional"
 
 # Legacy constant
-ORCHESTRATOR = None
+ORCHESTRATOR = "orchestrator"
 
 # Legacy constant
-OUT = None
+OUT = "out"
 
 # Legacy constant
-OUTPUT = None
+OUTPUT = "output"
 
 # Legacy constant
-OUTPUTS = None
+OUTPUTS = "outputs"
 
 # Legacy constant
-PACKAGES = None
+PACKAGES = "packages"
 
 # Legacy constant
-PARAM = None
+PARAM = "param"
 
 # Legacy constant
-PARAMS = None
+PARAMS = "params"
 
 # Legacy constant
-PARENT = None
+PARENT = "parent"
 
 # Legacy constant
-PARSED = None
+PARSED = "parsed"
 
 # Legacy constant
-PARTS = None
+PARTS = "parts"
 
 # Legacy constant
-PATHS = None
+PATHS = "paths"
 
 # Legacy constant
-PATTERN = None
+PATTERN = "pattern"
 
 # Legacy constant
-PATTERNS = None
+PATTERNS = "patterns"
 
 # Legacy constant
-PLAN = None
+PLAN = "plan"
 
 # Legacy constant
-PLANNER = None
+PLANNER = "planner"
 
 # Legacy constant
-POINTER_DIR = None
+POINTER_DIR = "pointer_dir"
 
 # Legacy constant
-POINTS = None
+POINTS = "points"
 
 # Legacy constant
-POLICY = None
+POLICY = "policy"
 
 # Legacy constant
-PORT = None
+PORT = "port"
 
 # Legacy constant
-PREDS = None
+PREDS = "preds"
 
 # Legacy constant
-PREFIX = None
+PREFIX = "prefix"
 
 # Legacy constant
-PROCESS = None
+PROCESS = "process"
 
 # Legacy constant
-PROFILE = None
+PROFILE = "profile"
 
 # Legacy constant
-PROGRESS = None
+PROGRESS = "progress"
 
 # Legacy constant
-PROJECT_ROOT = None
+PROJECT_ROOT = "project_root"
 
 # Legacy constant
-PROMPT = None
+PROMPT = "prompt"
 
 # Legacy constant
-PROMPTS = None
+PROMPTS = "prompts"
 
 # Legacy constant
-PROVIDER = None
+PROVIDER = "provider"
 
 # Legacy constant
-PROVIDER_ENV_VARS = None
+PROVIDER_ENV_VARS = "provider_env_vars"
 
 # Legacy constant
-PURPLE = None
+PURPLE = "purple"
 
 # Legacy constant
-PYPROJECT = None
+PYPROJECT = "pyproject"
 
 # Legacy constant
-QUALIFIED = None
+QUALIFIED = "qualified"
 
 # Legacy constant
-QUALITY = None
+QUALITY = "quality"
 
 # Legacy constant
-QUERIES = None
+QUERIES = "queries"
 
 # Legacy constant
-QUERY = None
+QUERY = "query"
 
 # Legacy constant
-QUEUE = None
+QUEUE = "queue"
 
 # Legacy constant
-RAG = None
+RAG = "rag"
 
 # Legacy constant
-RANKED = None
+RANKED = "ranked"
 
 # Legacy constant
-REAL = None
+REAL = "real"
 
 # Legacy constant
-REASONING = None
+REASONING = "reasoning"
 
 # Legacy constant
-RECOMMENDATIONS = None
+RECOMMENDATIONS = "recommendations"
 
 # Legacy constant
-RECORD = None
+RECORD = "record"
 
 # Legacy constant
-RECORDS = None
+RECORDS = "records"
 
 # Legacy constant
-RED = None
+RED = "red"
 
 # Legacy constant
-REFINED = None
+REFINED = "refined"
 
 # Legacy constant
-REL = None
+REL = "rel"
 
 # Legacy constant
-RELEVANT = None
+RELEVANT = "relevant"
 
 # Legacy constant
-RENDERED = None
+RENDERED = "rendered"
 
 # Legacy constant
-REPLACEMENT = None
+REPLACEMENT = "replacement"
 
 # Legacy constant
-REPO = None
+REPO = "repo"
 
 # Legacy constant
-REPORTS = None
+REPORTS = "reports"
 
 # Legacy constant
-REPO_ROOT = None
+REPO_ROOT = "repo_root"
 
 # Legacy constant
-REQ = None
+REQ = "req"
 
 # Legacy constant
-REQUEST = None
+REQUEST = "request"
 
 # Legacy constant
-RES = None
+RES = "res"
 
 # Legacy constant
-RESEARCHER = None
+RESEARCHER = "researcher"
 
 # Legacy constant
-RESOLVED = None
+RESOLVED = "resolved"
 
 # Legacy constant
-RESOURCE = None
+RESOURCE = "resource"
 
 # Legacy constant
-RESOURCES = None
+RESOURCES = "resources"
 
 # Legacy constant
-RESPONSE = None
+RESPONSE = "response"
 
 # Legacy constant
-RESULT = None
+RESULT = "result"
 
 # Legacy constant
-RESULTS = None
+RESULTS = "results"
 
 # Legacy constant
-RESUME = None
+RESUME = "resume"
 
 # Legacy constant
-RETRIEVED = None
+RETRIEVED = "retrieved"
 
 # Legacy constant
-REVIEW_PENDING = None
+REVIEW_PENDING = "review_pending"
 
 # Legacy constant
-RISK = None
+RISK = "risk"
 
 # Legacy constant
-ROOT = None
+ROOT = "root"
 
 # Legacy constant
-RULES = None
+RULES = "rules"
 
 # Legacy constant
-RUNNING = None
+RUNNING = "running"
 
 # Legacy constant
-SANITIZED = None
+SANITIZED = "sanitized"
 
 # Legacy constant
-SCENARIO = None
+SCENARIO = "scenario"
 
 # Legacy constant
-SCHEMA = None
+SCHEMA = "schema"
 
 # Legacy constant
-SCORE = None
+SCORE = "score"
 
 # Legacy constant
-SCORE1 = None
+SCORE1 = "score1"
 
 # Legacy constant
-SCORES = None
+SCORES = "scores"
 
 # Legacy constant
-SECOND = None
+SECOND = "second"
 
 # Legacy constant
-SERVERS = None
+SERVERS = "servers"
 
 # Legacy constant
-SESSION = None
+SESSION = "session"
 
 # Legacy constant
-SIGNATURE = None
+SIGNATURE = "signature"
 
 # Legacy constant
-SIGNATURE_TEMPLATE = None
+SIGNATURE_TEMPLATE = "signature_template"
 
 # Legacy constant
-SKIP_DOMAINS = None
+SKIP_DOMAINS = "skip_domains"
 
 # Legacy constant
-SOVEREIGN_AGENTS = None
+SOVEREIGN_AGENTS = "sovereign_agents"
 
 # Legacy constant
-SOVEREIGN_EXCLUSION_LIST = None
+SOVEREIGN_EXCLUSION_LIST = "sovereign_exclusion_list"
 
 # Legacy constant
-SPEC = None
+SPEC = "spec"
 
 # Legacy constant
-STATE = None
+STATE = "state"
 
 # Legacy constant
-STATS = None
+STATS = "stats"
 
 # Legacy constant
-STATUS = None
+STATUS = "status"
 
 # Legacy constant
-STEM = None
+STEM = "stem"
 
 # Legacy constant
-STEPS = None
+STEPS = "steps"
 
 # Legacy constant
-STRIPPED = None
+STRIPPED = "stripped"
 
 # Legacy constant
-SUCC = None
+SUCC = "succ"
 
 # Legacy constant
-SUCCESSES = None
+SUCCESSES = "successes"
 
 # Legacy constant
-SUFFIX = None
+SUFFIX = "suffix"
 
 # Legacy constant
-SUMMARY = None
+SUMMARY = "summary"
 
 # Legacy constant
-TARGET_DIRECTORIES = None
+TARGET_DIRECTORIES = "target_directories"
 
 # Legacy constant
-TECHNOLOGY_KEYWORDS = None
+TECHNOLOGY_KEYWORDS = "technology_keywords"
 
 # Legacy constant
-TEST_CONFIG = None
+TEST_CONFIG = "test_config"
 
 # Legacy constant
-TEST_JOB_ID = None
+TEST_JOB_ID = "test_job_id"
 
 # Legacy constant
-TEXT = None
+TEXT = "text"
 
 # Legacy constant
-TEXTS = None
+TEXTS = "texts"
 
 # Legacy constant
-TIMESTAMP = None
+TIMESTAMP = "timestamp"
 
 # Legacy constant
-TOOL = None
+TOOL = "tool"
 
 # Legacy constant
-TOOLKIT = None
+TOOLKIT = "toolkit"
 
 # Legacy constant
-TOOLS = None
+TOOLS = "tools"
 
 # Legacy constant
-TRIPLET = None
+TRIPLET = "triplet"
 
 # Legacy constant
-UNDERLINE = None
+UNDERLINE = "underline"
 
 # Legacy constant
-UNHEALTHY = None
+UNHEALTHY = "unhealthy"
 
 # Legacy constant
-UNIQUE = None
+UNIQUE = "unique"
 
 # Legacy constant
-UNUSED = None
+UNUSED = "unused"
 
 # Legacy constant
-UPDATE = None
+UPDATE = "update"
 
 # Legacy constant
-USAGE = None
+USAGE = "usage"
 
 # Legacy constant
-USER = None
+USER = "user"
 
 # Legacy constant
-VALIDATIONS = None
+VALIDATIONS = "validations"
 
 # Legacy constant
-VALIDITY = None
+VALIDITY = "validity"
 
 # Legacy constant
-VALUE = None
+VALUE = "value"
 
 # Legacy constant
-VALUES = None
+VALUES = "values"
 
 # Legacy constant
-VALUES1 = None
+VALUES1 = "values1"
 
 # Legacy constant
-VERDICT = None
+VERDICT = "verdict"
 
 # Legacy constant
-VERDICTS = None
+VERDICTS = "verdicts"
 
 # Legacy constant
-VERIFICATION = None
+VERIFICATION = "verification"
 
 # Legacy constant
-VERSIONS = None
+VERSIONS = "versions"
 
 # Legacy constant
-VIOLATION = None
+VIOLATION = "violation"
 
 # Legacy constant
-VIOLATIONS = None
+VIOLATIONS = "violations"
 
 # Legacy constant
-WEIGHTS = None
+WEIGHTS = "weights"
 
 # Legacy constant
-WORDS = None
+WORDS = "words"
 
 # Legacy constant
-WORDS1 = None
+WORDS1 = "words1"
 
 # Legacy constant
-WORDS2 = None
+WORDS2 = "words2"
 
 # Legacy constant
-YELLOW = None
+YELLOW = "yellow"
 
 # Legacy constant
 _CANONICAL_VERBS = None

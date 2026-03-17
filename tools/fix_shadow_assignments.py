@@ -20,24 +20,24 @@ SHADOW_PATTERN = re.compile(
 def fix_file(filepath):
     """Fix self-shadowing constant assignments in a file."""
     src = open(filepath, "r", encoding="utf-8").read()
-    
+
     matches = list(SHADOW_PATTERN.finditer(src))
     if not matches:
         return 0
-    
+
     fixed = 0
     for m in reversed(matches):  # reverse to maintain positions
         indent = m.group(1)
         const_name = m.group(2)
         rhs_prefix = m.group(3)
-        
+
         new_name = f"_{const_name}_PATH"
         old_line = m.group(0)
         new_line = f"{indent}{new_name} = {rhs_prefix} / {const_name}"
-        
+
         # Replace the assignment
         src = src[:m.start()] + new_line + src[m.end():]
-        
+
         # Replace all subsequent uses of the old name that referred to the path
         # (but NOT the import at the top)
         # This is tricky - we need to replace uses after this line
@@ -46,16 +46,16 @@ def fix_file(filepath):
         if const_name in rest:
             # Replace uses of const_name that are path-like (after this point)
             src = src[:m.start() + len(new_line)] + rest.replace(const_name, new_name)
-        
+
         fixed += 1
-    
+
     # Verify syntax
     try:
         ast.parse(src)
     except SyntaxError as e:
         print(f"  SYNTAX ERROR in {filepath}: {e}")
         return 0
-    
+
     open(filepath, "w", encoding="utf-8").write(src)
     return fixed
 

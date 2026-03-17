@@ -8,6 +8,7 @@ Provides self-healing capabilities for outreach campaigns:
 """
 
 from __future__ import annotations
+from typing import Any
 
 from dataclasses import dataclass, field
 from datetime import datetime

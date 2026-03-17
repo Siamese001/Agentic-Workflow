@@ -22,7 +22,7 @@ for test_file in eval_tests:
         capture_output=True, text=True, cwd=ROOT, timeout=30
     )
     clean = re.sub(r"\x1b\[[0-9;]*m", "", r.stdout + "\n" + r.stderr)
-    
+
     # Extract the full traceback for module errors
     for line in clean.split("\n"):
         s = line.strip()
