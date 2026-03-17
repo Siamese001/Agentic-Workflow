@@ -427,3 +427,17 @@ repos:
         pass_filenames: false
         always_run: true
         require_serial: true
+
+      # -- T24: MCP Config Sovereignty gate -------------------------------------
+      # Validates mcp_config.json: filesystem server present + not disabled,
+      # allowedDirectories locked to repo root only, _comment documents sovereign
+      # write territories and Constitutional Rule #0, no out-of-repo/forbidden
+      # paths in any server args or cwd.
+      - id: mcp-config-sovereignty
+        name: "T24: MCP Config Sovereignty — filesystem allowedDirectories locked to repo root (Rule #0)"
+        entry: cmd /c "set PYTHONPATH=.&& python ops_scripts/ci/check_mcp_config_sovereignty.py"
+        language: system
+        pass_filenames: false
+        files: ^mcp_config\.json$
+        always_run: false
+        require_serial: true
