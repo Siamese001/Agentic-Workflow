@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import re
 from typing import Any
 
@@ -55,16 +56,22 @@ class NullJudgeProvider:
 
 
 class GeminiJudgeProvider:
-    """Adapter wrapping the existing GeminiJudge for the new JudgeProvider protocol.
+    """Direct Gemini SDK provider for the JudgeProvider protocol.
 
-    Delegates to the GeminiJudge's LLM gateway for actual API calls.
-    Parses JSON responses and extracts criteria scores.
+    Uses ``google.generativeai`` directly with ``GEMINI_API_KEY`` or
+    ``GOOGLE_API_KEY``. Bypasses SovereignLLMGateway (which requires
+    agent_id and async routing not needed for judge evaluation).
+
+    Supports model override via ``GEMINI_MODEL`` env var.
+    Temperature is forced to 0.0 for maximum determinism.
     """
 
-    MODEL_ID = "gemini-1.5-flash"
+    DEFAULT_MODEL = "gemini-2.5-flash"
 
-    def __init__(self, gemini_client: Any = None) -> None:
+    def __init__(self, gemini_client: Any = None, model: str | None = None) -> None:
         self._client = gemini_client
+        self._model = model or os.getenv("GEMINI_MODEL", self.DEFAULT_MODEL)
+        self._configured = False
 
     @property
     def provider_id(self) -> str:
@@ -74,17 +81,30 @@ class GeminiJudgeProvider:
     def cost_per_eval(self) -> float:
         return 0.001
 
+    @property
+    def model_id(self) -> str:
+        return self._model
+
     def _get_client(self) -> Any:
         if self._client is not None:
             return self._client
         try:
-            from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
-                get_llm_gateway,
-            )
+            import google.generativeai as genai
+        except ImportError as exc:
+            raise RuntimeError(
+                "GeminiJudgeProvider: google-genai package not installed. "
+                "Install with: pip install google-genai"
+            ) from exc
 
-            return get_llm_gateway()
-        except Exception as exc:
-            raise RuntimeError("GeminiJudgeProvider: no LLM client available") from exc
+        api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+        if not api_key:
+            raise RuntimeError("GeminiJudgeProvider: GEMINI_API_KEY or GOOGLE_API_KEY required")
+
+        if not self._configured:
+            genai.configure(api_key=api_key)
+            self._configured = True
+
+        return genai.GenerativeModel(self._model)
 
     @staticmethod
     def _clean(raw: str) -> str:
@@ -99,7 +119,26 @@ class GeminiJudgeProvider:
 
     async def judge(self, prompt: str, rubric_id: str) -> dict[str, Any]:
         client = self._get_client()
-        raw = client.generate(prompt=prompt, temperature=0.0)
+        try:
+            response = client.generate_content(
+                prompt,
+                generation_config={"temperature": 0.0},
+            )
+            raw = response.text
+        except Exception as exc:
+            _log.warning(
+                "[GeminiJudgeProvider] Gemini API error for %s: %s",
+                rubric_id,
+                exc,
+            )
+            return {
+                "score": 0.0,
+                "reasoning": f"Gemini API error: {exc}",
+                "rubric_id": rubric_id,
+                "provider": self.provider_id,
+                "error": str(exc),
+            }
+
         try:
             data = self._parse(raw)
         except (json.JSONDecodeError, ValueError) as exc:
@@ -121,9 +160,7 @@ class GeminiJudgeProvider:
         reasoning = data.pop("reasoning", "")
 
         # Remaining keys are criteria scores
-        criteria_scores = {
-            k: float(v) for k, v in data.items() if isinstance(v, (int, float))
-        }
+        criteria_scores = {k: float(v) for k, v in data.items() if isinstance(v, (int, float))}
 
         # Compute aggregate score as mean of criteria
         if criteria_scores:
@@ -137,7 +174,7 @@ class GeminiJudgeProvider:
             "rubric_id": rubric_id,
             "provider": self.provider_id,
             "criteria_scores": criteria_scores,
-            "model": self.MODEL_ID,
+            "model": self._model,
         }
 
 
@@ -203,12 +240,23 @@ class JudgeProviderRegistry:
 
 
 def create_default_registry() -> JudgeProviderRegistry:
-    """Create a registry with the NullJudgeProvider pre-registered.
+    """Create a registry with NullJudgeProvider and optional GeminiJudgeProvider.
 
-    GeminiJudgeProvider is registered but not default (requires API key).
+    NullJudgeProvider is always registered as the default fallback.
+    GeminiJudgeProvider is registered and set as default when
+    ``GEMINI_API_KEY`` or ``GOOGLE_API_KEY`` is present.
     """
     registry = JudgeProviderRegistry()
     registry.register(NullJudgeProvider(), default=True)
+
+    if os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY"):
+        try:
+            gemini = GeminiJudgeProvider()
+            registry.register(gemini, default=True)
+            _log.info("[create_default_registry] Gemini provider auto-registered (API key found)")
+        except (ImportError, RuntimeError, ValueError, OSError) as exc:
+            _log.warning("[create_default_registry] Gemini registration failed: %s", exc)
+
     return registry
 
 
