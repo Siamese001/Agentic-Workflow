@@ -32,6 +32,53 @@ import subprocess
 import sys
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_reads_through,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+
+_emit_writes_through("p1", "adg_ci_lane_gate", "uwg_governed_write")
+_emit_writes_through("p1", "adg_ci_lane_gate", "uwg_governed_write_2")
+_emit_pulls_context("p1", "adg_ci_lane_gate", "context_retrieval")
+_emit_pulls_context("p1", "adg_ci_lane_gate", "context_retrieval_2")
+emit_determinism_digest("trace_adg_ci_lane_gate", "adg_ci_lane_gate_dispatch")
+emit_determinism_digest("trace_adg_ci_lane_gate", "adg_ci_lane_gate_complete")
+_emit_validated_by_safety_plane("p1", "adg_ci_lane_gate", "safety_validation")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_1")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_2")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_3")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_4")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_5")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_6")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_7")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_8")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_9")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_10")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_11")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_12")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_13")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_14")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_15")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_16")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_17")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_18")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_19")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_20")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_21")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_22")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_23")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_24")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_25")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_26")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_27")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_28")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_29")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_30")
+_emit_reads_through("l4", "adg_ci_lane_gate", "urg_read_31")
+
 REPO = Path(__file__).resolve().parent.parent
 CLASSIFICATION_PATH = REPO / "artifacts" / "adg_test_classification.json"
 RESULT_PATH = REPO / "artifacts" / "adg_ci_lane_gate_result.json"

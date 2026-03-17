@@ -210,6 +210,17 @@ _emit_writes_through("p1", "GovernanceAgent", "write_through_2")
 _emit_validated_by_safety_plane("p1", "GovernanceAgent", "safety_validation")
 _emit_invokes_eval("p1", "GovernanceAgent", "eval_call")
 _emit_proposal_commits_routing("p1", "GovernanceAgent", "routing_commit")
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+emit_determinism_digest("trace_GovernanceAgent", "GovernanceAgent_dispatch_entry")
+emit_determinism_digest("trace_GovernanceAgent", "GovernanceAgent_dispatch_exit")
+emit_determinism_digest("trace_GovernanceAgent", "GovernanceAgent_tool_invoke")
+emit_determinism_digest("trace_GovernanceAgent", "GovernanceAgent_tool_complete")
+emit_determinism_digest("trace_GovernanceAgent", "GovernanceAgent_agent_entry")
+emit_determinism_digest("trace_GovernanceAgent", "GovernanceAgent_agent_exit")
+emit_determinism_digest("trace_GovernanceAgent", "GovernanceAgent_uwg_write")
+emit_determinism_digest("trace_GovernanceAgent", "GovernanceAgent_trace_sign")
+emit_determinism_digest("trace_GovernanceAgent", "GovernanceAgent_guardrail_check")
+emit_determinism_digest("trace_GovernanceAgent", "GovernanceAgent_policy_verify")
 
 Logger: Any = logging.getLogger(__name__)
 LOGGER = Logger

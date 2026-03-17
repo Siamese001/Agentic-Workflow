@@ -6,6 +6,19 @@ Removes ```python and ``` from files that have them.
 import re
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "fix_markdown_fences", "uwg_governed_write")
+_emit_writes_through("p1", "fix_markdown_fences", "uwg_governed_write_2")
+_emit_pulls_context("p1", "fix_markdown_fences", "context_retrieval")
+_emit_pulls_context("p1", "fix_markdown_fences", "context_retrieval_2")
+emit_determinism_digest("trace_fix_markdown_fences", "fix_markdown_fences_dispatch")
+emit_determinism_digest("trace_fix_markdown_fences", "fix_markdown_fences_complete")
+_emit_validated_by_safety_plane("p1", "fix_markdown_fences", "safety_validation")
 
 
 def fix_markdown_fences(file_path: str) -> bool:

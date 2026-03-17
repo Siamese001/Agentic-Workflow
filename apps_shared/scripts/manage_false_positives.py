@@ -155,6 +155,13 @@ _emit_captures_evaluation_metric("p4", "manage_false_positives", "eval_metric")
 _emit_stores_embedding("p4", "manage_false_positives", "embedding_store")
 _emit_updates_meta_learning_state("p4", "manage_false_positives", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "manage_false_positives", "exec_snapshot_link")
+_emit_writes_through("p1", "manage_false_positives", "uwg_governed_write")
+_emit_writes_through("p1", "manage_false_positives", "uwg_governed_write_2")
+_emit_pulls_context("p1", "manage_false_positives", "context_retrieval")
+_emit_pulls_context("p1", "manage_false_positives", "context_retrieval_2")
+emit_determinism_digest("trace_manage_false_positives", "manage_false_positives_dispatch")
+emit_determinism_digest("trace_manage_false_positives", "manage_false_positives_complete")
+_emit_validated_by_safety_plane("p1", "manage_false_positives", "safety_validation")
 
 Logger: Any = logging.getLogger(__name__)
 

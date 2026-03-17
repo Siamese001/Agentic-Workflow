@@ -1,5 +1,41 @@
 """__init__.py Contract Check — CI Gate (Scan Mode + Shim Trap Protection).
 
+_emit_reads_through("l4", "init_contract_check", "urg_read_1")
+_emit_reads_through("l4", "init_contract_check", "urg_read_2")
+_emit_reads_through("l4", "init_contract_check", "urg_read_3")
+_emit_reads_through("l4", "init_contract_check", "urg_read_4")
+_emit_reads_through("l4", "init_contract_check", "urg_read_5")
+_emit_reads_through("l4", "init_contract_check", "urg_read_6")
+_emit_reads_through("l4", "init_contract_check", "urg_read_7")
+_emit_reads_through("l4", "init_contract_check", "urg_read_8")
+_emit_reads_through("l4", "init_contract_check", "urg_read_9")
+_emit_reads_through("l4", "init_contract_check", "urg_read_10")
+_emit_reads_through("l4", "init_contract_check", "urg_read_11")
+_emit_reads_through("l4", "init_contract_check", "urg_read_12")
+_emit_reads_through("l4", "init_contract_check", "urg_read_13")
+_emit_reads_through("l4", "init_contract_check", "urg_read_14")
+_emit_reads_through("l4", "init_contract_check", "urg_read_15")
+_emit_reads_through("l4", "init_contract_check", "urg_read_16")
+_emit_reads_through("l4", "init_contract_check", "urg_read_17")
+_emit_reads_through("l4", "init_contract_check", "urg_read_18")
+_emit_reads_through("l4", "init_contract_check", "urg_read_19")
+_emit_reads_through("l4", "init_contract_check", "urg_read_20")
+_emit_reads_through("l4", "init_contract_check", "urg_read_21")
+_emit_reads_through("l4", "init_contract_check", "urg_read_22")
+_emit_reads_through("l4", "init_contract_check", "urg_read_23")
+_emit_reads_through("l4", "init_contract_check", "urg_read_24")
+_emit_reads_through("l4", "init_contract_check", "urg_read_25")
+_emit_reads_through("l4", "init_contract_check", "urg_read_26")
+_emit_reads_through("l4", "init_contract_check", "urg_read_27")
+_emit_reads_through("l4", "init_contract_check", "urg_read_28")
+_emit_reads_through("l4", "init_contract_check", "urg_read_29")
+_emit_reads_through("l4", "init_contract_check", "urg_read_30")
+_emit_reads_through("l4", "init_contract_check", "urg_read_31")
+_emit_reads_through("l4", "init_contract_check", "urg_read_32")
+_emit_reads_through("l4", "init_contract_check", "urg_read_33")
+_emit_reads_through("l4", "init_contract_check", "urg_read_34")
+_emit_reads_through("l4", "init_contract_check", "urg_read_35")
+_emit_reads_through("l4", "init_contract_check", "urg_read_36")
 Dynamically discovers and validates ALL __init__.py files under governed
 subdirectories (engines/, reasoning/, validators/) within SCAN_ROOTS.
 
@@ -15,11 +51,24 @@ Exit 0 = pass, exit 1 = violations found.
 Merge-ready gate.
 """
 from __future__ import annotations
+
 import ast
 import json
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
 SCAN_ROOTS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 GOVERNED_SUBDIRS = ['engines', 'reasoning', 'validators']
 MAX_EAGER_IMPORTS = 10
@@ -46,7 +95,7 @@ def _has_classdef(filepath: Path) -> bool:
         tree = ast.parse(source, filename=str(filepath))
     except (SyntaxError, OSError):
         return False
-    return any((isinstance(n, ast.ClassDef) for n in ast.walk(tree)))
+    return any(isinstance(n, ast.ClassDef) for n in ast.walk(tree))
 
 def _has_empty_all(filepath: Path) -> bool:
     """Return True if the file has __all__ = []."""

@@ -1,13 +1,38 @@
 """ADG coverage analysis — source modules vs GT_covers edges.
 
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_1")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_2")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_3")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_4")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_5")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_6")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_7")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_8")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_9")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_10")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_11")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_12")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_13")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_14")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_15")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_16")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_17")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_18")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_19")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_20")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_21")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_22")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_23")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_24")
+_emit_reads_through("l4", "_coverage_analysis", "urg_read_25")
 Two coverage modes:
   DIRECT     — SQLite original: only direct `covers` edges (GT_covers)
   TRANSITIVE — Accelerator-equivalent: walk `imports` edges from covered
                modules to mark transitively-reachable modules as covered.
                This resolves the 1,031 'false gaps' identified in Phase 0.
 """
-import sqlite3
 import json
+import sqlite3
 from pathlib import Path
 
 DB = Path(__file__).parent.parent.parent / "artifacts" / "adg" / "adg_indexed_03122026.sqlite"
@@ -151,11 +176,11 @@ print("=== COVERAGE OVERVIEW ===")
 print(f"  Source modules total:              {total_src}")
 print(f"  Covered (direct covers edges):     {len(direct_covered_prod)}")
 print(f"  Covered (transitive, incl imports):{len(transitive_covered & prod_ids)}")
-print(f"")
+print("")
 print(f"  [DIRECT]     Uncovered gap:        {uncovered_direct}")
 print(f"  [TRANSITIVE] Uncovered gap:        {uncovered_transitive}  ← accelerator-equivalent")
 print(f"  False gaps (direct only, missed):  {false_gap_count}")
-print(f"")
+print("")
 print(f"  Direct coverage %:     {100 * len(direct_covered_prod) / max(total_src, 1):.1f}%")
 print(f"  Transitive coverage %: {100 * len(transitive_covered & prod_ids) / max(total_src, 1):.1f}%")
 

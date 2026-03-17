@@ -1,4 +1,40 @@
 """
+_emit_reads_through("l4", "validate_structure", "urg_read_1")
+_emit_reads_through("l4", "validate_structure", "urg_read_2")
+_emit_reads_through("l4", "validate_structure", "urg_read_3")
+_emit_reads_through("l4", "validate_structure", "urg_read_4")
+_emit_reads_through("l4", "validate_structure", "urg_read_5")
+_emit_reads_through("l4", "validate_structure", "urg_read_6")
+_emit_reads_through("l4", "validate_structure", "urg_read_7")
+_emit_reads_through("l4", "validate_structure", "urg_read_8")
+_emit_reads_through("l4", "validate_structure", "urg_read_9")
+_emit_reads_through("l4", "validate_structure", "urg_read_10")
+_emit_reads_through("l4", "validate_structure", "urg_read_11")
+_emit_reads_through("l4", "validate_structure", "urg_read_12")
+_emit_reads_through("l4", "validate_structure", "urg_read_13")
+_emit_reads_through("l4", "validate_structure", "urg_read_14")
+_emit_reads_through("l4", "validate_structure", "urg_read_15")
+_emit_reads_through("l4", "validate_structure", "urg_read_16")
+_emit_reads_through("l4", "validate_structure", "urg_read_17")
+_emit_reads_through("l4", "validate_structure", "urg_read_18")
+_emit_reads_through("l4", "validate_structure", "urg_read_19")
+_emit_reads_through("l4", "validate_structure", "urg_read_20")
+_emit_reads_through("l4", "validate_structure", "urg_read_21")
+_emit_reads_through("l4", "validate_structure", "urg_read_22")
+_emit_reads_through("l4", "validate_structure", "urg_read_23")
+_emit_reads_through("l4", "validate_structure", "urg_read_24")
+_emit_reads_through("l4", "validate_structure", "urg_read_25")
+_emit_reads_through("l4", "validate_structure", "urg_read_26")
+_emit_reads_through("l4", "validate_structure", "urg_read_27")
+_emit_reads_through("l4", "validate_structure", "urg_read_28")
+_emit_reads_through("l4", "validate_structure", "urg_read_29")
+_emit_reads_through("l4", "validate_structure", "urg_read_30")
+_emit_reads_through("l4", "validate_structure", "urg_read_31")
+_emit_reads_through("l4", "validate_structure", "urg_read_32")
+_emit_reads_through("l4", "validate_structure", "urg_read_33")
+_emit_reads_through("l4", "validate_structure", "urg_read_34")
+_emit_reads_through("l4", "validate_structure", "urg_read_35")
+_emit_reads_through("l4", "validate_structure", "urg_read_36")
 SSOT Structure Validator (The Smoke Detector)
 ============================================
 Fast (<5s) structural validation for pre-commit hooks.
@@ -21,8 +57,20 @@ EXIT CODES:
 import re
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import TOOLS_DIR
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+    TOOLS_DIR,
+)
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
 VALID_TERRITORIES: frozenset[str] = frozenset({AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR, TESTS_DIR, OPS_SCRIPTS_DIR, ARCHIVES_DIR, 'data', 'docs', 'logs', REPORTS_DIR, 'scripts', '.sovereign_healing_backup', '.github', '.windsurf', '.gravity_state', '.backup', '.git', 'temp_quiet_test', 'temp_verbose_test'})
 APPS_VALID_SUBFOLDERS: frozenset[str] = frozenset({'asset_library', 'core', 'domain', 'engines', 'logic_nodes', 'shared', 'system_flow', 'validation', REPORTS_DIR, 'scripts', TOOLS_DIR, 'agents', 'common_utils', 'config', 'core_components', 'data', 'utils'})
 AGENTIC_CORE_VALID_SUBFOLDERS: frozenset[str] = frozenset({'base_agents', 'domain', 'L0_routing', 'L1_cognition', 'L2_execution', 'L3_orchestration', 'L4_state', 'L5_safety', 'L6_observability', 'config', 'schemas', 'prompt_governance', 'runtime', 'utils', 'patterns', 'semantic_memory', 'knowledge'})

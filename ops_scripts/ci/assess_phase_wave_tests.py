@@ -59,46 +59,47 @@ from agentic_core.L0_routing.config.path_constants import (
     get_validated_project_root,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
+    _emit_reads_through,
     _emit_records_execution_trace,  # noqa: E402
     _emit_records_healing_outcome,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_escalates_to_human,
-    _emit_routes_through,
 )
 
 _emit_records_execution_trace("p0", "evidence", "assess_phase_wave_tests")
@@ -106,14 +107,21 @@ _emit_applies_guardrail("p0", "assess_phase_wave_tests", "p0_governance")
 _emit_reads_policy_state("p0", "assess_phase_wave_tests", "policy_binding")
 _emit_snapshots_state("p0", "assess_phase_wave_tests", "state_snapshot")
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
+    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -121,27 +129,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("assess_phase_wave_tests", "p4obs", "metric_1")
@@ -217,6 +218,179 @@ _emit_captures_evaluation_metric("p4", "assess_phase_wave_tests", "eval_metric")
 _emit_stores_embedding("p4", "assess_phase_wave_tests", "embedding_store")
 _emit_updates_meta_learning_state("p4", "assess_phase_wave_tests", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "assess_phase_wave_tests", "exec_snapshot_link")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_1")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_2")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_3")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_4")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_5")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_6")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_7")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_8")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_9")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_10")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_11")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_12")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_13")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_14")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_15")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_16")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_17")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_18")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_19")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_20")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_21")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_22")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_23")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_24")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_25")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_26")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_27")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_28")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_29")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_30")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_31")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_32")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_33")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_34")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_35")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_36")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_37")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_38")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_39")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_40")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_41")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_42")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_43")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_44")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_45")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_46")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_47")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_48")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_49")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_50")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_51")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_52")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_53")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_54")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_55")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_56")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_57")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_58")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_59")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_60")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_61")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_62")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_63")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_64")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_65")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_66")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_67")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_68")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_69")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_70")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_71")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_72")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_73")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_74")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_75")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_76")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_77")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_78")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_79")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_80")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_81")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_82")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_83")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_84")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_85")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_86")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_87")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_88")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_89")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_90")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_91")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_92")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_93")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_94")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_95")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_96")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_97")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_98")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_99")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_100")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_101")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_102")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_103")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_104")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_105")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_106")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_107")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_108")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_109")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_110")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_111")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_112")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_113")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_114")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_115")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_116")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_117")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_118")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_119")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_120")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_121")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_122")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_123")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_124")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_125")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_126")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_127")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_128")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_129")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_130")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_131")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_132")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_133")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_134")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_135")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_136")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_137")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_138")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_139")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_140")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_141")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_142")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_143")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_144")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_145")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_146")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_147")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_148")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_149")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_150")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_151")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_152")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_153")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_154")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_155")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_156")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_157")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_158")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_159")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_160")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_161")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_162")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_163")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_164")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_165")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_166")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_167")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_168")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_169")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_170")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_171")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_172")
+_emit_reads_through("l4", "assess_phase_wave_tests", "urg_read_173")
 REPO_ROOT = get_validated_project_root()
 TESTS_ROOT = REPO_ROOT / TESTS_DIR
 _PHASE_WAVE_TOKENS = ('phase', 'wave')

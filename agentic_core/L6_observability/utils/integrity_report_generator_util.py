@@ -81,6 +81,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_transcripts_response,
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
+    record_execution_trace,
 )
 
 emit_replay_key("p0", "integrity_report_generator_util")
@@ -168,6 +169,9 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
 )
+
+record_execution_trace("integrity_report_generator_util", "integrity_report_generator_util_trace")
+
 
 _emit_emits_metric_event("integrity_report_generator_util", "p4obs", "metric_1")
 _emit_emits_metric_event("integrity_report_generator_util", "p4obs", "metric_2")

@@ -9,6 +9,15 @@ import ast
 import sys
 from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    emit_determinism_digest,
+    record_execution_trace,
+)
+
+emit_determinism_digest("check_determinism_violations", "check_determinism_violations_digest")
+record_execution_trace("check_determinism_violations", "check_determinism_violations_trace")
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCAN_ROOTS = [L0_MAINTENANCE_DIR, L1_COGNITION_DIR, L2_EXECUTION_DIR, L3_ORCHESTRATION_DIR, L4_STATE_DIR, L5_SAFETY_DIR]
 EXCLUDE_PATTERNS = ['mixin.py', 'test_', '_test.py', 'tests/']

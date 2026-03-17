@@ -65,6 +65,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_transcripts_response,
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
+    record_execution_trace,
 )
 
 emit_replay_key("p0", "negative_control_harness")
@@ -152,6 +153,9 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
 )
+
+record_execution_trace("negative_control_harness", "negative_control_harness_trace")
+
 
 _emit_emits_metric_event("negative_control_harness", "p4obs", "metric_1")
 _emit_emits_metric_event("negative_control_harness", "p4obs", "metric_2")

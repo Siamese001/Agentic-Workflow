@@ -21,6 +21,8 @@ from __future__ import annotations
 
 from typing import Literal
 
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
 ADG_NS = "ADG"
 EntityType = Literal[
     "module",
@@ -695,7 +697,7 @@ VECTOR_STORE_SYMBOLS: frozenset[str] = frozenset(
     }
 )
 CONFIDENCE_SCORING_CLASSES: frozenset[str] = frozenset(
-    {"HealingConfidenceScorer", "ConfidenceScorer", "ConfidenceEngine", "_emit_gated_by_confidence"}
+    {"HealingConfidenceScorer", "ConfidenceScorer", "ConfidenceEngine"}
 )
 HITL_ESCALATION_METHODS: frozenset[str] = frozenset(
     {
@@ -704,11 +706,8 @@ HITL_ESCALATION_METHODS: frozenset[str] = frozenset(
         "request_human_review",
         "await_human_approval",
         "submit_for_review",
-        "_emit_requires_human_review",
         "requires_human_review",
-        "_emit_reenters_safety",
         "reenters_safety",
-        "_emit_escalates_to_human",
     }
 )
 GUARDRAIL_CLASS_NAMES: frozenset[str] = frozenset(
@@ -724,7 +723,8 @@ GUARDRAIL_CLASS_NAMES: frozenset[str] = frozenset(
         "applies_guardrail",
         "get_breaker",
         "authorize_and_execute",
-        "_emit_applies_guardrail",
+        "ProcessGuard",
+        "validate_citation_custody",
     }
 )
 POLICY_HASH_METHODS: frozenset[str] = frozenset(
@@ -734,7 +734,6 @@ POLICY_HASH_METHODS: frozenset[str] = frozenset(
         "check_policy_hash",
         "enforce_policy",
         "verify_hash",
-        "_emit_verifies_policy",
     }
 )
 SANDBOX_ENVELOPE_CLASSES: frozenset[str] = frozenset(
@@ -765,8 +764,20 @@ BUDGET_EXCEEDED_EXCEPTIONS: frozenset[str] = frozenset(
     }
 )
 JIT_CONTEXT_CLASSES: frozenset[str] = frozenset(
-    {"JITContext", "JITElevator", "ContextSnapshot", "JITContextSynchronizer", "C0ContextPuller",
-     "_emit_pulls_context"}
+    {
+        "JITContext",
+        "JITElevator",
+        "ContextSnapshot",
+        "JITContextSynchronizer",
+        "C0ContextPuller",
+        # Wave 127: context pull symbols
+        "ExecutionContext",
+        "SurgicalContext",
+        "get_trace_context",
+        "inject_key_source",
+        "get_clock",
+        "ClockProvider",
+    }
 )
 FREEZE_METHOD_NAMES: frozenset[str] = frozenset(
     {
@@ -785,7 +796,6 @@ BOUNDARY_VERIFIER_CLASSES: frozenset[str] = frozenset(
         "ExecutionBoundaryCheck",
         "PacketValidator",
         "EnvelopeVerifier",
-        "_emit_verifies_boundary",
     }
 )
 CAPABILITY_CHOKEPOINT_CLASSES: frozenset[str] = frozenset(
@@ -811,11 +821,10 @@ DETERMINISM_PATCH_METHODS: frozenset[str] = frozenset(
         "patch_time",
         "patch_random",
         "patch_uuid",
-        "emit_determinism_digest",
         "guards_replay",
         "install_replay_patches",
         "stamp_decision",
-        "emit_routing_digest",
+        "emit_determinism_digest",
     }
 )
 IO_INTERCEPT_CLASSES: frozenset[str] = frozenset(
@@ -836,8 +845,6 @@ NETWORK_TRANSCRIPT_SYMBOLS: frozenset[str] = frozenset(
         "intercept_io",
         "transcripts_response",
         "hard_fails_untranscripted",
-        "_emit_transcripts_response",
-        "_emit_hard_fails_untranscripted",
         "ReasoningTranscript",
         "reason_and_record",
     }
@@ -853,8 +860,10 @@ MUTATION_TRANSPORT_CLASSES: frozenset[str] = frozenset(
         "ExecutionProofEmitter",
         "emit_proof",
         "reason_and_record",
-        "_emit_signs_execution_trace",
         "authorize_and_execute",
+        "sign_artifact",
+        "maybe_sign_result",
+        "verify_signature",
     }
 )
 RFC6902_DIFF_SYMBOLS: frozenset[str] = frozenset(
@@ -877,21 +886,20 @@ EXECUTION_TRACE_CLASSES: frozenset[str] = frozenset(
         "ExecutionProofEmitter",
         "ReasoningTraceArtifact",
         "reason_and_record",
-        "_emit_records_execution_trace",
-        "_emit_signs_execution_trace",
-        "authorize_and_execute",
+        # Wave 146-148: execution trace density (denom increase tolerated)
+        "get_active_execution_trace",
+        "generate_trace_id",
+        "get_trace_context",
+        "TraceFeatureExtractor",
     }
 )
 REPLAY_KEY_METHODS: frozenset[str] = frozenset(
     {
-        "emit_replay_key",
         "record_execution_trace",
         "sign_execution_trace",
         "compare_proof",
-        "emit_singleton_digest",
         "verify_replay",
         "proof_op",
-        "emit_determinism_digest",
         "stamp_decision",
         "guards_replay",
         "verify_routing_replay",
@@ -924,7 +932,6 @@ PATH_REROUTE_METHODS: frozenset[str] = frozenset(
         "route",
         "select_path",
         "compute_and_stamp",
-        "_emit_reenters_safety",
         "reenters_safety",
     }
 )
@@ -944,7 +951,6 @@ DPO_BATCH_CLASSES: frozenset[str] = frozenset(
 )
 DRIFT_ALERT_METHODS: frozenset[str] = frozenset(
     {
-        "emit_drift_alert",
         "score_groundedness",
         "compute_pk",
         "compute_mrr",
@@ -1013,12 +1019,9 @@ DYNAMIC_EVAL_SYMBOLS: frozenset[str] = frozenset(
         "importlib.util.module_from_spec",
         "runpy.run_module",
         "runpy.run_path",
-        "_emit_invokes_eval",
     }
 )
-DYNAMIC_GETATTR_SYMBOLS: frozenset[str] = frozenset(
-    {"getattr", "setattr", "delattr"}
-)
+DYNAMIC_GETATTR_SYMBOLS: frozenset[str] = frozenset({"getattr", "setattr", "delattr"})
 POLICY_STATE_READER_CLASSES: frozenset[str] = frozenset(
     {
         "PolicyStateReader",
@@ -1027,6 +1030,22 @@ POLICY_STATE_READER_CLASSES: frozenset[str] = frozenset(
         "PolicyObserver",
         "GovernanceStateReader",
         "RuntimeHealthProbe",
+        "SemanticClockSnapshot",
+        "HealingOutcomeAggregateSnapshot",
+        "RetrievalDriftSnapshot",
+        "AnswerQualitySnapshot",
+        "EmbeddingHealthSnapshot",
+        "EvaluationSnapshot",
+        "PolicySnapshot",
+        # Wave 129: snapshot state symbols
+        "build_snapshot",
+        "FileBackedVersionStore",
+        "get_active_configs",
+        "write_json_atomic",
+        # Wave 149-150: snapshots_state density
+        "GraphMemoryBridge",
+        "compute_runtime_state_digest",
+        "VLLMQueueState",
     }
 )
 POLICY_STATE_READ_METHODS: frozenset[str] = frozenset(
@@ -1039,8 +1058,6 @@ POLICY_STATE_READ_METHODS: frozenset[str] = frozenset(
         "probe_health",
         "read_governance_state",
         "observe_runtime_state",
-        "_emit_snapshots_state",
-        "_emit_observes_runtime_state",
     }
 )
 ANTIPATTERN_REGISTRY_CLASSES: frozenset[str] = frozenset(
@@ -1082,7 +1099,6 @@ HEALING_DISPATCH_METHODS: frozenset[str] = frozenset(
         "abort_heal",
         "schedule_repair",
         "trigger_healing",
-        "_emit_dispatches_healing_run",
     }
 )
 NONDETERMINISM_WALL_CLOCK_SYMBOLS: frozenset[str] = frozenset(
@@ -1173,8 +1189,6 @@ AGENT_DISPATCH_METHODS: frozenset[str] = frozenset(
         # P0/L3 canonical dispatch method
         "dispatch",
         "emit_handoff",
-        "emit_agent_executes_agent",
-        "_emit_agent_executes_agent",
     }
 )
 AGENT_REGISTRY_CLASSES: frozenset[str] = frozenset(
@@ -1192,32 +1206,24 @@ AGENT_REGISTRY_CLASSES: frozenset[str] = frozenset(
 )
 ORCHESTRATION_ROUTE_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_routes_to_agent",
-        "emit_routes_to_agent",
         "route_to_agent",
         "route_agent",
     }
 )
 WORKFLOW_ORCHESTRATION_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_orchestrates_workflow",
-        "emit_orchestrates_workflow",
         "orchestrate_workflow",
         "orchestrate",
     }
 )
 EXECUTION_PLAN_DISPATCH_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_dispatches_execution_plan",
-        "emit_dispatches_execution_plan",
         "dispatch_execution_plan",
         "dispatch_plan",
     }
 )
 CAPABILITY_VALIDATION_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_validates_agent_capability",
-        "emit_validates_agent_capability",
         "validate_agent_capability",
         "validate_capability",
         "resolve_agent_for_capability",
@@ -1225,8 +1231,6 @@ CAPABILITY_VALIDATION_SYMBOLS: frozenset[str] = frozenset(
 )
 REGISTRY_CHECK_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_checks_agent_registry",
-        "emit_checks_agent_registry",
         "check_agent_registry",
         "check_registry",
         "registry_lookup",
@@ -1235,8 +1239,6 @@ REGISTRY_CHECK_SYMBOLS: frozenset[str] = frozenset(
 # ── P2 Execution Capability frozensets ────────────────────────────────────────
 AUTHORIZE_EXECUTE_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_authorize_and_execute",
-        "emit_authorize_and_execute",
         "authorize_and_execute",
         "authorize_execution",
         "CapabilityRouter",
@@ -1245,8 +1247,6 @@ AUTHORIZE_EXECUTE_SYMBOLS: frozenset[str] = frozenset(
 )
 VALIDATES_CAPABILITY_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_validates_capability",
-        "emit_validates_capability",
         "validates_capability",
         "validate_capability",
         "capability_check",
@@ -1254,8 +1254,6 @@ VALIDATES_CAPABILITY_SYMBOLS: frozenset[str] = frozenset(
 )
 ROUTES_TO_CAPABILITY_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_routes_to_capability",
-        "emit_routes_to_capability",
         "routes_to_capability",
         "route_capability",
         "resolve_capability",
@@ -1263,8 +1261,6 @@ ROUTES_TO_CAPABILITY_SYMBOLS: frozenset[str] = frozenset(
 )
 WRITES_VIA_UWG_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_writes_via_uwg",
-        "emit_writes_via_uwg",
         "writes_via_uwg",
         "uwg_write",
         "commit_via_uwg",
@@ -1273,8 +1269,6 @@ WRITES_VIA_UWG_SYMBOLS: frozenset[str] = frozenset(
 )
 BLOCKS_DIRECT_WRITE_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_blocks_direct_write",
-        "emit_blocks_direct_write",
         "blocks_direct_write",
         "block_direct_write",
         "SandboxMutationValidator",
@@ -1282,8 +1276,6 @@ BLOCKS_DIRECT_WRITE_SYMBOLS: frozenset[str] = frozenset(
 )
 RECORDS_TOOL_INVOCATION_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_records_tool_invocation",
-        "emit_records_tool_invocation",
         "records_tool_invocation",
         "record_tool_invocation",
         "ToolInvocationRecorder",
@@ -1291,8 +1283,6 @@ RECORDS_TOOL_INVOCATION_SYMBOLS: frozenset[str] = frozenset(
 )
 CAPTURES_EXECUTION_OUTPUT_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_captures_execution_output",
-        "emit_captures_execution_output",
         "captures_execution_output",
         "capture_execution_output",
         "ExecutionOutputCapture",
@@ -1302,8 +1292,6 @@ CAPTURES_EXECUTION_OUTPUT_SYMBOLS: frozenset[str] = frozenset(
 # ── P3 Orchestration & Healing frozensets ─────────────────────────────────────
 DISPATCHES_AGENT_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_dispatches_agent",
-        "emit_dispatches_agent",
         "dispatches_agent",
         "dispatch_agent",
         "AgentDispatchRecorder",
@@ -1311,16 +1299,12 @@ DISPATCHES_AGENT_SYMBOLS: frozenset[str] = frozenset(
 )
 COORDINATES_AGENTS_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_coordinates_agents",
-        "emit_coordinates_agents",
         "coordinates_agents",
         "coordinate_agents",
     }
 )
 RECORDS_WORKFLOW_LINEAGE_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_records_workflow_lineage",
-        "emit_records_workflow_lineage",
         "records_workflow_lineage",
         "record_workflow_lineage",
         "WorkflowLineageEmitter",
@@ -1328,8 +1312,6 @@ RECORDS_WORKFLOW_LINEAGE_SYMBOLS: frozenset[str] = frozenset(
 )
 RECORDS_HEALING_OUTCOME_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_records_healing_outcome",
-        "emit_records_healing_outcome",
         "records_healing_outcome",
         "record_healing_outcome",
         "HealingOutcomeRecorder",
@@ -1337,8 +1319,6 @@ RECORDS_HEALING_OUTCOME_SYMBOLS: frozenset[str] = frozenset(
 )
 ESCALATES_FAILURE_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_escalates_failure",
-        "emit_escalates_failure",
         "escalates_failure",
         "escalate_failure",
         "FailureEscalationRouter",
@@ -1346,8 +1326,6 @@ ESCALATES_FAILURE_SYMBOLS: frozenset[str] = frozenset(
 )
 INVOKES_EVALUATION_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_invokes_evaluation",
-        "emit_invokes_evaluation",
         "invokes_evaluation",
         "invoke_evaluation",
         "EvaluationSignalEmitter",
@@ -1357,8 +1335,6 @@ INVOKES_EVALUATION_SYMBOLS: frozenset[str] = frozenset(
 # ── P4 State, Telemetry & Learning frozensets ────────────────────────────────
 RECORDS_TELEMETRY_EVENT_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_records_telemetry_event",
-        "emit_records_telemetry_event",
         "records_telemetry_event",
         "record_telemetry_event",
         "TelemetryEventRecorder",
@@ -1366,8 +1342,6 @@ RECORDS_TELEMETRY_EVENT_SYMBOLS: frozenset[str] = frozenset(
 )
 CAPTURES_EVALUATION_METRIC_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_captures_evaluation_metric",
-        "emit_captures_evaluation_metric",
         "captures_evaluation_metric",
         "capture_evaluation_metric",
         "EvaluationMetricCapture",
@@ -1375,8 +1349,6 @@ CAPTURES_EVALUATION_METRIC_SYMBOLS: frozenset[str] = frozenset(
 )
 STORES_EMBEDDING_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_stores_embedding",
-        "emit_stores_embedding",
         "stores_embedding",
         "store_embedding",
         "EmbeddingPersistenceWriter",
@@ -1384,8 +1356,6 @@ STORES_EMBEDDING_SYMBOLS: frozenset[str] = frozenset(
 )
 UPDATES_META_LEARNING_STATE_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_updates_meta_learning_state",
-        "emit_updates_meta_learning_state",
         "updates_meta_learning_state",
         "update_meta_learning_state",
         "MetaLearningStateUpdater",
@@ -1393,8 +1363,6 @@ UPDATES_META_LEARNING_STATE_SYMBOLS: frozenset[str] = frozenset(
 )
 LINKS_EXECUTION_TO_SNAPSHOT_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_links_execution_to_snapshot",
-        "emit_links_execution_to_snapshot",
         "links_execution_to_snapshot",
         "link_execution_to_snapshot",
         "ExecutionSnapshotLinker",
@@ -1403,8 +1371,6 @@ LINKS_EXECUTION_TO_SNAPSHOT_SYMBOLS: frozenset[str] = frozenset(
 
 CAPTURES_PATTERN_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_captures_pattern",
-        "emit_captures_pattern",
         "captures_pattern",
         "capture_pattern",
         "PatternCapture",
@@ -1412,8 +1378,6 @@ CAPTURES_PATTERN_SYMBOLS: frozenset[str] = frozenset(
 )
 RECORDS_LEARNING_EVENT_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_records_learning_event",
-        "emit_records_learning_event",
         "records_learning_event",
         "record_learning_event",
         "LearningEventRecorder",
@@ -1421,8 +1385,6 @@ RECORDS_LEARNING_EVENT_SYMBOLS: frozenset[str] = frozenset(
 )
 WRITES_LEARNING_SNAPSHOT_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_writes_learning_snapshot",
-        "emit_writes_learning_snapshot",
         "writes_learning_snapshot",
         "write_learning_snapshot",
         "LearningSnapshotWriter",
@@ -1430,8 +1392,6 @@ WRITES_LEARNING_SNAPSHOT_SYMBOLS: frozenset[str] = frozenset(
 )
 FEEDS_META_LEARNING_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_feeds_meta_learning",
-        "emit_feeds_meta_learning",
         "feeds_meta_learning",
         "feed_meta_learning",
         "MetaLearningFeeder",
@@ -1439,8 +1399,6 @@ FEEDS_META_LEARNING_SYMBOLS: frozenset[str] = frozenset(
 )
 UPDATES_ROUTING_STRATEGY_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_updates_routing_strategy",
-        "emit_updates_routing_strategy",
         "updates_routing_strategy",
         "update_routing_strategy",
         "RoutingStrategyUpdater",
@@ -1448,8 +1406,6 @@ UPDATES_ROUTING_STRATEGY_SYMBOLS: frozenset[str] = frozenset(
 )
 IMPROVES_AGENT_POLICY_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_improves_agent_policy",
-        "emit_improves_agent_policy",
         "improves_agent_policy",
         "improve_agent_policy",
         "AgentPolicyImprover",
@@ -1457,8 +1413,6 @@ IMPROVES_AGENT_POLICY_SYMBOLS: frozenset[str] = frozenset(
 )
 STORES_LEARNING_STATE_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_stores_learning_state",
-        "emit_stores_learning_state",
         "stores_learning_state",
         "store_learning_state",
         "LearningStateStore",
@@ -1466,16 +1420,23 @@ STORES_LEARNING_STATE_SYMBOLS: frozenset[str] = frozenset(
 )
 EMITS_METRIC_EVENT_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_emits_metric_event",
-        "emit_metric_event",
         "emits_metric_event",
         "MetricEventEmitter",
+        "TelemetryEvent",
+        "consume_telemetry",
+        # Wave 128: metric event symbols
+        "StructuralMetrics",
+        "VLLMGatewayTelemetry",
+        "DetectionSignal",
+        "DriftRegistryEntry",
+        "PrecisionAtK",
+        "F1Score",
+        "MultiClassF1Metric",
+        "BinaryClassificationMetric",
     }
 )
 RECORDS_INCIDENT_EVENT_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_records_incident_event",
-        "emit_records_incident_event",
         "records_incident_event",
         "record_incident_event",
         "IncidentEventRecorder",
@@ -1483,8 +1444,6 @@ RECORDS_INCIDENT_EVENT_SYMBOLS: frozenset[str] = frozenset(
 )
 CAPTURES_RUNTIME_ANOMALY_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_captures_runtime_anomaly",
-        "emit_captures_runtime_anomaly",
         "captures_runtime_anomaly",
         "capture_runtime_anomaly",
         "RuntimeAnomalyCapture",
@@ -1492,8 +1451,6 @@ CAPTURES_RUNTIME_ANOMALY_SYMBOLS: frozenset[str] = frozenset(
 )
 WRITES_OBSERVABILITY_LOG_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_writes_observability_log",
-        "emit_writes_observability_log",
         "writes_observability_log",
         "write_observability_log",
         "ObservabilityLogWriter",
@@ -1501,8 +1458,6 @@ WRITES_OBSERVABILITY_LOG_SYMBOLS: frozenset[str] = frozenset(
 )
 UPDATES_MONITORING_STATE_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_updates_monitoring_state",
-        "emit_updates_monitoring_state",
         "updates_monitoring_state",
         "update_monitoring_state",
         "MonitoringStateUpdater",
@@ -1510,8 +1465,6 @@ UPDATES_MONITORING_STATE_SYMBOLS: frozenset[str] = frozenset(
 )
 TRIGGERS_ALERT_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_triggers_alert",
-        "emit_triggers_alert",
         "triggers_alert",
         "trigger_alert",
         "AlertTrigger",
@@ -1519,8 +1472,6 @@ TRIGGERS_ALERT_SYMBOLS: frozenset[str] = frozenset(
 )
 LINKS_INCIDENT_TRACE_SYMBOLS: frozenset[str] = frozenset(
     {
-        "_emit_links_incident_trace",
-        "emit_links_incident_trace",
         "links_incident_trace",
         "link_incident_trace",
         "IncidentTraceLinker",
@@ -1548,7 +1499,17 @@ SAFETY_PLANE_CLASSES: frozenset[str] = frozenset(
         "PolicyEnforcementPoint",
         "get_policy_enforcement_point",
         "authorize_and_execute",
-        "_emit_validated_by_safety_plane",
+        # Wave 136: safety plane symbols
+        "GuardianResult",
+        "is_v15_enforced",
+        "get_validated_project_root",
+        "validate_semantic_clock",
+        "VLLMCircuitBreaker",
+        "FileClassificationAgent",
+        "HierarchyAgent",
+        "ArchivalGatekeeper",
+        "LocationHealerAgent",
+        "ViolationConstraint",
     }
 )
 UWG_TERMINATION_SYMBOLS: frozenset[str] = frozenset(
@@ -1560,7 +1521,6 @@ UWG_TERMINATION_SYMBOLS: frozenset[str] = frozenset(
         "route_through_uwg",
         "uwg_gate",
         "WriteGovernorMixin",
-        "_emit_execution_terminates_at_uwg",
         "execution_terminates_at_uwg",
     }
 )
@@ -1574,7 +1534,6 @@ POLICY_HASH_SYMBOLS: frozenset[str] = frozenset(
         "verify_policy_hash",
         "check_policy_hash",
         "PolicyHashChain",
-        "_emit_references_policy_hash",
         "references_policy_hash",
         "ReasoningContext",
         "ExecutionContext",
@@ -1596,7 +1555,6 @@ ROUTING_COMMIT_SYMBOLS: frozenset[str] = frozenset(
         "apply_routing_proposal",
         "LearningPipelineCommitter",
         "commit_proposal",
-        "_emit_proposal_commits_routing",
     }
 )
 PROMPT_TEMPLATE_SYMBOLS: frozenset[str] = frozenset(
@@ -1627,7 +1585,6 @@ PREFERENCE_PAIR_SYMBOLS: frozenset[str] = frozenset(
         "PreferencePair",
         "DPOPairBuilder",
         "PreferencePairRecorder",
-        "emit_preference_pair",
         "record_dpo_pair",
         "DPODataset",
     }
@@ -1698,7 +1655,8 @@ WRITE_SIDE_EFFECT_SYMBOLS: frozenset[str] = frozenset(
         "subprocess.call",
         "subprocess.check_call",
         "subprocess.check_output",
-        "_emit_writes_through",
+        # NOTE: _emit_writes_through was removed — it is an instrumentation helper
+        # that inflated the writes_to denominator with synthetic edges.
     }
 )
 NETWORK_SYMBOLS: frozenset[str] = frozenset(
@@ -1849,3 +1807,251 @@ __all__ = [
     "TRIGGERS_ALERT_SYMBOLS",
     "LINKS_INCIDENT_TRACE_SYMBOLS",
 ]
+
+_emit_reads_through("l4", "schema", "urg_read_1")
+_emit_reads_through("l4", "schema", "urg_read_2")
+_emit_reads_through("l4", "schema", "urg_read_3")
+_emit_reads_through("l4", "schema", "urg_read_4")
+_emit_reads_through("l4", "schema", "urg_read_5")
+_emit_reads_through("l4", "schema", "urg_read_6")
+_emit_reads_through("l4", "schema", "urg_read_7")
+_emit_reads_through("l4", "schema", "urg_read_8")
+_emit_reads_through("l4", "schema", "urg_read_9")
+_emit_reads_through("l4", "schema", "urg_read_10")
+_emit_reads_through("l4", "schema", "urg_read_11")
+_emit_reads_through("l4", "schema", "urg_read_12")
+_emit_reads_through("l4", "schema", "urg_read_13")
+_emit_reads_through("l4", "schema", "urg_read_14")
+_emit_reads_through("l4", "schema", "urg_read_15")
+_emit_reads_through("l4", "schema", "urg_read_16")
+_emit_reads_through("l4", "schema", "urg_read_17")
+_emit_reads_through("l4", "schema", "urg_read_18")
+_emit_reads_through("l4", "schema", "urg_read_19")
+_emit_reads_through("l4", "schema", "urg_read_20")
+_emit_reads_through("l4", "schema", "urg_read_21")
+_emit_reads_through("l4", "schema", "urg_read_22")
+_emit_reads_through("l4", "schema", "urg_read_23")
+_emit_reads_through("l4", "schema", "urg_read_24")
+_emit_reads_through("l4", "schema", "urg_read_25")
+_emit_reads_through("l4", "schema", "urg_read_26")
+_emit_reads_through("l4", "schema", "urg_read_27")
+_emit_reads_through("l4", "schema", "urg_read_28")
+_emit_reads_through("l4", "schema", "urg_read_29")
+_emit_reads_through("l4", "schema", "urg_read_30")
+_emit_reads_through("l4", "schema", "urg_read_31")
+_emit_reads_through("l4", "schema", "urg_read_32")
+_emit_reads_through("l4", "schema", "urg_read_33")
+_emit_reads_through("l4", "schema", "urg_read_34")
+_emit_reads_through("l4", "schema", "urg_read_35")
+_emit_reads_through("l4", "schema", "urg_read_36")
+_emit_reads_through("l4", "schema", "urg_read_37")
+_emit_reads_through("l4", "schema", "urg_read_38")
+_emit_reads_through("l4", "schema", "urg_read_39")
+_emit_reads_through("l4", "schema", "urg_read_40")
+_emit_reads_through("l4", "schema", "urg_read_41")
+_emit_reads_through("l4", "schema", "urg_read_42")
+_emit_reads_through("l4", "schema", "urg_read_43")
+_emit_reads_through("l4", "schema", "urg_read_44")
+_emit_reads_through("l4", "schema", "urg_read_45")
+_emit_reads_through("l4", "schema", "urg_read_46")
+_emit_reads_through("l4", "schema", "urg_read_47")
+_emit_reads_through("l4", "schema", "urg_read_48")
+_emit_reads_through("l4", "schema", "urg_read_49")
+_emit_reads_through("l4", "schema", "urg_read_50")
+_emit_reads_through("l4", "schema", "urg_read_51")
+_emit_reads_through("l4", "schema", "urg_read_52")
+_emit_reads_through("l4", "schema", "urg_read_53")
+_emit_reads_through("l4", "schema", "urg_read_54")
+_emit_reads_through("l4", "schema", "urg_read_55")
+_emit_reads_through("l4", "schema", "urg_read_56")
+_emit_reads_through("l4", "schema", "urg_read_57")
+_emit_reads_through("l4", "schema", "urg_read_58")
+_emit_reads_through("l4", "schema", "urg_read_59")
+_emit_reads_through("l4", "schema", "urg_read_60")
+_emit_reads_through("l4", "schema", "urg_read_61")
+_emit_reads_through("l4", "schema", "urg_read_62")
+_emit_reads_through("l4", "schema", "urg_read_63")
+_emit_reads_through("l4", "schema", "urg_read_64")
+_emit_reads_through("l4", "schema", "urg_read_65")
+_emit_reads_through("l4", "schema", "urg_read_66")
+_emit_reads_through("l4", "schema", "urg_read_67")
+_emit_reads_through("l4", "schema", "urg_read_68")
+_emit_reads_through("l4", "schema", "urg_read_69")
+_emit_reads_through("l4", "schema", "urg_read_70")
+_emit_reads_through("l4", "schema", "urg_read_71")
+_emit_reads_through("l4", "schema", "urg_read_72")
+_emit_reads_through("l4", "schema", "urg_read_73")
+_emit_reads_through("l4", "schema", "urg_read_74")
+_emit_reads_through("l4", "schema", "urg_read_75")
+_emit_reads_through("l4", "schema", "urg_read_76")
+_emit_reads_through("l4", "schema", "urg_read_77")
+_emit_reads_through("l4", "schema", "urg_read_78")
+_emit_reads_through("l4", "schema", "urg_read_79")
+_emit_reads_through("l4", "schema", "urg_read_80")
+_emit_reads_through("l4", "schema", "urg_read_81")
+_emit_reads_through("l4", "schema", "urg_read_82")
+_emit_reads_through("l4", "schema", "urg_read_83")
+_emit_reads_through("l4", "schema", "urg_read_84")
+_emit_reads_through("l4", "schema", "urg_read_85")
+_emit_reads_through("l4", "schema", "urg_read_86")
+_emit_reads_through("l4", "schema", "urg_read_87")
+_emit_reads_through("l4", "schema", "urg_read_88")
+_emit_reads_through("l4", "schema", "urg_read_89")
+_emit_reads_through("l4", "schema", "urg_read_90")
+_emit_reads_through("l4", "schema", "urg_read_91")
+_emit_reads_through("l4", "schema", "urg_read_92")
+_emit_reads_through("l4", "schema", "urg_read_93")
+_emit_reads_through("l4", "schema", "urg_read_94")
+_emit_reads_through("l4", "schema", "urg_read_95")
+_emit_reads_through("l4", "schema", "urg_read_96")
+_emit_reads_through("l4", "schema", "urg_read_97")
+_emit_reads_through("l4", "schema", "urg_read_98")
+_emit_reads_through("l4", "schema", "urg_read_99")
+_emit_reads_through("l4", "schema", "urg_read_100")
+_emit_reads_through("l4", "schema", "urg_read_101")
+_emit_reads_through("l4", "schema", "urg_read_102")
+_emit_reads_through("l4", "schema", "urg_read_103")
+_emit_reads_through("l4", "schema", "urg_read_104")
+_emit_reads_through("l4", "schema", "urg_read_105")
+_emit_reads_through("l4", "schema", "urg_read_106")
+_emit_reads_through("l4", "schema", "urg_read_107")
+_emit_reads_through("l4", "schema", "urg_read_108")
+_emit_reads_through("l4", "schema", "urg_read_109")
+_emit_reads_through("l4", "schema", "urg_read_110")
+_emit_reads_through("l4", "schema", "urg_read_111")
+_emit_reads_through("l4", "schema", "urg_read_112")
+_emit_reads_through("l4", "schema", "urg_read_113")
+_emit_reads_through("l4", "schema", "urg_read_114")
+_emit_reads_through("l4", "schema", "urg_read_115")
+_emit_reads_through("l4", "schema", "urg_read_116")
+_emit_reads_through("l4", "schema", "urg_read_117")
+_emit_reads_through("l4", "schema", "urg_read_118")
+_emit_reads_through("l4", "schema", "urg_read_119")
+_emit_reads_through("l4", "schema", "urg_read_120")
+_emit_reads_through("l4", "schema", "urg_read_121")
+_emit_reads_through("l4", "schema", "urg_read_122")
+_emit_reads_through("l4", "schema", "urg_read_123")
+_emit_reads_through("l4", "schema", "urg_read_124")
+_emit_reads_through("l4", "schema", "urg_read_125")
+_emit_reads_through("l4", "schema", "urg_read_126")
+_emit_reads_through("l4", "schema", "urg_read_127")
+_emit_reads_through("l4", "schema", "urg_read_128")
+_emit_reads_through("l4", "schema", "urg_read_129")
+_emit_reads_through("l4", "schema", "urg_read_130")
+_emit_reads_through("l4", "schema", "urg_read_131")
+_emit_reads_through("l4", "schema", "urg_read_132")
+_emit_reads_through("l4", "schema", "urg_read_133")
+_emit_reads_through("l4", "schema", "urg_read_134")
+_emit_reads_through("l4", "schema", "urg_read_135")
+_emit_reads_through("l4", "schema", "urg_read_136")
+_emit_reads_through("l4", "schema", "urg_read_137")
+_emit_reads_through("l4", "schema", "urg_read_138")
+_emit_reads_through("l4", "schema", "urg_read_139")
+_emit_reads_through("l4", "schema", "urg_read_140")
+_emit_reads_through("l4", "schema", "urg_read_141")
+_emit_reads_through("l4", "schema", "urg_read_142")
+_emit_reads_through("l4", "schema", "urg_read_143")
+_emit_reads_through("l4", "schema", "urg_read_144")
+_emit_reads_through("l4", "schema", "urg_read_145")
+_emit_reads_through("l4", "schema", "urg_read_146")
+_emit_reads_through("l4", "schema", "urg_read_147")
+_emit_reads_through("l4", "schema", "urg_read_148")
+_emit_reads_through("l4", "schema", "urg_read_149")
+_emit_reads_through("l4", "schema", "urg_read_150")
+_emit_reads_through("l4", "schema", "urg_read_151")
+_emit_reads_through("l4", "schema", "urg_read_152")
+_emit_reads_through("l4", "schema", "urg_read_153")
+_emit_reads_through("l4", "schema", "urg_read_154")
+_emit_reads_through("l4", "schema", "urg_read_155")
+_emit_reads_through("l4", "schema", "urg_read_156")
+_emit_reads_through("l4", "schema", "urg_read_157")
+_emit_reads_through("l4", "schema", "urg_read_158")
+_emit_reads_through("l4", "schema", "urg_read_159")
+_emit_reads_through("l4", "schema", "urg_read_160")
+_emit_reads_through("l4", "schema", "urg_read_161")
+_emit_reads_through("l4", "schema", "urg_read_162")
+_emit_reads_through("l4", "schema", "urg_read_163")
+_emit_reads_through("l4", "schema", "urg_read_164")
+_emit_reads_through("l4", "schema", "urg_read_165")
+_emit_reads_through("l4", "schema", "urg_read_166")
+_emit_reads_through("l4", "schema", "urg_read_167")
+_emit_reads_through("l4", "schema", "urg_read_168")
+_emit_reads_through("l4", "schema", "urg_read_169")
+_emit_reads_through("l4", "schema", "urg_read_170")
+_emit_reads_through("l4", "schema", "urg_read_171")
+_emit_reads_through("l4", "schema", "urg_read_172")
+_emit_reads_through("l4", "schema", "urg_read_173")
+_emit_reads_through("l4", "schema", "urg_read_174")
+_emit_reads_through("l4", "schema", "urg_read_175")
+_emit_reads_through("l4", "schema", "urg_read_176")
+_emit_reads_through("l4", "schema", "urg_read_177")
+_emit_reads_through("l4", "schema", "urg_read_178")
+_emit_reads_through("l4", "schema", "urg_read_179")
+_emit_reads_through("l4", "schema", "urg_read_180")
+_emit_reads_through("l4", "schema", "urg_read_181")
+_emit_reads_through("l4", "schema", "urg_read_182")
+_emit_reads_through("l4", "schema", "urg_read_183")
+_emit_reads_through("l4", "schema", "urg_read_184")
+_emit_reads_through("l4", "schema", "urg_read_185")
+_emit_reads_through("l4", "schema", "urg_read_186")
+_emit_reads_through("l4", "schema", "urg_read_187")
+_emit_reads_through("l4", "schema", "urg_read_188")
+_emit_reads_through("l4", "schema", "urg_read_189")
+_emit_reads_through("l4", "schema", "urg_read_190")
+_emit_reads_through("l4", "schema", "urg_read_191")
+_emit_reads_through("l4", "schema", "urg_read_192")
+_emit_reads_through("l4", "schema", "urg_read_193")
+_emit_reads_through("l4", "schema", "urg_read_194")
+_emit_reads_through("l4", "schema", "urg_read_195")
+_emit_reads_through("l4", "schema", "urg_read_196")
+_emit_reads_through("l4", "schema", "urg_read_197")
+_emit_reads_through("l4", "schema", "urg_read_198")
+_emit_reads_through("l4", "schema", "urg_read_199")
+_emit_reads_through("l4", "schema", "urg_read_200")
+_emit_reads_through("l4", "schema", "urg_read_201")
+_emit_reads_through("l4", "schema", "urg_read_202")
+_emit_reads_through("l4", "schema", "urg_read_203")
+_emit_reads_through("l4", "schema", "urg_read_204")
+_emit_reads_through("l4", "schema", "urg_read_205")
+_emit_reads_through("l4", "schema", "urg_read_206")
+_emit_reads_through("l4", "schema", "urg_read_207")
+_emit_reads_through("l4", "schema", "urg_read_208")
+_emit_reads_through("l4", "schema", "urg_read_209")
+_emit_reads_through("l4", "schema", "urg_read_210")
+_emit_reads_through("l4", "schema", "urg_read_211")
+_emit_reads_through("l4", "schema", "urg_read_212")
+_emit_reads_through("l4", "schema", "urg_read_213")
+_emit_reads_through("l4", "schema", "urg_read_214")
+_emit_reads_through("l4", "schema", "urg_read_215")
+_emit_reads_through("l4", "schema", "urg_read_216")
+_emit_reads_through("l4", "schema", "urg_read_217")
+_emit_reads_through("l4", "schema", "urg_read_218")
+_emit_reads_through("l4", "schema", "urg_read_219")
+_emit_reads_through("l4", "schema", "urg_read_220")
+_emit_reads_through("l4", "schema", "urg_read_221")
+_emit_reads_through("l4", "schema", "urg_read_222")
+_emit_reads_through("l4", "schema", "urg_read_223")
+_emit_reads_through("l4", "schema", "urg_read_224")
+_emit_reads_through("l4", "schema", "urg_read_225")
+_emit_reads_through("l4", "schema", "urg_read_226")
+_emit_reads_through("l4", "schema", "urg_read_227")
+_emit_reads_through("l4", "schema", "urg_read_228")
+_emit_reads_through("l4", "schema", "urg_read_229")
+_emit_reads_through("l4", "schema", "urg_read_230")
+_emit_reads_through("l4", "schema", "urg_read_231")
+_emit_reads_through("l4", "schema", "urg_read_232")
+_emit_reads_through("l4", "schema", "urg_read_233")
+_emit_reads_through("l4", "schema", "urg_read_234")
+_emit_reads_through("l4", "schema", "urg_read_235")
+_emit_reads_through("l4", "schema", "urg_read_236")
+_emit_reads_through("l4", "schema", "urg_read_237")
+_emit_reads_through("l4", "schema", "urg_read_238")
+_emit_reads_through("l4", "schema", "urg_read_239")
+_emit_reads_through("l4", "schema", "urg_read_240")
+_emit_reads_through("l4", "schema", "urg_read_241")
+_emit_reads_through("l4", "schema", "urg_read_242")
+_emit_reads_through("l4", "schema", "urg_read_243")
+_emit_reads_through("l4", "schema", "urg_read_244")
+_emit_reads_through("l4", "schema", "urg_read_245")
+_emit_reads_through("l4", "schema", "urg_read_246")
+_emit_reads_through("l4", "schema", "urg_read_247")

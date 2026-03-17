@@ -215,6 +215,17 @@ _emit_writes_through("p1", "CodeDeduplicationAgent", "write_through_2")
 _emit_validated_by_safety_plane("p1", "CodeDeduplicationAgent", "safety_validation")
 _emit_invokes_eval("p1", "CodeDeduplicationAgent", "eval_call")
 _emit_proposal_commits_routing("p1", "CodeDeduplicationAgent", "routing_commit")
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+emit_determinism_digest("trace_CodeDeduplicationAgent", "CodeDeduplicationAgent_dispatch_entry")
+emit_determinism_digest("trace_CodeDeduplicationAgent", "CodeDeduplicationAgent_dispatch_exit")
+emit_determinism_digest("trace_CodeDeduplicationAgent", "CodeDeduplicationAgent_tool_invoke")
+emit_determinism_digest("trace_CodeDeduplicationAgent", "CodeDeduplicationAgent_tool_complete")
+emit_determinism_digest("trace_CodeDeduplicationAgent", "CodeDeduplicationAgent_agent_entry")
+emit_determinism_digest("trace_CodeDeduplicationAgent", "CodeDeduplicationAgent_agent_exit")
+emit_determinism_digest("trace_CodeDeduplicationAgent", "CodeDeduplicationAgent_uwg_write")
+emit_determinism_digest("trace_CodeDeduplicationAgent", "CodeDeduplicationAgent_trace_sign")
+emit_determinism_digest("trace_CodeDeduplicationAgent", "CodeDeduplicationAgent_guardrail_check")
+emit_determinism_digest("trace_CodeDeduplicationAgent", "CodeDeduplicationAgent_policy_verify")
 
 
 class CodeDeduplicationAgent(SovereignBaseAgent):

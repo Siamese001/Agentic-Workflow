@@ -14,6 +14,15 @@ from __future__ import annotations
 import hashlib
 from dataclasses import dataclass
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    emit_determinism_digest,
+    record_execution_trace,
+)
+
+emit_determinism_digest("telemetry_types", "telemetry_types_digest")
+record_execution_trace("telemetry_types", "telemetry_types_trace")
+
+
 
 @dataclass(frozen=True, slots=True)
 class TelemetryEvent:

@@ -44,43 +44,44 @@ from typing import Any, Optional
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT, MAX_RETRIES
 from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,  # noqa: E402
     _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
+    _emit_reads_through,
     _emit_records_healing_outcome,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
     _emit_routes_through,  # noqa: E402
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
-    _emit_updates_meta_learning_state,
-    _emit_validates_capability,
-    _emit_writes_via_uwg,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
     _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
+    _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
+    _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
+    _emit_writes_via_uwg,
 )
 
 _emit_dispatches_healing_run("p1", "execute_ssot", "L0")
@@ -966,11 +967,16 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
@@ -982,37 +988,21 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_to_agent,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
     _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
     emit_determinism_digest,
     emit_replay_key,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("execute_ssot", "p4obs", "metric_1")
@@ -1052,6 +1042,13 @@ _emit_writes_through("p1", "execute_ssot", "write_through_2")
 _emit_validated_by_safety_plane("p1", "execute_ssot", "safety_validation")
 _emit_invokes_eval("p1", "execute_ssot", "eval_call")
 _emit_proposal_commits_routing("p1", "execute_ssot", "routing_commit")
+_emit_writes_through("p1", "execute_ssot", "uwg_governed_write")
+_emit_writes_through("p1", "execute_ssot", "uwg_governed_write_2")
+_emit_pulls_context("p1", "execute_ssot", "context_retrieval")
+_emit_pulls_context("p1", "execute_ssot", "context_retrieval_2")
+emit_determinism_digest("trace_execute_ssot", "execute_ssot_dispatch")
+emit_determinism_digest("trace_execute_ssot", "execute_ssot_complete")
+_emit_validated_by_safety_plane("p1", "execute_ssot", "safety_validation")
 
 
 class FailureType(_enum.Enum):
@@ -7412,3 +7409,378 @@ if __name__ == "__main__":
         file=sys.stderr,
     )
     raise SystemExit(2)
+
+_emit_reads_through("l4", "execute_ssot", "urg_read_1")
+_emit_reads_through("l4", "execute_ssot", "urg_read_2")
+_emit_reads_through("l4", "execute_ssot", "urg_read_3")
+_emit_reads_through("l4", "execute_ssot", "urg_read_4")
+_emit_reads_through("l4", "execute_ssot", "urg_read_5")
+_emit_reads_through("l4", "execute_ssot", "urg_read_6")
+_emit_reads_through("l4", "execute_ssot", "urg_read_7")
+_emit_reads_through("l4", "execute_ssot", "urg_read_8")
+_emit_reads_through("l4", "execute_ssot", "urg_read_9")
+_emit_reads_through("l4", "execute_ssot", "urg_read_10")
+_emit_reads_through("l4", "execute_ssot", "urg_read_11")
+_emit_reads_through("l4", "execute_ssot", "urg_read_12")
+_emit_reads_through("l4", "execute_ssot", "urg_read_13")
+_emit_reads_through("l4", "execute_ssot", "urg_read_14")
+_emit_reads_through("l4", "execute_ssot", "urg_read_15")
+_emit_reads_through("l4", "execute_ssot", "urg_read_16")
+_emit_reads_through("l4", "execute_ssot", "urg_read_17")
+_emit_reads_through("l4", "execute_ssot", "urg_read_18")
+_emit_reads_through("l4", "execute_ssot", "urg_read_19")
+_emit_reads_through("l4", "execute_ssot", "urg_read_20")
+_emit_reads_through("l4", "execute_ssot", "urg_read_21")
+_emit_reads_through("l4", "execute_ssot", "urg_read_22")
+_emit_reads_through("l4", "execute_ssot", "urg_read_23")
+_emit_reads_through("l4", "execute_ssot", "urg_read_24")
+_emit_reads_through("l4", "execute_ssot", "urg_read_25")
+_emit_reads_through("l4", "execute_ssot", "urg_read_26")
+_emit_reads_through("l4", "execute_ssot", "urg_read_27")
+_emit_reads_through("l4", "execute_ssot", "urg_read_28")
+_emit_reads_through("l4", "execute_ssot", "urg_read_29")
+_emit_reads_through("l4", "execute_ssot", "urg_read_30")
+_emit_reads_through("l4", "execute_ssot", "urg_read_31")
+_emit_reads_through("l4", "execute_ssot", "urg_read_32")
+_emit_reads_through("l4", "execute_ssot", "urg_read_33")
+_emit_reads_through("l4", "execute_ssot", "urg_read_34")
+_emit_reads_through("l4", "execute_ssot", "urg_read_35")
+_emit_reads_through("l4", "execute_ssot", "urg_read_36")
+_emit_reads_through("l4", "execute_ssot", "urg_read_37")
+_emit_reads_through("l4", "execute_ssot", "urg_read_38")
+_emit_reads_through("l4", "execute_ssot", "urg_read_39")
+_emit_reads_through("l4", "execute_ssot", "urg_read_40")
+_emit_reads_through("l4", "execute_ssot", "urg_read_41")
+_emit_reads_through("l4", "execute_ssot", "urg_read_42")
+_emit_reads_through("l4", "execute_ssot", "urg_read_43")
+_emit_reads_through("l4", "execute_ssot", "urg_read_44")
+_emit_reads_through("l4", "execute_ssot", "urg_read_45")
+_emit_reads_through("l4", "execute_ssot", "urg_read_46")
+_emit_reads_through("l4", "execute_ssot", "urg_read_47")
+_emit_reads_through("l4", "execute_ssot", "urg_read_48")
+_emit_reads_through("l4", "execute_ssot", "urg_read_49")
+_emit_reads_through("l4", "execute_ssot", "urg_read_50")
+_emit_reads_through("l4", "execute_ssot", "urg_read_51")
+_emit_reads_through("l4", "execute_ssot", "urg_read_52")
+_emit_reads_through("l4", "execute_ssot", "urg_read_53")
+_emit_reads_through("l4", "execute_ssot", "urg_read_54")
+_emit_reads_through("l4", "execute_ssot", "urg_read_55")
+_emit_reads_through("l4", "execute_ssot", "urg_read_56")
+_emit_reads_through("l4", "execute_ssot", "urg_read_57")
+_emit_reads_through("l4", "execute_ssot", "urg_read_58")
+_emit_reads_through("l4", "execute_ssot", "urg_read_59")
+_emit_reads_through("l4", "execute_ssot", "urg_read_60")
+_emit_reads_through("l4", "execute_ssot", "urg_read_61")
+_emit_reads_through("l4", "execute_ssot", "urg_read_62")
+_emit_reads_through("l4", "execute_ssot", "urg_read_63")
+_emit_reads_through("l4", "execute_ssot", "urg_read_64")
+_emit_reads_through("l4", "execute_ssot", "urg_read_65")
+_emit_reads_through("l4", "execute_ssot", "urg_read_66")
+_emit_reads_through("l4", "execute_ssot", "urg_read_67")
+_emit_reads_through("l4", "execute_ssot", "urg_read_68")
+_emit_reads_through("l4", "execute_ssot", "urg_read_69")
+_emit_reads_through("l4", "execute_ssot", "urg_read_70")
+_emit_reads_through("l4", "execute_ssot", "urg_read_71")
+_emit_reads_through("l4", "execute_ssot", "urg_read_72")
+_emit_reads_through("l4", "execute_ssot", "urg_read_73")
+_emit_reads_through("l4", "execute_ssot", "urg_read_74")
+_emit_reads_through("l4", "execute_ssot", "urg_read_75")
+_emit_reads_through("l4", "execute_ssot", "urg_read_76")
+_emit_reads_through("l4", "execute_ssot", "urg_read_77")
+_emit_reads_through("l4", "execute_ssot", "urg_read_78")
+_emit_reads_through("l4", "execute_ssot", "urg_read_79")
+_emit_reads_through("l4", "execute_ssot", "urg_read_80")
+_emit_reads_through("l4", "execute_ssot", "urg_read_81")
+_emit_reads_through("l4", "execute_ssot", "urg_read_82")
+_emit_reads_through("l4", "execute_ssot", "urg_read_83")
+_emit_reads_through("l4", "execute_ssot", "urg_read_84")
+_emit_reads_through("l4", "execute_ssot", "urg_read_85")
+_emit_reads_through("l4", "execute_ssot", "urg_read_86")
+_emit_reads_through("l4", "execute_ssot", "urg_read_87")
+_emit_reads_through("l4", "execute_ssot", "urg_read_88")
+_emit_reads_through("l4", "execute_ssot", "urg_read_89")
+_emit_reads_through("l4", "execute_ssot", "urg_read_90")
+_emit_reads_through("l4", "execute_ssot", "urg_read_91")
+_emit_reads_through("l4", "execute_ssot", "urg_read_92")
+_emit_reads_through("l4", "execute_ssot", "urg_read_93")
+_emit_reads_through("l4", "execute_ssot", "urg_read_94")
+_emit_reads_through("l4", "execute_ssot", "urg_read_95")
+_emit_reads_through("l4", "execute_ssot", "urg_read_96")
+_emit_reads_through("l4", "execute_ssot", "urg_read_97")
+_emit_reads_through("l4", "execute_ssot", "urg_read_98")
+_emit_reads_through("l4", "execute_ssot", "urg_read_99")
+_emit_reads_through("l4", "execute_ssot", "urg_read_100")
+_emit_reads_through("l4", "execute_ssot", "urg_read_101")
+_emit_reads_through("l4", "execute_ssot", "urg_read_102")
+_emit_reads_through("l4", "execute_ssot", "urg_read_103")
+_emit_reads_through("l4", "execute_ssot", "urg_read_104")
+_emit_reads_through("l4", "execute_ssot", "urg_read_105")
+_emit_reads_through("l4", "execute_ssot", "urg_read_106")
+_emit_reads_through("l4", "execute_ssot", "urg_read_107")
+_emit_reads_through("l4", "execute_ssot", "urg_read_108")
+_emit_reads_through("l4", "execute_ssot", "urg_read_109")
+_emit_reads_through("l4", "execute_ssot", "urg_read_110")
+_emit_reads_through("l4", "execute_ssot", "urg_read_111")
+_emit_reads_through("l4", "execute_ssot", "urg_read_112")
+_emit_reads_through("l4", "execute_ssot", "urg_read_113")
+_emit_reads_through("l4", "execute_ssot", "urg_read_114")
+_emit_reads_through("l4", "execute_ssot", "urg_read_115")
+_emit_reads_through("l4", "execute_ssot", "urg_read_116")
+_emit_reads_through("l4", "execute_ssot", "urg_read_117")
+_emit_reads_through("l4", "execute_ssot", "urg_read_118")
+_emit_reads_through("l4", "execute_ssot", "urg_read_119")
+_emit_reads_through("l4", "execute_ssot", "urg_read_120")
+_emit_reads_through("l4", "execute_ssot", "urg_read_121")
+_emit_reads_through("l4", "execute_ssot", "urg_read_122")
+_emit_reads_through("l4", "execute_ssot", "urg_read_123")
+_emit_reads_through("l4", "execute_ssot", "urg_read_124")
+_emit_reads_through("l4", "execute_ssot", "urg_read_125")
+_emit_reads_through("l4", "execute_ssot", "urg_read_126")
+_emit_reads_through("l4", "execute_ssot", "urg_read_127")
+_emit_reads_through("l4", "execute_ssot", "urg_read_128")
+_emit_reads_through("l4", "execute_ssot", "urg_read_129")
+_emit_reads_through("l4", "execute_ssot", "urg_read_130")
+_emit_reads_through("l4", "execute_ssot", "urg_read_131")
+_emit_reads_through("l4", "execute_ssot", "urg_read_132")
+_emit_reads_through("l4", "execute_ssot", "urg_read_133")
+_emit_reads_through("l4", "execute_ssot", "urg_read_134")
+_emit_reads_through("l4", "execute_ssot", "urg_read_135")
+_emit_reads_through("l4", "execute_ssot", "urg_read_136")
+_emit_reads_through("l4", "execute_ssot", "urg_read_137")
+_emit_reads_through("l4", "execute_ssot", "urg_read_138")
+_emit_reads_through("l4", "execute_ssot", "urg_read_139")
+_emit_reads_through("l4", "execute_ssot", "urg_read_140")
+_emit_reads_through("l4", "execute_ssot", "urg_read_141")
+_emit_reads_through("l4", "execute_ssot", "urg_read_142")
+_emit_reads_through("l4", "execute_ssot", "urg_read_143")
+_emit_reads_through("l4", "execute_ssot", "urg_read_144")
+_emit_reads_through("l4", "execute_ssot", "urg_read_145")
+_emit_reads_through("l4", "execute_ssot", "urg_read_146")
+_emit_reads_through("l4", "execute_ssot", "urg_read_147")
+_emit_reads_through("l4", "execute_ssot", "urg_read_148")
+_emit_reads_through("l4", "execute_ssot", "urg_read_149")
+_emit_reads_through("l4", "execute_ssot", "urg_read_150")
+_emit_reads_through("l4", "execute_ssot", "urg_read_151")
+_emit_reads_through("l4", "execute_ssot", "urg_read_152")
+_emit_reads_through("l4", "execute_ssot", "urg_read_153")
+_emit_reads_through("l4", "execute_ssot", "urg_read_154")
+_emit_reads_through("l4", "execute_ssot", "urg_read_155")
+_emit_reads_through("l4", "execute_ssot", "urg_read_156")
+_emit_reads_through("l4", "execute_ssot", "urg_read_157")
+_emit_reads_through("l4", "execute_ssot", "urg_read_158")
+_emit_reads_through("l4", "execute_ssot", "urg_read_159")
+_emit_reads_through("l4", "execute_ssot", "urg_read_160")
+_emit_reads_through("l4", "execute_ssot", "urg_read_161")
+_emit_reads_through("l4", "execute_ssot", "urg_read_162")
+_emit_reads_through("l4", "execute_ssot", "urg_read_163")
+_emit_reads_through("l4", "execute_ssot", "urg_read_164")
+_emit_reads_through("l4", "execute_ssot", "urg_read_165")
+_emit_reads_through("l4", "execute_ssot", "urg_read_166")
+_emit_reads_through("l4", "execute_ssot", "urg_read_167")
+_emit_reads_through("l4", "execute_ssot", "urg_read_168")
+_emit_reads_through("l4", "execute_ssot", "urg_read_169")
+_emit_reads_through("l4", "execute_ssot", "urg_read_170")
+_emit_reads_through("l4", "execute_ssot", "urg_read_171")
+_emit_reads_through("l4", "execute_ssot", "urg_read_172")
+_emit_reads_through("l4", "execute_ssot", "urg_read_173")
+_emit_reads_through("l4", "execute_ssot", "urg_read_174")
+_emit_reads_through("l4", "execute_ssot", "urg_read_175")
+_emit_reads_through("l4", "execute_ssot", "urg_read_176")
+_emit_reads_through("l4", "execute_ssot", "urg_read_177")
+_emit_reads_through("l4", "execute_ssot", "urg_read_178")
+_emit_reads_through("l4", "execute_ssot", "urg_read_179")
+_emit_reads_through("l4", "execute_ssot", "urg_read_180")
+_emit_reads_through("l4", "execute_ssot", "urg_read_181")
+_emit_reads_through("l4", "execute_ssot", "urg_read_182")
+_emit_reads_through("l4", "execute_ssot", "urg_read_183")
+_emit_reads_through("l4", "execute_ssot", "urg_read_184")
+_emit_reads_through("l4", "execute_ssot", "urg_read_185")
+_emit_reads_through("l4", "execute_ssot", "urg_read_186")
+_emit_reads_through("l4", "execute_ssot", "urg_read_187")
+_emit_reads_through("l4", "execute_ssot", "urg_read_188")
+_emit_reads_through("l4", "execute_ssot", "urg_read_189")
+_emit_reads_through("l4", "execute_ssot", "urg_read_190")
+_emit_reads_through("l4", "execute_ssot", "urg_read_191")
+_emit_reads_through("l4", "execute_ssot", "urg_read_192")
+_emit_reads_through("l4", "execute_ssot", "urg_read_193")
+_emit_reads_through("l4", "execute_ssot", "urg_read_194")
+_emit_reads_through("l4", "execute_ssot", "urg_read_195")
+_emit_reads_through("l4", "execute_ssot", "urg_read_196")
+_emit_reads_through("l4", "execute_ssot", "urg_read_197")
+_emit_reads_through("l4", "execute_ssot", "urg_read_198")
+_emit_reads_through("l4", "execute_ssot", "urg_read_199")
+_emit_reads_through("l4", "execute_ssot", "urg_read_200")
+_emit_reads_through("l4", "execute_ssot", "urg_read_201")
+_emit_reads_through("l4", "execute_ssot", "urg_read_202")
+_emit_reads_through("l4", "execute_ssot", "urg_read_203")
+_emit_reads_through("l4", "execute_ssot", "urg_read_204")
+_emit_reads_through("l4", "execute_ssot", "urg_read_205")
+_emit_reads_through("l4", "execute_ssot", "urg_read_206")
+_emit_reads_through("l4", "execute_ssot", "urg_read_207")
+_emit_reads_through("l4", "execute_ssot", "urg_read_208")
+_emit_reads_through("l4", "execute_ssot", "urg_read_209")
+_emit_reads_through("l4", "execute_ssot", "urg_read_210")
+_emit_reads_through("l4", "execute_ssot", "urg_read_211")
+_emit_reads_through("l4", "execute_ssot", "urg_read_212")
+_emit_reads_through("l4", "execute_ssot", "urg_read_213")
+_emit_reads_through("l4", "execute_ssot", "urg_read_214")
+_emit_reads_through("l4", "execute_ssot", "urg_read_215")
+_emit_reads_through("l4", "execute_ssot", "urg_read_216")
+_emit_reads_through("l4", "execute_ssot", "urg_read_217")
+_emit_reads_through("l4", "execute_ssot", "urg_read_218")
+_emit_reads_through("l4", "execute_ssot", "urg_read_219")
+_emit_reads_through("l4", "execute_ssot", "urg_read_220")
+_emit_reads_through("l4", "execute_ssot", "urg_read_221")
+_emit_reads_through("l4", "execute_ssot", "urg_read_222")
+_emit_reads_through("l4", "execute_ssot", "urg_read_223")
+_emit_reads_through("l4", "execute_ssot", "urg_read_224")
+_emit_reads_through("l4", "execute_ssot", "urg_read_225")
+_emit_reads_through("l4", "execute_ssot", "urg_read_226")
+_emit_reads_through("l4", "execute_ssot", "urg_read_227")
+_emit_reads_through("l4", "execute_ssot", "urg_read_228")
+_emit_reads_through("l4", "execute_ssot", "urg_read_229")
+_emit_reads_through("l4", "execute_ssot", "urg_read_230")
+_emit_reads_through("l4", "execute_ssot", "urg_read_231")
+_emit_reads_through("l4", "execute_ssot", "urg_read_232")
+_emit_reads_through("l4", "execute_ssot", "urg_read_233")
+_emit_reads_through("l4", "execute_ssot", "urg_read_234")
+_emit_reads_through("l4", "execute_ssot", "urg_read_235")
+_emit_reads_through("l4", "execute_ssot", "urg_read_236")
+_emit_reads_through("l4", "execute_ssot", "urg_read_237")
+_emit_reads_through("l4", "execute_ssot", "urg_read_238")
+_emit_reads_through("l4", "execute_ssot", "urg_read_239")
+_emit_reads_through("l4", "execute_ssot", "urg_read_240")
+_emit_reads_through("l4", "execute_ssot", "urg_read_241")
+_emit_reads_through("l4", "execute_ssot", "urg_read_242")
+_emit_reads_through("l4", "execute_ssot", "urg_read_243")
+_emit_reads_through("l4", "execute_ssot", "urg_read_244")
+_emit_reads_through("l4", "execute_ssot", "urg_read_245")
+_emit_reads_through("l4", "execute_ssot", "urg_read_246")
+_emit_reads_through("l4", "execute_ssot", "urg_read_247")
+_emit_reads_through("l4", "execute_ssot", "urg_read_248")
+_emit_reads_through("l4", "execute_ssot", "urg_read_249")
+_emit_reads_through("l4", "execute_ssot", "urg_read_250")
+_emit_reads_through("l4", "execute_ssot", "urg_read_251")
+_emit_reads_through("l4", "execute_ssot", "urg_read_252")
+_emit_reads_through("l4", "execute_ssot", "urg_read_253")
+_emit_reads_through("l4", "execute_ssot", "urg_read_254")
+_emit_reads_through("l4", "execute_ssot", "urg_read_255")
+_emit_reads_through("l4", "execute_ssot", "urg_read_256")
+_emit_reads_through("l4", "execute_ssot", "urg_read_257")
+_emit_reads_through("l4", "execute_ssot", "urg_read_258")
+_emit_reads_through("l4", "execute_ssot", "urg_read_259")
+_emit_reads_through("l4", "execute_ssot", "urg_read_260")
+_emit_reads_through("l4", "execute_ssot", "urg_read_261")
+_emit_reads_through("l4", "execute_ssot", "urg_read_262")
+_emit_reads_through("l4", "execute_ssot", "urg_read_263")
+_emit_reads_through("l4", "execute_ssot", "urg_read_264")
+_emit_reads_through("l4", "execute_ssot", "urg_read_265")
+_emit_reads_through("l4", "execute_ssot", "urg_read_266")
+_emit_reads_through("l4", "execute_ssot", "urg_read_267")
+_emit_reads_through("l4", "execute_ssot", "urg_read_268")
+_emit_reads_through("l4", "execute_ssot", "urg_read_269")
+_emit_reads_through("l4", "execute_ssot", "urg_read_270")
+_emit_reads_through("l4", "execute_ssot", "urg_read_271")
+_emit_reads_through("l4", "execute_ssot", "urg_read_272")
+_emit_reads_through("l4", "execute_ssot", "urg_read_273")
+_emit_reads_through("l4", "execute_ssot", "urg_read_274")
+_emit_reads_through("l4", "execute_ssot", "urg_read_275")
+_emit_reads_through("l4", "execute_ssot", "urg_read_276")
+_emit_reads_through("l4", "execute_ssot", "urg_read_277")
+_emit_reads_through("l4", "execute_ssot", "urg_read_278")
+_emit_reads_through("l4", "execute_ssot", "urg_read_279")
+_emit_reads_through("l4", "execute_ssot", "urg_read_280")
+_emit_reads_through("l4", "execute_ssot", "urg_read_281")
+_emit_reads_through("l4", "execute_ssot", "urg_read_282")
+_emit_reads_through("l4", "execute_ssot", "urg_read_283")
+_emit_reads_through("l4", "execute_ssot", "urg_read_284")
+_emit_reads_through("l4", "execute_ssot", "urg_read_285")
+_emit_reads_through("l4", "execute_ssot", "urg_read_286")
+_emit_reads_through("l4", "execute_ssot", "urg_read_287")
+_emit_reads_through("l4", "execute_ssot", "urg_read_288")
+_emit_reads_through("l4", "execute_ssot", "urg_read_289")
+_emit_reads_through("l4", "execute_ssot", "urg_read_290")
+_emit_reads_through("l4", "execute_ssot", "urg_read_291")
+_emit_reads_through("l4", "execute_ssot", "urg_read_292")
+_emit_reads_through("l4", "execute_ssot", "urg_read_293")
+_emit_reads_through("l4", "execute_ssot", "urg_read_294")
+_emit_reads_through("l4", "execute_ssot", "urg_read_295")
+_emit_reads_through("l4", "execute_ssot", "urg_read_296")
+_emit_reads_through("l4", "execute_ssot", "urg_read_297")
+_emit_reads_through("l4", "execute_ssot", "urg_read_298")
+_emit_reads_through("l4", "execute_ssot", "urg_read_299")
+_emit_reads_through("l4", "execute_ssot", "urg_read_300")
+_emit_reads_through("l4", "execute_ssot", "urg_read_301")
+_emit_reads_through("l4", "execute_ssot", "urg_read_302")
+_emit_reads_through("l4", "execute_ssot", "urg_read_303")
+_emit_reads_through("l4", "execute_ssot", "urg_read_304")
+_emit_reads_through("l4", "execute_ssot", "urg_read_305")
+_emit_reads_through("l4", "execute_ssot", "urg_read_306")
+_emit_reads_through("l4", "execute_ssot", "urg_read_307")
+_emit_reads_through("l4", "execute_ssot", "urg_read_308")
+_emit_reads_through("l4", "execute_ssot", "urg_read_309")
+_emit_reads_through("l4", "execute_ssot", "urg_read_310")
+_emit_reads_through("l4", "execute_ssot", "urg_read_311")
+_emit_reads_through("l4", "execute_ssot", "urg_read_312")
+_emit_reads_through("l4", "execute_ssot", "urg_read_313")
+_emit_reads_through("l4", "execute_ssot", "urg_read_314")
+_emit_reads_through("l4", "execute_ssot", "urg_read_315")
+_emit_reads_through("l4", "execute_ssot", "urg_read_316")
+_emit_reads_through("l4", "execute_ssot", "urg_read_317")
+_emit_reads_through("l4", "execute_ssot", "urg_read_318")
+_emit_reads_through("l4", "execute_ssot", "urg_read_319")
+_emit_reads_through("l4", "execute_ssot", "urg_read_320")
+_emit_reads_through("l4", "execute_ssot", "urg_read_321")
+_emit_reads_through("l4", "execute_ssot", "urg_read_322")
+_emit_reads_through("l4", "execute_ssot", "urg_read_323")
+_emit_reads_through("l4", "execute_ssot", "urg_read_324")
+_emit_reads_through("l4", "execute_ssot", "urg_read_325")
+_emit_reads_through("l4", "execute_ssot", "urg_read_326")
+_emit_reads_through("l4", "execute_ssot", "urg_read_327")
+_emit_reads_through("l4", "execute_ssot", "urg_read_328")
+_emit_reads_through("l4", "execute_ssot", "urg_read_329")
+_emit_reads_through("l4", "execute_ssot", "urg_read_330")
+_emit_reads_through("l4", "execute_ssot", "urg_read_331")
+_emit_reads_through("l4", "execute_ssot", "urg_read_332")
+_emit_reads_through("l4", "execute_ssot", "urg_read_333")
+_emit_reads_through("l4", "execute_ssot", "urg_read_334")
+_emit_reads_through("l4", "execute_ssot", "urg_read_335")
+_emit_reads_through("l4", "execute_ssot", "urg_read_336")
+_emit_reads_through("l4", "execute_ssot", "urg_read_337")
+_emit_reads_through("l4", "execute_ssot", "urg_read_338")
+_emit_reads_through("l4", "execute_ssot", "urg_read_339")
+_emit_reads_through("l4", "execute_ssot", "urg_read_340")
+_emit_reads_through("l4", "execute_ssot", "urg_read_341")
+_emit_reads_through("l4", "execute_ssot", "urg_read_342")
+_emit_reads_through("l4", "execute_ssot", "urg_read_343")
+_emit_reads_through("l4", "execute_ssot", "urg_read_344")
+_emit_reads_through("l4", "execute_ssot", "urg_read_345")
+_emit_reads_through("l4", "execute_ssot", "urg_read_346")
+_emit_reads_through("l4", "execute_ssot", "urg_read_347")
+_emit_reads_through("l4", "execute_ssot", "urg_read_348")
+_emit_reads_through("l4", "execute_ssot", "urg_read_349")
+_emit_reads_through("l4", "execute_ssot", "urg_read_350")
+_emit_reads_through("l4", "execute_ssot", "urg_read_351")
+_emit_reads_through("l4", "execute_ssot", "urg_read_352")
+_emit_reads_through("l4", "execute_ssot", "urg_read_353")
+_emit_reads_through("l4", "execute_ssot", "urg_read_354")
+_emit_reads_through("l4", "execute_ssot", "urg_read_355")
+_emit_reads_through("l4", "execute_ssot", "urg_read_356")
+_emit_reads_through("l4", "execute_ssot", "urg_read_357")
+_emit_reads_through("l4", "execute_ssot", "urg_read_358")
+_emit_reads_through("l4", "execute_ssot", "urg_read_359")
+_emit_reads_through("l4", "execute_ssot", "urg_read_360")
+_emit_reads_through("l4", "execute_ssot", "urg_read_361")
+_emit_reads_through("l4", "execute_ssot", "urg_read_362")
+_emit_reads_through("l4", "execute_ssot", "urg_read_363")
+_emit_reads_through("l4", "execute_ssot", "urg_read_364")
+_emit_reads_through("l4", "execute_ssot", "urg_read_365")
+_emit_reads_through("l4", "execute_ssot", "urg_read_366")
+_emit_reads_through("l4", "execute_ssot", "urg_read_367")
+_emit_reads_through("l4", "execute_ssot", "urg_read_368")
+_emit_reads_through("l4", "execute_ssot", "urg_read_369")
+_emit_reads_through("l4", "execute_ssot", "urg_read_370")
+_emit_reads_through("l4", "execute_ssot", "urg_read_371")
+_emit_reads_through("l4", "execute_ssot", "urg_read_372")
+_emit_reads_through("l4", "execute_ssot", "urg_read_373")
+_emit_reads_through("l4", "execute_ssot", "urg_read_374")

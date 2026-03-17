@@ -152,6 +152,13 @@ _emit_verifies_boundary("p1", "answer_support", "boundary_check")
 _emit_transcripts_response("p1", "answer_support", "transcript")
 _emit_hard_fails_untranscripted("p1", "answer_support")
 _emit_gated_by_confidence("p1", "answer_support", "confidence_gate")
+_emit_writes_through("p1", "answer_support", "uwg_governed_write")
+_emit_writes_through("p1", "answer_support", "uwg_governed_write_2")
+_emit_pulls_context("p1", "answer_support", "context_retrieval")
+_emit_pulls_context("p1", "answer_support", "context_retrieval_2")
+emit_determinism_digest("trace_answer_support", "answer_support_dispatch")
+emit_determinism_digest("trace_answer_support", "answer_support_complete")
+_emit_validated_by_safety_plane("p1", "answer_support", "safety_validation")
 
 # ---------------------------------------------------------------------------
 # Concrete Implementation

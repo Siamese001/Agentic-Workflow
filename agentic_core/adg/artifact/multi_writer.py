@@ -285,6 +285,17 @@ CREATE TABLE IF NOT EXISTS meta (
     value TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS violations (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    edge_id       INTEGER NOT NULL REFERENCES edges(id),
+    category      TEXT NOT NULL,
+    evidence      TEXT NOT NULL DEFAULT '',
+    file_path     TEXT NOT NULL DEFAULT '',
+    line_no       INTEGER NOT NULL DEFAULT 0
+);
+CREATE INDEX IF NOT EXISTS idx_violations_cat  ON violations(category);
+CREATE INDEX IF NOT EXISTS idx_violations_file ON violations(file_path);
+
 CREATE VIEW IF NOT EXISTS edge_view AS
     SELECT
         e.id            AS edge_id,
@@ -353,6 +364,13 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
             "INSERT INTO edges(src_id,dst_id,relation_type,edge_kind,source_file,line_no,symbol) "
             "VALUES (?,?,?,?,?,?,?)",
             edge_rows,
+        )
+
+        # Populate violations from governance edges
+        conn.execute(
+            "INSERT INTO violations (edge_id, category, evidence, file_path, line_no) "
+            "SELECT id, relation_type, symbol, source_file, line_no "
+            "FROM edges WHERE relation_type IN ('violates', 'antipattern', 'dynamic_exec')"
         )
 
         # Meta

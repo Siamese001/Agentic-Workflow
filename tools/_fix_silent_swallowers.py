@@ -10,6 +10,19 @@ import re
 from pathlib import Path
 from typing import List, Tuple
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "_fix_silent_swallowers", "uwg_governed_write")
+_emit_writes_through("p1", "_fix_silent_swallowers", "uwg_governed_write_2")
+_emit_pulls_context("p1", "_fix_silent_swallowers", "context_retrieval")
+_emit_pulls_context("p1", "_fix_silent_swallowers", "context_retrieval_2")
+emit_determinism_digest("trace__fix_silent_swallowers", "_fix_silent_swallowers_dispatch")
+emit_determinism_digest("trace__fix_silent_swallowers", "_fix_silent_swallowers_complete")
+_emit_validated_by_safety_plane("p1", "_fix_silent_swallowers", "safety_validation")
 REPO = Path(__file__).resolve().parent.parent
 
 def find_silent_swallowers(file_path: Path) -> List[Tuple[int, str]]:

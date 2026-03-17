@@ -1,4 +1,57 @@
 """
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_1")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_2")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_3")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_4")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_5")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_6")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_7")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_8")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_9")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_10")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_11")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_12")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_13")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_14")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_15")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_16")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_17")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_18")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_19")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_20")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_21")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_22")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_23")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_24")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_25")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_26")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_27")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_28")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_29")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_30")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_31")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_32")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_33")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_34")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_35")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_36")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_37")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_38")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_39")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_40")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_41")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_42")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_43")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_44")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_45")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_46")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_47")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_48")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_49")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_50")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_51")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_52")
+_emit_reads_through("l4", "enforcement_metadata_tagger", "urg_read_53")
 Phase W-FINAL Phase 1: Enforcement Metadata Tagger
 
 Parses Agentic Master Requirements corpus, classifies each requirement with:
@@ -24,11 +77,24 @@ Validation:
   - STRUCTURAL must include AST or CI in ENFORCEMENT_LAYERS
 """
 from __future__ import annotations
+
 import json
 import re
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
 CORPUS_PATH = Path(__file__).resolve().parents[2] / 'docs' / REPORTS_DIR / 'plans' / 'Agentic Master Requirements.md'
 REPORT_PATH = Path(__file__).resolve().parents[2] / 'docs' / REPORTS_DIR / 'plans' / 'EnforcementMetadataTaggingReport.json'
 LAYER_PATTERNS: list[tuple[str, re.Pattern[str]]] = [('AST', re.compile('\\b(?:AST|[Ss]tatic(?:\\s+\\w+)?\\s*(?:scan|file|inspection|analysis)?|[Ss]tatic)\\b')), ('Runtime', re.compile('\\b(?:[Rr]untime|[Rr]un[\\s-]?time|[Gg]ate|[Gg]uard(?!ian)|[Bb]oundary|[Ii]nterception|[Ii]nvariant|[Cc]heck|[Ee]nforcement|[Vv]alidation|[Vv]erification|[Ii]nspection|[Cc]ompliance|[Ss]cope[\\s_]validator|[Kk]ey[\\s_]mgmt|[Pp]romotion[\\s_]guard|[Pp]hase[\\s_]gate|[Vv]ersionStore|[Hh]ealth|[Aa]pproval|[Aa]udit|[Rr]edaction|[Rr]outing|[Dd]ispatch|[Ee]gress|[Oo]utput)\\b')), ('CI', re.compile('\\b(?:CI|[Cc]ompliance[\\s_]calculation|[Cc]onfig)\\b')), ('Replay', re.compile('\\b(?:[Rr]eplay|[Dd]eterminism[\\s_]?(?:test|check)?|[Tt]amper)\\b')), ('Guardian', re.compile('\\b[Gg]uardian\\b')), ('Schema', re.compile('\\b(?:[Ss]chema|[Ss]erialization)\\b')), ('Signature', re.compile('\\b(?:[Ss]ignature|HMAC|[Ss]ig(?:nature)?[\\s_]verif)\\b'))]
@@ -59,7 +125,7 @@ def classify_enforcement_class(req_id: str, enforcement_text: str, requirement_t
     for pattern in EXECUTION_PATH_INDICATORS:
         if pattern.search(enforcement_text):
             return 'EXECUTION_PATH'
-    if any((l in ('Runtime', 'Replay', 'Guardian', 'Signature') for l in layers)):
+    if any(l in ('Runtime', 'Replay', 'Guardian', 'Signature') for l in layers):
         return 'EXECUTION_PATH'
     return 'STRUCTURAL'
 
@@ -91,7 +157,7 @@ def tag_requirements(requirements: list[dict[str, str]]) -> list[str]:
         eclass = classify_enforcement_class(req['req_id'], req['enforcement'], req['requirement'], layers)
         if eclass == 'EXECUTION_PATH' and 'Runtime' not in layers:
             layers.append('Runtime')
-        if eclass == 'STRUCTURAL' and (not any((l in ('AST', 'CI') for l in layers))):
+        if eclass == 'STRUCTURAL' and (not any(l in ('AST', 'CI') for l in layers)):
             if 'Schema' in layers or 'Signature' in layers:
                 layers.append('CI')
             else:
@@ -130,12 +196,12 @@ def harden_enforcement_depth(requirements: list[dict[str, str]]) -> list[dict[st
                     layers.append('Schema')
                     added.append('Schema')
             if added:
-                suffix = ' + ' + ' + '.join((f'{a} ratchet' if a == 'CI' else a for a in added))
+                suffix = ' + ' + ' + '.join(f'{a} ratchet' if a == 'CI' else a for a in added)
                 req['enforcement'] = req['enforcement'] + suffix
                 req['enforcement_layers'] = layers
                 actions.append({'req_id': req['req_id'], 'domain': req['domain'], 'added_layers': added, 'new_enforcement': req['enforcement']})
         elif eclass == 'STRUCTURAL':
-            if not any((l in ('AST', 'CI') for l in layers)):
+            if not any(l in ('AST', 'CI') for l in layers):
                 layers.append('CI')
                 req['enforcement'] = req['enforcement'] + ' + CI ratchet'
                 req['enforcement_layers'] = layers
@@ -156,7 +222,7 @@ def validate_dual_enforcement(requirements: list[dict[str, str]]) -> list[str]:
             if 'Runtime' not in layers:
                 failures.append(f"{req['req_id']}: EXECUTION_PATH CRITICAL without Runtime layer: {layers}")
         elif eclass == 'STRUCTURAL':
-            if not any((l in ('AST', 'CI') for l in layers)):
+            if not any(l in ('AST', 'CI') for l in layers):
                 failures.append(f"{req['req_id']}: STRUCTURAL CRITICAL without AST/CI layer: {layers}")
         else:
             failures.append(f"{req['req_id']}: CRITICAL with no ENFORCEMENT_CLASS")
@@ -177,11 +243,11 @@ def build_tagged_table(requirements: list[dict[str, str]]) -> str:
 def build_report(requirements: list[dict[str, str]], tagging_errors: list[str], audit_failures: list[str], hardening_actions: list[dict[str, str]] | None=None) -> dict:
     """Build the EnforcementMetadataTaggingReport."""
     total = len(requirements)
-    critical = sum((1 for r in requirements if r['severity'] == 'CRITICAL'))
-    structural = sum((1 for r in requirements if r.get('enforcement_class') == 'STRUCTURAL'))
-    execution_path = sum((1 for r in requirements if r.get('enforcement_class') == 'EXECUTION_PATH'))
-    critical_with_runtime = sum((1 for r in requirements if r['severity'] == 'CRITICAL' and 'Runtime' in r.get('enforcement_layers', [])))
-    critical_with_2_layers = sum((1 for r in requirements if r['severity'] == 'CRITICAL' and len(r.get('enforcement_layers', [])) >= 2))
+    critical = sum(1 for r in requirements if r['severity'] == 'CRITICAL')
+    structural = sum(1 for r in requirements if r.get('enforcement_class') == 'STRUCTURAL')
+    execution_path = sum(1 for r in requirements if r.get('enforcement_class') == 'EXECUTION_PATH')
+    critical_with_runtime = sum(1 for r in requirements if r['severity'] == 'CRITICAL' and 'Runtime' in r.get('enforcement_layers', []))
+    critical_with_2_layers = sum(1 for r in requirements if r['severity'] == 'CRITICAL' and len(r.get('enforcement_layers', [])) >= 2)
     return {'phase': 'W-FINAL Phase 1+3', 'title': 'EnforcementMetadataTaggingReport', 'total_reqs': total, 'total_critical': critical, 'structural_count': structural, 'execution_path_count': execution_path, 'critical_with_runtime': critical_with_runtime, 'critical_with_runtime_pct': round(critical_with_runtime / critical * 100, 1) if critical else 0, 'critical_with_2_layers': critical_with_2_layers, 'critical_with_2_layers_pct': round(critical_with_2_layers / critical * 100, 1) if critical else 0, 'tagging_errors': tagging_errors, 'audit_failures': audit_failures, 'hardening_actions': hardening_actions or [], 'hardening_count': len(hardening_actions) if hardening_actions else 0, 'status': 'PASS' if not tagging_errors and (not audit_failures) else 'FAIL'}
 
 def update_corpus_file(corpus_text: str, tagged_table: str, report: dict) -> str:

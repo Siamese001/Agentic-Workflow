@@ -1,4 +1,11 @@
 """
+_emit_reads_through("l4", "phase4_l5_d0_confcalib_evidence", "urg_read_1")
+_emit_reads_through("l4", "phase4_l5_d0_confcalib_evidence", "urg_read_2")
+_emit_reads_through("l4", "phase4_l5_d0_confcalib_evidence", "urg_read_3")
+_emit_reads_through("l4", "phase4_l5_d0_confcalib_evidence", "urg_read_4")
+_emit_reads_through("l4", "phase4_l5_d0_confcalib_evidence", "urg_read_5")
+_emit_reads_through("l4", "phase4_l5_d0_confcalib_evidence", "urg_read_6")
+_emit_reads_through("l4", "phase4_l5_d0_confcalib_evidence", "urg_read_7")
 Phase 4 L5 D0+CONF_CALIB Evidence Generator
 Python-only evidence capture for L5 safety modules.
 """

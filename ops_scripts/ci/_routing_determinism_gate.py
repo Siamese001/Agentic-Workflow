@@ -24,6 +24,15 @@ import glob
 import sqlite3
 import sys
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    emit_determinism_digest,
+    record_execution_trace,
+)
+
+emit_determinism_digest("_routing_determinism_gate", "_routing_determinism_gate_digest")
+record_execution_trace("_routing_determinism_gate", "_routing_determinism_gate_trace")
+
+
 
 def _latest_db() -> str:
     files = sorted(glob.glob("artifacts/adg/adg_indexed_*.sqlite"))

@@ -140,6 +140,13 @@ _emit_verifies_boundary("p1", "generate_all_agent_tests_util", "boundary_check")
 _emit_transcripts_response("p1", "generate_all_agent_tests_util", "transcript")
 _emit_hard_fails_untranscripted("p1", "generate_all_agent_tests_util")
 _emit_gated_by_confidence("p1", "generate_all_agent_tests_util", "confidence_gate")
+_emit_writes_through("p1", "generate_all_agent_tests_util", "uwg_governed_write")
+_emit_writes_through("p1", "generate_all_agent_tests_util", "uwg_governed_write_2")
+_emit_pulls_context("p1", "generate_all_agent_tests_util", "context_retrieval")
+_emit_pulls_context("p1", "generate_all_agent_tests_util", "context_retrieval_2")
+emit_determinism_digest("trace_generate_all_agent_tests_util", "generate_all_agent_tests_util_dispatch")
+emit_determinism_digest("trace_generate_all_agent_tests_util", "generate_all_agent_tests_util_complete")
+_emit_validated_by_safety_plane("p1", "generate_all_agent_tests_util", "safety_validation")
 
 _ROOT = get_validated_project_root()
 

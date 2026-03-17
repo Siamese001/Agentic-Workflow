@@ -10,6 +10,15 @@ import ast
 from pathlib import Path
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    emit_determinism_digest,
+    record_execution_trace,
+)
+
+emit_determinism_digest("add_execution_trace", "add_execution_trace_digest")
+record_execution_trace("add_execution_trace", "add_execution_trace_trace")
+
+
 ROOT = Path(__file__).resolve().parents[2]
 
 

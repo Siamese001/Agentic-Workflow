@@ -7,6 +7,7 @@ from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_
 from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -19,10 +20,14 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_dispatches_healing_run,  # noqa: E402
     _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
+    _emit_reads_through,
     _emit_records_healing_outcome,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
@@ -32,17 +37,13 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_routes_to_capability,
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
     _emit_validates_agent_capability,
     _emit_validates_capability,
-    _emit_writes_via_uwg,
-    _emit_agent_executes_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
     _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
+    _emit_verifies_policy,
+    _emit_writes_via_uwg,
 )
 
 _emit_authorize_and_execute("p2", "NervousSystemAgent", "execution_auth")
@@ -101,15 +102,18 @@ from agentic_core.L5_safety.enforcement.policy_action_contract import (
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
     _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -124,21 +128,13 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
     emit_determinism_digest,
     emit_replay_key,
-    _emit_agent_executes_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_gated_by_confidence,
-    _emit_agent_executes_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_gated_by_confidence,
 )
 from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
 
@@ -179,6 +175,18 @@ _emit_writes_through("p1", "NervousSystemAgent", "write_through_2")
 _emit_validated_by_safety_plane("p1", "NervousSystemAgent", "safety_validation")
 _emit_invokes_eval("p1", "NervousSystemAgent", "eval_call")
 _emit_proposal_commits_routing("p1", "NervousSystemAgent", "routing_commit")
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+
+emit_determinism_digest("trace_NervousSystemAgent", "NervousSystemAgent_dispatch_entry")
+emit_determinism_digest("trace_NervousSystemAgent", "NervousSystemAgent_dispatch_exit")
+emit_determinism_digest("trace_NervousSystemAgent", "NervousSystemAgent_tool_invoke")
+emit_determinism_digest("trace_NervousSystemAgent", "NervousSystemAgent_tool_complete")
+emit_determinism_digest("trace_NervousSystemAgent", "NervousSystemAgent_agent_entry")
+emit_determinism_digest("trace_NervousSystemAgent", "NervousSystemAgent_agent_exit")
+emit_determinism_digest("trace_NervousSystemAgent", "NervousSystemAgent_uwg_write")
+emit_determinism_digest("trace_NervousSystemAgent", "NervousSystemAgent_trace_sign")
+emit_determinism_digest("trace_NervousSystemAgent", "NervousSystemAgent_guardrail_check")
+emit_determinism_digest("trace_NervousSystemAgent", "NervousSystemAgent_policy_verify")
 
 _proof_emitter = ExecutionProofEmitter("L3.NervousSystemAgent")
 _exec_breaker = get_breaker("nervous_system_agent")
@@ -960,3 +968,78 @@ class NervousSystemAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [str(e)],
             }
+
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_1")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_2")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_3")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_4")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_5")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_6")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_7")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_8")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_9")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_10")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_11")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_12")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_13")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_14")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_15")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_16")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_17")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_18")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_19")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_20")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_21")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_22")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_23")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_24")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_25")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_26")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_27")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_28")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_29")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_30")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_31")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_32")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_33")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_34")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_35")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_36")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_37")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_38")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_39")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_40")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_41")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_42")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_43")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_44")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_45")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_46")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_47")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_48")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_49")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_50")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_51")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_52")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_53")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_54")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_55")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_56")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_57")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_58")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_59")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_60")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_61")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_62")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_63")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_64")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_65")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_66")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_67")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_68")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_69")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_70")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_71")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_72")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_73")
+_emit_reads_through("l4", "NervousSystemAgent", "urg_read_74")

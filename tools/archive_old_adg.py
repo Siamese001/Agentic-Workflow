@@ -27,10 +27,49 @@ from __future__ import annotations
 import argparse
 import gzip
 import shutil
-import sys
 from collections import defaultdict
 from datetime import datetime, timedelta
 from pathlib import Path
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_reads_through,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+
+_emit_writes_through("p1", "archive_old_adg", "uwg_governed_write")
+_emit_writes_through("p1", "archive_old_adg", "uwg_governed_write_2")
+_emit_pulls_context("p1", "archive_old_adg", "context_retrieval")
+_emit_pulls_context("p1", "archive_old_adg", "context_retrieval_2")
+emit_determinism_digest("trace_archive_old_adg", "archive_old_adg_dispatch")
+emit_determinism_digest("trace_archive_old_adg", "archive_old_adg_complete")
+_emit_validated_by_safety_plane("p1", "archive_old_adg", "safety_validation")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_1")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_2")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_3")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_4")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_5")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_6")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_7")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_8")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_9")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_10")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_11")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_12")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_13")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_14")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_15")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_16")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_17")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_18")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_19")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_20")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_21")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_22")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_23")
+_emit_reads_through("l4", "archive_old_adg", "urg_read_24")
 
 ROOT = Path(__file__).resolve().parents[1]
 ADG_DIR = ROOT / "artifacts" / "adg"

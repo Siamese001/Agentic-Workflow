@@ -18,10 +18,48 @@ from __future__ import annotations
 
 import ast
 import os
-import re
 import sys
-import uuid
 from pathlib import Path
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_reads_through,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+
+_emit_writes_through("p1", "mega_wire_adg", "uwg_governed_write")
+_emit_writes_through("p1", "mega_wire_adg", "uwg_governed_write_2")
+_emit_pulls_context("p1", "mega_wire_adg", "context_retrieval")
+_emit_pulls_context("p1", "mega_wire_adg", "context_retrieval_2")
+emit_determinism_digest("trace_mega_wire_adg", "mega_wire_adg_dispatch")
+emit_determinism_digest("trace_mega_wire_adg", "mega_wire_adg_complete")
+_emit_validated_by_safety_plane("p1", "mega_wire_adg", "safety_validation")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_1")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_2")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_3")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_4")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_5")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_6")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_7")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_8")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_9")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_10")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_11")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_12")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_13")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_14")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_15")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_16")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_17")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_18")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_19")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_20")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_21")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_22")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_23")
+_emit_reads_through("l4", "mega_wire_adg", "urg_read_24")
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
@@ -397,11 +435,11 @@ def main():
     print(f"\n{'=' * 60}")
     print(f"Total files:   {total_files}")
     print(f"Total methods: {total_methods}")
-    print(f"\nBy layer:")
+    print("\nBy layer:")
     for layer, count in sorted(total_by_layer.items()):
         print(f"  {layer}: {count}")
 
-    print(f"\nEdge types increased:")
+    print("\nEdge types increased:")
     print(f"  records_execution_trace: +{total_methods}")
     signs = sum(1 for _, _, _, ex in all_targets if "signs_trace" in ex)
     replay = sum(1 for _, _, _, ex in all_targets if "replay_key" in ex)
@@ -421,8 +459,8 @@ def main():
             print(f"  ... and {len(skipped_files) - 20} more")
 
     if dry_run:
-        print(f"\n=== DRY RUN COMPLETE — run with --apply to execute ===")
-        print(f"\nFirst 30 targets:")
+        print("\n=== DRY RUN COMPLETE — run with --apply to execute ===")
+        print("\nFirst 30 targets:")
         for rel, label, layer, extras in all_targets[:30]:
             extra_str = f" +{','.join(extras)}" if extras else ""
             print(f"  {rel} :: {label} [{layer}]{extra_str}")

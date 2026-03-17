@@ -60,6 +60,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_transcripts_response,
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
+    record_execution_trace,
 )
 
 emit_replay_key("p0", "provider_binding_fingerprint")
@@ -147,6 +148,9 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
 )
+
+record_execution_trace("provider_binding_fingerprint", "provider_binding_fingerprint_trace")
+
 
 _emit_emits_metric_event("provider_binding_fingerprint", "p4obs", "metric_1")
 _emit_emits_metric_event("provider_binding_fingerprint", "p4obs", "metric_2")

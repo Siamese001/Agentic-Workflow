@@ -66,6 +66,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_transcripts_response,
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
+    record_execution_trace,
 )
 
 emit_replay_key("p0", "meta_observability")
@@ -192,6 +193,20 @@ _emit_writes_through("p1", "meta_observability", "write_through_2")
 _emit_validated_by_safety_plane("p1", "meta_observability", "safety_validation")
 _emit_invokes_eval("p1", "meta_observability", "eval_call")
 _emit_proposal_commits_routing("p1", "meta_observability", "routing_commit")
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+
+record_execution_trace("meta_observability", "meta_observability_trace")
+
+emit_determinism_digest("trace_meta_observability", "meta_observability_dispatch_entry")
+emit_determinism_digest("trace_meta_observability", "meta_observability_dispatch_exit")
+emit_determinism_digest("trace_meta_observability", "meta_observability_tool_invoke")
+emit_determinism_digest("trace_meta_observability", "meta_observability_tool_complete")
+emit_determinism_digest("trace_meta_observability", "meta_observability_agent_entry")
+emit_determinism_digest("trace_meta_observability", "meta_observability_agent_exit")
+emit_determinism_digest("trace_meta_observability", "meta_observability_uwg_write")
+emit_determinism_digest("trace_meta_observability", "meta_observability_trace_sign")
+emit_determinism_digest("trace_meta_observability", "meta_observability_guardrail_check")
+emit_determinism_digest("trace_meta_observability", "meta_observability_policy_verify")
 
 Logger = logging.getLogger(__name__)
 

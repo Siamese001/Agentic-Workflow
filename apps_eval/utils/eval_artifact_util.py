@@ -12,6 +12,19 @@ import json
 import logging
 from pathlib import Path
 from typing import Any
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "eval_artifact_util", "uwg_governed_write")
+_emit_writes_through("p1", "eval_artifact_util", "uwg_governed_write_2")
+_emit_pulls_context("p1", "eval_artifact_util", "context_retrieval")
+_emit_pulls_context("p1", "eval_artifact_util", "context_retrieval_2")
+emit_determinism_digest("trace_eval_artifact_util", "eval_artifact_util_dispatch")
+emit_determinism_digest("trace_eval_artifact_util", "eval_artifact_util_complete")
+_emit_validated_by_safety_plane("p1", "eval_artifact_util", "safety_validation")
 
 _log = logging.getLogger(__name__)
 

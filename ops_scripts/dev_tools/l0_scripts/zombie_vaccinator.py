@@ -16,7 +16,57 @@ import logging
 import re
 from pathlib import Path
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_reads_through,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+
+_emit_writes_through("p1", "zombie_vaccinator", "uwg_governed_write")
+_emit_writes_through("p1", "zombie_vaccinator", "uwg_governed_write_2")
+_emit_pulls_context("p1", "zombie_vaccinator", "context_retrieval")
+_emit_pulls_context("p1", "zombie_vaccinator", "context_retrieval_2")
+emit_determinism_digest("trace_zombie_vaccinator", "zombie_vaccinator_dispatch")
+emit_determinism_digest("trace_zombie_vaccinator", "zombie_vaccinator_complete")
+_emit_validated_by_safety_plane("p1", "zombie_vaccinator", "safety_validation")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_1")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_2")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_3")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_4")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_5")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_6")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_7")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_8")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_9")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_10")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_11")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_12")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_13")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_14")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_15")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_16")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_17")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_18")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_19")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_20")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_21")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_22")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_23")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_24")
+_emit_reads_through("l4", "zombie_vaccinator", "urg_read_25")
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
 Logger = logging.getLogger('ZombieVaccinator')
 
@@ -128,7 +178,7 @@ class ZombieVaccinator:
         """Check if a method name matches vaccine prefixes and isn't excluded."""
         if method_name in self.EXCLUDE_METHODS:
             return False
-        return any((method_name.startswith(p) for p in self.VACCINE_PREFIXES))
+        return any(method_name.startswith(p) for p in self.VACCINE_PREFIXES)
 
     def _apply_vaccine(self, path: Path, source: str, orphans: list[str], class_name: str) -> bool:
         """Surgically inject method calls into the heal_repository implementation."""

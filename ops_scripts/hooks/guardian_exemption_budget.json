@@ -1657,13 +1657,6 @@
   "apps_lic/scripts/purge_legacy_archive.py": {
     "path-string": 3
   },
-  "apps_lic/tools/analyze_duplicates_detailed.py": {
-    "global-mutation": 1
-  },
-  "apps_lic/tools/clean_duplicates_enhanced.py": {
-    "path-string": 4,
-    "silent-swallow": 7
-  },
   "apps_lic/tools/run_workflow.py": {
     "path-string": 1
   },

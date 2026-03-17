@@ -217,6 +217,17 @@ _emit_writes_through("p1", "mission_runner", "write_through_2")
 _emit_validated_by_safety_plane("p1", "mission_runner", "safety_validation")
 _emit_invokes_eval("p1", "mission_runner", "eval_call")
 _emit_proposal_commits_routing("p1", "mission_runner", "routing_commit")
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+emit_determinism_digest("trace_mission_runner", "mission_runner_dispatch_entry")
+emit_determinism_digest("trace_mission_runner", "mission_runner_dispatch_exit")
+emit_determinism_digest("trace_mission_runner", "mission_runner_tool_invoke")
+emit_determinism_digest("trace_mission_runner", "mission_runner_tool_complete")
+emit_determinism_digest("trace_mission_runner", "mission_runner_agent_entry")
+emit_determinism_digest("trace_mission_runner", "mission_runner_agent_exit")
+emit_determinism_digest("trace_mission_runner", "mission_runner_uwg_write")
+emit_determinism_digest("trace_mission_runner", "mission_runner_trace_sign")
+emit_determinism_digest("trace_mission_runner", "mission_runner_guardrail_check")
+emit_determinism_digest("trace_mission_runner", "mission_runner_policy_verify")
 
 
 def _get_imports():

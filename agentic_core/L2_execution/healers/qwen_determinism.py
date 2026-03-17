@@ -53,6 +53,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_transcripts_response,
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
+    record_execution_trace,
 )
 
 emit_replay_key("p0", "qwen_determinism")
@@ -140,6 +141,9 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
 )
+
+record_execution_trace("qwen_determinism", "qwen_determinism_trace")
+
 
 _emit_emits_metric_event("qwen_determinism", "p4obs", "metric_1")
 _emit_emits_metric_event("qwen_determinism", "p4obs", "metric_2")

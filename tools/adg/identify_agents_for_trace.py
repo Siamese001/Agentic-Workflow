@@ -7,6 +7,15 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    emit_determinism_digest,
+    record_execution_trace,
+)
+
+emit_determinism_digest("identify_agents_for_trace", "identify_agents_for_trace_digest")
+record_execution_trace("identify_agents_for_trace", "identify_agents_for_trace_trace")
+
+
 ROOT = Path(__file__).resolve().parents[2]
 
 

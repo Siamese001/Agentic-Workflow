@@ -23,6 +23,19 @@ from pathlib import Path
 from agentic_core.L0_routing.config import (
     ARCHIVES_DIR,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "restore_app_agents", "uwg_governed_write")
+_emit_writes_through("p1", "restore_app_agents", "uwg_governed_write_2")
+_emit_pulls_context("p1", "restore_app_agents", "context_retrieval")
+_emit_pulls_context("p1", "restore_app_agents", "context_retrieval_2")
+emit_determinism_digest("trace_restore_app_agents", "restore_app_agents_dispatch")
+emit_determinism_digest("trace_restore_app_agents", "restore_app_agents_complete")
+_emit_validated_by_safety_plane("p1", "restore_app_agents", "safety_validation")
 
 PROJECT_ROOT = Path(__file__).parent.parent
 ARCHIVE_DIR = PROJECT_ROOT / ARCHIVES_DIR / "hierarchy_violations" / "apps_depth"

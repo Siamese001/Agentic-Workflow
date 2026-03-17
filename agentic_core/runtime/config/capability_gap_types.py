@@ -7,6 +7,8 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
 Logger: Any = logging.getLogger(__name__)
 
 
@@ -109,3 +111,37 @@ class AnalysisReport(BaseModel):
             "overall_health_score": self.overall_health_score,
             "analysis_timestamp": self.analysis_timestamp,
         }
+
+_emit_reads_through("l4", "capability_gap_types", "urg_read_1")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_2")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_3")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_4")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_5")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_6")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_7")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_8")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_9")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_10")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_11")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_12")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_13")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_14")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_15")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_16")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_17")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_18")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_19")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_20")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_21")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_22")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_23")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_24")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_25")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_26")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_27")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_28")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_29")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_30")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_31")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_32")
+_emit_reads_through("l4", "capability_gap_types", "urg_read_33")

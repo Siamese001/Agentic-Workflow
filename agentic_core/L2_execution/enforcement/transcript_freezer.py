@@ -129,6 +129,13 @@ _emit_captures_evaluation_metric("p4", "transcript_freezer", "eval_metric")
 _emit_stores_embedding("p4", "transcript_freezer", "embedding_store")
 _emit_updates_meta_learning_state("p4", "transcript_freezer", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "transcript_freezer", "exec_snapshot_link")
+_emit_writes_through("p1", "transcript_freezer", "uwg_governed_write")
+_emit_writes_through("p1", "transcript_freezer", "uwg_governed_write_2")
+_emit_pulls_context("p1", "transcript_freezer", "context_retrieval")
+_emit_pulls_context("p1", "transcript_freezer", "context_retrieval_2")
+emit_determinism_digest("trace_transcript_freezer", "transcript_freezer_dispatch")
+emit_determinism_digest("trace_transcript_freezer", "transcript_freezer_complete")
+_emit_validated_by_safety_plane("p1", "transcript_freezer", "safety_validation")
 
 
 class TranscriptMutationViolation(Exception):

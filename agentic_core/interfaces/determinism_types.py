@@ -30,6 +30,15 @@ from agentic_core.L0_routing.types.determinism_types import (
     WALL_CLOCK_FORBIDDEN_CALLABLES,
 )
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    emit_determinism_digest,
+    record_execution_trace,
+)
+
+emit_determinism_digest("determinism_types", "determinism_types_digest")
+record_execution_trace("determinism_types", "determinism_types_trace")
+
+
 __all__ = [
     "BoundarySnapshotArtifact",
     "CanonicalASTResult",

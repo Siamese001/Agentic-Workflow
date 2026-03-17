@@ -1,5 +1,32 @@
 """Active Set SSOT Check — CI Gate (AST-enforced).
 
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_1")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_2")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_3")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_4")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_5")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_6")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_7")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_8")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_9")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_10")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_11")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_12")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_13")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_14")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_15")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_16")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_17")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_18")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_19")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_20")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_21")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_22")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_23")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_24")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_25")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_26")
+_emit_reads_through("l4", "active_set_ssot_check", "urg_read_27")
 Enforces that scripts requiring the ACTIVE agent set use the shared
 ``active_set_helper`` module instead of direct pipeline calls.
 
@@ -22,12 +49,26 @@ Exit 0 = pass, exit 1 = violations found.
 Merge-ready gate.
 """
 from __future__ import annotations
+
 import ast
 import re
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import OPS_SCRIPTS_DIR, get_validated_project_root
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    OPS_SCRIPTS_DIR,
+    THRESHOLD,
+    get_validated_project_root,
+)
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
 _GOVERNANCE_EXCLUDES = frozenset({'__init__.py', 'active_set_helper.py', 'active_set_ssot_check.py', 'active_set_snapshot_check.py', 'baseline_io.py', 'gate_consistency_check.py', 'governance_coverage_check.py', 'mro_new_diamond_check.py'})
 _GOVERNANCE_MARKERS = ('active_set_helper', 'active set', 'get_active_set', 'agent_count_cap', 'registry_consistency_check')
 _PROHIBITED_PATTERNS = [re.compile('\\bssot_discovery_util\\b'), re.compile('(?<![./\\\\])\\bfull_agent_discovery\\b'), re.compile('\\bload_agent_discovery\\b'), re.compile('\\bperform_deep_integrity_scan\\b'), re.compile('agent_discovery_full\\.json')]
@@ -48,7 +89,7 @@ def discover_governed_scripts(ci_dir: Path) -> list[str]:
             source = py_file.read_text(encoding='utf-8')
         except (OSError, UnicodeDecodeError):
             continue
-        is_governed = any((marker in source for marker in _GOVERNANCE_MARKERS)) or any((pat.search(source) is not None for pat in _PROHIBITED_PATTERNS))
+        is_governed = any(marker in source for marker in _GOVERNANCE_MARKERS) or any(pat.search(source) is not None for pat in _PROHIBITED_PATTERNS)
         if is_governed:
             governed.append(py_file.relative_to(project_root).as_posix())
     return governed

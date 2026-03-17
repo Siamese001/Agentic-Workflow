@@ -62,6 +62,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_gated_by_confidence,
     _emit_escalates_to_human,
     _emit_routes_through,
+    record_execution_trace,
 )
 
 _emit_applies_guardrail("p0", "trace_registry_types", "p0_governance")
@@ -105,6 +106,9 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
 )
+
+record_execution_trace("trace_registry_types", "trace_registry_types_trace")
+
 
 _emit_emits_metric_event("trace_registry_types", "p4obs", "metric_1")
 _emit_emits_metric_event("trace_registry_types", "p4obs", "metric_2")

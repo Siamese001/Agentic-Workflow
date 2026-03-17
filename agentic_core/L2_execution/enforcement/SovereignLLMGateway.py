@@ -207,6 +207,17 @@ _emit_writes_through("p1", "SovereignLLMGateway", "write_through_2")
 _emit_validated_by_safety_plane("p1", "SovereignLLMGateway", "safety_validation")
 _emit_invokes_eval("p1", "SovereignLLMGateway", "eval_call")
 _emit_proposal_commits_routing("p1", "SovereignLLMGateway", "routing_commit")
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+emit_determinism_digest("trace_SovereignLLMGateway", "SovereignLLMGateway_dispatch_entry")
+emit_determinism_digest("trace_SovereignLLMGateway", "SovereignLLMGateway_dispatch_exit")
+emit_determinism_digest("trace_SovereignLLMGateway", "SovereignLLMGateway_tool_invoke")
+emit_determinism_digest("trace_SovereignLLMGateway", "SovereignLLMGateway_tool_complete")
+emit_determinism_digest("trace_SovereignLLMGateway", "SovereignLLMGateway_agent_entry")
+emit_determinism_digest("trace_SovereignLLMGateway", "SovereignLLMGateway_agent_exit")
+emit_determinism_digest("trace_SovereignLLMGateway", "SovereignLLMGateway_uwg_write")
+emit_determinism_digest("trace_SovereignLLMGateway", "SovereignLLMGateway_trace_sign")
+emit_determinism_digest("trace_SovereignLLMGateway", "SovereignLLMGateway_guardrail_check")
+emit_determinism_digest("trace_SovereignLLMGateway", "SovereignLLMGateway_policy_verify")
 
 
 def _get_injection_detector_class():

@@ -10,6 +10,15 @@ import ast
 import sys
 from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    emit_determinism_digest,
+    record_execution_trace,
+)
+
+emit_determinism_digest("check_wall_clock_in_determinism", "check_wall_clock_in_determinism_digest")
+record_execution_trace("check_wall_clock_in_determinism", "check_wall_clock_in_determinism_trace")
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DETERMINISM_ROOTS = ['agentic_core/L2_execution/determinism']
 ALLOWED_PATHS: set[str] = set()

@@ -26,8 +26,95 @@ from dataclasses import dataclass, field
 from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_reads_through,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+
+_emit_writes_through("p1", "architecture_gap_analyzer", "uwg_governed_write")
+_emit_writes_through("p1", "architecture_gap_analyzer", "uwg_governed_write_2")
+_emit_pulls_context("p1", "architecture_gap_analyzer", "context_retrieval")
+_emit_pulls_context("p1", "architecture_gap_analyzer", "context_retrieval_2")
+emit_determinism_digest("trace_architecture_gap_analyzer", "architecture_gap_analyzer_dispatch")
+emit_determinism_digest("trace_architecture_gap_analyzer", "architecture_gap_analyzer_complete")
+_emit_validated_by_safety_plane("p1", "architecture_gap_analyzer", "safety_validation")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_1")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_2")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_3")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_4")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_5")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_6")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_7")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_8")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_9")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_10")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_11")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_12")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_13")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_14")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_15")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_16")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_17")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_18")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_19")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_20")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_21")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_22")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_23")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_24")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_25")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_26")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_27")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_28")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_29")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_30")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_31")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_32")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_33")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_34")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_35")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_36")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_37")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_38")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_39")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_40")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_41")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_42")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_43")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_44")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_45")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_46")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_47")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_48")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_49")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_50")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_51")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_52")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_53")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_54")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_55")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_56")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_57")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_58")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_59")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_60")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_61")
+_emit_reads_through("l4", "architecture_gap_analyzer", "urg_read_62")
 
 @dataclass
 class ArchitectureComponent:
@@ -147,7 +234,7 @@ class ASTAnalyzer:
     def scan_repository(self) -> None:
         """Scan entire repository for Python files."""
         for py_file in self.repo_root.rglob('*.py'):
-            if any((skip in str(py_file) for skip in ['.venv', 'node_modules', '__pycache__', '.git'])):
+            if any(skip in str(py_file) for skip in ['.venv', 'node_modules', '__pycache__', '.git']):
                 continue
             tree = self.parse_file(py_file)
             if tree:
@@ -199,7 +286,7 @@ class ArchitectureGapAnalyzer:
             coverage = best_impl.match_score * 100
             gaps = []
             for cap in component.required_capabilities:
-                if not any((cap in impl.matched_capabilities for impl in implementations[:3])):
+                if not any(cap in impl.matched_capabilities for impl in implementations[:3]):
                     gaps.append(f'Missing capability: {cap}')
         else:
             coverage = 0

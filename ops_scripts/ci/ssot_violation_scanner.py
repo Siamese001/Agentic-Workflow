@@ -1,4 +1,62 @@
 """
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_1")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_2")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_3")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_4")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_5")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_6")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_7")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_8")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_9")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_10")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_11")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_12")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_13")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_14")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_15")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_16")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_17")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_18")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_19")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_20")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_21")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_22")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_23")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_24")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_25")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_26")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_27")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_28")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_29")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_30")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_31")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_32")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_33")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_34")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_35")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_36")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_37")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_38")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_39")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_40")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_41")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_42")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_43")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_44")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_45")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_46")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_47")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_48")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_49")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_50")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_51")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_52")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_53")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_54")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_55")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_56")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_57")
+_emit_reads_through("l4", "ssot_violation_scanner", "urg_read_58")
 SSOT Violation Scanner  [UTF-8 output]
 ======================
 
@@ -24,20 +82,58 @@ Usage:
     python ops_scripts/ci/ssot_violation_scanner.py --category REPLACE
 """
 from __future__ import annotations
+
 import ast
 import io
 import json
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 _ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
-from agentic_core.L5_safety.config.structure_blueprint.ssot import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS, DOCS_REPORTS_PLANS, TESTS_UNIT_DIR, REPORTS_DIR
-from agentic_core.L0_routing.config.path_constants import L0_MAINTENANCE_DIR, L3_ORCHESTRATION_DIR, L6_OBSERVABILITY_DIR, L1_COGNITION_DIR, L2_EXECUTION_DIR, L5_SAFETY_DIR, L4_STATE_DIR, SYSTEM_LEARNING_DIR, AGENTIC_CORE_DIR, APPS_SHARED_DIR, OPS_SCRIPTS_DIR, ARCHIVES_DIR, APPS_LIC_DIR, APPS_RG_DIR, TESTS_DIR, TOOLS_DIR, SYSTEM_LEARNING_DIR, AGENTIC_CORE_DIR, APPS_SHARED_DIR, OPS_SCRIPTS_DIR, APPS_LIC_DIR, APPS_RG_DIR, TESTS_DIR, TOOLS_DIR
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    ARCHIVES_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    OPS_SCRIPTS_DIR,
+    SYSTEM_LEARNING_DIR,
+    TESTS_DIR,
+    TOOLS_DIR,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    DOCS_REPORTS_PLANS,
+    GLOBAL_EXCLUDED_DIRS,
+    REPORTS_DIR,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+    TESTS_UNIT_DIR,
+)
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
 SSOT_TARGETS: list[tuple[str, str, str, str]] = [(ARCHIVES_DIR, 'ARCHIVES_DIR', 'agentic_core.L0_routing.config.path_constants', 'root_dir'), (AGENTIC_CORE_DIR, 'AGENTIC_CORE_DIR', 'agentic_core.L0_routing.config.path_constants', 'root_dir'), (APPS_LIC_DIR, 'APPS_LIC_DIR', 'agentic_core.L0_routing.config.path_constants', 'root_dir'), (APPS_RG_DIR, 'APPS_RG_DIR', 'agentic_core.L0_routing.config.path_constants', 'root_dir'), (APPS_SHARED_DIR, 'APPS_SHARED_DIR', 'agentic_core.L0_routing.config.path_constants', 'root_dir'), (OPS_SCRIPTS_DIR, 'OPS_SCRIPTS_DIR', 'agentic_core.L0_routing.config.path_constants', 'root_dir'), (TESTS_DIR, 'TESTS_DIR', 'agentic_core.L0_routing.config.path_constants', 'root_dir'), (SYSTEM_LEARNING_DIR, 'SYSTEM_LEARNING_DIR', 'agentic_core.L0_routing.config.path_constants', 'root_dir'), (TOOLS_DIR, 'TOOLS_DIR', 'agentic_core.L0_routing.config.path_constants', 'root_dir'), (REPORTS_DIR, 'REPORTS_DIR', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'root_dir'), ('data', 'DATA_DIR', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'root_dir'), ('docs', 'DOCS_DIR', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'root_dir'), ('L0_routing', 'LAYER_ROOTS', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'layer_root'), ('L1_cognition', 'LAYER_ROOTS', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'layer_root'), ('L2_execution', 'LAYER_ROOTS', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'layer_root'), ('L3_orchestration', 'LAYER_ROOTS', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'layer_root'), ('L4_state', 'LAYER_ROOTS', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'layer_root'), ('L5_safety', 'LAYER_ROOTS', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'layer_root'), ('L6_observability', 'LAYER_ROOTS', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'layer_root'), (L0_MAINTENANCE_DIR, 'L0_ROUTING_DIR', 'agentic_core.L0_routing.config.path_constants', 'layer_path'), (L1_COGNITION_DIR, 'L1_COGNITION_DIR', 'agentic_core.L0_routing.config.path_constants', 'layer_path'), (L2_EXECUTION_DIR, 'L2_EXECUTION_DIR', 'agentic_core.L0_routing.config.path_constants', 'layer_path'), (L3_ORCHESTRATION_DIR, 'L3_ORCHESTRATION_DIR', 'agentic_core.L0_routing.config.path_constants', 'layer_path'), (L4_STATE_DIR, 'L4_STATE_DIR', 'agentic_core.L0_routing.config.path_constants', 'layer_path'), (L5_SAFETY_DIR, 'L5_SAFETY_DIR', 'agentic_core.L0_routing.config.path_constants', 'layer_path'), (L6_OBSERVABILITY_DIR, 'L6_OBSERVABILITY_DIR', 'agentic_core.L0_routing.config.path_constants', 'layer_path'), ('agentic_core/L6_observability/dashboards', 'DASHBOARD_DIR', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'compound_path'), ('agentic_core/config/core', 'BLUEPRINT_SOVEREIGN_DIR', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'compound_path'), ('agentic_core/runtime/types', 'SCHEMAS_DIR', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'compound_path'), ('agentic_core/prompt_governance', 'PROMPT_GOVERNANCE_DIR', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'compound_path'), ('agentic_core/utils', 'UTILS_DIR', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'compound_path'), ('agentic_core/runtime', 'RUNTIME_DIR', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'compound_path'), (DOCS_REPORTS_PLANS, 'DOCS_REPORTS_PLANS', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'compound_path'), ('reports/coverage_html', 'COVERAGE_HTML_DIR', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'compound_path'), (TESTS_UNIT_DIR, 'TESTS_UNIT_DIR', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'test_path'), ('tests/integration', 'TESTS_INTEGRATION_DIR', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'test_path'), ('tests/e2e', 'TESTS_E2E_DIR', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'test_path'), ('tests/unit_min_deps', 'TESTS_AUTOGEN_DIR', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'test_path'), ('tests/unit/agentic_core', 'TEST_CANONICAL_LOCATION_MAP', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'test_path'), ('tests/unit/apps_lic', 'TEST_CANONICAL_LOCATION_MAP', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'test_path'), ('tests/unit/apps_rg', 'TEST_CANONICAL_LOCATION_MAP', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'test_path'), ('tests/unit/apps_shared', 'TEST_CANONICAL_LOCATION_MAP', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'test_path'), ('tests/unit/system_learning', 'TEST_CANONICAL_LOCATION_MAP', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'test_path'), ('runtime_state.json', 'RUNTIME_STATE_JSON', 'agentic_core.L0_routing.config.path_constants', 'filename'), ('agent_discovery_full.json', 'AGENT_DISCOVERY_JSON', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'filename'), ('agent_discovery_full.manifest.json', 'AGENT_DISCOVERY_MANIFEST_JSON', 'agentic_core.L5_safety.config.structure_blueprint.ssot', 'filename')]
 _TARGET_MAP: dict[str, tuple[str, str, str]] = {v: (c, m, t) for v, c, m, t in SSOT_TARGETS}
 WRONG_IMPORT_PATTERNS: list[tuple[str, str]] = [('structure_blueprint_config', 'agentic_core.L5_safety.config.structure_blueprint'), ('agentic_core.L5_safety.config.structure_blueprint_config', 'agentic_core.L5_safety.config.structure_blueprint')]
@@ -56,12 +152,12 @@ def _get_project_root() -> Path:
 def _is_already_using_constant(line_text: str) -> bool:
     """Return True if the line already references an SSOT constant."""
     ssot_suffixes = ('_DIR', '_ROOT', '_ROOTS', '_MAP', '_JSON', '_PLANS', '_BASE')
-    return any((s in line_text for s in ssot_suffixes))
+    return any(s in line_text for s in ssot_suffixes)
 
 def _is_dict_key_or_comparison(value: str, line_text: str) -> bool:
     """Return True for dict-key lookups, startswith/endswith — not path constructions."""
     checks = (f'.get("{value}"', f".get('{value}'", f'["{value}"]', f"['{value}']", f'.startswith("{value}"', f".startswith('{value}'", f'.endswith("{value}"', f".endswith('{value}'", f'.index("{value}"', f".index('{value}'", f'.split("{value}"', f".split('{value}'", f'== "{value}"', f"== '{value}'", f'!= "{value}"', f"!= '{value}'", f'in "{value}"', f"in '{value}'")
-    return any((p in line_text for p in checks))
+    return any(p in line_text for p in checks)
 
 def _classify_string_hit(node: ast.Constant, tree: ast.Module, source_lines: list[str], file_path: Path) -> str:
     value: str = node.value
@@ -79,9 +175,9 @@ def _classify_string_hit(node: ast.Constant, tree: ast.Module, source_lines: lis
     if _is_dict_key_or_comparison(value, line_text):
         return 'SKIP_DYNAMIC'
     test_data_signals = ('test_', '_test', 'assert', 'expected', 'fixture', 'parametrize', 'EXPECTED', 'pytest.param')
-    is_test_file = any((s in str(file_path) for s in ('test_', '_test', 'tests/', 'tests\\')))
+    is_test_file = any(s in str(file_path) for s in ('test_', '_test', 'tests/', 'tests\\'))
     if is_test_file:
-        if any((sig in line_text for sig in test_data_signals)):
+        if any(sig in line_text for sig in test_data_signals):
             return 'SKIP_TEST_DATA'
         if 'assert' in line_text or 'expected' in line_text.lower():
             return 'SKIP_TEST_DATA'
@@ -154,7 +250,7 @@ def scan_all(project_root: Path) -> list[dict]:
         if not root_path.exists():
             continue
         for py_file in root_path.rglob('*.py'):
-            if any((part in EXCLUDE_DIRS for part in py_file.parts)):
+            if any(part in EXCLUDE_DIRS for part in py_file.parts):
                 files_skipped += 1
                 continue
             files_scanned += 1

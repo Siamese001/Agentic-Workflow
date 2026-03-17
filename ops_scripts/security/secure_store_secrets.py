@@ -6,6 +6,19 @@ import json
 from pathlib import Path
 from cryptography.fernet import Fernet
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "secure_store_secrets", "uwg_governed_write")
+_emit_writes_through("p1", "secure_store_secrets", "uwg_governed_write_2")
+_emit_pulls_context("p1", "secure_store_secrets", "context_retrieval")
+_emit_pulls_context("p1", "secure_store_secrets", "context_retrieval_2")
+emit_determinism_digest("trace_secure_store_secrets", "secure_store_secrets_dispatch")
+emit_determinism_digest("trace_secure_store_secrets", "secure_store_secrets_complete")
+_emit_validated_by_safety_plane("p1", "secure_store_secrets", "safety_validation")
 SECRETS_DIR = Path('C:\\Users\\amita\\.agentic_secrets')
 KEY_FILE = SECRETS_DIR / '.key'
 SECRETS_FILE = SECRETS_DIR / 'secrets.enc'

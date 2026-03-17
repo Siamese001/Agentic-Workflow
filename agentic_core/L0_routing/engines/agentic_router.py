@@ -199,6 +199,17 @@ _emit_writes_through("p1", "agentic_router", "write_through_2")
 _emit_validated_by_safety_plane("p1", "agentic_router", "safety_validation")
 _emit_invokes_eval("p1", "agentic_router", "eval_call")
 _emit_proposal_commits_routing("p1", "agentic_router", "routing_commit")
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+emit_determinism_digest("trace_agentic_router", "agentic_router_dispatch_entry")
+emit_determinism_digest("trace_agentic_router", "agentic_router_dispatch_exit")
+emit_determinism_digest("trace_agentic_router", "agentic_router_tool_invoke")
+emit_determinism_digest("trace_agentic_router", "agentic_router_tool_complete")
+emit_determinism_digest("trace_agentic_router", "agentic_router_agent_entry")
+emit_determinism_digest("trace_agentic_router", "agentic_router_agent_exit")
+emit_determinism_digest("trace_agentic_router", "agentic_router_uwg_write")
+emit_determinism_digest("trace_agentic_router", "agentic_router_trace_sign")
+emit_determinism_digest("trace_agentic_router", "agentic_router_guardrail_check")
+emit_determinism_digest("trace_agentic_router", "agentic_router_policy_verify")
 
 if TYPE_CHECKING:
     from agentic_core.L0_routing.engines.intent_embedding_classifier import IntentEmbeddingClassifier

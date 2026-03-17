@@ -8,10 +8,21 @@ and verify capability tokens. Determinism digest is bound to the trace
 after the determinism engine is sealed.
 """
 
+import logging
 import threading
 import uuid
 from dataclasses import dataclass
 from typing import Any
+
+_logger = logging.getLogger(__name__)
+
+
+def _bootstrap_determinism_digest() -> None:
+    """Deferred bootstrap to avoid circular import with lifecycle_trace_contract."""
+    from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest  # noqa: PLC0415
+
+    emit_determinism_digest("execution_trace", "execution_trace_digest")
+    _logger.debug("execution_trace determinism digest emitted")
 
 
 @dataclass(frozen=True)

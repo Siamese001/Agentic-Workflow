@@ -57,6 +57,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    record_execution_trace,
     _emit_checks_agent_registry,
     _emit_validates_agent_capability,
     _emit_dispatches_execution_plan,
@@ -71,6 +72,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
 
 emit_replay_key("p0", "dashboard_orchestrator")
 emit_determinism_digest("p0", "dashboard_orchestrator")
+record_execution_trace("dashboard_orchestrator", "dashboard_orchestrator_trace")
 
 _emit_dispatches_healing_run("p1", "dashboard_orchestrator", "L6")
 _emit_routes_through("p1", "dashboard_orchestrator", "L6")
@@ -421,26 +423,6 @@ def _gather_lifecycle_telemetry(telemetry_window: TelemetryWindow) -> dict[str, 
 
 def _compute_aggregate_metrics(
     telemetry_data: dict[str, Any], dashboard_policy: DashboardPolicy
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
 ) -> dict[str, Any]:
     """Compute aggregate metrics from telemetry data."""
     # This would normally compute real metrics from telemetry

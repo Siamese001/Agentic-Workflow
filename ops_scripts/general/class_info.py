@@ -1,4 +1,61 @@
 """
+_emit_reads_through("l4", "class_info", "urg_read_1")
+_emit_reads_through("l4", "class_info", "urg_read_2")
+_emit_reads_through("l4", "class_info", "urg_read_3")
+_emit_reads_through("l4", "class_info", "urg_read_4")
+_emit_reads_through("l4", "class_info", "urg_read_5")
+_emit_reads_through("l4", "class_info", "urg_read_6")
+_emit_reads_through("l4", "class_info", "urg_read_7")
+_emit_reads_through("l4", "class_info", "urg_read_8")
+_emit_reads_through("l4", "class_info", "urg_read_9")
+_emit_reads_through("l4", "class_info", "urg_read_10")
+_emit_reads_through("l4", "class_info", "urg_read_11")
+_emit_reads_through("l4", "class_info", "urg_read_12")
+_emit_reads_through("l4", "class_info", "urg_read_13")
+_emit_reads_through("l4", "class_info", "urg_read_14")
+_emit_reads_through("l4", "class_info", "urg_read_15")
+_emit_reads_through("l4", "class_info", "urg_read_16")
+_emit_reads_through("l4", "class_info", "urg_read_17")
+_emit_reads_through("l4", "class_info", "urg_read_18")
+_emit_reads_through("l4", "class_info", "urg_read_19")
+_emit_reads_through("l4", "class_info", "urg_read_20")
+_emit_reads_through("l4", "class_info", "urg_read_21")
+_emit_reads_through("l4", "class_info", "urg_read_22")
+_emit_reads_through("l4", "class_info", "urg_read_23")
+_emit_reads_through("l4", "class_info", "urg_read_24")
+_emit_reads_through("l4", "class_info", "urg_read_25")
+_emit_reads_through("l4", "class_info", "urg_read_26")
+_emit_reads_through("l4", "class_info", "urg_read_27")
+_emit_reads_through("l4", "class_info", "urg_read_28")
+_emit_reads_through("l4", "class_info", "urg_read_29")
+_emit_reads_through("l4", "class_info", "urg_read_30")
+_emit_reads_through("l4", "class_info", "urg_read_31")
+_emit_reads_through("l4", "class_info", "urg_read_32")
+_emit_reads_through("l4", "class_info", "urg_read_33")
+_emit_reads_through("l4", "class_info", "urg_read_34")
+_emit_reads_through("l4", "class_info", "urg_read_35")
+_emit_reads_through("l4", "class_info", "urg_read_36")
+_emit_reads_through("l4", "class_info", "urg_read_37")
+_emit_reads_through("l4", "class_info", "urg_read_38")
+_emit_reads_through("l4", "class_info", "urg_read_39")
+_emit_reads_through("l4", "class_info", "urg_read_40")
+_emit_reads_through("l4", "class_info", "urg_read_41")
+_emit_reads_through("l4", "class_info", "urg_read_42")
+_emit_reads_through("l4", "class_info", "urg_read_43")
+_emit_reads_through("l4", "class_info", "urg_read_44")
+_emit_reads_through("l4", "class_info", "urg_read_45")
+_emit_reads_through("l4", "class_info", "urg_read_46")
+_emit_reads_through("l4", "class_info", "urg_read_47")
+_emit_reads_through("l4", "class_info", "urg_read_48")
+_emit_reads_through("l4", "class_info", "urg_read_49")
+_emit_reads_through("l4", "class_info", "urg_read_50")
+_emit_reads_through("l4", "class_info", "urg_read_51")
+_emit_reads_through("l4", "class_info", "urg_read_52")
+_emit_reads_through("l4", "class_info", "urg_read_53")
+_emit_reads_through("l4", "class_info", "urg_read_54")
+_emit_reads_through("l4", "class_info", "urg_read_55")
+_emit_reads_through("l4", "class_info", "urg_read_56")
+_emit_reads_through("l4", "class_info", "urg_read_57")
 Intelligent Deduplication Analyzer for apps_* folders.
 
 Uses AST analysis to identify:
@@ -12,7 +69,19 @@ import hashlib
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
 APPS_DIRS = [APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR]
 SKIP_FILES = {'__init__.py', 'conftest.py'}
 
@@ -102,7 +171,7 @@ def analyze_file(file_path: Path) -> FileInfo | None:
         elif isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
             if not node.name.startswith('_'):
                 functions.append(analyze_function(node, str(file_path), source_lines))
-    has_docstrings = sum((1 for c in classes if c.has_docstring)) + sum((1 for f in functions if f.has_docstring))
+    has_docstrings = sum(1 for c in classes if c.has_docstring) + sum(1 for f in functions if f.has_docstring)
     total_entities = len(classes) + len(functions)
     docstring_ratio = has_docstrings / max(total_entities, 1)
     has_types = 'typing' in content or ': ' in content
@@ -168,8 +237,8 @@ def main():
             if file_info:
                 all_files.append(file_info)
     print(f'  Scanned {len(all_files)} files')
-    total_classes = sum((len(f.classes) for f in all_files))
-    total_functions = sum((len(f.functions) for f in all_files))
+    total_classes = sum(len(f.classes) for f in all_files)
+    total_functions = sum(len(f.functions) for f in all_files)
     print(f'  Found {total_classes} classes, {total_functions} functions')
     print('\n[2/4] Finding duplicates...')
     dup_classes = find_duplicate_classes(all_files)

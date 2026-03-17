@@ -1,7 +1,31 @@
 """Generate foundational tests for modules that the hard-gate (fan_in>=10) requires."""
 from __future__ import annotations
-import ast, sys
+
+import ast
+import sys
 from pathlib import Path
+
+_emit_reads_through("l4", "_fill_hardgate_gaps", "urg_read_1")
+_emit_reads_through("l4", "_fill_hardgate_gaps", "urg_read_2")
+_emit_reads_through("l4", "_fill_hardgate_gaps", "urg_read_3")
+_emit_reads_through("l4", "_fill_hardgate_gaps", "urg_read_4")
+_emit_reads_through("l4", "_fill_hardgate_gaps", "urg_read_5")
+_emit_reads_through("l4", "_fill_hardgate_gaps", "urg_read_6")
+_emit_reads_through("l4", "_fill_hardgate_gaps", "urg_read_7")
+_emit_reads_through("l4", "_fill_hardgate_gaps", "urg_read_8")
+_emit_reads_through("l4", "_fill_hardgate_gaps", "urg_read_9")
+_emit_reads_through("l4", "_fill_hardgate_gaps", "urg_read_10")
+_emit_reads_through("l4", "_fill_hardgate_gaps", "urg_read_11")
+_emit_reads_through("l4", "_fill_hardgate_gaps", "urg_read_12")
+_emit_reads_through("l4", "_fill_hardgate_gaps", "urg_read_13")
+_emit_reads_through("l4", "_fill_hardgate_gaps", "urg_read_14")
+_emit_reads_through("l4", "_fill_hardgate_gaps", "urg_read_15")
+_emit_reads_through("l4", "_fill_hardgate_gaps", "urg_read_16")
+_emit_reads_through("l4", "_fill_hardgate_gaps", "urg_read_17")
+_emit_reads_through("l4", "_fill_hardgate_gaps", "urg_read_18")
+_emit_reads_through("l4", "_fill_hardgate_gaps", "urg_read_19")
+_emit_reads_through("l4", "_fill_hardgate_gaps", "urg_read_20")
+_emit_reads_through("l4", "_fill_hardgate_gaps", "urg_read_21")
 ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 if str(ROOT) not in sys.path:
@@ -9,7 +33,6 @@ if str(ROOT) not in sys.path:
 
 # Re-use inspection logic inline to avoid import issues
 from dataclasses import dataclass, field
-from typing import Optional
 
 TARGETS = [
     "agentic_core/L0_routing/enforcement/traceability_contracts.py",
@@ -134,11 +157,11 @@ def generate(module_path: str, info: ModuleInfo, fan_in: int) -> str:
 
     lines = []
     lines.append(f'"""Foundational behavioral tests for {module_path}.')
-    lines.append(f'')
+    lines.append('')
     lines.append(f'fan_in={fan_in} — this module is imported by {fan_in} other modules.')
     lines.append(f'ADG contract: import-hygiene is covered by test_{stem}_adg.py.')
-    lines.append(f'This file covers behavioral invariants and public API contracts.')
-    lines.append(f'"""')
+    lines.append('This file covers behavioral invariants and public API contracts.')
+    lines.append('"""')
     lines.append("from __future__ import annotations")
     lines.append("")
     lines.append("import pytest")

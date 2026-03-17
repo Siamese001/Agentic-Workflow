@@ -23,4 +23,13 @@ from __future__ import annotations
 from agentic_core.L6_observability.utils.system_telemetry_util import SystemTelemetry
 from agentic_core.runtime.types.circuit_breaker_types import CircuitBreakerState
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    emit_determinism_digest,
+    record_execution_trace,
+)
+
+emit_determinism_digest("observability", "observability_digest")
+record_execution_trace("observability", "observability_trace")
+
+
 __all__ = ["SystemTelemetry", "CircuitBreakerState"]

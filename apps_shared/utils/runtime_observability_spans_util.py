@@ -1,6 +1,15 @@
 import time
 import uuid
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    emit_determinism_digest,
+    record_execution_trace,
+)
+
+emit_determinism_digest("runtime_observability_spans_util", "runtime_observability_spans_util_digest")
+record_execution_trace("runtime_observability_spans_util", "runtime_observability_spans_util_trace")
+
+
 
 def _now_ms() -> int:
     return int(time.time() * 1000)

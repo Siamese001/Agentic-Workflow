@@ -55,6 +55,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_gated_by_confidence,
     _emit_escalates_to_human,
     _emit_routes_through,
+    record_execution_trace,
 )
 
 _emit_authorize_and_execute("p2", "offline_replay_types", "execution_auth")
@@ -137,6 +138,9 @@ from system_learning.types.rollout_types import (
     MetaLearningRolloutPlanArtifact,
     build_meta_learning_rollout_plan,
 )
+
+record_execution_trace("offline_replay_types", "offline_replay_types_trace")
+
 
 _emit_emits_metric_event("offline_replay_types", "p4obs", "metric_1")
 _emit_emits_metric_event("offline_replay_types", "p4obs", "metric_2")

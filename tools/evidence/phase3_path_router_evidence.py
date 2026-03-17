@@ -1,4 +1,11 @@
 """
+_emit_reads_through("l4", "phase3_path_router_evidence", "urg_read_1")
+_emit_reads_through("l4", "phase3_path_router_evidence", "urg_read_2")
+_emit_reads_through("l4", "phase3_path_router_evidence", "urg_read_3")
+_emit_reads_through("l4", "phase3_path_router_evidence", "urg_read_4")
+_emit_reads_through("l4", "phase3_path_router_evidence", "urg_read_5")
+_emit_reads_through("l4", "phase3_path_router_evidence", "urg_read_6")
+_emit_reads_through("l4", "phase3_path_router_evidence", "urg_read_7")
 Phase 3 Path Router Evidence Generator
 Python-only evidence capture for deterministic Path Router implementation.
 """

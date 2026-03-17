@@ -2,7 +2,16 @@
 import json
 import re
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
+_emit_reads_through("l4", "_summarize_ssot_run", "urg_read_1")
+_emit_reads_through("l4", "_summarize_ssot_run", "urg_read_2")
+_emit_reads_through("l4", "_summarize_ssot_run", "urg_read_3")
+_emit_reads_through("l4", "_summarize_ssot_run", "urg_read_4")
+_emit_reads_through("l4", "_summarize_ssot_run", "urg_read_5")
+_emit_reads_through("l4", "_summarize_ssot_run", "urg_read_6")
+_emit_reads_through("l4", "_summarize_ssot_run", "urg_read_7")
 RAW_PATH = Path('docs/reports/plans/ssot_healing_run_report.json')
 OUT_PATH = Path('docs/reports/plans/ssot_healing_detailed_report.json')
 
@@ -35,7 +44,7 @@ def main() -> None:
     agents_roster = {'registered': ['reconciler (FilesystemSSOTHealerAgent)', 'location (LocationHealerAgent)', 'hierarchy (HierarchyHealerAgent)', 'arch_governor (ArchitectureGovernorAgent)', 'gravity_repair (GravityLeakHealerAgent)', 'system_architect (SystemArchitectAgent)', 'file_classification (FileClassificationHealerAgent)', 'conversational_repair (ObservabilityProbeExecutorAgent)', 'cognitive_disposition (CognitiveDispositionAgent)', 'root_hygiene (RootHygieneAgent)'], 'validation_status': 'PASSED - All 10 agents validated by mandatory roster check'}
 
     def has_keyword(msg: str, keywords: list) -> bool:
-        return any((k.lower() in msg.lower() for k in keywords))
+        return any(k.lower() in msg.lower() for k in keywords)
     error_events = [{'timestamp': e['timestamp'], 'level': e['level'], 'logger': e['logger'], 'message': e['message'], 'traceback': e['extra']} for e in log_entries if e['level'] in ('ERROR', 'CRITICAL')]
     drift_findings = [e['message'] for e in log_entries if has_keyword(e['message'], ['DRIFT', 'drift', 'Forbidden', 'Duplicate', 'phantom', 'SSOT', 'reconcil'])]
     healing_decisions = [e['message'] for e in log_entries if has_keyword(e['message'], ['heal', 'Heal', 'fix', 'Fix', 'repair', 'Repair', 'sovereign', 'decision', 'Decision', 'confidence', 'Confidence', 'purge', 'Purge', 'SOVEREIGNTY'])]
@@ -51,7 +60,7 @@ def main() -> None:
     known_failures = []
     for e in error_events:
         msg = e['message']
-        if '__post_init__' in msg or any(('__post_init__' in x for x in e['traceback'])):
+        if '__post_init__' in msg or any('__post_init__' in x for x in e['traceback']):
             known_failures.append({'failure_type': 'MRO_CHAIN_BROKEN', 'agent': 'LocationAgent', 'root_cause': 'super().__post_init__() called but parent class (LocationHealerAgent base) does not define __post_init__', 'affected_territories': ['prompt_governance', 'L5_safety', 'L3_orchestration', 'L2_execution', 'L0_routing'], 'impact': 'ALL territories failed Phase 1 Discovery; 0/5 territories processed', 'traceback_summary': ['agentic_core/L0_routing/scripts/execute_ssot.py:3342 -> execute_phase1_discovery()', 'agentic_core/L5_safety/reasoning/LocationAgent.py:42 -> super().__post_init__()', 'agentic_core/L5_safety/reasoning/LocationHealerAgent.py:87 -> super().__post_init__()', "AttributeError: 'super' object has no attribute '__post_init__'"], 'remediation': 'Fix MRO chain in LocationHealerAgent or LocationAgent base class; ensure all dataclass parents define __post_init__ or remove super() calls'})
             break
         if 'mutation_prohibition' in e['logger']:

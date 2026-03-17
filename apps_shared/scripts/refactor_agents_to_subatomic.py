@@ -5,6 +5,19 @@ This script systematically updates all agent files in agentic_core/agents/.
 
 import re
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "refactor_agents_to_subatomic", "uwg_governed_write")
+_emit_writes_through("p1", "refactor_agents_to_subatomic", "uwg_governed_write_2")
+_emit_pulls_context("p1", "refactor_agents_to_subatomic", "context_retrieval")
+_emit_pulls_context("p1", "refactor_agents_to_subatomic", "context_retrieval_2")
+emit_determinism_digest("trace_refactor_agents_to_subatomic", "refactor_agents_to_subatomic_dispatch")
+emit_determinism_digest("trace_refactor_agents_to_subatomic", "refactor_agents_to_subatomic_complete")
+_emit_validated_by_safety_plane("p1", "refactor_agents_to_subatomic", "safety_validation")
 
 agent_files = [
     "memory_architect.py",

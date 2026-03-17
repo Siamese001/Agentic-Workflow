@@ -4,6 +4,19 @@ import subprocess
 import sys
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 from pathlib import Path
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "_run_baseline_and_commit", "uwg_governed_write")
+_emit_writes_through("p1", "_run_baseline_and_commit", "uwg_governed_write_2")
+_emit_pulls_context("p1", "_run_baseline_and_commit", "context_retrieval")
+_emit_pulls_context("p1", "_run_baseline_and_commit", "context_retrieval_2")
+emit_determinism_digest("trace__run_baseline_and_commit", "_run_baseline_and_commit_dispatch")
+emit_determinism_digest("trace__run_baseline_and_commit", "_run_baseline_and_commit_complete")
+_emit_validated_by_safety_plane("p1", "_run_baseline_and_commit", "safety_validation")
 # guardian: allow-path-string
 ROOT = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))).parent
 

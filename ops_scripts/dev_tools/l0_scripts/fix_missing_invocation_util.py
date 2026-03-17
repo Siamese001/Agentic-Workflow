@@ -13,6 +13,19 @@ from pathlib import Path
 from agentic_core.L5_safety.config.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "fix_missing_invocation_util", "uwg_governed_write")
+_emit_writes_through("p1", "fix_missing_invocation_util", "uwg_governed_write_2")
+_emit_pulls_context("p1", "fix_missing_invocation_util", "context_retrieval")
+_emit_pulls_context("p1", "fix_missing_invocation_util", "context_retrieval_2")
+emit_determinism_digest("trace_fix_missing_invocation_util", "fix_missing_invocation_util_dispatch")
+emit_determinism_digest("trace_fix_missing_invocation_util", "fix_missing_invocation_util_complete")
+_emit_validated_by_safety_plane("p1", "fix_missing_invocation_util", "safety_validation")
 
 PROJECT_ROOT = Path(__file__).parent.parent
 

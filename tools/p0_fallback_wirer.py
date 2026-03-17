@@ -8,6 +8,19 @@ import argparse
 import ast
 import glob
 import os
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "p0_fallback_wirer", "uwg_governed_write")
+_emit_writes_through("p1", "p0_fallback_wirer", "uwg_governed_write_2")
+_emit_pulls_context("p1", "p0_fallback_wirer", "context_retrieval")
+_emit_pulls_context("p1", "p0_fallback_wirer", "context_retrieval_2")
+emit_determinism_digest("trace_p0_fallback_wirer", "p0_fallback_wirer_dispatch")
+emit_determinism_digest("trace_p0_fallback_wirer", "p0_fallback_wirer_complete")
+_emit_validated_by_safety_plane("p1", "p0_fallback_wirer", "safety_validation")
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 

@@ -215,6 +215,17 @@ _emit_writes_through("p1", "sovereign_rag_orchestrator", "write_through_2")
 _emit_validated_by_safety_plane("p1", "sovereign_rag_orchestrator", "safety_validation")
 _emit_invokes_eval("p1", "sovereign_rag_orchestrator", "eval_call")
 _emit_proposal_commits_routing("p1", "sovereign_rag_orchestrator", "routing_commit")
+from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+emit_determinism_digest("trace_sovereign_rag_orchestrator", "sovereign_rag_orchestrator_dispatch_entry")
+emit_determinism_digest("trace_sovereign_rag_orchestrator", "sovereign_rag_orchestrator_dispatch_exit")
+emit_determinism_digest("trace_sovereign_rag_orchestrator", "sovereign_rag_orchestrator_tool_invoke")
+emit_determinism_digest("trace_sovereign_rag_orchestrator", "sovereign_rag_orchestrator_tool_complete")
+emit_determinism_digest("trace_sovereign_rag_orchestrator", "sovereign_rag_orchestrator_agent_entry")
+emit_determinism_digest("trace_sovereign_rag_orchestrator", "sovereign_rag_orchestrator_agent_exit")
+emit_determinism_digest("trace_sovereign_rag_orchestrator", "sovereign_rag_orchestrator_uwg_write")
+emit_determinism_digest("trace_sovereign_rag_orchestrator", "sovereign_rag_orchestrator_trace_sign")
+emit_determinism_digest("trace_sovereign_rag_orchestrator", "sovereign_rag_orchestrator_guardrail_check")
+emit_determinism_digest("trace_sovereign_rag_orchestrator", "sovereign_rag_orchestrator_policy_verify")
 
 
 def get_sovereign_rag_orchestrator() -> SovereignRagOrchestrator:

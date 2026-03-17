@@ -8,6 +8,19 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "file_io_util", "uwg_governed_write")
+_emit_writes_through("p1", "file_io_util", "uwg_governed_write_2")
+_emit_pulls_context("p1", "file_io_util", "context_retrieval")
+_emit_pulls_context("p1", "file_io_util", "context_retrieval_2")
+emit_determinism_digest("trace_file_io_util", "file_io_util_dispatch")
+emit_determinism_digest("trace_file_io_util", "file_io_util_complete")
+_emit_validated_by_safety_plane("p1", "file_io_util", "safety_validation")
 
 
 def calculate_file_hash(file_path: str) -> str:

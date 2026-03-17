@@ -137,6 +137,13 @@ _emit_verifies_boundary("p1", "phase2_remediation", "boundary_check")
 _emit_transcripts_response("p1", "phase2_remediation", "transcript")
 _emit_hard_fails_untranscripted("p1", "phase2_remediation")
 _emit_gated_by_confidence("p1", "phase2_remediation", "confidence_gate")
+_emit_writes_through("p1", "phase2_remediation", "uwg_governed_write")
+_emit_writes_through("p1", "phase2_remediation", "uwg_governed_write_2")
+_emit_pulls_context("p1", "phase2_remediation", "context_retrieval")
+_emit_pulls_context("p1", "phase2_remediation", "context_retrieval_2")
+emit_determinism_digest("trace_phase2_remediation", "phase2_remediation_dispatch")
+emit_determinism_digest("trace_phase2_remediation", "phase2_remediation_complete")
+_emit_validated_by_safety_plane("p1", "phase2_remediation", "safety_validation")
 
 _ROOT = get_validated_project_root()
 

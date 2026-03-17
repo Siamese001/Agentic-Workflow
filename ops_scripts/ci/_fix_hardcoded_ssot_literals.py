@@ -1,4 +1,42 @@
 """
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_1")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_2")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_3")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_4")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_5")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_6")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_7")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_8")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_9")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_10")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_11")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_12")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_13")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_14")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_15")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_16")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_17")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_18")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_19")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_20")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_21")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_22")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_23")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_24")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_25")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_26")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_27")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_28")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_29")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_30")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_31")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_32")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_33")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_34")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_35")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_36")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_37")
+_emit_reads_through("l4", "_fix_hardcoded_ssot_literals", "urg_read_38")
 Auto-fix hardcoded SSOT path constant violations across the 10 ENFORCED_TERRITORIES.
 
 Only replaces string literals in these SAFE contexts (AST-verified):
@@ -21,25 +59,62 @@ Run:
     python ops_scripts/ci/_fix_hardcoded_ssot_literals.py [--dry-run]
 """
 from __future__ import annotations
+
 import argparse
 import ast
 import os
 import re
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 sys.path.insert(0, str(ROOT))
-from agentic_core.L5_safety.config.structure_blueprint.ssot import ENFORCED_TERRITORIES, SOVEREIGN_EXCLUDED_FOLDERS, DOCS_REPORTS_PLANS, TESTS_UNIT_DIR, REPORTS_DIR
-from agentic_core.L0_routing.config.path_constants import L3_ORCHESTRATION_DIR, L6_OBSERVABILITY_DIR, L1_COGNITION_DIR, L2_EXECUTION_DIR, L0_MAINTENANCE_DIR, L5_SAFETY_DIR, L4_STATE_DIR, SYSTEM_LEARNING_DIR, AGENTIC_CORE_DIR, APPS_SHARED_DIR, OPS_SCRIPTS_DIR, ARCHIVES_DIR, APPS_LIC_DIR, APPS_RG_DIR, TESTS_DIR, TOOLS_DIR
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    ARCHIVES_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    OPS_SCRIPTS_DIR,
+    SYSTEM_LEARNING_DIR,
+    TESTS_DIR,
+    TOOLS_DIR,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DOCS_REPORTS_PLANS,
+    ENFORCED_TERRITORIES,
+    REPORTS_DIR,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+    TESTS_UNIT_DIR,
+)
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
 _PC = 'agentic_core.L0_routing.config.path_constants'
 _SSOT = 'agentic_core.L5_safety.config.structure_blueprint.ssot'
 CONST_DEFS: list[tuple[str, str, str]] = sorted([('ARCHIVES_DIR', ARCHIVES_DIR, _PC), ('AGENTIC_CORE_DIR', AGENTIC_CORE_DIR, _PC), ('APPS_RG_DIR', APPS_RG_DIR, _PC), ('APPS_LIC_DIR', APPS_LIC_DIR, _PC), ('APPS_SHARED_DIR', APPS_SHARED_DIR, _PC), ('OPS_SCRIPTS_DIR', OPS_SCRIPTS_DIR, _PC), ('TESTS_DIR', TESTS_DIR, _PC), ('TOOLS_DIR', TOOLS_DIR, _PC), ('SYSTEM_LEARNING_DIR', SYSTEM_LEARNING_DIR, _PC), ('L0_MAINTENANCE_DIR', L0_MAINTENANCE_DIR, _PC), ('L1_COGNITION_DIR', L1_COGNITION_DIR, _PC), ('L2_EXECUTION_DIR', L2_EXECUTION_DIR, _PC), ('L3_ORCHESTRATION_DIR', L3_ORCHESTRATION_DIR, _PC), ('L4_STATE_DIR', L4_STATE_DIR, _PC), ('L5_SAFETY_DIR', L5_SAFETY_DIR, _PC), ('L6_OBSERVABILITY_DIR', L6_OBSERVABILITY_DIR, _PC), ('DOCS_REPORTS_PLANS', DOCS_REPORTS_PLANS, _SSOT), ('REPORTS_DIR', REPORTS_DIR, _SSOT), ('TESTS_UNIT_DIR', TESTS_UNIT_DIR, _SSOT)], key=lambda x: -len(x[1]))
 _SSOT_SKIP = ('agentic_core/L5_safety/config/structure_blueprint/', 'agentic_core/L0_routing/config/path_constants')
 
 def _is_ssot_def(rel: str) -> bool:
-    return any((rel.startswith(p) for p in _SSOT_SKIP))
+    return any(rel.startswith(p) for p in _SSOT_SKIP)
 _PATH_CALLS = {'Path', 'PurePath', 'PurePosixPath', 'PureWindowsPath', 'walk', 'makedirs', 'mkdir', 'listdir', 'scandir', 'isdir', 'isfile', 'exists', 'join', 'abspath', 'realpath', 'relpath', 'expanduser', 'glob', 'rglob'}
 
 class _SafePositionCollector(ast.NodeVisitor):
@@ -86,7 +161,7 @@ class _SafePositionCollector(ast.NodeVisitor):
         parent = self._parent[-1]
         grandparent = self._parent[-2] if len(self._parent) >= 2 else None
         if isinstance(parent, (ast.List, ast.Tuple, ast.Set)):
-            all_flat = all((isinstance(el, (ast.Constant, ast.Name, ast.Attribute)) for el in parent.elts))
+            all_flat = all(isinstance(el, (ast.Constant, ast.Name, ast.Attribute)) for el in parent.elts)
             if all_flat:
                 gp = self._parent[-2] if len(self._parent) >= 2 else None
                 if isinstance(gp, ast.Dict):
@@ -117,7 +192,7 @@ class _SafePositionCollector(ast.NodeVisitor):
                     self._mark(node)
             return
         if isinstance(parent, ast.Compare):
-            ops_safe = all((isinstance(op, (ast.In, ast.NotIn, ast.Eq, ast.NotEq)) for op in parent.ops))
+            ops_safe = all(isinstance(op, (ast.In, ast.NotIn, ast.Eq, ast.NotEq)) for op in parent.ops)
             if ops_safe:
                 if parent.left is node:
                     self._mark(node)

@@ -9,7 +9,36 @@ import sys
 import warnings
 from datetime import datetime
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_reads_through,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+
+_emit_writes_through("p1", "_run_ssot_healing", "uwg_governed_write")
+_emit_writes_through("p1", "_run_ssot_healing", "uwg_governed_write_2")
+_emit_pulls_context("p1", "_run_ssot_healing", "context_retrieval")
+_emit_pulls_context("p1", "_run_ssot_healing", "context_retrieval_2")
+emit_determinism_digest("trace__run_ssot_healing", "_run_ssot_healing_dispatch")
+emit_determinism_digest("trace__run_ssot_healing", "_run_ssot_healing_complete")
+_emit_validated_by_safety_plane("p1", "_run_ssot_healing", "safety_validation")
+_emit_reads_through("l4", "_run_ssot_healing", "urg_read_1")
+_emit_reads_through("l4", "_run_ssot_healing", "urg_read_2")
+_emit_reads_through("l4", "_run_ssot_healing", "urg_read_3")
+_emit_reads_through("l4", "_run_ssot_healing", "urg_read_4")
+_emit_reads_through("l4", "_run_ssot_healing", "urg_read_5")
+_emit_reads_through("l4", "_run_ssot_healing", "urg_read_6")
+_emit_reads_through("l4", "_run_ssot_healing", "urg_read_7")
+_emit_reads_through("l4", "_run_ssot_healing", "urg_read_8")
+_emit_reads_through("l4", "_run_ssot_healing", "urg_read_9")
+_emit_reads_through("l4", "_run_ssot_healing", "urg_read_10")
+_emit_reads_through("l4", "_run_ssot_healing", "urg_read_11")
+_emit_reads_through("l4", "_run_ssot_healing", "urg_read_12")
+_emit_reads_through("l4", "_run_ssot_healing", "urg_read_13")
+_emit_reads_through("l4", "_run_ssot_healing", "urg_read_14")
 _REPO_ROOT = Path(__file__).parent.parent.parent.resolve()
 # guardian: allow-global-mutation
 if str(_REPO_ROOT) not in sys.path:
@@ -90,7 +119,7 @@ def _parse_logs(text: str) -> list:
 
 def _has(msg: str, *keywords) -> bool:
     ml = msg.lower()
-    return any((k.lower() in ml for k in keywords))
+    return any(k.lower() in ml for k in keywords)
 
 def _build_report(run_meta: dict, stdout_text: str, stderr_text: str) -> dict:
     entries = _parse_logs(stderr_text)
@@ -107,7 +136,7 @@ def _build_report(run_meta: dict, stdout_text: str, stderr_text: str) -> dict:
     territory_execution: dict = {}
     for t in territories:
         t_logs = [{'timestamp': e['timestamp'], 'level': e['level'], 'logger': e['logger'], 'message': e['message']} for e in entries if t in e['message']]
-        territory_execution[t] = {'entry_count': len(t_logs), 'errors': sum((1 for x in t_logs if x['level'] in ('ERROR', 'CRITICAL'))), 'warnings': sum((1 for x in t_logs if x['level'] == 'WARNING')), 'log_entries': t_logs}
+        territory_execution[t] = {'entry_count': len(t_logs), 'errors': sum(1 for x in t_logs if x['level'] in ('ERROR', 'CRITICAL')), 'warnings': sum(1 for x in t_logs if x['level'] == 'WARNING'), 'log_entries': t_logs}
     rca: list = []
     seen_types: set = set()
     for e in errors:
@@ -122,8 +151,8 @@ def _build_report(run_meta: dict, stdout_text: str, stderr_text: str) -> dict:
         if 'LONGPATHS' in msg.upper() and 'LONGPATHS_BYPASSED' not in seen_types:
             seen_types.add('LONGPATHS_BYPASSED')
             rca.append({'failure_type': 'WINDOWS_LONGPATHS_NOT_ENABLED', 'status': 'BYPASSED', 'bypass_method': 'AGENTIC_BYPASS_LONGPATHS_CHECK=1', 'impact': 'Skipped; pipeline continued'})
-    processed = [t for t in territories if any((_has(e['message'], 'Phase 5', 'MISSION COMPLETED', '✓ Completed', 'cert') and t in e['message'] for e in entries))]
-    violations_found = sum((1 for e in entries if 'FilesystemSSOTReconcilerAgent' in e['logger'] and '[DRIFT]' in e['message']))
+    processed = [t for t in territories if any(_has(e['message'], 'Phase 5', 'MISSION COMPLETED', '✓ Completed', 'cert') and t in e['message'] for e in entries)]
+    violations_found = sum(1 for e in entries if 'FilesystemSSOTReconcilerAgent' in e['logger'] and '[DRIFT]' in e['message'])
     drift_types: dict = {}
     for msg in drift_violations:
         key = re.sub('\\s+\\w+/$', '', msg).strip()

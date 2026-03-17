@@ -17,6 +17,19 @@ from agentic_core.L5_safety.config.structure_blueprint import (
     AGENT_DISCOVERY_JSON,
     TESTS_DIR,
 )
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
+    _emit_writes_through,
+    emit_determinism_digest,
+)
+_emit_writes_through("p1", "generate_agent_report_util", "uwg_governed_write")
+_emit_writes_through("p1", "generate_agent_report_util", "uwg_governed_write_2")
+_emit_pulls_context("p1", "generate_agent_report_util", "context_retrieval")
+_emit_pulls_context("p1", "generate_agent_report_util", "context_retrieval_2")
+emit_determinism_digest("trace_generate_agent_report_util", "generate_agent_report_util_dispatch")
+emit_determinism_digest("trace_generate_agent_report_util", "generate_agent_report_util_complete")
+_emit_validated_by_safety_plane("p1", "generate_agent_report_util", "safety_validation")
 
 # Load full analysis
 with open(AGENT_DISCOVERY_JSON) as f:
