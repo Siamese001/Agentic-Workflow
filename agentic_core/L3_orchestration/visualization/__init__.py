@@ -21,9 +21,6 @@ from agentic_core.L3_orchestration.visualization.visualization_updater import (
 from agentic_core.L3_orchestration.visualization.visualization_updater import (
     get_workflow_visualization_registry as get_updater_registry,
 )
-from agentic_core.L3_orchestration.visualization.visualization_updater import (
-    reset_workflow_visualization_registry as reset_updater_registry,
-)
 from agentic_core.L3_orchestration.visualization.workflow_visualization import (
     # Enum values for ADG scanner detection
     ACTIVE,
