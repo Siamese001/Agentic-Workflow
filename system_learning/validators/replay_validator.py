@@ -15,6 +15,15 @@ from __future__ import annotations
 import hashlib
 from typing import Any, Callable
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    emit_determinism_digest,
+    record_execution_trace,
+)
+
+emit_determinism_digest("replay_validator", "replay_validator_digest")
+record_execution_trace("replay_validator", "replay_validator_trace")
+
+
 
 class DeterminismViolation(RuntimeError):
     """Raised when an engine produces different outputs across identical runs."""

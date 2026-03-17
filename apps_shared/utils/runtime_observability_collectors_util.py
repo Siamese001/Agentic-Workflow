@@ -1,3 +1,12 @@
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    emit_determinism_digest,
+    record_execution_trace,
+)
+
+emit_determinism_digest("runtime_observability_collectors_util", "runtime_observability_collectors_util_digest")
+record_execution_trace("runtime_observability_collectors_util", "runtime_observability_collectors_util_trace")
+
 # from archives.legacy_root_folders.core.models.models import TelemetryEvent  # DEPRECATED: Archive import removed to protect archives from validation edits
 
 

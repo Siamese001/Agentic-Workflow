@@ -14,6 +14,15 @@ for territory, sub in matches[:30]:
 print('\n' + '=' * 70)
 print(f'Unique territories in onclick: {len(territories_clicked)}')
 import json
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    emit_determinism_digest,
+    record_execution_trace,
+)
+
+emit_determinism_digest("trace_drilldown_util", "trace_drilldown_util_digest")
+record_execution_trace("trace_drilldown_util", "trace_drilldown_util_trace")
+
 data_start = html.find('const dashboardData = ')
 data_end = html.find('];', data_start)
 data_str = html[data_start + 22:data_end + 1]

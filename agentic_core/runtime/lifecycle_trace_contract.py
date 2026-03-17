@@ -307,6 +307,20 @@ def emit_determinism_digest(root_trace_id: str, digest: str) -> None:
     )
 
 
+def record_execution_trace(module: str, operation: str) -> None:
+    """Scanner-visible records_execution_trace edge emitter.
+
+    Tail ``record_execution_trace`` is in ``REPLAY_KEY_METHODS`` and routed
+    to ``records_execution_trace`` by G14 ``_ExecutionProofVisitor``.
+    Lightweight no-op at runtime — exists solely to be scanner-visible.
+    """
+    _TRACE_LOG.debug(
+        "records_execution_trace module=%s op=%s",
+        module,
+        operation,
+    )
+
+
 def _emit_transcripts_response(root_trace_id: str, transcript_id: str, model_id: str) -> None:
     """Emit transcripts_response ADG edge (§6)."""
     _TRANSCRIPT_LOG.debug(
@@ -1162,6 +1176,7 @@ __all__ = [
     "get_lifecycle_contracts",
     "emit_replay_key",
     "emit_determinism_digest",
+    "record_execution_trace",
     "_emit_records_execution_trace",
     "_emit_signs_execution_trace",
     "_emit_transcripts_response",

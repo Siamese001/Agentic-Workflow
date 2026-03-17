@@ -66,6 +66,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_gated_by_confidence,
     _emit_escalates_to_human,
     _emit_routes_through,
+    record_execution_trace,
 )
 
 _emit_authorize_and_execute("p2", "prompt_execution_tracer", "execution_auth")
@@ -150,6 +151,9 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
 )
+
+record_execution_trace("prompt_execution_tracer", "prompt_execution_tracer_trace")
+
 
 _emit_emits_metric_event("prompt_execution_tracer", "p4obs", "metric_1")
 _emit_emits_metric_event("prompt_execution_tracer", "p4obs", "metric_2")

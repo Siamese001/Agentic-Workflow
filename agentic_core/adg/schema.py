@@ -824,6 +824,7 @@ DETERMINISM_PATCH_METHODS: frozenset[str] = frozenset(
         "guards_replay",
         "install_replay_patches",
         "stamp_decision",
+        "emit_determinism_digest",
     }
 )
 IO_INTERCEPT_CLASSES: frozenset[str] = frozenset(

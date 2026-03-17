@@ -17,6 +17,15 @@ import sys
 from pathlib import Path
 from typing import List, Tuple
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    emit_determinism_digest,
+    record_execution_trace,
+)
+
+emit_determinism_digest("_observability_dashboard_gate", "_observability_dashboard_gate_digest")
+record_execution_trace("_observability_dashboard_gate", "_observability_dashboard_gate_trace")
+
+
 # Constants
 NON_TEST = """
     AND source_file NOT LIKE '%test%'

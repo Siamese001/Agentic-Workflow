@@ -60,6 +60,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_gated_by_confidence,
     _emit_escalates_to_human,
     _emit_routes_through,
+    record_execution_trace,
 )
 
 _emit_records_execution_trace("p0", "evidence", "replay_guard_mixin")
@@ -103,6 +104,9 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
 )
+
+record_execution_trace("replay_guard_mixin", "replay_guard_mixin_trace")
+
 
 _emit_emits_metric_event("replay_guard_mixin", "p4obs", "metric_1")
 _emit_emits_metric_event("replay_guard_mixin", "p4obs", "metric_2")

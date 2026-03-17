@@ -1,6 +1,15 @@
 """Trace exactly what _inject_import does to bloat_analysis_util.py"""
 import re, sys
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    emit_determinism_digest,
+    record_execution_trace,
+)
+
+emit_determinism_digest("_trace_inject", "_trace_inject_digest")
+record_execution_trace("_trace_inject", "_trace_inject_trace")
+
 # guardian: allow-global-mutation
 sys.path.insert(0, 'c:\\Git\\Agentic-Workflow')
 _PC = 'agentic_core.L0_routing.config.path_constants'

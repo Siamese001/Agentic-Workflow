@@ -78,6 +78,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    record_execution_trace,
     _emit_checks_agent_registry,
     _emit_validates_agent_capability,
     _emit_dispatches_execution_plan,
@@ -122,6 +123,7 @@ _emit_reads_runtime_state("traceability_contracts", "runtime_state", "p2_rt_2")
 
 emit_replay_key("p0", "traceability_contracts")
 emit_determinism_digest("p0", "traceability_contracts")
+record_execution_trace("traceability_contracts", "traceability_contracts_trace")
 
 _emit_dispatches_healing_run("p1", "traceability_contracts", "L0")
 _emit_routes_through("p1", "traceability_contracts", "L0")

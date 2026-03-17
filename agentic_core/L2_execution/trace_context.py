@@ -80,6 +80,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    record_execution_trace,
     _emit_checks_agent_registry,
     _emit_validates_agent_capability,
     _emit_dispatches_execution_plan,
@@ -95,6 +96,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
 
 emit_replay_key("p0", "trace_context")
 emit_determinism_digest("p0", "trace_context")
+record_execution_trace("trace_context", "trace_context_trace")
 
 _emit_dispatches_healing_run("p1", "trace_context", "L2")
 _emit_routes_through("p1", "trace_context", "L2")

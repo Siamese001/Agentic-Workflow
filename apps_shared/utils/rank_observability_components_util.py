@@ -71,9 +71,13 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_transcripts_response,
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
+    record_execution_trace,
 )
 
 from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
+
+record_execution_trace("rank_observability_components_util", "rank_observability_components_util_trace")
+
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
 BUFFER_SIZE = 8192

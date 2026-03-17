@@ -58,6 +58,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,
     emit_replay_key,
+    record_execution_trace,
 )
 
 _emit_dispatches_healing_run("p1", "determinism_types", "L0")
@@ -135,6 +136,9 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+
+record_execution_trace("determinism_types", "determinism_types_trace")
+
 
 _emit_emits_metric_event("determinism_types", "p4obs", "metric_1")
 _emit_emits_metric_event("determinism_types", "p4obs", "metric_2")

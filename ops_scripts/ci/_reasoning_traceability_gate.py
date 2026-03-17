@@ -19,6 +19,15 @@ import os
 import sqlite3
 import sys
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    emit_determinism_digest,
+    record_execution_trace,
+)
+
+emit_determinism_digest("_reasoning_traceability_gate", "_reasoning_traceability_gate_digest")
+record_execution_trace("_reasoning_traceability_gate", "_reasoning_traceability_gate_trace")
+
+
 THRESHOLD_TRACE_COVERAGE = 0.80
 THRESHOLD_SIGNED_COVERAGE = 0.80
 THRESHOLD_TRANSCRIPT_COVERAGE = 0.90

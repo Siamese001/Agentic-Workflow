@@ -55,6 +55,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_gated_by_confidence,
     _emit_escalates_to_human,
     _emit_routes_through,
+    record_execution_trace,
 )
 
 _emit_authorize_and_execute("p2", "telemetry_consumer", "execution_auth")
@@ -119,6 +120,9 @@ from system_learning.types.telemetry_types import (
     TelemetryEvent,
     create_telemetry_slice,
 )
+
+record_execution_trace("telemetry_consumer", "telemetry_consumer_trace")
+
 
 _emit_emits_metric_event("telemetry_consumer", "p4obs", "metric_1")
 _emit_emits_metric_event("telemetry_consumer", "p4obs", "metric_2")

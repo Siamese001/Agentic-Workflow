@@ -74,7 +74,11 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    record_execution_trace,
 )
+
+record_execution_trace("phase11_l1_telemetry_emitter_evidence", "phase11_l1_telemetry_emitter_evidence_trace")
+
 
 _emit_emits_metric_event("phase11_l1_telemetry_emitter_evidence", "p4obs", "metric_1")
 _emit_emits_metric_event("phase11_l1_telemetry_emitter_evidence", "p4obs", "metric_2")

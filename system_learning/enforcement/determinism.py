@@ -26,6 +26,15 @@ import logging
 import re
 from typing import Any
 
+from agentic_core.runtime.lifecycle_trace_contract import (
+    emit_determinism_digest,
+    record_execution_trace,
+)
+
+emit_determinism_digest("determinism", "determinism_digest")
+record_execution_trace("determinism", "determinism_trace")
+
+
 logger = logging.getLogger(__name__)
 FORBIDDEN_PATTERNS: tuple[str, ...] = (
     "uuid4\\b",

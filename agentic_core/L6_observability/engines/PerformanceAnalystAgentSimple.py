@@ -37,6 +37,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_transcripts_response,
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
+    record_execution_trace,
 )
 
 emit_replay_key("p0", "PerformanceAnalystAgentSimple")
@@ -136,6 +137,9 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_gated_by_confidence,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
+
+record_execution_trace("PerformanceAnalystAgentSimple", "PerformanceAnalystAgentSimple_trace")
+
 
 _emit_emits_metric_event("PerformanceAnalystAgentSimple", "p4obs", "metric_1")
 _emit_emits_metric_event("PerformanceAnalystAgentSimple", "p4obs", "metric_2")

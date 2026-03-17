@@ -54,6 +54,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_gated_by_confidence,
     _emit_escalates_to_human,
     _emit_routes_through,
+    record_execution_trace,
 )
 
 _emit_applies_guardrail("p0", "telemetry_store", "p0_governance")
@@ -97,6 +98,9 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
 )
+
+record_execution_trace("telemetry_store", "telemetry_store_trace")
+
 
 _emit_emits_metric_event("telemetry_store", "p4obs", "metric_1")
 _emit_emits_metric_event("telemetry_store", "p4obs", "metric_2")

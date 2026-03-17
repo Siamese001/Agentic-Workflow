@@ -64,7 +64,15 @@ import glob
 import sqlite3
 import sys
 
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_reads_through,
+    emit_determinism_digest,
+    record_execution_trace,
+)
+
+emit_determinism_digest("_routing_telemetry_gate", "_routing_telemetry_gate_digest")
+record_execution_trace("_routing_telemetry_gate", "_routing_telemetry_gate_trace")
+
 
 GATE_RESULTS: list[tuple[str, bool, str]] = []
 

@@ -45,6 +45,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_transcripts_response,
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
+    record_execution_trace,
 )
 
 emit_replay_key("p0", "telemetry_recorder_enforcer")
@@ -132,6 +133,9 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
 )
+
+record_execution_trace("telemetry_recorder_enforcer", "telemetry_recorder_enforcer_trace")
+
 
 _emit_emits_metric_event("telemetry_recorder_enforcer", "p4obs", "metric_1")
 _emit_emits_metric_event("telemetry_recorder_enforcer", "p4obs", "metric_2")

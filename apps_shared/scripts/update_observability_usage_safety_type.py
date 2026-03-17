@@ -55,6 +55,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
+    record_execution_trace,
 )
 
 _emit_applies_guardrail("p0", "update_observability_usage_safety_type", "p0_governance")
@@ -98,6 +99,9 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+
+record_execution_trace("update_observability_usage_safety_type", "update_observability_usage_safety_type_trace")
+
 
 _emit_emits_metric_event("update_observability_usage_safety_type", "p4obs", "metric_1")
 _emit_emits_metric_event("update_observability_usage_safety_type", "p4obs", "metric_2")

@@ -1,3 +1,12 @@
+
+from agentic_core.runtime.lifecycle_trace_contract import (
+    emit_determinism_digest,
+    record_execution_trace,
+)
+
+emit_determinism_digest("observability_util", "observability_util_digest")
+record_execution_trace("observability_util", "observability_util_trace")
+
 """observability - Runtime Layer
 
 This module provides observability compatibility shim.
