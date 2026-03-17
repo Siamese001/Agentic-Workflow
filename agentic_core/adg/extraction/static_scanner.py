@@ -1105,6 +1105,11 @@ class _CallVisitor(ast.NodeVisitor):
 
         sym = self._extract_symbol(node.func)
         if sym:
+            # Suppress instrumentation helpers from generating base edges
+            tail = sym.rsplit(".", 1)[-1] if "." in sym else sym
+            if tail.startswith("_emit_") or tail.startswith("emit_"):
+                self.generic_visit(node)
+                return
             edge_kind, relation = self._classify_call(sym)
             if edge_kind:
                 to_name = canonical_name("Symbol", sym)
@@ -1177,7 +1182,42 @@ _GOVERNANCE_WRITE_SYMBOLS: frozenset[str] = frozenset(
         "uwg",
         "WriteGovernorMixin",
         "uwg_write",
-        "_emit_writes_through",
+        "write_text",
+        "write_guardian_result",
+        "create_artifact",
+        "get_write_gateway",
+        "persist_scan_result",
+        # Wave 116: gateway/mutation writes
+        "write_gateway",
+        "assert_no_persistent_write",
+        "write_all_artifacts",
+        "is_commit_sandbox_active",
+        "ProposalCommitter",
+        # Wave 117: store writes
+        "InMemoryHealingOutcomeIntakeStore",
+        "HealingSuccessRateStore",
+        "get_default_store",
+        "reset_default_store",
+        "get_bm25_store",
+        # Wave 118: record writes
+        "TraceFeatureRecord",
+        "CorpusRecord",
+        "KeyRecord",
+        "MutationDiffRecord",
+        "ReplayFailureRecord",
+        "PromptOutcomeRecord",
+        "HealingOutcomeIntakeRecord",
+        # Wave 119: commit/persist writes
+        "create_and_commit_routing_contract",
+        "analyze_failures_and_persist",
+        "compute_content_hash",
+        "compute_replay_hash",
+        "PolicyUpdateProposal",
+        # Wave 120: healing/input writes
+        "HealingInput",
+        "compute_heal_confidence",
+        "create_legacy_import_healer",
+        "log_event",
     }
 )
 
@@ -1190,7 +1230,31 @@ _GOVERNANCE_ROUTE_SYMBOLS: frozenset[str] = frozenset(
         "replay_run",
         "route_instruction",
         "healing_orchestrator",
-        "_emit_routes_through",
+        "dispatch_healing",
+        "route_healing_tier",
+        "AgenticRouter",
+        # Wave 121: gateway/routing dispatchers
+        "get_routing_gateway",
+        "V15ExecutionGateway",
+        "VLLMQueueController",
+        "VLLMCircuitBreakerRegistry",
+        "get_agent_dispatch_registry",
+        # Wave 122: pipeline/orchestrator routes
+        "run_pipeline",
+        "ExecutionOrchestrator",
+        "VigilanceDispatcherAdapter",
+        "get_healing_orchestrator",
+        "get_validator_orchestrator",
+        # Wave 123: route decision artifacts
+        "route_violations",
+        "build_l3_route_decision_artifact",
+        "ResumeOrchestratorEngine",
+        "PipelineDependencies",
+        "build_pipeline_deps",
+        # Wave 124: coordination routes
+        "ASTCoordinate",
+        "MCPConnectionManager",
+        "ExecutionPathController",
     }
 )
 
@@ -1204,7 +1268,119 @@ _GOVERNANCE_READ_SYMBOLS: frozenset[str] = frozenset(
         "read_artifact",
         "urg_read",
         "ReadGovernorMixin",
-        "_emit_reads_through",
+        "read_active_payload",
+        "pull_audit_data",
+        # Wave 101: config readers
+        "load_default_healing_tier_config",
+        "load_or_scan",
+        "get_sovereign_config",
+        "get_active_configs",
+        "ConfigurationLoader",
+        "get_config_loader",
+        "EvaluationLoader",
+        "build_pipeline_config",
+        "load_dev_script",
+        "get_config_surface",
+        "deterministic_json",
+        # Wave 102: sqlite readers
+        "ADGQuerySession",
+        "ADGRuntimeQueryEngine",
+        "SqliteMemoryStore",
+        "safe_execute",
+        "execute_ssot",
+        "get_runtime_query_engine",
+        # Wave 103: redis readers
+        "get_hot_cache",
+        "ADGRedisClient",
+        "SemanticCacheManager",
+        "DeterministicRedisCache",
+        "check_redis_health",
+        "ScanCache",
+        "get_coordination_cache",
+        # Wave 104: vector/faiss readers
+        "LocalFAISSStore",
+        "RetrievalProfile",
+        "EmbeddingServiceFactory",
+        "query_similarity",
+        "build_retriever",
+        "build_seed_embedding_pack",
+        # Wave 105: artifact/archive readers
+        "build_artifact",
+        "build_pre_run_report",
+        "RouteDecisionArtifact",
+        "ADGArtifactBuilder",
+        "IncidentBundle",
+        # Wave 106: file/path readers
+        "module_path_to_layer",
+        "normalize_repo_path",
+        "validate_no_absolute_paths",
+        "PathRouter",
+        "ExecutionPathController",
+        # Wave 107: state/freeze readers
+        "get_run_state_authority",
+        "RuntimeStateGuard",
+        "RuntimeStateManager",
+        "JsonFileBackedFreezeReader",
+        "StaticFreezeReader",
+        "compute_runtime_state_digest",
+        "FileBackedAuditStore",
+        # Wave 108: healing/config readers
+        "HealingTierConfig",
+        "HealingConfigOptimizer",
+        "ConfigurationService",
+        "SandboxEnvelope",
+        "ResourceEnvelope",
+        "GovernedPayload",
+        # Wave 109: snapshot readers
+        "SemanticClockSnapshot",
+        "HealingOutcomeAggregateSnapshot",
+        "BlindSpotReport",
+        "PatternFindingReport",
+        "GuardianReportBuilder",
+        # Wave 110: misc residual readers
+        "MCPConnectionManager",
+        "load_agent_discovery",
+        "stable_sha256_json",
+        "RetrievalAnchor",
+        "get_embedding_gateway",
+        # Wave 111: envelope/payload readers
+        "CanonicalJSON",
+        "canonical_json",
+        "ReasonTraceEnvelope",
+        "ResultEnvelope",
+        "ReplayEnvelope",
+        "PromptLoader",
+        "MetaLearningBusConfig",
+        # Wave 112: state/queue readers
+        "VLLMQueueState",
+        "HandshakeStateMachine",
+        "SlotPayload",
+        "RunScopedStateAuthority",
+        "StateVersionManager",
+        "DefaultL4StateWriter",
+        # Wave 113: retrieval/drift readers
+        "RetrievalDriftMonitor",
+        "RetrievalPipeline",
+        "RetrievalCaseRecord",
+        "EmbeddingHealthSnapshot",
+        "PromptOutcomeEmbeddingRecord",
+        "read_only_retrieval_scope",
+        "get_embedding_config_surface",
+        # Wave 114: report/artifact readers
+        "EvaluationReport",
+        "DeltaReport",
+        "AnswerQualitySnapshot",
+        "HumanDecisionArtifact",
+        "FeatureBundle",
+        "ReportLocationValidator",
+        "build_replay_bundle",
+        # Wave 115: security/protected readers
+        "assert_read_only_audit_access",
+        "SafetyAuditTrail",
+        "verify_mutation_paths",
+        "PathFragilityDetector",
+        "_read_baseline",
+        "safe_git_execute",
     }
 )
 
@@ -1240,12 +1416,20 @@ class _InternalCallGraphVisitor(ast.NodeVisitor):
                 self._internal_locals[local] = f"{module}.{alias.name}"
         self.generic_visit(node)
 
+    # Instrumentation helper prefixes — suppress synthetic base edges
+    _INSTRUMENTATION_PREFIXES: frozenset[str] = frozenset({"_emit_", "emit_"})
+
     def visit_Call(self, node: ast.Call) -> None:
         sym = self._extract_symbol(node.func)
         if sym:
             base = sym.split(".")[0]
             if base in self._internal_locals:
                 full_sym = self._internal_locals[base]
+                # Suppress calls to instrumentation helpers (_emit_*, emit_*)
+                tail = full_sym.rsplit(".", 1)[-1] if "." in full_sym else full_sym
+                if any(tail.startswith(p) for p in self._INSTRUMENTATION_PREFIXES):
+                    self.generic_visit(node)
+                    return
                 to_name = canonical_name("Symbol", full_sym)
                 self.edges.append(
                     Edge(
@@ -1371,6 +1555,10 @@ class _GovernancePlaneVisitor(ast.NodeVisitor):
         if sym:
             base = sym.split(".")[0]
             tail = sym.split(".")[-1]
+            # Suppress instrumentation helpers from generating governance edges
+            if tail.startswith("_emit_") or tail.startswith("emit_"):
+                self.generic_visit(node)
+                return
             if base in _GOVERNANCE_WRITE_SYMBOLS or tail in _GOVERNANCE_WRITE_SYMBOLS:
                 to_name = canonical_name("Symbol", sym)
                 self.edges.append(
@@ -2793,6 +2981,10 @@ class _JITContextVisitor(ast.NodeVisitor):
         sym = _sym_of(node.func)
         tail = sym.split(".")[-1] if sym else ""
         base = sym.split(".")[0] if sym else ""
+        # Suppress instrumentation helpers from generating context edges
+        if tail.startswith("_emit_") or tail.startswith("emit_"):
+            self.generic_visit(node)
+            return
         if tail in JIT_CONTEXT_CLASSES or base in JIT_CONTEXT_CLASSES:
             self.edges.append(
                 Edge(
