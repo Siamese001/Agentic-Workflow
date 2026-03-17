@@ -1577,6 +1577,16 @@ PROMPT_INJECTION_SYMBOLS: frozenset[str] = frozenset(
         "inject_d0",
         "PromptAugmentor",
         "InstructionOverride",
+        "ContextInjector",
+        "C0Injector",
+        "inject_context",
+        "U0Override",
+        "SystemPromptOverride",
+        "PromptEscalator",
+        "inject_system",
+        "inject_u0",
+        "PromptHijacker",
+        "SlotOverride",
     }
 )
 PREFERENCE_PAIR_SYMBOLS: frozenset[str] = frozenset(

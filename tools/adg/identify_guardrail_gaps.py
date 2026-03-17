@@ -1,11 +1,13 @@
 """Identify operations that should have guardrails but don't."""
+# guardian: allow-direct_prompt_compilation reason=diagnostic_tool_sql_queries
+
 import sqlite3
 from pathlib import Path
-from collections import defaultdict
+
 
 def identify_guardrail_gaps():
-    adg_dir = Path(__file__).resolve().parents[2] / 'artifacts' / 'adg'
-    sqlite_files = list(adg_dir.glob('adg_indexed_*.sqlite'))
+    adg_dir = Path(__file__).resolve().parents[2] / "artifacts" / "adg"
+    sqlite_files = list(adg_dir.glob("adg_indexed_*.sqlite"))
     if not sqlite_files:
         print("No ADG SQLite files found")
         return
@@ -18,12 +20,12 @@ def identify_guardrail_gaps():
 
     # High-risk edge types that should have guardrails
     high_risk_edges = [
-        'accesses_credential',
-        'external_http_call',
-        'reads_secret',
-        'invokes_dynamic',
-        'invokes_eval',
-        'invokes_importlib',
+        "accesses_credential",
+        "external_http_call",
+        "reads_secret",
+        "invokes_dynamic",
+        "invokes_eval",
+        "invokes_importlib",
     ]
 
     print("=== High-Risk Operations Without Guardrails ===\n")
@@ -35,7 +37,7 @@ def identify_guardrail_gaps():
             FROM edges
             WHERE relation_type = '{edge_type}'
         """)
-        files_with_risk = set(row[0] for row in cur.fetchall())
+        files_with_risk = {row[0] for row in cur.fetchall()}
 
         # Get files with guardrails
         cur.execute("""
@@ -43,7 +45,7 @@ def identify_guardrail_gaps():
             FROM edges
             WHERE relation_type = 'applies_guardrail'
         """)
-        files_with_guardrails = set(row[0] for row in cur.fetchall())
+        files_with_guardrails = {row[0] for row in cur.fetchall()}
 
         # Find gap
         gap_files = files_with_risk - files_with_guardrails
@@ -52,11 +54,14 @@ def identify_guardrail_gaps():
             print(f"\n{edge_type}: {len(gap_files)} files without guardrails")
             for f in sorted(gap_files)[:10]:  # Show first 10
                 # Get count of this edge type in file
-                cur.execute(f"""
+                cur.execute(
+                    f"""
                     SELECT COUNT(*)
                     FROM edges
                     WHERE relation_type = '{edge_type}' AND source_file = ?
-                """, (f,))
+                """,
+                    (f,),
+                )
                 count = cur.fetchone()[0]
                 print(f"  {f} ({count} sites)")
             if len(gap_files) > 10:
@@ -116,6 +121,57 @@ def identify_guardrail_gaps():
         for file_path, symbol, count in llm_gaps:
             print(f"{file_path}: {symbol} ({count} calls)")
 
+    # Prompt Governance Gaps
+    print("\n\n=== Prompt Governance Gaps ===\n")
+
+    # D0 injection fence coverage
+    cur.execute(
+        "SELECT COUNT(DISTINCT source_file) FROM edges "
+        "WHERE relation_type = 'generates_prompt' AND symbol LIKE '%D0%'"
+    )
+    d0_files = cur.fetchone()[0]
+    cur.execute("SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type = 'generates_prompt'")
+    total_prompt_files = cur.fetchone()[0]
+    if total_prompt_files > 0:
+        d0_pct = 100 * d0_files / total_prompt_files
+        print(f"D0 injection fence coverage: {d0_files}/{total_prompt_files} files ({d0_pct:.1f}%)")
+        if d0_pct < 100:
+            cur.execute(
+                "SELECT DISTINCT source_file FROM edges "
+                "WHERE relation_type = 'generates_prompt' "
+                "AND source_file NOT IN ("
+                "  SELECT DISTINCT source_file FROM edges "
+                "  WHERE relation_type = 'generates_prompt' AND symbol LIKE '%D0%'"
+                ") AND source_file NOT LIKE 'tests/%'"
+            )
+            for (f,) in cur.fetchall():
+                print(f"  MISSING D0: {f}")
+
+    # Agent reasoning files without prompt governance edges
+    cur.execute(
+        "SELECT DISTINCT source_file FROM edges "
+        "WHERE (source_file LIKE 'apps_%/reasoning/%' OR source_file LIKE 'apps_shared/reasoning/%') "
+        "AND source_file NOT LIKE '%__init__%' "
+        "AND source_file NOT IN ("
+        "  SELECT DISTINCT source_file FROM edges "
+        "  WHERE relation_type IN ('generates_prompt', 'consumes_prompt', "
+        "    'instruction_injection_source', 'prompt_template_used_by')"
+        ") ORDER BY source_file"
+    )
+    agents_no_prompt = [r[0] for r in cur.fetchall()]
+    print(f"\nAgent reasoning files WITHOUT prompt governance edges: {len(agents_no_prompt)}")
+    for f in agents_no_prompt[:15]:
+        print(f"  {f}")
+    if len(agents_no_prompt) > 15:
+        print(f"  ... and {len(agents_no_prompt) - 15} more")
+
+    # Instruction injection source coverage
+    cur.execute("SELECT COUNT(*) FROM edges WHERE relation_type = 'instruction_injection_source'")
+    inj_count = cur.fetchone()[0]
+    print(f"\nInstruction injection sources tracked: {inj_count}")
+    if inj_count < 5:
+        print("  WARNING: Very low injection source tracking — scanner may need wider symbol coverage")
+
     # Summary
     print("\n\n=== Wave 4 Target Summary ===\n")
 
@@ -131,9 +187,10 @@ def identify_guardrail_gaps():
 
     print(f"\nTotal high-risk edges: {total_high_risk}")
     print(f"Current guardrail coverage: {current_guardrails} edges")
-    print(f"Coverage ratio: {100*current_guardrails/max(total_high_risk,1):.1f}%")
+    print(f"Coverage ratio: {100 * current_guardrails / max(total_high_risk, 1):.1f}%")
 
     conn.close()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     identify_guardrail_gaps()
