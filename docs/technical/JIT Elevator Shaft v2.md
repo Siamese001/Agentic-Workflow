@@ -21,8 +21,10 @@
 | - [PULL] Active Routing Weights, Toggles, and RLHF Heuristics.                          |             ||
 | - [PULL] Current Tool Inventory, Budget Forecast, & Rate Limits.                        |             ||
 | - [PULL] L1 Intent vs. L6 Anomaly/Drift Scores (Correlate Risk).                        |             ||
+| - [ADG] routes_path=183 | gated_by_confidence=37                                        |             ||
 |                                                                                         |             ||
 | - [!] JIT fetch ensures L0 routes using the exact same state that L5 will use to verify.|             ||
+| - [!] Confidence-gated escalation syncs exact semantic snapshot to both L0 and L5.      |             ||
 +-----------------------------------------------------------------------------------------+             ||
                           |                                                                             ||
                           v (Dispatches Plan to PATH A / B / C / D)                                     ||
@@ -31,6 +33,7 @@
 |-----------------------------------------------------------------------------------------|             ||
 | - Proposes sequenced DAG execution plan or patched `MODIFY_DIFF`.                       |             ||
 | - Resolves simultaneous escalations before handing off to Safety.                       |             ||
+| - [ADG] escalates_to_human=1182 | requires_human_review=5                               |             ||
 |                                                                                         |             ||
 | L3 ORCHESTRATION ENGINES:                                                               |             ||
 | - DAGManager: Manages execution DAG with dependency resolution                          |             ||
@@ -52,8 +55,11 @@
 | - [PULL] Active Risk Threshold Configs & L4 Policy Configs.                             |             ||
 | - [PULL] Dynamic Safety Rule Strictness (Tuned by Meta-Learning).                       |             ||
 | - [PULL] Historical Path D Override Logs (To evaluate False Positives).                 |             ||
+| - [ADG] reenters_safety=11                                                              |             ||
 |                                                                                         |             ||
 | - [!] Evaluates the proposed plan against the mathematical present, not the past.       |             ||
+| - [!] JIT state pulls are informational authority until re-cleared. No mutable          |             ||
+|       transition is valid before L5-certified reentry.                                  |             ||
 +-----------------------------------------------------------------------------------------+             ||
                           |                                                                             ||
                           v (Grants Auth Stamp / Handoff to Sandbox)                                    ||
@@ -64,9 +70,13 @@
 |-----------------------------------------------------------------------------------------|             ||
 | - Initializes the SandboxEnvelope.                                                      |             ||
 | - Establishes [FREEZE] state.                                                           |             ||
+| - [ADG] enters_sandbox=39 | freezes_context=5 | unfreezes_context=2                     |             ||
 | - [PULL] ToolBudget Caps (compute_ms, memory_mb, stdout_bytes).                         |             ||
 | - [PULL] CapabilityToken (Scoped + Unexpired credentials).                              |             ||
 | - [PULL] [C0] RAG Informational Context (Seed Packs from Singleton Factory).            |             ||
+|                                                                                         |             ||
+| - [PATH D SEQUENCE] enters_sandbox -> freezes_context -> human decision ->              |             ||
+|                     L5 re-clear -> unfreezes_context                                    |             ||
 |                                                                                         |             ||
 | - [!] Once L2 pulls state, the `[FREEZE]` locks the environment. Elevator bottoms out.  |             ||
 +-----------------------------------------------------------------------------------------+             ||
@@ -81,16 +91,5 @@
 | [25] ActionNode         : [node_id, tool_intent, dependencies, status, result] -> Individual DAG execution node                                                    |
 | [26] OrchestratorMode   : Enum[HEALING, REASONING, VALIDATION, UNIFIED] -> Orchestration mode selector                                                             |
 | [27] WorkflowContext    : [workflow_id, current_phase, state_snapshot] -> Execution context for orchestration                                                      |
-======================================================================================================================================================================
-
-======================================================================================================================================================================
-  HITL ADG OVERLAY (v2) — ELEVATOR SHAFT / PATH D SYNCHRONIZATION
-======================================================================================================================================================================
-| ADG HITL Signals: escalates_to_human=1182 | requires_human_review=5 | routes_path=183 | reenters_safety=11 | gated_by_confidence=37                    |
-| Lifecycle Signals: enters_sandbox=39 | freezes_context=5 | unfreezes_context=2 | Learning linkage: builds_dpo_batch=43 | produces_preference_pair=13              |
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-| JIT SYNCHRONIZATION HARDENING                                                                                                                                        |
-| - Confidence-gated escalation requires the same semantic snapshot to be visible to both L0 route choice and L5 validation at decision time.                      |
-| - Path D handoff must preserve the sequence: enters_sandbox -> freezes_context -> human decision -> L5 re-clear -> unfreezes_context.                             |
-| - JIT state pulls are informational authority until re-cleared; no direct mutable transition is valid before L5-certified reentry.                                |
+| [ADG] Learning Linkage  : builds_dpo_batch=43 | produces_preference_pair=13                                                                                        |
 ======================================================================================================================================================================
