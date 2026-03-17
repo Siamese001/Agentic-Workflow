@@ -89,6 +89,36 @@ A fully indexed, queryable graph representing system behavior.
 ### 3. Built-In Governance & Safety
 Governance is embedded directly into execution flows.
 
+```
+┌─────────────────────┐
+│ Agent Action Intent │
+└──────────┬──────────┘
+           ↓
+┌──────────────────────┐
+│ Pre-Execution        │
+│ Guardrails           │──(Violation)──→ Block & Log
+└──────────┬───────────┘
+           ↓ (Pass)
+┌──────────────────────┐
+│ C0 Boundary Check    │──(Unsafe)──→ Reject Mutation
+│ (State Mutation)     │
+└──────────┬───────────┘
+           ↓ (Safe)
+┌──────────────────────┐
+│ Execute Action       │
+└──────────┬───────────┘
+           ↓
+┌──────────────────────┐
+│ Post-Execution       │
+│ Validation           │──(Risk)──→ HITL Trigger
+└──────────┬───────────┘
+           ↓ (Pass)
+┌──────────────────────┐
+│ Policy Enforcement   │
+│ (ADG State Check)    │
+└──────────────────────┘
+```
+
 * C0 informational boundary prevents unsafe state mutation.
 * Guardrails enforced pre and post execution.
 * HITL triggered dynamically based on risk thresholds.
@@ -161,6 +191,72 @@ Efficient retrieval and cost optimization layer.
 
 ### 7. Human-in-the-Loop (HITL) as a System Primitive
 Human oversight is embedded, not external.
+
+**Example 1: High-Risk Financial Transaction**
+```
+┌──────────────────────┐
+│ Agent: Wire Transfer │
+│ Amount: $50,000      │
+└──────────┬───────────┘
+           ↓
+┌──────────────────────┐
+│ Risk Scorer          │
+│ Score: 0.85 (HIGH)   │
+└──────────┬───────────┘
+           ↓
+┌──────────────────────┐
+│ HITL Gate Triggered  │──→ Human Review Required
+└──────────┬───────────┘
+           ↓
+┌──────────────────────┐
+│ Approval/Rejection   │
+│ (Logged in ADG)      │
+└──────────────────────┘
+```
+
+**Example 2: Sensitive Data Access**
+```
+┌──────────────────────┐
+│ Agent: Query PII     │
+│ Records: 1,000+      │
+└──────────┬───────────┘
+           ↓
+┌──────────────────────┐
+│ Policy Check         │
+│ Sensitivity: Critical│
+└──────────┬───────────┘
+           ↓
+┌──────────────────────┐
+│ HITL Escalation      │──→ Compliance Officer Notified
+└──────────┬───────────┘
+           ↓
+┌──────────────────────┐
+│ Audit Trail Created  │
+│ (Full Lineage)       │
+└──────────────────────┘
+```
+
+**Example 3: Model Output Validation**
+```
+┌──────────────────────┐
+│ LLM Generated Output │
+│ Confidence: 0.62     │
+└──────────┬───────────┘
+           ↓
+┌──────────────────────┐
+│ Confidence Threshold │
+│ Required: 0.75       │
+└──────────┬───────────┘
+           ↓
+┌──────────────────────┐
+│ HITL Review Queue    │──→ Expert Validation
+└──────────┬───────────┘
+           ↓
+┌──────────────────────┐
+│ Feedback Loop        │
+│ (Meta-Learning)      │
+└──────────────────────┘
+```
 
 * Triggered by policy and risk scoring.
 * Integrated into orchestration flows.
