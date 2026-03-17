@@ -11,12 +11,12 @@ The canonical guardian comment format is exactly:
 Where <type> is lowercase-kebab (e.g. magic-config, silent-swallower, global-mutation).
 
 Non-canonical forms that are auto-corrected:
-    # guardian allow-magic-config -- reason          (missing colon)
-    # guardian: allow-magic-config: reason           (colon separator instead of --)
-    # Guardian: allow-magic-config -- reason         (wrong case)
-    # guardian: allow_magic_config -- reason         (underscore type → kebab)
-    # guardian: allowMagicConfig -- reason           (camelCase type → kebab)
-    # guardian: allow-magic-config --reason          (missing space after --)
+    # guardian: allow-magic-config -- reason          (missing colon)
+    # guardian: allow-magic-config -- reason           (colon separator instead of --)
+    # guardian: allow-magic-config -- reason         (wrong case)
+    # guardian: allow-magic-config -- reason         (underscore type → kebab)
+    # guardian: allow-magic-config -- reason           (camelCase type → kebab)
+    # guardian: allow-magic-config -- reason          (missing space after --)
     # guardian: allow-magic-config -- (empty justification)  → warned, not fixed
 
 Fail-closed on filesystem errors. No ADG dependency — runs on raw source.
@@ -61,6 +61,18 @@ _CANONICAL_TYPES: dict[str, str] = {
     "bare-except": "bare-except",
     "bare_except": "bare-except",
     "bareexcept": "bare-except",
+    # broad-exception-catch
+    "broad-exception-catch": "broad-exception-catch",
+    "broad_exception_catch": "broad-exception-catch",
+    "broadexceptioncatch": "broad-exception-catch",
+    # log-and-swallow
+    "log-and-swallow": "log-and-swallow",
+    "log_and_swallow": "log-and-swallow",
+    "logandswallow": "log-and-swallow",
+    # return-none-swallow
+    "return-none-swallow": "return-none-swallow",
+    "return_none_swallow": "return-none-swallow",
+    "returnnoneswallow": "return-none-swallow",
     # os-path — common in legacy code
     "os-path": "os-path",
     "os_path": "os-path",
