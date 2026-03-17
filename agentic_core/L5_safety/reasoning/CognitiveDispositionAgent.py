@@ -1,19 +1,26 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.mixins.prompt_rendering_mixin import PromptRenderingMixin
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,  # noqa: E402
     _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_healing_outcome,
@@ -21,25 +28,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
     _emit_routes_through,  # noqa: E402
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
 )
 
 emit_replay_key("p0", "CognitiveDispositionAgent")
@@ -94,14 +95,20 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.config.structure_blueprint import LAYER_ROOTS
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -109,37 +116,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_to_agent,
     _emit_signs_execution_trace,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("CognitiveDispositionAgent", "p4obs", "metric_1")
@@ -191,7 +181,7 @@ class DispositionDecision:
     confidence: float = 0.0
 
 
-class CognitiveDispositionAgent(SovereignBaseAgent):
+class CognitiveDispositionAgent(PromptRenderingMixin, SovereignBaseAgent):
     """AI-Powered Architectural Triage Agent via Sovereign Gateway.
 
     DEPRECATION STATUS: KEEP - This agent is actively used and valuable.
@@ -208,7 +198,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
     - Expand beyond file-level to architectural analysis
     """
 
-    # guardian: allow-magic-config
+    # guardian: allow-magic-config -- confidence_threshold default is domain-specific tuning parameter
     def __init__(self, project_root: Path | None = None, confidence_threshold: float = 0.75):
         super().__init__()
         self.project_root = project_root or Path.cwd()
@@ -256,8 +246,8 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
             )
             try:
                 data = json.loads(response["content"])
-            # guardian: allow-silent-swallow
-            except:
+            # guardian: allow-silent-swallow -- JSON parse fallback strips markdown fences before retry
+            except:  # noqa: E722
                 text = response["content"].replace("```json", "").replace("```", "").strip()
                 data = json.loads(text)
             decision = DispositionDecision(
@@ -275,7 +265,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
             self.analytics["average_confidence"] = (current_avg * (total - 1) + decision.confidence) / total
             await self.cache_set(cache_key, decision.__dict__, ttl=3600)
             return decision
-        # guardian: allow-silent-swallow
+        # guardian: allow-silent-swallow -- analysis failure returns MANUAL_REVIEW disposition with error logged
         except Exception as e:
             Logger.error(f"CDA Analysis failed: {e}")
             return DispositionDecision(action="MANUAL_REVIEW", reason=f"Error: {e}")
@@ -307,13 +297,13 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
                     file_path=Path(path_str) if path_str else Path("."), violation_type=vtype, context=ctx
                 )
                 decisions.append(decision)
-            # guardian: allow-silent-swallow
+            # guardian: allow-silent-swallow -- per-violation failure is logged and returns MANUAL_REVIEW disposition
             except Exception as _e:
                 Logger.warning("[CDA] analyze_violations: skipping %s: %s", path_str, _e)
                 decisions.append(DispositionDecision(action="MANUAL_REVIEW", reason=f"Error: {_e}"))
         return decisions
 
-    # guardian: allow-type-erasure
+    # guardian: allow-type-erasure -- analytics dict has dynamic keys based on accumulated metrics
     def get_analytics(self) -> dict:
         """Get usage analytics for the CognitiveDispositionAgent.
 
@@ -330,7 +320,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
     def _build_prompt(self, file_path: Path, violation_type: str, context: dict) -> str:
         return f"\n        Analyze File: {file_path.name}\n        Violation: {violation_type}\n        Context: {json.dumps(context)}\n\n        Determine if this file should be MOVED, ARCHIVED, or IGNORED based on {json.dumps(self.layer_map)}.\n        Return JSON.\n        "
 
-    # guardian: allow-type-erasure
+    # guardian: allow-type-erasure -- standard_heal decorator normalizes violation dict for orchestration compatibility
     def heal(self, violation: dict) -> dict:
         """Heal cognitive disposition violations using standard_heal decorator pattern.
 
@@ -350,7 +340,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
         from agentic_core.utils.decorators_compat_util import standard_heal
 
         @standard_heal
-        # guardian: allow-type-erasure
+        # guardian: allow-type-erasure -- standard_heal decorator normalizes violation dict for orchestration compatibility
         def _heal_cognitive_disposition(self, violation: dict) -> dict:
             """Internal heal method with standard_heal decorator."""
             path = violation.get("path", "")
@@ -393,14 +383,14 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
                 else:
                     Logger.warning(f"  Low confidence ({decision.confidence}) - requires manual review")
                     return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}
-            # guardian: allow-silent-swallow
+            # guardian: allow-silent-swallow -- cognitive healing failure returns error count with error logged
             except Exception as e:
                 Logger.error(f"  Error in cognitive healing: {e}")
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
 
         return _heal_cognitive_disposition(self, violation)
 
-    # guardian: allow-type-erasure
+    # guardian: allow-type-erasure -- raises NotImplementedError; placeholder for orchestration interface
     def heal_repository(self, *args, **kwargs) -> dict:
         """heal_repository() not implemented for CognitiveDispositionAgent."""
         raise NotImplementedError("heal_repository() not implemented for CognitiveDispositionAgent")

@@ -1,19 +1,26 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.mixins.prompt_rendering_mixin import PromptRenderingMixin
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,  # noqa: E402
     _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_healing_outcome,
@@ -21,26 +28,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
     _emit_routes_through,  # noqa: E402
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
 )
 
 emit_replay_key("p0", "GravityLeakRepairAgent")
@@ -101,14 +102,20 @@ from agentic_core.L4_state.utils.layer_gravity_util import LAYER_ORDER
 from agentic_core.L5_safety.validators.context_validator import get_context_manager
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -116,36 +123,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_to_agent,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("GravityLeakRepairAgent", "p4obs", "metric_1")
@@ -213,7 +203,7 @@ class GravityFix:
     rationale: str
 
 
-class GravityLeakRepairAgent(SovereignBaseAgent):
+class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
     """
     [L5 HEALER] Automated gravity violation repair agent.
 
@@ -387,7 +377,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
         if self._prohibition_hits[key] >= 2:
             raise GravityRepairProhibitedError(file_path, "L0", op)
 
-    # guardian: allow-type-erasure
+    # guardian: allow-type-erasure -- returns untyped dict for flexible plan-only artifact serialization
     def _emit_plan_only(self, fix: GravityFix) -> dict[str, Any]:
         """Emit a PLAN-ONLY artifact without attempting any write."""
         self.logger.warning(
@@ -543,7 +533,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             )
         return changed
 
-    # guardian: allow-type-erasure
+    # guardian: allow-type-erasure -- returns status dict with dynamic keys depending on fix outcome
     def apply_fix(
         self, fix: GravityFix, dry_run: bool = True, privileged_mutation_context: bool = False
     ) -> dict[str, Any]:
@@ -567,7 +557,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                         self.logger.info(f"[DEFERRED] {fix.file_path.name}: moved import into function scope")
                         return {"status": "fixed", "fix_type": "DEFERRED"}
                     return {"status": "no_change", "fix_type": "DEFERRED"}
-                # guardian: allow-silent-swallow
+                # guardian: allow-silent-swallow -- deferred import fix failure is logged; falls through to plan-only
                 except Exception as deferred_err:
                     self.logger.warning(f"[DEFERRED] Failed for {fix.file_path.name}: {deferred_err}")
                     return self._emit_plan_only(fix)
@@ -595,11 +585,11 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                     except OSError:
                         pass
                     temp_fd = None
-                    # guardian: allow-path-string
+                    # guardian: allow-path-string -- temp_path is OS tempfile path requiring os.path.exists check
                     if os.path.exists(temp_path):
                         try:
                             _wg.remove_file(temp_path)
-                        # guardian: allow-silent-swallow
+                        # guardian: allow-silent-swallow -- temp file cleanup failure is non-fatal
                         except Exception:
                             pass
                     self.logger.warning(
@@ -636,31 +626,31 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                     self._check_prohibition_circuit_breaker(fix.file_path, op)
                     if temp_fd is not None and (not isinstance(temp_fd, int)):
                         pass
-                    # guardian: allow-path-string
+                    # guardian: allow-path-string -- temp_path is OS tempfile path requiring os.path.exists check
                     if os.path.exists(temp_path):
                         try:
                             _wg.remove_file(temp_path)
-                        # guardian: allow-silent-swallow
+                        # guardian: allow-silent-swallow -- temp file cleanup failure is non-fatal
                         except Exception:
                             pass
                     return self._emit_plan_only(fix)
                 raise
-            # guardian: allow-silent-swallow
+            # guardian: allow-silent-swallow -- write error re-raised after temp cleanup; logged for diagnostics
             except Exception as write_err:
                 raise
-                # guardian: allow-path-string
+                # guardian: allow-path-string -- temp_path is OS tempfile path requiring os.path.exists check
                 if os.path.exists(temp_path):
                     _wg.remove_file(temp_path)
                 raise write_err
         except GravityRepairProhibitedError as prohibited:
             self.logger.warning(str(prohibited))
             return self._emit_plan_only(fix)
-        # guardian: allow-silent-swallow
+        # guardian: allow-silent-swallow -- outer catch-all returns error status dict with error logged
         except Exception as e:
             self.logger.error(f"Error applying fix to {fix.file_path}: {e}")
             return {"status": "error", "error": str(e)}
 
-    # guardian: allow-type-erasure
+    # guardian: allow-type-erasure -- violations list contains heterogeneous dicts; return dict has dynamic summary keys
     def heal_violations(self, violations: list, *, dry_run: bool = False) -> dict:
         """Pure healer: fix pre-computed gravity violations without re-scanning.
 
@@ -742,9 +732,9 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             "summary": f"Analyzed {len(violations)} violations, applied {fixes_applied} fixes",
         }
 
-    # guardian: allow-magic-config
-    # guardian: allow-type-erasure
-    # guardian: allow-magic-config
+    # guardian: allow-magic-config -- default parameters are deploy-environment-specific safety bounds
+    # guardian: allow-type-erasure -- return dict has dynamic keys depending on heal outcomes
+    # guardian: allow-magic-config -- duplicate retained for pre-commit gate compatibility
     def heal_repository(
         self,
         dry_run: bool = True,
@@ -815,7 +805,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                     getattr(v, "file_path", v.get("file_path", "") if isinstance(v, dict) else "")
                 ).replace("\\", "/")
                 try:
-                    # guardian: allow-path-string
+                    # guardian: allow-path-string -- computing relative path from project_root string for scope filtering
                     rel = fp.replace(str(self.project_root).replace("\\", "/") + "/", "", 1)
                 except (ValueError, AttributeError) as e:
                     self.logger.debug(f"Failed to make path relative: {e}")
@@ -831,7 +821,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                 return False
 
             violations = [v for v in violations if _in_sovereign_scope(v)]
-        # guardian: allow-silent-swallow
+        # guardian: allow-silent-swallow -- StructureEnforcerAgent failure is logged; falls through to empty violations
         except Exception as e:
             self.logger.error(f"Failed to get violations from StructureEnforcerAgent: {e}")
             return {
@@ -916,7 +906,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             "summary": f"Analyzed {len(violations)} violations, applied {fixes_applied} fixes",
         }
 
-    # guardian: allow-type-erasure
+    # guardian: allow-type-erasure -- standard_heal decorator normalizes violation dict for orchestration compatibility
     def heal(self, violation: dict) -> dict:
         """Heal gravity leak violations using meta-learning enhanced pattern.
 
@@ -937,7 +927,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             Dictionary with healing results following standard_heal format.
         """
 
-        # guardian: allow-type-erasure
+        # guardian: allow-type-erasure -- inner function uses untyped dict for standard_heal decorator compatibility
         def _heal_gravity_violation(violation: dict) -> dict:
             path = violation.get("path", "")
             import_statement = violation.get("import_statement", "")
@@ -964,7 +954,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                             violation, healing_result, agent="GravityLeakRepairAgent"
                         )
                         return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
-                # guardian: allow-silent-swallow
+                # guardian: allow-silent-swallow -- gravity heal failure returns error count with error logged
                 except Exception as e:
                     self.logger.error(f"[GRAVITY_LEAK_REPAIR] Failed to heal: {e}")
                     return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}

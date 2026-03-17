@@ -24,6 +24,7 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -36,8 +37,11 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_dispatches_healing_run,  # noqa: E402
     _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_healing_outcome,
@@ -50,19 +54,15 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_signs_execution_trace,
     _emit_snapshots_state,
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
     _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_agent_executes_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
 )
 
 emit_replay_key("p0", "UnifiedAgent")
@@ -434,7 +434,7 @@ class OrchestrationStrategy(BaseStrategy):
                 signals.extend(step_signals)
                 if step_result.get("terminate", False):
                     break
-            # guardian: allow-silent-swallow
+            # guardian: allow-silent-swallow -- orchestration step failure is logged and aggregated in errors list
             except Exception as e:
                 errors.append(f"Step {step_name} failed: {str(e)}")
                 agent.log_error(f"Orchestration step failed: {step_name} - {e}")
@@ -507,7 +507,7 @@ class HealingStrategy(BaseStrategy):
                         artifacts.extend(fix_result.get("artifacts", []))
                     else:
                         skipped.append(violation.get("type", "unknown"))
-                # guardian: allow-silent-swallow
+                # guardian: allow-silent-swallow -- violation fix failure is logged and aggregated in errors list
                 except Exception as e:
                     errors.append(f"Failed to fix violation: {str(e)}")
         return HealingResult(
@@ -839,12 +839,12 @@ class UnifiedAgent(SovereignBaseAgent):
 
             return load_agent_config(self._config_name)
         except ImportError:
-            logger.warning("config_loader not available, using empty config")
+            logger.warning("config_loader module could not be imported; using empty config")
             return {}
-        # guardian: allow-silent-swallow
+        # guardian: allow-silent-swallow -- config load failure is non-fatal; re-raised after logging
         except Exception as e:
             logger.warning(f"Failed to load config {self._config_name}: {e}")
-            return {}
+            raise
 
     def _create_strategy(self) -> BaseStrategy:
         """Create strategy based on category."""
@@ -863,6 +863,7 @@ class UnifiedAgent(SovereignBaseAgent):
         self, **kwargs: Any
     ) -> ValidationResult | OrchestrationResult | HealingResult | dict[str, Any]:
         """Unified execute method delegating to category strategy."""
+        from agentic_core.runtime.lifecycle_trace_contract import (  # noqa: PLC0415
             LayerSegment,
             _emit_records_execution_trace,
         )

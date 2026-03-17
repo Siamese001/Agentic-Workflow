@@ -1,6 +1,6 @@
 """Identify files with high-risk operations but no guardrail coverage."""
 
-# guardian: allow-direct-prompt-compilation -- audit script uses print for CLI output
+# guardian: allow-direct-prompt-compilation -- audit script uses SQL queries and print for CLI output
 
 import sqlite3
 from pathlib import Path
@@ -135,6 +135,7 @@ def identify_guardrail_gaps():
     total_prompt_files = cur.fetchone()[0]
     if total_prompt_files > 0:
         d0_pct = 100 * d0_files / total_prompt_files
+        # guardian: allow-direct-prompt-compilation -- CLI output reporting D0 fence audit metrics
         print(f"D0 injection fence coverage: {d0_files}/{total_prompt_files} files ({d0_pct:.1f}%)")
         if d0_pct < 100:
             cur.execute(

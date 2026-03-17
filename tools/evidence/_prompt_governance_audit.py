@@ -1,5 +1,5 @@
 """Prompt governance & injection coverage audit against ADG SQLite."""
-# guardian: allow-direct_prompt_compilation reason=audit_tool_sql_queries
+# guardian: allow-direct-prompt-compilation -- audit tool uses SQL queries against ADG for prompt governance analysis
 
 import sqlite3
 from pathlib import Path
@@ -76,8 +76,10 @@ def main():
     cur.execute("SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type = 'generates_prompt'")
     total_gen = cur.fetchone()[0]
     print(f"  Files generating prompts: {total_gen}")
+    # guardian: allow-direct-prompt-compilation -- CLI output reporting D0 fence audit metrics
     print(f"  Files with D0 fences: {d0_count}")
     if total_gen > 0:
+        # guardian: allow-direct-prompt-compilation -- CLI output reporting D0 coverage percentage
         print(f"  D0 coverage: {100 * d0_count / total_gen:.1f}%")
 
     # 5. Orphan prompt consumers

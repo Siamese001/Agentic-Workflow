@@ -131,13 +131,7 @@ class GeminiJudgeProvider:
                 rubric_id,
                 exc,
             )
-            return {
-                "score": 0.0,
-                "reasoning": f"Gemini API error: {exc}",
-                "rubric_id": rubric_id,
-                "provider": self.provider_id,
-                "error": str(exc),
-            }
+            raise
 
         try:
             data = self._parse(raw)
@@ -254,7 +248,7 @@ def create_default_registry() -> JudgeProviderRegistry:
             gemini = GeminiJudgeProvider()
             registry.register(gemini, default=True)
             _log.info("[create_default_registry] Gemini provider auto-registered (API key found)")
-        except (ImportError, RuntimeError, ValueError, OSError) as exc:
+        except (RuntimeError, ValueError, OSError) as exc:
             _log.warning("[create_default_registry] Gemini registration failed: %s", exc)
 
     return registry
