@@ -1,0 +1,349 @@
+{
+  "_meta": {
+    "schema_version": "1.0.0",
+    "description": "LLM-as-Judge rubric definitions for deterministic and LLM-based evaluation",
+    "last_updated": "2026-03-17"
+  },
+  "rubrics": [
+    {
+      "rubric_id": "ARCH-001",
+      "dimension": "architecture",
+      "display_name": "Layer Boundary Compliance",
+      "description": "Checks that a module only imports from layers at or below its own level (LN imports L0..LN only). Layer inversion is a CRITICAL violation.",
+      "scoring_method": "deterministic",
+      "severity": "CRITICAL",
+      "applies_to": {
+        "layer_filter": ["L0", "L1", "L2", "L3", "L4", "L5", "L6"],
+        "entity_types": ["module", "class", "function"]
+      },
+      "evidence_requirements": [
+        {"evidence_type": "adg_edge", "relation": "imports", "description": "All import edges from the target module"},
+        {"evidence_type": "adg_edge", "relation": "calls", "description": "All call edges to verify no cross-layer calls"}
+      ],
+      "scoring_criteria": [
+        {
+          "criterion_id": "layer_import_compliance",
+          "description": "Fraction of imports that respect layer boundaries",
+          "weight": 1.0,
+          "pass_threshold": 1.0,
+          "warn_threshold": 0.95
+        }
+      ],
+      "deterministic_check": "all(edge.target_layer <= module.layer for edge in imports)",
+      "score_formula": "compliant_imports / total_imports",
+      "pass_threshold": 1.0,
+      "warn_threshold": 0.95,
+      "prompt_template": ""
+    },
+    {
+      "rubric_id": "QUAL-001",
+      "dimension": "code_quality",
+      "display_name": "Anti-Pattern Density",
+      "description": "Measures anti-pattern violations per module as detected by the ADG static scanner. High density indicates code quality issues.",
+      "scoring_method": "deterministic",
+      "severity": "HIGH",
+      "applies_to": {
+        "layer_filter": ["L0", "L1", "L2", "L3", "L4", "L5", "L6"],
+        "entity_types": ["module"]
+      },
+      "evidence_requirements": [
+        {"evidence_type": "adg_edge", "relation": "antipattern", "description": "Anti-pattern violation edges for the module"},
+        {"evidence_type": "adg_edge", "relation": "violates", "description": "Governance violation edges"}
+      ],
+      "scoring_criteria": [
+        {
+          "criterion_id": "violation_density",
+          "description": "Score = max(0, 1 - violations/threshold) where threshold = 5 per module",
+          "weight": 1.0,
+          "pass_threshold": 0.8,
+          "warn_threshold": 0.6
+        }
+      ],
+      "deterministic_check": "violations = count(antipattern edges for module)",
+      "score_formula": "max(0.0, 1.0 - violation_count / 5.0)",
+      "pass_threshold": 0.8,
+      "warn_threshold": 0.6,
+      "prompt_template": ""
+    },
+    {
+      "rubric_id": "QUAL-002",
+      "dimension": "code_quality",
+      "display_name": "Cyclomatic Complexity Proxy",
+      "description": "Uses ADG call-graph fanout as a proxy for cyclomatic complexity. Modules with excessive outgoing calls are harder to maintain.",
+      "scoring_method": "deterministic",
+      "severity": "MEDIUM",
+      "applies_to": {
+        "layer_filter": ["L0", "L1", "L2", "L3", "L4", "L5", "L6"],
+        "entity_types": ["module"]
+      },
+      "evidence_requirements": [
+        {"evidence_type": "adg_edge", "relation": "calls", "description": "All outgoing call edges from the module"}
+      ],
+      "scoring_criteria": [
+        {
+          "criterion_id": "fanout_score",
+          "description": "Score = max(0, 1 - fanout/threshold) where threshold = 50 outgoing calls",
+          "weight": 1.0,
+          "pass_threshold": 0.6,
+          "warn_threshold": 0.4
+        }
+      ],
+      "deterministic_check": "fanout = count(calls edges from module)",
+      "score_formula": "max(0.0, 1.0 - fanout / 50.0)",
+      "pass_threshold": 0.6,
+      "warn_threshold": 0.4,
+      "prompt_template": ""
+    },
+    {
+      "rubric_id": "DEP-001",
+      "dimension": "dependency_health",
+      "display_name": "Circular Dependency Detection",
+      "description": "Detects circular import chains using ADG import edges. Any circular dependency is a FAIL.",
+      "scoring_method": "deterministic",
+      "severity": "HIGH",
+      "applies_to": {
+        "layer_filter": ["L0", "L1", "L2", "L3", "L4", "L5", "L6"],
+        "entity_types": ["module"]
+      },
+      "evidence_requirements": [
+        {"evidence_type": "adg_edge", "relation": "imports", "description": "Import edges for cycle detection"}
+      ],
+      "scoring_criteria": [
+        {
+          "criterion_id": "no_cycles",
+          "description": "Module participates in zero circular import chains",
+          "weight": 1.0,
+          "pass_threshold": 1.0,
+          "warn_threshold": 1.0
+        }
+      ],
+      "deterministic_check": "module not in any import cycle (DFS from module through imports)",
+      "score_formula": "1.0 if no_cycles else 0.0",
+      "pass_threshold": 1.0,
+      "warn_threshold": 1.0,
+      "prompt_template": ""
+    },
+    {
+      "rubric_id": "COV-001",
+      "dimension": "governance_coverage",
+      "display_name": "Governance Edge Coverage",
+      "description": "Measures what fraction of governance dimensions a module has wired (e.g. records_execution_trace, applies_guardrail, etc).",
+      "scoring_method": "deterministic",
+      "severity": "HIGH",
+      "applies_to": {
+        "layer_filter": ["L0", "L1", "L2", "L3", "L4", "L5", "L6"],
+        "entity_types": ["module"]
+      },
+      "evidence_requirements": [
+        {"evidence_type": "adg_edge", "relation": "records_execution_trace", "description": "Execution trace governance edge"},
+        {"evidence_type": "adg_edge", "relation": "applies_guardrail", "description": "Guardrail governance edge"},
+        {"evidence_type": "adg_edge", "relation": "reads_policy_state", "description": "Policy state governance edge"},
+        {"evidence_type": "adg_edge", "relation": "signs_execution_trace", "description": "Trace signing governance edge"},
+        {"evidence_type": "adg_edge", "relation": "snapshots_state", "description": "State snapshot governance edge"},
+        {"evidence_type": "adg_edge", "relation": "emits_replay_key", "description": "Replay key governance edge"},
+        {"evidence_type": "adg_edge", "relation": "emits_determinism_digest", "description": "Determinism digest governance edge"}
+      ],
+      "scoring_criteria": [
+        {
+          "criterion_id": "governance_coverage_ratio",
+          "description": "Fraction of required governance dimensions wired",
+          "weight": 1.0,
+          "pass_threshold": 1.0,
+          "warn_threshold": 0.85
+        }
+      ],
+      "deterministic_check": "wired_dims / total_required_dims",
+      "score_formula": "wired_dimension_count / required_dimension_count",
+      "pass_threshold": 1.0,
+      "warn_threshold": 0.85,
+      "prompt_template": ""
+    },
+    {
+      "rubric_id": "GOV-001",
+      "dimension": "governance_quality",
+      "display_name": "Policy Compliance Review",
+      "description": "LLM judge reviews whether a module's governance implementation is substantive (not just stub calls). Requires source code and ADG edge context.",
+      "scoring_method": "llm_pointwise",
+      "severity": "HIGH",
+      "applies_to": {
+        "layer_filter": ["L0", "L1", "L2", "L3", "L4", "L5", "L6"],
+        "entity_types": ["module"]
+      },
+      "evidence_requirements": [
+        {"evidence_type": "source_code", "description": "Full module source code"},
+        {"evidence_type": "adg_edge", "relation": "applies_guardrail", "description": "Guardrail edges for context"},
+        {"evidence_type": "adg_edge", "relation": "reads_policy_state", "description": "Policy edges for context"}
+      ],
+      "scoring_criteria": [
+        {
+          "criterion_id": "guardrail_substantive",
+          "description": "Guardrail calls use meaningful policy parameters, not hardcoded stubs",
+          "weight": 0.5,
+          "pass_threshold": 0.7,
+          "warn_threshold": 0.5
+        },
+        {
+          "criterion_id": "policy_integration",
+          "description": "Policy state reads are integrated into business logic flow",
+          "weight": 0.5,
+          "pass_threshold": 0.7,
+          "warn_threshold": 0.5
+        }
+      ],
+      "deterministic_check": "",
+      "score_formula": "weighted_avg(criteria_scores)",
+      "pass_threshold": 0.7,
+      "warn_threshold": 0.5,
+      "prompt_template": "You are evaluating governance compliance for module: {target}\n\nSource code:\n```python\n{source_code}\n```\n\nADG governance edges:\n{adg_edges}\n\nScore each criterion 0.0-1.0:\n1. guardrail_substantive: Are guardrail calls using meaningful parameters?\n2. policy_integration: Are policy reads integrated into logic flow?\n\nRespond with JSON: {\"guardrail_substantive\": <0-1>, \"policy_integration\": <0-1>, \"reasoning\": \"<text>\"}"
+    },
+    {
+      "rubric_id": "GOV-002",
+      "dimension": "governance_coverage",
+      "display_name": "Write Governance Compliance",
+      "description": "Checks that all write operations go through the Universal Write Gateway (UWG). Direct writes bypass governance and are violations.",
+      "scoring_method": "deterministic",
+      "severity": "CRITICAL",
+      "applies_to": {
+        "layer_filter": ["L0", "L1", "L2", "L3", "L4", "L5", "L6"],
+        "entity_types": ["module"]
+      },
+      "evidence_requirements": [
+        {"evidence_type": "adg_edge", "relation": "writes_via_uwg", "description": "Governed write operations"},
+        {"evidence_type": "adg_edge", "relation": "writes_to", "description": "All write operations including direct"},
+        {"evidence_type": "adg_edge", "relation": "blocks_direct_write", "description": "Direct write blocking edges"}
+      ],
+      "scoring_criteria": [
+        {
+          "criterion_id": "uwg_coverage",
+          "description": "Fraction of writes going through UWG",
+          "weight": 1.0,
+          "pass_threshold": 1.0,
+          "warn_threshold": 0.9
+        }
+      ],
+      "deterministic_check": "uwg_writes / total_writes",
+      "score_formula": "writes_via_uwg_count / max(1, total_write_count)",
+      "pass_threshold": 1.0,
+      "warn_threshold": 0.9,
+      "prompt_template": ""
+    },
+    {
+      "rubric_id": "SEC-001",
+      "dimension": "security",
+      "display_name": "Dynamic Execution Safety Review",
+      "description": "LLM judge reviews modules with dynamic execution (eval/exec/getattr) for safety. Requires source code context around dynamic calls.",
+      "scoring_method": "llm_pointwise",
+      "severity": "CRITICAL",
+      "applies_to": {
+        "entity_types": ["module"]
+      },
+      "evidence_requirements": [
+        {"evidence_type": "adg_edge", "relation": "invokes_eval", "description": "Dynamic eval/exec edges"},
+        {"evidence_type": "adg_edge", "relation": "invokes_getattr_dynamic", "description": "Dynamic getattr edges"},
+        {"evidence_type": "source_code", "description": "Source code around dynamic call sites"}
+      ],
+      "scoring_criteria": [
+        {
+          "criterion_id": "input_validation",
+          "description": "Dynamic calls have input validation/sanitization",
+          "weight": 0.4,
+          "pass_threshold": 0.8,
+          "warn_threshold": 0.5
+        },
+        {
+          "criterion_id": "scope_restriction",
+          "description": "Dynamic execution is scoped to minimum necessary",
+          "weight": 0.3,
+          "pass_threshold": 0.8,
+          "warn_threshold": 0.5
+        },
+        {
+          "criterion_id": "documentation",
+          "description": "Dynamic execution rationale is documented",
+          "weight": 0.3,
+          "pass_threshold": 0.6,
+          "warn_threshold": 0.3
+        }
+      ],
+      "deterministic_check": "",
+      "score_formula": "weighted_avg(criteria_scores)",
+      "pass_threshold": 0.7,
+      "warn_threshold": 0.5,
+      "prompt_template": "You are a security reviewer evaluating dynamic execution in module: {target}\n\nSource code around dynamic calls:\n```python\n{source_code}\n```\n\nADG dynamic execution edges:\n{adg_edges}\n\nScore each criterion 0.0-1.0:\n1. input_validation: Are inputs to eval/exec/getattr validated?\n2. scope_restriction: Is dynamic execution scoped minimally?\n3. documentation: Is the rationale documented?\n\nRespond with JSON: {\"input_validation\": <0-1>, \"scope_restriction\": <0-1>, \"documentation\": <0-1>, \"reasoning\": \"<text>\"}"
+    },
+    {
+      "rubric_id": "SEC-002",
+      "dimension": "security",
+      "display_name": "Import Security",
+      "description": "Checks that no forbidden imports (subprocess, os.system, etc) are present outside allowlisted modules.",
+      "scoring_method": "deterministic",
+      "severity": "HIGH",
+      "applies_to": {
+        "entity_types": ["module"]
+      },
+      "evidence_requirements": [
+        {"evidence_type": "adg_edge", "relation": "imports", "description": "All import edges from the module"}
+      ],
+      "scoring_criteria": [
+        {
+          "criterion_id": "no_forbidden_imports",
+          "description": "Module does not import forbidden dangerous modules",
+          "weight": 1.0,
+          "pass_threshold": 1.0,
+          "warn_threshold": 1.0
+        }
+      ],
+      "deterministic_check": "no imports of {subprocess, os.system, shutil.rmtree} unless in allowlist",
+      "score_formula": "1.0 if no_forbidden else 0.0",
+      "pass_threshold": 1.0,
+      "warn_threshold": 1.0,
+      "prompt_template": ""
+    },
+    {
+      "rubric_id": "GOV-003",
+      "dimension": "governance_quality",
+      "display_name": "Orchestration Completeness Review",
+      "description": "LLM judge evaluates whether orchestration patterns (dispatch, coordinate, heal) are properly implemented with lineage tracking.",
+      "scoring_method": "llm_pointwise",
+      "severity": "MEDIUM",
+      "applies_to": {
+        "layer_filter": ["L3"],
+        "entity_types": ["module"]
+      },
+      "evidence_requirements": [
+        {"evidence_type": "source_code", "description": "Full module source code"},
+        {"evidence_type": "adg_edge", "relation": "orchestrates_workflow", "description": "Workflow orchestration edges"},
+        {"evidence_type": "adg_edge", "relation": "dispatches_agent", "description": "Agent dispatch edges"},
+        {"evidence_type": "adg_edge", "relation": "records_workflow_lineage", "description": "Lineage tracking edges"}
+      ],
+      "scoring_criteria": [
+        {
+          "criterion_id": "dispatch_tracking",
+          "description": "Agent dispatches include proper lineage/trace IDs",
+          "weight": 0.4,
+          "pass_threshold": 0.7,
+          "warn_threshold": 0.5
+        },
+        {
+          "criterion_id": "error_handling",
+          "description": "Orchestration includes failure escalation paths",
+          "weight": 0.3,
+          "pass_threshold": 0.7,
+          "warn_threshold": 0.5
+        },
+        {
+          "criterion_id": "healing_integration",
+          "description": "Healing mechanisms are integrated for recovery",
+          "weight": 0.3,
+          "pass_threshold": 0.6,
+          "warn_threshold": 0.4
+        }
+      ],
+      "deterministic_check": "",
+      "score_formula": "weighted_avg(criteria_scores)",
+      "pass_threshold": 0.7,
+      "warn_threshold": 0.5,
+      "prompt_template": "You are evaluating orchestration completeness for module: {target}\n\nSource code:\n```python\n{source_code}\n```\n\nADG orchestration edges:\n{adg_edges}\n\nScore each criterion 0.0-1.0:\n1. dispatch_tracking: Do agent dispatches include lineage/trace IDs?\n2. error_handling: Are failure escalation paths present?\n3. healing_integration: Are healing mechanisms integrated?\n\nRespond with JSON: {\"dispatch_tracking\": <0-1>, \"error_handling\": <0-1>, \"healing_integration\": <0-1>, \"reasoning\": \"<text>\"}"
+    }
+  ]
+}
