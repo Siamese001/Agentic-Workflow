@@ -13,27 +13,34 @@ Most enterprise AI implementations today face three core issues: **non-reproduci
 
 The system enforces a strict separation of responsibilities across layers to ensure scalability, determinism, and operational clarity.
 
-       [ User / API Request ]
-                 │
- ┌───────────────▼─────────────────────────────────┐
- │ L0: Routing (Intent Classification & Workload)  │
- └───────────────┬─────────────────────────────────┘
-                 │
- ┌───────────────▼─────────────────┐   ┌─────────────┐
- │ L1: Cognition (Bounded LLM)     │◄──┤ L4: State   │
- └───────────────┬─────────────────┘   │ (ADG Memory,│
-                 │                     │ Checkpoints)│
- ┌───────────────▼─────────────────┐   └──────┬──────┘
- │ L2: Execution (PTC Tool Calling)│          │
- └───────────────┬─────────────────┘          │
-                 │                     ┌──────▼──────┐
- ┌───────────────▼─────────────────┐   │ L5: Safety  │
- │ L3: Orchestration (Multi-Agent) ├──►│ (Guardrails,│
- └───────────────┬─────────────────┘   │ HITL Gates) │
-                 │                     └──────┬──────┘
- ┌───────────────▼────────────────────────────▼──────┐
- │ L6: Observability (Tracing & Determinism Digests) │
- └───────────────────────────────────────────────────┘
+```
+User / API Request
+        ↓
+┌─────────────────────────────────────────┐
+│  L0: Routing                            │
+│  (Intent Classification & Workload)     │
+└─────────────────┬───────────────────────┘
+                  ↓
+┌─────────────────────────┐    ┌──────────────────┐
+│  L1: Cognition          │◄───│  L4: State       │
+│  (Bounded LLM)          │    │  (ADG, Memory)   │
+└──────────┬──────────────┘    └────────┬─────────┘
+           ↓                            │
+┌─────────────────────────┐             │
+│  L2: Execution          │             │
+│  (PTC Tool Calling)     │             │
+└──────────┬──────────────┘             │
+           ↓                            │
+┌─────────────────────────┐    ┌────────┴─────────┐
+│  L3: Orchestration      │───→│  L5: Safety      │
+│  (Multi-Agent)          │    │  (Guardrails)    │
+└──────────┬──────────────┘    └────────┬─────────┘
+           ↓                            ↓
+┌──────────────────────────────────────────────────┐
+│  L6: Observability                               │
+│  (Tracing & Determinism Digests)                 │
+└──────────────────────────────────────────────────┘
+```
 
 * **L0 Routing:** Deterministic routing across model tiers and workflows.
 * **L1 Cognition:** Controlled LLM interaction with bounded stochasticity.
@@ -50,18 +57,20 @@ The system enforces a strict separation of responsibilities across layers to ens
 ### 1. Deterministic Replay (System-Level Determinism)
 Determinism is enforced at the system layer, not the model layer. Determinism is enforced across orchestration, tool execution, and state transitions, while the LLM layer remains probabilistic but bounded and controlled.
 
-  [ Live Execution ]                   [ Graph Storage ]
-  ┌────────────────┐    Traces &       ┌───────────────┐
-  │ L1-L3 Activity ├──► Digests ──────►│ SQLite (ADG)  │
-  └────────────────┘                   │ ~69K Nodes    │
-          ▲                            │ ~500K Edges   │
-          │                            └───────┬───────┘
-          │                                    │
-          │ State Hydration                    │ Query / Fetch
-          │                                    ▼
-  ┌───────┴────────┐                   ┌───────────────┐
-  │ Replay Engine  │◄── Hash Match ────┤ CI/CD / Debug │
-  └────────────────┘                   └───────────────┘
+```
+Live Execution          Traces & Digests          Graph Storage
+┌──────────────┐              →              ┌─────────────────┐
+│ L1-L3        │                             │ SQLite (ADG)    │
+│ Activity     │                             │ ~69K Nodes      │
+└──────┬───────┘                             │ ~500K Edges     │
+       ↑                                     └────────┬────────┘
+       │                                              │
+       │ State Hydration              Query / Fetch  │
+       │                                              ↓
+┌──────┴────────┐      Hash Match      ┌──────────────────────┐
+│ Replay Engine │◄─────────────────────│ CI/CD / Debug        │
+└───────────────┘                      └──────────────────────┘
+```
 
 * Execution traces recorded across all layers.
 * Determinism digests validate execution consistency.
@@ -89,13 +98,21 @@ Governance is embedded directly into execution flows.
 ### 4. Programmatic Tool Calling (PTC)
 Tool usage is deterministic and contract-driven.
 
- [ L1: Cognition ]
-        │ (Structured JSON Intent)
-        ▼
- [ Contract Schema Validator ] ──(Fail)──► [ Error / Self-Correction ]
-        │ (Pass)
-        ▼
- [ L2: Tool Execution ]
+```
+┌──────────────────────┐
+│  L1: Cognition       │
+│  (JSON Intent)       │
+└──────────┬───────────┘
+           ↓
+┌──────────────────────┐
+│  Contract Schema     │──(Fail)──→ Error / Self-Correction
+│  Validator           │
+└──────────┬───────────┘
+           ↓ (Pass)
+┌──────────────────────┐
+│  L2: Tool Execution  │
+└──────────────────────┘
+```
 
 * Explicit tool schemas and invocation contracts.
 * No free-form or inferred tool selection.
@@ -105,9 +122,16 @@ Tool usage is deterministic and contract-driven.
 ### 5. Meta-Learning Feedback Loop
 The system improves continuously through execution feedback.
 
- [ ADG Execution Trace ] ──► [ Text Embedding Model ]
-                                        │
- [ L0 / L3 Future Routing ] ◄── [ Vector Store (FAISS) ]
+```
+┌─────────────────────┐         ┌──────────────────────┐
+│ ADG Execution Trace │────────→│ Text Embedding Model │
+└─────────────────────┘         └──────────┬───────────┘
+                                           ↓
+┌─────────────────────┐         ┌──────────────────────┐
+│ L0 / L3 Future      │◄────────│ Vector Store (FAISS) │
+│ Routing             │         └──────────────────────┘
+└─────────────────────┘
+```
 
 * Execution traces → embeddings → retrieval signals.
 * Pattern detection across runs.
@@ -117,11 +141,18 @@ The system improves continuously through execution feedback.
 ### 6. Semantic Cache + Redis L1 Retrieval Gate
 Efficient retrieval and cost optimization layer.
 
- [ Incoming Query ] ──► [ Redis L1 Cache ] ──(Hit)──► [ Fast Deterministic Return ]
-                                 │
-                               (Miss)
-                                 ▼
-                       [ L1 Cognition (LLM) ]
+```
+┌─────────────────┐         ┌──────────────────┐
+│ Incoming Query  │────────→│ Redis L1 Cache   │──(Hit)──→ Fast Return
+└─────────────────┘         └────────┬─────────┘
+                                     │
+                                   (Miss)
+                                     ↓
+                            ┌─────────────────┐
+                            │ L1 Cognition    │
+                            │ (LLM)           │
+                            └─────────────────┘
+```
 
 * Redis-based hot cache for low-latency access.
 * Embedding similarity for semantic cache hits.
