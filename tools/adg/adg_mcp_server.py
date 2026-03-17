@@ -121,8 +121,10 @@ Run as stdio MCP server:
 
 from __future__ import annotations
 
+import glob
 import json
 import os
+import sqlite3
 import time
 from pathlib import Path
 from typing import Any
@@ -272,6 +274,17 @@ def adg_status() -> dict[str, Any]:
         disk_mtime: float | None = p.stat().st_mtime if (p and sqlite_exists) else None
         is_fresh = (ingested_at >= disk_mtime) if disk_mtime is not None else False
 
+        projection_coherent = status.get("projection_coherent", False)
+        if isinstance(projection_coherent, str):
+            projection_coherent = projection_coherent.lower() == "true"
+        verdict_parts = []
+        if is_fresh:
+            verdict_parts.append("HOT")
+        else:
+            verdict_parts.append("STALE — run: python tools/adg/adg_redis_ingest.py --force")
+        if not projection_coherent:
+            verdict_parts.append("PROJECTION MISMATCH — re-ingest required")
+
         return {
             "status": "ok",
             "data": {
@@ -283,9 +296,10 @@ def adg_status() -> dict[str, Any]:
                 "sqlite_exists": sqlite_exists,
                 "sqlite_disk_mtime": disk_mtime,
                 "is_fresh": is_fresh,
-                "verdict": (
-                    "HOT" if is_fresh else "STALE — run: python tools/adg/adg_redis_ingest.py --force"
-                ),
+                "projection_coherent": projection_coherent,
+                "sqlite_digest": status.get("sqlite_digest", ""),
+                "redis_digest": status.get("redis_digest", ""),
+                "verdict": " | ".join(verdict_parts),
             },
         }
     except _redis_lib.RedisError as exc:
@@ -416,25 +430,60 @@ def adg_nodes_by_file(file_path: str) -> dict[str, Any]:
 
 
 @mcp.tool()
-def adg_edge_fanout(src_id: str, relation_type: str) -> dict[str, Any]:
-    """Get all targets of an outgoing edge from a node (SMEMBERS adg:edge:<src>:<rel>).
+def adg_edge_fanout(
+    src_id: str, relation_type: str, resolve: bool = True, limit: int = 200,
+) -> dict[str, Any]:
+    """Get all outgoing edges from a node (SMEMBERS adg:edge:<src>:<rel>).
+
+    Adjacency sets store edge_ids (v2). If resolve=True (default), fetches
+    full edge metadata via pipeline and extracts target node IDs.
 
     Args:
         src_id:        Source node ID
         relation_type: e.g. 'calls', 'imports', 'exports', 'invokes_dynamic',
                        'applies_guardrail', 'records_execution_trace'
+        resolve:       Resolve edge_ids to full metadata (default True)
+        limit:         Max edges to resolve (default 200)
 
     NOTE: adg:edge:* are SET type — mcp9_get returns WRONGTYPE on them.
     """
     key = f"adg:edge:{src_id}:{relation_type}"
     try:
-        targets = sorted(_redis().smembers(key))
+        edge_ids = sorted(_redis().smembers(key))
+        total = len(edge_ids)
+        page = edge_ids[:limit]
+
+        if resolve and page:
+            pipe = _redis().pipeline(transaction=False)
+            for eid in page:
+                pipe.hgetall(f"adg:edge_detail:{eid}")
+            details = pipe.execute()
+            edges = []
+            targets = []
+            for eid, detail in zip(page, details):
+                if detail:
+                    edges.append(detail)
+                    tgt = detail.get("dst_id", "")
+                    if tgt and tgt not in targets:
+                        targets.append(tgt)
+            return _ok(
+                {
+                    "src_id": src_id,
+                    "relation_type": relation_type,
+                    "total_edge_count": total,
+                    "returned": len(page),
+                    "target_count": len(targets),
+                    "targets": sorted(targets),
+                    "edges": edges,
+                }
+            )
         return _ok(
             {
                 "src_id": src_id,
                 "relation_type": relation_type,
-                "target_count": len(targets),
-                "targets": targets,
+                "total_edge_count": total,
+                "returned": len(page),
+                "edge_ids": page,
             }
         )
     except _redis_lib.RedisError as exc:
@@ -442,24 +491,59 @@ def adg_edge_fanout(src_id: str, relation_type: str) -> dict[str, Any]:
 
 
 @mcp.tool()
-def adg_edge_fanin(tgt_id: str, relation_type: str) -> dict[str, Any]:
-    """Get all sources of incoming edges to a node (SMEMBERS adg:edge:in:<tgt>:<rel>).
+def adg_edge_fanin(
+    tgt_id: str, relation_type: str, resolve: bool = True, limit: int = 200,
+) -> dict[str, Any]:
+    """Get all incoming edges to a node (SMEMBERS adg:edge:in:<tgt>:<rel>).
+
+    Adjacency sets store edge_ids (v2). If resolve=True (default), fetches
+    full edge metadata via pipeline and extracts source node IDs.
 
     Args:
         tgt_id:        Target node ID
         relation_type: e.g. 'calls', 'imports'
+        resolve:       Resolve edge_ids to full metadata (default True)
+        limit:         Max edges to resolve (default 200)
 
     NOTE: adg:edge:in:* are SET type — mcp9_get returns WRONGTYPE on them.
     """
     key = f"adg:edge:in:{tgt_id}:{relation_type}"
     try:
-        sources = sorted(_redis().smembers(key))
+        edge_ids = sorted(_redis().smembers(key))
+        total = len(edge_ids)
+        page = edge_ids[:limit]
+
+        if resolve and page:
+            pipe = _redis().pipeline(transaction=False)
+            for eid in page:
+                pipe.hgetall(f"adg:edge_detail:{eid}")
+            details = pipe.execute()
+            edges = []
+            sources = []
+            for eid, detail in zip(page, details):
+                if detail:
+                    edges.append(detail)
+                    src = detail.get("src_id", "")
+                    if src and src not in sources:
+                        sources.append(src)
+            return _ok(
+                {
+                    "tgt_id": tgt_id,
+                    "relation_type": relation_type,
+                    "total_edge_count": total,
+                    "returned": len(page),
+                    "source_count": len(sources),
+                    "sources": sorted(sources),
+                    "edges": edges,
+                }
+            )
         return _ok(
             {
                 "tgt_id": tgt_id,
                 "relation_type": relation_type,
-                "source_count": len(sources),
-                "sources": sources,
+                "total_edge_count": total,
+                "returned": len(page),
+                "edge_ids": page,
             }
         )
     except _redis_lib.RedisError as exc:
@@ -470,20 +554,149 @@ def adg_edge_fanin(tgt_id: str, relation_type: str) -> dict[str, Any]:
 def adg_violations() -> dict[str, Any]:
     """Get all ADG anti-pattern violations from the hot cache (LRANGE adg:violations).
 
+    v2: adg:violations LIST stores violation IDs. Full metadata is in
+    adg:violation:<id> HASHes, resolved via pipeline.
+
     Returns list of violation dicts: file_path, category, line_number, evidence.
     NOTE: adg:violations is a LIST — mcp9_get returns WRONGTYPE on it.
     """
     try:
-        raw_list = _redis().lrange("adg:violations", 0, -1)
+        vid_list = _redis().lrange("adg:violations", 0, -1)
+        if not vid_list:
+            return _ok({"count": 0, "violations": []})
+
+        pipe = _redis().pipeline(transaction=False)
+        for vid in vid_list:
+            pipe.hgetall(f"adg:violation:{vid}")
+        results = pipe.execute()
+
         violations = []
-        for item in raw_list:
-            try:
-                violations.append(json.loads(item))
-            except json.JSONDecodeError:
-                violations.append({"raw": item})
+        for vid, detail in zip(vid_list, results):
+            if detail:
+                violations.append(detail)
+            else:
+                # Backward compat: try parsing vid as JSON (old v1 format)
+                try:
+                    violations.append(json.loads(vid))
+                except (json.JSONDecodeError, TypeError):
+                    violations.append({"id": vid, "raw": True})
         return _ok({"count": len(violations), "violations": violations})
     except _redis_lib.RedisError as exc:
         return _err(f"Redis unavailable: {exc}")
+
+
+@mcp.tool()
+def adg_edge_detail(edge_id: str) -> dict[str, Any]:
+    """Read full metadata for a single edge by its ID (HGETALL adg:edge_detail:<edge_id>).
+
+    Zero-loss: every field from the SQLite edges table is preserved.
+    Returns: id, src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol.
+
+    Args:
+        edge_id: Edge ID (integer stored as string), e.g. '12345'
+    """
+    key = f"adg:edge_detail:{edge_id}"
+    try:
+        edge = _redis().hgetall(key)
+        if not edge:
+            return _err(f"Edge '{edge_id}' not found in ADG cache", key=key)
+        return _ok(edge)
+    except _redis_lib.RedisError as exc:
+        return _err(f"Redis unavailable: {exc}")
+
+
+@mcp.tool()
+def adg_module_context(module_id: str) -> dict[str, Any]:
+    """Get precomputed module context from Redis (zero fan-out, O(1) lookup).
+
+    Returns: module metadata (layer, entity_type, resolved_path), edge counts
+    by relation, neighbors by relation, context digest.
+
+    This is the HOT PATH for module analysis — uses only precomputed Redis data.
+    Must be derivable entirely from Redis WITHOUT fan-out calls.
+    For provenance requiring SQLite evidence, use adg_source_context instead.
+
+    Args:
+        module_id: Module node ID (integer stored as string)
+    """
+    try:
+        node = _redis().hgetall(f"adg:node:{module_id}")
+        if not node:
+            return _err(f"Module '{module_id}' not found in ADG cache")
+
+        context_raw = _redis().get(f"adg:module_context:{module_id}")
+        context_digest = _redis().get(f"adg:module_context_digest:{module_id}")
+
+        if context_raw:
+            context = json.loads(context_raw)
+        else:
+            context = {"edge_counts": {}, "neighbors": {}}
+
+        return _ok(
+            {
+                "module_id": module_id,
+                "layer": node.get("layer", ""),
+                "entity_type": node.get("entity_type", ""),
+                "resolved_path": node.get("resolved_path", ""),
+                "adg_name": node.get("adg_name", ""),
+                "edge_counts": context.get("edge_counts", {}),
+                "neighbors": context.get("neighbors", {}),
+                "context_digest": context_digest or "",
+            }
+        )
+    except _redis_lib.RedisError as exc:
+        return _err(f"Redis unavailable: {exc}")
+
+
+def _get_sqlite_conn() -> sqlite3.Connection:
+    """Get a connection to the latest ADG SQLite database."""
+    candidates = sorted(
+        glob.glob(str(_ADG_DIR / "adg_indexed_*.sqlite")),
+        key=os.path.getmtime,
+        reverse=True,
+    )
+    if not candidates:
+        raise FileNotFoundError(f"No adg_indexed_*.sqlite in {_ADG_DIR}")
+    conn = sqlite3.connect(candidates[0])
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+@mcp.tool()
+def adg_source_context(edge_id: str) -> dict[str, Any]:
+    """Pull provenance context for an edge from SQLite ONLY (not Redis).
+
+    This is the JUDGE-SAFE escalation path. Any governance or evaluation
+    pathway that requires provenance MUST use this tool, not Redis-only tools.
+
+    Returns: edge metadata, source/target node names and types, layer info.
+
+    Args:
+        edge_id: Edge ID (integer stored as string), e.g. '12345'
+    """
+    try:
+        conn = _get_sqlite_conn()
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT e.*, src.adg_name AS src_name, dst.adg_name AS dst_name, "
+            "src.entity_type AS src_type, dst.entity_type AS dst_type, "
+            "src.layer AS src_layer, dst.layer AS dst_layer "
+            "FROM edges e "
+            "JOIN nodes src ON src.id = e.src_id "
+            "JOIN nodes dst ON dst.id = e.dst_id "
+            "WHERE e.id = ?",
+            (int(edge_id),),
+        )
+        row = cur.fetchone()
+        conn.close()
+        if not row:
+            return _err(f"Edge {edge_id} not found in SQLite", provenance="sqlite")
+        result = {k: str(v) if v is not None else "" for k, v in dict(row).items()}
+        return _ok(result, provenance="sqlite")
+    except FileNotFoundError as exc:
+        return _err(str(exc), provenance="sqlite")
+    except Exception as exc:  # noqa: BLE001
+        return _err(f"SQLite error: {exc}", provenance="sqlite")
 
 
 @mcp.tool()
