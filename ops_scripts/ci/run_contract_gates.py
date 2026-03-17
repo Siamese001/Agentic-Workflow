@@ -12,6 +12,7 @@ Fails if argv0 contains pwsh/powershell.
 import subprocess
 import sys
 from pathlib import Path
+
 from agentic_core.L5_safety.config.structure_blueprint.ssot import DOCS_REPORTS_PLANS
 
 
@@ -131,6 +132,10 @@ def main():
         (
             [sys.executable, "ops_scripts/ci/adg_yaml_grep_ban_gate.py", "--all-yaml"],
             "ADG YAML Grep-Ban Gate — no grep/rg in GitHub Actions run: steps (§2.6)",
+        ),
+        (
+            [sys.executable, "ops_scripts/ci/check_mcp_config_sovereignty.py"],
+            "MCP Config Sovereignty — filesystem allowedDirectories locked to repo root (Rule #0)",
         ),
     ]
 

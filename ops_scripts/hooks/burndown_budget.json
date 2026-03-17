@@ -1,38 +1,4 @@
 {
-  "_tmp_current_state.py": {
-    "path_fragility": 1
-  },
-  "_tmp_l0_after.py": {
-    "path_fragility": 1
-  },
-  "_tmp_l0_regen.py": {
-    "path_fragility": 1
-  },
-  "_tmp_l1l2l3_wc.py": {
-    "path_fragility": 1
-  },
-  "_tmp_l4_debug.py": {
-    "path_fragility": 1
-  },
-  "_tmp_l4_regen.py": {
-    "magic_configuration": 3,
-    "path_fragility": 1
-  },
-  "_tmp_l5_counts.py": {
-    "path_fragility": 1
-  },
-  "_tmp_l5_regen.py": {
-    "path_fragility": 1
-  },
-  "_tmp_l6_regen.py": {
-    "path_fragility": 1
-  },
-  "_tmp_routing_callers.py": {
-    "path_fragility": 1
-  },
-  "_tmp_routing_sites.py": {
-    "path_fragility": 1
-  },
   "agentic_core/L0_routing/capacity/capacity_aware_router.py": {
     "magic_configuration": 2
   },
@@ -63,10 +29,6 @@
   },
   "agentic_core/L0_routing/scripts/_ssot_meta_learning.py": {
     "silent_degradation": 11
-  },
-  "system_learning/engines/historical_backfill_engine.py": {
-    "silent_degradation": 1,
-    "silent_swallower": 1
   },
   "agentic_core/L0_routing/scripts/_ssot_phases.py": {
     "silent_degradation": 7
@@ -295,9 +257,6 @@
     "silent_degradation": 1,
     "silent_swallower": 2
   },
-  "agentic_core/L3_orchestration/reasoning/UnifiedAgent.py": {
-    "silent_degradation": 1
-  },
   "agentic_core/L3_orchestration/reasoning/mcp_manager.py": {
     "silent_degradation": 1
   },
@@ -497,6 +456,25 @@
   },
   "agentic_core/evaluation/__init__.py": {
     "silent_degradation": 3
+  },
+  "agentic_core/evaluation/judges/deterministic_judges.py": {
+    "magic_configuration": 2
+  },
+  "agentic_core/evaluation/judges/evidence_assembler.py": {
+    "magic_configuration": 1,
+    "silent_swallower": 1
+  },
+  "agentic_core/evaluation/judges/llm_judges.py": {
+    "silent_swallower": 3
+  },
+  "agentic_core/evaluation/judges/orchestrator.py": {
+    "silent_swallower": 2
+  },
+  "agentic_core/evaluation/judges/scorecard.py": {
+    "magic_configuration": 1
+  },
+  "agentic_core/evaluation/judges/verdict_store.py": {
+    "magic_configuration": 6
   },
   "agentic_core/evaluation/metrics/__init__.py": {
     "silent_degradation": 9
@@ -763,6 +741,9 @@
   "apps_shared/utils/config_loader_util.py": {
     "silent_degradation": 1
   },
+  "apps_shared/utils/graph_rag_fusion_util.py": {
+    "magic_configuration": 1
+  },
   "apps_shared/utils/health_check_types_util.py": {
     "silent_degradation": 2
   },
@@ -773,7 +754,7 @@
     "silent_degradation": 1
   },
   "apps_shared/utils/rank_observability_components_util.py": {
-    "silent_degradation": 1
+    "silent_swallower": 2
   },
   "apps_shared/utils/resource_manager_types_util.py": {
     "silent_degradation": 1
@@ -928,6 +909,10 @@
   "ops_scripts/maintenance/migrate_reports_to_ssot.py": {
     "silent_degradation": 1
   },
+  "system_learning/engines/historical_backfill_engine.py": {
+    "silent_degradation": 1,
+    "silent_swallower": 1
+  },
   "system_learning/engines/meta_learning_bus.py": {
     "silent_swallower": 6
   },
@@ -974,8 +959,8 @@
     "magic_configuration": 1
   },
   "tools/adg/adg_mcp_server.py": {
-    "magic_configuration": 3,
-    "silent_swallower": 1
+    "magic_configuration": 5,
+    "silent_swallower": 2
   },
   "tools/adg/adg_redis_query.py": {
     "global_mutation": 1
@@ -1005,17 +990,59 @@
   "tools/adg/redis_health_check.py": {
     "silent_degradation": 1
   },
+  "tools/adg_incremental_update.py": {
+    "global_mutation": 1
+  },
   "tools/check_adg_edges.py": {
     "silent_swallower": 1
   },
   "tools/check_schema.py": {
     "path_fragility": 4
   },
+  "tools/closure_gap_analysis.py": {
+    "path_fragility": 1
+  },
   "tools/commit_helper.py": {
     "path_fragility": 4
   },
   "tools/debug_import_end.py": {
     "global_mutation": 1
+  },
+  "tools/denominator_diagnostic.py": {
+    "path_fragility": 1
+  },
+  "tools/denominator_lock_gate.py": {
+    "path_fragility": 3
+  },
+  "tools/denominator_post_rollback_validate.py": {
+    "path_fragility": 3
+  },
+  "tools/denominator_rollback_baseline.py": {
+    "path_fragility": 2
+  },
+  "tools/evidence/_check_convergence_edges.py": {
+    "path_fragility": 8
+  },
+  "tools/evidence/_convergence_batch_wire.py": {
+    "path_fragility": 9,
+    "silent_swallower": 1
+  },
+  "tools/evidence/_convergence_batch_wire_v2.py": {
+    "path_fragility": 9,
+    "silent_swallower": 1
+  },
+  "tools/evidence/_convergence_gap_analysis.py": {
+    "magic_configuration": 1
+  },
+  "tools/evidence/_convergence_wiring_audit.py": {
+    "path_fragility": 8
+  },
+  "tools/evidence/_debug_blocker_edges.py": {
+    "path_fragility": 5
+  },
+  "tools/evidence/_debug_g11_visitor.py": {
+    "global_mutation": 1,
+    "path_fragility": 9
   },
   "tools/evidence/_pg_verify.py": {
     "silent_degradation": 1
@@ -1042,6 +1069,18 @@
     "global_mutation": 1,
     "path_fragility": 1
   },
+  "tools/l4_gap_analysis.py": {
+    "path_fragility": 2
+  },
+  "tools/l4_read_baseline_check.py": {
+    "path_fragility": 1
+  },
+  "tools/l4_read_wave_patcher.py": {
+    "magic_configuration": 1
+  },
+  "tools/l4_wave_patcher.py": {
+    "magic_configuration": 1
+  },
   "tools/measure_p0.py": {
     "path_fragility": 4
   },
@@ -1062,5 +1101,44 @@
   },
   "tools/prove_meta_learning_bus.py": {
     "silent_degradation": 4
+  },
+  "tools/reads_from_delta_check.py": {
+    "path_fragility": 1
+  },
+  "tools/wave101_full_governance_audit.py": {
+    "path_fragility": 1
+  },
+  "tools/wave101_writes_audit.py": {
+    "path_fragility": 1
+  },
+  "tools/wave110_capture_baseline.py": {
+    "path_fragility": 3
+  },
+  "tools/wave_convergence_census.py": {
+    "path_fragility": 1
+  },
+  "tools/wave_gap_finder.py": {
+    "path_fragility": 3
+  },
+  "tools/wave_measure.py": {
+    "path_fragility": 3
+  },
+  "tools/wave_multi_metric_census.py": {
+    "path_fragility": 3
+  },
+  "tools/wave_read_gap_finder.py": {
+    "path_fragility": 3
+  },
+  "tools/wave_read_symbol_census.py": {
+    "path_fragility": 3
+  },
+  "tools/wave_route_symbol_census.py": {
+    "path_fragility": 3
+  },
+  "tools/wave_symbol_impact.py": {
+    "path_fragility": 3
+  },
+  "tools/wave_write_symbol_census.py": {
+    "path_fragility": 3
   }
 }

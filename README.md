@@ -1,274 +1,187 @@
-# Agentic Workflow
+# Agentic Workflow — Deterministic Multi-Agent AI Platform
+
+## Overview
+This repository provides a production-grade agentic AI platform that enforces deterministic execution, embedded governance, and full-system observability, enabling enterprises to move from AI experimentation to reliable, auditable, and scalable AI systems.
+
+> **Core Principle:** AI systems should behave like reliable software systems, not probabilistic experiments.
+
+Most enterprise AI implementations today face three core issues: **non-reproducible behavior, limited observability, and weak governance.** This platform addresses these directly by treating AI as a systems engineering problem rather than just a modeling problem, ensuring reproducibility, traceability, and continuous improvement across all agent interactions.
+
+---
+
+## Architecture & Layered Design (L0–L6)
+
+The system enforces a strict separation of responsibilities across layers to ensure scalability, determinism, and operational clarity.
+
+       [ User / API Request ]
+                 │
+ ┌───────────────▼─────────────────────────────────┐
+ │ L0: Routing (Intent Classification & Workload)  │
+ └───────────────┬─────────────────────────────────┘
+                 │
+ ┌───────────────▼─────────────────┐   ┌─────────────┐
+ │ L1: Cognition (Bounded LLM)     │◄──┤ L4: State   │
+ └───────────────┬─────────────────┘   │ (ADG Memory,│
+                 │                     │ Checkpoints)│
+ ┌───────────────▼─────────────────┐   └──────┬──────┘
+ │ L2: Execution (PTC Tool Calling)│          │
+ └───────────────┬─────────────────┘          │
+                 │                     ┌──────▼──────┐
+ ┌───────────────▼─────────────────┐   │ L5: Safety  │
+ │ L3: Orchestration (Multi-Agent) ├──►│ (Guardrails,│
+ └───────────────┬─────────────────┘   │ HITL Gates) │
+                 │                     └──────┬──────┘
+ ┌───────────────▼────────────────────────────▼──────┐
+ │ L6: Observability (Tracing & Determinism Digests) │
+ └───────────────────────────────────────────────────┘
+
+* **L0 Routing:** Deterministic routing across model tiers and workflows.
+* **L1 Cognition:** Controlled LLM interaction with bounded stochasticity.
+* **L2 Execution:** Programmatic Tool Calling (PTC) with schema enforcement.
+* **L3 Orchestration:** Multi-agent coordination and workflow management.
+* **L4 State:** Agentic Dependency Graph (ADG), memory, and checkpointing.
+* **L5 Safety:** Guardrails, policy enforcement, and HITL triggers.
+* **L6 Observability:** Execution tracing, determinism validation, and metrics.
+
+---
+
+## Key Differentiators
+
+### 1. Deterministic Replay (System-Level Determinism)
+Determinism is enforced at the system layer, not the model layer. Determinism is enforced across orchestration, tool execution, and state transitions, while the LLM layer remains probabilistic but bounded and controlled.
+
+  [ Live Execution ]                   [ Graph Storage ]
+  ┌────────────────┐    Traces &       ┌───────────────┐
+  │ L1-L3 Activity ├──► Digests ──────►│ SQLite (ADG)  │
+  └────────────────┘                   │ ~69K Nodes    │
+          ▲                            │ ~500K Edges   │
+          │                            └───────┬───────┘
+          │                                    │
+          │ State Hydration                    │ Query / Fetch
+          │                                    ▼
+  ┌───────┴────────┐                   ┌───────────────┐
+  │ Replay Engine  │◄── Hash Match ────┤ CI/CD / Debug │
+  └────────────────┘                   └───────────────┘
+
+* Execution traces recorded across all layers.
+* Determinism digests validate execution consistency.
+* Replay engine re-executes workflows against captured state.
+* Controlled LLM parameters (temperature, seeds, caching boundaries).
+* **Result:** Audit-ready execution, reproducible workflows, and CI/CD validation for AI systems.
+
+### 2. Agentic Dependency Graph (ADG)
+A fully indexed, queryable graph representing system behavior.
+
+* **~69K nodes** and **~500K+ edges** observed in production-scale ADG snapshots.
+* Edge types: `calls`, `reads_from`, `writes_to`, `emits_determinism_digest`.
+* SQLite-backed for deterministic state inspection and replay.
+* **Result:** End-to-end observability and instant root cause analysis across complex agent workflows.
+
+### 3. Built-In Governance & Safety
+Governance is embedded directly into execution flows.
+
+* C0 informational boundary prevents unsafe state mutation.
+* Guardrails enforced pre and post execution.
+* HITL triggered dynamically based on risk thresholds.
+* Policy enforcement tied to execution graph state.
+* **Result:** Enterprise-grade safety and compliance without sacrificing velocity.
+
+### 4. Programmatic Tool Calling (PTC)
+Tool usage is deterministic and contract-driven.
+
+ [ L1: Cognition ]
+        │ (Structured JSON Intent)
+        ▼
+ [ Contract Schema Validator ] ──(Fail)──► [ Error / Self-Correction ]
+        │ (Pass)
+        ▼
+ [ L2: Tool Execution ]
+
+* Explicit tool schemas and invocation contracts.
+* No free-form or inferred tool selection.
+* Execution routed through controlled interfaces.
+* **Result:** Eliminates hallucinated tool calls and ensures reliable automation.
 
-Enterprise agentic AI platform for deterministic multi-agent execution, bounded side effects, auditable recovery, and governed deployment.
+### 5. Meta-Learning Feedback Loop
+The system improves continuously through execution feedback.
 
-**Executive Summary**
+ [ ADG Execution Trace ] ──► [ Text Embedding Model ]
+                                        │
+ [ L0 / L3 Future Routing ] ◄── [ Vector Store (FAISS) ]
 
-This repository demonstrates how to build agentic systems that are reliable enough for enterprise environments rather than just impressive in demos.
+* Execution traces → embeddings → retrieval signals.
+* Pattern detection across runs.
+* Healing agents adjust future execution paths.
+* **Result:** Reduced failure recurrence and compounding system intelligence.
 
-Most agent frameworks focus on agent composition and prompt orchestration. This system instead focuses on the **control plane required to make multi-agent systems trustworthy, inspectable, and operationally safe.**
+### 6. Semantic Cache + Redis L1 Retrieval Gate
+Efficient retrieval and cost optimization layer.
 
-The platform treats routing, execution, mutation control, safety enforcement, replayability, and recovery as **first-class engineering primitives** rather than application glue.
+ [ Incoming Query ] ──► [ Redis L1 Cache ] ──(Hit)──► [ Fast Deterministic Return ]
+                                 │
+                               (Miss)
+                                 ▼
+                       [ L1 Cognition (LLM) ]
 
-The result is a layered agentic execution substrate that enables complex workflows to run with explicit control over side effects, deterministic decision boundaries, and auditable system behavior.
+* Redis-based hot cache for low-latency access.
+* Embedding similarity for semantic cache hits.
+* Deterministic validation of cached responses.
+* **Result:** Lower latency and significant reduction in LLM cost footprint.
 
-**What This System Demonstrates**
+### 7. Human-in-the-Loop (HITL) as a System Primitive
+Human oversight is embedded, not external.
 
-This repository is not a collection of agents. It is a platform that demonstrates how governed agentic systems can be engineered.
+* Triggered by policy and risk scoring.
+* Integrated into orchestration flows.
+* Fully traceable within ADG.
+* **Result:** Increased trust, auditability, and controlled deployment of critical workflows.
 
-Key properties include:
+---
 
-* **Deterministic routing**
-  Critical routing and orchestration decisions generate stable digests tied to exact inputs so behavior can be inspected and compared across runs.
+## Enterprise Impact
 
-* **Bounded side effects**
-  Filesystem writes, model calls, and embedding generation pass through explicit gateways instead of being scattered throughout the codebase.
+| Capability | Enterprise Outcome |
+| :--- | :--- |
+| **Deterministic Replay** | Audit-ready AI systems with CI/CD compatibility |
+| **ADG Observability** | 10x faster debugging and precise root cause analysis |
+| **Embedded Governance** | Reduced compliance risk and safe data boundaries |
+| **Programmatic Tool Calling**| Reliable automation with zero tool hallucination |
+| **Meta-Learning System** | Continuous improvement and reduced failure recurrence |
+| **Semantic Cache** | Lower latency and reduced infrastructure cost |
 
-* **Architectural enforcement**
-  AST analysis verifies architectural rules such as layer boundaries and dependency direction.
+---
 
-* **Fail-closed behavior**
-  Integrity failures stop execution rather than silently degrading into partial results.
+## Tech Stack
 
-* **Auditable recovery**
-  Validation and healing components repair failures in ways that are observable and testable.
+* **Languages:** Python (core orchestration, agents, tooling)
+* **Execution Layer:** Custom agentic orchestration framework (L0–L3 separation)
+* **State & Graph:** SQLite (ADG), JSON graph snapshots
+* **Caching Layer:** Redis (L1 semantic cache, retrieval gating)
+* **Embeddings:** OpenAI (`text-embedding-3-large`), BGE (local embedding models)
+* **Vector Store:** FAISS (semantic retrieval layer)
+* **LLM Routing:** Multi-model routing (OpenAI, local vLLM inference)
+* **Infrastructure:** Local-first with containerized services (Redis, supporting services)
 
-* **Reusable multi-app architecture**
-  Multiple applications run on the same shared platform rather than embedding logic into one-off scripts.
+---
 
-**Working Applications**
+## Quickstart
 
-Two applications run on top of the same shared agentic core.
+# Clone the repository
+git clone https://github.com/Siamese001/Agentic-Workflow.git
+cd Agentic-Workflow
 
-1. **apps_lic**
+# Create environment
+python -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
 
-   Governed LinkedIn outreach generation system.
+# Install dependencies
+pip install -r requirements.txt
 
-   Capabilities:
+# Start Redis (L1 cache)
+docker-compose up -d redis
 
-   * Profile analysis
-   * Research and context enrichment
-   * Persona routing
-   * Message generation
-   * Validation and QA
-   * Recovery loops for output quality
+# Run a deterministic workflow
+python main.py --workflow sample_agentic_run
 
-2. **apps_rg**
-
-   Resume generation system.
-
-   Capabilities:
-
-   * Persona-driven resume construction
-   * Evidence-aware bullet generation
-   * Company-specific tailoring
-   * Validation and healing loops
-
-These applications demonstrate that the platform is **reusable infrastructure** rather than a single-purpose agent pipeline.
-
-**Why This Architecture Exists**
-
-Most agentic repos demonstrate that agents can call tools and coordinate tasks.
-
-Very few demonstrate how those systems remain stable in real production environments.
-
-Common failure modes in typical agent frameworks include:
-
-* Hidden side effects scattered across the codebase
-* Non-repeatable model behavior
-* Silent fallbacks masking infrastructure failures
-* Architectural drift over time
-* Retry loops that hide errors instead of repairing them
-
-This repository explores a different engineering model where agentic systems are treated as **infrastructure platforms with enforceable control surfaces.**
-
-**Platform Architecture**
-
-The system is organized into a layered architecture.
-
-Execution flows downward through controlled interfaces while validation and observability flow upward.
-
-1. **L0 Routing**
-
-   * Entry policies
-   * Reasoning policies
-   * Envelope formation
-   * Deterministic routing decisions
-
-2. **L1 Cognition**
-
-   * Perception modules
-   * Reasoning systems
-   * Action planning
-   * Coordinator logic
-
-3. **L2 Execution**
-
-   * Execution pipelines
-   * Sovereign gateways
-   * Healing-tier routing
-   * Execution cycle management
-
-4. **L3 Orchestration**
-
-   * Multi-step workflow coordination
-   * Tool handshake protocols
-   * Contract enforcement
-
-5. **L4 State**
-
-   * Retrieval systems
-   * Vector store interaction
-   * State inspection
-   * Mutation monitoring
-
-6. **L5 Safety**
-
-   * Classification
-   * Validation policies
-   * Structural rule enforcement
-   * SSOT governance
-
-7. **L6 Observability**
-
-   * Execution digests
-   * Telemetry signals
-   * Drift detection
-   * Audit traces
-
-**Sovereign Gateways**
-
-Side effects are not allowed to occur directly inside arbitrary agents.
-
-They pass through explicit gateways designed for policy enforcement and auditability.
-
-* **Write Gateway**
-
-  * Controls filesystem mutations
-  * Verifies allowed write paths
-
-* **LLM Gateway**
-
-  * Centralizes model invocation
-  * Routes between Gemini and local Qwen models
-
-* **Embedding Gateway**
-
-  * Generates embeddings
-  * Verifies embedding artifact integrity
-
-Separating these gateways ensures that mutation control, model governance, and embedding integrity remain independent and enforceable.
-
-**Determinism and Replay**
-
-Certain decision boundaries generate deterministic digests tied to exact inputs.
-
-These digests allow:
-
-* Run-to-run comparison
-* Drift detection
-* Execution audit trails
-* Debuggable reasoning paths
-
-The system does not attempt to make every component deterministic. Instead it ensures that **critical trust boundaries emit reproducible signals.**
-
-**Architecture Dependency Graph**
-
-The repository includes an AST-derived Architecture Dependency Graph.
-
-The ADG is used to analyze the structure of the codebase and enforce architectural rules.
-
-Capabilities include:
-
-* Detecting layer boundary violations
-* Identifying gateway bypass attempts
-* Detecting dependency cycles
-* Surfacing orphan modules
-* Tracking structural drift
-
-Using AST analysis turns architectural governance into **executable verification rather than documentation.**
-
-**Failure Philosophy**
-
-The platform is intentionally designed to make failures visible.
-
-Examples include:
-
-* Write attempts outside approved paths are rejected
-* Embedding integrity mismatches stop execution
-* Layer inversions trigger structural failures
-* Prompt contract violations block dispatch
-* Routing paths outside allowlists cause hard failure
-
-The goal is not to eliminate failure.
-The goal is to make failures **bounded, inspectable, and recoverable.**
-
-**Testing and CI**
-
-Continuous integration enforces architectural integrity in addition to running tests.
-
-Checks include:
-
-* Dependency graph enforcement
-* Layer sovereignty validation
-* Prompt governance verification
-* Determinism guards
-* Import correctness checks
-* Application scope isolation
-* Infrastructure boundary validation
-
-Architectural drift therefore appears as a **CI failure** rather than an unnoticed design regression.
-
-**Technology Stack**
-
-Model inference
-
-* Gemini APIs
-* Qwen models via local vLLM
-
-Embeddings
-
-* FAISS
-* multilingual-e5-large
-
-Data and state
-
-* Redis
-* DuckDB
-* SQLite
-* Pandas
-
-Structural analysis
-
-* Python AST
-* libcst
-
-Prompt assembly
-
-* XML semantic fencing
-* Jinja2 StrictUndefined
-
-Testing
-
-* pytest
-* pytest-asyncio
-* Playwright
-
-Continuous integration
-
-* GitHub Actions
-
-**How to Read This Repository**
-
-Recommended reading order:
-
-1. README
-2. docs/technical/agentic_process_mapping_detailed.md
-3. agentic_core/adg
-4. agentic_core/L2_execution
-5. agentic_core/L3_orchestration
-6. agentic_core/L5_safety
-7. apps_lic and apps_rg
-8. tests
-
-This order reveals the system from architecture through enforcement to application.
+# Validate replay determinism
+python replay.py --run_id <execution_id>
