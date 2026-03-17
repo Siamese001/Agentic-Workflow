@@ -36,6 +36,7 @@ from agentic_core.adg.schema import (
     AUTHORIZE_EXECUTE_SYMBOLS,
     BLOCKS_DIRECT_WRITE_SYMBOLS,
     BOUNDARY_VERIFIER_CLASSES,
+    BROAD_EXCEPTION_TYPES,
     BUDGET_EXCEEDED_EXCEPTIONS,
     CAPABILITY_CHOKEPOINT_CLASSES,
     CAPABILITY_TOKEN_CLASSES,
@@ -77,6 +78,7 @@ from agentic_core.adg.schema import (
     JIT_CONTEXT_CLASSES,
     LINKS_EXECUTION_TO_SNAPSHOT_SYMBOLS,
     LINKS_INCIDENT_TRACE_SYMBOLS,
+    LOGGING_METHOD_NAMES,
     MUTATION_TRANSPORT_CLASSES,
     NETWORK_SYMBOLS,
     NETWORK_TRANSCRIPT_SYMBOLS,
@@ -1824,16 +1826,17 @@ class _AntipatternVisitor(ast.NodeVisitor):
 
     # ------------------------------------------------------------------
     # Pattern 1: Silent exception swallowing
+    # Pattern 1b: Broad exception catch (except Exception without re-raise)
+    # Pattern 1c: Log-and-swallow (log but no re-raise on broad type)
+    # Pattern 1d: Return-None swallow (return None/empty on broad type)
     # ------------------------------------------------------------------
 
     def visit_ExceptHandler(self, node: ast.ExceptHandler) -> None:
+        exc_name = self._except_type_name(node)
+        is_broad = exc_name in BROAD_EXCEPTION_TYPES or exc_name == "bare"
+
+        # Pattern 1: Silent swallow (pass/continue/break/bare return)
         if self._is_silent_swallow(node):
-            exc_name = ""
-            if node.type is not None:
-                if isinstance(node.type, ast.Name):
-                    exc_name = node.type.id
-                elif isinstance(node.type, ast.Attribute):
-                    exc_name = self._extract_sym(node.type)
             self.edges.append(
                 Edge(
                     from_name=self.module_adg_name,
@@ -1845,7 +1848,66 @@ class _AntipatternVisitor(ast.NodeVisitor):
                     symbol=f"except:{exc_name or 'bare'}",
                 )
             )
+            self.generic_visit(node)
+            return
+
+        has_raise = self._body_has_raise(node.body)
+
+        # Pattern 1b: Broad exception catch without re-raise
+        if is_broad and not has_raise:
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="antipattern",
+                    to_name=canonical_name("Symbol", "broad_exception_catch"),
+                    edge_kind="broad_exception_catch",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=f"except:{exc_name}",
+                )
+            )
+
+        # Pattern 1c: Log-and-swallow (broad type, body is only logging, no re-raise)
+        if is_broad and not has_raise and self._is_log_only_body(node.body):
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="antipattern",
+                    to_name=canonical_name("Symbol", "log_and_swallow"),
+                    edge_kind="log_and_swallow",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=f"except:{exc_name}",
+                )
+            )
+
+        # Pattern 1d: Return-None/empty swallow (broad type, returns sentinel, no re-raise)
+        if is_broad and not has_raise:
+            sentinel = self._return_sentinel_kind(node.body)
+            if sentinel:
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="antipattern",
+                        to_name=canonical_name("Symbol", "return_none_swallow"),
+                        edge_kind="return_none_swallow",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=f"except:{exc_name}:{sentinel}",
+                    )
+                )
+
         self.generic_visit(node)
+
+    def _except_type_name(self, node: ast.ExceptHandler) -> str:
+        """Extract the exception type name from an except handler."""
+        if node.type is None:
+            return "bare"
+        if isinstance(node.type, ast.Name):
+            return node.type.id
+        if isinstance(node.type, ast.Attribute):
+            return self._extract_sym(node.type)
+        return ""
 
     def _is_silent_swallow(self, node: ast.ExceptHandler) -> bool:
         """True if the except body has no real action (pass, continue, break, or bare return)."""
@@ -1860,6 +1922,69 @@ class _AntipatternVisitor(ast.NodeVisitor):
             if isinstance(stmt, ast.Return) and stmt.value is None:
                 return True
         return False
+
+    @staticmethod
+    def _body_has_raise(body: list[ast.stmt]) -> bool:
+        """True if any statement in the body is a raise (re-raise or new raise)."""
+        for stmt in body:
+            if isinstance(stmt, ast.Raise):
+                return True
+            # Check nested if/else for re-raise patterns
+            for child in ast.walk(stmt):
+                if isinstance(child, ast.Raise):
+                    return True
+        return False
+
+    @staticmethod
+    def _is_log_only_body(body: list[ast.stmt]) -> bool:
+        """True if every statement in the except body is a logging call or pass."""
+        if not body:
+            return False
+        for stmt in body:
+            if isinstance(stmt, ast.Pass):
+                continue
+            if isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
+                func = stmt.value.func
+                sym = ""
+                if isinstance(func, ast.Attribute):
+                    sym = func.attr
+                elif isinstance(func, ast.Name):
+                    sym = func.id
+                if sym in LOGGING_METHOD_NAMES:
+                    continue
+            return False
+        return True
+
+    @staticmethod
+    def _return_sentinel_kind(body: list[ast.stmt]) -> str:
+        """If body ends with a return of a sentinel value, return a description; else ''."""
+        if not body:
+            return ""
+        # Look at last statement
+        last = body[-1]
+        if not isinstance(last, ast.Return):
+            return ""
+        val = last.value
+        if val is None:
+            return "return_bare"
+        if isinstance(val, ast.Constant):
+            if val.value is None:
+                return "return_None"
+            if val.value is False:
+                return "return_False"
+            if val.value == "":
+                return "return_empty_str"
+            if val.value == 0 and not isinstance(val.value, bool):
+                return "return_zero"
+        if isinstance(val, ast.List) and not val.elts:
+            return "return_empty_list"
+        if isinstance(val, ast.Dict) and not val.keys:
+            return "return_empty_dict"
+        if isinstance(val, ast.Tuple) and not val.elts:
+            return "return_empty_tuple"
+        if isinstance(val, ast.Set) and not val.elts:
+            return "return_empty_set"
+        return ""
 
     # ------------------------------------------------------------------
     # Pattern 2: Blocking calls inside async functions

@@ -295,6 +295,9 @@ EdgeKind = Literal[
     "policy_validation",
     "state_lineage",
     "silent_exception_swallow",
+    "broad_exception_catch",
+    "log_and_swallow",
+    "return_none_swallow",
     "blocking_call_in_async",
     "global_state_mutation",
     "retry_without_backoff",
@@ -1079,6 +1082,27 @@ ANTIPATTERN_CATEGORY_NAMES: frozenset[str] = frozenset(
         "mutable_default_arg",
         "star_import_use",
         "hardcoded_secret",
+        "broad_exception_catch",
+        "log_and_swallow",
+        "return_none_swallow",
+    }
+)
+# --- Exception broadness classification ---
+# Exception types considered "broad" — catching these without re-raise is Col3 behavior.
+BROAD_EXCEPTION_TYPES: frozenset[str] = frozenset({"Exception", "BaseException"})
+# Logging method names that indicate a log-and-swallow pattern when used
+# as the *only* action in an except block (no re-raise).
+LOGGING_METHOD_NAMES: frozenset[str] = frozenset(
+    {
+        "debug",
+        "info",
+        "warning",
+        "error",
+        "critical",
+        "exception",
+        "warn",
+        "log",
+        "print",
     }
 )
 HEALING_ORCHESTRATOR_CLASSES: frozenset[str] = frozenset(
@@ -1761,6 +1785,8 @@ __all__ = [
     "POLICY_STATE_READ_METHODS",
     "ANTIPATTERN_REGISTRY_CLASSES",
     "ANTIPATTERN_CATEGORY_NAMES",
+    "BROAD_EXCEPTION_TYPES",
+    "LOGGING_METHOD_NAMES",
     "HEALING_ORCHESTRATOR_CLASSES",
     "HEALING_DISPATCH_METHODS",
     "NONDETERMINISM_WALL_CLOCK_SYMBOLS",
