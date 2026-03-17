@@ -40,6 +40,18 @@ def _get_layer_dirs():
     )
 
 
+try:
+    (L0_MAINTENANCE_DIR, L1_COGNITION_DIR, L2_EXECUTION_DIR,
+     L3_ORCHESTRATION_DIR, L4_STATE_DIR, L5_SAFETY_DIR, L6_OBSERVABILITY_DIR) = _get_layer_dirs()
+except Exception:  # guardian: allow-silent-swallow
+    L0_MAINTENANCE_DIR = "agentic_core/L0_routing/maintenance"
+    L1_COGNITION_DIR = "agentic_core/L1_cognition"
+    L2_EXECUTION_DIR = "agentic_core/L2_execution"
+    L3_ORCHESTRATION_DIR = "agentic_core/L3_orchestration"
+    L4_STATE_DIR = "agentic_core/L4_state"
+    L5_SAFETY_DIR = "agentic_core/L5_safety"
+    L6_OBSERVABILITY_DIR = "agentic_core/L6_observability"
+
 # 1. Bounded Contexts (Strict Boundaries)
 # Sovereign Layer Hierarchy (L0=Governance, L6=observability)
 # Higher ranks (smaller numbers) define Policy and Intent.

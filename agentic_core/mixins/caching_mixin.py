@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import functools
 import logging
+from typing import Optional
 import threading
 import time
 from collections import OrderedDict

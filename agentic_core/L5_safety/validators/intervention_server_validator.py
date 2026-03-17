@@ -93,6 +93,7 @@ Canon Validator Patterns Implemented:
 """
 import asyncio
 import logging
+from typing import Optional
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime

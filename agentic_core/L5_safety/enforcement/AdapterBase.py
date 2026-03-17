@@ -17,6 +17,7 @@ References:
 """
 
 import logging
+from typing import Optional
 import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field

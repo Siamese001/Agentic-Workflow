@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import ast
 import logging
+from typing import Optional
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path

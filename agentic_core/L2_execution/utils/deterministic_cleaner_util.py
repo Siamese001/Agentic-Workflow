@@ -86,6 +86,7 @@ _emit_links_execution_to_snapshot("p4", "deterministic_cleaner_util", "exec_snap
 "\nL6 Deterministic Pre-Flight Sanitation\n\nImplements deterministic cleaners that run before LLM processing\nto maintain baseline code quality and save tokens.\n"
 import ast
 import logging
+from typing import Optional
 import os
 import re
 import subprocess

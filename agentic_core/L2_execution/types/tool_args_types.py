@@ -4,6 +4,8 @@ Tool Registry Definitions - Phase 21.1 Restoration
 Provides Pydantic models for tool argument validation.
 These are used by the tool_registry to validate tool calls.
 """
+from pathlib import Path
+from typing import Optional
 
 from pydantic import BaseModel, Field
 

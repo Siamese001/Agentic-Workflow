@@ -88,6 +88,7 @@ _emit_links_execution_to_snapshot("p4", "SovereignActionPlaneAgent", "exec_snaps
 "Sovereign Action Plane Implementation.\n\nBypasses corrupted registry files with Toolsmith logic from the monolith.\n"
 import asyncio
 import logging
+from typing import Optional
 import os
 import subprocess
 import time

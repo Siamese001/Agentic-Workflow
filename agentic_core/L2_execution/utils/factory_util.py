@@ -5,6 +5,7 @@ Phase 1 - Pillar 3: Typed Contracts (Strict Schemas)
 
 import importlib
 import logging
+from typing import Optional
 from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (

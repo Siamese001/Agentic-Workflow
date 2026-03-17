@@ -86,6 +86,7 @@ _emit_links_execution_to_snapshot("p4", "sovereign_rag_orchestrator", "exec_snap
 import asyncio
 import json
 import logging
+from typing import Optional
 import uuid
 from pathlib import Path
 from typing import Any

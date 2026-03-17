@@ -57,9 +57,11 @@ CACHE_METRICS_ENABLED: bool = os.getenv("CACHE_METRICS_ENABLED", "false").lower(
 
 # Default directories to exclude from file discovery
 # This is a frozenset for immutability and hashability
-DEFAULT_EXCLUDE_DIRS: frozenset[str] = (
-    GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
-)
+try:
+    _DET, _GED, _SEF = _get_ssot_exclusions()
+    DEFAULT_EXCLUDE_DIRS: frozenset[str] = _GED | _SEF | _DET
+except Exception:  # guardian: allow-silent-swallow
+    DEFAULT_EXCLUDE_DIRS: frozenset[str] = frozenset({"__pycache__", ".git", "node_modules", "venv", ".venv", "archives"})
 
 
 # =============================================================================

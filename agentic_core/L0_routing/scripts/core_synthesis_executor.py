@@ -9,6 +9,7 @@ to eliminate entropy and establish the Final Sovereign Engine.
 import json
 import shutil
 import uuid
+from pathlib import Path
 
 from agentic_core.L0_routing.config import (
     APPS_LIC_DIR,

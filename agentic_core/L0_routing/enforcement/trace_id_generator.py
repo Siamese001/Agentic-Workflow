@@ -8,6 +8,7 @@ from __future__ import annotations
 import hashlib
 import re
 import uuid
+from typing import Optional
 
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
 from agentic_core.runtime.lifecycle_trace_contract import (

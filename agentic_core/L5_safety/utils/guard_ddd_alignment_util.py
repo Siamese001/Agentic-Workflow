@@ -9,6 +9,7 @@ Detects violations of Domain-Driven Design tactical patterns:
 """
 
 import ast
+from dataclasses import dataclass
 from pathlib import Path
 
 from agentic_core.runtime.lifecycle_trace_contract import (
@@ -182,8 +183,8 @@ _emit_proposal_commits_routing("p1", "guard_ddd_alignment_util", "routing_commit
 try:
     from agentic_core.L0_routing.scripts.full_agent_discovery import SCRIPTS_DIR, TESTS_DIR
 except ImportError:
-    SCRIPTS_DIR = OPS_SCRIPTS_DIR
-    TESTS_DIR = TESTS_DIR
+    SCRIPTS_DIR = "ops_scripts"
+    TESTS_DIR = "tests"
 
 
 def get_ddd_violations_detailed(root_path: str) -> list[dict]:

@@ -15,6 +15,8 @@ LAYER: L3_orchestration (workflow coordination)
 
 import json
 import logging
+from dataclasses import dataclass, field
+from typing import Optional
 import uuid
 from collections.abc import Awaitable, Callable
 from datetime import datetime

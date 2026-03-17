@@ -106,6 +106,8 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
+    _emit_writes_through,  # noqa: E402
+    _emit_links_incident_trace,  # noqa: E402
 )
 
 _emit_emits_metric_event("test_adg_g17_g22_completeness_accuracy", "p4obs", "metric_1")

@@ -81,6 +81,9 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_gated_by_confidence,
     _emit_escalates_to_human,
     _emit_routes_through,
+    _emit_writes_through,
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
 )
 
 _emit_emits_metric_event("answer_support", "p4obs", "metric_1")

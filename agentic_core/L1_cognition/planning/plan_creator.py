@@ -29,6 +29,7 @@ from agentic_core.L1_cognition.planning.reasoning_plan import (
     ReasoningPlanError,
     StepStatus,
     get_plan_registry,
+    reset_plan_registry,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,  # noqa: E402

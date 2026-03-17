@@ -111,6 +111,7 @@ LOCATION: agentic_core/L5_safety/enforcement/ (LCD+ SSOT-compliant)
 """
 
 import logging
+from typing import Optional
 import os
 import time
 import uuid

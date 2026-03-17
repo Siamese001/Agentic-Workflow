@@ -80,6 +80,7 @@ _emit_links_execution_to_snapshot("p4", "security_controls_util", "exec_snapshot
 
 "\nSecurity Controls Utility\n\nZero-Ambiguity Standard: Renamed from security_controls_validator_util.py to security_controls_util.py\nCategory: UTILITY (Security helper functions)\n\nProvides core functionality and exports for the Security Controls module.\n"
 import logging
+from typing import Optional
 from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (

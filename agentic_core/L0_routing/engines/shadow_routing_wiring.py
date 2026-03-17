@@ -8,6 +8,7 @@ that cannot affect actual routing decisions.
 from __future__ import annotations
 
 import logging
+from typing import Optional
 from typing import Any
 
 from agentic_core.L0_routing.engines.shadow_router_classifier import ShadowRouterClassifier

@@ -29,6 +29,7 @@ THUNDERING HERD PROTECTION:
 
 import hashlib
 import logging
+from typing import Optional
 import os
 import random
 import time

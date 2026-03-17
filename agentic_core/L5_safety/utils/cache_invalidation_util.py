@@ -81,6 +81,7 @@ _emit_links_execution_to_snapshot("p4", "cache_invalidation_util", "exec_snapsho
 '\ncache Invalidation Utilities for Healing Workflows\n\nProvides decorators and helpers to invalidate cache after successful healing operations.\nThis ensures stale cached data (like AST results, compliance checks) is purged\nwhen the underlying code changes.\n\nUsage:\n\n    class HealerAgent(SovereignBaseAgent):\n        @heal_invalidate_cache("canon:*")  # Invalidate AST caches after heal\n        async def heal_repository(self) -> dict:\n            # Healing logic...\n            return {"success": True}\n'
 import functools
 import logging
+from pathlib import Path
 from collections.abc import Callable
 from typing import Any
 

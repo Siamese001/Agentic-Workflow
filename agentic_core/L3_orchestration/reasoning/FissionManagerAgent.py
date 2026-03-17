@@ -83,6 +83,7 @@ _emit_links_execution_to_snapshot("p4", "FissionManagerAgent", "exec_snapshot_li
 "\n[PHASE 14 REFACTOR] FissionManagerAgent.\nSTRICT COMPLIANCE: No direct SDK imports. Uses SovereignLLMGateway.\n"
 import json
 import logging
+from pathlib import Path
 import os
 from dataclasses import dataclass
 

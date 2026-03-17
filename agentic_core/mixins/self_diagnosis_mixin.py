@@ -71,6 +71,7 @@ _emit_links_execution_to_snapshot("p4", "self_diagnosis_mixin", "exec_snapshot_l
 
 "\nSelfDiagnosisMixin – Sovereign Agent Role Mixin (Phase 31 – Dec 30, 2025)\n\nPurpose:\n  Enable critical agents (especially orchestrators) to autonomously monitor their own health.\n  Detects:\n    - Missing mandatory components\n    - Component health_check failures\n    - configuration drift\n  Critical for ComplianceOrchestratorAgent, HealingOrchestratorAgent, and future SovereignOrchestrator.\n\nConstitutional Alignment:\n  - Enables self-preservation without external monitoring\n  - Provides early warning of internal degradation\n  - Fully observable via structured diagnosis output\n"
 import logging
+from typing import Optional
 from datetime import datetime
 from typing import Any
 

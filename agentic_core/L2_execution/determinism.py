@@ -13,6 +13,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+from typing import Optional
 from pathlib import Path
 
 from agentic_core.agents.agent_registry import AGENT_REGISTRY, registry_digest

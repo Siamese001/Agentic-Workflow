@@ -15,6 +15,7 @@ Same-cycle events (commit_tick == before_tick) are structurally invisible.
 from __future__ import annotations
 
 import uuid
+from typing import Optional
 
 from agentic_core.L4_state.types.violation_event_types import ViolationEvent
 from agentic_core.runtime.lifecycle_trace_contract import (

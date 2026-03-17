@@ -74,6 +74,7 @@ _emit_links_execution_to_snapshot("p4", "IBlackboardLeaseVerifierProtocol", "exe
 "\nSecure Filesystem Operations - Sandboxed File I/O with Blackboard Integration\nPrevents path traversal, protects critical directories, and integrates with HealingLease.\n\nDELEGATION NOTICE (2026-01-21):\n- move_file() and delete_file() now delegate to ArchivalGatekeeper\n- This ensures all destructive operations go through the governance layer\n- Direct shutil/os operations have been removed for security\n"
 import os
 import warnings
+from typing import Optional
 from functools import wraps
 from pathlib import Path
 from typing import Any, Protocol

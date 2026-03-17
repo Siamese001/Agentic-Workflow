@@ -13,6 +13,8 @@ Also provides bridge adapters (dataclass → dict) that do not mutate inputs.
 from __future__ import annotations
 
 import dataclasses
+from dataclasses import dataclass
+from enum import Enum
 from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (

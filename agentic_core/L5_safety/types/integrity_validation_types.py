@@ -86,6 +86,7 @@ _emit_links_execution_to_snapshot("p4", "integrity_validation_types", "exec_snap
 "\nIntegrity Validation Guardrail - Consolidated Integrity Checks\n\nMerges:\n- L5IntegrityGateExecutor\n- GravityEnforcer\n\nComposable Rules:\n- integrity_checks: Data integrity validation\n- gravity_compliance: Gravity enforcement\n"
 import hashlib
 import time
+from typing import Optional
 from dataclasses import dataclass, field
 from typing import Any
 

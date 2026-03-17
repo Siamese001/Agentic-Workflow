@@ -205,7 +205,7 @@ class VmConfig:
     """configuration for micro-VM."""
 
     vm_id: str
-    Provider: VMProvider = VMProvider.FIRECRACKER
+    Provider: VmProvider = VmProvider.FIRECRACKER
     cpu_count: int = 1
     memory_mb: int = 512
     disk_mb: int = 1024

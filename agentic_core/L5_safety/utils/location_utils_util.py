@@ -80,6 +80,7 @@ _emit_links_execution_to_snapshot("p4", "location_utils_util", "exec_snapshot_li
 
 "\nShared utility functions for location-based operations.\n\nExtracted from LocationAgent.py during SRP fission.\nAll location-related agents should import from this module.\n"
 import os
+from typing import Optional
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR

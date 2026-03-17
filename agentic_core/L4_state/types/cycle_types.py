@@ -80,6 +80,7 @@ _emit_links_execution_to_snapshot("p4", "cycle_types", "exec_snapshot_link")
 
 "Think-Act-Observe Cycle Implementation.\n\nPhase 2 - Pillar 4: Workflow (DAGs)\nImplements the 5-step Mission-Scene-Think-Act-Observe loop with ReAct integration.\n"
 import logging
+from pathlib import Path
 from dataclasses import dataclass, field
 from typing import Any
 

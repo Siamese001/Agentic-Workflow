@@ -5,6 +5,7 @@ This layer provides orchestration, agent handoff, capability registry, and workf
 No cognition, routing, or execution logic belongs in this layer.
 Only orchestration contracts, capability management, and visualization are exported.
 """
+from enum import Enum
 
 # Orchestration contracts and capability registry
 from agentic_core.L3_orchestration.visualization.visualization_updater import (

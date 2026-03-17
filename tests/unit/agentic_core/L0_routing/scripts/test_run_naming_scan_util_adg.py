@@ -5,6 +5,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
+_AVAILABLE = False
 try:
     from agentic_core.L0_routing.scripts.run_naming_scan_util import (  # noqa: F401
         BATCH_SIZE,
@@ -15,8 +16,7 @@ try:
         THRESHOLD,
     )
     _AVAILABLE = True
-except ImportError:
-    _AVAILABLE = False
+except Exception:  # guardian: allow-silent-swallow
     MAX_RETRIES = None  # type: ignore[assignment,misc]
     DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
     THRESHOLD = None  # type: ignore[assignment,misc]

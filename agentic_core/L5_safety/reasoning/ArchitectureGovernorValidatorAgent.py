@@ -7,6 +7,7 @@ structured check dict consumed by heal_architecture_governance via HEALER_REGIST
 """
 
 from __future__ import annotations
+from typing import Optional
 
 from pathlib import Path
 from typing import Any

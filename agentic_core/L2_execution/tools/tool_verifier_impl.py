@@ -86,6 +86,8 @@ _emit_links_execution_to_snapshot("p4", "tool_verifier_impl", "exec_snapshot_lin
 '\nTool Verification Loop - The "Compiler Check"\n\nPrevents agents from hallucinating tools or code by forcing verification\nbefore execution. Acts as a pre-commit check for agent actions.\n'
 import ast
 import logging
+from pathlib import Path
+from typing import Optional
 import re
 import uuid
 from dataclasses import dataclass

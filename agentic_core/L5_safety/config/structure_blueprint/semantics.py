@@ -8,6 +8,9 @@ Loaded lazily on first access.
 """
 
 from __future__ import annotations
+from dataclasses import dataclass
+from pydantic import BaseModel
+from typing import Optional
 
 from collections.abc import Mapping, Sequence
 from typing import Any, Final

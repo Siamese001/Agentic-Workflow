@@ -81,6 +81,7 @@ _emit_links_execution_to_snapshot("p4", "PredictiveCostAuditorAgent", "exec_snap
 
 '\n⚛️ Predictive Cost Auditor - The Efficiency Guard\n\nMonitors Atomic Blackboard to track Economic ROI of healing efforts.\nIdentifies "Healing Sinks" where token spending exceeds value threshold.\n\nMission: Provide Go/No-Go signals for pipeline deployment\nStrategy: Thermal mapping of repository to identify technical debt hotspots\n\nTracks: Token usage per file, healing attempts, success rates\nFlags: Files consuming excessive tokens without reaching PASS state\nSuggests: Where manual Atomic Fission would be more cost-effective\n'
 import logging
+from pathlib import Path
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timezone

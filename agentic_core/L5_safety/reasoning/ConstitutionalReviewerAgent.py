@@ -1,6 +1,13 @@
 from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+
+try:
+    from agentic_core.L5_safety.base import L5SafetyBase
+except ImportError:
+    class L5SafetyBase:  # type: ignore[no-redef]
+        """Stub L5SafetyBase."""
+        pass
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,

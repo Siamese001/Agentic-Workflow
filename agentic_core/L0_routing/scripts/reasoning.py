@@ -82,6 +82,7 @@ _emit_links_execution_to_snapshot("p4", "reasoning", "exec_snapshot_link")
 
 "\nReasoning Strategy Pattern - Polymorphic Thought Execution\n\nReplaces if/elif branching with strategy classes for different reasoning modes.\nEach strategy encapsulates a distinct reasoning approach (CoT, ToT, ReAct, etc.).\n"
 import logging
+from pathlib import Path
 from abc import ABC, abstractmethod
 from typing import Any
 

@@ -80,6 +80,7 @@ _emit_links_execution_to_snapshot("p4", "mcp_tool_types", "exec_snapshot_link")
 
 "MCP Tool Server Integration.\n\nProvides MCP (Model Context Protocol) tool server integration\nfor external tool access and context providers.\n\nPhase 1C - SDK Integration Layer\n"
 import logging
+from typing import Optional
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field

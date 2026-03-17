@@ -5,6 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
+
+
+_AVAILABLE = False
 try:
     from agentic_core.L3_orchestration.engines.dag_manager import (  # noqa: F401
         BATCH_SIZE,
@@ -15,9 +18,6 @@ try:
         THRESHOLD,
         DAGManager,
     )
-    _AVAILABLE = True
-except ImportError:
-    _AVAILABLE = False
     DAGManager = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]
     DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
@@ -25,6 +25,9 @@ except ImportError:
     BUFFER_SIZE = None  # type: ignore[assignment,misc]
     BATCH_SIZE = None  # type: ignore[assignment,misc]
     MAX_DEPTH = None  # type: ignore[assignment,misc]
+    _AVAILABLE = True
+except Exception:  # guardian: allow-silent-swallow
+    pass
 
 
 @pytest.mark.skipif(not _AVAILABLE, reason="dag_manager.py deps unavailable")

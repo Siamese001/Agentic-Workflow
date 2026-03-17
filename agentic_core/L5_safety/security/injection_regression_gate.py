@@ -4,6 +4,7 @@ Injection Regression Gate - L5 Security Gate.
 Provides fail-closed regression detection for injection detection.
 Deterministic evaluation with no timestamps, UUIDs, or random values.
 """
+from typing import Optional
 
 from dataclasses import dataclass
 from typing import Any

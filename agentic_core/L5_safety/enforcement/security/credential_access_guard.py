@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+from typing import Optional
 import os
 from typing import Any
 

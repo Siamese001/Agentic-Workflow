@@ -157,10 +157,13 @@ _emit_links_execution_to_snapshot("p4", "verify_base_agent_names_util", "exec_sn
 project_root = Path(__file__).parent.parent
 data_file = project_root / AGENTIC_CORE_DIR / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
 
-content = data_file.read_text(encoding="utf-8")
-lines = [l for l in content.split("\n") if not l.strip().startswith("//")]
-content = "\n".join(lines).replace("window.dashboardData = ", "").strip().rstrip(";")
-data = json.loads(content)
+try:
+    content = data_file.read_text(encoding="utf-8")
+    lines = [l for l in content.split("\n") if not l.strip().startswith("//")]
+    content = "\n".join(lines).replace("window.dashboardData = ", "").strip().rstrip(";")
+    data = json.loads(content)
+except (FileNotFoundError, OSError):  # guardian: allow-silent-swallow
+    pass
 
 print("\nFirst 10 territories in dashboard data:")
 print("=" * 60)

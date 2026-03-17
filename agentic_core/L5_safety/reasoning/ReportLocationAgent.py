@@ -22,6 +22,7 @@ SSOT PRINCIPLE:
 from __future__ import annotations
 
 import logging
+from typing import Optional
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path

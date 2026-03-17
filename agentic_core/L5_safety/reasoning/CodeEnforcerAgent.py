@@ -83,6 +83,7 @@ _emit_links_execution_to_snapshot("p4", "CodeEnforcerAgent", "exec_snapshot_link
 "\nCodeEnforcerAgent - Code Sovereignty Enforcement\n\nPhase 3 Hard Migration: Consolidates:\n- CodeSSOTEnforcerAgent (SSOT registry sync)\n- CodeStandardsEnforcerAgent (code standards)\n- PatternEnforcerAgent (pattern enforcement)\n- TypeEnforcerAgent (type hint enforcement)\n- PythonFileSovereigntyEnforcerAgent (file sovereignty)\n\nFeatures:\n- SSOT registry synchronization\n- Code standards enforcement\n- Pattern detection and enforcement\n- Type hint validation\n- Layer sovereignty protection (L5 files protected from L3/L4 modification)\n- Signed exception support for cross-layer access\n"
 import ast
 import logging
+from typing import Optional
 import re
 import threading
 import uuid

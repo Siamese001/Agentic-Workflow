@@ -81,6 +81,7 @@ _emit_links_execution_to_snapshot("p4", "hardened_orchestrator_wrapper_util", "e
 "\nHardened Orchestrator - Thin Wrapper\nDelegates to consolidated core orchestrator in agentic_core/core/orchestrator_main.py\n\nThis is a stub-and-proxy pattern implementation that eliminates race conditions\nby routing all orchestration through the consolidated AtomicBlackboard-integrated core.\n"
 import asyncio
 import logging
+from pathlib import Path
 from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (

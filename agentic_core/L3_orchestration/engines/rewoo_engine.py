@@ -14,6 +14,7 @@ Layer: L3_orchestration
 from __future__ import annotations
 
 import logging
+from typing import Optional
 import uuid
 from collections.abc import Awaitable, Callable
 from typing import Any

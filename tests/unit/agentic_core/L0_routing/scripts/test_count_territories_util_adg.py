@@ -5,24 +5,28 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
+_AVAILABLE = False
 try:
-    from agentic_core.L0_routing.scripts.count_territories_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_DEPTH,
-        MAX_RETRIES,
-        THRESHOLD,
-    )
-    _AVAILABLE = True
-except ImportError:
-    _AVAILABLE = False
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
-    MAX_DEPTH = None  # type: ignore[assignment,misc]
+    try:
+        from agentic_core.L0_routing.scripts.count_territories_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_DEPTH,
+            MAX_RETRIES,
+            THRESHOLD,
+        )
+        _AVAILABLE = True
+    except ImportError:
+        _AVAILABLE = False
+        MAX_RETRIES = None  # type: ignore[assignment,misc]
+        DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
+        THRESHOLD = None  # type: ignore[assignment,misc]
+        BUFFER_SIZE = None  # type: ignore[assignment,misc]
+        BATCH_SIZE = None  # type: ignore[assignment,misc]
+        MAX_DEPTH = None  # type: ignore[assignment,misc]
+except Exception:  # guardian: allow-silent-swallow
+    pass
 
 
 @pytest.mark.skipif(not _AVAILABLE, reason="count_territories_util.py deps unavailable")

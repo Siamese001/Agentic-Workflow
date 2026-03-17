@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+from pathlib import Path
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 

@@ -9,6 +9,7 @@ import argparse
 import os
 import re
 import sys
+from typing import Optional
 from pathlib import Path
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_pulls_context,

@@ -25,6 +25,7 @@ It only knows about "checks", "issues", "metrics", and "results".
 """
 
 from __future__ import annotations
+from typing import Optional
 
 from dataclasses import dataclass, field
 from typing import Any, ClassVar

@@ -15,6 +15,7 @@ Phase: 5 - Optimization & Enhancement
 from __future__ import annotations
 
 import logging
+from typing import Optional
 import uuid
 from dataclasses import dataclass, field
 from typing import Any

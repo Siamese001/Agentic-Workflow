@@ -8,6 +8,7 @@ Ensures deterministic storage and retrieval of tool call artifacts.
 from __future__ import annotations
 
 import json
+from typing import Optional
 from pathlib import Path
 from typing import Any
 

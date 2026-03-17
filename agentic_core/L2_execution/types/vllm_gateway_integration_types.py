@@ -12,6 +12,8 @@ No external SDK dependencies. All types are stdlib + Phase 1/2 types.
 from __future__ import annotations
 
 import threading
+from pathlib import Path
+from typing import Optional
 from dataclasses import dataclass
 from typing import Any
 

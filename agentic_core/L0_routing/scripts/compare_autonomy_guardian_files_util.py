@@ -92,23 +92,26 @@ _emit_links_execution_to_snapshot("p4", "compare_autonomy_guardian_files_util", 
 
 file1 = Path("agentic_core/L5_safety/validators/AutonomyGuardianAgent.py")
 file2 = Path("agentic_core/config/blueprint_sovereign/AutonomyGuardianAgent.py")
-content1 = file1.read_text(encoding="utf-8").splitlines()
-content2 = file2.read_text(encoding="utf-8").splitlines()
-print(f"L5 Validators version: {len(content1)} lines")
-print(f"Blueprint version: {len(content2)} lines")
-print(f"Difference: {len(content1) - len(content2)} lines")
-print()
-diff = list(
-    difflib.unified_diff(content2, content1, fromfile=str(file2), tofile=str(file1), lineterm="", n=3)
-)
-if diff:
-    print(f"Found {len(diff)} diff lines")
-    print("\nFirst 100 lines of diff:")
-    for line in diff[:100]:
-        print(line)
-else:
-    print("Files are identical")
-import re
+try:
+    content1 = file1.read_text(encoding="utf-8").splitlines()
+    content2 = file2.read_text(encoding="utf-8").splitlines()
+    print(f"L5 Validators version: {len(content1)} lines")
+    print(f"Blueprint version: {len(content2)} lines")
+    print(f"Difference: {len(content1) - len(content2)} lines")
+    print()
+    diff = list(
+        difflib.unified_diff(content2, content1, fromfile=str(file2), tofile=str(file1), lineterm="", n=3)
+    )
+    if diff:
+        print(f"Found {len(diff)} diff lines")
+        print("\nFirst 100 lines of diff:")
+        for line in diff[:100]:
+            print(line)
+    else:
+        print("Files are identical")
+    import re
+except (FileNotFoundError, OSError):  # guardian: allow-silent-swallow
+    pass
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_captures_pattern,

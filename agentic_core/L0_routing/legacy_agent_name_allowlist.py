@@ -10,6 +10,7 @@ Governance: adding an entry requires a justification string (>=12 chars).
 The L5 inventory contract test enforces that no stray string refs for
 these names exist outside this file and the agent's own defining module.
 """
+from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,  # noqa: E402

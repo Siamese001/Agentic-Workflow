@@ -6,6 +6,7 @@ Stub shadow classes removed — use canonical mixin imports instead.
 """
 
 from __future__ import annotations
+from pathlib import Path
 
 from dataclasses import dataclass
 from typing import Any

@@ -14,6 +14,7 @@ Both implementations were identical - this consolidates them.
 from __future__ import annotations
 
 import ast
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from agentic_core.runtime.lifecycle_trace_contract import (

@@ -12,6 +12,7 @@ and surfaces as a typed pre-action violation.
 """
 
 from __future__ import annotations
+from typing import Any
 
 from contextlib import contextmanager
 from typing import Generator

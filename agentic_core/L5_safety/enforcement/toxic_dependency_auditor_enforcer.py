@@ -13,6 +13,7 @@ Logic:
 """
 
 import ast
+from typing import Optional
 from pathlib import Path
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent

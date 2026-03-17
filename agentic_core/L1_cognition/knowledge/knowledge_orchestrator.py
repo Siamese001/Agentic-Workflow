@@ -26,6 +26,7 @@ from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_
 from agentic_core.L1_cognition.knowledge.reasoning_knowledge import (
     ReasoningKnowledgeRecord,
     get_reasoning_knowledge_registry,
+    reset_reasoning_knowledge_registry,
 )
 from agentic_core.L5_safety.enforcement.policy_action_contract import (
     ActionClass,

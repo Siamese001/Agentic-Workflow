@@ -2,6 +2,7 @@
 
 Provides capacity-aware routing decisions that incorporate workload, queue pressure, and service availability.
 """
+from enum import Enum
 
 # P3/L0 Routing Capacity Governance exports
 from agentic_core.L0_routing.capacity.capacity_aware_router import (

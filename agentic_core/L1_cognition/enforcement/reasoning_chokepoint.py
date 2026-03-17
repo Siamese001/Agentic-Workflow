@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+from typing import Optional
 import time
 from typing import Any, Callable
 

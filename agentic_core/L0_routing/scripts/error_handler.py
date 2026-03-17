@@ -75,6 +75,7 @@ _emit_links_execution_to_snapshot("p4", "error_handler", "exec_snapshot_link")
 
 "\nUnified Workflow Engine\n\nSingle entry point for all workflow orchestration, replacing 8 core engines:\n- NervousSystemAgent\n- MissionControllerEngine\n- SubatomicOrchestratorImpl\n- DAGManagerAgent\n- DagEngineAgent\n- SelfRecoveringOrchestratorAgent\n- WorkflowFissionManagerAgent\n- L3OrchestrationBase\n"
 import uuid
+from typing import Optional
 from dataclasses import dataclass
 from typing import Any
 

@@ -5,12 +5,12 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
+_AVAILABLE = False
 try:
     import agentic_core.L0_routing.scripts.verify_base_agent_names_util as _mod  # noqa: F401
     _AVAILABLE = True
-except ImportError:
+except Exception:  # guardian: allow-silent-swallow
     _mod = None
-    _AVAILABLE = False
 
 
 def test_module_importable():

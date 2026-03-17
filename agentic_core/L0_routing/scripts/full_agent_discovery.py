@@ -35,6 +35,7 @@ import ast
 import hashlib
 import json
 import logging
+from typing import Optional
 import platform
 import sys
 from dataclasses import dataclass, field

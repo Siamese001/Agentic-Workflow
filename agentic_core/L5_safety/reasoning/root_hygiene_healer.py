@@ -99,6 +99,7 @@ Rationale:
 
 import sys
 import uuid
+from typing import Optional
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any

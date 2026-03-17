@@ -83,6 +83,8 @@ _emit_links_execution_to_snapshot("p4", "ArchitectureGovernorAgent", "exec_snaps
 import hashlib
 import json
 import logging
+from enum import Enum
+from typing import Optional
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime

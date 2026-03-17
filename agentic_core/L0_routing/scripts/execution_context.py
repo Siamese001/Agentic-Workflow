@@ -12,6 +12,7 @@ Import from here instead of duplicating code.
 
 import hashlib
 import json
+from typing import Optional
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any

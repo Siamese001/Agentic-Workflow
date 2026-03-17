@@ -5,6 +5,7 @@ This layer provides persistence, state management, and lifecycle governance.
 No orchestration, execution, or routing logic belongs in this layer.
 Only persistence contracts, state lifecycle, and governance are exported.
 """
+from enum import Enum
 
 # P3/L4 State Lifecycle Governance exports
 from agentic_core.L4_persistence.lifecycle.lifecycle_policy_applier import (

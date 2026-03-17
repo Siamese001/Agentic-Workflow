@@ -23,6 +23,8 @@ import ast
 import hashlib
 import json
 import logging
+from dataclasses import dataclass
+from pydantic import BaseModel
 import os
 import platform
 import sys
@@ -124,6 +126,7 @@ except ImportError:
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent))
 # guardian: allow-global-mutation
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, ARCHIVES_DIR  # noqa: E402
 sys.path.insert(0, str(Path(__file__).parent.parent / AGENTIC_CORE_DIR / "L0_routing" / "scripts"))
 try:
     from territory_ssot_definitions import get_territory_from_path, refine_territory_by_ast
@@ -1690,3 +1693,4 @@ _emit_reads_through("l4", "complexity_visitor_util", "urg_read_99")
 _emit_reads_through("l4", "complexity_visitor_util", "urg_read_100")
 _emit_reads_through("l4", "complexity_visitor_util", "urg_read_101")
 _emit_reads_through("l4", "complexity_visitor_util", "urg_read_102")
+ROOT = Path(__file__).resolve().parents[3]

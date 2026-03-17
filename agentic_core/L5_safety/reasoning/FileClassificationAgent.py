@@ -190,6 +190,9 @@ except ImportError:
 # Safety Gates (WAVE 1.1–3.2): collision prevention, blast radius, mass action, wave execution
 # Logger for healing operations
 import logging
+from enum import Enum
+from pydantic import BaseModel
+from typing import Optional
 import uuid
 
 from agentic_core.L5_safety.utils.fca_safety_gates_util import (

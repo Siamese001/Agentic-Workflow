@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_authorize_and_execute,
@@ -81,6 +83,8 @@ _emit_links_execution_to_snapshot("p4", "DuplicateCodeDetectorAgent", "exec_snap
 import ast
 import hashlib
 import logging
+from dataclasses import dataclass
+from typing import Any, Optional
 import uuid
 
 from agentic_core.L5_safety.config.structure_blueprint import (
@@ -206,6 +210,33 @@ class DuplicateFile:
     keep_path: Path | None = None
     delete_paths: list[Path] = None
     rationale: str = ""
+
+
+try:
+    from agentic_core.utils.timeout_util import timeout
+except ImportError:
+    def timeout(seconds=30):
+        def decorator(func):
+            return func
+        return decorator
+
+try:
+    from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
+except ImportError:
+    class SubatomicTestingMixin:  # type: ignore[no-redef]
+        pass
+
+try:
+    from agentic_core.mixins.healer_mixin import HealerMixin
+except ImportError:
+    class HealerMixin:  # type: ignore[no-redef]
+        pass
+
+try:
+    from agentic_core.interfaces.mixins import MCPHardenedMixin
+except (ImportError, NameError):
+    class MCPHardenedMixin:  # type: ignore[no-redef]
+        pass
 
 
 @dataclass

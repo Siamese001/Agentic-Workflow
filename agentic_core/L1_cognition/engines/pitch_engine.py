@@ -81,6 +81,7 @@ _emit_links_execution_to_snapshot("p4", "pitch_engine", "exec_snapshot_link")
 "\nPitch Generator for Outreach Engine\nGenerates personalized outreach pitches\n"
 import json
 import logging
+from typing import Optional
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any

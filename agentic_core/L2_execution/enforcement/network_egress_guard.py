@@ -8,6 +8,7 @@ MUST originate exclusively from SovereignLLMGateway.
 from __future__ import annotations
 
 import logging
+from typing import Optional
 import os
 import re
 import socket

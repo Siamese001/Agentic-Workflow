@@ -11,6 +11,7 @@ import enum as _enum
 import os
 import uuid
 import warnings
+from enum import Enum
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path

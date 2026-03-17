@@ -84,8 +84,9 @@ _emit_links_execution_to_snapshot("p4", "forge_fortress_util", "exec_snapshot_li
 "Brief description of functionality and purpose."
 "Brief description of functionality and purpose."
 from pathlib import Path
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR  # noqa: E402
 
-root: Any = Path("C:/Git/Agentic-Workflow")
+ROOT: Any = Path("C:/Git/Agentic-Workflow")
 core: Any = ROOT / AGENTIC_CORE_DIR
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 from typing import Any
@@ -192,12 +193,12 @@ external_map: Any = {
     "archives": ["logs", "backups", "refactors"],
 }
 annexation_plan: Any = {
-    "config": CORE / "config/P1_core",
-    "observability": CORE / "observability/P1_core",
-    "prompt_governance": CORE / "prompt_governance/P1_core",
-    "schemas": CORE / "schemas/P1_core",
-    "scripts": CORE / "L0_routing/scripts",
-    "prompt_templates": CORE / "prompt_governance/P2_prompts",
+    "config": core / "config/P1_core",
+    "observability": core / "observability/P1_core",
+    "prompt_governance": core / "prompt_governance/P1_core",
+    "schemas": core / "schemas/P1_core",
+    "scripts": core / "L0_routing/scripts",
+    "prompt_templates": core / "prompt_governance/P2_prompts",
 }
 
 

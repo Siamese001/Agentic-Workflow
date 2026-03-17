@@ -5,6 +5,7 @@ This is a data integrity issue that needs to be fixed.
 """
 
 import json
+from pathlib import Path
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,  # noqa: E402

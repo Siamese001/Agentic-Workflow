@@ -1,8 +1,18 @@
 from __future__ import annotations
 
 import uuid
+from pathlib import Path
+from typing import Optional
 from dataclasses import dataclass
 from typing import Any
+
+try:
+    from agentic_core.L6_observability.reasoning.layer_decorator import layer_entry
+except ImportError:
+    def layer_entry(*args, **kwargs):  # type: ignore[misc]
+        """Stub layer_entry decorator."""
+        def wrapper(f): return f
+        return wrapper if not args or not callable(args[0]) else args[0]
 
 from agentic_core.L0_routing.config.path_constants import (
     APPS_LIC_DIR,

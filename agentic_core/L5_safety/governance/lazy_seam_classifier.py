@@ -84,6 +84,7 @@ _emit_links_execution_to_snapshot("p4", "lazy_seam_classifier", "exec_snapshot_l
 
 "\nLazy Seam Allowlist Reason Classifier - Phase 4.2\n\nClassifies lazy seams into reason categories based on their imports and context.\n"
 import json
+from typing import Optional
 from pathlib import Path
 from typing import Any
 

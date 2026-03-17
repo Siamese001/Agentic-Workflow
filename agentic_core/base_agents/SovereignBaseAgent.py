@@ -26,6 +26,7 @@ MRO HARDENING:
 """
 
 import logging
+from dataclasses import dataclass
 import uuid
 from pathlib import Path
 from typing import Any

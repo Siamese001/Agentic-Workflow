@@ -207,6 +207,12 @@ def _get_DiscoveredAgent():
 logger = logging.getLogger(__name__)
 
 
+try:
+    DiscoveredAgent = _get_DiscoveredAgent()
+except Exception:
+    class DiscoveredAgent:  # type: ignore
+        def __init__(self, **kw): self.__dict__.update(kw)
+
 def check_compliance(discovered_agents: list[DiscoveredAgent]) -> list[str]:
     """
     Validates that all discovered agents conform to architectural requirements.

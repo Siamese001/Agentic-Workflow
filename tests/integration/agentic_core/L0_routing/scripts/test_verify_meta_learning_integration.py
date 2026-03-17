@@ -95,6 +95,8 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_transcripts_response,
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
+    _emit_writes_through,  # noqa: E402
+    _emit_links_incident_trace,  # noqa: E402
 )
 
 _emit_emits_metric_event("test_verify_meta_learning_integration", "p4obs", "metric_1")

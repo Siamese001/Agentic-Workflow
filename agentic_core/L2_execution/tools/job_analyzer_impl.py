@@ -81,6 +81,7 @@ _emit_links_execution_to_snapshot("p4", "job_analyzer_impl", "exec_snapshot_link
 "\nJob Analyzer - LLM-powered job description analysis.\n\nAnalyzes job descriptions to extract key skills, requirements, and cultural fit indicators.\n"
 import json
 import logging
+from typing import Optional
 import os
 from typing import Any
 

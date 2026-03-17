@@ -88,6 +88,7 @@ def _get_write_gateway():
 "\nStorage adapters for different backend types.\n\nProvides atomic storage operations with hot-swappable backends.\nSupports local disk (for development) and S3 (for production).\n"
 import json
 import logging
+from typing import Optional
 import uuid
 from pathlib import Path
 from typing import Any, Protocol

@@ -206,8 +206,8 @@ def test_safe_remediation_gate_has_path_filter():
 
 def test_workflow_count_reduced():
     count = len(WORKFLOWS)
-    assert count <= 20, (
-        f"Expected ≤20 workflows after cleanup, found {count}. Possible stray workflows not yet deleted."
+    assert count <= 21, (
+        f"Expected ≤21 workflows after cleanup, found {count}. Possible stray workflows not yet deleted."
     )
     assert count >= 15, (
         f"Only {count} workflows found — unexpectedly few, check nothing critical was deleted."

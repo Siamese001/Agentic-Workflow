@@ -81,6 +81,7 @@ _emit_links_execution_to_snapshot("p4", "archive_util", "exec_snapshot_link")
 "MCP client factory and instantiation logic.\n\nPhase 1 - Pillar 3: Typed Contracts (Strict Schemas)\n"
 import importlib
 import logging
+from typing import Optional
 from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (

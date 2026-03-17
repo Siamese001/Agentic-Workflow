@@ -90,6 +90,7 @@ from pathlib import Path
 from typing import Any
 
 import redis
+from typing import Optional
 from redis.connection import ConnectionPool
 
 from agentic_core.config.core.env_loader import get_env

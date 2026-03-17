@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+from typing import Optional
 import threading
 import time
 import uuid

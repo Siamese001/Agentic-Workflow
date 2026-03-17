@@ -11,6 +11,7 @@ SOURCE: data/prompt_governance/injections/
 from __future__ import annotations
 
 import logging
+from typing import Optional
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any

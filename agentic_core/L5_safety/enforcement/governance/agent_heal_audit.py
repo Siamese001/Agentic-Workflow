@@ -12,6 +12,7 @@ import argparse
 import ast
 import json
 import uuid
+from pydantic import BaseModel
 from pathlib import Path, PurePosixPath
 from typing import Any
 

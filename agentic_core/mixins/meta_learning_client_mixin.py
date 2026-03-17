@@ -21,6 +21,7 @@ into the SovereignBaseAgent hierarchy, enabling all agents to:
 from __future__ import annotations
 
 import logging
+from typing import Optional
 import uuid
 from typing import Any
 

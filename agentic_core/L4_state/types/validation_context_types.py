@@ -90,6 +90,7 @@ def _get_write_gateway():
 "Brief description of functionality and purpose."
 import json
 import logging
+from typing import Optional
 from datetime import datetime
 from pathlib import Path
 from typing import Protocol

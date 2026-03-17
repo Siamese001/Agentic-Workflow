@@ -85,6 +85,7 @@ _emit_links_execution_to_snapshot("p4", "constitutional_governance_types", "exec
 
 "\nConstitutional Governance Guardrail - Consolidated Constitutional AI\n\nMerges:\n- ConstitutionalReviewer\n- constitutional_ai\n- constitutional_overseer\n\nComposable Rules:\n- constitutional_review: Constitutional principle checks\n- governance: Governance rule enforcement\n- oversight: Oversight and audit trails\n"
 import time
+from typing import Optional
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any

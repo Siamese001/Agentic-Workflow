@@ -18,6 +18,7 @@ Pattern Detection:
 from __future__ import annotations
 
 import ast
+from typing import Any
 from pathlib import Path
 
 from agentic_core.runtime.lifecycle_trace_contract import (

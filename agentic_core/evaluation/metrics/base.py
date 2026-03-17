@@ -5,6 +5,7 @@ All evaluation metrics must implement the EvaluationMetric protocol.
 """
 
 from __future__ import annotations
+from typing import Optional
 
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any

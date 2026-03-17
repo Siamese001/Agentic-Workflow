@@ -11,6 +11,7 @@ step_index, trace_id.
 from __future__ import annotations
 
 import logging
+from typing import Optional
 from typing import Sequence
 
 from agentic_core.runtime.lifecycle_trace_contract import (

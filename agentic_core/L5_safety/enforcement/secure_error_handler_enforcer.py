@@ -81,6 +81,7 @@ _emit_links_execution_to_snapshot("p4", "secure_error_handler_enforcer", "exec_s
 "Secure Error Handling - Prevents sensitive data leakage in exceptions.\n\nThis module provides secure exception handling that sanitizes error messages,\nremoves sensitive information from stack traces, and provides safe error\nreporting mechanisms.\n"
 import inspect
 import logging
+from typing import Optional
 import re
 import traceback
 from functools import wraps

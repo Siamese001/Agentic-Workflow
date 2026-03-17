@@ -9,6 +9,7 @@ Compatibility stub: agentic_core/L0_routing/types/artifact_typed_compat_types.py
 """
 
 from __future__ import annotations
+from typing import Any
 
 from agentic_core.L0_routing.types.routing_artifact_types import (
     AggregateArtifact,

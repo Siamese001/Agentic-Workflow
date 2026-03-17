@@ -5,6 +5,7 @@ This layer provides execution, tool invocation, and operational observability.
 No cognition, routing, or persistence logic belongs in this layer.
 Only execution contracts, tool contracts, and observability are exported.
 """
+from enum import Enum
 
 # Execution contracts and tool contracts
 from agentic_core.L2_execution.adaptation.adaptation_orchestrator import (

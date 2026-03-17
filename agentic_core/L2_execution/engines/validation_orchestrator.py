@@ -11,6 +11,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import logging
+from typing import Optional
 import os
 import uuid
 from pathlib import Path

@@ -86,6 +86,7 @@ _emit_links_execution_to_snapshot("p4", "ephemeral_vm_types", "exec_snapshot_lin
 "Ephemeral VM with Isolation and Auto-Teardown.\n\nPhase 3 - Pillar 14: Execution Sandbox (Hardened Ephemeral)\nEnforces strict network/resource isolation and automatic teardown.\n"
 import asyncio
 import logging
+from typing import Optional
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any

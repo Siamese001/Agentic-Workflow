@@ -84,6 +84,7 @@ _emit_links_execution_to_snapshot("p4", "AutonomousThreatEvolutionAgent", "exec_
 "\nAutonomousThreatEvolution – L5 Sovereign Threat Self-Evolution\nVoid-Compliant Version: PEP8 Gravity + Memory Safety\n"
 import asyncio
 import json
+from typing import Optional
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any

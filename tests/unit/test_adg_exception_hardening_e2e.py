@@ -74,6 +74,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,
     emit_replay_key,
+    _emit_links_incident_trace,  # noqa: E402
 )
 
 # --- P0-P4 bootstrap (required for ADG coverage) ---

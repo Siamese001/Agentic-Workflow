@@ -10,6 +10,7 @@ HEALER_REGISTRY.
 from __future__ import annotations
 
 import logging
+from typing import Optional
 from pathlib import Path
 from typing import Any
 

@@ -80,6 +80,7 @@ _emit_links_execution_to_snapshot("p4", "in_memory_vector_cache", "exec_snapshot
 
 "In-Memory Vector cache - Ultra-fast ChromaDB hot cache for 10-50x speedup.\n\nProvides ephemeral in-memory vector storage for frequently accessed collections.\nOptimized for 8GB hot cache allocation within 32GB WSL2 environment.\n"
 import logging
+from typing import Optional
 from typing import Any
 
 try:

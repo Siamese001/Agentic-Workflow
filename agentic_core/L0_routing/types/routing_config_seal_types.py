@@ -11,6 +11,7 @@ Lives in L0 (routing types) — config is read at routing time.
 from __future__ import annotations
 
 import hashlib
+from typing import Any
 from dataclasses import dataclass
 from datetime import datetime, timezone
 

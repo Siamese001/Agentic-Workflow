@@ -73,6 +73,7 @@ _emit_links_execution_to_snapshot("p4", "prompt_assembler", "exec_snapshot_link"
 import hashlib
 import json
 import logging
+from typing import Optional
 import re
 import uuid
 import xml.etree.ElementTree as ET

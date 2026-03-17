@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+from typing import Optional
 from typing import Any
 
 from agentic_core.L0_routing.types.routing_artifact_types import (

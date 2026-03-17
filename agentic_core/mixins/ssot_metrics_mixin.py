@@ -13,6 +13,7 @@ Authority: Read-only metrics emission. No L4 mutation. No routing influence.
 from __future__ import annotations
 
 import logging
+from typing import Optional
 import time
 from typing import Any
 

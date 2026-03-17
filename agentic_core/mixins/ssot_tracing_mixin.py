@@ -14,6 +14,7 @@ Authority: Trace emission only. No L4 mutation. No routing influence.
 from __future__ import annotations
 
 import logging
+from typing import Optional
 import time
 from contextlib import contextmanager
 from typing import Any, Generator

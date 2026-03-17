@@ -175,7 +175,7 @@ _emit_validated_by_safety_plane("p1", "fix_remaining_depth_util", "safety_valida
 _emit_invokes_eval("p1", "fix_remaining_depth_util", "eval_call")
 _emit_proposal_commits_routing("p1", "fix_remaining_depth_util", "routing_commit")
 
-root: Any = Path("C:/Git/Agentic-Workflow")
+ROOT: Any = Path("C:/Git/Agentic-Workflow")
 core: Any = ROOT / AGENTIC_CORE_DIR
 
 

@@ -5,6 +5,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
+_AVAILABLE = False
 try:
     from agentic_core.runtime.config.model_tier_config import (  # noqa: F401
         BATCH_SIZE,
@@ -19,8 +20,7 @@ try:
         TaskComplexity,
     )
     _AVAILABLE = True
-except ImportError:
-    _AVAILABLE = False
+except Exception:  # guardian: allow-silent-swallow
     ModelTier = None  # type: ignore[assignment,misc]
     TaskComplexity = None  # type: ignore[assignment,misc]
     ModelConfig = None  # type: ignore[assignment,misc]

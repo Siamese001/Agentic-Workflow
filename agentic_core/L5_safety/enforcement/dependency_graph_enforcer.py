@@ -85,6 +85,7 @@ _emit_links_execution_to_snapshot("p4", "dependency_graph_enforcer", "exec_snaps
 
 "\nDependency Graph - Code structure analysis and impact tracking.\nExtracted from BudgetManagerAgent.py for single responsibility.\n"
 import ast
+from pathlib import Path
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,

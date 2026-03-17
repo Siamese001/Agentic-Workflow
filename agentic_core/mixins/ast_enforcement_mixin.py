@@ -73,6 +73,8 @@ _emit_links_execution_to_snapshot("p4", "ast_enforcement_mixin", "exec_snapshot_
 
 "ASTEnforcementMixin — Ultra L5 Mixin for AST Enforcement (Jan 01, 2026)\n\nAdd to validators/enforcers for precise AST analysis (no regex).\n- Detect snake_case classes, aliases, etc.\n- Use in _ast_audit override\n- Maximizes AST opportunities across all validators\n"
 import ast
+from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR

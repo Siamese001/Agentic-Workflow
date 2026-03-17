@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from typing import Optional
 from typing import Any
 
 from agentic_core.L4_state.types.citation_bundle_types import build_citation_bundle

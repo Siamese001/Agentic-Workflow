@@ -11,6 +11,7 @@ Pattern Detection:
 """
 
 import ast
+from dataclasses import dataclass
 from pathlib import Path
 
 from agentic_core.runtime.lifecycle_trace_contract import (

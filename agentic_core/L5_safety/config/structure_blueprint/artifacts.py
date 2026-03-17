@@ -11,6 +11,7 @@ Loaded lazily on first access.
 from __future__ import annotations
 
 import re
+from typing import Any, Optional
 from collections.abc import Mapping, Sequence
 from functools import lru_cache
 from pathlib import Path

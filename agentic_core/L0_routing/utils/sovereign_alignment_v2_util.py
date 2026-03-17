@@ -177,7 +177,7 @@ _emit_validated_by_safety_plane("p1", "sovereign_alignment_v2_util", "safety_val
 _emit_invokes_eval("p1", "sovereign_alignment_v2_util", "eval_call")
 _emit_proposal_commits_routing("p1", "sovereign_alignment_v2_util", "routing_commit")
 
-root: Any = Path.cwd()
+ROOT: Any = Path.cwd()
 core: Any = ROOT / AGENTIC_CORE_DIR
 migration_map: Any = {
     "agentic_core/engines": "agentic_core/L2_execution/P3_engines",

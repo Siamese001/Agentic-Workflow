@@ -6,6 +6,7 @@ Restored: 2026-01-13 | Version: 2.1.0 (With Telemetry)
 import hashlib
 import json
 import logging
+from typing import Optional
 import os
 import uuid
 from collections.abc import Callable

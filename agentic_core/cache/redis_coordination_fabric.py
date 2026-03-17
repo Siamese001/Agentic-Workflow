@@ -96,7 +96,9 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
+    _emit_writes_through,
     _emit_writes_via_uwg,
+    _emit_pulls_context,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
@@ -501,6 +503,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
 )
+from agentic_core.runtime.lifecycle_trace_contract import _emit_writes_through
 _emit_pulls_context("p1", "redis_coordination_fabric", "context_pull")
 _emit_pulls_context("p1", "redis_coordination_fabric", "context_pull_secondary")
 _emit_execution_terminates_at_uwg("p1", "redis_coordination_fabric", "uwg_term")

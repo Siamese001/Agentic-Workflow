@@ -86,6 +86,7 @@ _emit_links_execution_to_snapshot("p4", "SafetyInspectorAgent", "exec_snapshot_l
 
 'Constitutional Overseer for validating ActionRequests.\n\nThis module provides safety validation for action requests, including:\n- ConstitutionalOverseer: Validates actions against forbidden commands\n- SafetyInspectorAgent: Scans files for security violations with Socratic Judge\n\nTypical usage:\n    overseer = create_overseer()\n    result = await overseer.validate_action(request)\n\n    inspector = create_safety_inspector()\n    violations = await inspector.scan_file("path/to/file.py")\n'
 import logging
+from pathlib import Path
 import re
 import uuid
 from dataclasses import dataclass

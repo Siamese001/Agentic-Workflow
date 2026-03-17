@@ -179,8 +179,9 @@ _emit_validated_by_safety_plane("p1", "force_annexation_util", "safety_validatio
 _emit_invokes_eval("p1", "force_annexation_util", "eval_call")
 _emit_proposal_commits_routing("p1", "force_annexation_util", "routing_commit")
 
-root: Any = Path("C:/Git/Agentic-Workflow")
+ROOT: Any = Path("C:/Git/Agentic-Workflow")
 core: Any = ROOT / AGENTIC_CORE_DIR
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR  # noqa: E402
 excluded_zones: Any = ["data", ARCHIVES_DIR, TESTS_DIR, ".git", ".venv", "__pycache__"]
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 annexation_plan: Any = {

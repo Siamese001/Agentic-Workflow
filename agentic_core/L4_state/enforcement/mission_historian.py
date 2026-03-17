@@ -96,6 +96,7 @@ def _get_write_gateway():
 "\nMissionHistorian - L4 State Framework Agent\nTracks mission execution history and audit trails.\n"
 import csv
 import logging
+from typing import Optional
 import uuid
 from datetime import datetime
 from pathlib import Path

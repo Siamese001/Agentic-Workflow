@@ -181,7 +181,7 @@ _emit_proposal_commits_routing("p1", "DocumentationAgent", "routing_commit")
 
 
 @dataclass
-class DocumentationAgent(SovereignBaseAgent, SubAtomicAgent):
+class DocumentationAgent(SubAtomicAgent):
     """
     Documentation enforcement agent for docstring validation.
 

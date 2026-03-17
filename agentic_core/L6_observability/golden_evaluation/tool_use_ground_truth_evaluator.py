@@ -7,6 +7,7 @@ No timestamps, UUIDs, or nondeterministic fields in output.
 
 import hashlib
 import json
+from typing import Optional
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any

@@ -9,6 +9,7 @@ and persists snapshots to L4 telemetry registry.
 from __future__ import annotations
 
 import logging
+from typing import Optional
 import math
 import statistics
 import uuid

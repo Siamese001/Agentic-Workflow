@@ -6,6 +6,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+try:
+    from agentic_core.L6_observability.reasoning.layer_decorator import layer_entry
+except ImportError:
+    def layer_entry(*args, **kwargs):  # type: ignore[misc]
+        """Stub layer_entry decorator."""
+        def wrapper(f): return f
+        return wrapper if not args or not callable(args[0]) else args[0]
+
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_authorize_and_execute,

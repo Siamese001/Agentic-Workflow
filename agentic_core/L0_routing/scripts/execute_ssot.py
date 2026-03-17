@@ -22,6 +22,7 @@ import importlib.util
 import inspect
 import json
 import logging
+from enum import Enum
 import os
 import platform
 import re

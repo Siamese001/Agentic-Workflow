@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import json
 import logging
+from typing import Optional
 import os
 import shutil
 from contextlib import contextmanager

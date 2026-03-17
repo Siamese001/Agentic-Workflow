@@ -88,6 +88,7 @@ _emit_links_execution_to_snapshot("p4", "CredentialScannerAgent", "exec_snapshot
 
 "\nCredentialScannerAgent - Detects hardcoded credentials in source code\n\nRisk 4: Hardcoded Credential Detection\nScans the codebase for potential security leaks including:\n- API Keys\n- Secret Tokens\n- Private Keys\n- Hardcoded Passwords\n- AWS/Azure/GCP credentials\n\nUses FileCache for efficient scanning (Opportunity #3 integration).\n"
 import logging
+from typing import Optional
 import re
 import uuid
 from dataclasses import dataclass, field

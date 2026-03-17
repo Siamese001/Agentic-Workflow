@@ -38,6 +38,7 @@ from __future__ import annotations
 import hashlib
 import json
 import time
+from typing import Optional
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any

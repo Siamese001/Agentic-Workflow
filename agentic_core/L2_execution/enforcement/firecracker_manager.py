@@ -80,6 +80,7 @@ _emit_links_execution_to_snapshot("p4", "firecracker_manager", "exec_snapshot_li
 
 "Implementation for FirecrackerManager."
 import logging
+from typing import Optional
 import subprocess
 import uuid
 from typing import Any

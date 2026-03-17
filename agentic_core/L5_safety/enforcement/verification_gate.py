@@ -9,6 +9,7 @@ Integrates with L4ContextManager for shared file analysis caching.
 
 import ast
 import logging
+from typing import Optional
 from pathlib import Path
 from typing import Any
 

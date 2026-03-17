@@ -7,6 +7,8 @@ HITL capabilities.
 """
 
 import logging
+from pathlib import Path
+from typing import Optional
 import uuid
 from collections.abc import Callable
 from typing import Any, TypeVar

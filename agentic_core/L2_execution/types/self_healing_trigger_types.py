@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from enum import Enum
 from dataclasses import dataclass
 from typing import Any
 

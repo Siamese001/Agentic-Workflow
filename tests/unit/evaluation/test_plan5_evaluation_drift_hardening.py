@@ -97,6 +97,8 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_transcripts_response,
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
+    _emit_writes_through,  # noqa: E402
+    _emit_links_incident_trace,  # noqa: E402
 )
 
 _emit_emits_metric_event("test_plan5_evaluation_drift_hardening", "p4obs", "metric_1")
@@ -176,6 +178,7 @@ _emit_links_execution_to_snapshot("p4", "test_plan5_evaluation_drift_hardening",
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
+DRIFT_THRESHOLD = 0.85
 BUFFER_SIZE = 8192
 BATCH_SIZE = 32
 MAX_DEPTH = 6
@@ -275,7 +278,7 @@ class TestShadowDriftAnalyzerThreshold:
     def test_custom_threshold_stored(self):
         from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
 
-        analyzer = ShadowDriftAnalyzer(drift_threshold=THRESHOLD)
+        analyzer = ShadowDriftAnalyzer(drift_threshold=DRIFT_THRESHOLD)
         assert analyzer._drift_threshold == 0.85
 
     def test_summary_contains_drift_threshold_field(self):
@@ -289,23 +292,23 @@ class TestShadowDriftAnalyzerThreshold:
     def test_custom_threshold_reflected_in_summary(self):
         from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
 
-        analyzer = ShadowDriftAnalyzer(drift_threshold=THRESHOLD)
+        analyzer = ShadowDriftAnalyzer(drift_threshold=DRIFT_THRESHOLD)
         summary = analyzer.analyze_batch(shadow_records=self._records(0.90), profile_id="p1", now_utc=0)
         assert summary.drift_threshold == 0.85
 
     def test_drift_flag_respects_custom_threshold(self):
-        """Analyzer(threshold=THRESHOLD): cosine=0.84 < 0.85 → drift_flag=True."""
+        """Analyzer(threshold=DRIFT_THRESHOLD): cosine=0.84 < 0.85 → drift_flag=True."""
         from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
 
-        analyzer = ShadowDriftAnalyzer(drift_threshold=THRESHOLD)
+        analyzer = ShadowDriftAnalyzer(drift_threshold=DRIFT_THRESHOLD)
         summary = analyzer.analyze_batch(shadow_records=self._records(0.84), profile_id="p1", now_utc=0)
         assert summary.drift_flag is True
 
     def test_drift_flag_false_when_above_custom_threshold(self):
-        """Analyzer(threshold=THRESHOLD): cosine=0.90 >= 0.85 → drift_flag=False."""
+        """Analyzer(threshold=DRIFT_THRESHOLD): cosine=0.90 >= 0.85 → drift_flag=False."""
         from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
 
-        analyzer = ShadowDriftAnalyzer(drift_threshold=THRESHOLD)
+        analyzer = ShadowDriftAnalyzer(drift_threshold=DRIFT_THRESHOLD)
         summary = analyzer.analyze_batch(shadow_records=self._records(0.90), profile_id="p1", now_utc=0)
         assert summary.drift_flag is False
 
@@ -314,8 +317,8 @@ class TestShadowDriftAnalyzerThreshold:
         from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
 
         records = self._records(0.90)
-        a1 = ShadowDriftAnalyzer(drift_threshold=THRESHOLD)
-        a2 = ShadowDriftAnalyzer(drift_threshold=THRESHOLD)
+        a1 = ShadowDriftAnalyzer(drift_threshold=DRIFT_THRESHOLD)
+        a2 = ShadowDriftAnalyzer(drift_threshold=0.92)
         s1 = a1.analyze_batch(shadow_records=records, profile_id="p1", now_utc=0)
         s2 = a2.analyze_batch(shadow_records=records, profile_id="p1", now_utc=0)
         assert s1.deterministic_digest != s2.deterministic_digest

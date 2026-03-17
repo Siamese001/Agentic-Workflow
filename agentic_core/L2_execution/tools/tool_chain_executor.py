@@ -85,6 +85,7 @@ _emit_links_execution_to_snapshot("p4", "tool_chain_executor", "exec_snapshot_li
 
 "Implementation for ToolsUseATool."
 import logging
+from typing import Optional
 import sys
 from typing import Any
 

@@ -10,6 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 import libcst as cst
+from typing import Any, Optional
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,

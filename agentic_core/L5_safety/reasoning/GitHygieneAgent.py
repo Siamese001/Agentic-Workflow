@@ -84,7 +84,13 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.security_util import safe_git_execute
+try:
+    from agentic_core.utils.security_util import safe_git_execute
+except ModuleNotFoundError:
+    import subprocess
+    def safe_git_execute(cmd, **kwargs):
+        """Stub safe_git_execute when security_util is not available."""
+        return subprocess.run(cmd, capture_output=True, text=True, **kwargs)
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.runtime.lifecycle_trace_contract import (

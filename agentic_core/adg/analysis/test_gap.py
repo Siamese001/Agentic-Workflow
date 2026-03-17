@@ -25,6 +25,7 @@ Usage::
 from __future__ import annotations
 
 import json
+from typing import Optional
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 

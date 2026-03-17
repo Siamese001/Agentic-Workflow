@@ -80,6 +80,7 @@ _emit_links_execution_to_snapshot("p4", "ToolsmithAgent", "exec_snapshot_link")
 
 "\nToolsmithAgent - L2 Tool Creation Agent\n\n"
 import logging
+from typing import Any
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime

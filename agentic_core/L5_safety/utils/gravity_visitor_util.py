@@ -86,6 +86,7 @@ _emit_links_execution_to_snapshot("p4", "gravity_visitor_util", "exec_snapshot_l
 'AST Engine - Centralized Architectural Parsing Logic.\n\n[Phase 5] Provides shared AST utilities for L5 agents.\nCentralizes import extraction and gravity violation detection.\n\nUsage:\n\n    imports = get_file_imports(Path("my_file.py"))\n    # Returns: [("module.name", line_number), ...]\n'
 import ast
 import logging
+from typing import Optional
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR

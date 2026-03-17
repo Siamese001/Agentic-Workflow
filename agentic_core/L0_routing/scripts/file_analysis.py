@@ -6,6 +6,8 @@ how archived code fits into the current codebase.
 """
 
 import ast
+from enum import Enum
+from pydantic import BaseModel
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any

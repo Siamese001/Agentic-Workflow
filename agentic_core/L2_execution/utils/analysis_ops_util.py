@@ -81,6 +81,8 @@ _emit_links_execution_to_snapshot("p4", "analysis_ops_util", "exec_snapshot_link
 "\nAnalysis Operations - AST Parsing, Linting, and Code Quality Tools\nConsolidated from core_utils.py and security_utils.py\n"
 import ast
 import logging
+from pathlib import Path
+from typing import Optional
 import subprocess
 from typing import Any
 

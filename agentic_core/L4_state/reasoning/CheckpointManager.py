@@ -90,6 +90,7 @@ import asyncio
 import hashlib
 import json
 import logging
+from typing import Optional
 import time
 import uuid
 from collections.abc import Callable

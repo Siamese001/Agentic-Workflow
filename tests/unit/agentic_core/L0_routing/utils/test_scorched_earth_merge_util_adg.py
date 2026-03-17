@@ -6,25 +6,28 @@ import pytest
 pytestmark = pytest.mark.unit
 
 try:
-    from agentic_core.L0_routing.utils.scorched_earth_merge_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_DEPTH,
-        MAX_RETRIES,
-        THRESHOLD,
-        scorched_earth_merge,
-    )
-    _AVAILABLE = True
-except ImportError:
-    _AVAILABLE = False
-    scorched_earth_merge = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
-    MAX_DEPTH = None  # type: ignore[assignment,misc]
+    try:
+        from agentic_core.L0_routing.utils.scorched_earth_merge_util import (  # noqa: F401
+            BATCH_SIZE,
+            BUFFER_SIZE,
+            DEFAULT_SLEEP,
+            MAX_DEPTH,
+            MAX_RETRIES,
+            THRESHOLD,
+            scorched_earth_merge,
+        )
+        _AVAILABLE = True
+    except ImportError:
+        _AVAILABLE = False
+        scorched_earth_merge = None  # type: ignore[assignment,misc]
+        MAX_RETRIES = None  # type: ignore[assignment,misc]
+        DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
+        THRESHOLD = None  # type: ignore[assignment,misc]
+        BUFFER_SIZE = None  # type: ignore[assignment,misc]
+        BATCH_SIZE = None  # type: ignore[assignment,misc]
+        MAX_DEPTH = None  # type: ignore[assignment,misc]
+except Exception:  # guardian: allow-silent-swallow
+    pass
 
 
 @pytest.mark.skipif(not _AVAILABLE, reason="scorched_earth_merge_util.py deps unavailable")

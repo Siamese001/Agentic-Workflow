@@ -97,6 +97,7 @@ The ReAct framework interleaves reasoning and action steps to solve complex task
 """
 
 import logging
+from typing import Optional
 import uuid
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field

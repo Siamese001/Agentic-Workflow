@@ -3,6 +3,7 @@
 Provides operational telemetry for runtime execution with structured
 start, finish, failure, retry, and duration telemetry.
 """
+from enum import Enum
 
 # P3/L2 Execution Observability exports
 from agentic_core.L2_execution.observability.execution_observability import (

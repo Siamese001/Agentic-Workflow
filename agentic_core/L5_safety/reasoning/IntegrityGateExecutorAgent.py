@@ -85,6 +85,8 @@ _emit_links_execution_to_snapshot("p4", "IntegrityGateExecutorAgent", "exec_snap
 "Brief description of functionality and purpose."
 import re
 import uuid
+from pathlib import Path
+from typing import Optional
 from enum import Enum
 from typing import Any
 

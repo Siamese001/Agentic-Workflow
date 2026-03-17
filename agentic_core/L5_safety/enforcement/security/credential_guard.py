@@ -181,6 +181,32 @@ _emit_validated_by_safety_plane("p1", "credential_guard", "safety_validation")
 _emit_invokes_eval("p1", "credential_guard", "eval_call")
 _emit_proposal_commits_routing("p1", "credential_guard", "routing_commit")
 
+class CredentialGuard:
+    """Runtime credential access guard."""
+
+    _instance = None
+
+    @classmethod
+    def get_instance(cls):
+        if cls._instance is None:
+            cls._instance = cls()
+        return cls._instance
+
+    @classmethod
+    def check(cls, operation="", target="", **kwargs):
+        """Validate a credential access operation. No-op by default."""
+        pass
+
+    @classmethod
+    def reset(cls):
+        cls._instance = None
+
+
+def get_credential_guard():
+    """Get the singleton CredentialGuard instance."""
+    return CredentialGuard.get_instance()
+
+
 PATTERNS = [
     {"name": "OPENAI_KEY_PROJ", "regex": re.compile("sk-proj-[A-Za-z0-9_-]{20,}")},
     {"name": "OPENAI_KEY_ADMIN", "regex": re.compile("sk-admin-[A-Za-z0-9_-]{20,}")},

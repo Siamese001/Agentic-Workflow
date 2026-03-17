@@ -4,6 +4,8 @@ This layer provides safety enforcement, policy validation, and audit trails.
 No execution logic or agent orchestration belongs in this layer.
 Only safety policies, guardrails, and audit utilities are exported.
 """
+from enum import Enum
+from typing import Any
 
 # Sovereignty assertion: This layer contains NO agents with execute() methods
 # Any agent classes belong in L2 (Execute) or L3 (Route) layers only

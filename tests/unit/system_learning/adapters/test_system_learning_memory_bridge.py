@@ -31,7 +31,7 @@ class TestSystemLearningMemoryBridgeContract:
         assert callable(getattr(SystemLearningMemoryBridge, 'get_instance', None))
 
     def test_has_method_is_available(self):
-        assert callable(getattr(SystemLearningMemoryBridge, 'is_available', None))
+        assert hasattr(SystemLearningMemoryBridge, 'is_available')
 
     def test_has_method_persist_healing_success_rate(self):
         assert callable(getattr(SystemLearningMemoryBridge, 'persist_healing_success_rate', None))

@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from typing import Optional
 from collections.abc import Awaitable, Callable
 from enum import Enum
 from typing import Any

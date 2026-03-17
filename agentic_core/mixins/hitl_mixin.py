@@ -23,6 +23,7 @@ MAX_PENDING_APPROVALS = 100
 DEFAULT_HISTORY_LIMIT = 100
 
 import logging
+from typing import Optional
 import threading
 import time
 import uuid

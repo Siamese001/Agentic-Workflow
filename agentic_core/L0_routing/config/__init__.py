@@ -8,6 +8,7 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_RG_DIR,
     APPS_SHARED_DIR,
     ARCHIVES_DIR,
+    REPORTS_DIR,
     DASHBOARD_DIR,
     DISCOVERY_EXCLUDED_TERRITORIES,
     GLOBAL_EXCLUDED_DIRS,

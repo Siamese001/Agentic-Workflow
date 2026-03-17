@@ -85,6 +85,7 @@ _emit_links_execution_to_snapshot("p4", "egress_util", "exec_snapshot_link")
 
 "\nNetworking Utilities for Agentic Workflow\nProvides P8 Egress Filter for strict domain whitelisting\n\nZero-Ambiguity Standard: Renamed from EgressResult.py to egress_util.py\n"
 import logging
+from typing import Optional
 from dataclasses import dataclass
 from typing import Any
 from urllib.parse import urlparse

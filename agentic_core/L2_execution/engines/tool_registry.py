@@ -82,6 +82,7 @@ _emit_links_execution_to_snapshot("p4", "tool_registry", "exec_snapshot_link")
 import inspect
 import json
 import logging
+from typing import Optional
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field

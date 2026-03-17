@@ -17,6 +17,7 @@ from pathlib import Path
 
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
+    ARCHIVES_DIR,
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
@@ -191,8 +192,8 @@ _emit_proposal_commits_routing("p1", "class_info", "routing_commit")
 
 # Project root
 PROJECT_ROOT = Path(__file__).parent.parent
-ARCHIVES_DIR = PROJECT_ROOT / ARCHIVES_DIR
-AGENTIC_CORE_DIR = PROJECT_ROOT / AGENTIC_CORE_DIR
+_ARCHIVES_DIR_PATH = PROJECT_ROOT / ARCHIVES_DIR
+_AGENTIC_CORE_DIR_PATH = PROJECT_ROOT / AGENTIC_CORE_DIR
 
 # Target archive folders
 TARGET_ARCHIVES = ["runtime", "schemas", "shared"]
@@ -679,7 +680,7 @@ def analyze_file(file_path: Path, archive_base: Path) -> FileAnalysis:
 def scan_archive_folder(archive_folder: str) -> list[FileAnalysis]:
     """Recursively scan an archive folder."""
     analyses = []
-    archive_path = ARCHIVES_DIR / archive_folder
+    archive_path = _ARCHIVES_DIR_PATH / archive_folder
 
     if not archive_path.exists():
         print(f"WARNING: Archive folder not found: {archive_path}")
@@ -697,7 +698,7 @@ def scan_archive_folder(archive_folder: str) -> list[FileAnalysis]:
                 continue
 
             try:
-                analysis = analyze_file(file_path, ARCHIVES_DIR)
+                analysis = analyze_file(file_path, _ARCHIVES_DIR_PATH)
                 analyses.append(analysis)
             # guardian: allow-silent-swallow
             except Exception as e:

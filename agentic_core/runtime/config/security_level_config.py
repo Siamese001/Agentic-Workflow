@@ -921,6 +921,21 @@ class OmniContext:
         }
 
 
+
+class MCPHardenedMixin:
+    """Stub mixin for MCP hardened agents."""
+    pass
+
+try:
+    from agentic_core.mixins.healer_mixin import HealerMixin
+except ImportError:
+    class HealerMixin:  # type: ignore[no-redef]
+        pass
+
+class L3SubatomicTestingMixin:
+    """Stub mixin for L3 subatomic testing."""
+    pass
+
 class Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """
     Multi-phase execution orchestrator.
@@ -1266,8 +1281,3 @@ _emit_reads_through("l4", "security_level_config", "urg_read_104")
 _emit_reads_through("l4", "security_level_config", "urg_read_105")
 _emit_reads_through("l4", "security_level_config", "urg_read_106")
 _emit_reads_through("l4", "security_level_config", "urg_read_107")
-_emit_reads_through("l4", "security_level_config", "urg_read_108")
-_emit_reads_through("l4", "security_level_config", "urg_read_109")
-_emit_reads_through("l4", "security_level_config", "urg_read_110")
-_emit_reads_through("l4", "security_level_config", "urg_read_111")
-_emit_reads_through("l4", "security_level_config", "urg_read_112")

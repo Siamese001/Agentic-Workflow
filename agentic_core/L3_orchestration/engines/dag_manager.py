@@ -4,6 +4,20 @@ from collections.abc import Callable
 from datetime import datetime
 from typing import Any
 
+try:
+    from agentic_core.mixins.healer_mixin import HealerMixin
+except ImportError:
+    class HealerMixin:  # type: ignore[no-redef]
+        """Stub."""
+        pass
+
+try:
+    from agentic_core.interfaces.mixins import MCPHardenedMixin
+except (ImportError, NameError):
+    class MCPHardenedMixin:  # type: ignore[no-redef]
+        """Stub."""
+        pass
+
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -85,6 +99,7 @@ _emit_links_execution_to_snapshot("p4", "dag_manager", "exec_snapshot_link")
 "\nDAGManager - Extracted for one-class-per-file pattern.\n\nOriginally from: DAGMutatorAgent.py\nExtracted: 2026-01-06 (Surgical Extraction)\nRenamed: 2026-01-22 (Utility Renaming - Not an Agent)\n"
 
 import networkx as nx
+from typing import Optional
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
@@ -178,6 +193,12 @@ _emit_invokes_eval("p1", "dag_manager", "eval_call")
 _emit_proposal_commits_routing("p1", "dag_manager", "routing_commit")
 
 
+try:
+    from agentic_core.mixins.subatomic_testing_mixin import L3SubatomicTestingMixin
+except (ImportError, AttributeError):
+    class L3SubatomicTestingMixin:  # type: ignore[no-redef]
+        pass
+
 class DAGManager(
     HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin
 ):
@@ -230,6 +251,7 @@ class DAGManager(
             function: The function to register
         """
         import uuid as _uuid  # noqa: PLC0415
+
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(

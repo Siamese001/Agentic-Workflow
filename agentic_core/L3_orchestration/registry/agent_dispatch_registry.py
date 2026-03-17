@@ -45,6 +45,7 @@ ADG edges emitted (log-level structured records):
 from __future__ import annotations
 
 import logging
+from typing import Optional
 from dataclasses import dataclass, field
 from typing import Any
 

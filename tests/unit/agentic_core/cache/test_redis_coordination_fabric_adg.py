@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+except Exception:  # guardian: allow-silent-swallow
     _AVAILABLE = False
     RedisCoordinationFabric = None  # type: ignore[assignment,misc]
     get_coordination_fabric = None  # type: ignore[assignment,misc]

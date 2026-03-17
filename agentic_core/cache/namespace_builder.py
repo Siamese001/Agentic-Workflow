@@ -23,6 +23,7 @@ Key examples::
 from __future__ import annotations
 
 import re
+from typing import Optional
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,

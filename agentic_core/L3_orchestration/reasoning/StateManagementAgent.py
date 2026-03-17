@@ -90,6 +90,7 @@ import asyncio
 import hashlib
 import json
 import logging
+from typing import Optional
 import threading
 from collections.abc import Callable
 from dataclasses import dataclass, field

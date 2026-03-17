@@ -206,7 +206,11 @@ _emit_gated_by_confidence("p1", "non_conforming_agent_finder_config", "confidenc
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
 
-EXCLUDED_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
+try:
+    _DET, _GED, _SEF = _get_ssot_exclusions()
+    EXCLUDED_DIRS = _GED | _SEF | _DET
+except Exception:  # guardian: allow-silent-swallow
+    EXCLUDED_DIRS = frozenset({"__pycache__", ".git", "node_modules", "venv", ".venv", "archives"})
 
 # Canonical agent methods — presence strongly indicates "agent" role
 AGENT_LIKE_METHODS = {

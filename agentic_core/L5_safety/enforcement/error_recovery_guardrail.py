@@ -94,6 +94,7 @@ MILLISECONDS_MULTIPLIER = 1000
 "\nError Recovery Guardrail - Consolidated Error Handling & Self-Healing\n\nMerges:\n- SecureErrorHandler\n- TerritoryHealer\n- SelfUpdatingSafetyEngine\n\nComposable Rules:\n- error_classification: Categorize error types\n- recovery_strategy: Select appropriate recovery\n- self_healing: Auto-recovery mechanisms\n"
 import traceback
 import uuid
+from typing import Optional
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any

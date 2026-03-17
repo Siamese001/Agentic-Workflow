@@ -83,6 +83,7 @@ _emit_links_execution_to_snapshot("p4", "safety_types", "exec_snapshot_link")
 "\nSelf-Updating Safety Engine - L5 Safety Enhancement\n\nDynamically learns and updates safety rules based on detected threats.\nAutomatically adapts to new attack patterns and security vulnerabilities.\n"
 import json
 import logging
+from typing import Optional
 import os
 import uuid
 from dataclasses import dataclass, field

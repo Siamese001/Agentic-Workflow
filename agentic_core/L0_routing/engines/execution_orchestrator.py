@@ -8,6 +8,7 @@ Remains deterministic, side-effect minimal, uses injected seams only.
 
 import hashlib
 import logging
+from typing import Optional
 import uuid
 from typing import Any
 

@@ -12,6 +12,7 @@ import contextvars
 import hashlib
 import json
 import os
+from typing import Optional
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Literal

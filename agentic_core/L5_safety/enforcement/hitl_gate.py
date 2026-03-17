@@ -27,6 +27,7 @@ Rules
 from __future__ import annotations
 
 import logging
+from typing import Any
 import sys
 from dataclasses import dataclass
 from enum import Enum

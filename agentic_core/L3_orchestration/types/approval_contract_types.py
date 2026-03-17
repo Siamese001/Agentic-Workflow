@@ -15,6 +15,7 @@ Contract version is an integer that increments on breaking changes.
 from __future__ import annotations
 
 import json
+from typing import Optional
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any

@@ -7,6 +7,7 @@ FIX: Implements Functional Naming for imports.
 from __future__ import annotations
 
 import logging
+from typing import Optional
 import uuid
 from collections.abc import Awaitable, Callable
 from typing import Any

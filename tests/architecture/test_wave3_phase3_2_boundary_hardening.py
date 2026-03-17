@@ -196,6 +196,8 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_transcripts_response,
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
+    _emit_writes_through,  # noqa: E402
+    _emit_links_incident_trace,  # noqa: E402
 )
 from tools.semantic_gap_analyzer import (
     AGENTIC_CORE,

@@ -81,6 +81,7 @@ _emit_links_execution_to_snapshot("p4", "sovereign_filesystem_mcp", "exec_snapsh
 "L4 State: Sovereign Filesystem MCP Client — Atomic Eternal Operations\nUltra-hardened integration of Filesystem MCP with Roots, L5 shielding, and Redis cache.\nZero tolerance for path escape or unrecorded writes.\n[SSOT] Root prefixes derived from SOVEREIGN_REGISTRY in structure_blueprint.py\n"
 import json
 import logging
+from pathlib import Path
 import uuid
 from datetime import datetime
 

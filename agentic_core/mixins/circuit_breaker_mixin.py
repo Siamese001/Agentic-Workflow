@@ -10,6 +10,7 @@ References:
 """
 
 import logging
+from typing import Optional
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime

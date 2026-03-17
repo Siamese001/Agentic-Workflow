@@ -4,6 +4,7 @@ L2 Re-Entry Loop - Bounded Deterministic Retry Mechanism
 Implements bounded retry logic with deterministic behavior.
 No infinite loops, no sleep/time usage, pure deterministic behavior.
 """
+from typing import Optional
 
 from agentic_core.L2_execution.cid_registry import CIDRegistry, ExecutionCycle
 from agentic_core.runtime.lifecycle_trace_contract import (

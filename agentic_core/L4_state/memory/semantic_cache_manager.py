@@ -82,6 +82,7 @@ _emit_links_execution_to_snapshot("p4", "semantic_cache_manager", "exec_snapshot
 import hashlib
 import json
 import logging
+from typing import Optional
 import os
 import random
 import threading

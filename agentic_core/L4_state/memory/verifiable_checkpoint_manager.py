@@ -87,6 +87,7 @@ _emit_links_execution_to_snapshot("p4", "verifiable_checkpoint_manager", "exec_s
 import hashlib
 import json
 import logging
+from typing import Optional
 import uuid
 from typing import TYPE_CHECKING, Any
 

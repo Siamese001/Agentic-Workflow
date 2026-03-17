@@ -8,6 +8,7 @@ Ensures proper loopback invariants and certification invalidation.
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Literal

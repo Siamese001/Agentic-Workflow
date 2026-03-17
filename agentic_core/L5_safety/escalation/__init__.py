@@ -3,6 +3,7 @@
 Provides systematic, policy-driven, trace-bound human safety escalation
 for designated high-risk or ambiguous operations.
 """
+from enum import Enum
 
 # P3/L5 Human Safety Escalation exports
 from agentic_core.L5_safety.escalation.escalation_orchestrator import (

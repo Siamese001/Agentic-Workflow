@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+from typing import Optional
 from typing import TYPE_CHECKING
 
 from agentic_core.agents.agent_registry import get_execution_profile

@@ -37,6 +37,7 @@ DO NOT add new definitions here. Add them to the modular package instead.
 # noqa: F401 — re-exports for backward compatibility
 
 from __future__ import annotations
+from pathlib import Path
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0

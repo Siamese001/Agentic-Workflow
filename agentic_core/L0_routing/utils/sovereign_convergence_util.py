@@ -177,7 +177,7 @@ _emit_validated_by_safety_plane("p1", "sovereign_convergence_util", "safety_vali
 _emit_invokes_eval("p1", "sovereign_convergence_util", "eval_call")
 _emit_proposal_commits_routing("p1", "sovereign_convergence_util", "routing_commit")
 
-root: Any = Path.cwd()
+ROOT: Any = Path.cwd()
 core: Any = ROOT / AGENTIC_CORE_DIR
 migration_map: Any = {}
 

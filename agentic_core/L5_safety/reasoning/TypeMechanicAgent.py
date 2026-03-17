@@ -179,7 +179,7 @@ _emit_proposal_commits_routing("p1", "TypeMechanicAgent", "routing_commit")
 
 
 @dataclass
-class TypeMechanicAgent(SovereignBaseAgent, SubAtomicAgent):
+class TypeMechanicAgent(SubAtomicAgent):
     """
     Type Mechanic Agent - Type hints and code quality enforcement.
 

@@ -112,6 +112,7 @@ Updated: January 20, 2026
 
 import functools
 import logging
+from typing import Optional
 import warnings
 from collections.abc import Iterator
 from pathlib import Path

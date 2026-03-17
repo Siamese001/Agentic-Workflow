@@ -88,6 +88,7 @@ and Claim confidence scoring to ensure maximum output quality.
 
 import hashlib
 import logging
+from typing import Optional
 import os
 import re
 import uuid

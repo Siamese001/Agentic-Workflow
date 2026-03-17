@@ -8,6 +8,7 @@ documents appearing at the top of the ranked list.
 from __future__ import annotations
 
 import math
+from typing import Optional
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,

@@ -7,6 +7,7 @@ in L4 storage with replay binding capabilities.
 import hashlib
 import json
 import logging
+from typing import Optional
 import uuid
 from dataclasses import asdict, dataclass
 from pathlib import Path

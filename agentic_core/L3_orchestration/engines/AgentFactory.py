@@ -80,6 +80,7 @@ _emit_links_execution_to_snapshot("p4", "AgentFactory", "exec_snapshot_link")
 
 "\nAgent Factory – L3 Orchestration Layer (Phase 9A & 11 – Dec 26, 2025)\nWires L1 Cognition agents with L2 Execution implementations via DIP.\n\nDDD Compliance:\n- L3 orchestrates the wiring between L1 and L2\n- L1 never directly imports L2\n- All dependencies injected at runtime\n\nPhase 11: Configurable Implementation Factory\n- Supports multiple implementation modes: real, mock, aggressive\n- Enables zero-cost unit testing with mock implementations\n- Allows runtime switching of agent behavior\n"
 import uuid
+from typing import Optional
 from typing import Any
 
 try:

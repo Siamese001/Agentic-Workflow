@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import hashlib
 import logging
+from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.L2_execution.providers import get_clock

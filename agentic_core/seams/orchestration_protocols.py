@@ -6,6 +6,7 @@ Type-safe protocols ensure consistent behavior across all orchestrators.
 """
 
 from __future__ import annotations
+from pathlib import Path
 
 from dataclasses import dataclass
 from typing import Any, Protocol, runtime_checkable

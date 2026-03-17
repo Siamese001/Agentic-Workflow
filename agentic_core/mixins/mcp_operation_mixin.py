@@ -21,6 +21,7 @@ from __future__ import annotations
 import asyncio
 import hashlib
 import logging
+from typing import Optional
 import time
 import uuid
 from typing import Any

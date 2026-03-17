@@ -26,6 +26,9 @@
 
 import ast
 import logging
+from dataclasses import dataclass
+from enum import Enum
+from typing import Any
 import re
 from contextlib import contextmanager
 from functools import lru_cache
@@ -86,6 +89,9 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_transcripts_response,
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
+    _emit_writes_through,
+    _emit_pulls_context,
+    _emit_validated_by_safety_plane,
 )
 
 _emit_emits_metric_event("classification_kernel", "p4obs", "metric_1")

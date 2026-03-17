@@ -46,7 +46,9 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_validates_capability,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
+    _emit_writes_through,
     _emit_writes_via_uwg,
+    _emit_pulls_context,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
     _emit_checks_agent_registry,
@@ -224,6 +226,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_hard_fails_untranscripted,
     _emit_gated_by_confidence,
 )
+from agentic_core.runtime.lifecycle_trace_contract import _emit_writes_through
 _emit_pulls_context("p1", "transcript_freezer", "context_pull")
 _emit_pulls_context("p1", "transcript_freezer", "context_pull_secondary")
 _emit_execution_terminates_at_uwg("p1", "transcript_freezer", "uwg_term")

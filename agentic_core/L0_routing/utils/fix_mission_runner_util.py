@@ -173,7 +173,7 @@ _emit_validated_by_safety_plane("p1", "fix_mission_runner_util", "safety_validat
 _emit_invokes_eval("p1", "fix_mission_runner_util", "eval_call")
 _emit_proposal_commits_routing("p1", "fix_mission_runner_util", "routing_commit")
 
-root: Any = Path("C:/Git/Agentic-Workflow")
+ROOT: Any = Path("C:/Git/Agentic-Workflow")
 mission_runner: Any = ROOT / "agentic_core/L3_orchestration/mission_runner.py"
 
 

@@ -12,6 +12,7 @@ Override: AGENTIC_ALLOW_MUTATION_FOR_TESTS=1 (env var, test-only).
 from __future__ import annotations
 
 import logging
+from typing import Optional
 import os
 from contextlib import contextmanager
 from pathlib import Path

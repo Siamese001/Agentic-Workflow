@@ -85,6 +85,7 @@ _emit_links_execution_to_snapshot("p4", "git_ops_impl", "exec_snapshot_link")
 
 "\nGit Tools - Atomic Module\nExtracted from action_registry.py via Atomic Fission Protocol\nTool ID Prefix: ACT-010\n"
 import logging
+from typing import Optional
 import uuid
 from typing import Any
 

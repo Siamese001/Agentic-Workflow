@@ -174,7 +174,7 @@ _emit_validated_by_safety_plane("p1", "trim_remaining_airlocks_util", "safety_va
 _emit_invokes_eval("p1", "trim_remaining_airlocks_util", "eval_call")
 _emit_proposal_commits_routing("p1", "trim_remaining_airlocks_util", "routing_commit")
 
-root: Any = Path("C:/Git/Agentic-Workflow")
+ROOT: Any = Path("C:/Git/Agentic-Workflow")
 core: Any = ROOT / AGENTIC_CORE_DIR
 heavy_airlocks: Any = [
     "L1_cognition/P1_core/check_outreach/__init__.py",

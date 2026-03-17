@@ -19,6 +19,7 @@ Diamond Problem risk. See critique in validation_report.md §1.
 """
 
 from __future__ import annotations
+from dataclasses import dataclass
 
 from pathlib import Path
 from typing import Any

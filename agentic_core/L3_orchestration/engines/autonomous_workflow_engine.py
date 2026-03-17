@@ -15,6 +15,7 @@ Layer: L3_orchestration
 from __future__ import annotations
 
 import logging
+from typing import Optional
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from enum import Enum

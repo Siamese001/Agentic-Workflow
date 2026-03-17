@@ -85,6 +85,7 @@ _emit_links_execution_to_snapshot("p4", "rule_types", "exec_snapshot_link")
 
 "Constitutional AI System for Safety and Alignment.\n\nPhase 1 - Pillar 9: Safety & Policy (Control Plane & Guardrails)\nMigrated from archives/engines/legacy_engines/ConstitutionalAiSystem.py\n"
 import logging
+from typing import Optional
 import re
 import time
 from collections import defaultdict

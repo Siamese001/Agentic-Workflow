@@ -19,6 +19,7 @@ this file thinking you need a Redis client, import instead:
 
     from agentic_core.cache import get_hot_cache, get_coordination_cache
 """
+from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,  # noqa: E402

@@ -4,6 +4,7 @@ agentic_core/base_agents/base_meta_learner.py
 [PHASE 25] BaseMetaLearner - Abstract Base Class for Meta-Learning.
 ARCHITECTURAL CONTRACT: Enforces consistency across L0-L6.
 """
+from pathlib import Path
 
 from abc import ABC, abstractmethod
 from collections.abc import Callable

@@ -86,6 +86,7 @@ _emit_links_execution_to_snapshot("p4", "TestGeneratorAgent", "exec_snapshot_lin
 "\nTestGeneratorAgent: Automatically creates subatomic tests for agents.\nCreated: 2026-01-13 | Version: 2.0.0\n\nThis agent parses agent source files via AST and generates corresponding\ntest cases for methods, ensuring L0 maintenance health.\n"
 import ast
 import logging
+from typing import Optional
 from datetime import datetime
 from pathlib import Path
 from typing import Any

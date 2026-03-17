@@ -10,6 +10,7 @@ REQ-036 / Phase 3 SOV-DELTA additive helper.
 from __future__ import annotations
 
 import json
+from dataclasses import dataclass
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
