@@ -765,7 +765,11 @@ BUDGET_EXCEEDED_EXCEPTIONS: frozenset[str] = frozenset(
 )
 JIT_CONTEXT_CLASSES: frozenset[str] = frozenset(
     {
-        "JITContext", "JITElevator", "ContextSnapshot", "JITContextSynchronizer", "C0ContextPuller",
+        "JITContext",
+        "JITElevator",
+        "ContextSnapshot",
+        "JITContextSynchronizer",
+        "C0ContextPuller",
         # Wave 127: context pull symbols
         "ExecutionContext",
         "SurgicalContext",
@@ -881,6 +885,11 @@ EXECUTION_TRACE_CLASSES: frozenset[str] = frozenset(
         "ExecutionProofEmitter",
         "ReasoningTraceArtifact",
         "reason_and_record",
+        # Wave 146-148: execution trace density (denom increase tolerated)
+        "get_active_execution_trace",
+        "generate_trace_id",
+        "get_trace_context",
+        "TraceFeatureExtractor",
     }
 )
 REPLAY_KEY_METHODS: frozenset[str] = frozenset(
@@ -1011,9 +1020,7 @@ DYNAMIC_EVAL_SYMBOLS: frozenset[str] = frozenset(
         "runpy.run_path",
     }
 )
-DYNAMIC_GETATTR_SYMBOLS: frozenset[str] = frozenset(
-    {"getattr", "setattr", "delattr"}
-)
+DYNAMIC_GETATTR_SYMBOLS: frozenset[str] = frozenset({"getattr", "setattr", "delattr"})
 POLICY_STATE_READER_CLASSES: frozenset[str] = frozenset(
     {
         "PolicyStateReader",
@@ -1034,6 +1041,10 @@ POLICY_STATE_READER_CLASSES: frozenset[str] = frozenset(
         "FileBackedVersionStore",
         "get_active_configs",
         "write_json_atomic",
+        # Wave 149-150: snapshots_state density
+        "GraphMemoryBridge",
+        "compute_runtime_state_digest",
+        "VLLMQueueState",
     }
 )
 POLICY_STATE_READ_METHODS: frozenset[str] = frozenset(

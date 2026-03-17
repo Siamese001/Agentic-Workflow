@@ -1218,6 +1218,11 @@ _GOVERNANCE_WRITE_SYMBOLS: frozenset[str] = frozenset(
         "compute_heal_confidence",
         "create_legacy_import_healer",
         "log_event",
+        # Wave 137-139: writes_through density
+        "get_validated_project_root",
+        "ExecutionContext",
+        "SurgicalContext",
+        "ViolationConstraint",
     }
 )
 
@@ -1255,6 +1260,16 @@ _GOVERNANCE_ROUTE_SYMBOLS: frozenset[str] = frozenset(
         "ASTCoordinate",
         "MCPConnectionManager",
         "ExecutionPathController",
+        # Wave 143-145: routes_through density
+        "invoke_hierarchy_agent",
+        "safe_run",
+        "ModelRouter",
+        "ValidationResult",
+        "UnifiedAgent",
+        "get_llm_gateway",
+        "check_gateway_topology",
+        "build_route_decision_key",
+        "build_route_context_key",
     }
 )
 
@@ -1381,6 +1396,14 @@ _GOVERNANCE_READ_SYMBOLS: frozenset[str] = frozenset(
         "PathFragilityDetector",
         "_read_baseline",
         "safe_git_execute",
+        # Wave 140-142: reads_through density
+        "get_clock",
+        "get_python_files",
+        "get_active_execution_trace",
+        "get_behavioral_profile",
+        "ADGBehavioralIndex",
+        "get_data_files",
+        "ADGStaticScanner",
     }
 )
 
@@ -3640,10 +3663,12 @@ class _PolicyStateObserverVisitor(ast.NodeVisitor):
         tail = sym.split(".")[-1] if sym else ""
         base = sym.split(".")[0] if sym else ""
         if tail in POLICY_STATE_READER_CLASSES or base in POLICY_STATE_READER_CLASSES:
-            if "Snapshot" in tail:
+            if "Snapshot" in tail or "snapshot" in tail:
                 self._emit("snapshots_state", "runtime_state_snapshot", sym or tail, node.lineno)
             elif "Runtime" in tail or "Health" in tail:
                 self._emit("observes_runtime_state", "runtime_state_snapshot", sym or tail, node.lineno)
+            elif "State" in tail or "state" in tail or "Bridge" in tail or "digest" in tail:
+                self._emit("snapshots_state", "runtime_state_snapshot", sym or tail, node.lineno)
             else:
                 self._emit("observes_policy_state", "policy_state_observation", sym or tail, node.lineno)
         elif tail in POLICY_STATE_READ_METHODS:
@@ -4990,7 +5015,9 @@ class ADGStaticScanner:
         manifest.test_covers_count = sum(1 for e in result.edges if e.relation_type == "covers")
         manifest.layer_violation_count = sum(1 for e in result.edges if e.relation_type == "violates")
         manifest.governance_plane_count = sum(
-            1 for e in result.edges if e.relation_type in ("writes_through", "reads_through", "routes_through")
+            1
+            for e in result.edges
+            if e.relation_type in ("writes_through", "reads_through", "routes_through")
         )
         # E1 manifest counts
         manifest.symbol_export_count = sum(1 for e in result.edges if e.relation_type == "exports")
