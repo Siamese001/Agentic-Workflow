@@ -1,5 +1,6 @@
-"""Identify operations that should have guardrails but don't."""
-# guardian: allow-direct_prompt_compilation reason=diagnostic_tool_sql_queries
+"""Identify files with high-risk operations but no guardrail coverage."""
+
+# guardian: allow-direct-prompt-compilation -- audit script uses print for CLI output
 
 import sqlite3
 from pathlib import Path

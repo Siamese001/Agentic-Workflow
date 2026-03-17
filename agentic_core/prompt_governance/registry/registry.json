@@ -1,18 +1,381 @@
 {
-  "sovereign_version": "1.0",
-  "generated_date": "2026-01-19",
+  "sovereign_version": "2.0",
+  "generated_date": "2026-03-17",
   "prompts": {
     "file_placement.jinja": [
       {
         "version": "v1",
-        "purpose": "Enforces territory/file placement rules",
+        "purpose": "Sovereign file placement guidance using structure_blueprint SSOT",
         "territory": "templates",
         "active": true,
-        "author": "LocationAgent",
+        "author": "LocationHealerAgent",
         "registered_date": "2026-01-19",
         "content_hash": "dabdf2dcb3e21a10ef205d266cac7797d5d85710a3e86c0bf0b27a05ae662927"
       }
+    ],
+    "code_healing.jinja": [
+      {
+        "version": "v1.1",
+        "purpose": "Guides atomic healers to refactor code while preserving behavior",
+        "territory": "templates",
+        "active": true,
+        "author": "CodeHealerAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "subatomic_healing_context.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Shared sub-atomic healing context injected via Jinja include",
+        "territory": "templates",
+        "active": true,
+        "author": "CodeHealerAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "gravity_compliance.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Gravity law enforcement for detected violations",
+        "territory": "templates",
+        "active": true,
+        "author": "GravityLeakRepairAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "gravity_repair.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Converts static upward imports to dynamic importlib",
+        "territory": "templates",
+        "active": true,
+        "author": "GravityLeakRepairAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "gravity_dynamic_conversion.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Dynamic import conversion guidance for gravity fixes",
+        "territory": "templates",
+        "active": true,
+        "author": "GravityLeakRepairAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "naming_law.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Snake_case conversion and naming law enforcement",
+        "territory": "templates",
+        "active": true,
+        "author": "NamingAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "naming_precision.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Precise naming convention guidance",
+        "territory": "templates",
+        "active": true,
+        "author": "NamingAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "dead_code_elimination.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Unused symbol removal with sovereign awareness",
+        "territory": "templates",
+        "active": true,
+        "author": "CodeDetectorAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "docstring_enrichment.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Docstring generation and enrichment guidance",
+        "territory": "templates",
+        "active": true,
+        "author": "DocstringComplianceAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "type_inference.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Type hint inference and annotation guidance",
+        "territory": "templates",
+        "active": true,
+        "author": "CodeValidatorAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "import_optimization.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Import optimization and deduplication guidance",
+        "territory": "templates",
+        "active": true,
+        "author": "CodeJanitorAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "reasoning_chain.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Structured chain-of-thought reasoning for L1 cognition agents",
+        "territory": "templates",
+        "active": true,
+        "author": "CognitiveDispositionAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "anomaly_detection_response.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Anomaly detection, classification, and containment protocol",
+        "territory": "templates",
+        "active": true,
+        "author": "NeuralAutoImmuneAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "cross_layer_coordination.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Gravity-compliant cross-layer communication protocol",
+        "territory": "templates",
+        "active": true,
+        "author": "ArchitectureGovernorAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "context_memory_synthesis.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Context and memory synthesis for agent decision-making",
+        "territory": "templates",
+        "active": true,
+        "author": "CognitiveDispositionAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "agent_autonomy_law.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Agent autonomy rules and sovereignty enforcement",
+        "territory": "templates",
+        "active": true,
+        "author": "AutonomyGuardianAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "autonomous_decision_tree.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Decision tree guidance for autonomous agent actions",
+        "territory": "templates",
+        "active": true,
+        "author": "AutonomyGuardianAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "async_compatibility.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Async/await compatibility checks and conversion guidance",
+        "territory": "templates",
+        "active": true,
+        "author": "CodeValidatorAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "fission_planning.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Module fission planning for large file decomposition",
+        "territory": "templates",
+        "active": true,
+        "author": "ComplexityAnalyzerAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "goal_decomposition_planning.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Goal decomposition and mission planning guidance",
+        "territory": "templates",
+        "active": true,
+        "author": "CognitiveDispositionAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "multi_agent_consensus.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Multi-agent consensus protocol for conflicting decisions",
+        "territory": "templates",
+        "active": true,
+        "author": "ArchitectureGovernorAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "predictive_failure_prevention.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Predictive failure detection and prevention guidance",
+        "territory": "templates",
+        "active": true,
+        "author": "PredictiveCostAuditorAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "jailbreak_classic.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Classic jailbreak prompt testing",
+        "territory": "security/adversarial",
+        "active": true,
+        "author": "RedTeamAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "prompt_injection_payload.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Prompt injection payload testing",
+        "territory": "security/adversarial",
+        "active": true,
+        "author": "RedTeamAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "indirect_attack.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Indirect attack via context manipulation",
+        "territory": "security/adversarial",
+        "active": true,
+        "author": "RedTeamAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "token_smuggling.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Token smuggling via Unicode/encoding tricks",
+        "territory": "security/adversarial",
+        "active": true,
+        "author": "RedTeamAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "cot_jailbreak.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Chain-of-thought reasoning jailbreak",
+        "territory": "security/adversarial",
+        "active": true,
+        "author": "RedTeamAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "encoded_payload_base64.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Base64-encoded payload injection",
+        "territory": "security/adversarial",
+        "active": true,
+        "author": "RedTeamAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "encoded_payload_leetspeak.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Leetspeak-encoded payload injection",
+        "territory": "security/adversarial",
+        "active": true,
+        "author": "RedTeamAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "encoded_payload_rot13.jinja": [
+      {
+        "version": "v1",
+        "purpose": "ROT13-encoded payload injection",
+        "territory": "security/adversarial",
+        "active": true,
+        "author": "RedTeamAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "multilingual_jailbreak.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Multilingual jailbreak prompt testing",
+        "territory": "security/adversarial",
+        "active": true,
+        "author": "RedTeamAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "recursive_override.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Recursive instruction override attack",
+        "territory": "security/adversarial",
+        "active": true,
+        "author": "RedTeamAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
+    ],
+    "recursive_override_staged.jinja": [
+      {
+        "version": "v1",
+        "purpose": "Staged recursive override attack",
+        "territory": "security/adversarial",
+        "active": true,
+        "author": "RedTeamAgent",
+        "registered_date": "2026-03-17",
+        "content_hash": ""
+      }
     ]
   },
-  "last_sync_date": "1769463975.5941505"
+  "last_sync_date": "2026-03-17T06:00:00Z"
 }

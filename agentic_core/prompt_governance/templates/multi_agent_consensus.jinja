@@ -81,7 +81,7 @@ CONSENSUS PROTOCOL (execute in strict order):
 OUTPUT FORMAT (strict JSON only):
 {
   "problem_statement": "{{ problem_statement }}",
-  "participating_agents": [{{ agent_list | map('quote') | join(', ') }}],
+  "participating_agents": [{{ agent_list | map('tojson') | join(', ') }}],
   "convergence_points": [
     "All agents agree structural SSOT must be restored first"
   ],
