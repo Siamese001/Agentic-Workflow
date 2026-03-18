@@ -1747,7 +1747,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 if file_type in ("AGENT", "ORCHESTRATOR"):
                     _is_agent = True
             except (ImportError, AttributeError, OSError) as e:
-                self.logger.debug(f"File classification failed for {file_path.name}: {e}")
+                Logger.debug(f"File classification failed for {file_path.name}: {e}")
             # Filename heuristic always fires for *Agent.py regardless of path classification.
             # A file named *Agent.py that lives in tests/ is a misplaced production agent.
             if not _is_agent and file_path.name.endswith("Agent.py"):
@@ -1861,7 +1861,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 if file_type in ("AGENT", "ORCHESTRATOR"):
                     is_agent_type = True
             except (ImportError, AttributeError, OSError) as e:
-                self.logger.debug(f"File classification failed for {file_path.name}: {e}")
+                Logger.debug(f"File classification failed for {file_path.name}: {e}")
             # Filename heuristic always fires for *Agent.py — a production agent
             # named *Agent.py must never be routed to a non-source subfolder.
             if not is_agent_type and file_path.name.endswith("Agent.py"):

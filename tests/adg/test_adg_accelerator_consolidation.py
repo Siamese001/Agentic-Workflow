@@ -354,6 +354,9 @@ _EXPECTED_MCP_TOOLS = [
     "adg_nodes_by_file",
     "adg_edge_fanout",
     "adg_edge_fanin",
+    "adg_edge_detail",
+    "adg_module_context",
+    "adg_source_context",
     "adg_violations",
     "adg_assert_fresh",
     "redis_get",
@@ -379,8 +382,8 @@ class TestMCPServerSourceAnalysis:
     def test_exactly_17_mcp_tools_registered(self) -> None:
         src = self._source()
         count = src.count("@mcp.tool()")
-        assert count == 17, (
-            f"Expected exactly 17 @mcp.tool() decorators, found {count}"
+        assert count == 20, (
+            f"Expected exactly 20 @mcp.tool() decorators, found {count}"
         )
 
     @pytest.mark.parametrize("tool_name", _EXPECTED_MCP_TOOLS)

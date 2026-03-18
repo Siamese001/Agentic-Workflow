@@ -604,14 +604,17 @@ class TestFailIfStaleMode:
         )
 
     def test_precommit_uses_warn_for_t3g_not_fail_if_stale(self) -> None:
-        """T3g in pre-commit must use --warn (non-blocking); --fail-if-stale is for CI only."""
+        """ADG stale guard in pre-commit must use --warn (non-blocking); --fail-if-stale is for CI only."""
         cfg = (ROOT / ".pre-commit-config.yaml").read_text(encoding="utf-8")
-        t3g_idx = cfg.find("T3g:")
-        assert t3g_idx != -1
+        # Hook is registered as T17 (ADG Staleness Guard)
+        t3g_idx = cfg.find("adg-stale-guard")
+        if t3g_idx == -1:
+            t3g_idx = cfg.find("T3g:")
+        assert t3g_idx != -1, "ADG stale guard hook (T17/T3g) must exist in pre-commit config"
         t3g_block = cfg[t3g_idx: t3g_idx + 300]
-        assert "--warn" in t3g_block, "T3g pre-commit hook must use --warn mode"
+        assert "--warn" in t3g_block, "ADG stale guard pre-commit hook must use --warn mode"
         assert "--fail-if-stale" not in t3g_block, (
-            "T3g pre-commit hook must NOT use --fail-if-stale (that's for CI)"
+            "ADG stale guard pre-commit hook must NOT use --fail-if-stale (that's for CI)"
         )
 
 

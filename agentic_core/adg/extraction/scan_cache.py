@@ -320,8 +320,24 @@ class ScanCache:
 
 
 def file_hash(filepath: Path) -> str:
-    """Compute SHA-256 hex digest of a file's contents."""
+    """Compute SHA-256 hex digest of a file's contents.
+
+    Uses streaming hash for files > 1MB and skips files > 50MB
+    to prevent timeouts on large artifacts.
+    """
     try:
+        size = filepath.stat().st_size
+        if size > 50 * 1024 * 1024:
+            # For very large files, hash size + mtime as proxy
+            mtime = filepath.stat().st_mtime_ns
+            return hashlib.sha256(f"{size}:{mtime}".encode()).hexdigest()
+        if size > 1024 * 1024:
+            # Stream large files in chunks
+            h = hashlib.sha256()
+            with filepath.open("rb") as f:
+                while chunk := f.read(65536):
+                    h.update(chunk)
+            return h.hexdigest()
         data = filepath.read_bytes()
         return hashlib.sha256(data).hexdigest()
     except OSError:
