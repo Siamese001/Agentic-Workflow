@@ -100,6 +100,8 @@ except ImportError:
     VMProvider = None
     VMStatus = None
 from agentic_core.utils.security_util import safe_execute
+from agentic_core.utils.timeout_decorator_impl_util import timeout
+from agentic_core.utils.decorators_util import standard_heal
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
@@ -208,7 +210,7 @@ class FirecrackerManager:
     Production should use full Firecracker/E2B SDK.
     """
 
-    def __init__(self, Provider: VMProvider = VMProvider.FIRECRACKER, enable_logging: bool = True):
+    def __init__(self, Provider: VMProvider = None, enable_logging: bool = True):
         """Initialize Firecracker manager.
 
         Args:
@@ -451,7 +453,7 @@ class FirecrackerManager:
             _call_path.discard(agent_name)
 
 
-def create_firecracker_manager(Provider: VMProvider = VMProvider.FIRECRACKER) -> FirecrackerManager:
+def create_firecracker_manager(Provider: VMProvider = None) -> FirecrackerManager:
     """Factory function to create Firecracker manager.
 
     # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)

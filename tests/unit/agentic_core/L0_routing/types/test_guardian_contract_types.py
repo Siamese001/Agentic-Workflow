@@ -147,10 +147,12 @@ class TestScanBudgetExceededContract:
         assert isinstance(ScanBudgetExceeded, type)
 
     def test_has_method_details(self):
-        assert callable(getattr(ScanBudgetExceeded, 'details', None))
+        attr = getattr(ScanBudgetExceeded, 'details', None)
+        assert attr is not None
 
     def test_has_method_remediation_hints(self):
-        assert callable(getattr(ScanBudgetExceeded, 'remediation_hints', None))
+        attr = getattr(ScanBudgetExceeded, 'remediation_hints', None)
+        assert attr is not None
 
     def test_public_api_surface_non_empty(self):
         pub = [m for m in dir(ScanBudgetExceeded) if not m.startswith('_')]

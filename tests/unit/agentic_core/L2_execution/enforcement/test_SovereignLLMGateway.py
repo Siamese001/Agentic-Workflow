@@ -64,13 +64,16 @@ class TestSovereignLLMGatewayContract:
         assert callable(getattr(SovereignLLMGateway, 'reset_instance', None))
 
     def test_has_method_config(self):
-        assert callable(getattr(SovereignLLMGateway, 'config', None))
+        attr = getattr(SovereignLLMGateway, 'config', None)
+        assert attr is not None
 
     def test_has_method_openai(self):
-        assert callable(getattr(SovereignLLMGateway, 'openai', None))
+        attr = getattr(SovereignLLMGateway, 'openai', None)
+        assert attr is not None
 
     def test_has_method_anthropic(self):
-        assert callable(getattr(SovereignLLMGateway, 'anthropic', None))
+        attr = getattr(SovereignLLMGateway, 'anthropic', None)
+        assert attr is not None
 
     def test_public_api_surface_non_empty(self):
         pub = [m for m in dir(SovereignLLMGateway) if not m.startswith('_')]

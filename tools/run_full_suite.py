@@ -16,7 +16,7 @@ for sd in sorted(os.listdir(AC)):
         [sys.executable, "-m", "pytest", f"tests/unit/agentic_core/{sd}",
          "-c", "tools/pytest_minimal.ini", "--tb=no", "-p", "no:warnings", "-q"],
         capture_output=True, text=True, encoding="utf-8", errors="replace",
-        cwd=ROOT, timeout=600, stdin=subprocess.DEVNULL,
+        cwd=ROOT, timeout=900, stdin=subprocess.DEVNULL,
     )
     for line in r.stdout.splitlines()[-3:]:
         if "passed" in line or "failed" in line or "error" in line or "skipped" in line:

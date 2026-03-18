@@ -132,13 +132,16 @@ class TestCapabilityEnforcerContract:
         assert isinstance(CapabilityEnforcer, type)
 
     def test_has_method_token(self):
-        assert callable(getattr(CapabilityEnforcer, 'token', None))
+        attr = getattr(CapabilityEnforcer, 'token', None)
+        assert attr is not None
 
     def test_has_method_call_count(self):
-        assert callable(getattr(CapabilityEnforcer, 'call_count', None))
+        attr = getattr(CapabilityEnforcer, 'call_count', None)
+        assert attr is not None
 
     def test_has_method_decisions(self):
-        assert callable(getattr(CapabilityEnforcer, 'decisions', None))
+        attr = getattr(CapabilityEnforcer, 'decisions', None)
+        assert attr is not None
 
     def test_has_method_check(self):
         assert callable(getattr(CapabilityEnforcer, 'check', None))

@@ -13,6 +13,8 @@ import json
 from dataclasses import dataclass, field
 from typing import Any
 
+from agentic_core.L5_safety.types.hardening_errors import ExecutionTraceIntegrityError  # noqa: F401
+
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,  # noqa: E402

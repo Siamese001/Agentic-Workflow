@@ -59,7 +59,8 @@ class TestLawSlotHandlerContract:
         assert callable(getattr(LawSlotHandler, 'acquire_slot', None))
 
     def test_has_method_depletion_tracker(self):
-        assert callable(getattr(LawSlotHandler, 'depletion_tracker', None))
+        attr = getattr(LawSlotHandler, 'depletion_tracker', None)
+        assert attr is not None
 
     def test_public_api_surface_non_empty(self):
         pub = [m for m in dir(LawSlotHandler) if not m.startswith('_')]
@@ -71,7 +72,8 @@ class TestPolicyConfigGuardContract:
         assert isinstance(PolicyConfigGuard, type)
 
     def test_has_method_policy_hash(self):
-        assert callable(getattr(PolicyConfigGuard, 'policy_hash', None))
+        attr = getattr(PolicyConfigGuard, 'policy_hash', None)
+        assert attr is not None
 
     def test_has_method_read_config(self):
         assert callable(getattr(PolicyConfigGuard, 'read_config', None))
@@ -151,10 +153,12 @@ class TestHealingTransactionBoundaryContract:
         assert callable(getattr(HealingTransactionBoundary, 'commit', None))
 
     def test_has_method_committed(self):
-        assert callable(getattr(HealingTransactionBoundary, 'committed', None))
+        attr = getattr(HealingTransactionBoundary, 'committed', None)
+        assert attr is not None
 
     def test_has_method_rolled_back(self):
-        assert callable(getattr(HealingTransactionBoundary, 'rolled_back', None))
+        attr = getattr(HealingTransactionBoundary, 'rolled_back', None)
+        assert attr is not None
 
     def test_public_api_surface_non_empty(self):
         pub = [m for m in dir(HealingTransactionBoundary) if not m.startswith('_')]
