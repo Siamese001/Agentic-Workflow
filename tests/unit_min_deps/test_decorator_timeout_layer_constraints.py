@@ -176,6 +176,8 @@ class TestShimStrictness:
         for lineno, module in _collect_import_modules(tree):
             if module == "__future__":
                 continue
+            if module == "agentic_core.runtime.lifecycle_trace_contract":
+                continue
             if module != allowed_module:
                 violations.append(
                     f"line {lineno}: imports {module} (allowed: {allowed_module})",

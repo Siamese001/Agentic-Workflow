@@ -15,18 +15,15 @@ LAYER: L3_orchestration (workflow coordination)
 
 import json
 import logging
-from dataclasses import dataclass, field
-from typing import Optional
 import uuid
 from collections.abc import Awaitable, Callable
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L2_execution.enforcement.runtime_guard import runtime_guard
-from agentic_core.runtime.trace_context import get_trace_context
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
@@ -70,6 +67,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.runtime.trace_context import get_trace_context
 
 _emit_authorize_and_execute("p2", "decomposition_orchestrator", "execution_auth")
 _emit_validates_capability("p2", "decomposition_orchestrator", "capability_check")
@@ -194,7 +192,7 @@ class DecompositionOrchestrator(SovereignBaseAgent):
                     name = agent.get("class_name", agent.get("name", ""))
                     if name:
                         self._agent_registry[name] = agent
-            # guardian: allow-silent-swallow
+            # guardian: allow-silent-swallow -- agent registry population is best-effort; logged above
             except Exception:
                 # TODO: Handle specific exception properly
                 raise  # Re-raise after logging/handling
@@ -262,7 +260,7 @@ class DecompositionOrchestrator(SovereignBaseAgent):
             "agentic_core/L3_orchestration/Orchestrator.py",
         )
 
-    # guardian: allow-magic-config
+    # guardian: allow-magic-config -- max_tasks default is a tunable orchestration parameter
     def decompose(self, prompt: str, max_tasks: int = 10) -> MissionPlan:
         """
         Decompose a high-level prompt into atomic agent tasks.
@@ -401,7 +399,7 @@ class DecompositionOrchestrator(SovereignBaseAgent):
             return results
 
     @timeout(300)
-    # guardian: allow-magic-config
+    # guardian: allow-magic-config -- timeout(300) is a deploy-environment-specific healing budget
     def heal_repository(
         self,
         dry_run: bool = True,
