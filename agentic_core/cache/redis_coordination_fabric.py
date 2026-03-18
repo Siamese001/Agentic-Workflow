@@ -32,6 +32,7 @@ Design invariants
 from __future__ import annotations
 
 import logging
+import uuid
 from typing import Any
 
 from agentic_core.cache.redis_cache_client import (

@@ -288,7 +288,8 @@ class MemoryCard:
         }
 
     def stable_hash(self) -> str:
-        return stable_sha256_json(self.to_dict())
+        _, _stable_sha256_json = _get_determinism_fns()
+        return _stable_sha256_json(self.to_dict())
 
     def to_observations(self) -> list[str]:
         """Build the observation list stored on the Memory MCP entity."""
@@ -312,7 +313,8 @@ class MemoryCard:
             obs.append(f"common_healers:{','.join(sorted(self.common_healers))}")
         if self.policy_touchpoints:
             obs.append(f"policy_touchpoints:{','.join(sorted(self.policy_touchpoints))}")
-        obs.append(_truncate(f"card_summary:{deterministic_json(self.to_dict())}"))
+        _deterministic_json, _ = _get_determinism_fns()
+        obs.append(_truncate(f"card_summary:{_deterministic_json(self.to_dict())}"))
         return obs
 
 

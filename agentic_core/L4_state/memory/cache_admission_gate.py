@@ -295,10 +295,12 @@ class CacheAdmissionDecision:
         }
 
     def to_json(self) -> str:
-        return deterministic_json(self.to_dict())
+        _deterministic_json, _ = _get_determinism_fns()
+        return _deterministic_json(self.to_dict())
 
     def stable_hash(self) -> str:
-        return stable_sha256_json(self.to_dict())
+        _, _stable_sha256_json = _get_determinism_fns()
+        return _stable_sha256_json(self.to_dict())
 
 
 # Stable deny reason codes

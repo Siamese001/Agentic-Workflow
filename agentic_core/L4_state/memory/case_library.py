@@ -364,6 +364,17 @@ class CaseLibrary:
 
     def _build_observations(self, bundle: CaseBundle, stable_hash: str) -> list[str]:
         """Build the observation list stored on the Memory MCP entity."""
+        # Resolve types at runtime (they are TYPE_CHECKING-only imports)
+        (
+            _,
+            _CaseBundle,
+            _CaseRecord,
+            _GovernancePrecedent,
+            _HealerBundle,
+            _HITLPreferenceRecord,
+            _PromptBundle,
+        ) = _get_case_memory_types()
+
         artifact_type = bundle.artifact_type  # type: ignore[union-attr]
         common = [
             f"artifact_type:{artifact_type}",
@@ -371,7 +382,7 @@ class CaseLibrary:
             f"trace_id:{bundle.trace_id}",  # type: ignore[union-attr]
         ]
 
-        if isinstance(bundle, CaseRecord):
+        if isinstance(bundle, _CaseRecord):
             specific = [
                 f"plan_hash:{bundle.plan_hash}",
                 f"replay_key:{bundle.replay_key}",
@@ -384,7 +395,7 @@ class CaseLibrary:
                 _truncate(f"canonical_summary:{bundle.to_json()}"),
             ]
 
-        elif isinstance(bundle, HealerBundle):
+        elif isinstance(bundle, _HealerBundle):
             specific = [
                 f"violation_pattern:{bundle.violation_pattern}",
                 f"healer_id:{bundle.healer_id}",
@@ -396,7 +407,7 @@ class CaseLibrary:
                 _truncate(f"canonical_summary:{bundle.to_json()}"),
             ]
 
-        elif isinstance(bundle, GovernancePrecedent):
+        elif isinstance(bundle, _GovernancePrecedent):
             specific = [
                 f"safety_issue_type:{bundle.safety_issue_type}",
                 f"guardrail_id:{bundle.guardrail_id}",
@@ -410,7 +421,7 @@ class CaseLibrary:
                 _truncate(f"canonical_summary:{bundle.to_json()}"),
             ]
 
-        elif isinstance(bundle, PromptBundle):
+        elif isinstance(bundle, _PromptBundle):
             specific = [
                 f"prompt_artifact_hash:{bundle.prompt_artifact_hash}",
                 f"template_manifest_hash:{bundle.template_manifest_hash}",
@@ -422,7 +433,7 @@ class CaseLibrary:
                 _truncate(f"canonical_summary:{bundle.to_json()}"),
             ]
 
-        elif isinstance(bundle, HITLPreferenceRecord):
+        elif isinstance(bundle, _HITLPreferenceRecord):
             specific = [
                 f"original_plan_hash:{bundle.original_plan_hash}",
                 f"human_decision:{bundle.human_decision}",
@@ -475,6 +486,17 @@ class CaseLibrary:
 
     def _link_adg_nodes(self, bundle: CaseBundle, entity_name: str) -> None:
         """Create ``sourced_from_adg_node`` relations for each ADG node ref."""
+        # Resolve types at runtime (they are TYPE_CHECKING-only imports)
+        (
+            _,
+            _CaseBundle,
+            _CaseRecord,
+            _GovernancePrecedent,
+            _HealerBundle,
+            _HITLPreferenceRecord,
+            _PromptBundle,
+        ) = _get_case_memory_types()
+
         adg_nodes = getattr(bundle, "adg_nodes", None)
         if adg_nodes:
             for node_ref in adg_nodes:
@@ -489,7 +511,7 @@ class CaseLibrary:
                 )
                 self._bridge.create_relation(entity_name, node_ref.entity_name, "sourced_from_adg_node")
 
-        if isinstance(bundle, HealerBundle):
+        if isinstance(bundle, _HealerBundle):
             healer_node = bundle.adg_healer_node
             self._bridge.create_agent_entity(
                 agent_name=healer_node.entity_name,
@@ -506,7 +528,7 @@ class CaseLibrary:
                 )
                 self._bridge.create_relation(entity_name, vnode.entity_name, "sourced_from_adg_node")
 
-        elif isinstance(bundle, GovernancePrecedent):
+        elif isinstance(bundle, _GovernancePrecedent):
             gnode = bundle.adg_guardrail_node
             self._bridge.create_agent_entity(
                 agent_name=gnode.entity_name,
@@ -515,7 +537,7 @@ class CaseLibrary:
             )
             self._bridge.create_relation(entity_name, gnode.entity_name, "sourced_from_adg_node")
 
-        elif isinstance(bundle, PromptBundle):
+        elif isinstance(bundle, _PromptBundle):
             pnode = bundle.adg_prompt_node
             self._bridge.create_agent_entity(
                 agent_name=pnode.entity_name,
@@ -524,7 +546,7 @@ class CaseLibrary:
             )
             self._bridge.create_relation(entity_name, pnode.entity_name, "sourced_from_adg_node")
 
-        elif isinstance(bundle, HITLPreferenceRecord):
+        elif isinstance(bundle, _HITLPreferenceRecord):
             hnode = bundle.adg_hitl_node
             self._bridge.create_agent_entity(
                 agent_name=hnode.entity_name,
@@ -535,7 +557,10 @@ class CaseLibrary:
 
     def _link_type_specific(self, bundle: CaseBundle, entity_name: str) -> None:
         """Create bundle-type-specific relations."""
-        if isinstance(bundle, HealerBundle):
+        # Resolve types at runtime (they are TYPE_CHECKING-only imports)
+        (_, _, _, _, _HealerBundle, _HITLPreferenceRecord, _) = _get_case_memory_types()
+
+        if isinstance(bundle, _HealerBundle):
             violation_node = f"ADG::ViolationPattern::{bundle.violation_pattern[:32]}"
             self._bridge.create_agent_entity(
                 agent_name=violation_node,
@@ -544,7 +569,7 @@ class CaseLibrary:
             )
             self._bridge.create_relation(entity_name, violation_node, "healer_resolved")
 
-        elif isinstance(bundle, HITLPreferenceRecord):
+        elif isinstance(bundle, _HITLPreferenceRecord):
             plan_node = _plan_entity_name(bundle.original_plan_hash)
             self._bridge.create_agent_entity(
                 agent_name=plan_node,
