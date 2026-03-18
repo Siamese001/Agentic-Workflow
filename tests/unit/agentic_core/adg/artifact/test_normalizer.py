@@ -4,6 +4,7 @@ fan_in=3 — imported by 3 other modules.
 ADG import-hygiene is covered separately by test_normalizer_adg.py.
 This file covers behavioral invariants and public API contracts.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -11,12 +12,13 @@ import pytest
 pytestmark = pytest.mark.unit
 
 try:
-    from agentic_core.adg.artifact.normalizer import (  # noqa: F401
+    from agentic_core.adg.artifact.normalizer_config import (  # noqa: F401
         ArtifactNormalizer,
         NormalizedGraph,
         normalize_artifact,
         size_comparison,
     )
+
     _AVAILABLE = True
 except ImportError:
     _AVAILABLE = False
@@ -30,16 +32,27 @@ except ImportError:
 class TestNormalizedGraphContract:
     def test_is_dataclass(self):
         import dataclasses
+
         assert dataclasses.is_dataclass(NormalizedGraph)
 
     def test_field_names_present(self):
         import dataclasses
+
         fnames = {f.name for f in dataclasses.fields(NormalizedGraph)}
-        assert fnames >= {'scanner_digest', 'edges', 'nodes', 'schema_version', 'commit_sha', 'artifact_digest'}
+        assert fnames >= {
+            "scanner_digest",
+            "edges",
+            "nodes",
+            "schema_version",
+            "commit_sha",
+            "artifact_digest",
+        }
 
     def test_field_count_reasonable(self):
         import dataclasses
+
         assert len(dataclasses.fields(NormalizedGraph)) >= 1
+
 
 @pytest.mark.skipif(not _AVAILABLE, reason="normalizer.py deps unavailable")
 class TestArtifactNormalizerContract:
@@ -47,14 +60,15 @@ class TestArtifactNormalizerContract:
         assert isinstance(ArtifactNormalizer, type)
 
     def test_has_method_normalize(self):
-        assert callable(getattr(ArtifactNormalizer, 'normalize', None))
+        assert callable(getattr(ArtifactNormalizer, "normalize", None))
 
     def test_has_method_denormalize(self):
-        assert callable(getattr(ArtifactNormalizer, 'denormalize', None))
+        assert callable(getattr(ArtifactNormalizer, "denormalize", None))
 
     def test_public_api_surface_non_empty(self):
-        pub = [m for m in dir(ArtifactNormalizer) if not m.startswith('_')]
+        pub = [m for m in dir(ArtifactNormalizer) if not m.startswith("_")]
         assert len(pub) >= 1
+
 
 @pytest.mark.skipif(not _AVAILABLE, reason="normalizer.py deps unavailable")
 class TestNormalizeArtifactFunction:
@@ -63,8 +77,10 @@ class TestNormalizeArtifactFunction:
 
     def test_has_return_annotation(self):
         import inspect
+
         sig = inspect.signature(normalize_artifact)
         assert sig.return_annotation is not inspect.Parameter.empty
+
 
 @pytest.mark.skipif(not _AVAILABLE, reason="normalizer.py deps unavailable")
 class TestSizeComparisonFunction:
@@ -73,6 +89,7 @@ class TestSizeComparisonFunction:
 
     def test_has_return_annotation(self):
         import inspect
+
         sig = inspect.signature(size_comparison)
         assert sig.return_annotation is not inspect.Parameter.empty
 

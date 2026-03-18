@@ -10,14 +10,14 @@ ScanResult, including:
 - Deterministic SHA256 artifact digest
 """
 
-from agentic_core.adg.artifact.builder import (
-    ADGArtifactBuilder,
+from agentic_core.adg.artifact.builder_types import (
     ADGArtifact,
+    ADGArtifactBuilder,
     build_artifact,
 )
-from agentic_core.adg.artifact.serializer import (
-    serialize_artifact,
+from agentic_core.adg.artifact.serializer_util import (
     diff_artifacts,
+    serialize_artifact,
 )
 
 __all__ = [

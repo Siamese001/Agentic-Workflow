@@ -15,7 +15,7 @@ import ast
 import textwrap
 from unittest.mock import MagicMock
 
-from agentic_core.adg.ci.invariant_scanner import (
+from agentic_core.adg.ci.invariant_scanner_config import (
     _POLICY_DUPLICATE_METHOD,
     _POLICY_UNREACHABLE_AFTER_RAISE,
     InvariantScanner,

@@ -625,7 +625,7 @@ class TestVerifyLayerGraphConsistency:
 
 class TestPopulateModuleEntities:
     def _build(self, modules, edges=None):
-        from agentic_core.adg.artifact.builder import ADGArtifactBuilder
+        from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
         from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="sha")

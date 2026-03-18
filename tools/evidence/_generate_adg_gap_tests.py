@@ -6,6 +6,7 @@ source module, and writes appropriately-typed test stubs to the matching tests/u
 Usage:
     python tools/evidence/_generate_adg_gap_tests.py [--dry-run] [--layer L5]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -206,9 +207,12 @@ if str(ROOT) not in sys.path:
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class SymbolInfo:
-    classes: list[tuple[str, bool, bool, bool]] = field(default_factory=list)  # name, is_dc, is_frozen, is_enum
+    classes: list[tuple[str, bool, bool, bool]] = field(
+        default_factory=list
+    )  # name, is_dc, is_frozen, is_enum
     functions: list[str] = field(default_factory=list)
     constants: list[str] = field(default_factory=list)
     all_exports: list[str] = field(default_factory=list)
@@ -241,7 +245,10 @@ def inspect_module(src_path: Path) -> SymbolInfo:
                 continue
             is_enum = any(
                 (isinstance(b, ast.Name) and b.id in ("Enum", "IntEnum", "StrEnum", "Flag", "IntFlag"))
-                or (isinstance(b, ast.Attribute) and b.attr in ("Enum", "IntEnum", "StrEnum", "Flag", "IntFlag"))
+                or (
+                    isinstance(b, ast.Attribute)
+                    and b.attr in ("Enum", "IntEnum", "StrEnum", "Flag", "IntFlag")
+                )
                 for b in node.bases
             )
             is_dataclass = any(
@@ -302,6 +309,7 @@ def safe_flag(name: str) -> str:
 # ---------------------------------------------------------------------------
 # Test content generator
 # ---------------------------------------------------------------------------
+
 
 def generate_test_content(module_path: str, info: SymbolInfo, fan_in: int = 0) -> str:
     dotted = module_path_to_import(module_path)
@@ -373,9 +381,9 @@ def generate_test_content(module_path: str, info: SymbolInfo, fan_in: int = 0) -
     lines.append("")
 
     # Per-class tests
-    for (name, is_dc, is_frozen, is_enum) in pub_classes:
+    for name, is_dc, is_frozen, is_enum in pub_classes:
         lines.append("")
-        lines.append(f"@pytest.mark.skipif(not _AVAILABLE, reason=\"{mod_short} deps unavailable\")")
+        lines.append(f'@pytest.mark.skipif(not _AVAILABLE, reason="{mod_short} deps unavailable")')
         lines.append(f"class Test{name}:")
         if is_enum:
             lines.append("    def test_is_enum(self):")
@@ -403,7 +411,7 @@ def generate_test_content(module_path: str, info: SymbolInfo, fan_in: int = 0) -
     # Per-function tests
     for fn in pub_funcs:
         lines.append("")
-        lines.append(f"@pytest.mark.skipif(not _AVAILABLE, reason=\"{mod_short} deps unavailable\")")
+        lines.append(f'@pytest.mark.skipif(not _AVAILABLE, reason="{mod_short} deps unavailable")')
         lines.append(f"class Test{fn.replace('_', ' ').title().replace(' ', '')}:")
         lines.append("    def test_is_callable(self):")
         lines.append(f"        assert callable({fn})")
@@ -412,7 +420,7 @@ def generate_test_content(module_path: str, info: SymbolInfo, fan_in: int = 0) -
     for const in pub_consts:
         title = const.replace("_", " ").title().replace(" ", "")
         lines.append("")
-        lines.append(f"@pytest.mark.skipif(not _AVAILABLE, reason=\"{mod_short} deps unavailable\")")
+        lines.append(f'@pytest.mark.skipif(not _AVAILABLE, reason="{mod_short} deps unavailable")')
         lines.append(f"class Test{title}Constant:")
         lines.append("    def test_is_not_none(self):")
         lines.append(f"        assert {const} is not None")
@@ -432,6 +440,7 @@ def generate_test_content(module_path: str, info: SymbolInfo, fan_in: int = 0) -
 # Main
 # ---------------------------------------------------------------------------
 
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate ADG gap tests")
     parser.add_argument("--dry-run", action="store_true", help="Print paths without writing")
@@ -440,8 +449,8 @@ def main() -> None:
     args = parser.parse_args()
 
     # Use accelerator to get authoritative gap list
-    from agentic_core.adg.analysis.hotspot_index import HotspotIndex
-    from agentic_core.adg.analysis.test_gap import detect_test_gaps
+    from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+    from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
     from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
     print("[GEN] Scanning ADG for gap modules...")
@@ -456,14 +465,25 @@ def main() -> None:
 
     # Sort by layer priority then fan_in desc
     LAYER_PRIORITY = {
-        "L1": 0, "L2": 1, "L3": 2, "L4": 3, "L6": 4,
-        "L_RUNTIME": 5, "L_SL": 6, "L_SHARED": 7,
-        "L5": 8, "L0": 9, "L_APP": 10, "L_PG": 11, "L_TOOLS": 12, "L_UNKNOWN": 13,
+        "L1": 0,
+        "L2": 1,
+        "L3": 2,
+        "L4": 3,
+        "L6": 4,
+        "L_RUNTIME": 5,
+        "L_SL": 6,
+        "L_SHARED": 7,
+        "L5": 8,
+        "L0": 9,
+        "L_APP": 10,
+        "L_PG": 11,
+        "L_TOOLS": 12,
+        "L_UNKNOWN": 13,
     }
     entries = sorted(entries, key=lambda e: (LAYER_PRIORITY.get(e.layer, 99), -e.fan_in))
 
     if args.limit:
-        entries = entries[:args.limit]
+        entries = entries[: args.limit]
 
     print(f"[GEN] {len(entries)} modules to cover (coverage was {report.coverage_rate:.1%})")
 

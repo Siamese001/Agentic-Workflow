@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Literal
 
 if TYPE_CHECKING:
-    from agentic_core.adg.analysis.diff import GraphDiff
+    from agentic_core.adg.analysis.GraphDiff import GraphDiff
     from agentic_core.adg.extraction.static_scanner import Edge
 
 RepairAgent = Literal[

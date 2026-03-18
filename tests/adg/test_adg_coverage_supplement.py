@@ -1004,7 +1004,7 @@ class TestBuilderLine347Precise:
         """Two edges with identical to_name: the second iteration hits line 347 'continue'.
         After the first edge adds the symbol, existing_adg contains it; the second
         duplicate adg_target is skipped via the 'if adg_target in existing_adg: continue'."""
-        from agentic_core.adg.artifact.builder import ADGArtifactBuilder
+        from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
 
         shared_sym = canonical_name("Symbol", "pytest")
         mod_a = canonical_name("Module", "agentic_core/L0_routing/a.py")
@@ -1050,7 +1050,7 @@ class TestBuilderUnresolvedImportLine457:
         """Force UNRESOLVED_IMPORT by patching normalizer.normalize for an internal name.
         'agentic_core.unresolved_xyz_abc.Missing' is internal but file doesn't exist
         -> normalizer returns UNRESOLVED_IMPORT -> appended to artifact.unresolved_imports."""
-        from agentic_core.adg.artifact.builder import ADGArtifactBuilder
+        from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
         from agentic_core.adg.identity.normalizer import (
             IdentityConfidence,
             IdentityKind,

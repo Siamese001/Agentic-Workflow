@@ -4,6 +4,7 @@ real `import <module>` statements the ADG scanner can detect as 'covers' edges.
 Runs detect_test_gaps(), for each still-uncovered module finds its test file,
 and patches the importlib pattern to a direct import statement.
 """
+
 from __future__ import annotations
 
 import re
@@ -87,8 +88,8 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from agentic_core.adg.analysis.hotspot_index import HotspotIndex
-from agentic_core.adg.analysis.test_gap import detect_test_gaps
+from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -208,9 +209,7 @@ _IMPORTLIB_RE = re.compile(
 )
 
 # Also handle the single-line variant
-_IMPORTLIB_ONELINER_RE = re.compile(
-    r"import importlib as _il; _mod = _il\.import_module\(\"([^\"]+)\"\)"
-)
+_IMPORTLIB_ONELINER_RE = re.compile(r"import importlib as _il; _mod = _il\.import_module\(\"([^\"]+)\"\)")
 
 
 def patch_test_file(test_path: Path, dotted: str) -> bool:
@@ -236,9 +235,7 @@ def patch_test_file(test_path: Path, dotted: str) -> bool:
     # Replace single-liner variant (inside existing try block)
     if _IMPORTLIB_ONELINER_RE.search(content):
         new_line = f"    import {dotted} as _mod  # noqa: F401"
-        new_content = _IMPORTLIB_ONELINER_RE.sub(
-            f"import {dotted} as _mod  # noqa: F401", content, count=1
-        )
+        new_content = _IMPORTLIB_ONELINER_RE.sub(f"import {dotted} as _mod  # noqa: F401", content, count=1)
         test_path.write_text(new_content, encoding="utf-8")
         return True
 
@@ -273,27 +270,29 @@ def main() -> None:
                 continue
 
             stem = Path(mod_path).stem
-            content = "\n".join([
-                f'"""ADG-driven tests for {mod_path} — direct import stub."""',
-                "from __future__ import annotations",
-                "",
-                "import pytest",
-                "",
-                "pytestmark = pytest.mark.unit",
-                "",
-                "try:",
-                f"    import {dotted} as _mod  # noqa: F401",
-                "    _AVAILABLE = True",
-                "except Exception:",
-                "    _mod = None",
-                "    _AVAILABLE = False",
-                "",
-                "",
-                "def test_module_importable():",
-                f'    """Module {stem} is importable (or deps unavailable)."""',
-                "    assert _AVAILABLE or not _AVAILABLE",
-                "",
-            ])
+            content = "\n".join(
+                [
+                    f'"""ADG-driven tests for {mod_path} — direct import stub."""',
+                    "from __future__ import annotations",
+                    "",
+                    "import pytest",
+                    "",
+                    "pytestmark = pytest.mark.unit",
+                    "",
+                    "try:",
+                    f"    import {dotted} as _mod  # noqa: F401",
+                    "    _AVAILABLE = True",
+                    "except Exception:",
+                    "    _mod = None",
+                    "    _AVAILABLE = False",
+                    "",
+                    "",
+                    "def test_module_importable():",
+                    f'    """Module {stem} is importable (or deps unavailable)."""',
+                    "    assert _AVAILABLE or not _AVAILABLE",
+                    "",
+                ]
+            )
             test_path.parent.mkdir(parents=True, exist_ok=True)
             # Ensure __init__.py chain
             for parent in reversed(test_path.parents):

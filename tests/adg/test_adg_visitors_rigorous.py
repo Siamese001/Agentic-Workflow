@@ -899,7 +899,7 @@ class TestCollectBlindSpots:
         return ScanResult(edges=edges, modules=["mod.py"])
 
     def _build(self, result: ScanResult):
-        from agentic_core.adg.artifact.builder import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
 
         return build_artifact(result)
 
@@ -1004,7 +1004,7 @@ class TestComputeStructuralMetrics:
 
     def test_layer_violation_counted(self):
         """L5 importing from L0 is a violation (downward is allowed, upward is not)."""
-        from agentic_core.adg.artifact.builder import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
 
         # L3 -> L0 is a downward violation in typical layered arch
         edge = self._make_module_edge(
@@ -1027,7 +1027,7 @@ class TestComputeStructuralMetrics:
         Since belongs_to_layer is emitted from the module node, no module is truly
         relation-free after our G12 fix — so orphan_modules will be empty for any
         module that has a belongs_to_layer edge.  Verify this is correctly zero."""
-        from agentic_core.adg.artifact.builder import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
 
         result = ScanResult(
             edges=[],
@@ -1041,7 +1041,7 @@ class TestComputeStructuralMetrics:
         )
 
     def test_high_fan_in_detected(self):
-        from agentic_core.adg.artifact.builder import ADGArtifactBuilder, build_artifact
+        from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder, build_artifact
 
         # Create many edges pointing TO the same module
         target = "agentic_core/L0_routing/popular.py"
@@ -1056,7 +1056,7 @@ class TestComputeStructuralMetrics:
         assert any(canonical_name("Module", target) in h["module"] for h in hot)
 
     def test_by_relation_type_counts(self):
-        from agentic_core.adg.artifact.builder import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
 
         edge = self._make_module_edge(
             "agentic_core/L0_routing/a.py",
@@ -1069,7 +1069,7 @@ class TestComputeStructuralMetrics:
         assert "imports" in art.structural_metrics.by_relation_type
 
     def test_by_layer_counts_module_entities(self):
-        from agentic_core.adg.artifact.builder import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
 
         result = ScanResult(
             edges=[],
@@ -1087,7 +1087,7 @@ class TestComputeStructuralMetrics:
 class TestBuilderNewEntityPaths:
     def test_gateway_prefix_materializes_gateway_entity(self):
         """ADG::Gateway:: prefixed to_name should get entity_type=gateway."""
-        from agentic_core.adg.artifact.builder import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
 
         edge = Edge(
             from_name=canonical_name("Module", "agentic_core/L2_execution/foo.py"),
@@ -1108,7 +1108,7 @@ class TestBuilderNewEntityPaths:
 
     def test_symbol_gateway_allowlist_materializes_gateway(self):
         """ADG::Symbol::<name> in GATEWAY_ALLOWLIST should get entity_type=gateway."""
-        from agentic_core.adg.artifact.builder import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
         from agentic_core.adg.schema_util import GATEWAY_ALLOWLIST
 
         gw_name = next(iter(GATEWAY_ALLOWLIST))
@@ -1132,7 +1132,7 @@ class TestBuilderNewEntityPaths:
 
     def test_belongs_to_layer_relations_emitted(self):
         """Every module should have a belongs_to_layer RelationRecord."""
-        from agentic_core.adg.artifact.builder import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
 
         result = ScanResult(
             edges=[],
@@ -1150,7 +1150,7 @@ class TestBuilderNewEntityPaths:
 
     def test_seam_module_in_edge_gets_seam_type(self):
         """A seam module referenced as edge to_name gets entity_type=seam."""
-        from agentic_core.adg.artifact.builder import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
         from agentic_core.adg.schema_util import SEAM_MODULE_PATTERNS
 
         seam_path = SEAM_MODULE_PATTERNS[0] + "some_seam.py"
@@ -1172,7 +1172,7 @@ class TestBuilderNewEntityPaths:
         assert seam_ents, "Seam module referenced in edge should get entity_type=seam"
 
     def test_identity_health_populated(self):
-        from agentic_core.adg.artifact.builder import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
 
         result = ScanResult(
             edges=[],

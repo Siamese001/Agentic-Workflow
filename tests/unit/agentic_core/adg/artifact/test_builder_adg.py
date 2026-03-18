@@ -9,7 +9,7 @@ from __future__ import annotations
 import pytest
 
 try:
-    from agentic_core.adg.artifact.builder import (  # noqa: F401
+    from agentic_core.adg.artifact.builder_types import (  # noqa: F401
         ADGArtifact,
         ADGArtifactBuilder,
         BlindSpotReport,

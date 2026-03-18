@@ -253,8 +253,9 @@ class ScanReport:
         return len(self.violations) == 0
 
     def print_summary(self) -> None:
-
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "InvariantScanResult.print_summary")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "InvariantScanResult.print_summary"
+        )
         if self.passed:
             print(f"ADG-INVARIANT-SCAN: PASSED (new_edges={self.new_edges_count}, digest={self.digest})")
         else:
@@ -459,7 +460,6 @@ class InvariantScanner:
                 )
             )
         return violations
-
 
     def _rule_d_duplicate_method(self, result: ScanResult) -> list[Violation]:
         """RULE D: No duplicate method definitions within the same class.

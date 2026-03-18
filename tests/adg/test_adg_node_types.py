@@ -213,7 +213,7 @@ def _make_edge(from_name, relation_type, to_name, edge_kind="import", source_fil
 
 
 def _build_artifact(edges, modules=None):
-    from agentic_core.adg.artifact.builder import ADGArtifactBuilder
+    from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
 
     result = _make_scan_result_with_edges(edges)
     if modules:
@@ -340,7 +340,7 @@ class TestG9SeamEntityType:
             assert non_seam.entity_type == "module"
 
     def test_is_seam_module_helper(self):
-        from agentic_core.adg.artifact.builder import ADGArtifactBuilder
+        from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
 
         assert ADGArtifactBuilder._is_seam_module("agentic_core/L0_routing/seams/some_seam.py")
         assert ADGArtifactBuilder._is_seam_module("agentic_core/seams/my_seam.py")

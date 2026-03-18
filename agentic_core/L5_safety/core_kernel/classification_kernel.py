@@ -26,9 +26,6 @@
 
 import ast
 import logging
-from dataclasses import dataclass
-from enum import Enum
-from typing import Any
 import re
 from contextlib import contextmanager
 from functools import lru_cache
@@ -57,13 +54,11 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_gated_by_confidence,
     _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
-    _emit_invokes_eval,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
     _emit_links_incident_trace,
     _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
-    _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_policy_state,
@@ -248,6 +243,8 @@ def clear_classification_conflicts() -> None:
 # EXCLUDED / CRITICAL FILES — exempt from classification
 # ============================================================================
 
+OPS_SCRIPTS_DIR = "ops_scripts"
+
 _CRITICAL_IGNORES = frozenset(
     {
         "conftest.py",
@@ -314,7 +311,7 @@ def classify_file_standalone(path: Path) -> FileType:
         resolved = path
     try:
         return _classify_impl(resolved)
-    # guardian: allow-silent-swallow
+    # guardian: allow-silent-swallow -- Classification fallback to IGNORE is fail-safe; error logged for debugging
     except Exception as exc:
         logger.warning(
             "Kernel: unexpected error classifying %s: %s — returning IGNORE",

@@ -92,7 +92,7 @@ _emit_links_execution_to_snapshot("p4", "test_adg_g23_g27_completeness_accuracy"
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from agentic_core.adg.artifact.layer_splitter import _GOVERNANCE_GRAPH_RELS
+from agentic_core.adg.artifact.SplitArtifact import _GOVERNANCE_GRAPH_RELS
 from agentic_core.adg.extraction.static_scanner import (
     _AgentDispatchVisitor,
     _ExternalHttpVisitor,

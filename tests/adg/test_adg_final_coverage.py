@@ -1170,7 +1170,7 @@ class TestBuilderLine347:
     def test_to_resolve_target_already_added_mid_loop(self):
         """Two edges share the same to_name. After first iteration adds it to
         existing_adg, second iteration hits the 'continue' on line 347."""
-        from agentic_core.adg.artifact.builder import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
 
         shared_sym = canonical_name("Symbol", "shared_target")
         edge_a = Edge(
@@ -1212,7 +1212,7 @@ class TestBuilderLine347:
 class TestBuilderUnresolvedImports:
     def test_unresolved_external_symbol_tracked(self):
         """An edge to an external ADG::Symbol:: that can't be resolved -> unresolved_imports."""
-        from agentic_core.adg.artifact.builder import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
 
         # Use a clearly external dotted name that identity resolution won't find
         edge = Edge(
@@ -1247,7 +1247,7 @@ class TestBuilderStructuralMetrics:
         """When from_name starts with ADG::Symbol:: (not ADG::Module::),
         the fan_out branch at line 518 does NOT increment fan_out.
         Verifies the code path by confirming high_fan_out_modules stays empty."""
-        from agentic_core.adg.artifact.builder import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
 
         sym_from = canonical_name("Symbol", "some.func")
         mod_to = canonical_name("Module", "agentic_core/L0_routing/mod.py")
@@ -1270,7 +1270,7 @@ class TestBuilderStructuralMetrics:
 
     def test_layer_violation_count_incremented(self):
         """Two module-to-module import edges across forbidden layers -> violation counted."""
-        from agentic_core.adg.artifact.builder import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
         from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES
 
         # Find a forbidden pair

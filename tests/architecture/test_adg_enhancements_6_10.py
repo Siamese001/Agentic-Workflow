@@ -14,17 +14,24 @@ import json
 
 from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,  # noqa: E402
@@ -32,28 +39,21 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_escalates_to_human,
-    _emit_routes_through,
 )
 
 _emit_records_execution_trace("p0", "evidence", "test_adg_enhancements_6_10")
@@ -61,14 +61,21 @@ _emit_applies_guardrail("p0", "test_adg_enhancements_6_10", "p0_governance")
 _emit_reads_policy_state("p0", "test_adg_enhancements_6_10", "policy_binding")
 _emit_snapshots_state("p0", "test_adg_enhancements_6_10", "state_snapshot")
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
+    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
-    _emit_links_incident_trace,
+    _emit_links_incident_trace,  # noqa: E402
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -76,29 +83,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
-    _emit_writes_through,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
     _emit_writes_through,  # noqa: E402
-    _emit_links_incident_trace,  # noqa: E402
 )
 
 _emit_emits_metric_event("test_adg_enhancements_6_10", "p4obs", "metric_1")
@@ -217,7 +215,7 @@ class TestCanonicalSnapshot:
     """E6: CanonicalSnapshot correctness and determinism."""
 
     def _build(self, edges: list[Edge]) -> object:
-        from agentic_core.adg.analysis.snapshot import build_snapshot
+        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
 
         return build_snapshot(_make_result(edges))
 
@@ -321,7 +319,7 @@ class TestCanonicalSnapshot:
         assert "graph_hash" in parsed
 
     def test_snapshot_from_dict_roundtrip(self):
-        from agentic_core.adg.analysis.snapshot import CanonicalSnapshot
+        from agentic_core.adg.analysis.CanonicalSnapshot import CanonicalSnapshot
 
         e = _make_edge("ADG::Module::a.py", "imports", "ADG::Symbol::b")
         snap = self._build([e])
@@ -331,7 +329,7 @@ class TestCanonicalSnapshot:
         assert restored.node_count == snap.node_count
 
     def test_snapshot_commit_sha_propagated(self):
-        from agentic_core.adg.analysis.snapshot import build_snapshot
+        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
 
         result = ScanResult(
             edges=sorted({_make_edge("ADG::Module::a.py", "imports", "ADG::Symbol::b")}),
@@ -363,12 +361,12 @@ class TestGraphDiff:
     """E7: GraphDiff between two CanonicalSnapshots."""
 
     def _snap(self, edges: list[Edge]) -> object:
-        from agentic_core.adg.analysis.snapshot import build_snapshot
+        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
 
         return build_snapshot(_make_result(edges))
 
     def _diff(self, before_edges: list[Edge], after_edges: list[Edge]) -> object:
-        from agentic_core.adg.analysis.diff import diff_snapshots
+        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
 
         return diff_snapshots(self._snap(before_edges), self._snap(after_edges))
 
@@ -476,8 +474,8 @@ class TestGraphDiff:
         assert "is_identical" in parsed
 
     def test_commit_shas_propagated(self):
-        from agentic_core.adg.analysis.diff import diff_snapshots
-        from agentic_core.adg.analysis.snapshot import build_snapshot
+        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
 
         r1 = ScanResult(edges=sorted({_make_edge("M::a", "imports", "S::b")}), modules=[], commit_sha="aaa")
         r2 = ScanResult(edges=sorted({_make_edge("M::a", "imports", "S::c")}), modules=[], commit_sha="bbb")
@@ -495,7 +493,7 @@ class TestOwnershipRegistry:
     """E8: ModuleOwnership and OwnershipRegistry."""
 
     def test_l0_routing_is_platform_high(self):
-        from agentic_core.adg.analysis.ownership import OwnershipRegistry
+        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
 
         reg = OwnershipRegistry.from_module_list(["agentic_core/L0_routing/engines/router.py"])
         meta = reg.get("agentic_core/L0_routing/engines/router.py")
@@ -503,7 +501,7 @@ class TestOwnershipRegistry:
         assert meta.criticality == "high"
 
     def test_l5_safety_is_safety_governance(self):
-        from agentic_core.adg.analysis.ownership import OwnershipRegistry
+        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
 
         reg = OwnershipRegistry.from_module_list(["agentic_core/L5_safety/config/ssot.py"])
         meta = reg.get("agentic_core/L5_safety/config/ssot.py")
@@ -511,14 +509,14 @@ class TestOwnershipRegistry:
         assert meta.runtime_surface == "governance"
 
     def test_apps_rg_owner(self):
-        from agentic_core.adg.analysis.ownership import OwnershipRegistry
+        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
 
         reg = OwnershipRegistry.from_module_list(["apps_rg/reasoning/ATSCompatibilityAgent.py"])
         meta = reg.get("apps_rg/reasoning/ATSCompatibilityAgent.py")
         assert meta.owner == "apps_rg"
 
     def test_tests_is_ci_low(self):
-        from agentic_core.adg.analysis.ownership import OwnershipRegistry
+        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
 
         reg = OwnershipRegistry.from_module_list(["tests/unit/test_foo.py"])
         meta = reg.get("tests/unit/test_foo.py")
@@ -526,14 +524,14 @@ class TestOwnershipRegistry:
         assert meta.criticality == "low"
 
     def test_unknown_module_returns_default(self):
-        from agentic_core.adg.analysis.ownership import OwnershipRegistry
+        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
 
         reg = OwnershipRegistry()
         meta = reg.get("some/unknown/module.py")
         assert meta.owner == "unknown"
 
     def test_blast_radius_high_risk_for_high_criticality_changed(self):
-        from agentic_core.adg.analysis.ownership import OwnershipRegistry
+        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
 
         reg = OwnershipRegistry.from_module_list(
             [
@@ -556,14 +554,14 @@ class TestOwnershipRegistry:
         assert report["impacted_module_count"] == 3
 
     def test_blast_radius_low_risk_for_low_criticality(self):
-        from agentic_core.adg.analysis.ownership import OwnershipRegistry
+        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
 
         reg = OwnershipRegistry.from_module_list(["tools/some_script.py", "tests/unit/test_x.py"])
         report = reg.blast_radius_report("tools/some_script.py", ["tests/unit/test_x.py"])
         assert report["aggregate_risk"] == "LOW"
 
     def test_blast_radius_report_has_affected_domains(self):
-        from agentic_core.adg.analysis.ownership import OwnershipRegistry
+        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
 
         reg = OwnershipRegistry.from_module_list(
             [
@@ -578,7 +576,7 @@ class TestOwnershipRegistry:
         assert "apps_rg" in report["affected_domains"]
 
     def test_module_ownership_to_dict(self):
-        from agentic_core.adg.analysis.ownership import ModuleOwnership
+        from agentic_core.adg.analysis.ModuleOwnership import ModuleOwnership
 
         m = ModuleOwnership(
             module_path="agentic_core/L2_execution/x.py",
@@ -591,14 +589,14 @@ class TestOwnershipRegistry:
         assert d["criticality"] == "high"
 
     def test_registry_from_scan_result(self):
-        from agentic_core.adg.analysis.ownership import OwnershipRegistry
+        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
 
         result = _make_result([], modules=["agentic_core/L0_routing/engines/r.py", "apps_rg/reasoning/a.py"])
         reg = OwnershipRegistry.from_scan_result(result)
         assert reg.get("agentic_core/L0_routing/engines/r.py").owner == "platform"
 
     def test_to_json_valid(self):
-        from agentic_core.adg.analysis.ownership import OwnershipRegistry
+        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
 
         reg = OwnershipRegistry.from_module_list(["agentic_core/L0_routing/x.py"])
         j = reg.to_json()
@@ -615,7 +613,7 @@ class TestEdgeConfidence:
     """E9: EdgeConfidence assignment and summary."""
 
     def test_import_edge_confidence_1_0(self):
-        from agentic_core.adg.analysis.confidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         e = _make_edge("ADG::Module::a.py", "imports", "ADG::Symbol::b", edge_kind="import")
         ec = score_edge(e)
@@ -623,7 +621,7 @@ class TestEdgeConfidence:
         assert ec.provenance == "ast_import"
 
     def test_inheritance_edge_confidence(self):
-        from agentic_core.adg.analysis.confidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         e = _make_edge("ADG::Module::a.py", "implements", "ADG::Symbol::Base", edge_kind="import")
         ec = score_edge(e)
@@ -631,14 +629,14 @@ class TestEdgeConfidence:
         assert ec.provenance == "ast_inheritance"
 
     def test_calls_edge_confidence(self):
-        from agentic_core.adg.analysis.confidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         e = _make_edge("ADG::Module::a.py", "calls", "ADG::Symbol::fn", edge_kind="call")
         ec = score_edge(e)
         assert ec.confidence == 0.95
 
     def test_violates_edge_confidence_low(self):
-        from agentic_core.adg.analysis.confidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         e = _make_edge("ADG::Module::a.py", "violates", "ADG::Layer::L5")
         ec = score_edge(e)
@@ -646,7 +644,7 @@ class TestEdgeConfidence:
         assert ec.provenance == "layer_violation"
 
     def test_covers_edge_confidence_naming_heuristic(self):
-        from agentic_core.adg.analysis.confidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         e = _make_edge("ADG::Module::tests/t.py", "covers", "ADG::Module::a.py")
         ec = score_edge(e)
@@ -654,21 +652,21 @@ class TestEdgeConfidence:
         assert ec.provenance == "naming_heuristic"
 
     def test_network_edge_kind_reduces_confidence(self):
-        from agentic_core.adg.analysis.confidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         e = _make_edge("ADG::Module::a.py", "invokes_provider", "ADG::Symbol::openai", edge_kind="network")
         ec = score_edge(e)
         assert ec.confidence < 0.90
 
     def test_dynamic_exec_edge_kind_reduces_confidence(self):
-        from agentic_core.adg.analysis.confidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         e = _make_edge("ADG::Module::a.py", "influences", "ADG::Symbol::eval", edge_kind="dynamic_exec")
         ec = score_edge(e)
         assert ec.confidence < 0.75
 
     def test_score_edges_sorted(self):
-        from agentic_core.adg.analysis.confidence import score_edges
+        from agentic_core.adg.analysis.EdgeConfidence import score_edges
 
         edges = [
             _make_edge("ADG::Module::z.py", "imports", "ADG::Symbol::a"),
@@ -679,7 +677,7 @@ class TestEdgeConfidence:
         assert names == sorted(names)
 
     def test_confidence_summary_tiers(self):
-        from agentic_core.adg.analysis.confidence import confidence_summary, score_edges
+        from agentic_core.adg.analysis.EdgeConfidence import confidence_summary, score_edges
 
         edges = [
             _make_edge("ADG::Module::a.py", "imports", "ADG::Symbol::b"),
@@ -692,7 +690,7 @@ class TestEdgeConfidence:
         assert summary["confidence_tiers"]["low"] >= 1
 
     def test_confidence_summary_average(self):
-        from agentic_core.adg.analysis.confidence import confidence_summary, score_edges
+        from agentic_core.adg.analysis.EdgeConfidence import confidence_summary, score_edges
 
         edges = [_make_edge("ADG::Module::a.py", "imports", "ADG::Symbol::b")]
         scored = score_edges(edges)
@@ -700,7 +698,7 @@ class TestEdgeConfidence:
         assert summary["average_confidence"] == 1.0
 
     def test_confidence_summary_provenance_breakdown(self):
-        from agentic_core.adg.analysis.confidence import confidence_summary, score_edges
+        from agentic_core.adg.analysis.EdgeConfidence import confidence_summary, score_edges
 
         edges = [
             _make_edge("ADG::Module::a.py", "imports", "ADG::Symbol::b"),
@@ -712,21 +710,21 @@ class TestEdgeConfidence:
         assert "ast_inheritance" in summary["provenance_breakdown"]
 
     def test_confidence_clamp_max_1(self):
-        from agentic_core.adg.analysis.confidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         e = _make_edge("ADG::Module::a.py", "belongs_to_layer", "ADG::Layer::L0")
         ec = score_edge(e)
         assert ec.confidence <= 1.0
 
     def test_confidence_clamp_min_0(self):
-        from agentic_core.adg.analysis.confidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         e = _make_edge("ADG::Module::a.py", "violates", "ADG::Layer::L5", edge_kind="dynamic_exec")
         ec = score_edge(e)
         assert ec.confidence >= 0.0
 
     def test_edge_confidence_to_dict(self):
-        from agentic_core.adg.analysis.confidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         e = _make_edge("ADG::Module::a.py", "imports", "ADG::Symbol::b")
         ec = score_edge(e)
@@ -736,7 +734,7 @@ class TestEdgeConfidence:
         assert d["confidence"] == 1.0
 
     def test_empty_edges_summary(self):
-        from agentic_core.adg.analysis.confidence import confidence_summary
+        from agentic_core.adg.analysis.EdgeConfidence import confidence_summary
 
         summary = confidence_summary([])
         assert summary["total_edges"] == 0
@@ -752,7 +750,7 @@ class TestRepairRouting:
     """E10: RepairRoute recommendations from violation edges."""
 
     def test_violates_routes_to_architecture_governor(self):
-        from agentic_core.adg.analysis.repair import route_violations
+        from agentic_core.adg.analysis.RepairRoute import route_violations
 
         e = _make_edge("ADG::Module::a.py", "violates", "ADG::Layer::L5")
         routes = route_violations([e])
@@ -762,42 +760,42 @@ class TestRepairRouting:
         assert routes[0].severity == "critical"
 
     def test_dynamic_exec_routes_to_dynamic_review(self):
-        from agentic_core.adg.analysis.repair import route_violations
+        from agentic_core.adg.analysis.RepairRoute import route_violations
 
         e = _make_edge("ADG::Module::a.py", "dynamic_exec", "ADG::Symbol::eval", edge_kind="dynamic_exec")
         routes = route_violations([e])
         assert any(r.recommended_agent == "DynamicExecReviewAgent" for r in routes)
 
     def test_invokes_provider_routes_to_dependency_repair(self):
-        from agentic_core.adg.analysis.repair import route_violations
+        from agentic_core.adg.analysis.RepairRoute import route_violations
 
         e = _make_edge("ADG::Module::a.py", "invokes_provider", "ADG::Symbol::openai", edge_kind="network")
         routes = route_violations([e])
         assert any(r.recommended_agent == "DependencyRepairAgent" for r in routes)
 
     def test_writes_through_routes_to_healing_orchestrator(self):
-        from agentic_core.adg.analysis.repair import route_violations
+        from agentic_core.adg.analysis.RepairRoute import route_violations
 
         e = _make_edge("ADG::Module::a.py", "writes_through", "ADG::Symbol::UWG", edge_kind="write")
         routes = route_violations([e])
         assert any(r.recommended_agent == "HealingOrchestrator" for r in routes)
 
     def test_routes_through_routes_to_healing_orchestrator(self):
-        from agentic_core.adg.analysis.repair import route_violations
+        from agentic_core.adg.analysis.RepairRoute import route_violations
 
         e = _make_edge("ADG::Module::a.py", "routes_through", "ADG::Symbol::H", edge_kind="call")
         routes = route_violations([e])
         assert any(r.recommended_agent == "HealingOrchestrator" for r in routes)
 
     def test_benign_import_not_routed(self):
-        from agentic_core.adg.analysis.repair import route_violations
+        from agentic_core.adg.analysis.RepairRoute import route_violations
 
         e = _make_edge("ADG::Module::a.py", "imports", "ADG::Symbol::b")
         routes = route_violations([e])
         assert routes == []
 
     def test_routes_sorted_by_severity(self):
-        from agentic_core.adg.analysis.repair import route_violations
+        from agentic_core.adg.analysis.RepairRoute import route_violations
 
         edges = [
             _make_edge("ADG::Module::a.py", "invokes_provider", "ADG::Symbol::openai", edge_kind="network"),
@@ -809,7 +807,7 @@ class TestRepairRouting:
         assert order[severities[0]] <= order[severities[-1]]
 
     def test_repair_route_to_dict(self):
-        from agentic_core.adg.analysis.repair import RepairRoute
+        from agentic_core.adg.analysis.RepairRoute import RepairRoute
 
         r = RepairRoute(
             violation_type="violates",
@@ -824,7 +822,7 @@ class TestRepairRouting:
         assert d["ci_lane"] == "layer_guard"
 
     def test_routing_summary_counts(self):
-        from agentic_core.adg.analysis.repair import repair_routing_summary, route_violations
+        from agentic_core.adg.analysis.RepairRoute import repair_routing_summary, route_violations
 
         edges = [
             _make_edge("ADG::Module::a.py", "violates", "ADG::Layer::L5"),
@@ -837,9 +835,9 @@ class TestRepairRouting:
         assert summary["by_agent"]["ArchitectureGovernorAgent"] == 2
 
     def test_route_diff_violations_new_violation(self):
-        from agentic_core.adg.analysis.diff import diff_snapshots
-        from agentic_core.adg.analysis.repair import route_diff_violations
-        from agentic_core.adg.analysis.snapshot import build_snapshot
+        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+        from agentic_core.adg.analysis.RepairRoute import route_diff_violations
 
         e_viol = _make_edge("ADG::Module::a.py", "violates", "ADG::Layer::L5")
         diff = diff_snapshots(build_snapshot(_make_result([])), build_snapshot(_make_result([e_viol])))
@@ -848,9 +846,9 @@ class TestRepairRouting:
         assert any(r.recommended_agent == "DriftGovernorAgent" for r in routes)
 
     def test_route_diff_missing_test_coverage_for_new_calls(self):
-        from agentic_core.adg.analysis.diff import diff_snapshots
-        from agentic_core.adg.analysis.repair import route_diff_violations
-        from agentic_core.adg.analysis.snapshot import build_snapshot
+        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+        from agentic_core.adg.analysis.RepairRoute import route_diff_violations
 
         e_call = _make_edge("ADG::Module::a.py", "calls", "ADG::Symbol::fn", edge_kind="call")
         diff = diff_snapshots(build_snapshot(_make_result([])), build_snapshot(_make_result([e_call])))
@@ -858,9 +856,9 @@ class TestRepairRouting:
         assert any(r.recommended_agent == "TestRepairAgent" for r in routes)
 
     def test_route_diff_no_routes_on_identical(self):
-        from agentic_core.adg.analysis.diff import diff_snapshots
-        from agentic_core.adg.analysis.repair import route_diff_violations
-        from agentic_core.adg.analysis.snapshot import build_snapshot
+        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+        from agentic_core.adg.analysis.RepairRoute import route_diff_violations
 
         edges = [_make_edge("ADG::Module::a.py", "imports", "ADG::Symbol::b")]
         diff = diff_snapshots(build_snapshot(_make_result(edges)), build_snapshot(_make_result(edges)))
@@ -868,6 +866,6 @@ class TestRepairRouting:
         assert routes == []
 
     def test_empty_edges_no_routes(self):
-        from agentic_core.adg.analysis.repair import route_violations
+        from agentic_core.adg.analysis.RepairRoute import route_violations
 
         assert route_violations([]) == []

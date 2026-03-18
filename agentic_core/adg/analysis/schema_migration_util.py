@@ -15,7 +15,7 @@ Each migration callable receives the raw dict (as produced by
 applied in ascending lexicographic order of their ``from_version``.
 
 Usage:
-    from agentic_core.adg.analysis.schema_migration import migrate_scan_result_dict
+    from agentic_core.adg.analysis.schema_migration_util import migrate_scan_result_dict
 
     raw = json.loads(snapshot_file.read_text())
     migrated = migrate_scan_result_dict(raw)
@@ -25,7 +25,6 @@ Usage:
 from __future__ import annotations
 
 import logging
-from dataclasses import field
 from typing import Callable
 
 logger = logging.getLogger(__name__)

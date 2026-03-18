@@ -8,17 +8,17 @@ Modules:
   repair      - Enhancement 10: Repair recommendation / routing layer
 """
 
-from agentic_core.adg.analysis.confidence import EdgeConfidence, score_edges
-from agentic_core.adg.analysis.diff import GraphDiff, diff_snapshots
-from agentic_core.adg.analysis.healer_validator_graph import (
+from agentic_core.adg.analysis.CanonicalSnapshot import CanonicalSnapshot, build_snapshot
+from agentic_core.adg.analysis.EdgeConfidence import EdgeConfidence, score_edges
+from agentic_core.adg.analysis.GraphDiff import GraphDiff, diff_snapshots
+from agentic_core.adg.analysis.healer_validator_graph_validator import (
     HealerValidatorEdge,
     HealerValidatorReport,
     detect_healer_validator_relationships,
 )
-from agentic_core.adg.analysis.impact import ImpactReport, predict_impact
-from agentic_core.adg.analysis.ownership import ModuleOwnership, OwnershipRegistry
-from agentic_core.adg.analysis.repair import RepairRoute, route_violations
-from agentic_core.adg.analysis.snapshot import CanonicalSnapshot, build_snapshot
+from agentic_core.adg.analysis.ImpactReport import ImpactReport, predict_impact
+from agentic_core.adg.analysis.ModuleOwnership import ModuleOwnership, OwnershipRegistry
+from agentic_core.adg.analysis.RepairRoute import RepairRoute, route_violations
 
 __all__ = [
     "CanonicalSnapshot",

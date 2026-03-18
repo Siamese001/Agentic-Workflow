@@ -1150,7 +1150,7 @@ class TestModuleLayerMap:
 
 class TestBuilderDuplicateEntitySkip:
     def test_duplicate_module_not_added_twice(self):
-        from agentic_core.adg.artifact.builder import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
 
         result = ScanResult(
             edges=[],
@@ -1165,7 +1165,7 @@ class TestBuilderDuplicateEntitySkip:
         assert len(module_entities) == 1, "Duplicate module should only appear once"
 
     def test_duplicate_symbol_target_not_added_twice(self):
-        from agentic_core.adg.artifact.builder import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
 
         edge1 = _import_edge("agentic_core/L0_routing/a.py", "os")
         edge2 = _import_edge("agentic_core/L0_routing/b.py", "os")
@@ -1186,7 +1186,7 @@ class TestBuilderDuplicateEntitySkip:
 
 class TestCollectBlindSpotsNoManifest:
     def test_no_manifest_parse_failure_defaults_zero(self):
-        from agentic_core.adg.artifact.builder import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
 
         result = ScanResult(edges=[], modules=[])
         result.manifest = None  # type: ignore[assignment]
@@ -1202,7 +1202,7 @@ class TestCollectBlindSpotsNoManifest:
 
 class TestBuilderCycleMetrics:
     def test_in_cycle_edges_counted_in_by_relation_type(self):
-        from agentic_core.adg.artifact.builder import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
 
         a = "agentic_core/L0_routing/a.py"
         b = "agentic_core/L0_routing/b.py"

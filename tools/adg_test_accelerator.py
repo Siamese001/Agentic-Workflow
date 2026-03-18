@@ -108,8 +108,8 @@ _ROOT = pathlib.Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-from agentic_core.adg.analysis.hotspot_index import HotspotIndex
-from agentic_core.adg.analysis.test_gap import detect_test_gaps
+from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 from agentic_core.adg.extraction.static_scanner import ADGStaticScanner, ScanResult
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -272,7 +272,7 @@ def _symbol_to_path(sym: str) -> str:
 def _module_adg_to_path(adg_name: str) -> str:
     """Strip ADG::Module:: prefix."""
     if adg_name.startswith(_MODULE_PREFIX):
-        return adg_name[len(_MODULE_PREFIX):]
+        return adg_name[len(_MODULE_PREFIX) :]
     return adg_name
 
 
@@ -308,7 +308,7 @@ class ADGIndex:
             if rel == "covers":
                 to_name = edge.to_name
                 if to_name.startswith(_SYMBOL_PREFIX):
-                    prod_path = _symbol_to_path(to_name[len(_SYMBOL_PREFIX):])
+                    prod_path = _symbol_to_path(to_name[len(_SYMBOL_PREFIX) :])
                 elif to_name.startswith(_MODULE_PREFIX):
                     prod_path = _module_adg_to_path(to_name)
                 else:
@@ -360,6 +360,7 @@ class ADGIndex:
         for prods in [self.test_to_prods.get(norm, set())]:
             for prod in prods:
                 from agentic_core.adg.schema_util import module_path_to_layer
+
                 layer = module_path_to_layer(prod)
                 if layer and layer != "unknown":
                     return layer
@@ -383,7 +384,7 @@ def cmd_gap(args: argparse.Namespace, idx: ADGIndex) -> None:
         entries = [e for e in entries if e.layer == args.layer]
 
     # Re-sort by fan-in descending
-    entries = sorted(entries, key=lambda e: -e.fan_in)[:args.top]
+    entries = sorted(entries, key=lambda e: -e.fan_in)[: args.top]
 
     print(f"Coverage rate : {report.coverage_rate:.1%}")
     print(f"Total production modules : {report.total_production_modules}")
@@ -477,7 +478,7 @@ def cmd_groups(args: argparse.Namespace, idx: ADGIndex) -> None:
 
 def cmd_report(args: argparse.Namespace, idx: ADGIndex) -> None:
     """Write a full JSON report combining gap analysis and layer breakdown."""
-    from agentic_core.adg.analysis.test_gap import detect_test_gaps
+    from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 
     report = detect_test_gaps(idx.result, hotspot_index=idx.hotspot)
 
@@ -542,10 +543,10 @@ def _build_parser() -> argparse.ArgumentParser:
 
     # scope
     scope = sub.add_parser("scope", help="Emit test files covering changed modules")
-    scope.add_argument("--changed", nargs="*", default=[], metavar="FILE",
-                       help="Changed file paths (relative to repo root)")
-    scope.add_argument("--stdin", action="store_true",
-                       help="Read changed files from stdin (one per line)")
+    scope.add_argument(
+        "--changed", nargs="*", default=[], metavar="FILE", help="Changed file paths (relative to repo root)"
+    )
+    scope.add_argument("--stdin", action="store_true", help="Read changed files from stdin (one per line)")
     scope.add_argument("--format", choices=["lines", "pytest", "json"], default="lines")
 
     # groups
@@ -570,7 +571,7 @@ def main() -> None:
     scanner = ADGStaticScanner(include_tests=include_tests)
     result = scanner.scan()
     print(
-        f"[ADG] Scan done in {time.time()-t0:.1f}s — "
+        f"[ADG] Scan done in {time.time() - t0:.1f}s — "
         f"{len(result.modules)} modules, {len(result.edges)} edges",
         file=sys.stderr,
     )
