@@ -204,11 +204,11 @@ _emit_updates_meta_learning_state("p4", "test_wave1_phase1_parse_failures_and_ss
 _emit_links_execution_to_snapshot("p4", "test_wave1_phase1_parse_failures_and_ssot_paths", "exec_snapshot_link")
 REPO_ROOT = Path(__file__).resolve().parents[2]
 AGENTIC_CORE = REPO_ROOT / AGENTIC_CORE_DIR
-PARSE_FAILURE_FILES = [AGENTIC_CORE / L0_ROUTING_DIR / 'reasoning' / 'SSOTFolderCleanupAgent.py', AGENTIC_CORE / L0_ROUTING_DIR / 'scripts' / 'forensic_discovery_prep.py', AGENTIC_CORE / L0_ROUTING_DIR / 'scripts' / 'run_guardian_hierarchy_compliance.py']
-WRITE_GATEWAY_CORRECT = AGENTIC_CORE / L2_EXECUTION_DIR / TOOLS_DIR / 'write_gateway.py'
-WRITE_GATEWAY_WRONG = AGENTIC_CORE / L2_EXECUTION_DIR / 'write_gateway.py'
+PARSE_FAILURE_FILES = [REPO_ROOT / L0_ROUTING_DIR / 'reasoning' / 'SSOTFolderCleanupAgent.py', REPO_ROOT / L0_ROUTING_DIR / 'scripts' / 'forensic_discovery_prep.py', REPO_ROOT / L0_ROUTING_DIR / 'scripts' / 'run_guardian_hierarchy_compliance.py']
+WRITE_GATEWAY_CORRECT = REPO_ROOT / L2_EXECUTION_DIR / TOOLS_DIR / 'write_gateway.py'
+WRITE_GATEWAY_WRONG = REPO_ROOT / L2_EXECUTION_DIR / 'write_gateway.py'
 META_LEARNING_CORRECT = AGENTIC_CORE / 'utils' / 'meta_learning_engine_util.py'
-META_LEARNING_WRONG = AGENTIC_CORE / SYSTEM_LEARNING_DIR / 'pipelines' / 'meta_learning_pipeline.py'
+META_LEARNING_WRONG = REPO_ROOT / SYSTEM_LEARNING_DIR / 'pipelines' / 'meta_learning_pipeline.py'
 
 def _ast_parse_ok(path: Path) -> tuple[bool, str]:
     try:
