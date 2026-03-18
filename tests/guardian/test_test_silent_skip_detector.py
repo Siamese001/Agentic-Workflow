@@ -29,6 +29,7 @@ from agentic_core.L5_safety.validators.test_skip_detector_validator import (
     TestSilentSkipDetector,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -36,16 +37,22 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_captures_execution_output,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_emits_metric_event,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
     _emit_links_incident_trace,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_environ,
     _emit_reads_policy_state,  # noqa: E402
@@ -57,34 +64,27 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_meta_learning_state,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_escalates_to_human,
-    _emit_routes_through,
 )
 
 _emit_emits_metric_event("test_test_silent_skip_detector", "p4obs", "metric_1")
@@ -507,7 +507,6 @@ except Exception:
 
 
 class TestWhitelistMechanics:
-
     def test_guardian_comment_suppresses(self, det, test_py):
         code = """\
 # guardian: allow-test-silent-skip -- optional GPU dep, absent in CPU CI
@@ -556,7 +555,6 @@ except Exception:
 
 
 class TestCategoryAndWiring:
-
     def test_category_value(self):
         assert AntiPatternCategory.TEST_SILENT_SKIP == "test_silent_skip"
 
@@ -568,51 +566,6 @@ class TestCategoryAndWiring:
         code = """\
 try:
     from mod import X
-from agentic_core.runtime.lifecycle_trace_contract import (
-    _emit_pulls_context,
-    _emit_execution_terminates_at_uwg,
-    _emit_writes_through,
-    _emit_validated_by_safety_plane,
-    _emit_invokes_eval,
-    _emit_proposal_commits_routing,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_writes_through,  # noqa: E402
-    _emit_links_incident_trace,  # noqa: E402
-)
-_emit_pulls_context("p1", "test_test_silent_skip_detector", "context_pull")
-_emit_pulls_context("p1", "test_test_silent_skip_detector", "context_pull_secondary")
-_emit_execution_terminates_at_uwg("p1", "test_test_silent_skip_detector", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "test_test_silent_skip_detector", "uwg_term_secondary")
-_emit_writes_through("p1", "test_test_silent_skip_detector", "write_through")
-_emit_writes_through("p1", "test_test_silent_skip_detector", "write_through_secondary")
-_emit_validated_by_safety_plane("p1", "test_test_silent_skip_detector", "safety_validation")
-_emit_invokes_eval("p1", "test_test_silent_skip_detector", "eval_call")
-_emit_proposal_commits_routing("p1", "test_test_silent_skip_detector", "routing_commit")
-_emit_escalates_to_human("p1", "test_test_silent_skip_detector", "human_escalation")
-_emit_routes_through("p1", "test_test_silent_skip_detector", "route_through")
-_emit_checks_agent_registry("p1", "test_test_silent_skip_detector", "agent_registry")
-_emit_validates_agent_capability("p1", "test_test_silent_skip_detector", "capability")
-_emit_dispatches_execution_plan("p1", "test_test_silent_skip_detector", "exec_plan")
-_emit_agent_executes_agent("p1", "test_test_silent_skip_detector", "sub_agent")
-_emit_routes_to_agent("p1", "test_test_silent_skip_detector", "target_agent")
-_emit_verifies_policy("p1", "test_test_silent_skip_detector", "policy_check")
-_emit_observes_runtime_state("p1", "test_test_silent_skip_detector", "runtime_state")
-_emit_verifies_boundary("p1", "test_test_silent_skip_detector", "boundary_check")
-_emit_transcripts_response("p1", "test_test_silent_skip_detector", "transcript")
-_emit_hard_fails_untranscripted("p1", "test_test_silent_skip_detector")
-_emit_gated_by_confidence("p1", "test_test_silent_skip_detector", "confidence_gate")
     _AVAILABLE = True
 except Exception:
     _AVAILABLE = False

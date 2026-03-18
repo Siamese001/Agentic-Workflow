@@ -18,17 +18,24 @@ from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,  # noqa: E402
@@ -36,28 +43,21 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_escalates_to_human,
-    _emit_routes_through,
 )
 
 _emit_records_execution_trace("p0", "evidence", "test_anti_patterns")
@@ -117,14 +117,21 @@ from agentic_core.L5_safety.validators.type_erasure_validator import (
     TypeErasureDetector,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
+    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
-    _emit_links_incident_trace,
+    _emit_links_incident_trace,  # noqa: E402
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -132,29 +139,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
-    _emit_writes_through,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
     _emit_writes_through,  # noqa: E402
-    _emit_links_incident_trace,  # noqa: E402
 )
 
 _emit_emits_metric_event("test_anti_patterns", "p4obs", "metric_1")
@@ -298,7 +296,7 @@ def risky_function():
 def risky_function():
     try:
         do_something()
-    except (ValueError, TypeError):
+    except Exception:
         pass
 """
         file_path = temp_python_file(code)
@@ -520,7 +518,7 @@ def get_model():
     def test_detects_hardcoded_timeout(self, magic_validator, temp_python_file):
         """Hardcoded timeout values should be detected."""
         code = """
-def call_api(timeout=DEFAULT_TIMEOUT):
+def call_api(timeout=30):
     pass
 """
         file_path = temp_python_file(code)
@@ -967,27 +965,38 @@ class TestScanFileErrorHandling:
         detector = SilentSwallowerDetector()
         result = detector.scan_file(p)
         assert isinstance(result, DetectionResult)
+
     def test_whitelisted_file_returns_empty_result(self, tmp_path):
         p = tmp_path / "my_module.py"
         p.write_text("try:\n    x()\nexcept Exception:\n    pass\n", encoding="utf-8")
         detector = SilentSwallowerDetector(whitelisted_files=["my_module.py"])
         result = detector.scan_file(p)
         assert result.violation_count == 0
+
+
 class TestTypeErasureDetectorABCInheritance:
     """TypeErasureDetector correctly inherits and extends AntiPatternDetector."""
+
     def test_is_subclass_of_anti_pattern_detector(self):
         from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
+
         assert issubclass(TypeErasureDetector, AntiPatternDetector)
+
     def test_category_returns_type_erasure(self):
         from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
+
         detector = TypeErasureDetector(check_agent_classes_only=False)
         assert detector.category == AntiPatternCategory.TYPE_ERASURE
+
     def test_category_value_is_string(self):
         from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
+
         detector = TypeErasureDetector()
         assert isinstance(detector.category.value, str)
+
     def test_allowed_dict_types_are_not_flagged(self, tmp_path):
         from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
+
         p = tmp_path / "my_agent.py"
         p.write_text(
             "class MyAgent:\n    def run(self) -> dict[str, str]:\n        return {}\n",
