@@ -22,13 +22,12 @@ from __future__ import annotations
 import ast
 import hashlib
 import logging
-from typing import Any
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterator
 
-from agentic_core.adg.schema import (
+from agentic_core.adg.schema_util import (
     AGENT_DISPATCH_CLASSES,
     AGENT_DISPATCH_METHODS,
     AGENT_REGISTRY_CLASSES,
@@ -2137,7 +2136,7 @@ class _PromptSlotVisitor(ast.NodeVisitor):
 
     def _handle_assembler(self, node: ast.Call) -> None:
         """Emit generates_prompt for each recognised slot kwarg."""
-        from agentic_core.adg.schema import PROMPT_FIELD_TO_SLOT
+        from agentic_core.adg.schema_util import PROMPT_FIELD_TO_SLOT
 
         for kw in node.keywords:
             slot = PROMPT_FIELD_TO_SLOT.get(kw.arg or "")
@@ -2634,7 +2633,7 @@ def _emit_layer_violation_edges(result: ScanResult) -> list[Edge]:
     importing the to-symbol's layer.  Deduplicates on (from_module, from_layer, to_layer).
     Skips lazy imports (inside function bodies, TYPE_CHECKING guards, optional_import blocks).
     """
-    from agentic_core.adg.schema import ALLOWED_LAYER_EDGES
+    from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES
 
     _SKIP_EDGE_KINDS = frozenset(
         {"lazy_import", "type_checking_import", "optional_import", "version_guard_import"}
@@ -5118,7 +5117,7 @@ class ADGStaticScanner:
         manifest.edge_counts_by_graph = result.edge_counts_by_relation()
         manifest.syntax_error_count = syntax_error_count
         # S4: unknown layer count
-        from agentic_core.adg.schema import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
 
         manifest.unknown_layer_count = sum(1 for m in modules_seen if module_path_to_layer(m) == "L_UNKNOWN")
         # dynamic exec count

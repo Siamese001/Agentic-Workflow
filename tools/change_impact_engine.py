@@ -282,7 +282,7 @@ class ChangeImpactResult:
             "impacted_modules": sorted(self.impacted_modules),
             "impacted_test_count": len(self.impacted_tests),
             "impacted_tests": sorted(self.impacted_tests),
-            "blast_radius_by_depth": {k: v for k, v in sorted(self.blast_radius_by_depth.items())},
+            "blast_radius_by_depth": dict(sorted(self.blast_radius_by_depth.items())),
             "uncovered_changed_files": sorted(self.uncovered_changed_files),
             "scope_widening_events": sorted(self.scope_widening_events),
             "risk_score": self.risk_score,
@@ -347,7 +347,7 @@ class ChangeImpactEngine:
     def _build_module_layers(self) -> dict[str, str]:
         if self._module_layers is not None:
             return self._module_layers
-        from agentic_core.adg.schema import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
 
         layers: dict[str, str] = {}
         for mod_path in self._result.modules:
@@ -409,7 +409,7 @@ class ChangeImpactEngine:
         """
         import hashlib
 
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         # Normalize paths
         norm_changed = [f.replace("\\", "/") for f in changed_files]
@@ -442,7 +442,7 @@ class ChangeImpactEngine:
 
         # Scope widening events (modules from different layers than changed files)
         scope_widening: list[str] = []
-        from agentic_core.adg.schema import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
 
         changed_layers = {module_path_to_layer(p) for p in norm_changed if p in module_set}
         for rel in impacted_rel:
@@ -476,7 +476,7 @@ class ChangeImpactEngine:
             changed_files=sorted(norm_changed),
             impacted_modules=sorted(impacted_rel),
             impacted_tests=sorted(impacted_tests),
-            blast_radius_by_depth={k: v for k, v in sorted(by_depth_raw.items())},
+            blast_radius_by_depth=dict(sorted(by_depth_raw.items())),
             uncovered_changed_files=sorted(uncovered),
             scope_widening_events=sorted(scope_widening),
             risk_score=risk_score,

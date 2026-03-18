@@ -4,7 +4,7 @@ Provides commit-scoped static analysis, MCP-backed graph persistence,
 and policy enforcement across the five governance applications.
 """
 
-from agentic_core.adg.schema import (
+from agentic_core.adg.schema_util import (
     ADG_NS,
     EdgeKind,
     EntityType,

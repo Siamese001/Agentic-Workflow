@@ -22,7 +22,6 @@ import importlib.util
 import inspect
 import json
 import logging
-from enum import Enum
 import os
 import platform
 import re
@@ -3281,6 +3280,7 @@ def execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr,
             outcome="SUCCESS",
         )
         state_mgr.complete_agent("LocationHealerAgent", True, f"Violations: 0 | Conf: {confidence.value:.2f}")
+    # PHASE 1 ENHANCEMENT: Early File Classification Detection
     classification_violations = []
     classification_scan_result = {}
     try:

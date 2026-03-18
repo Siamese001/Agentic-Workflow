@@ -29,17 +29,24 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_SHARED_DIR,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,  # noqa: E402
@@ -47,28 +54,21 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_escalates_to_human,
-    _emit_routes_through,
 )
 
 _emit_records_execution_trace("p0", "evidence", "test_healing_tier_e2e_invocation")
@@ -496,53 +496,8 @@ class TestNegativeControlsE2E:
 
     def test_synthetic_bypass_detected_by_ast(self):
         """A synthetic module that directly selects HealingTier members is detected."""
-        bypass_code = textwrap.dedent("""
+        bypass_code = textwrap.dedent("""\
             from agentic_core.L2_execution.healers.healing_tier_types import HealingTier
-from agentic_core.runtime.lifecycle_trace_contract import (
-    _emit_pulls_context,
-    _emit_execution_terminates_at_uwg,
-    _emit_writes_through,
-    _emit_validated_by_safety_plane,
-    _emit_invokes_eval,
-    _emit_proposal_commits_routing,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_writes_through,  # noqa: E402
-    _emit_links_incident_trace,  # noqa: E402
-)
-_emit_pulls_context("p1", "test_healing_tier_e2e_invocation", "context_pull")
-_emit_pulls_context("p1", "test_healing_tier_e2e_invocation", "context_pull_secondary")
-_emit_execution_terminates_at_uwg("p1", "test_healing_tier_e2e_invocation", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "test_healing_tier_e2e_invocation", "uwg_term_secondary")
-_emit_writes_through("p1", "test_healing_tier_e2e_invocation", "write_through")
-_emit_writes_through("p1", "test_healing_tier_e2e_invocation", "write_through_secondary")
-_emit_validated_by_safety_plane("p1", "test_healing_tier_e2e_invocation", "safety_validation")
-_emit_invokes_eval("p1", "test_healing_tier_e2e_invocation", "eval_call")
-_emit_proposal_commits_routing("p1", "test_healing_tier_e2e_invocation", "routing_commit")
-_emit_escalates_to_human("p1", "test_healing_tier_e2e_invocation", "human_escalation")
-_emit_routes_through("p1", "test_healing_tier_e2e_invocation", "route_through")
-_emit_checks_agent_registry("p1", "test_healing_tier_e2e_invocation", "agent_registry")
-_emit_validates_agent_capability("p1", "test_healing_tier_e2e_invocation", "capability")
-_emit_dispatches_execution_plan("p1", "test_healing_tier_e2e_invocation", "exec_plan")
-_emit_agent_executes_agent("p1", "test_healing_tier_e2e_invocation", "sub_agent")
-_emit_routes_to_agent("p1", "test_healing_tier_e2e_invocation", "target_agent")
-_emit_verifies_policy("p1", "test_healing_tier_e2e_invocation", "policy_check")
-_emit_observes_runtime_state("p1", "test_healing_tier_e2e_invocation", "runtime_state")
-_emit_verifies_boundary("p1", "test_healing_tier_e2e_invocation", "boundary_check")
-_emit_transcripts_response("p1", "test_healing_tier_e2e_invocation", "transcript")
-_emit_hard_fails_untranscripted("p1", "test_healing_tier_e2e_invocation")
-_emit_gated_by_confidence("p1", "test_healing_tier_e2e_invocation", "confidence_gate")
 
             def bypass_select(confidence: float):
                 if confidence < 0.4:

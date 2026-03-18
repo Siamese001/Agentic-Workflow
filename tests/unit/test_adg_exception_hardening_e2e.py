@@ -13,7 +13,7 @@ from __future__ import annotations
 import ast
 
 from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
-from agentic_core.adg.schema import (
+from agentic_core.adg.schema_util import (
     BROAD_EXCEPTION_TYPES,
     LOGGING_METHOD_NAMES,
 )
@@ -40,7 +40,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_improves_agent_policy,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
-    _emit_links_incident_trace,
+    _emit_links_incident_trace,  # noqa: E402
     _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_environ,
@@ -74,7 +74,6 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_via_uwg,
     emit_determinism_digest,
     emit_replay_key,
-    _emit_links_incident_trace,  # noqa: E402
 )
 
 # --- P0-P4 bootstrap (required for ADG coverage) ---
@@ -174,7 +173,7 @@ class TestSchemaIntegrity:
             assert name in LOGGING_METHOD_NAMES
 
     def test_new_edge_kinds_in_antipattern_category_names(self):
-        from agentic_core.adg.schema import ANTIPATTERN_CATEGORY_NAMES
+        from agentic_core.adg.schema_util import ANTIPATTERN_CATEGORY_NAMES
 
         assert "broad_exception_catch" in ANTIPATTERN_CATEGORY_NAMES
         assert "log_and_swallow" in ANTIPATTERN_CATEGORY_NAMES

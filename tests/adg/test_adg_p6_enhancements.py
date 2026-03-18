@@ -15,17 +15,24 @@ import json
 from dataclasses import dataclass, field
 
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,  # noqa: E402
@@ -33,28 +40,21 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_escalates_to_human,
-    _emit_routes_through,
 )
 
 _emit_records_execution_trace("p0", "evidence", "test_adg_p6_enhancements")
@@ -62,14 +62,21 @@ _emit_applies_guardrail("p0", "test_adg_p6_enhancements", "p0_governance")
 _emit_reads_policy_state("p0", "test_adg_p6_enhancements", "policy_binding")
 _emit_snapshots_state("p0", "test_adg_p6_enhancements", "state_snapshot")
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
+    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
-    _emit_links_incident_trace,
+    _emit_links_incident_trace,  # noqa: E402
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -77,29 +84,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
-    _emit_writes_through,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
     _emit_writes_through,  # noqa: E402
-    _emit_links_incident_trace,  # noqa: E402
 )
 
 _emit_emits_metric_event("test_adg_p6_enhancements", "p4obs", "metric_1")
@@ -233,7 +231,7 @@ class TestPromptSlotVisitor:
 
     def _run_visitor(self, code: str, source_file: str = "test_module.py") -> list:
         from agentic_core.adg.extraction.static_scanner import _PromptSlotVisitor
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         module_adg = canonical_name("Module", source_file)
         tree = ast.parse(code)
@@ -792,7 +790,7 @@ class TestSchemaExtensions:
         assert "prompt_authority_violation" in ek_args
 
     def test_prompt_slot_authority_ordering(self):
-        from agentic_core.adg.schema import PROMPT_SLOT_AUTHORITY
+        from agentic_core.adg.schema_util import PROMPT_SLOT_AUTHORITY
 
         # S0 must be highest authority (lowest rank number)
         assert PROMPT_SLOT_AUTHORITY["S0"] < PROMPT_SLOT_AUTHORITY["D0"]
@@ -801,7 +799,7 @@ class TestSchemaExtensions:
         assert PROMPT_SLOT_AUTHORITY["C0"] < PROMPT_SLOT_AUTHORITY["U0"]
 
     def test_prompt_authority_rules_correct_direction(self):
-        from agentic_core.adg.schema import PROMPT_AUTHORITY_RULES, PROMPT_SLOT_AUTHORITY
+        from agentic_core.adg.schema_util import PROMPT_AUTHORITY_RULES, PROMPT_SLOT_AUTHORITY
 
         for low_slot, high_slot in PROMPT_AUTHORITY_RULES:
             low_rank = PROMPT_SLOT_AUTHORITY[low_slot]
@@ -812,20 +810,20 @@ class TestSchemaExtensions:
             )
 
     def test_prompt_field_to_slot_complete(self):
-        from agentic_core.adg.schema import PROMPT_FIELD_TO_SLOT, PROMPT_SLOT_TYPES
+        from agentic_core.adg.schema_util import PROMPT_FIELD_TO_SLOT, PROMPT_SLOT_TYPES
 
         mapped_slots = set(PROMPT_FIELD_TO_SLOT.values())
         for slot in PROMPT_SLOT_TYPES:
             assert slot in mapped_slots, f"Slot {slot} not mapped in PROMPT_FIELD_TO_SLOT"
 
     def test_canonical_name_prompt_slot(self):
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         name = canonical_name("PromptSlot", "S0", "agentic_core/test.py")
         assert name == "ADG::PromptSlot::S0::agentic_core/test.py"
 
     def test_canonical_name_prompt_template(self):
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         name = canonical_name("PromptTemplate", "SOVEREIGN_SYSTEM_CORE")
         assert name == "ADG::PromptTemplate::SOVEREIGN_SYSTEM_CORE"
@@ -841,7 +839,7 @@ class TestExecutionTraceVisitor:
 
     def _run_visitor(self, code: str, source_file: str = "test_trace.py") -> list:
         from agentic_core.adg.extraction.static_scanner import _ExecutionTraceVisitor
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         module_adg = canonical_name("Module", source_file)
         tree = ast.parse(code)
@@ -933,7 +931,7 @@ class TestAuthorityRulesCompleteness:
 
     def test_all_authority_rules_have_violation_type(self):
         from agentic_core.adg.analysis.prompt_authority import _violation_type_for
-        from agentic_core.adg.schema import PROMPT_AUTHORITY_RULES
+        from agentic_core.adg.schema_util import PROMPT_AUTHORITY_RULES
 
         for low_slot, high_slot in PROMPT_AUTHORITY_RULES:
             vtype = _violation_type_for(low_slot, high_slot)
@@ -941,7 +939,7 @@ class TestAuthorityRulesCompleteness:
 
     def test_suggested_fixes_non_empty(self):
         from agentic_core.adg.analysis.prompt_authority import _suggested_fix
-        from agentic_core.adg.schema import PROMPT_AUTHORITY_RULES
+        from agentic_core.adg.schema_util import PROMPT_AUTHORITY_RULES
 
         for low_slot, high_slot in PROMPT_AUTHORITY_RULES:
             fix = _suggested_fix(low_slot, high_slot)

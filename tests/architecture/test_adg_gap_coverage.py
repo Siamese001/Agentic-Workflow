@@ -22,17 +22,24 @@ from agentic_core.adg.extraction.static_scanner import (
     _TestTraceabilityVisitor,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,  # noqa: E402
@@ -40,28 +47,21 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_escalates_to_human,
-    _emit_routes_through,
 )
 
 _emit_records_execution_trace("p0", "evidence", "test_adg_gap_coverage")
@@ -69,14 +69,21 @@ _emit_applies_guardrail("p0", "test_adg_gap_coverage", "p0_governance")
 _emit_reads_policy_state("p0", "test_adg_gap_coverage", "policy_binding")
 _emit_snapshots_state("p0", "test_adg_gap_coverage", "state_snapshot")
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
+    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
-    _emit_links_incident_trace,
+    _emit_links_incident_trace,  # noqa: E402
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -84,29 +91,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
-    _emit_writes_through,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
     _emit_writes_through,  # noqa: E402
-    _emit_links_incident_trace,  # noqa: E402
 )
 
 _emit_emits_metric_event("test_adg_gap_coverage", "p4obs", "metric_1")
@@ -227,7 +225,7 @@ class TestInternalCallGraphVisitor:
 
     def test_calls_edge_emitted_for_imported_internal_symbol(self):
         src = """
-from agentic_core.adg.schema import canonical_name
+from agentic_core.adg.schema_util import canonical_name
 result = canonical_name("Module", "foo.py")
 """
         edges = _run_icg(src)
@@ -239,7 +237,7 @@ result = canonical_name("Module", "foo.py")
 
     def test_calls_edge_for_import_alias(self):
         src = """
-from agentic_core.adg.schema import canonical_name as cn
+from agentic_core.adg.schema_util import canonical_name as cn
 x = cn("Layer", "L0")
 """
         edges = _run_icg(src)
@@ -271,7 +269,7 @@ run_check()
 
     def test_multiple_calls_same_symbol_deduplicated_on_set(self):
         src = """
-from agentic_core.adg.schema import canonical_name
+from agentic_core.adg.schema_util import canonical_name
 x = canonical_name("Module", "a.py")
 y = canonical_name("Module", "b.py")
 """
@@ -291,7 +289,7 @@ agentic_core.something()
 
     def test_line_number_captured(self):
         src = """
-from agentic_core.adg.schema import canonical_name
+from agentic_core.adg.schema_util import canonical_name
 
 result = canonical_name("Module", "x.py")
 """
@@ -309,7 +307,7 @@ class TestTestTraceabilityVisitor:
 
     def test_covers_edge_for_internal_import_from(self):
         src = """
-from agentic_core.adg.schema import canonical_name
+from agentic_core.adg.schema_util import canonical_name
 """
         edges = _run_tt(src)
         assert len(edges) == 1
@@ -325,7 +323,7 @@ import agentic_core
 
     def test_no_covers_edge_for_non_test_file(self):
         src = """
-from agentic_core.adg.schema import canonical_name
+from agentic_core.adg.schema_util import canonical_name
 """
         tree = _parse(src)
         visitor = _TestTraceabilityVisitor(
@@ -361,7 +359,7 @@ from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGatewa
 
     def test_test_file_under_nested_path(self):
         src = """
-from agentic_core.adg.schema import canonical_name
+from agentic_core.adg.schema_util import canonical_name
 """
         tree = _parse(src)
         visitor = _TestTraceabilityVisitor(
@@ -386,7 +384,7 @@ class TestLayerViolationEdges:
         sym: str,
         line_no: int = 1,
     ) -> Edge:
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         return Edge(
             from_name=canonical_name("Module", from_rel),
@@ -455,7 +453,7 @@ class TestLayerViolationEdges:
         assert violations[0].symbol == "L0->L5"
 
     def test_non_import_edges_ignored(self):
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         non_import = Edge(
             from_name=canonical_name("Module", "agentic_core/L0_routing/engines/router.py"),

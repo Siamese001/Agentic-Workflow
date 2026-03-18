@@ -359,7 +359,7 @@ class ADGIndex:
         norm = test_path.replace("\\", "/")
         for prods in [self.test_to_prods.get(norm, set())]:
             for prod in prods:
-                from agentic_core.adg.schema import module_path_to_layer
+                from agentic_core.adg.schema_util import module_path_to_layer
                 layer = module_path_to_layer(prod)
                 if layer and layer != "unknown":
                     return layer
@@ -435,11 +435,11 @@ def cmd_groups(args: argparse.Namespace, idx: ADGIndex) -> None:
 
     # Collect all test files from result
     all_test_files: list[str] = sorted(
-        set(
+        {
             e.source_file.replace("\\", "/")
             for e in idx.result.edges
             if "tests/" in e.source_file.replace("\\", "/")
-        )
+        }
     )
 
     # Group by layer
@@ -488,11 +488,11 @@ def cmd_report(args: argparse.Namespace, idx: ADGIndex) -> None:
 
     # Layer breakdown of test files
     all_test_files = sorted(
-        set(
+        {
             e.source_file.replace("\\", "/")
             for e in idx.result.edges
             if "tests/" in e.source_file.replace("\\", "/")
-        )
+        }
     )
     layer_counts: dict[str, int] = defaultdict(int)
     for tf in all_test_files:
@@ -508,9 +508,7 @@ def cmd_report(args: argparse.Namespace, idx: ADGIndex) -> None:
         },
         "gap_summary": report.to_dict(),
         "test_layer_distribution": dict(sorted(layer_counts.items())),
-        "coverage_map_sample": {
-            k: v for k, v in list(covered_by.items())[:50]
-        },
+        "coverage_map_sample": dict(list(covered_by.items())[:50]),
         "highest_risk_gaps": [e.to_dict() for e in report.highest_risk_gaps[:30]],
     }
 

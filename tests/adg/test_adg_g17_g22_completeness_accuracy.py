@@ -85,7 +85,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
-    _emit_links_incident_trace,
+    _emit_links_incident_trace,  # noqa: E402
     _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
@@ -105,9 +105,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
-    _emit_writes_through,
     _emit_writes_through,  # noqa: E402
-    _emit_links_incident_trace,  # noqa: E402
 )
 
 _emit_emits_metric_event("test_adg_g17_g22_completeness_accuracy", "p4obs", "metric_1")
@@ -230,7 +228,7 @@ class TestSchemaCompleteness:
         ],
     )
     def test_entity_type_literal_exists(self, et: str) -> None:
-        from agentic_core.adg.schema import EntityType
+        from agentic_core.adg.schema_util import EntityType
 
         assert et in get_args(EntityType), f"EntityType missing: {et!r}"
 
@@ -265,7 +263,7 @@ class TestSchemaCompleteness:
         ],
     )
     def test_relation_type_literal_exists(self, rt: str) -> None:
-        from agentic_core.adg.schema import RelationType
+        from agentic_core.adg.schema_util import RelationType
 
         assert rt in get_args(RelationType), f"RelationType missing: {rt!r}"
 
@@ -294,7 +292,7 @@ class TestSchemaCompleteness:
         ],
     )
     def test_edge_kind_literal_exists(self, ek: str) -> None:
-        from agentic_core.adg.schema import EdgeKind
+        from agentic_core.adg.schema_util import EdgeKind
 
         assert ek in get_args(EdgeKind), f"EdgeKind missing: {ek!r}"
 

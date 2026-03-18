@@ -34,42 +34,42 @@ from pathlib import Path
 import pytest
 
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_healing_outcome,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
-    _emit_updates_meta_learning_state,
-    _emit_validates_capability,
-    _emit_writes_via_uwg,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
     _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_escalates_to_human,
-    _emit_routes_through,
+    _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
+    _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
+    _emit_writes_via_uwg,
 )
 
 _emit_applies_guardrail("p0", "test_adg_g7_g16_completeness_accuracy", "p0_governance")
@@ -96,14 +96,21 @@ _emit_stores_embedding("p4", "test_adg_g7_g16_completeness_accuracy", "embedding
 _emit_updates_meta_learning_state("p4", "test_adg_g7_g16_completeness_accuracy", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "test_adg_g7_g16_completeness_accuracy", "exec_snapshot_link")
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
+    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
-    _emit_links_incident_trace,
+    _emit_links_incident_trace,  # noqa: E402
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -111,29 +118,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
-    _emit_writes_through,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
     _emit_writes_through,  # noqa: E402
-    _emit_links_incident_trace,  # noqa: E402
 )
 
 _emit_emits_metric_event("test_adg_g7_g16_completeness_accuracy", "p4obs", "metric_1")
@@ -379,40 +377,40 @@ class TestC1SchemaCompleteness:
     """C1: All G7-G16 literals declared in schema.py."""
 
     def test_all_g7_g16_entity_types_in_literal(self) -> None:
-        from agentic_core.adg.schema import EntityType
+        from agentic_core.adg.schema_util import EntityType
 
         args = set(typing.get_args(EntityType))
         missing = [e for e in G7_G16_ENTITY_TYPES if e not in args]
         assert not missing, f"EntityType missing: {missing}"
 
     def test_all_g7_g16_relation_types_in_literal(self) -> None:
-        from agentic_core.adg.schema import RelationType
+        from agentic_core.adg.schema_util import RelationType
 
         args = set(typing.get_args(RelationType))
         missing = [r for r in G7_G16_RELATION_TYPES if r not in args]
         assert not missing, f"RelationType missing: {missing}"
 
     def test_all_g7_g16_edge_kinds_in_literal(self) -> None:
-        from agentic_core.adg.schema import EdgeKind
+        from agentic_core.adg.schema_util import EdgeKind
 
         args = set(typing.get_args(EdgeKind))
         missing = [k for k in G7_G16_EDGE_KINDS if k not in args]
         assert not missing, f"EdgeKind missing: {missing}"
 
     def test_no_empty_entity_type_string(self) -> None:
-        from agentic_core.adg.schema import EntityType
+        from agentic_core.adg.schema_util import EntityType
 
         for et in typing.get_args(EntityType):
             assert et and et.strip(), f"Empty EntityType: {et!r}"
 
     def test_no_empty_relation_type_string(self) -> None:
-        from agentic_core.adg.schema import RelationType
+        from agentic_core.adg.schema_util import RelationType
 
         for rt in typing.get_args(RelationType):
             assert rt and rt.strip(), f"Empty RelationType: {rt!r}"
 
     def test_no_empty_edge_kind_string(self) -> None:
-        from agentic_core.adg.schema import EdgeKind
+        from agentic_core.adg.schema_util import EdgeKind
 
         for ek in typing.get_args(EdgeKind):
             assert ek and ek.strip(), f"Empty EdgeKind: {ek!r}"
@@ -437,45 +435,45 @@ class TestC2DetectionConstants:
 
     # ---------- G7 ----------
     def test_sandbox_envelope_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema import SANDBOX_ENVELOPE_CLASSES
+        from agentic_core.adg.schema_util import SANDBOX_ENVELOPE_CLASSES
 
         assert len(SANDBOX_ENVELOPE_CLASSES) >= 3
         assert "SandboxEnvelope" in SANDBOX_ENVELOPE_CLASSES
 
     def test_capability_token_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema import CAPABILITY_TOKEN_CLASSES
+        from agentic_core.adg.schema_util import CAPABILITY_TOKEN_CLASSES
 
         assert len(CAPABILITY_TOKEN_CLASSES) >= 2
         assert "CapabilityToken" in CAPABILITY_TOKEN_CLASSES
 
     def test_work_contract_methods_nonempty(self) -> None:
-        from agentic_core.adg.schema import WORK_CONTRACT_METHODS
+        from agentic_core.adg.schema_util import WORK_CONTRACT_METHODS
 
         assert len(WORK_CONTRACT_METHODS) >= 3
         assert "stamp_work_contract" in WORK_CONTRACT_METHODS
 
     # ---------- G8 ----------
     def test_tool_budget_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema import TOOL_BUDGET_CLASSES
+        from agentic_core.adg.schema_util import TOOL_BUDGET_CLASSES
 
         assert len(TOOL_BUDGET_CLASSES) >= 3
         assert "ToolBudget" in TOOL_BUDGET_CLASSES
 
     def test_budget_exceeded_exceptions_nonempty(self) -> None:
-        from agentic_core.adg.schema import BUDGET_EXCEEDED_EXCEPTIONS
+        from agentic_core.adg.schema_util import BUDGET_EXCEEDED_EXCEPTIONS
 
         assert len(BUDGET_EXCEEDED_EXCEPTIONS) >= 3
         assert "BudgetExceededError" in BUDGET_EXCEEDED_EXCEPTIONS
 
     # ---------- G9 ----------
     def test_jit_context_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema import JIT_CONTEXT_CLASSES
+        from agentic_core.adg.schema_util import JIT_CONTEXT_CLASSES
 
         assert len(JIT_CONTEXT_CLASSES) >= 3
         assert "JITContext" in JIT_CONTEXT_CLASSES
 
     def test_freeze_method_names_nonempty(self) -> None:
-        from agentic_core.adg.schema import FREEZE_METHOD_NAMES
+        from agentic_core.adg.schema_util import FREEZE_METHOD_NAMES
 
         assert len(FREEZE_METHOD_NAMES) >= 4
         assert "freeze_context" in FREEZE_METHOD_NAMES
@@ -484,32 +482,32 @@ class TestC2DetectionConstants:
 
     # ---------- G10 ----------
     def test_boundary_verifier_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema import BOUNDARY_VERIFIER_CLASSES
+        from agentic_core.adg.schema_util import BOUNDARY_VERIFIER_CLASSES
 
         assert len(BOUNDARY_VERIFIER_CLASSES) >= 3
         assert "L2BoundaryVerifier" in BOUNDARY_VERIFIER_CLASSES
 
     def test_capability_chokepoint_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema import CAPABILITY_CHOKEPOINT_CLASSES
+        from agentic_core.adg.schema_util import CAPABILITY_CHOKEPOINT_CLASSES
 
         assert len(CAPABILITY_CHOKEPOINT_CLASSES) >= 2
         assert "CapabilityChokepoint" in CAPABILITY_CHOKEPOINT_CLASSES
 
     # ---------- G11 ----------
     def test_semantic_clock_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema import SEMANTIC_CLOCK_CLASSES
+        from agentic_core.adg.schema_util import SEMANTIC_CLOCK_CLASSES
 
         assert len(SEMANTIC_CLOCK_CLASSES) >= 2
         assert "SemanticClock" in SEMANTIC_CLOCK_CLASSES
 
     def test_replay_guard_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema import REPLAY_GUARD_CLASSES
+        from agentic_core.adg.schema_util import REPLAY_GUARD_CLASSES
 
         assert len(REPLAY_GUARD_CLASSES) >= 2
         assert "ReplayGuard" in REPLAY_GUARD_CLASSES
 
     def test_determinism_patch_methods_nonempty(self) -> None:
-        from agentic_core.adg.schema import DETERMINISM_PATCH_METHODS
+        from agentic_core.adg.schema_util import DETERMINISM_PATCH_METHODS
 
         assert len(DETERMINISM_PATCH_METHODS) >= 4
         assert "seed_rng" in DETERMINISM_PATCH_METHODS
@@ -518,13 +516,13 @@ class TestC2DetectionConstants:
 
     # ---------- G12 ----------
     def test_io_intercept_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema import IO_INTERCEPT_CLASSES
+        from agentic_core.adg.schema_util import IO_INTERCEPT_CLASSES
 
         assert len(IO_INTERCEPT_CLASSES) >= 3
         assert "IOInterceptor" in IO_INTERCEPT_CLASSES
 
     def test_network_transcript_symbols_nonempty(self) -> None:
-        from agentic_core.adg.schema import NETWORK_TRANSCRIPT_SYMBOLS
+        from agentic_core.adg.schema_util import NETWORK_TRANSCRIPT_SYMBOLS
 
         assert len(NETWORK_TRANSCRIPT_SYMBOLS) >= 3
         assert "transcript_response" in NETWORK_TRANSCRIPT_SYMBOLS
@@ -532,14 +530,14 @@ class TestC2DetectionConstants:
 
     # ---------- G13 ----------
     def test_mutation_transport_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema import MUTATION_TRANSPORT_CLASSES
+        from agentic_core.adg.schema_util import MUTATION_TRANSPORT_CLASSES
 
         assert len(MUTATION_TRANSPORT_CLASSES) >= 3
         assert "MutationTransport" in MUTATION_TRANSPORT_CLASSES
         assert "TwoPhaseCommit" in MUTATION_TRANSPORT_CLASSES
 
     def test_rfc6902_diff_symbols_nonempty(self) -> None:
-        from agentic_core.adg.schema import RFC6902_DIFF_SYMBOLS
+        from agentic_core.adg.schema_util import RFC6902_DIFF_SYMBOLS
 
         assert len(RFC6902_DIFF_SYMBOLS) >= 4
         assert "package_diff" in RFC6902_DIFF_SYMBOLS
@@ -547,13 +545,13 @@ class TestC2DetectionConstants:
 
     # ---------- G14 ----------
     def test_execution_trace_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema import EXECUTION_TRACE_CLASSES
+        from agentic_core.adg.schema_util import EXECUTION_TRACE_CLASSES
 
         assert len(EXECUTION_TRACE_CLASSES) >= 3
         assert "ExecutionTrace" in EXECUTION_TRACE_CLASSES
 
     def test_replay_key_methods_nonempty(self) -> None:
-        from agentic_core.adg.schema import REPLAY_KEY_METHODS
+        from agentic_core.adg.schema_util import REPLAY_KEY_METHODS
 
         assert len(REPLAY_KEY_METHODS) >= 4
         assert "emit_replay_key" in REPLAY_KEY_METHODS
@@ -562,13 +560,13 @@ class TestC2DetectionConstants:
 
     # ---------- G15 ----------
     def test_path_control_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema import PATH_CONTROL_CLASSES
+        from agentic_core.adg.schema_util import PATH_CONTROL_CLASSES
 
         assert len(PATH_CONTROL_CLASSES) >= 3
         assert "ExecutionPathController" in PATH_CONTROL_CLASSES
 
     def test_path_reroute_methods_nonempty(self) -> None:
-        from agentic_core.adg.schema import PATH_REROUTE_METHODS
+        from agentic_core.adg.schema_util import PATH_REROUTE_METHODS
 
         assert len(PATH_REROUTE_METHODS) >= 5
         assert "route_path" in PATH_REROUTE_METHODS
@@ -578,20 +576,20 @@ class TestC2DetectionConstants:
 
     # ---------- G16 ----------
     def test_eval_metric_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema import EVAL_METRIC_CLASSES
+        from agentic_core.adg.schema_util import EVAL_METRIC_CLASSES
 
         assert len(EVAL_METRIC_CLASSES) >= 4
         assert "EvalSpine" in EVAL_METRIC_CLASSES
 
     def test_dpo_batch_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema import DPO_BATCH_CLASSES
+        from agentic_core.adg.schema_util import DPO_BATCH_CLASSES
 
         assert len(DPO_BATCH_CLASSES) >= 3
         assert "DPOBatchBuilder" in DPO_BATCH_CLASSES
         assert "DPOBatch" in DPO_BATCH_CLASSES
 
     def test_drift_alert_methods_nonempty(self) -> None:
-        from agentic_core.adg.schema import DRIFT_ALERT_METHODS
+        from agentic_core.adg.schema_util import DRIFT_ALERT_METHODS
 
         assert len(DRIFT_ALERT_METHODS) >= 5
         assert "emit_drift_alert" in DRIFT_ALERT_METHODS
@@ -633,7 +631,7 @@ class TestC2DetectionConstants:
 
     def test_constants_cover_canonical_runtime_class_names(self) -> None:
         """Every primary class used in the runtime modules is in a detection constant."""
-        from agentic_core.adg.schema import (
+        from agentic_core.adg.schema_util import (
             BOUNDARY_VERIFIER_CLASSES,
             CAPABILITY_CHOKEPOINT_CLASSES,
             CAPABILITY_TOKEN_CLASSES,

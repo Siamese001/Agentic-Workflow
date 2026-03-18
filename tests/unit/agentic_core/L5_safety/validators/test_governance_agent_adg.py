@@ -3,15 +3,17 @@
 Uses AST-based source inspection -- immune to broken transitive deps.
 """
 from __future__ import annotations
+
 import ast
 import pathlib
+
 import pytest
 
 pytestmark = pytest.mark.unit
 
 _SRC = (
     pathlib.Path(__file__).parents[5]
-    / "agentic_core" / "L5_safety" / "validators" / "GovernanceAgent.py"
+    / "agentic_core" / "L5_safety" / "reasoning" / "GovernanceAgent.py"
 )
 
 

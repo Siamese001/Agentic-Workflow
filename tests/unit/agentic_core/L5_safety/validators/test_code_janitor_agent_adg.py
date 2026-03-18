@@ -13,7 +13,7 @@ pytestmark = pytest.mark.unit
 
 _SRC = (
     pathlib.Path(__file__).parents[5]
-    / "agentic_core" / "L5_safety" / "validators" / "CodeJanitorAgent.py"
+    / "agentic_core" / "L5_safety" / "reasoning" / "CodeJanitorAgent.py"
 )
 
 

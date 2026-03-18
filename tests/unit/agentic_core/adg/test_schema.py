@@ -11,7 +11,7 @@ import pytest
 pytestmark = pytest.mark.unit
 
 try:
-    from agentic_core.adg.schema import (  # noqa: F401
+    from agentic_core.adg.schema_util import (  # noqa: F401
         BATCH_SIZE,
         BUFFER_SIZE,
         DEFAULT_SLEEP,

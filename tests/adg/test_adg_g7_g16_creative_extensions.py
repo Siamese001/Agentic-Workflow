@@ -52,42 +52,42 @@ from typing import Any
 import pytest
 
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_healing_outcome,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
-    _emit_updates_meta_learning_state,
-    _emit_validates_capability,
-    _emit_writes_via_uwg,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
     _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_escalates_to_human,
-    _emit_routes_through,
+    _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
+    _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
+    _emit_writes_via_uwg,
 )
 
 _emit_applies_guardrail("p0", "test_adg_g7_g16_creative_extensions", "p0_governance")
@@ -114,14 +114,21 @@ _emit_stores_embedding("p4", "test_adg_g7_g16_creative_extensions", "embedding_s
 _emit_updates_meta_learning_state("p4", "test_adg_g7_g16_creative_extensions", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "test_adg_g7_g16_creative_extensions", "exec_snapshot_link")
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
+    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
-    _emit_links_incident_trace,
+    _emit_links_incident_trace,  # noqa: E402
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -129,29 +136,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
-    _emit_writes_through,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
     _emit_writes_through,  # noqa: E402
-    _emit_links_incident_trace,  # noqa: E402
 )
 
 _emit_emits_metric_event("test_adg_g7_g16_creative_extensions", "p4obs", "metric_1")
@@ -360,7 +358,7 @@ class TestD1DeadRelationAudit:
 
     def test_known_dead_relations_are_in_schema(self) -> None:
         """Every catalogued dead relation must exist in RelationType (it's a real schema value)."""
-        from agentic_core.adg.schema import RelationType
+        from agentic_core.adg.schema_util import RelationType
 
         schema_rels = set(typing.get_args(RelationType))
         missing = _KNOWN_DEAD_RELATIONS - schema_rels
@@ -915,7 +913,7 @@ class TestD8CrossConstantNonOverlap:
     def _get_constants(cls) -> list[tuple[str, frozenset]]:
         if cls._CONST_NAMES_AND_VALUES:
             return cls._CONST_NAMES_AND_VALUES
-        from agentic_core.adg.schema import (
+        from agentic_core.adg.schema_util import (
             BOUNDARY_VERIFIER_CLASSES,
             BUDGET_EXCEEDED_EXCEPTIONS,
             CAPABILITY_CHOKEPOINT_CLASSES,
@@ -987,7 +985,7 @@ class TestD8CrossConstantNonOverlap:
 
     def test_class_names_and_method_names_do_not_overlap(self) -> None:
         """CamelCase class names never appear in method-name frozensets and vice versa."""
-        from agentic_core.adg.schema import (
+        from agentic_core.adg.schema_util import (
             BOUNDARY_VERIFIER_CLASSES,
             BUDGET_EXCEEDED_EXCEPTIONS,
             CAPABILITY_CHOKEPOINT_CLASSES,
@@ -1532,7 +1530,7 @@ class TestD18SchemaValueFormat:
     def test_all_relation_types_lowercase_snake_case(self) -> None:
         import re
 
-        from agentic_core.adg.schema import RelationType
+        from agentic_core.adg.schema_util import RelationType
 
         snake_re = re.compile(r"^[a-z][a-z0-9_]*$")
         bad = [r for r in typing.get_args(RelationType) if not snake_re.match(r)]
@@ -1541,7 +1539,7 @@ class TestD18SchemaValueFormat:
     def test_all_edge_kinds_lowercase_snake_case(self) -> None:
         import re
 
-        from agentic_core.adg.schema import EdgeKind
+        from agentic_core.adg.schema_util import EdgeKind
 
         snake_re = re.compile(r"^[a-z][a-z0-9_]*$")
         bad = [k for k in typing.get_args(EdgeKind) if not snake_re.match(k)]
@@ -1555,13 +1553,13 @@ class TestD18SchemaValueFormat:
         assert not bad, f"G7-G16 RelationType values not lowercase snake_case: {bad}"
 
     def test_no_camelcase_leaks_into_relation_types(self) -> None:
-        from agentic_core.adg.schema import RelationType
+        from agentic_core.adg.schema_util import RelationType
 
         camel = [r for r in typing.get_args(RelationType) if any(c.isupper() for c in r)]
         assert not camel, f"CamelCase leaked into RelationType: {camel}"
 
     def test_no_camelcase_leaks_into_edge_kinds(self) -> None:
-        from agentic_core.adg.schema import EdgeKind
+        from agentic_core.adg.schema_util import EdgeKind
 
         camel = [k for k in typing.get_args(EdgeKind) if any(c.isupper() for c in k)]
         assert not camel, f"CamelCase leaked into EdgeKind: {camel}"

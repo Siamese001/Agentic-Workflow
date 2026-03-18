@@ -425,7 +425,7 @@ def _node_id(module_path: str, qualified_name: str) -> str:
 
 def extract_file(rel_path: str, source: str) -> tuple[list[SemanticNode], list[SemanticEdge]]:
     """Parse one Python file and return all semantic nodes and intra-file edges."""
-    from agentic_core.adg.schema import module_path_to_layer
+    from agentic_core.adg.schema_util import module_path_to_layer
 
     nodes: list[SemanticNode] = []
     edges: list[SemanticEdge] = []
@@ -760,7 +760,7 @@ def build_failure_clusters(graph: dict, surface_map: dict) -> dict:
 
     No pytest is run. Risk is inferred purely from graph signals.
     """
-    from agentic_core.adg.schema import module_path_to_layer
+    from agentic_core.adg.schema_util import module_path_to_layer
 
     module_coverage = surface_map.get("module_coverage", {})
 
@@ -778,10 +778,10 @@ def build_failure_clusters(graph: dict, surface_map: dict) -> dict:
     }
 
     # Collect all non-test modules
-    all_modules = set(
+    all_modules = {
         n["module_path"] for n in graph["entities"]
         if n["node_type"] == "ModuleNode" and not n["module_path"].startswith("tests/")
-    )
+    }
 
     clusters = []
     for mod in all_modules:

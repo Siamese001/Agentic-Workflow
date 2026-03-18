@@ -2,7 +2,7 @@
 
 import logging
 
-from agentic_core.adg.schema import (
+from agentic_core.adg.schema_util import (
     PROMPT_AUTHORITY_RULES,
     PROMPT_INJECTION_SYMBOLS,
     PROMPT_SLOT_AUTHORITY,

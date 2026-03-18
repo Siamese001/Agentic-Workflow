@@ -19,17 +19,24 @@ from pathlib import Path
 import pytest
 
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,  # noqa: E402
@@ -37,28 +44,21 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_escalates_to_human,
-    _emit_routes_through,
 )
 
 _emit_records_execution_trace("p0", "evidence", "test_adg_scan_roundtrip")
@@ -66,14 +66,21 @@ _emit_applies_guardrail("p0", "test_adg_scan_roundtrip", "p0_governance")
 _emit_reads_policy_state("p0", "test_adg_scan_roundtrip", "policy_binding")
 _emit_snapshots_state("p0", "test_adg_scan_roundtrip", "state_snapshot")
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
+    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
-    _emit_links_incident_trace,
+    _emit_links_incident_trace,  # noqa: E402
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -81,29 +88,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
-    _emit_writes_through,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
     _emit_writes_through,  # noqa: E402
-    _emit_links_incident_trace,  # noqa: E402
 )
 
 _emit_emits_metric_event("test_adg_scan_roundtrip", "p4obs", "metric_1")
@@ -374,7 +372,7 @@ class TestClassifyCallBoundary:
         self._classify = _CallVisitor._classify_call
 
     def test_embedding_symbol_direct(self):
-        from agentic_core.adg.schema import EMBEDDING_SYMBOLS
+        from agentic_core.adg.schema_util import EMBEDDING_SYMBOLS
 
         sym = next(iter(EMBEDDING_SYMBOLS))
         kind, rel = self._classify(sym)
@@ -382,7 +380,7 @@ class TestClassifyCallBoundary:
         assert rel == "instantiates"
 
     def test_embedding_symbol_suffix_match(self):
-        from agentic_core.adg.schema import EMBEDDING_SYMBOLS
+        from agentic_core.adg.schema_util import EMBEDDING_SYMBOLS
 
         sym = next(iter(EMBEDDING_SYMBOLS))
         kind, rel = self._classify(f"some.nested.{sym}")
@@ -391,7 +389,7 @@ class TestClassifyCallBoundary:
 
     def test_write_symbol_direct(self):
         # Pick one that is NOT in WRITE_SIDE_EFFECT_EXCLUSIONS
-        from agentic_core.adg.schema import WRITE_SIDE_EFFECT_EXCLUSIONS, WRITE_SIDE_EFFECT_SYMBOLS
+        from agentic_core.adg.schema_util import WRITE_SIDE_EFFECT_EXCLUSIONS, WRITE_SIDE_EFFECT_SYMBOLS
 
         sym = next(s for s in WRITE_SIDE_EFFECT_SYMBOLS if s not in WRITE_SIDE_EFFECT_EXCLUSIONS)
         kind, rel = self._classify(sym)
@@ -399,7 +397,7 @@ class TestClassifyCallBoundary:
         assert rel == "writes_to"
 
     def test_write_symbol_suffix_match_not_excluded(self):
-        from agentic_core.adg.schema import WRITE_SIDE_EFFECT_EXCLUSIONS, WRITE_SIDE_EFFECT_SYMBOLS
+        from agentic_core.adg.schema_util import WRITE_SIDE_EFFECT_EXCLUSIONS, WRITE_SIDE_EFFECT_SYMBOLS
 
         sym = next(s for s in WRITE_SIDE_EFFECT_SYMBOLS if s not in WRITE_SIDE_EFFECT_EXCLUSIONS)
         kind, rel = self._classify(f"some.module.{sym}")
@@ -407,7 +405,7 @@ class TestClassifyCallBoundary:
         assert rel == "writes_to"
 
     def test_excluded_write_symbol_returns_empty(self):
-        from agentic_core.adg.schema import WRITE_SIDE_EFFECT_EXCLUSIONS
+        from agentic_core.adg.schema_util import WRITE_SIDE_EFFECT_EXCLUSIONS
 
         for excl in WRITE_SIDE_EFFECT_EXCLUSIONS:
             kind, rel = self._classify(excl)
@@ -422,7 +420,7 @@ class TestClassifyCallBoundary:
         assert rel == "invokes_provider"
 
     def test_provider_sdk_base_match(self):
-        from agentic_core.adg.schema import PROVIDER_SDK_SYMBOLS
+        from agentic_core.adg.schema_util import PROVIDER_SDK_SYMBOLS
 
         sym = next(iter(PROVIDER_SDK_SYMBOLS))
         base = sym.split(".")[0]
@@ -547,7 +545,7 @@ class TestRegressionLockBannedRelations:
         assert not bad
 
     def test_no_writes_to_from_excluded_symbols(self, tmp_path):
-        from agentic_core.adg.schema import WRITE_SIDE_EFFECT_EXCLUSIONS
+        from agentic_core.adg.schema_util import WRITE_SIDE_EFFECT_EXCLUSIONS
 
         for excl in WRITE_SIDE_EFFECT_EXCLUSIONS:
             src = f"result = {excl}(something)\n"
@@ -584,20 +582,20 @@ class TestRegressionLockBannedRelations:
 
 class TestVerifyLayerGraphConsistency:
     def test_clean_map_returns_empty(self):
-        from agentic_core.adg.schema import verify_layer_graph_consistency
+        from agentic_core.adg.schema_util import verify_layer_graph_consistency
 
         errors = verify_layer_graph_consistency({"mod_a.py": "L0", "mod_b.py": "L2"})
         assert errors == []
 
     def test_l_unknown_produces_error(self):
-        from agentic_core.adg.schema import verify_layer_graph_consistency
+        from agentic_core.adg.schema_util import verify_layer_graph_consistency
 
         errors = verify_layer_graph_consistency({"unmapped/some_module.py": "L_UNKNOWN"})
         assert errors
         assert "unmapped/some_module.py" in errors[0]
 
     def test_multiple_l_unknown_all_reported(self):
-        from agentic_core.adg.schema import verify_layer_graph_consistency
+        from agentic_core.adg.schema_util import verify_layer_graph_consistency
 
         errors = verify_layer_graph_consistency(
             {
@@ -609,12 +607,12 @@ class TestVerifyLayerGraphConsistency:
         assert len(errors) == 2
 
     def test_empty_map_returns_empty(self):
-        from agentic_core.adg.schema import verify_layer_graph_consistency
+        from agentic_core.adg.schema_util import verify_layer_graph_consistency
 
         assert verify_layer_graph_consistency({}) == []
 
     def test_error_message_contains_l_unknown_text(self):
-        from agentic_core.adg.schema import verify_layer_graph_consistency
+        from agentic_core.adg.schema_util import verify_layer_graph_consistency
 
         errors = verify_layer_graph_consistency({"orphan.py": "L_UNKNOWN"})
         assert "L_UNKNOWN" in errors[0]
@@ -639,7 +637,7 @@ class TestPopulateModuleEntities:
         return builder.build(result)
 
     def test_seam_module_in_modules_list_gets_seam_type(self):
-        from agentic_core.adg.schema import SEAM_MODULE_PATTERNS
+        from agentic_core.adg.schema_util import SEAM_MODULE_PATTERNS
 
         if not SEAM_MODULE_PATTERNS:
             pytest.skip("No SEAM_MODULE_PATTERNS")

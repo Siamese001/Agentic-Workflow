@@ -220,7 +220,7 @@ class TestPhase1EarlyDetectionPosition:
         # Find the return statement in execute_phase1_discovery_impl
         early_detection_pos = content.find("PHASE 1 ENHANCEMENT")
         return_pos = content.find(
-            "return drift_report, violations, location_scan_result",
+            "return (drift_report, violations, location_scan_result)",
             early_detection_pos,
         )
 

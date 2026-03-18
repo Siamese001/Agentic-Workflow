@@ -10,17 +10,24 @@ from pathlib import Path
 import pytest
 
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,  # noqa: E402
@@ -28,28 +35,21 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_escalates_to_human,
-    _emit_routes_through,
 )
 
 _emit_records_execution_trace("p0", "evidence", "test_adg_invariants")
@@ -57,14 +57,21 @@ _emit_applies_guardrail("p0", "test_adg_invariants", "p0_governance")
 _emit_reads_policy_state("p0", "test_adg_invariants", "policy_binding")
 _emit_snapshots_state("p0", "test_adg_invariants", "state_snapshot")
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
+    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
-    _emit_links_incident_trace,
+    _emit_links_incident_trace,  # noqa: E402
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -72,29 +79,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
-    _emit_writes_through,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
     _emit_writes_through,  # noqa: E402
-    _emit_links_incident_trace,  # noqa: E402
 )
 
 _emit_emits_metric_event("test_adg_invariants", "p4obs", "metric_1")
@@ -193,61 +191,61 @@ REPO_ROOT = Path(__file__).parent.parent.parent
 @pytest.mark.unit
 class TestADGSchema:
     def test_canonical_name_module(self) -> None:
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         result = canonical_name("Module", "agentic_core/L0_routing/engines/path_router.py")
         assert result == "ADG::Module::agentic_core/L0_routing/engines/path_router.py"
 
     def test_canonical_name_layer(self) -> None:
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         assert canonical_name("Layer", "L2") == "ADG::Layer::L2"
 
     def test_canonical_name_snapshot(self) -> None:
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         assert canonical_name("Snapshot", "abc123", "deadbeef") == "ADG::Snapshot::abc123::deadbeef"
 
     def test_canonical_name_backslash_normalized(self) -> None:
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         result = canonical_name("Module", "agentic_core\\L0_routing\\path.py")
         assert "\\" not in result
 
     def test_layer_mapping_l0(self) -> None:
-        from agentic_core.adg.schema import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
 
         assert module_path_to_layer("agentic_core/L0_routing/engines/path_router.py") == "L0"
 
     def test_layer_mapping_l2(self) -> None:
-        from agentic_core.adg.schema import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
 
         assert module_path_to_layer("agentic_core/L2_execution/UniversalWriteGateway.py") == "L2"
 
     def test_layer_mapping_l5(self) -> None:
-        from agentic_core.adg.schema import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
 
         assert module_path_to_layer("agentic_core/L5_safety/enforcement/some_guard.py") == "L5"
 
     def test_layer_mapping_apps(self) -> None:
-        from agentic_core.adg.schema import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
 
         assert module_path_to_layer("apps_rg/engines/SomeAgent.py") == "L_APP"
 
     def test_layer_mapping_unknown(self) -> None:
-        from agentic_core.adg.schema import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
 
         assert module_path_to_layer("random/unknown/path.py") == "L_UNKNOWN"
 
     def test_allowed_layer_edges_contains_downward(self) -> None:
-        from agentic_core.adg.schema import ALLOWED_LAYER_EDGES
+        from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES
 
         assert ("L2", "L0") in ALLOWED_LAYER_EDGES
         assert ("L5", "L2") in ALLOWED_LAYER_EDGES
         assert ("L6", "L0") in ALLOWED_LAYER_EDGES
 
     def test_allowed_layer_edges_excludes_upward(self) -> None:
-        from agentic_core.adg.schema import ALLOWED_LAYER_EDGES
+        from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES
 
         assert ("L0", "L2") not in ALLOWED_LAYER_EDGES
         assert ("L1", "L5") not in ALLOWED_LAYER_EDGES

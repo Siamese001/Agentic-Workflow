@@ -23,17 +23,24 @@ from agentic_core.L0_routing.config.path_constants import (
     L2_EXECUTION_DIR,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,  # noqa: E402
@@ -41,28 +48,21 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_escalates_to_human,
-    _emit_routes_through,
 )
 
 _emit_records_execution_trace("p0", "evidence", "test_adg_branches_and_robustness")
@@ -70,14 +70,21 @@ _emit_applies_guardrail("p0", "test_adg_branches_and_robustness", "p0_governance
 _emit_reads_policy_state("p0", "test_adg_branches_and_robustness", "policy_binding")
 _emit_snapshots_state("p0", "test_adg_branches_and_robustness", "state_snapshot")
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
+    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
-    _emit_links_incident_trace,
+    _emit_links_incident_trace,  # noqa: E402
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -85,29 +92,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
-    _emit_writes_through,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
     _emit_writes_through,  # noqa: E402
-    _emit_links_incident_trace,  # noqa: E402
 )
 
 _emit_emits_metric_event("test_adg_branches_and_robustness", "p4obs", "metric_1")
@@ -197,19 +195,19 @@ class TestCanonicalNameBranches:
 
     @pytest.mark.architecture
     def test_single_part(self) -> None:
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         assert canonical_name("Module", "a.py") == "ADG::Module::a.py"
 
     @pytest.mark.architecture
     def test_multi_part(self) -> None:
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         assert canonical_name("Snapshot", "sha1", "dig1") == "ADG::Snapshot::sha1::dig1"
 
     @pytest.mark.architecture
     def test_backslash_in_single_part(self) -> None:
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         result = canonical_name("Module", "a\\b\\c.py")
         assert "\\" not in result
@@ -217,28 +215,28 @@ class TestCanonicalNameBranches:
 
     @pytest.mark.architecture
     def test_backslash_in_multi_part(self) -> None:
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         result = canonical_name("Module", "a\\b", "c\\d")
         assert "\\" not in result
 
     @pytest.mark.architecture
     def test_empty_part_preserved(self) -> None:
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         result = canonical_name("Symbol", "")
         assert result == "ADG::Symbol::"
 
     @pytest.mark.architecture
     def test_forward_slash_unchanged(self) -> None:
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         result = canonical_name("Module", "a/b/c.py")
         assert result == "ADG::Module::a/b/c.py"
 
     @pytest.mark.architecture
     def test_namespace_prefix_correct(self) -> None:
-        from agentic_core.adg.schema import ADG_NS, canonical_name
+        from agentic_core.adg.schema_util import ADG_NS, canonical_name
 
         result = canonical_name("Layer", "L0")
         assert result.startswith(f"{ADG_NS}::")
@@ -246,7 +244,7 @@ class TestCanonicalNameBranches:
     @pytest.mark.architecture
     def test_two_calls_same_input_identical(self) -> None:
         """Determinism: same input always produces same output."""
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         r1 = canonical_name("Module", "agentic_core/L2_execution/UniversalWriteGateway.py")
         r2 = canonical_name("Module", "agentic_core/L2_execution/UniversalWriteGateway.py")
@@ -258,7 +256,7 @@ class TestModulePathToLayerBranches:
 
     @pytest.mark.architecture
     def test_each_layer_prefix_maps_correctly(self) -> None:
-        from agentic_core.adg.schema import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
 
         cases = [
             ("agentic_core/L0_routing/x.py", "L0"),
@@ -280,33 +278,33 @@ class TestModulePathToLayerBranches:
 
     @pytest.mark.architecture
     def test_unknown_prefix_returns_l_unknown(self) -> None:
-        from agentic_core.adg.schema import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
 
         assert module_path_to_layer("totally/random/path.py") == "L_UNKNOWN"
 
     @pytest.mark.architecture
     def test_backslash_path_normalized(self) -> None:
-        from agentic_core.adg.schema import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
 
         assert module_path_to_layer("agentic_core\\L2_execution\\x.py") == "L2"
 
     @pytest.mark.architecture
     def test_empty_path_returns_l_unknown(self) -> None:
-        from agentic_core.adg.schema import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
 
         assert module_path_to_layer("") == "L_UNKNOWN"
 
     @pytest.mark.architecture
     def test_longer_prefix_wins_over_shorter(self) -> None:
         """Longer prefix must win (no false L_UNKNOWN from prefix collision)."""
-        from agentic_core.adg.schema import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
 
         result = module_path_to_layer("agentic_core/L0_routing/engines/deep/path.py")
         assert result == "L0"
 
     @pytest.mark.architecture
     def test_determinism_two_calls(self) -> None:
-        from agentic_core.adg.schema import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
 
         r1 = module_path_to_layer("agentic_core/L5_safety/x.py")
         r2 = module_path_to_layer("agentic_core/L5_safety/x.py")
@@ -564,7 +562,7 @@ class TestScanResultDigestBranches:
 class TestBlastRadiusThresholdBoundary:
     """Blast-radius scoring: exact threshold boundary values per §4."""
 
-    def _make_result_with_weight(self, total_weight: int) -> ScanResult:
+    def _make_result_with_weight(self, total_weight: int) -> "ScanResult":
         """Build a ScanResult whose impacted modules sum to exactly total_weight."""
         from agentic_core.adg.extraction.static_scanner import ScanResult
 
@@ -717,7 +715,7 @@ class TestInvariantScannerBranches:
         for their destination if the destination is also ambiguous."""
         from agentic_core.adg.ci.invariant_scanner import InvariantScanner
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         edge = Edge(
             from_name=canonical_name("Module", "totally/random/module.py"),
@@ -742,7 +740,7 @@ class TestInvariantScannerBranches:
         """Non-embedding edge_kind must not trigger RULE_B even for embedding symbol."""
         from agentic_core.adg.ci.invariant_scanner import InvariantScanner
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         edge = Edge(
             from_name=canonical_name("Module", "apps_rg/engines/SomeEngine.py"),
@@ -767,7 +765,7 @@ class TestInvariantScannerBranches:
         """Edge within same layer must not be flagged by RULE_C."""
         from agentic_core.adg.ci.invariant_scanner import InvariantScanner
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         edge = Edge(
             from_name=canonical_name("Module", "agentic_core/L2_execution/UniversalWriteGateway.py"),
@@ -795,7 +793,7 @@ class TestInvariantScannerBranches:
         """L6 importing L0 is allowed (downward)."""
         from agentic_core.adg.ci.invariant_scanner import InvariantScanner
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         edge = Edge(
             from_name=canonical_name("Module", "agentic_core/L6_observability/engines/monitor.py"),
@@ -823,7 +821,7 @@ class TestInvariantScannerBranches:
         """L_APP importing L2 is allowed."""
         from agentic_core.adg.ci.invariant_scanner import InvariantScanner
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         edge = Edge(
             from_name=canonical_name("Module", "apps_rg/engines/SomeAgent.py"),
@@ -1073,7 +1071,7 @@ class TestInvariantScannerMatrix:
         """RULE_A must also fire for invokes_provider relation (not just imports)."""
         from agentic_core.adg.ci.invariant_scanner import InvariantScanner
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         for rel_type in ("imports", "invokes_provider"):
             edge = Edge(
@@ -1099,7 +1097,7 @@ class TestInvariantScannerMatrix:
         """Every upward L_low -> L_high pair (low num < high num) must be RULE_C."""
         from agentic_core.adg.ci.invariant_scanner import InvariantScanner
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         upward_pairs = [
             ("L0", "L1"),
@@ -1145,7 +1143,7 @@ class TestInvariantScannerMatrix:
         """RULE_A must fire for each provider SDK symbol from a non-gateway module."""
         from agentic_core.adg.ci.invariant_scanner import InvariantScanner
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema import PROVIDER_SDK_SYMBOLS, canonical_name
+        from agentic_core.adg.schema_util import PROVIDER_SDK_SYMBOLS, canonical_name
 
         provider_bases = sorted({s.split(".")[0] for s in PROVIDER_SDK_SYMBOLS})
         for sym_base in provider_bases:
@@ -1182,7 +1180,7 @@ class TestGatewayTopologyBranches:
         from agentic_core.adg.applications.gateway_topology import check_gateway_topology
         from agentic_core.adg.client.mcp_client import ADGMCPClient
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         client = ADGMCPClient()
         bad_edge = Edge(
@@ -1242,7 +1240,7 @@ class TestUWGWriteAuthorityBranches:
         """Modules under tests/ prefix must not be flagged."""
         from agentic_core.adg.applications.uwg_write_authority import check_uwg_write_authority
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         edge = Edge(
             from_name=canonical_name("Module", "tests/architecture/test_foo.py"),
@@ -1266,7 +1264,7 @@ class TestUWGWriteAuthorityBranches:
         """Modules under ops_scripts/ci/ prefix must not be flagged."""
         from agentic_core.adg.applications.uwg_write_authority import check_uwg_write_authority
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         edge = Edge(
             from_name=canonical_name("Module", "ops_scripts/ci/run_contract_gates.py"),
@@ -1290,7 +1288,7 @@ class TestUWGWriteAuthorityBranches:
         """Only write edge_kind triggers UWG check (not import/network/etc)."""
         from agentic_core.adg.applications.uwg_write_authority import check_uwg_write_authority
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         edge = Edge(
             from_name=canonical_name("Module", "agentic_core/L1_cognition/engines/x.py"),
@@ -1315,7 +1313,7 @@ class TestUWGWriteAuthorityBranches:
         from agentic_core.adg.applications.uwg_write_authority import check_uwg_write_authority
         from agentic_core.adg.client.mcp_client import ADGMCPClient
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         client = ADGMCPClient()
         edge = Edge(
@@ -1455,7 +1453,7 @@ class TestRAGSovereigntyBranches:
         """Extra edges with relation != 'influences' must not be flagged."""
         from agentic_core.adg.applications.rag_sovereignty import check_rag_sovereignty
         from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         result = ScanResult(commit_sha="rag-non-influences")
         result.compute_digest()
@@ -1472,7 +1470,7 @@ class TestRAGSovereigntyBranches:
         """C0Context influences non-decision node must NOT be flagged."""
         from agentic_core.adg.applications.rag_sovereignty import check_rag_sovereignty
         from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         result = ScanResult(commit_sha="rag-non-decision")
         result.compute_digest()
@@ -1492,7 +1490,7 @@ class TestRAGSovereigntyBranches:
             check_rag_sovereignty,
         )
         from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         for decision_node in sorted(_DECISION_NODES):
             result = ScanResult(commit_sha=f"rag-dn-{decision_node[-10:]}")
@@ -1511,7 +1509,7 @@ class TestRAGSovereigntyBranches:
         """Proof digest must differ when violations are present vs absent."""
         from agentic_core.adg.applications.rag_sovereignty import check_rag_sovereignty
         from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
 
         result = ScanResult(commit_sha="rag-digest-diff")
         result.compute_digest()

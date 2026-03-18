@@ -1,0 +1,12 @@
+agent_name,layer,file_path,complexity,safety_risk,confidence_band,tiering_recommendation
+CodeHealerAgent,L5,agentic_core/L5_safety/reasoning/CodeHealerAgent.py,HIGH,HIGH,QWEN,TIERED
+GravityLeakRepairAgent,L5,agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py,HIGH,HIGH,QWEN,TIERED
+IntegrityGateExecutorAgent,L5,agentic_core/L5_safety/reasoning/IntegrityGateExecutorAgent.py,HIGH,HIGH,QWEN,TIERED
+LocationHealerAgent,L5,agentic_core/L5_safety/reasoning/LocationHealerAgent.py,MEDIUM,MEDIUM,LOCAL,TIERED
+SafetyExecutorAgent,L5,agentic_core/L5_safety/reasoning/SafetyExecutorAgent.py,HIGH,HIGH,GEMINI,TIERED
+StructureHealerAgent,L5,agentic_core/L5_safety/reasoning/StructureHealerAgent.py,MEDIUM,MEDIUM,LOCAL,TIERED
+TypeHintFixerAgent,L5,agentic_core/L5_safety/reasoning/TypeHintFixerAgent.py,MEDIUM,LOW,LOCAL,TIERED
+DispatchOutreachToolsAgent,APP,apps_lic/reasoning/DispatchOutreachToolsAgent.py,MEDIUM,LOW,LOCAL,TIERED
+OutreachValidationExecutorAgent,APP,apps_lic/reasoning/OutreachValidationExecutorAgent.py,MEDIUM,LOW,LOCAL,TIERED
+DispatchResumeToolsAgent,APP,apps_rg/reasoning/DispatchResumeToolsAgent.py,MEDIUM,LOW,LOCAL,TIERED
+remediation_dispatcher,L2,agentic_core/L2_execution/scripts/remediation_dispatcher.py,HIGH,HIGH,QWEN,TIERED

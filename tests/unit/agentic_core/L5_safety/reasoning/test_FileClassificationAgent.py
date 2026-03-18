@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -16,16 +17,22 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_captures_execution_output,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_emits_metric_event,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
     _emit_links_incident_trace,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_environ,
     _emit_reads_policy_state,  # noqa: E402
@@ -37,34 +44,27 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_meta_learning_state,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_escalates_to_human,
-    _emit_routes_through,
 )
 
 _emit_emits_metric_event("test_FileClassificationAgent", "p4obs", "metric_1")
@@ -301,49 +301,6 @@ class TestSemanticDuplicateDetection:
             d / "IBlackboardLeaseVerifier.py",
             """\
             from typing import Protocol
-from agentic_core.runtime.lifecycle_trace_contract import (
-    _emit_pulls_context,
-    _emit_execution_terminates_at_uwg,
-    _emit_writes_through,
-    _emit_validated_by_safety_plane,
-    _emit_invokes_eval,
-    _emit_proposal_commits_routing,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-)
-_emit_pulls_context("p1", "test_FileClassificationAgent", "context_pull")
-_emit_pulls_context("p1", "test_FileClassificationAgent", "context_pull_secondary")
-_emit_execution_terminates_at_uwg("p1", "test_FileClassificationAgent", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "test_FileClassificationAgent", "uwg_term_secondary")
-_emit_writes_through("p1", "test_FileClassificationAgent", "write_through")
-_emit_writes_through("p1", "test_FileClassificationAgent", "write_through_secondary")
-_emit_validated_by_safety_plane("p1", "test_FileClassificationAgent", "safety_validation")
-_emit_invokes_eval("p1", "test_FileClassificationAgent", "eval_call")
-_emit_proposal_commits_routing("p1", "test_FileClassificationAgent", "routing_commit")
-_emit_escalates_to_human("p1", "test_FileClassificationAgent", "human_escalation")
-_emit_routes_through("p1", "test_FileClassificationAgent", "route_through")
-_emit_checks_agent_registry("p1", "test_FileClassificationAgent", "agent_registry")
-_emit_validates_agent_capability("p1", "test_FileClassificationAgent", "capability")
-_emit_dispatches_execution_plan("p1", "test_FileClassificationAgent", "exec_plan")
-_emit_agent_executes_agent("p1", "test_FileClassificationAgent", "sub_agent")
-_emit_routes_to_agent("p1", "test_FileClassificationAgent", "target_agent")
-_emit_verifies_policy("p1", "test_FileClassificationAgent", "policy_check")
-_emit_observes_runtime_state("p1", "test_FileClassificationAgent", "runtime_state")
-_emit_verifies_boundary("p1", "test_FileClassificationAgent", "boundary_check")
-_emit_transcripts_response("p1", "test_FileClassificationAgent", "transcript")
-_emit_hard_fails_untranscripted("p1", "test_FileClassificationAgent")
-_emit_gated_by_confidence("p1", "test_FileClassificationAgent", "confidence_gate")
             class blackboard_lease_verifier(Protocol):
                 def verify(self) -> bool: ...
             """,

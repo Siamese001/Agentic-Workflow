@@ -21,16 +21,6 @@ import textwrap
 import pytest
 
 # ---------------------------------------------------------------------------
-# G14: Execution proof
-# ---------------------------------------------------------------------------
-from agentic_core.adg.runtime.execution_proof import (
-    ExecutionProofRecorder,
-    ExecutionTrace,
-    ProofComparisonOutcome,
-    ReplayKey,
-)
-
-# ---------------------------------------------------------------------------
 # G10: Boundary verifier
 # ---------------------------------------------------------------------------
 from agentic_core.adg.runtime.boundary_verifier import (
@@ -69,6 +59,16 @@ from agentic_core.adg.runtime.eval_spine import (
     DriftAlert,
     EvalSpine,
     OptimizationStage,
+)
+
+# ---------------------------------------------------------------------------
+# G14: Execution proof
+# ---------------------------------------------------------------------------
+from agentic_core.adg.runtime.execution_proof import (
+    ExecutionProofRecorder,
+    ExecutionTrace,
+    ProofComparisonOutcome,
+    ReplayKey,
 )
 
 # ---------------------------------------------------------------------------
@@ -116,42 +116,42 @@ from agentic_core.adg.runtime.sandbox_airlock import (
     WorkContract,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_healing_outcome,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
-    _emit_updates_meta_learning_state,
-    _emit_validates_capability,
-    _emit_writes_via_uwg,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
     _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_escalates_to_human,
-    _emit_routes_through,
+    _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
+    _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
+    _emit_writes_via_uwg,
 )
 
 _emit_applies_guardrail("p0", "test_adg_gap_g7_g16", "p0_governance")
@@ -178,14 +178,21 @@ _emit_stores_embedding("p4", "test_adg_gap_g7_g16", "embedding_store")
 _emit_updates_meta_learning_state("p4", "test_adg_gap_g7_g16", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "test_adg_gap_g7_g16", "exec_snapshot_link")
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
+    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
-    _emit_links_incident_trace,
+    _emit_links_incident_trace,  # noqa: E402
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -193,29 +200,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
-    _emit_writes_through,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
     _emit_writes_through,  # noqa: E402
-    _emit_links_incident_trace,  # noqa: E402
 )
 
 _emit_emits_metric_event("test_adg_gap_g7_g16", "p4obs", "metric_1")
@@ -1112,69 +1110,69 @@ class TestG16EvalSpineVisitor:
 
 class TestSchemaG7G16Constants:
     def test_sandbox_envelope_classes(self) -> None:
-        from agentic_core.adg.schema import SANDBOX_ENVELOPE_CLASSES
+        from agentic_core.adg.schema_util import SANDBOX_ENVELOPE_CLASSES
 
         assert "SandboxEnvelope" in SANDBOX_ENVELOPE_CLASSES
 
     def test_capability_token_classes(self) -> None:
-        from agentic_core.adg.schema import CAPABILITY_TOKEN_CLASSES
+        from agentic_core.adg.schema_util import CAPABILITY_TOKEN_CLASSES
 
         assert "CapabilityToken" in CAPABILITY_TOKEN_CLASSES
 
     def test_tool_budget_classes(self) -> None:
-        from agentic_core.adg.schema import TOOL_BUDGET_CLASSES
+        from agentic_core.adg.schema_util import TOOL_BUDGET_CLASSES
 
         assert "ToolBudget" in TOOL_BUDGET_CLASSES
 
     def test_jit_context_classes(self) -> None:
-        from agentic_core.adg.schema import JIT_CONTEXT_CLASSES
+        from agentic_core.adg.schema_util import JIT_CONTEXT_CLASSES
 
         assert "JITContext" in JIT_CONTEXT_CLASSES
 
     def test_boundary_verifier_classes(self) -> None:
-        from agentic_core.adg.schema import BOUNDARY_VERIFIER_CLASSES
+        from agentic_core.adg.schema_util import BOUNDARY_VERIFIER_CLASSES
 
         assert "L2BoundaryVerifier" in BOUNDARY_VERIFIER_CLASSES
 
     def test_semantic_clock_classes(self) -> None:
-        from agentic_core.adg.schema import SEMANTIC_CLOCK_CLASSES
+        from agentic_core.adg.schema_util import SEMANTIC_CLOCK_CLASSES
 
         assert "SemanticClock" in SEMANTIC_CLOCK_CLASSES
 
     def test_io_intercept_classes(self) -> None:
-        from agentic_core.adg.schema import IO_INTERCEPT_CLASSES
+        from agentic_core.adg.schema_util import IO_INTERCEPT_CLASSES
 
         assert "IOInterceptor" in IO_INTERCEPT_CLASSES
 
     def test_mutation_transport_classes(self) -> None:
-        from agentic_core.adg.schema import MUTATION_TRANSPORT_CLASSES
+        from agentic_core.adg.schema_util import MUTATION_TRANSPORT_CLASSES
 
         assert "MutationTransport" in MUTATION_TRANSPORT_CLASSES
 
     def test_execution_trace_classes(self) -> None:
-        from agentic_core.adg.schema import EXECUTION_TRACE_CLASSES
+        from agentic_core.adg.schema_util import EXECUTION_TRACE_CLASSES
 
         assert "ExecutionTrace" in EXECUTION_TRACE_CLASSES
 
     def test_path_control_classes(self) -> None:
-        from agentic_core.adg.schema import PATH_CONTROL_CLASSES
+        from agentic_core.adg.schema_util import PATH_CONTROL_CLASSES
 
         assert "ExecutionPathController" in PATH_CONTROL_CLASSES
 
     def test_eval_metric_classes(self) -> None:
-        from agentic_core.adg.schema import EVAL_METRIC_CLASSES
+        from agentic_core.adg.schema_util import EVAL_METRIC_CLASSES
 
         assert "EvalSpine" in EVAL_METRIC_CLASSES
 
     def test_dpo_batch_classes(self) -> None:
-        from agentic_core.adg.schema import DPO_BATCH_CLASSES
+        from agentic_core.adg.schema_util import DPO_BATCH_CLASSES
 
         assert "DPOBatchBuilder" in DPO_BATCH_CLASSES
 
     def test_all_new_relation_types_valid(self) -> None:
         import typing
 
-        from agentic_core.adg.schema import RelationType
+        from agentic_core.adg.schema_util import RelationType
 
         args = typing.get_args(RelationType)
         for rel in [
@@ -1214,7 +1212,7 @@ class TestSchemaG7G16Constants:
     def test_all_new_edge_kinds_valid(self) -> None:
         import typing
 
-        from agentic_core.adg.schema import EdgeKind
+        from agentic_core.adg.schema_util import EdgeKind
 
         args = typing.get_args(EdgeKind)
         for ek in [

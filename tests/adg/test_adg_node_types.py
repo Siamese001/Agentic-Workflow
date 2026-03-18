@@ -17,17 +17,24 @@ from pathlib import Path
 import pytest
 
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,  # noqa: E402
@@ -35,28 +42,21 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_escalates_to_human,
-    _emit_routes_through,
 )
 
 _emit_records_execution_trace("p0", "evidence", "test_adg_node_types")
@@ -64,14 +64,21 @@ _emit_applies_guardrail("p0", "test_adg_node_types", "p0_governance")
 _emit_reads_policy_state("p0", "test_adg_node_types", "policy_binding")
 _emit_snapshots_state("p0", "test_adg_node_types", "state_snapshot")
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
+    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
-    _emit_links_incident_trace,
+    _emit_links_incident_trace,  # noqa: E402
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -79,29 +86,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
-    _emit_writes_through,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
     _emit_writes_through,  # noqa: E402
-    _emit_links_incident_trace,  # noqa: E402
 )
 
 _emit_emits_metric_event("test_adg_node_types", "p4obs", "metric_1")
@@ -283,7 +281,7 @@ class TestG8GatewayNodes:
         assert gw_entities[0].entity_type == "gateway"
 
     def test_gateway_node_has_resolved_path(self):
-        from agentic_core.adg.schema import GATEWAY_ALLOWLIST
+        from agentic_core.adg.schema_util import GATEWAY_ALLOWLIST
 
         edges = [
             _make_edge(
@@ -307,7 +305,7 @@ class TestG8GatewayNodes:
 
 class TestG9SeamEntityType:
     def test_seam_module_gets_seam_entity_type(self):
-        from agentic_core.adg.schema import SEAM_MODULE_PATTERNS
+        from agentic_core.adg.schema_util import SEAM_MODULE_PATTERNS
 
         if not SEAM_MODULE_PATTERNS:
             pytest.skip("No SEAM_MODULE_PATTERNS defined")
@@ -466,34 +464,34 @@ class TestG2PromptEntityTypes:
 
 class TestG11LayerPrefixes:
     def test_compat_dir_mapped(self):
-        from agentic_core.adg.schema import LAYER_PREFIXES
+        from agentic_core.adg.schema_util import LAYER_PREFIXES
 
         assert "agentic_core/_compat" in LAYER_PREFIXES, (
             "agentic_core/_compat must be in LAYER_PREFIXES (G11)"
         )
 
     def test_embeddings_dir_mapped(self):
-        from agentic_core.adg.schema import LAYER_PREFIXES
+        from agentic_core.adg.schema_util import LAYER_PREFIXES
 
         assert "agentic_core/embeddings" in LAYER_PREFIXES, (
             "agentic_core/embeddings must be in LAYER_PREFIXES (G11)"
         )
 
     def test_enforcement_dir_mapped(self):
-        from agentic_core.adg.schema import LAYER_PREFIXES
+        from agentic_core.adg.schema_util import LAYER_PREFIXES
 
         assert "agentic_core/enforcement" in LAYER_PREFIXES, (
             "agentic_core/enforcement must be in LAYER_PREFIXES (G11)"
         )
 
     def test_new_entries_map_to_l_shared(self):
-        from agentic_core.adg.schema import LAYER_PREFIXES
+        from agentic_core.adg.schema_util import LAYER_PREFIXES
 
         for key in ("agentic_core/_compat", "agentic_core/embeddings", "agentic_core/enforcement"):
             assert LAYER_PREFIXES.get(key) == "L_SHARED", f"{key} should map to L_SHARED in LAYER_PREFIXES"
 
     def test_module_path_to_layer_resolves_new_entries(self):
-        from agentic_core.adg.schema import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
 
         assert module_path_to_layer("agentic_core/_compat/some_module.py") == "L_SHARED"
         assert module_path_to_layer("agentic_core/embeddings/vertex.py") == "L_SHARED"
