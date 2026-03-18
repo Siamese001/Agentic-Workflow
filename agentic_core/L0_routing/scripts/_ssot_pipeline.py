@@ -617,7 +617,7 @@ def _emit_adg_pre_run_artifact(repo_root: "Path") -> None:
     }
     try:
         artifacts_dir.mkdir(parents=True, exist_ok=True)
-        from agentic_core.adg.applications.execute_ssot_integration import build_pre_run_report
+        from agentic_core.adg.applications.PreRunADGReport import build_pre_run_report
 
         report = build_pre_run_report(changed_files=[_THIS_FILE], repo_root=repo_root)
         payload["adg_available"] = report.adg_available
@@ -642,7 +642,7 @@ def _emit_adg_pre_run_artifact(repo_root: "Path") -> None:
             # Wire GuardianPrioritizer: rank guardians by ADG structural signals so
             # guardian_scope reflects evidence-based execution order, not a static list.
             try:
-                from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
+                from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
                 from agentic_core.adg.runtime.cache_loader import load_or_scan
 
                 _scan = load_or_scan(repo_root=str(repo_root))

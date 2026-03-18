@@ -277,7 +277,7 @@ class TestEmitADGPreRunArtifactGuardianPrioritizer:
     @pytest.mark.unit
     def test_guardian_scope_populated_when_adg_available(self) -> None:
         """When ADG is available and GuardianPrioritizer runs, guardian_scope is populated."""
-        from agentic_core.adg.applications.guardian_prioritizer import (
+        from agentic_core.adg.applications.guardian_prioritizer_types import (
             GuardianPriorityScore,
             PrioritizationResult,
         )
@@ -300,11 +300,11 @@ class TestEmitADGPreRunArtifactGuardianPrioritizer:
         try:
             with (
                 patch(
-                    "agentic_core.adg.applications.execute_ssot_integration.build_pre_run_report",
+                    "agentic_core.adg.applications.PreRunADGReport.build_pre_run_report",
                     return_value=self._make_mock_report(adg_available=True),
                 ),
                 patch(
-                    "agentic_core.adg.applications.guardian_prioritizer.GuardianPrioritizer",
+                    "agentic_core.adg.applications.guardian_prioritizer_types.GuardianPrioritizer",
                     return_value=mock_prioritizer,
                 ),
                 patch(
@@ -331,7 +331,7 @@ class TestEmitADGPreRunArtifactGuardianPrioritizer:
         tmp = Path(tempfile.mkdtemp())
         try:
             with patch(
-                "agentic_core.adg.applications.execute_ssot_integration.build_pre_run_report",
+                "agentic_core.adg.applications.PreRunADGReport.build_pre_run_report",
                 return_value=self._make_mock_report(adg_available=False),
             ):
                 _emit_adg_pre_run_artifact(tmp)
@@ -352,11 +352,11 @@ class TestEmitADGPreRunArtifactGuardianPrioritizer:
         try:
             with (
                 patch(
-                    "agentic_core.adg.applications.execute_ssot_integration.build_pre_run_report",
+                    "agentic_core.adg.applications.PreRunADGReport.build_pre_run_report",
                     return_value=self._make_mock_report(adg_available=True),
                 ),
                 patch(
-                    "agentic_core.adg.applications.guardian_prioritizer.GuardianPrioritizer",
+                    "agentic_core.adg.applications.guardian_prioritizer_types.GuardianPrioritizer",
                     side_effect=RuntimeError("ADG scan exploded"),
                 ),
                 patch(
@@ -382,7 +382,7 @@ class TestEmitADGPreRunArtifactGuardianPrioritizer:
         tmp = Path(tempfile.mkdtemp())
         try:
             with patch(
-                "agentic_core.adg.applications.execute_ssot_integration.build_pre_run_report",
+                "agentic_core.adg.applications.PreRunADGReport.build_pre_run_report",
                 side_effect=RuntimeError("ADG import failed"),
             ):
                 _emit_adg_pre_run_artifact(tmp)
@@ -452,8 +452,12 @@ class TestPhase4ADGSignalInjection:
         with (
             patch.object(_bi_mod, "ADGBehavioralIndex") as mock_idx_cls,
             patch(
-                "agentic_core.adg.applications.guardian_prioritizer.GuardianPrioritizer",
+                "agentic_core.adg.applications.guardian_prioritizer_types.GuardianPrioritizer",
                 return_value=mock_gp,
+            ),
+            patch(
+                "agentic_core.adg.runtime.cache_loader.load_or_scan",
+                return_value=_make_empty_scan_result(),
             ),
         ):
             mock_idx_cls.from_latest = MagicMock(return_value=mock_adg_idx)
@@ -501,8 +505,12 @@ class TestPhase4ADGSignalInjection:
         with (
             patch.object(_bi_mod, "ADGBehavioralIndex") as mock_idx_cls,
             patch(
-                "agentic_core.adg.applications.guardian_prioritizer.GuardianPrioritizer",
+                "agentic_core.adg.applications.guardian_prioritizer_types.GuardianPrioritizer",
                 return_value=mock_gp,
+            ),
+            patch(
+                "agentic_core.adg.runtime.cache_loader.load_or_scan",
+                return_value=_make_empty_scan_result(),
             ),
         ):
             mock_idx_cls.from_latest = MagicMock(return_value=mock_adg_idx)
@@ -1150,7 +1158,7 @@ class TestExecuteSSOTIntegrationSurface:
     def test_returns_unavailable_report_on_runtime_error(self) -> None:
         """build_pre_run_report must return unavailable report when ADG scan fails."""
         import agentic_core.adg.runtime.cache_loader as _cl_mod
-        from agentic_core.adg.applications.execute_ssot_integration import build_pre_run_report
+        from agentic_core.adg.applications.PreRunADGReport import build_pre_run_report
 
         tmp = Path(tempfile.mkdtemp())
         try:
@@ -1165,7 +1173,7 @@ class TestExecuteSSOTIntegrationSurface:
 
     @pytest.mark.unit
     def test_unavailable_classmethod_sets_changed_files(self) -> None:
-        from agentic_core.adg.applications.execute_ssot_integration import PreRunADGReport
+        from agentic_core.adg.applications.PreRunADGReport import PreRunADGReport
 
         report = PreRunADGReport.unavailable(["a.py", "b.py"], "test reason")
         assert report.adg_available is False
@@ -1175,7 +1183,7 @@ class TestExecuteSSOTIntegrationSurface:
 
     @pytest.mark.unit
     def test_pre_run_report_to_dict_has_summary_key(self) -> None:
-        from agentic_core.adg.applications.execute_ssot_integration import PreRunADGReport
+        from agentic_core.adg.applications.PreRunADGReport import PreRunADGReport
 
         report = PreRunADGReport.unavailable([], "no adg")
         d = report.to_dict()
@@ -1186,7 +1194,7 @@ class TestExecuteSSOTIntegrationSurface:
 
     @pytest.mark.unit
     def test_emit_pre_run_log_handles_unavailable_gracefully(self) -> None:
-        from agentic_core.adg.applications.execute_ssot_integration import (
+        from agentic_core.adg.applications.PreRunADGReport import (
             PreRunADGReport,
             emit_pre_run_log,
         )
@@ -1205,7 +1213,7 @@ class TestGuardianPrioritizerPipelineIntegration:
 
     @pytest.mark.unit
     def test_prioritize_with_canonical_roster_keys(self) -> None:
-        from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
+        from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
         from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
 
         scan = _make_empty_scan_result()
@@ -1216,7 +1224,7 @@ class TestGuardianPrioritizerPipelineIntegration:
 
     @pytest.mark.unit
     def test_cross_layer_violation_raises_hierarchy_compliance_priority(self) -> None:
-        from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
+        from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
         from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
 
         empty_scan = _make_empty_scan_result()
@@ -1232,7 +1240,7 @@ class TestGuardianPrioritizerPipelineIntegration:
 
     @pytest.mark.unit
     def test_ordered_output_is_list_of_strings_when_extracted(self) -> None:
-        from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
+        from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
         from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
 
         scan = _make_empty_scan_result()
@@ -1243,7 +1251,7 @@ class TestGuardianPrioritizerPipelineIntegration:
 
     @pytest.mark.unit
     def test_priority_digest_is_16_char_hex(self) -> None:
-        from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
+        from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
 
         scan = _make_empty_scan_result()
         prio = GuardianPrioritizer(scan).prioritize()

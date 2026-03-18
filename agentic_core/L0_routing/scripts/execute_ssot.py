@@ -3609,7 +3609,7 @@ def execute_phase4_validation_impl(agents, territory, state_mgr, ctx: "HealConte
     # governor has structural evidence beyond what its own static scan finds.
     _adg_arch_signals: dict = {}
     try:
-        from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
+        from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
         from agentic_core.adg.runtime.cache_loader import load_or_scan as _adg_load_or_scan
 
         _scan_result = _adg_load_or_scan(repo_root=str(REPO_ROOT))
