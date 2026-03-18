@@ -198,7 +198,7 @@ def needs_ssot_import(content: str) -> bool:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "needs_ssot_import")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "needs_ssot_import")
     has_layer_ref = bool(LAYER_PATTERN.search(content))
     has_ssot_import = bool(SSOT_IMPORT_PATTERN.search(content))
     return has_layer_ref and (not has_ssot_import)

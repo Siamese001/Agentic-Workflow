@@ -263,7 +263,7 @@ class GravityLeakDetector:
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_SAFETY, "GravityLeakDetector._recompute_ast_scores"
+            _trace_id, LayerSegment.L5_POLICY, "GravityLeakDetector._recompute_ast_scores"
         )
         initial_scores = {
             "app_rg": 0.0,

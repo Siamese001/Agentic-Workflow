@@ -209,7 +209,7 @@ def _read_bytes(path: str) -> bytes | None:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "_read_bytes")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "_read_bytes")
     # guardian: allow-path-string
     if not os.path.isfile(path):
         return None

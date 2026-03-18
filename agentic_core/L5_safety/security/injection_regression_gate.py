@@ -231,7 +231,7 @@ def evaluate_against_baseline(
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "evaluate_against_baseline")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "evaluate_against_baseline")
     if thresholds is None:
         thresholds = RegressionThresholds()
     current_metrics = InjectionMetrics(

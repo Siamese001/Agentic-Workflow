@@ -198,7 +198,7 @@ def has_h1_heading(file_path: Path) -> bool:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "has_h1_heading")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "has_h1_heading")
     try:
         with open(file_path, encoding="utf-8") as f:
             content = f.read()

@@ -207,7 +207,7 @@ def run_hierarchy_dry_run(project_root: Path) -> dict:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "run_hierarchy_dry_run")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "run_hierarchy_dry_run")
     from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
     agent = HierarchyAgent(project_root, healing_enabled=False)

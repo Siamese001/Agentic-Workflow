@@ -202,7 +202,7 @@ def calculate_relative_import(file_path: Path, import_path: str, project_root: P
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "calculate_relative_import")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "calculate_relative_import")
     file_dir: Any = file_path.parent
     try:
         rel_to_core: Any = file_dir.relative_to(project_root)

@@ -224,7 +224,7 @@ class health_metrics:
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "health_metrics.to_dict")
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "health_metrics.to_dict")
         return {
             "agent_id": self.agent_id,
             "success_rate": self.success_rate,

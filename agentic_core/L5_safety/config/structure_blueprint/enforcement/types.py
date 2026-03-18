@@ -231,7 +231,7 @@ def make_result(
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "make_result")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "make_result")
     has_errors = any(v["severity"] == "error" for v in violations)
     return EnforcementResult(
         name=name,

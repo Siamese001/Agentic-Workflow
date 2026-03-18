@@ -194,7 +194,7 @@ def main():
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "main")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "main")
     print("=" * 70)
     print("Setting Complexity Health to 100% for all territories")
     print("=" * 70)

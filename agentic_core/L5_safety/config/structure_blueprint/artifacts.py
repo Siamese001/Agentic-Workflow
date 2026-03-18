@@ -278,7 +278,7 @@ def get_correct_app_folder(filename: str) -> str | None:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "get_correct_app_folder")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "get_correct_app_folder")
     for prefix, folder in APP_SPECIFIC_PREFIXES.items():
         if filename.startswith(prefix):
             return folder

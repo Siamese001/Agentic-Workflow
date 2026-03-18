@@ -207,7 +207,7 @@ def run_ci_verification(project_root: Path, auto_approve: bool = True) -> dict:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "run_ci_verification")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "run_ci_verification")
     from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
 
     agent = ArchitectureGovernorAgent(project_root=project_root, auto_approve=auto_approve)

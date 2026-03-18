@@ -215,7 +215,7 @@ def check_gemini_embedder(guardian):
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "check_gemini_embedder")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "check_gemini_embedder")
     print("\n" + "=" * 80)
     print("1. GEMINI EMBEDDER VERIFICATION")
     print("=" * 80)

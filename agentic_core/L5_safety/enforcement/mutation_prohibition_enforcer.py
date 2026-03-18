@@ -225,7 +225,7 @@ def assert_no_persistent_write(
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "assert_no_persistent_write")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "assert_no_persistent_write")
     if layer not in FORBIDDEN_WRITE_LAYERS:
         return
     if _is_override_active():

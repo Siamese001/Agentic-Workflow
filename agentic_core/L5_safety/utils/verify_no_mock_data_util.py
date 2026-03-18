@@ -205,7 +205,7 @@ def verify_no_mock_data():
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "verify_no_mock_data")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "verify_no_mock_data")
     print("=" * 70)
     print("MOCK DATA ELIMINATION VERIFICATION")
     print("=" * 70)

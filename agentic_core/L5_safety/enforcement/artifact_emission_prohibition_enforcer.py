@@ -213,7 +213,7 @@ def assert_layer_may_emit(artifact_kind: str, layer: str, trace_id: str | None =
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "assert_layer_may_emit")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "assert_layer_may_emit")
     if layer not in FORBIDDEN_EMISSION_LAYERS:
         return
     if artifact_kind not in FORBIDDEN_ARTIFACT_KINDS:

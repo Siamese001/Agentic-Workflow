@@ -212,7 +212,7 @@ def _is_shell_injection_risk(arg: str) -> bool:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "_is_shell_injection_risk")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "_is_shell_injection_risk")
     if arg.startswith("import ") or "import " in arg[:50]:
         return False
     if "|" in arg and "||" not in arg:

@@ -231,7 +231,7 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "is_path_compliant")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "is_path_compliant")
     from agentic_core.L5_safety.config.structure_blueprint import (
         DEPTH_RULES,
         PROJECT_ROOT_WHITELIST,

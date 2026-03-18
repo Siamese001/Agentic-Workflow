@@ -205,7 +205,7 @@ def heal_invalidate_cache(pattern: str = ""):
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "heal_invalidate_cache")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "heal_invalidate_cache")
 
     def decorator(func: Callable):
         @functools.wraps(func)

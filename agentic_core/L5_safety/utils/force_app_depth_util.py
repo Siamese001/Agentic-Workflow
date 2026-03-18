@@ -201,7 +201,7 @@ def force_app_depth() -> Any:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "force_app_depth")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "force_app_depth")
     print("[*] FORCING DEPTH-4 ON TERRITORIES...")
     for app_path in APPS:
         if not app_path.exists():

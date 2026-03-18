@@ -232,7 +232,7 @@ def assert_activation_allowed(trace_id: str | None = None) -> None:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "assert_activation_allowed")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "assert_activation_allowed")
     missing: list[str] = []
     for module_path, symbol_name, short_key in _REQUIRED_COMPONENTS:
         try:

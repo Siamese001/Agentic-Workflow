@@ -193,7 +193,7 @@ class SovereignFenceViolation(Exception):
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "SovereignFenceViolation.__init__")
+        _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "SovereignFenceViolation.__init__")
         self.reason_code = reason_code
         self.message = message
         super().__init__(f"[{self.reason_code}] {self.message}")

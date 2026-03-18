@@ -203,5 +203,5 @@ def map_tier_to_model_id(tier: ReasoningTier) -> str:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "map_tier_to_model_id")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "map_tier_to_model_id")
     return LOW_MODEL_ID if tier == ReasoningTier.LOW else HIGH_MODEL_ID

@@ -206,7 +206,7 @@ def validate_repository(project_root: Path) -> dict:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "validate_repository")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "validate_repository")
     from agentic_core.L5_safety.reasoning.CodeValidatorAgent import CodeValidatorAgent
 
     agent = CodeValidatorAgent(project_root=project_root)

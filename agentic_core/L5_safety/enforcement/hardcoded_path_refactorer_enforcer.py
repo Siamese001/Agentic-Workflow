@@ -277,7 +277,7 @@ def should_exclude_path(path: Path) -> bool:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "should_exclude_path")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "should_exclude_path")
     parts_lower = {p.lower() for p in path.parts}
     if parts_lower & {d.lower() for d in EXCLUDED_DIRS}:
         return True

@@ -205,7 +205,7 @@ def _get_ObservabilityProbeExecutorAgent():
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "_get_ObservabilityProbeExecutorAgent")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "_get_ObservabilityProbeExecutorAgent")
     from agentic_core.L6_observability.reasoning.observability_probe_executor import (
         ObservabilityProbeExecutorAgent,
     )

@@ -205,7 +205,7 @@ def generate_structure_manifest() -> dict[str, Any]:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "generate_structure_manifest")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "generate_structure_manifest")
     manifest = {"directories": [], "python_files": []}
     for path in sorted(PROJECT_ROOT.rglob("*")):
         if path.is_dir():

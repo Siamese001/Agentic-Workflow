@@ -208,7 +208,7 @@ def get_ddd_violations_detailed(root_path: str) -> list[dict]:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "get_ddd_violations_detailed")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "get_ddd_violations_detailed")
     violations: list[dict] = []
     root = Path(root_path)
     if not root.exists():

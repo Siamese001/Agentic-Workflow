@@ -200,7 +200,7 @@ def normalize_location_path(path: str) -> str:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "normalize_location_path")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "normalize_location_path")
     # guardian: allow-path-string
     return os.path.normpath(path).replace("\\", "/")
 

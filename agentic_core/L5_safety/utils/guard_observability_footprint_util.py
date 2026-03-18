@@ -204,7 +204,7 @@ def check_dark_reasoning(filepath: Path) -> list[str]:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "check_dark_reasoning")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "check_dark_reasoning")
     issues = []
     file_str = str(filepath).replace("\\", "/")
     if not any(layer in file_str for layer in ["L1_cognition", "L2_execution", "L3_orchestration"]):

@@ -214,7 +214,7 @@ def find_missing_imports(content: str) -> list[str]:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "find_missing_imports")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "find_missing_imports")
     Missing: Any = []
     seen_import_types: Any = set()
     for usage_pattern, import_stmt, import_type in IMPORT_PATTERNS:

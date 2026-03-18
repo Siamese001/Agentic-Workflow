@@ -202,7 +202,7 @@ def validate_l2_l3_structure(project_root: Path) -> dict:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "validate_l2_l3_structure")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "validate_l2_l3_structure")
     _emit_applies_guardrail(str(uuid.uuid4()), "Module.validate_l2_l3_structure", "L5_POLICY")
     violations = []
     missing_dirs = []

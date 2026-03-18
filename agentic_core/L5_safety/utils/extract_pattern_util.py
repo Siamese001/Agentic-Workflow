@@ -193,7 +193,7 @@ def extract_class_with_context(content: str, class_name: str) -> tuple[str, int,
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "extract_class_with_context")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "extract_class_with_context")
     lines = content.split("\n")
     tree = ast.parse(content)
     for node in ast.walk(tree):

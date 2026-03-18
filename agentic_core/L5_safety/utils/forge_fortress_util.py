@@ -218,7 +218,7 @@ def forge_fortress() -> Any:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "forge_fortress")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "forge_fortress")
     logging.info("FORTRESS FORGE: Initializing System Reconstruction...")
     for layer, stages in CORE_MAP.items():
         layer_path: Any = CORE / layer

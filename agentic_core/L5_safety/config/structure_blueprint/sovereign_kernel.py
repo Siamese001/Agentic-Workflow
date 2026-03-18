@@ -244,7 +244,7 @@ def is_kernel_component(module_path: str) -> bool:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "is_kernel_component")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "is_kernel_component")
     normalized = module_path.replace("/", ".").replace("\\", ".")
     for kernel_path in SOVEREIGN_KERNEL_COMPONENTS:
         if normalized == kernel_path or normalized.startswith(kernel_path + "."):

@@ -250,7 +250,7 @@ class MetaLearningProtocol(ABC):
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(
-            _trace_id, LayerSegment.L5_SAFETY, "MetaLearningProtocol.recall_or_execute"
+            _trace_id, LayerSegment.L5_POLICY, "MetaLearningProtocol.recall_or_execute"
         )
         pass
 

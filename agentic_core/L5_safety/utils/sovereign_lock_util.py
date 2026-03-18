@@ -196,7 +196,7 @@ def enforce_gravity() -> Any:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "enforce_gravity")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "enforce_gravity")
     print("[*] ENFORCING GRAVITY...")
     violations: Any = 0
     forbidden: Any = [APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR]

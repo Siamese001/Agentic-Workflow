@@ -199,7 +199,7 @@ def sanitize_filename(filename: str) -> str:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "sanitize_filename")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "sanitize_filename")
     invalid_chars: Any = '<>:"/\\|?*'
     for char in invalid_chars:
         filename: Any = filename.replace(char, "_")

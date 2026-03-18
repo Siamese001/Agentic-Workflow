@@ -194,7 +194,7 @@ def load_inherited_agents() -> list[dict]:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "load_inherited_agents")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "load_inherited_agents")
     with open(DISCOVERY_JSON, encoding="utf-8") as f:
         agents = json.load(f)
     return [a for a in agents if a.get("invocation") == "Inherited"]

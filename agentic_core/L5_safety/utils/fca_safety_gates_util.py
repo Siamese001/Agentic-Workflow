@@ -258,7 +258,7 @@ def check_rename_collisions(
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "check_rename_collisions")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "check_rename_collisions")
     collisions: list[dict[str, Any]] = []
 
     def _norm(p: str) -> str:

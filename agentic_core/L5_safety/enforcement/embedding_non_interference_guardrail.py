@@ -253,7 +253,7 @@ def assert_c0_context_clean(c0_context: dict[str, Any]) -> None:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "assert_c0_context_clean")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "assert_c0_context_clean")
     violations = [
         f"forbidden field {field!r} present in c0_context"
         for field in _C0_FORBIDDEN_FIELDS

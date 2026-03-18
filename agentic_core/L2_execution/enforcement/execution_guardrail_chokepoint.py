@@ -64,7 +64,6 @@ from agentic_core.L2_execution.enforcement.execution_proof_contract import (
     emit_execution_proof,
 )
 from agentic_core.L2_execution.observability.observability_recorder import (
-    ExecutionContext,
     ExecutionObservabilityContext,
     ExecutionStatus,
     FailureClassification,

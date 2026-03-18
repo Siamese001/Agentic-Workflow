@@ -216,7 +216,7 @@ def initialize() -> dict[str, Any]:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "initialize")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "initialize")
     global _REGISTERED
     if _REGISTERED:
         return {"status": "already_initialized", "validators": [], "strategies": []}

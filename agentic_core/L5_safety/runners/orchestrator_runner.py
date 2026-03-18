@@ -205,7 +205,7 @@ def run_orchestrator_mission(project_root: Path, targets: list[str], execute: bo
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "run_orchestrator_mission")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "run_orchestrator_mission")
     try:
         from agentic_core.L3_orchestration.ConsolidatedOrchestratorAgent import get_consolidated_orchestrator
 

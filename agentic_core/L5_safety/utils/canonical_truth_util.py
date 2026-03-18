@@ -224,7 +224,7 @@ def calculate_health_score(
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "calculate_health_score")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "calculate_health_score")
     if not violations:
         return 100.0
     default_weights = {"critical": 10.0, "high": 5.0, "medium": 2.0, "low": 1.0}

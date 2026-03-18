@@ -245,7 +245,7 @@ def _assert_frozen(obj: object, path: str = "root") -> str | None:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "_assert_frozen")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "_assert_frozen")
     if isinstance(obj, dict):
         return f"{path}: dict (mutable)"
     if isinstance(obj, list):

@@ -191,7 +191,7 @@ def _get_sovereign_domain():
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "_get_sovereign_domain")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "_get_sovereign_domain")
     import importlib
 
     module = importlib.import_module("agentic_core.L1_cognition.P2_domain.sovereign")

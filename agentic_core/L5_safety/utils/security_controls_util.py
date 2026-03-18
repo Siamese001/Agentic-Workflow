@@ -208,7 +208,7 @@ def get_module_info() -> dict[str, str | list[str]]:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "get_module_info")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "get_module_info")
     return {
         "name": "Security Controls",
         "version": __version__,

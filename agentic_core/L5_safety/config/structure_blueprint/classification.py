@@ -536,7 +536,7 @@ def get_compound_suffix_patterns_compiled() -> list[tuple[Pattern, str, str, str
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "get_compound_suffix_patterns_compiled")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "get_compound_suffix_patterns_compiled")
     return [
         (re.compile(pattern), tag_a, tag_b, example)
         for pattern, tag_a, tag_b, example in COMPOUND_SUFFIX_CONFLICTS

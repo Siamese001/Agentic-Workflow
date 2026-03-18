@@ -189,7 +189,7 @@ def is_forbidden_artifact_name(file_path: Path) -> bool:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "is_forbidden_artifact_name")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "is_forbidden_artifact_name")
     forbidden_patterns = [".secrets.baseline", "forensic_discovery_output.json"]
     return any(pattern in str(file_path) for pattern in forbidden_patterns)
 

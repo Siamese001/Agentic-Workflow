@@ -201,7 +201,7 @@ def _guarded_reload(module: ModuleType) -> ModuleType:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "_guarded_reload")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "_guarded_reload")
     name = getattr(module, "__name__", "") or ""
     if any(name.startswith(p) for p in _CORE_PREFIXES):
         raise ImportError(f"REQ-417: importlib.reload of core module forbidden: {name}")

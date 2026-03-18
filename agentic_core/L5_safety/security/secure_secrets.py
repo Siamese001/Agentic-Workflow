@@ -198,7 +198,7 @@ def _ensure_key() -> bytes:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "_ensure_key")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "_ensure_key")
     if KEY_FILE.exists():
         return KEY_FILE.read_bytes()
     key = Fernet.generate_key()

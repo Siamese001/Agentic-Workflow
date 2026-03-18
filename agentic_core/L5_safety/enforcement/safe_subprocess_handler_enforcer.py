@@ -242,7 +242,7 @@ def safe_run(
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "safe_run")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "safe_run")
     guard = ProcessGuard.get_instance()
     guard.validate_command(command)
     logger.debug(f"safe_run: Executing command: {command}")
