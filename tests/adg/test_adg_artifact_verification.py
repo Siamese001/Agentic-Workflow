@@ -30,59 +30,66 @@ from pathlib import Path
 import pytest
 
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_records_execution_trace,  # noqa: E402
     _emit_records_healing_outcome,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_escalates_to_human,
-    _emit_routes_through,
 )
 
 _emit_records_execution_trace("p0", "evidence", "test_adg_artifact_verification")
 _emit_applies_guardrail("p0", "test_adg_artifact_verification", "p0_governance")
 _emit_snapshots_state("p0", "test_adg_artifact_verification", "state_snapshot")
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
+    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
-    _emit_links_incident_trace,
+    _emit_links_incident_trace,  # noqa: E402
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -90,29 +97,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
-    _emit_writes_through,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
     _emit_writes_through,  # noqa: E402
-    _emit_links_incident_trace,  # noqa: E402
 )
 
 _emit_emits_metric_event("test_adg_artifact_verification", "p4obs", "metric_1")
@@ -334,7 +332,7 @@ class TestRoundTripFidelity:
 
     @pytest.fixture(scope="class")
     def live_artifact(self):
-        from agentic_core.adg.artifact.builder import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
         from agentic_core.adg.runtime.cache_loader import load_or_scan
 
         result = load_or_scan(repo_root=str(ROOT))
@@ -342,13 +340,13 @@ class TestRoundTripFidelity:
 
     @pytest.fixture(scope="class")
     def normalized(self, live_artifact):
-        from agentic_core.adg.artifact.normalizer import ArtifactNormalizer
+        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
 
         return ArtifactNormalizer().normalize(live_artifact)
 
     @pytest.fixture(scope="class")
     def restored(self, live_artifact, normalized):
-        from agentic_core.adg.artifact.normalizer import ArtifactNormalizer
+        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
 
         return ArtifactNormalizer().denormalize(normalized)
 
@@ -385,7 +383,7 @@ class TestRoundTripFidelity:
         assert not missing, f"{len(missing)} relation triples lost in round-trip: {list(missing)[:3]}"
 
     def test_normalized_digest_is_deterministic(self, live_artifact):
-        from agentic_core.adg.artifact.normalizer import ArtifactNormalizer
+        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
 
         normalizer = ArtifactNormalizer()
         ng1 = normalizer.normalize(live_artifact)
@@ -405,7 +403,7 @@ class TestRoundTripFidelity:
                     assert "ADG::Module::" not in v, f"Unnormalized name in edge: {edge}"
 
     def test_size_reduction_at_least_30_pct(self, live_artifact, normalized):
-        from agentic_core.adg.artifact.normalizer import size_comparison
+        from agentic_core.adg.artifact.normalizer_config import size_comparison
 
         sc = size_comparison(live_artifact, normalized)
         assert sc["reduction_pct"] >= 30, (
@@ -414,7 +412,7 @@ class TestRoundTripFidelity:
         )
 
     def test_written_file_is_loadable(self, normalized, tmp_path):
-        from agentic_core.adg.artifact.normalizer import NormalizedGraph
+        from agentic_core.adg.artifact.normalizer_config import NormalizedGraph
 
         p = normalized.write(tmp_path / "ng.json")
         loaded = NormalizedGraph.load(p)
@@ -547,13 +545,13 @@ class TestSplitPlaneIsolation:
         """file_graph may include module→module 'covers' edges (by design).
         Verify all covers edges in file_graph have module nodes on both sides.
         """
-        from agentic_core.adg.artifact.layer_splitter import _FILE_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS
 
         assert "covers" in _FILE_GRAPH_RELS  # design: file_graph includes covers
 
     def test_file_graph_has_no_violates(self, rel_types):
         """violates is a governance-plane edge and must not appear in file_graph."""
-        from agentic_core.adg.artifact.layer_splitter import _FILE_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS
 
         assert "violates" not in _FILE_GRAPH_RELS
 
@@ -567,7 +565,7 @@ class TestSplitPlaneIsolation:
         assert "imports" not in rel_types["symbol"], "symbol_graph must not contain 'imports' edges"
 
     def test_symbol_graph_has_no_covers(self):
-        from agentic_core.adg.artifact.layer_splitter import _SYMBOL_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _SYMBOL_GRAPH_RELS
 
         assert "covers" not in _SYMBOL_GRAPH_RELS
 
@@ -582,7 +580,7 @@ class TestSplitPlaneIsolation:
         assert "imports" not in rel_types["governance"], "governance_graph must not contain 'imports' edges"
 
     def test_governance_graph_has_no_covers(self):
-        from agentic_core.adg.artifact.layer_splitter import _GOVERNANCE_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _GOVERNANCE_GRAPH_RELS
 
         assert "covers" not in _GOVERNANCE_GRAPH_RELS
 
@@ -632,7 +630,7 @@ class TestSplitPlaneIsolation:
 
     def test_no_cross_contamination_between_any_pair(self):
         """Zero edge-type overlap between any two planes (strict non-redundancy)."""
-        from agentic_core.adg.artifact.layer_splitter import (
+        from agentic_core.adg.artifact.SplitArtifact import (
             _FILE_GRAPH_RELS,
             _GOVERNANCE_GRAPH_RELS,
             _SYMBOL_GRAPH_RELS,
@@ -666,7 +664,7 @@ class TestIncrementalScanAccuracy:
     """Test 5 — affected module propagation logic (pure unit + integration)."""
 
     def test_direct_change_is_in_affected_set(self):
-        from agentic_core.adg.artifact.normalizer import NormalizedGraph
+        from agentic_core.adg.artifact.normalizer_config import NormalizedGraph
         from agentic_core.adg.extraction.incremental import compute_affected_modules
 
         ng = NormalizedGraph(
@@ -680,7 +678,7 @@ class TestIncrementalScanAccuracy:
         assert "ADG::Module::x.py" in affected
 
     def test_importer_is_in_affected_set(self):
-        from agentic_core.adg.artifact.normalizer import NormalizedGraph
+        from agentic_core.adg.artifact.normalizer_config import NormalizedGraph
         from agentic_core.adg.extraction.incremental import compute_affected_modules
 
         ng = NormalizedGraph(
@@ -701,7 +699,7 @@ class TestIncrementalScanAccuracy:
         assert "ADG::Module::consumer.py" in affected
 
     def test_transitive_depth_2(self):
-        from agentic_core.adg.artifact.normalizer import NormalizedGraph
+        from agentic_core.adg.artifact.normalizer_config import NormalizedGraph
         from agentic_core.adg.extraction.incremental import compute_affected_modules
 
         ng = NormalizedGraph(
@@ -721,7 +719,7 @@ class TestIncrementalScanAccuracy:
         assert "ADG::Module::c.py" in affected
 
     def test_depth_1_does_not_reach_grandparent(self):
-        from agentic_core.adg.artifact.normalizer import NormalizedGraph
+        from agentic_core.adg.artifact.normalizer_config import NormalizedGraph
         from agentic_core.adg.extraction.incremental import compute_affected_modules
 
         ng = NormalizedGraph(
@@ -740,7 +738,7 @@ class TestIncrementalScanAccuracy:
 
     def test_non_import_edges_do_not_propagate(self):
         """calls/writes_to edges must not propagate the affected set."""
-        from agentic_core.adg.artifact.normalizer import NormalizedGraph
+        from agentic_core.adg.artifact.normalizer_config import NormalizedGraph
         from agentic_core.adg.extraction.incremental import compute_affected_modules
 
         ng = NormalizedGraph(
@@ -897,7 +895,7 @@ class TestBackwardCompatibility:
         return load_or_scan(repo_root=str(ROOT))
 
     def test_runtime_graph_produces_report(self, scan_result):
-        from agentic_core.adg.applications.runtime_graph import build_runtime_graph
+        from agentic_core.adg.applications.runtime_graph_types import build_runtime_graph
 
         report = build_runtime_graph(scan_result)
         assert hasattr(report, "summary")
@@ -906,7 +904,7 @@ class TestBackwardCompatibility:
         assert "agent_action_count" in d or "action_count" in d or len(d) > 0
 
     def test_layer_authority_produces_report(self, scan_result):
-        from agentic_core.adg.analysis.layer_authority import detect_layer_authority_violations
+        from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
 
         report = detect_layer_authority_violations(scan_result)
         assert hasattr(report, "violation_count")
@@ -914,14 +912,14 @@ class TestBackwardCompatibility:
         assert isinstance(report.violation_count, int)
 
     def test_mutation_paths_produces_report(self, scan_result):
-        from agentic_core.adg.analysis.mutation_authority import verify_mutation_paths
+        from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
 
         report = verify_mutation_paths(scan_result)
         assert hasattr(report, "summary")
         assert hasattr(report, "critical_violations")
 
     def test_state_lineage_produces_report(self, scan_result):
-        from agentic_core.adg.applications.state_lineage import (
+        from agentic_core.adg.applications.state_lineage_types import (
             LineageIndex,
             build_lineage_index,
         )
@@ -940,7 +938,7 @@ class TestBackwardCompatibility:
         assert isinstance(report.violation_count, int)
 
     def test_architecture_verifier_produces_report(self, scan_result):
-        from agentic_core.adg.applications.architecture_verifier import (
+        from agentic_core.adg.applications.architecture_verifier_validator import (
             ArchitectureVerificationReport,
             verify_architecture,
         )
@@ -957,8 +955,8 @@ class TestBackwardCompatibility:
             pytest.skip("No scan cache present")
         mtime_before = cache_path.stat().st_mtime
 
-        from agentic_core.adg.artifact.builder import build_artifact
-        from agentic_core.adg.artifact.multi_writer import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.builder_types import build_artifact
         from agentic_core.adg.runtime.cache_loader import load_or_scan
 
         result = load_or_scan(repo_root=str(ROOT))
@@ -1048,8 +1046,8 @@ class TestSizeAndPerformance:
         assert elapsed_ms < 200, f"SQLite query too slow: {elapsed_ms:.0f} ms (expected < 200 ms)"
 
     def test_size_comparison_utility_reports_positive_reduction(self):
-        from agentic_core.adg.artifact.builder import build_artifact
-        from agentic_core.adg.artifact.normalizer import ArtifactNormalizer, size_comparison
+        from agentic_core.adg.artifact.builder_types import build_artifact
+        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer, size_comparison
         from agentic_core.adg.runtime.cache_loader import load_or_scan
 
         result = load_or_scan(repo_root=str(ROOT))

@@ -4,6 +4,7 @@ fan_in=7 — imported by 7 other modules.
 ADG import-hygiene is covered separately by test_mcp_client_adg.py.
 This file covers behavioral invariants and public API contracts.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -11,7 +12,7 @@ import pytest
 pytestmark = pytest.mark.unit
 
 try:
-    from agentic_core.adg.client.mcp_client import (  # noqa: F401
+    from agentic_core.adg.client.InMemoryStore import (  # noqa: F401
         BATCH_SIZE,
         BUFFER_SIZE,
         DEFAULT_SLEEP,
@@ -20,6 +21,7 @@ try:
         THRESHOLD,
         ADGMCPClient,
     )
+
     _AVAILABLE = True
 except ImportError:
     _AVAILABLE = False
@@ -38,20 +40,21 @@ class TestADGMCPClientContract:
         assert isinstance(ADGMCPClient, type)
 
     def test_has_method_upsert_entity(self):
-        assert callable(getattr(ADGMCPClient, 'upsert_entity', None))
+        assert callable(getattr(ADGMCPClient, "upsert_entity", None))
 
     def test_has_method_upsert_relation(self):
-        assert callable(getattr(ADGMCPClient, 'upsert_relation', None))
+        assert callable(getattr(ADGMCPClient, "upsert_relation", None))
 
     def test_has_method_add_observation(self):
-        assert callable(getattr(ADGMCPClient, 'add_observation', None))
+        assert callable(getattr(ADGMCPClient, "add_observation", None))
 
     def test_has_method_search_nodes(self):
-        assert callable(getattr(ADGMCPClient, 'search_nodes', None))
+        assert callable(getattr(ADGMCPClient, "search_nodes", None))
 
     def test_public_api_surface_non_empty(self):
-        pub = [m for m in dir(ADGMCPClient) if not m.startswith('_')]
+        pub = [m for m in dir(ADGMCPClient) if not m.startswith("_")]
         assert len(pub) >= 1
+
 
 @pytest.mark.skipif(not _AVAILABLE, reason="mcp_client.py deps unavailable")
 class TestMaxRetriesConstant:
@@ -61,6 +64,7 @@ class TestMaxRetriesConstant:
     def test_value_is_truthy_or_defined(self):
         assert MAX_RETRIES is not None
 
+
 @pytest.mark.skipif(not _AVAILABLE, reason="mcp_client.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
@@ -68,6 +72,7 @@ class TestDefaultSleepConstant:
 
     def test_value_is_truthy_or_defined(self):
         assert DEFAULT_SLEEP is not None
+
 
 @pytest.mark.skipif(not _AVAILABLE, reason="mcp_client.py deps unavailable")
 class TestThresholdConstant:
@@ -77,6 +82,7 @@ class TestThresholdConstant:
     def test_value_is_truthy_or_defined(self):
         assert THRESHOLD is not None
 
+
 @pytest.mark.skipif(not _AVAILABLE, reason="mcp_client.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
@@ -85,6 +91,7 @@ class TestBufferSizeConstant:
     def test_value_is_truthy_or_defined(self):
         assert BUFFER_SIZE is not None
 
+
 @pytest.mark.skipif(not _AVAILABLE, reason="mcp_client.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
@@ -92,6 +99,7 @@ class TestBatchSizeConstant:
 
     def test_value_is_truthy_or_defined(self):
         assert BATCH_SIZE is not None
+
 
 @pytest.mark.skipif(not _AVAILABLE, reason="mcp_client.py deps unavailable")
 class TestMaxDepthConstant:

@@ -22,11 +22,9 @@ and adds zero overhead.
 from __future__ import annotations
 
 import os
-import sys
 import pathlib
+import sys
 from typing import TYPE_CHECKING
-
-import pytest
 
 if TYPE_CHECKING:
     pass
@@ -40,7 +38,6 @@ def _build_adg_index():
         if str(_ROOT) not in sys.path:
             sys.path.insert(0, str(_ROOT))
         from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
-        from agentic_core.adg.analysis.hotspot_index import HotspotIndex
         from tools.adg_test_accelerator import ADGIndex
 
         scanner = ADGStaticScanner(include_tests=True)
@@ -103,7 +100,7 @@ def pytest_collection_modifyitems(config, items):
         config.hook.pytest_deselected(items=deselected)
         items[:] = selected
         print(
-            f"[ADG_SCOPE] Selected {len(selected)}/{len(selected)+len(deselected)} tests "
+            f"[ADG_SCOPE] Selected {len(selected)}/{len(selected) + len(deselected)} tests "
             f"covering {len(changed)} changed file(s).",
             file=sys.stderr,
         )
@@ -131,11 +128,11 @@ def pytest_sessionstart(session):
     from collections import defaultdict
 
     all_test_files = sorted(
-        set(
+        {
             e.source_file.replace("\\", "/")
             for e in idx.result.edges
             if "tests/" in e.source_file.replace("\\", "/")
-        )
+        }
     )
 
     by_layer: dict[str, list[str]] = defaultdict(list)
@@ -149,10 +146,10 @@ def pytest_sessionstart(session):
         workers[target].extend(by_layer[layer])
         sizes[target] += len(by_layer[layer])
 
-    print(f"[ADG_GROUPS] Layer distribution:", file=sys.stderr)
+    print("[ADG_GROUPS] Layer distribution:", file=sys.stderr)
     for layer, files in sorted(by_layer.items(), key=lambda kv: -len(kv[1])):
         print(f"  {layer:<12} {len(files):4d} files", file=sys.stderr)
 
-    print(f"\n[ADG_GROUPS] Worker assignments:", file=sys.stderr)
+    print("\n[ADG_GROUPS] Worker assignments:", file=sys.stderr)
     for i, group in enumerate(workers):
         print(f"  worker_{i}: {len(group)} files", file=sys.stderr)

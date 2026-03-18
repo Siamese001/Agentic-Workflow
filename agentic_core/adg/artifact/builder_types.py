@@ -10,7 +10,7 @@ ADGArtifact with:
   - artifact_digest: deterministic SHA256 of the whole artifact
 
 No classification or territory logic is duplicated here — all layer queries
-delegate to ``module_path_to_layer`` from ``agentic_core.adg.schema``.
+delegate to ``module_path_to_layer`` from ``agentic_core.adg.schema_util``.
 """
 
 from __future__ import annotations
@@ -355,7 +355,9 @@ class ADGArtifact:
         same digest regardless of which commit triggered the scan.
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ADGBuilder.compute_digest")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "ADGBuilder.compute_digest"
+        )
         payload = {
             "schema_version": self.schema_version,
             "entities": sorted([e.to_dict() for e in self.entities], key=lambda x: x["adg_name"]),

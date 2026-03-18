@@ -10,6 +10,7 @@ The test verifies that after the full ingest pipeline, the SQLite database
 contains meaningful entity/observation/relation counts — the definitive proof
 that no stage in the chain silently swallowed the data.
 """
+
 from __future__ import annotations
 
 import sqlite3
@@ -18,17 +19,24 @@ from dataclasses import dataclass, field
 import pytest
 
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,  # noqa: E402
@@ -36,28 +44,21 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_escalates_to_human,
-    _emit_routes_through,
 )
 
 _emit_records_execution_trace("p0", "evidence", "test_memory_persistence_e2e")
@@ -65,14 +66,21 @@ _emit_applies_guardrail("p0", "test_memory_persistence_e2e", "p0_governance")
 _emit_reads_policy_state("p0", "test_memory_persistence_e2e", "policy_binding")
 _emit_snapshots_state("p0", "test_memory_persistence_e2e", "state_snapshot")
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
+    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
-    _emit_links_incident_trace,
+    _emit_links_incident_trace,  # noqa: E402
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -80,29 +88,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
-    _emit_writes_through,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
     _emit_writes_through,  # noqa: E402
-    _emit_links_incident_trace,  # noqa: E402
 )
 
 _emit_emits_metric_event("test_memory_persistence_e2e", "p4obs", "metric_1")
@@ -186,6 +185,7 @@ pytestmark = pytest.mark.integration
 # Shared mock types (mirror the real ScanResult interface)
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class _MockEdge:
     from_name: str
@@ -206,12 +206,16 @@ class _MockScanResult:
 
 def _make_scan_result(n_modules: int = 10, n_edges: int = 5) -> _MockScanResult:
     """Build a realistic mock ScanResult with N modules and E edges."""
-    layers = ["L0_routing", "L1_cognition", "L2_execution", "L3_orchestration",
-              "L4_state", "L5_safety", "L6_observability"]
-    modules = [
-        f"agentic_core/{layers[i % len(layers)]}/module_{i}.py"
-        for i in range(n_modules)
+    layers = [
+        "L0_routing",
+        "L1_cognition",
+        "L2_execution",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability",
     ]
+    modules = [f"agentic_core/{layers[i % len(layers)]}/module_{i}.py" for i in range(n_modules)]
     edges = [
         _MockEdge(
             from_name=modules[i % n_modules],
@@ -226,6 +230,7 @@ def _make_scan_result(n_modules: int = 10, n_edges: int = 5) -> _MockScanResult:
 # Fixture: isolated bridge + adapter pointing at a temp db
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture()
 def memory_env(tmp_path, monkeypatch):
     """Provide (adapter, db_path) with a fresh temp SQLite store."""
@@ -235,7 +240,8 @@ def memory_env(tmp_path, monkeypatch):
     monkeypatch.setenv("MEMORY_DB", str(db))
     GraphMemoryBridge.reset_instance()
 
-    from agentic_core.adg.adapters.memory_mcp_adapter import ADGMemoryAdapter
+    from agentic_core.adg.adapters.ADGMemoryAdapter import ADGMemoryAdapter
+
     adapter = ADGMemoryAdapter()
 
     yield adapter, db
@@ -256,6 +262,7 @@ def _counts(db):
 # Tests
 # ---------------------------------------------------------------------------
 
+
 class TestFullPersistencePipeline:
     def test_ingest_populates_sqlite(self, memory_env):
         """Full pipeline: ingest_snapshot must produce non-zero entity count in SQLite."""
@@ -266,8 +273,7 @@ class TestFullPersistencePipeline:
 
         entities, obs, rels = _counts(db)
         assert entities > 0, (
-            f"Expected entities > 0 after ingest, got {entities}. "
-            "Full pipeline is silently dropping data."
+            f"Expected entities > 0 after ingest, got {entities}. Full pipeline is silently dropping data."
         )
 
     def test_snapshot_entity_written(self, memory_env):
@@ -277,9 +283,7 @@ class TestFullPersistencePipeline:
         adapter.ingest_snapshot(_make_scan_result(), ts=ts)
 
         conn = sqlite3.connect(str(db))
-        row = conn.execute(
-            "SELECT name, entity_type FROM entities WHERE name LIKE 'ADGSnapshot%'"
-        ).fetchone()
+        row = conn.execute("SELECT name, entity_type FROM entities WHERE name LIKE 'ADGSnapshot%'").fetchone()
         conn.close()
 
         assert row is not None, f"ADGSnapshot_* entity missing after ingest(ts={ts!r})"
@@ -291,9 +295,7 @@ class TestFullPersistencePipeline:
         adapter.ingest_snapshot(_make_scan_result(n_modules=20), ts="20991231T000000Z")
 
         conn = sqlite3.connect(str(db))
-        n = conn.execute(
-            "SELECT COUNT(*) FROM entities WHERE entity_type='ADGLayer'"
-        ).fetchone()[0]
+        n = conn.execute("SELECT COUNT(*) FROM entities WHERE entity_type='ADGLayer'").fetchone()[0]
         conn.close()
 
         assert n > 0, "No ADGLayer entities found — layer structure was not persisted"
@@ -314,7 +316,7 @@ class TestFullPersistencePipeline:
 
         This proves durability: data is in SQLite, not RAM.
         """
-        from agentic_core.adg.adapters.memory_mcp_adapter import ADGMemoryAdapter
+        from agentic_core.adg.adapters.ADGMemoryAdapter import ADGMemoryAdapter
         from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
 
         db = tmp_path / "kg_durable.sqlite"
@@ -370,9 +372,7 @@ class TestViolationPersistence:
         adapter.ingest_snapshot(scan, ts="20991231T000000Z")
 
         conn = sqlite3.connect(str(db))
-        n = conn.execute(
-            "SELECT COUNT(*) FROM entities WHERE entity_type='ADGViolation'"
-        ).fetchone()[0]
+        n = conn.execute("SELECT COUNT(*) FROM entities WHERE entity_type='ADGViolation'").fetchone()[0]
         conn.close()
 
         assert n > 0, "ADGViolation entities not persisted — violation tracking is broken"

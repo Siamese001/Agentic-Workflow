@@ -101,18 +101,18 @@ _emit_stores_embedding("p4", "generate_full_adg", "embedding_store")
 _emit_updates_meta_learning_state("p4", "generate_full_adg", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "generate_full_adg", "exec_snapshot_link")
 
-from agentic_core.adg.analysis.confidence import confidence_summary, score_edges
-from agentic_core.adg.analysis.diff import diff_snapshots
-from agentic_core.adg.analysis.impact import impact_summary, predict_impact
-from agentic_core.adg.analysis.ownership import OwnershipRegistry, _infer_ownership
-from agentic_core.adg.analysis.repair import repair_routing_summary, route_violations
-from agentic_core.adg.analysis.snapshot import (
+from agentic_core.adg.analysis.CanonicalSnapshot import (
     build_snapshot,
     load_latest_snapshot,
     save_snapshot,
 )
-from agentic_core.adg.artifact.builder import build_artifact
-from agentic_core.adg.artifact.multi_writer import write_all_artifacts
+from agentic_core.adg.analysis.EdgeConfidence import confidence_summary, score_edges
+from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+from agentic_core.adg.analysis.ImpactReport import impact_summary, predict_impact
+from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry, _infer_ownership
+from agentic_core.adg.analysis.RepairRoute import repair_routing_summary, route_violations
+from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+from agentic_core.adg.artifact.builder_types import build_artifact
 from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -246,7 +246,9 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
     print(f"[ADG] Scan complete. Digest: {result.digest}")
     print(f"[ADG] Modules: {len(result.modules)}")
     print(f"[ADG] Edges: {len(result.edges)}")
-    print(f"[ADG] Cache: hits={result.manifest.cache_hits} misses={result.manifest.cache_misses} rate={result.manifest.cache_hit_rate:.1%}")
+    print(
+        f"[ADG] Cache: hits={result.manifest.cache_hits} misses={result.manifest.cache_misses} rate={result.manifest.cache_hit_rate:.1%}"
+    )
 
     # --- Build canonical artifact (schema v3) ---
     print("[ADG] Building canonical artifact...")
@@ -512,7 +514,7 @@ def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: 
 def _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summary, ts: str) -> None:
     """Persist key ADG signals to Memory MCP knowledge graph via ADGMemoryAdapter."""
     try:
-        from agentic_core.adg.adapters.memory_mcp_adapter import get_adapter
+        from agentic_core.adg.adapters.ADGMemoryAdapter import get_adapter
 
         adapter = get_adapter()
     except (ImportError, AttributeError, RuntimeError) as e:

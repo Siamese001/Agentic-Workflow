@@ -21,52 +21,51 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import Optional
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_healing_outcome,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_escalates_to_human,
-    _emit_routes_through,
 )
 
 _emit_applies_guardrail("p0", "guardian_prioritizer", "p0_governance")
@@ -107,14 +106,21 @@ from agentic_core.adg.schema_util import (
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
+    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -122,27 +128,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("guardian_prioritizer", "p4obs", "metric_1")
@@ -331,8 +330,8 @@ class GuardianPrioritizer:
 
             # Cross-layer violations (import only)
             if edge.relation_type == "imports":
-                from_path = from_mod[len(_MODULE_PREFIX):] if from_mod.startswith(_MODULE_PREFIX) else ""
-                to_path = to_sym[len(_MODULE_PREFIX):] if to_sym.startswith(_MODULE_PREFIX) else ""
+                from_path = from_mod[len(_MODULE_PREFIX) :] if from_mod.startswith(_MODULE_PREFIX) else ""
+                to_path = to_sym[len(_MODULE_PREFIX) :] if to_sym.startswith(_MODULE_PREFIX) else ""
                 if from_path and to_path:
                     fl = module_path_to_layer(from_path)
                     tl = module_path_to_layer(to_path)
@@ -347,25 +346,25 @@ class GuardianPrioritizer:
                 if sym in PROVIDER_SDK_SYMBOLS or any(
                     sym.startswith(pkg) for pkg in ("openai.", "anthropic.", "google.generativeai.")
                 ):
-                    from_path = from_mod[len(_MODULE_PREFIX):] if from_mod.startswith(_MODULE_PREFIX) else ""
+                    from_path = from_mod[len(_MODULE_PREFIX) :] if from_mod.startswith(_MODULE_PREFIX) else ""
                     llm_violations.append({"file": from_path, "symbol": sym, "line": edge.line_no})
 
             # Embedding violations (RULE_B)
             if edge.relation_type == "instantiates" and edge.edge_kind == "embedding":
                 sym = edge.symbol or ""
                 if sym in EMBEDDING_SYMBOLS or not sym:
-                    from_path = from_mod[len(_MODULE_PREFIX):] if from_mod.startswith(_MODULE_PREFIX) else ""
+                    from_path = from_mod[len(_MODULE_PREFIX) :] if from_mod.startswith(_MODULE_PREFIX) else ""
                     embedding_violations.append({"file": from_path, "symbol": sym, "line": edge.line_no})
 
             # Dynamic exec violations (RULE_F)
             if edge.edge_kind == "exec":
-                from_path = from_mod[len(_MODULE_PREFIX):] if from_mod.startswith(_MODULE_PREFIX) else ""
+                from_path = from_mod[len(_MODULE_PREFIX) :] if from_mod.startswith(_MODULE_PREFIX) else ""
                 dynamic_exec.append({"file": from_path, "line": edge.line_no})
 
             # Upward mutations (write to higher-rank layer)
             if edge.relation_type == "writes_to" and edge.edge_kind in ("write", "network"):
-                from_path = from_mod[len(_MODULE_PREFIX):] if from_mod.startswith(_MODULE_PREFIX) else ""
-                to_path = to_sym[len(_MODULE_PREFIX):] if to_sym.startswith(_MODULE_PREFIX) else ""
+                from_path = from_mod[len(_MODULE_PREFIX) :] if from_mod.startswith(_MODULE_PREFIX) else ""
+                to_path = to_sym[len(_MODULE_PREFIX) :] if to_sym.startswith(_MODULE_PREFIX) else ""
                 if from_path and to_path:
                     fl = module_path_to_layer(from_path)
                     tl = module_path_to_layer(to_path)
@@ -405,7 +404,9 @@ class GuardianPrioritizer:
             "upward_mutations": upward_mutations,
             "fan_in_hotspots": fan_in_hotspots,
             "config_hotspots": config_hotspots,
-            "layer_hotspots": [{"key": k, "count": v} for k, v in sorted(layer_traffic.items(), key=lambda x: -x[1])],
+            "layer_hotspots": [
+                {"key": k, "count": v} for k, v in sorted(layer_traffic.items(), key=lambda x: -x[1])
+            ],
             "orphan_modules": orphan_modules,
         }
         self._signals_built = True
@@ -420,8 +421,11 @@ class GuardianPrioritizer:
             guardians in _GUARDIAN_ADG_SIGNALS are scored.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "GuardianPrioritizer.prioritize")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "GuardianPrioritizer.prioritize"
+        )
 
         import hashlib
 
@@ -431,7 +435,7 @@ class GuardianPrioritizer:
 
         # Add any unknown guardian IDs with score=0
         all_known = set(_GUARDIAN_ADG_SIGNALS.keys())
-        for gid in (guardian_ids or []):
+        for gid in guardian_ids or []:
             if gid not in all_known:
                 ids_to_score = list(ids_to_score) + [gid]
 
@@ -463,9 +467,7 @@ class GuardianPrioritizer:
 
         # Compute signals digest for reproducibility
         signals_summary = {k: len(v) if isinstance(v, list) else v for k, v in self._signals.items()}
-        signals_digest = hashlib.sha256(
-            json.dumps(signals_summary, sort_keys=True).encode()
-        ).hexdigest()[:16]
+        signals_digest = hashlib.sha256(json.dumps(signals_summary, sort_keys=True).encode()).hexdigest()[:16]
 
         result = PrioritizationResult(scores=scores, adg_signals_digest=signals_digest)
         logger.info(
@@ -515,7 +517,7 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.signals:
         signals = prioritizer.get_signals()
-        print(json.dumps({k: v for k, v in signals.items()}, indent=2))
+        print(json.dumps(dict(signals.items()), indent=2))
         return 0
 
     prio_result = prioritizer.prioritize(guardian_ids=args.guardians)

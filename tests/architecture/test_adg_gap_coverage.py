@@ -312,7 +312,7 @@ from agentic_core.adg.schema_util import canonical_name
         edges = _run_tt(src)
         assert len(edges) == 1
         assert edges[0].relation_type == "covers"
-        assert edges[0].symbol == "agentic_core.adg.schema"
+        assert edges[0].symbol == "agentic_core.adg.schema_util"
 
     def test_covers_edge_for_plain_import(self):
         src = """

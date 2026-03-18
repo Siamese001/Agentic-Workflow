@@ -9,7 +9,7 @@ from __future__ import annotations
 import pytest
 
 try:
-    from agentic_core.adg.adapters.memory_mcp_adapter import (  # noqa: F401
+    from agentic_core.adg.adapters.ADGMemoryAdapter import (  # noqa: F401
         ADGMemoryAdapter,
         get_adapter,
     )

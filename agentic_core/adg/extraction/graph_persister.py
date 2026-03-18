@@ -16,7 +16,7 @@ import logging
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
-from agentic_core.adg.client.mcp_client import ADGMCPClient
+from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 from agentic_core.adg.schema_util import (
     GATEWAY_ALLOWLIST,
     canonical_name,

@@ -600,7 +600,7 @@ class TestD5SchemaAllCoverage:
     ]
 
     def test_all_g7_g16_constants_in_schema_all(self) -> None:
-        import agentic_core.adg.schema as sch
+        import agentic_core.adg.schema_util as sch
 
         if not hasattr(sch, "__all__"):
             pytest.skip("schema.py does not define __all__")
@@ -609,7 +609,7 @@ class TestD5SchemaAllCoverage:
 
     def test_all_constants_resolvable_after_star_import(self) -> None:
         """Every constant can be resolved via getattr(schema_module, name)."""
-        import agentic_core.adg.schema as sch
+        import agentic_core.adg.schema_util as sch
 
         for name in self._G7_G16_CONSTANT_NAMES:
             obj = getattr(sch, name, None)
@@ -618,7 +618,7 @@ class TestD5SchemaAllCoverage:
 
     @pytest.mark.parametrize("const_name", _G7_G16_CONSTANT_NAMES)
     def test_each_constant_importable_directly(self, const_name: str) -> None:
-        mod = importlib.import_module("agentic_core.adg.schema")
+        mod = importlib.import_module("agentic_core.adg.schema_util")
         obj = getattr(mod, const_name)
         assert isinstance(obj, frozenset)
         assert len(obj) > 0
@@ -1492,20 +1492,20 @@ class TestD17ConstantMemberHygiene:
 
     @pytest.mark.parametrize("const_name", _CONSTANT_NAMES)
     def test_no_empty_string_member(self, const_name: str) -> None:
-        mod = importlib.import_module("agentic_core.adg.schema")
+        mod = importlib.import_module("agentic_core.adg.schema_util")
         fset: frozenset = getattr(mod, const_name)
         assert "" not in fset, f"{const_name} contains the empty string"
 
     @pytest.mark.parametrize("const_name", _CONSTANT_NAMES)
     def test_no_whitespace_only_member(self, const_name: str) -> None:
-        mod = importlib.import_module("agentic_core.adg.schema")
+        mod = importlib.import_module("agentic_core.adg.schema_util")
         fset: frozenset = getattr(mod, const_name)
         bad = [s for s in fset if isinstance(s, str) and not s.strip()]
         assert not bad, f"{const_name} contains whitespace-only member: {bad}"
 
     @pytest.mark.parametrize("const_name", _CONSTANT_NAMES)
     def test_all_members_are_strings(self, const_name: str) -> None:
-        mod = importlib.import_module("agentic_core.adg.schema")
+        mod = importlib.import_module("agentic_core.adg.schema_util")
         fset: frozenset = getattr(mod, const_name)
         non_strings = [m for m in fset if not isinstance(m, str)]
         assert not non_strings, f"{const_name} has non-string members: {non_strings}"
@@ -1513,7 +1513,7 @@ class TestD17ConstantMemberHygiene:
     @pytest.mark.parametrize("const_name", _CONSTANT_NAMES)
     def test_no_member_contains_whitespace(self, const_name: str) -> None:
         """Symbol names must not contain internal spaces."""
-        mod = importlib.import_module("agentic_core.adg.schema")
+        mod = importlib.import_module("agentic_core.adg.schema_util")
         fset: frozenset = getattr(mod, const_name)
         bad = [s for s in fset if isinstance(s, str) and " " in s]
         assert not bad, f"{const_name} has member with spaces: {bad}"
@@ -1727,7 +1727,7 @@ class TestD20SchemaConstantTotalCount:
         assert len(self._G7_G16_CONSTANT_NAMES) == len(set(self._G7_G16_CONSTANT_NAMES))
 
     def test_all_catalogued_constants_are_importable(self) -> None:
-        import agentic_core.adg.schema as sch
+        import agentic_core.adg.schema_util as sch
 
         for name in self._G7_G16_CONSTANT_NAMES:
             obj = getattr(sch, name, None)

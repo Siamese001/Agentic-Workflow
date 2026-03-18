@@ -354,9 +354,9 @@ def _out(data: dict | list, indent: int = 2) -> None:
 
 def cmd_build(rebuild: bool, repo_root: Path) -> int:
     """Build ADG and emit canonical artifacts."""
-    from agentic_core.adg.applications.health_reporter import build_health_report
-    from agentic_core.adg.artifact.builder import build_artifact
-    from agentic_core.adg.artifact.serializer import write_artifact
+    from agentic_core.adg.applications.health_reporter_types import build_health_report
+    from agentic_core.adg.artifact.builder_types import build_artifact
+    from agentic_core.adg.artifact.serializer_util import write_artifact
 
     ts = _timestamp()
     artifacts_dir = repo_root / _ARTIFACTS_DIR
@@ -481,15 +481,15 @@ def _write_summary_markdown(
 
 def cmd_health(repo_root: Path, strict: bool = False) -> int:
     """Run trust gate health check on adg_latest.json."""
-    from agentic_core.adg.applications.health_reporter import build_health_report
-    from agentic_core.adg.artifact.builder import build_artifact
+    from agentic_core.adg.applications.health_reporter_types import build_health_report
+    from agentic_core.adg.artifact.builder_types import build_artifact
 
     latest = repo_root / _ARTIFACTS_DIR / "adg_latest.json"
     if latest.exists():
         # Load from existing artifact file
         import json as _json
 
-        from agentic_core.adg.artifact.builder import (
+        from agentic_core.adg.artifact.builder_types import (
             ADGArtifact,
             BlindSpotReport,
             EntityRecord,
@@ -617,7 +617,7 @@ def cmd_stats(repo_root: Path) -> int:
 
 def cmd_diff(baseline: str, repo_root: Path) -> int:
     """Diff current adg_latest.json against a baseline artifact."""
-    from agentic_core.adg.artifact.serializer import diff_artifacts
+    from agentic_core.adg.artifact.serializer_util import diff_artifacts
 
     current_path = repo_root / _ARTIFACTS_DIR / "adg_latest.json"
     if not current_path.exists():
@@ -677,7 +677,7 @@ def cmd_impact_symbol(symbol_name: str, repo_root: Path) -> int:
                 {
                     "symbol": symbol_name,
                     "error": f"Could not resolve symbol '{symbol_name}' to a known module path",
-                    "hint": "Use dotted qualified name, e.g. agentic_core.adg.schema.canonical_name",
+                    "hint": "Use dotted qualified name, e.g. agentic_core.adg.schema_util.canonical_name",
                     "widening_action": "MANUAL_REVIEW_REQUIRED",
                 },
                 indent=2,
@@ -781,7 +781,7 @@ def cmd_neighbors(file_path: str, repo_root: Path) -> int:
 
 def cmd_ownership(symbol_or_file: str, repo_root: Path) -> int:
     """Return territory and layer ownership for a symbol or file."""
-    from agentic_core.adg.applications.placement_advisor import _infer_territory
+    from agentic_core.adg.applications.placement_advisor_types import _infer_territory
     from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, module_path_to_layer
 
     norm = symbol_or_file.replace("\\", "/")
@@ -1029,6 +1029,7 @@ def cmd_guardian_scope(
 ) -> int:
     """Produce ADG-prioritized guardian execution scope."""
     from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
+
     from agentic_core.adg.schema_util import module_path_to_layer
 
     result = _load_scan(repo_root)
@@ -1048,18 +1049,20 @@ def cmd_guardian_scope(
         # Fan-out for this file
         _MODULE_PREFIX = "ADG::Module::"
         fan_out = sum(
-            1 for e in result.edges
+            1
+            for e in result.edges
             if e.from_name == _MODULE_PREFIX + norm_path and e.relation_type == "imports"
         )
         fan_in = sum(
-            1 for e in result.edges
+            1
+            for e in result.edges
             if e.to_name == _MODULE_PREFIX + norm_path and e.relation_type == "imports"
         )
 
         relevant_violations = [
-            v for v in signals.get("cross_layer_violations", [])
-            if v.get("from_module", "").endswith(norm_path)
-            or v.get("to_module", "").endswith(norm_path)
+            v
+            for v in signals.get("cross_layer_violations", [])
+            if v.get("from_module", "").endswith(norm_path) or v.get("to_module", "").endswith(norm_path)
         ]
 
         trigger_reasons = []
@@ -1349,7 +1352,7 @@ def cmd_healing_radius(symbol_name: str, repo_root: Path) -> int:
 
 def cmd_suggest_placement(kind: str, name: str, repo_root: Path) -> int:
     """Suggest canonical placement for a new file or symbol."""
-    from agentic_core.adg.applications.placement_advisor import PlacementAdvisor
+    from agentic_core.adg.applications.placement_advisor_types import PlacementAdvisor
 
     result = _load_scan(repo_root)
     advisor = PlacementAdvisor(result, repo_root=repo_root)
@@ -1365,7 +1368,7 @@ def cmd_suggest_placement(kind: str, name: str, repo_root: Path) -> int:
 
 def cmd_context_file(file_path: str, repo_root: Path) -> int:
     """Get structural context for an existing file."""
-    from agentic_core.adg.applications.placement_advisor import PlacementAdvisor
+    from agentic_core.adg.applications.placement_advisor_types import PlacementAdvisor
 
     result = _load_scan(repo_root)
     advisor = PlacementAdvisor(result, repo_root=repo_root)
@@ -1376,7 +1379,7 @@ def cmd_context_file(file_path: str, repo_root: Path) -> int:
 
 def cmd_context_symbol(symbol_name: str, repo_root: Path) -> int:
     """Get structural context for a qualified symbol name."""
-    from agentic_core.adg.applications.placement_advisor import PlacementAdvisor
+    from agentic_core.adg.applications.placement_advisor_types import PlacementAdvisor
 
     result = _load_scan(repo_root)
     advisor = PlacementAdvisor(result, repo_root=repo_root)
@@ -1530,8 +1533,16 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_missing_tests(symbol_name=args.symbol, repo_root=rr)
     if cmd == "guardian-scope":
         file_arg = getattr(args, "file", None)
-        if not file_arg and not args.high_risk_only and not args.focus_territory and not args.boundary_violations:
-            print("guardian-scope requires --file, --high-risk-only, --focus-territory, or --boundary-violations", file=sys.stderr)
+        if (
+            not file_arg
+            and not args.high_risk_only
+            and not args.focus_territory
+            and not args.boundary_violations
+        ):
+            print(
+                "guardian-scope requires --file, --high-risk-only, --focus-territory, or --boundary-violations",
+                file=sys.stderr,
+            )
             return 2
         return cmd_guardian_scope(
             high_risk_only=args.high_risk_only,

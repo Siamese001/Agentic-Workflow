@@ -331,7 +331,7 @@ class TestPromptAuthorityDetector:
         return _ScanResult(edges=edges)  # type: ignore[arg-type]
 
     def test_clean_assembly_no_violations(self):
-        from agentic_core.adg.analysis.prompt_authority import detect_prompt_authority_violations
+        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
 
         # Each module generates only ONE slot type → no cross-authority violations
         result = self._make_result(
@@ -354,7 +354,7 @@ class TestPromptAuthorityDetector:
         assert report.violation_count == 0
 
     def test_u0_also_generates_s0_is_violation(self):
-        from agentic_core.adg.analysis.prompt_authority import detect_prompt_authority_violations
+        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
 
         # One module generates BOTH S0 and U0 → U0_MUTATES_S0
         result = self._make_result(
@@ -381,7 +381,7 @@ class TestPromptAuthorityDetector:
         assert "U0_MUTATES_S0" in vtypes
 
     def test_c0_generates_s0_is_violation(self):
-        from agentic_core.adg.analysis.prompt_authority import detect_prompt_authority_violations
+        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
 
         result = self._make_result(
             [
@@ -405,7 +405,7 @@ class TestPromptAuthorityDetector:
         assert "C0_MUTATES_S0" in vtypes
 
     def test_missing_d0_fence_detected(self):
-        from agentic_core.adg.analysis.prompt_authority import detect_prompt_authority_violations
+        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
 
         # Assembles S0 + U0 but no D0
         result = self._make_result(
@@ -428,7 +428,7 @@ class TestPromptAuthorityDetector:
         assert "agentic_core/L0_routing/no_fence.py" in report.missing_fences
 
     def test_slot_generators_index_populated(self):
-        from agentic_core.adg.analysis.prompt_authority import detect_prompt_authority_violations
+        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
 
         result = self._make_result(
             [
@@ -444,7 +444,7 @@ class TestPromptAuthorityDetector:
         assert "agentic_core/prompt_governance/constitution.py" in report.slot_generators.get("S0", [])
 
     def test_severity_critical_for_s0_violations(self):
-        from agentic_core.adg.analysis.prompt_authority import detect_prompt_authority_violations
+        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
 
         result = self._make_result(
             [
@@ -469,7 +469,7 @@ class TestPromptAuthorityDetector:
         assert all(v.severity == "critical" for v in authority_inversion_violations)
 
     def test_report_to_dict_serializable(self):
-        from agentic_core.adg.analysis.prompt_authority import detect_prompt_authority_violations
+        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
 
         result = self._make_result([])
         report = detect_prompt_authority_violations(result)  # type: ignore[arg-type]
@@ -481,7 +481,7 @@ class TestPromptAuthorityDetector:
         json.dumps(d)
 
     def test_report_summary_string(self):
-        from agentic_core.adg.analysis.prompt_authority import detect_prompt_authority_violations
+        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
 
         result = self._make_result([])
         report = detect_prompt_authority_violations(result)  # type: ignore[arg-type]
@@ -501,7 +501,7 @@ class TestPromptImpactAnalyzer:
         return _ScanResult(edges=edges)  # type: ignore[arg-type]
 
     def test_empty_changed_files_no_impact(self):
-        from agentic_core.adg.applications.prompt_impact import analyze_prompt_impact
+        from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
 
         result = self._make_result([])
         report = analyze_prompt_impact(result, changed_files=[])  # type: ignore[arg-type]
@@ -509,7 +509,7 @@ class TestPromptImpactAnalyzer:
         assert report.risk_label == "LOW"
 
     def test_changed_generator_module_shows_impact(self):
-        from agentic_core.adg.applications.prompt_impact import analyze_prompt_impact
+        from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
 
         edges = [
             _make_edge(
@@ -528,7 +528,7 @@ class TestPromptImpactAnalyzer:
         assert report.impacted_count >= 1
 
     def test_s0_slot_gives_high_risk_score(self):
-        from agentic_core.adg.applications.prompt_impact import analyze_prompt_impact
+        from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
 
         edges = [
             _make_edge(
@@ -547,7 +547,7 @@ class TestPromptImpactAnalyzer:
         assert report.risk_score > 0.5
 
     def test_u0_slot_lower_risk_than_s0(self):
-        from agentic_core.adg.applications.prompt_impact import analyze_prompt_impact
+        from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
 
         edges_s0 = [
             _make_edge(
@@ -578,7 +578,7 @@ class TestPromptImpactAnalyzer:
         assert r_s0.risk_score > r_u0.risk_score
 
     def test_consumers_traced_through_edges(self):
-        from agentic_core.adg.applications.prompt_impact import analyze_prompt_impact
+        from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
 
         tmpl_node = "ADG::PromptTemplate::TITANIUM_RESEARCHER_SYSTEM"
         edges = [
@@ -606,14 +606,14 @@ class TestPromptImpactAnalyzer:
         assert "apps_rg/agents/titanium_agent.py" in impacted_mods
 
     def test_report_to_dict_json_serializable(self):
-        from agentic_core.adg.applications.prompt_impact import analyze_prompt_impact
+        from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
 
         result = self._make_result([])
         report = analyze_prompt_impact(result, changed_files=[])  # type: ignore[arg-type]
         json.dumps(report.to_dict())
 
     def test_affected_slot_types_ordered_by_authority(self):
-        from agentic_core.adg.applications.prompt_impact import analyze_prompt_impact
+        from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
 
         edges = [
             _make_edge(
@@ -930,7 +930,7 @@ class TestAuthorityRulesCompleteness:
     """Verify that all authority violation type strings are valid."""
 
     def test_all_authority_rules_have_violation_type(self):
-        from agentic_core.adg.analysis.prompt_authority import _violation_type_for
+        from agentic_core.adg.analysis.prompt_authority_types import _violation_type_for
         from agentic_core.adg.schema_util import PROMPT_AUTHORITY_RULES
 
         for low_slot, high_slot in PROMPT_AUTHORITY_RULES:
@@ -938,7 +938,7 @@ class TestAuthorityRulesCompleteness:
             assert vtype is not None, f"No violation type defined for ({low_slot}, {high_slot})"
 
     def test_suggested_fixes_non_empty(self):
-        from agentic_core.adg.analysis.prompt_authority import _suggested_fix
+        from agentic_core.adg.analysis.prompt_authority_types import _suggested_fix
         from agentic_core.adg.schema_util import PROMPT_AUTHORITY_RULES
 
         for low_slot, high_slot in PROMPT_AUTHORITY_RULES:

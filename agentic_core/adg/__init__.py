@@ -4,6 +4,7 @@ Provides commit-scoped static analysis, MCP-backed graph persistence,
 and policy enforcement across the five governance applications.
 """
 
+from agentic_core.adg import schema_util as schema  # backward-compat alias
 from agentic_core.adg.schema_util import (
     ADG_NS,
     EdgeKind,
@@ -18,4 +19,5 @@ __all__ = [
     "RelationType",
     "EdgeKind",
     "canonical_name",
+    "schema",
 ]

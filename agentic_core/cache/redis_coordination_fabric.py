@@ -67,6 +67,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_links_incident_trace,
     _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
+    _emit_pulls_context,
     _emit_reads_environ,
     _emit_reads_policy_state,  # noqa: E402
     _emit_reads_runtime_state,
@@ -90,6 +91,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_updates_meta_learning_state,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
+    _emit_validated_by_safety_plane,
     _emit_validates_agent_capability,
     _emit_validates_capability,
     _emit_verifies_boundary,
@@ -98,7 +100,6 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
     _emit_writes_via_uwg,
-    _emit_pulls_context,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
@@ -324,7 +325,11 @@ class RedisCoordinationFabric:
             True on success (Redis or fallback).
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"RedisCoordinationFabric.set_trace_working_set:{trace_id_hash}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()),
+            LayerSegment.L3_ORCHESTRATION,
+            f"RedisCoordinationFabric.set_trace_working_set:{trace_id_hash}",
+        )
         if ttl_seconds > _TTL_TRACE_WS:
             raise ValueError(f"trace working set TTL must be ≤ {_TTL_TRACE_WS}s, got {ttl_seconds}")
         key = _trace_ws_key(trace_id_hash)
@@ -479,53 +484,53 @@ class RedisCoordinationFabric:
     ) -> dict[str, Any] | None:
         """Return a cached replay fragment.
 
-        When ``replay_mode=True``, always returns None so the caller re-derives
-        from L4 and appends to the deterministic transcript.
-import uuid
-from agentic_core.runtime.lifecycle_trace_contract import (
-    _emit_pulls_context,
-    _emit_execution_terminates_at_uwg,
-    _emit_writes_through,
-    _emit_validated_by_safety_plane,
-    _emit_invokes_eval,
-    _emit_proposal_commits_routing,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-)
-from agentic_core.runtime.lifecycle_trace_contract import _emit_writes_through
-_emit_pulls_context("p1", "redis_coordination_fabric", "context_pull")
-_emit_pulls_context("p1", "redis_coordination_fabric", "context_pull_secondary")
-_emit_execution_terminates_at_uwg("p1", "redis_coordination_fabric", "uwg_term")
-_emit_execution_terminates_at_uwg("p1", "redis_coordination_fabric", "uwg_term_secondary")
-_emit_writes_through("p1", "redis_coordination_fabric", "write_through")
-_emit_writes_through("p1", "redis_coordination_fabric", "write_through_secondary")
-_emit_validated_by_safety_plane("p1", "redis_coordination_fabric", "safety_validation")
-_emit_invokes_eval("p1", "redis_coordination_fabric", "eval_call")
-_emit_proposal_commits_routing("p1", "redis_coordination_fabric", "routing_commit")
-_emit_escalates_to_human("p1", "redis_coordination_fabric", "human_escalation")
-_emit_routes_through("p1", "redis_coordination_fabric", "route_through")
-_emit_checks_agent_registry("p1", "redis_coordination_fabric", "agent_registry")
-_emit_validates_agent_capability("p1", "redis_coordination_fabric", "capability")
-_emit_dispatches_execution_plan("p1", "redis_coordination_fabric", "exec_plan")
-_emit_agent_executes_agent("p1", "redis_coordination_fabric", "sub_agent")
-_emit_routes_to_agent("p1", "redis_coordination_fabric", "target_agent")
-_emit_verifies_policy("p1", "redis_coordination_fabric", "policy_check")
-_emit_observes_runtime_state("p1", "redis_coordination_fabric", "runtime_state")
-_emit_verifies_boundary("p1", "redis_coordination_fabric", "boundary_check")
-_emit_transcripts_response("p1", "redis_coordination_fabric", "transcript")
-_emit_hard_fails_untranscripted("p1", "redis_coordination_fabric")
-_emit_gated_by_confidence("p1", "redis_coordination_fabric", "confidence_gate")
+                When ``replay_mode=True``, always returns None so the caller re-derives
+                from L4 and appends to the deterministic transcript.
+        import uuid
+        from agentic_core.runtime.lifecycle_trace_contract import (
+            _emit_pulls_context,
+            _emit_execution_terminates_at_uwg,
+            _emit_writes_through,
+            _emit_validated_by_safety_plane,
+            _emit_invokes_eval,
+            _emit_proposal_commits_routing,
+            _emit_escalates_to_human,
+            _emit_routes_through,
+            _emit_checks_agent_registry,
+            _emit_validates_agent_capability,
+            _emit_dispatches_execution_plan,
+            _emit_agent_executes_agent,
+            _emit_routes_to_agent,
+            _emit_verifies_policy,
+            _emit_observes_runtime_state,
+            _emit_verifies_boundary,
+            _emit_transcripts_response,
+            _emit_hard_fails_untranscripted,
+            _emit_gated_by_confidence,
+        )
+        from agentic_core.runtime.lifecycle_trace_contract import _emit_writes_through
+        _emit_pulls_context("p1", "redis_coordination_fabric", "context_pull")
+        _emit_pulls_context("p1", "redis_coordination_fabric", "context_pull_secondary")
+        _emit_execution_terminates_at_uwg("p1", "redis_coordination_fabric", "uwg_term")
+        _emit_execution_terminates_at_uwg("p1", "redis_coordination_fabric", "uwg_term_secondary")
+        _emit_writes_through("p1", "redis_coordination_fabric", "write_through")
+        _emit_writes_through("p1", "redis_coordination_fabric", "write_through_secondary")
+        _emit_validated_by_safety_plane("p1", "redis_coordination_fabric", "safety_validation")
+        _emit_invokes_eval("p1", "redis_coordination_fabric", "eval_call")
+        _emit_proposal_commits_routing("p1", "redis_coordination_fabric", "routing_commit")
+        _emit_escalates_to_human("p1", "redis_coordination_fabric", "human_escalation")
+        _emit_routes_through("p1", "redis_coordination_fabric", "route_through")
+        _emit_checks_agent_registry("p1", "redis_coordination_fabric", "agent_registry")
+        _emit_validates_agent_capability("p1", "redis_coordination_fabric", "capability")
+        _emit_dispatches_execution_plan("p1", "redis_coordination_fabric", "exec_plan")
+        _emit_agent_executes_agent("p1", "redis_coordination_fabric", "sub_agent")
+        _emit_routes_to_agent("p1", "redis_coordination_fabric", "target_agent")
+        _emit_verifies_policy("p1", "redis_coordination_fabric", "policy_check")
+        _emit_observes_runtime_state("p1", "redis_coordination_fabric", "runtime_state")
+        _emit_verifies_boundary("p1", "redis_coordination_fabric", "boundary_check")
+        _emit_transcripts_response("p1", "redis_coordination_fabric", "transcript")
+        _emit_hard_fails_untranscripted("p1", "redis_coordination_fabric")
+        _emit_gated_by_confidence("p1", "redis_coordination_fabric", "confidence_gate")
         """
         return self._cache.get_json(_replay_frag_key(replay_key_hash), replay_mode=replay_mode)
 

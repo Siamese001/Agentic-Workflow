@@ -597,7 +597,7 @@ class TestC2DetectionConstants:
         assert "commit_optimization" in DRIFT_ALERT_METHODS
 
     def test_all_constants_are_frozensets(self) -> None:
-        import agentic_core.adg.schema as sch
+        import agentic_core.adg.schema_util as sch
 
         constant_names = [
             "SANDBOX_ENVELOPE_CLASSES",
@@ -2086,37 +2086,37 @@ class TestA5LayerSplitterAccuracy:
     """A5: Governance plane contains all G7-G16 relations; zero cross-plane overlap."""
 
     def test_all_g7_g16_relations_in_governance_plane(self) -> None:
-        from agentic_core.adg.artifact.layer_splitter import _GOVERNANCE_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _GOVERNANCE_GRAPH_RELS
 
         missing = [r for r in G7_G16_RELATION_TYPES if r not in _GOVERNANCE_GRAPH_RELS]
         assert not missing, f"G7-G16 relations missing from governance plane: {missing}"
 
     def test_zero_overlap_file_symbol(self) -> None:
-        from agentic_core.adg.artifact.layer_splitter import _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS
 
         overlap = _FILE_GRAPH_RELS & _SYMBOL_GRAPH_RELS
         assert not overlap, f"FILE ∩ SYMBOL overlap: {sorted(overlap)}"
 
     def test_zero_overlap_file_governance(self) -> None:
-        from agentic_core.adg.artifact.layer_splitter import _FILE_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS
 
         overlap = _FILE_GRAPH_RELS & _GOVERNANCE_GRAPH_RELS
         assert not overlap, f"FILE ∩ GOVERNANCE overlap: {sorted(overlap)}"
 
     def test_zero_overlap_symbol_governance(self) -> None:
-        from agentic_core.adg.artifact.layer_splitter import _GOVERNANCE_GRAPH_RELS, _SYMBOL_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _GOVERNANCE_GRAPH_RELS, _SYMBOL_GRAPH_RELS
 
         overlap = _SYMBOL_GRAPH_RELS & _GOVERNANCE_GRAPH_RELS
         assert not overlap, f"SYMBOL ∩ GOVERNANCE overlap: {sorted(overlap)}"
 
     def test_g7_g16_not_in_file_plane(self) -> None:
-        from agentic_core.adg.artifact.layer_splitter import _FILE_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS
 
         contaminated = [r for r in G7_G16_RELATION_TYPES if r in _FILE_GRAPH_RELS]
         assert not contaminated, f"G7-G16 relations contaminate file plane: {contaminated}"
 
     def test_g7_g16_not_in_symbol_plane(self) -> None:
-        from agentic_core.adg.artifact.layer_splitter import _SYMBOL_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _SYMBOL_GRAPH_RELS
 
         contaminated = [r for r in G7_G16_RELATION_TYPES if r in _SYMBOL_GRAPH_RELS]
         assert not contaminated, f"G7-G16 relations contaminate symbol plane: {contaminated}"
@@ -2125,7 +2125,7 @@ class TestA5LayerSplitterAccuracy:
         """Every relation type in the refreshed SQLite is in at least one plane."""
         import sqlite3
 
-        from agentic_core.adg.artifact.layer_splitter import (
+        from agentic_core.adg.artifact.SplitArtifact import (
             _FILE_GRAPH_RELS,
             _GOVERNANCE_GRAPH_RELS,
             _SYMBOL_GRAPH_RELS,
@@ -2162,7 +2162,7 @@ class TestA5LayerSplitterAccuracy:
 
     def test_runtime_module_relations_not_in_file_or_symbol_planes(self) -> None:
         """Runtime-only relations (e.g. reads_config, reads_env) are not in file/symbol planes."""
-        from agentic_core.adg.artifact.layer_splitter import _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS
 
         runtime_only = {
             "reads_config",

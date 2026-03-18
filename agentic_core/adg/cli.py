@@ -24,59 +24,66 @@ import sys
 from pathlib import Path
 
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_records_execution_trace,  # noqa: E402
     _emit_records_healing_outcome,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_escalates_to_human,
-    _emit_routes_through,
 )
 
 _emit_records_execution_trace("p0", "evidence", "cli")
 _emit_applies_guardrail("p0", "cli", "p0_governance")
 _emit_snapshots_state("p0", "cli", "state_snapshot")
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
+    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -84,27 +91,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("cli", "p4obs", "metric_1")
@@ -181,6 +181,7 @@ _emit_stores_embedding("p4", "cli", "embedding_store")
 _emit_updates_meta_learning_state("p4", "cli", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "cli", "exec_snapshot_link")
 from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+
 emit_determinism_digest("trace_cli", "cli_dispatch_entry")
 emit_determinism_digest("trace_cli", "cli_dispatch_exit")
 emit_determinism_digest("trace_cli", "cli_tool_invoke")
@@ -204,7 +205,7 @@ def _cmd_scan(args: argparse.Namespace) -> int:
     import json
     from pathlib import Path
 
-    from agentic_core.adg.ci.invariant_scanner import run_ci_scan
+    from agentic_core.adg.ci.invariant_scanner_config import run_ci_scan
 
     diff_files = args.diff_files if args.diff_files else None
     include_tests = not getattr(args, "exclude_tests", False)
@@ -235,7 +236,7 @@ def _cmd_scan(args: argparse.Namespace) -> int:
 
 
 def _cmd_blast_radius(args: argparse.Namespace) -> int:
-    from agentic_core.adg.applications.blast_radius import compute_blast_radius
+    from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
     from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
     scanner = ADGStaticScanner(repo_root=Path(args.repo_root))
@@ -252,8 +253,8 @@ def _cmd_blast_radius(args: argparse.Namespace) -> int:
 
 
 def _cmd_build_artifact(args: argparse.Namespace) -> int:
-    from agentic_core.adg.artifact.builder import build_artifact
-    from agentic_core.adg.artifact.serializer import write_artifact
+    from agentic_core.adg.artifact.builder_types import build_artifact
+    from agentic_core.adg.artifact.serializer_util import write_artifact
     from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
     repo_root = Path(args.repo_root)
@@ -309,7 +310,7 @@ def _cmd_refactor(args: argparse.Namespace) -> int:
     result.print_digest()
 
     if getattr(args, "rename", None):
-        from agentic_core.adg.applications.rename_safety import analyze_rename
+        from agentic_core.adg.applications.rename_safety_types import analyze_rename
 
         old_path, new_path = args.rename
         report = analyze_rename(result, old_path=old_path, new_path=new_path)
@@ -319,10 +320,9 @@ def _cmd_refactor(args: argparse.Namespace) -> int:
 
     if getattr(args, "analyze", None):
         from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
-
-        from agentic_core.adg.analysis.hotspot_index import HotspotIndex
-        from agentic_core.adg.analysis.test_gap import detect_test_gaps
-        from agentic_core.adg.applications.placement_advisor import PlacementAdvisor
+        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+        from agentic_core.adg.applications.placement_advisor_types import PlacementAdvisor
 
         target = args.analyze
         idx = HotspotIndex.build(result)
@@ -351,7 +351,7 @@ def _cmd_refactor(args: argparse.Namespace) -> int:
         return 0
 
     if getattr(args, "plan", False):
-        from agentic_core.adg.applications.refactoring_planner import build_refactoring_plan
+        from agentic_core.adg.applications.refactoring_planner_config import build_refactoring_plan
 
         files = getattr(args, "files", None) or []
         plan = build_refactoring_plan(result, target_files=files or None)
@@ -366,7 +366,7 @@ def _cmd_refactor(args: argparse.Namespace) -> int:
 def _cmd_hotspots(args: argparse.Namespace) -> int:
     import json
 
-    from agentic_core.adg.analysis.hotspot_index import HotspotIndex
+    from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
     from agentic_core.adg.runtime.cache_loader import load_or_scan
 
     repo_root = Path(args.repo_root)
@@ -389,8 +389,8 @@ def _cmd_hotspots(args: argparse.Namespace) -> int:
 def _cmd_test_gaps(args: argparse.Namespace) -> int:
     import json
 
-    from agentic_core.adg.analysis.hotspot_index import HotspotIndex
-    from agentic_core.adg.analysis.test_gap import detect_test_gaps
+    from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+    from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
     from agentic_core.adg.runtime.cache_loader import load_or_scan
 
     repo_root = Path(args.repo_root)
@@ -408,7 +408,6 @@ def _cmd_coupling(args: argparse.Namespace) -> int:
     import json
 
     from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
-
     from agentic_core.adg.runtime.cache_loader import load_or_scan
 
     repo_root = Path(args.repo_root)
@@ -435,7 +434,7 @@ def _cmd_coupling(args: argparse.Namespace) -> int:
 def _cmd_api_surface(args: argparse.Namespace) -> int:
     import json
 
-    from agentic_core.adg.applications.api_surface import build_api_surface
+    from agentic_core.adg.applications.api_surface_types import build_api_surface
     from agentic_core.adg.runtime.cache_loader import load_or_scan
 
     repo_root = Path(args.repo_root)
@@ -450,7 +449,7 @@ def _cmd_api_surface(args: argparse.Namespace) -> int:
 def _cmd_dip_check(args: argparse.Namespace) -> int:
     import json
 
-    from agentic_core.adg.analysis.dep_inversion import detect_dip_violations
+    from agentic_core.adg.analysis.dep_inversion_types import detect_dip_violations
     from agentic_core.adg.runtime.cache_loader import load_or_scan
 
     repo_root = Path(args.repo_root)
@@ -466,7 +465,7 @@ def _cmd_dip_check(args: argparse.Namespace) -> int:
 def _cmd_runtime_graph(args: argparse.Namespace) -> int:
     import json
 
-    from agentic_core.adg.applications.runtime_graph import build_runtime_graph
+    from agentic_core.adg.applications.runtime_graph_types import build_runtime_graph
     from agentic_core.adg.runtime.cache_loader import load_or_scan
 
     repo_root = Path(args.repo_root)
@@ -482,7 +481,7 @@ def _cmd_runtime_graph(args: argparse.Namespace) -> int:
 def _cmd_layer_authority(args: argparse.Namespace) -> int:
     import json
 
-    from agentic_core.adg.analysis.layer_authority import detect_layer_authority_violations
+    from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
     from agentic_core.adg.runtime.cache_loader import load_or_scan
 
     repo_root = Path(args.repo_root)
@@ -498,7 +497,7 @@ def _cmd_layer_authority(args: argparse.Namespace) -> int:
 def _cmd_mutation_paths(args: argparse.Namespace) -> int:
     import json
 
-    from agentic_core.adg.analysis.mutation_authority import verify_mutation_paths
+    from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
     from agentic_core.adg.runtime.cache_loader import load_or_scan
 
     repo_root = Path(args.repo_root)
@@ -515,7 +514,7 @@ def _cmd_mutation_paths(args: argparse.Namespace) -> int:
 def _cmd_state_lineage(args: argparse.Namespace) -> int:
     import json
 
-    from agentic_core.adg.applications.state_lineage import build_lineage_index
+    from agentic_core.adg.applications.state_lineage_types import build_lineage_index
     from agentic_core.adg.runtime.cache_loader import load_or_scan
 
     repo_root = Path(args.repo_root)
@@ -535,7 +534,7 @@ def _cmd_state_lineage(args: argparse.Namespace) -> int:
 
 
 def _cmd_verify_architecture(args: argparse.Namespace) -> int:
-    from agentic_core.adg.applications.architecture_verifier import verify_architecture
+    from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
     from agentic_core.adg.runtime.cache_loader import load_or_scan
 
     repo_root = Path(args.repo_root)
@@ -574,8 +573,8 @@ def _cmd_build_artifacts(args: argparse.Namespace) -> int:
     import json
     from datetime import datetime, timedelta, timezone
 
-    from agentic_core.adg.artifact.builder import build_artifact
-    from agentic_core.adg.artifact.multi_writer import write_all_artifacts
+    from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+    from agentic_core.adg.artifact.builder_types import build_artifact
     from agentic_core.adg.runtime.cache_loader import load_or_scan
 
     repo_root = Path(args.repo_root)

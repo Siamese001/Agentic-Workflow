@@ -13,7 +13,7 @@ A module is a "hotspot" if its coupling exceeds a configurable threshold.
 
 Usage::
 
-    from agentic_core.adg.analysis.hotspot_index import HotspotIndex
+    from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
 
     idx = HotspotIndex.build(scan_result)
     fi = idx.fan_in("agentic_core/L0_routing/engines/path_router.py")
@@ -28,45 +28,45 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_healing_outcome,
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_escalates_to_human,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_routes_through,
 )
 
 _emit_applies_guardrail("p0", "hotspot_index", "p0_governance")
@@ -101,14 +101,20 @@ if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -116,26 +122,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("hotspot_index", "p4obs", "metric_1")
@@ -240,6 +240,7 @@ class HotspotIndex:
         symbol-level addressing.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HotspotIndex.build")
 
@@ -252,9 +253,9 @@ class HotspotIndex:
 
         def _to_path(name: str) -> str | None:
             if name.startswith(_mod):
-                return name[len(_mod):]
+                return name[len(_mod) :]
             if name.startswith(_sym):
-                sym = name[len(_sym):]
+                sym = name[len(_sym) :]
                 parts = sym.split(".")
                 # Try from most-specific to least-specific:
                 # a.b.c.func -> a/b/c/func.py, a/b/c.py, a/b/__init__.py ...
@@ -262,21 +263,25 @@ class HotspotIndex:
                     prefix = "/".join(parts[:n])
                     if prefix + ".py" in module_set:
                         return prefix + ".py"
-                    # guardian: allow-path-string
+                    # guardian: allow-path-string -- constructing ADG module lookup key from import prefix
                     if prefix + "/__init__.py" in module_set:
-                        # guardian: allow-path-string
+                        # guardian: allow-path-string -- constructing ADG module lookup key for package __init__
                         return prefix + "/__init__.py"
             return None
 
         for edge in result.edges:
             if edge.relation_type not in (
-                "imports", "reads_from", "calls", "instantiates", "implements",
+                "imports",
+                "reads_from",
+                "calls",
+                "instantiates",
+                "implements",
             ):
                 continue
             if not edge.from_name.startswith(_mod):
                 continue
 
-            from_path = edge.from_name[len(_mod):]
+            from_path = edge.from_name[len(_mod) :]
             to_path = _to_path(edge.to_name)
             if to_path is None or from_path == to_path:
                 continue

@@ -9,7 +9,7 @@ from __future__ import annotations
 import pytest
 
 try:
-    from agentic_core.adg.client.mcp_client import (  # noqa: F401
+    from agentic_core.adg.client.InMemoryStore import (  # noqa: F401
         ADGMCPClient,
     )
 

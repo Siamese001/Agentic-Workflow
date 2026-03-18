@@ -36,20 +36,27 @@ import subprocess
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from agentic_core.adg.artifact.normalizer import NormalizedGraph
+from agentic_core.adg.artifact.normalizer_config import NormalizedGraph
 from agentic_core.adg.extraction.scan_cache import ScanCache, file_hash
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,  # noqa: E402
@@ -57,28 +64,21 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_escalates_to_human,
-    _emit_routes_through,
 )
 
 _emit_records_execution_trace("p0", "evidence", "incremental")
@@ -86,14 +86,21 @@ _emit_applies_guardrail("p0", "incremental", "p0_governance")
 _emit_reads_policy_state("p0", "incremental", "policy_binding")
 _emit_snapshots_state("p0", "incremental", "state_snapshot")
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
+    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -101,27 +108,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("incremental", "p4obs", "metric_1")
@@ -219,7 +219,7 @@ def _git_changed_files(repo_root: Path, base_ref: str = "HEAD~1") -> list[str]:
     (e.g., first commit).
     """
     try:
-        # guardian: allow-magic-config
+        # guardian: allow-magic-config -- git diff base_ref is the canonical way to detect changed files
         result = subprocess.run(
             ["git", "diff", "--name-only", base_ref, "HEAD"],
             cwd=str(repo_root),
@@ -232,7 +232,7 @@ def _git_changed_files(repo_root: Path, base_ref: str = "HEAD~1") -> list[str]:
             return []
         lines = [l.strip() for l in result.stdout.splitlines() if l.strip().endswith(".py")]
         return lines
-    # guardian: allow-silent-swallow
+    # guardian: allow-silent-swallow -- git unavailability is non-fatal; caller falls back to full scan
     except Exception as exc:
         logger.debug("_git_changed_files error: %s", exc)
         return []
@@ -241,7 +241,7 @@ def _git_changed_files(repo_root: Path, base_ref: str = "HEAD~1") -> list[str]:
 def _git_staged_files(repo_root: Path) -> list[str]:
     """Return staged .py files (for pre-commit hook integration)."""
     try:
-        # guardian: allow-magic-config
+        # guardian: allow-magic-config -- git diff --cached is the canonical way to detect staged files
         result = subprocess.run(
             ["git", "diff", "--cached", "--name-only"],
             cwd=str(repo_root),
@@ -252,7 +252,7 @@ def _git_staged_files(repo_root: Path) -> list[str]:
         if result.returncode != 0:
             return []
         return [l.strip() for l in result.stdout.splitlines() if l.strip().endswith(".py")]
-    # guardian: allow-silent-swallow
+    # guardian: allow-silent-swallow -- git unavailability is non-fatal; caller falls back to full scan
     except Exception:
         return []
 
@@ -422,7 +422,7 @@ def incremental_scan(
     # Step 3: load snapshot for reverse-import index
     try:
         ng = NormalizedGraph.load(Path(full_snapshot_path))
-    # guardian: allow-silent-swallow
+    # guardian: allow-silent-swallow -- snapshot load failure triggers full scan fallback; logged below
     except Exception as exc:
         logger.warning("Failed to load snapshot %s: %s — full scan", full_snapshot_path, exc)
         scanner = ADGStaticScanner(repo_root=repo_root)

@@ -24,17 +24,24 @@ from agentic_core.adg.identity.normalizer import (
     normalize_identity,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_execution_trace,  # noqa: E402
@@ -42,28 +49,21 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_escalates_to_human,
-    _emit_routes_through,
 )
 
 _emit_records_execution_trace("p0", "evidence", "test_adg_identity_normalizer")
@@ -71,14 +71,21 @@ _emit_applies_guardrail("p0", "test_adg_identity_normalizer", "p0_governance")
 _emit_reads_policy_state("p0", "test_adg_identity_normalizer", "policy_binding")
 _emit_snapshots_state("p0", "test_adg_identity_normalizer", "state_snapshot")
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
+    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
-    _emit_links_incident_trace,
+    _emit_links_incident_trace,  # noqa: E402
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -86,29 +93,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
-    _emit_writes_through,
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
     _emit_writes_through,  # noqa: E402
-    _emit_links_incident_trace,  # noqa: E402
 )
 
 _emit_emits_metric_event("test_adg_identity_normalizer", "p4obs", "metric_1")
@@ -247,7 +245,7 @@ class TestRepoModuleResolution:
     @pytest.mark.unit
     def test_adg_schema_is_repo_module(self) -> None:
         rec = normalize_identity(
-            "agentic_core.adg.schema",
+            "agentic_core.adg.schema_util",
             repo_root=_REPO_ROOT,
         )
         assert rec.kind == IdentityKind.REPO_MODULE
@@ -255,7 +253,7 @@ class TestRepoModuleResolution:
     @pytest.mark.unit
     def test_repo_module_resolved_path_ends_with_py(self) -> None:
         rec = normalize_identity(
-            "agentic_core.adg.schema",
+            "agentic_core.adg.schema_util",
             repo_root=_REPO_ROOT,
         )
         assert rec.resolved_path.endswith(".py")
@@ -263,7 +261,7 @@ class TestRepoModuleResolution:
     @pytest.mark.unit
     def test_repo_module_has_high_confidence(self) -> None:
         rec = normalize_identity(
-            "agentic_core.adg.schema",
+            "agentic_core.adg.schema_util",
             repo_root=_REPO_ROOT,
         )
         assert rec.confidence == IdentityConfidence.HIGH
@@ -271,7 +269,7 @@ class TestRepoModuleResolution:
     @pytest.mark.unit
     def test_repo_module_adg_name_starts_with_adg_module(self) -> None:
         rec = normalize_identity(
-            "agentic_core.adg.schema",
+            "agentic_core.adg.schema_util",
             repo_root=_REPO_ROOT,
         )
         assert rec.adg_name.startswith("ADG::Module::")
@@ -353,7 +351,7 @@ class TestInferredSymbolResolution:
     @pytest.mark.unit
     def test_class_from_module_is_inferred_symbol(self) -> None:
         rec = normalize_identity(
-            "agentic_core.adg.schema.EntityType",
+            "agentic_core.adg.schema_util.EntityType",
             repo_root=_REPO_ROOT,
         )
         assert rec.kind == IdentityKind.INFERRED_SYMBOL
@@ -361,7 +359,7 @@ class TestInferredSymbolResolution:
     @pytest.mark.unit
     def test_inferred_symbol_has_parent_path(self) -> None:
         rec = normalize_identity(
-            "agentic_core.adg.schema.canonical_name",
+            "agentic_core.adg.schema_util.canonical_name",
             repo_root=_REPO_ROOT,
         )
         assert rec.resolved_path.endswith(".py")
@@ -369,7 +367,7 @@ class TestInferredSymbolResolution:
     @pytest.mark.unit
     def test_inferred_symbol_has_medium_confidence(self) -> None:
         rec = normalize_identity(
-            "agentic_core.adg.schema.RelationType",
+            "agentic_core.adg.schema_util.RelationType",
             repo_root=_REPO_ROOT,
         )
         assert rec.confidence == IdentityConfidence.MEDIUM
@@ -387,8 +385,8 @@ class TestDeterminism:
 
     @pytest.mark.unit
     def test_repo_module_deterministic(self) -> None:
-        r1 = normalize_identity("agentic_core.adg.schema", repo_root=_REPO_ROOT)
-        r2 = normalize_identity("agentic_core.adg.schema", repo_root=_REPO_ROOT)
+        r1 = normalize_identity("agentic_core.adg.schema_util", repo_root=_REPO_ROOT)
+        r2 = normalize_identity("agentic_core.adg.schema_util", repo_root=_REPO_ROOT)
         assert r1.resolved_path == r2.resolved_path
         assert r1.confidence == r2.confidence
 
@@ -396,8 +394,8 @@ class TestDeterminism:
     def test_normalize_many_order_independent(self) -> None:
         """normalize_many result is keyed by sorted names regardless of input order."""
         normalizer = IdentityNormalizer(repo_root=_REPO_ROOT)
-        r1 = normalizer.normalize_many(["openai", "agentic_core.adg.schema"])
-        r2 = normalizer.normalize_many(["agentic_core.adg.schema", "openai"])
+        r1 = normalizer.normalize_many(["openai", "agentic_core.adg.schema_util"])
+        r2 = normalizer.normalize_many(["agentic_core.adg.schema_util", "openai"])
         assert set(r1.keys()) == set(r2.keys())
         for k in r1:
             assert r1[k].kind == r2[k].kind
@@ -409,7 +407,7 @@ class TestNormalizationReport:
     @pytest.mark.unit
     def test_report_total_matches_record_count(self) -> None:
         normalizer = IdentityNormalizer(repo_root=_REPO_ROOT)
-        names = ["openai", "agentic_core.adg.schema", "agentic_core.adg"]
+        names = ["openai", "agentic_core.adg.schema_util", "agentic_core.adg"]
         records = normalizer.normalize_many(names)
         report = normalizer.report(records)
         assert report.total == 3
@@ -417,7 +415,7 @@ class TestNormalizationReport:
     @pytest.mark.unit
     def test_report_by_kind_sums_to_total(self) -> None:
         normalizer = IdentityNormalizer(repo_root=_REPO_ROOT)
-        names = ["openai", "agentic_core.adg.schema", "agentic_core.adg"]
+        names = ["openai", "agentic_core.adg.schema_util", "agentic_core.adg"]
         records = normalizer.normalize_many(names)
         report = normalizer.report(records)
         assert sum(report.by_kind.values()) == report.total
@@ -447,7 +445,7 @@ class TestBuildIdentityIndex:
     @pytest.mark.unit
     def test_returns_records_and_report(self) -> None:
         records, report = build_identity_index(
-            ["openai", "agentic_core.adg.schema"],
+            ["openai", "agentic_core.adg.schema_util"],
             repo_root=_REPO_ROOT,
         )
         assert isinstance(records, dict)
@@ -465,7 +463,7 @@ class TestIdentityRecordAdgName:
 
     @pytest.mark.unit
     def test_repo_module_adg_name_nonempty(self) -> None:
-        rec = normalize_identity("agentic_core.adg.schema", repo_root=_REPO_ROOT)
+        rec = normalize_identity("agentic_core.adg.schema_util", repo_root=_REPO_ROOT)
         assert len(rec.adg_name) > 0
 
     @pytest.mark.unit
@@ -475,7 +473,7 @@ class TestIdentityRecordAdgName:
 
     @pytest.mark.unit
     def test_inferred_symbol_adg_name_nonempty(self) -> None:
-        rec = normalize_identity("agentic_core.adg.schema.EntityType", repo_root=_REPO_ROOT)
+        rec = normalize_identity("agentic_core.adg.schema_util.EntityType", repo_root=_REPO_ROOT)
         assert len(rec.adg_name) > 0
 
 

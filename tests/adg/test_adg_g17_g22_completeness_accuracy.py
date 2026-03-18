@@ -333,7 +333,7 @@ class TestDetectionConstants:
         ],
     )
     def test_constant_contains_expected_members(self, const_name: str, expected_members: list[str]) -> None:
-        import agentic_core.adg.schema as sch
+        import agentic_core.adg.schema_util as sch
 
         fs = getattr(sch, const_name)
         for m in expected_members:
@@ -358,13 +358,13 @@ class TestDetectionConstants:
         ],
     )
     def test_constant_exported_in_all(self, const_name: str) -> None:
-        import agentic_core.adg.schema as sch
+        import agentic_core.adg.schema_util as sch
 
         assert const_name in sch.__all__, f"{const_name} missing from schema.__all__"
 
     def test_no_cross_constant_overlap(self) -> None:
         """No symbol string should appear in two different G17-G22 frozensets."""
-        import agentic_core.adg.schema as sch
+        import agentic_core.adg.schema_util as sch
 
         g17_g22_consts = [
             "SECRET_VAULT_CLASSES",
@@ -406,7 +406,7 @@ class TestDetectionConstants:
         ],
     )
     def test_no_empty_or_whitespace_members(self, const_name: str) -> None:
-        import agentic_core.adg.schema as sch
+        import agentic_core.adg.schema_util as sch
 
         for m in getattr(sch, const_name):
             assert isinstance(m, str) and m.strip(), f"{const_name}: invalid member {m!r}"
@@ -1412,7 +1412,7 @@ class TestLayerSplitterAccuracy:
         ],
     )
     def test_relation_in_governance_plane(self, relation: str) -> None:
-        from agentic_core.adg.artifact.layer_splitter import _GOVERNANCE_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _GOVERNANCE_GRAPH_RELS
 
         assert relation in _GOVERNANCE_GRAPH_RELS, f"{relation!r} not in _GOVERNANCE_GRAPH_RELS"
 
@@ -1440,7 +1440,7 @@ class TestLayerSplitterAccuracy:
         ],
     )
     def test_relation_not_in_file_plane(self, relation: str) -> None:
-        from agentic_core.adg.artifact.layer_splitter import _FILE_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS
 
         assert relation not in _FILE_GRAPH_RELS
 
@@ -1468,13 +1468,13 @@ class TestLayerSplitterAccuracy:
         ],
     )
     def test_relation_not_in_symbol_plane(self, relation: str) -> None:
-        from agentic_core.adg.artifact.layer_splitter import _SYMBOL_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _SYMBOL_GRAPH_RELS
 
         assert relation not in _SYMBOL_GRAPH_RELS
 
     def test_no_three_plane_overlap(self) -> None:
         """Every relation type must appear in exactly one plane."""
-        from agentic_core.adg.artifact.layer_splitter import (
+        from agentic_core.adg.artifact.SplitArtifact import (
             _FILE_GRAPH_RELS,
             _GOVERNANCE_GRAPH_RELS,
             _SYMBOL_GRAPH_RELS,
