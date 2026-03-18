@@ -170,7 +170,11 @@ try:
     _AVAILABLE = True
 except (ImportError, NameError, AttributeError, TypeError, Exception):  # guardian: allow-silent-swallow
     pass
-from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+try:
+    from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+except (ImportError, ModuleNotFoundError):
+    HealingOutcomeEvent = None  # type: ignore[misc,assignment]
+    _AVAILABLE = False
 
 _emit_emits_metric_event("test_healing_outcome_wiring", "p4obs", "metric_1")
 _emit_emits_metric_event("test_healing_outcome_wiring", "p4obs", "metric_2")

@@ -178,6 +178,8 @@ try:
 except Exception:  # guardian: allow-silent-swallow
     pass
 
+pytestmark = pytest.mark.skipif(not _AVAILABLE, reason="transcript_freezer.py deps unavailable")
+
 
 class TestTranscriptMutationViolation:
     def test_is_exception(self):

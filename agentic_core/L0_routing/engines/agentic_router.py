@@ -362,7 +362,6 @@ class AgenticRouter:
         _emitter = _get_proof_emitter()
         with _emitter.proof_op(f"route:{intent}:{target_name}"):
             pass
-        _emitter.emit_proof(intent, target_name)
         from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
 
         _active = get_active_execution_trace()

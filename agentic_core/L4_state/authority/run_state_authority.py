@@ -516,7 +516,6 @@ class RunStateAuthority(WriteGovernorMixin):
         """
         with _proof_emitter.proof_op(f"commit:{key}"):
             pass
-        _proof_emitter.emit_proof(key, value)
         effective_run_id = run_id or self.run_id
         namespace = state_namespace or f"run_state.{effective_run_id}"
 

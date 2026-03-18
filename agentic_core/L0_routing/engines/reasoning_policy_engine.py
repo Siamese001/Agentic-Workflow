@@ -475,7 +475,6 @@ class ReasoningPolicyEngine:
         _emitter = _get_proof_emitter()
         with _emitter.proof_op(f"compute_and_stamp:{route_decision.trace_id}"):
             pass
-        _emitter.emit_proof(route_decision.trace_id, tier.value)
         _rctx_rpe = RoutingContext(
             run_id=route_decision.trace_id,
             router_id="ReasoningPolicyEngine",

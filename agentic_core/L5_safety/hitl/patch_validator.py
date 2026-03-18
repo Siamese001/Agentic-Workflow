@@ -221,7 +221,7 @@ def validate_patch(patch: dict[str, Any]) -> ValidatedPatch:
     import uuid as _uuid  # noqa: PLC0415
 
     _trace_id = str(_uuid.uuid4())
-    _emit_records_execution_trace(_trace_id, LayerSegment.L5_SAFETY, "validate_patch")
+    _emit_records_execution_trace(_trace_id, LayerSegment.L5_POLICY, "validate_patch")
     missing = [f for f in sorted(_REQUIRED_FIELDS) if not patch.get(f)]
     if missing:
         raise HumanPatchValidationError(

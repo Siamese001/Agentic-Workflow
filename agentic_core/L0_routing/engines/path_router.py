@@ -267,7 +267,6 @@ class PathRouter:
         _emitter = _get_proof_emitter()
         with _emitter.proof_op(f"select_path:{chosen.value}"):
             pass
-        _emitter.emit_proof("path", chosen.value)
         from agentic_core.runtime.execution_trace import get_active_execution_trace  # noqa: PLC0415
 
         _active = get_active_execution_trace()

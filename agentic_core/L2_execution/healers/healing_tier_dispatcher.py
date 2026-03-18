@@ -472,7 +472,6 @@ def dispatch_healing(
     try:
         record = registry.dispatch(
             caller="healing_tier_dispatcher",
-            target_class=invoker.__class__.__name__,
             method=method_name,
             target_instance=invoker,
             args=(healing_input, decision, config),
@@ -703,7 +702,6 @@ def invoke_qwen_with_oom_protection(
             registry = get_agent_dispatch_registry()
             return registry.dispatch(
                 caller="healing_tier_dispatcher",
-                target_class=invoker.__class__.__name__,
                 method=method_name,
                 target_instance=invoker,
                 args=(healing_input, escalated_decision, config),
