@@ -480,13 +480,22 @@ class SystemLearningMemoryBridge:
         """
         if not self._bridge:
             return []
-        query = f"SLRCAFinding {category}" if category else "SLRCAFinding"
         try:
-            return self._bridge.search_entities(query)
+            results = self._bridge.search_entities("SLRCAFinding")
         # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-silent-swallower
             logger.debug("[SLMemoryBridge] query_rca_pattern_frequency failed: %s", e)
             return []
+        if not category:
+            return results
+        # Filter by category in observations (MCP search may not substring-match)
+        filtered = []
+        for entity in results:
+            for obs in entity.get("observations", []):
+                if obs.startswith("category=") and category in obs:
+                    filtered.append(entity)
+                    break
+        return filtered
 
     # ------------------------------------------------------------------
     # 3. Shadow Drift Summaries — drift trend history
@@ -552,13 +561,22 @@ class SystemLearningMemoryBridge:
         """
         if not self._bridge:
             return []
-        query = f"SLDriftSummary {profile_id}" if profile_id else "SLDriftSummary"
         try:
-            return self._bridge.search_entities(query)
+            results = self._bridge.search_entities("SLDriftSummary")
         # guardian: allow-silent-swallow
         except Exception as e:  # guardian: allow-silent-swallower
             logger.debug("[SLMemoryBridge] query_drift_history failed: %s", e)
             return []
+        if not profile_id:
+            return results
+        # Filter by profile_id in observations (MCP search may not substring-match)
+        filtered = []
+        for entity in results:
+            for obs in entity.get("observations", []):
+                if obs.startswith("profile_id=") and profile_id in obs:
+                    filtered.append(entity)
+                    break
+        return filtered
 
     # ------------------------------------------------------------------
     # 4. Policy Recommendations — history + outcome feedback

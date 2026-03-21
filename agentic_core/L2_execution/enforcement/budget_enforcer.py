@@ -269,8 +269,8 @@ class BudgetEnforcer:
         # Wave 3: Guardrail pre-check
         guardrail = get_guardrail_gate()
         guardrail.check(operation="run_budget_enforcer", target=envelope.tool_name)
-        if envelope.max_stdout_bytes <= 0:
-            raise BudgetExceeded(f"stdout_bytes cap ({envelope.max_stdout_bytes}) exceeded")
+        if envelope.budget.stdout_bytes <= 0:
+            raise BudgetExceeded(f"stdout_bytes cap ({envelope.budget.stdout_bytes}) exceeded")
         budget = envelope.budget
         if _HAS_RESOURCE:
             try:

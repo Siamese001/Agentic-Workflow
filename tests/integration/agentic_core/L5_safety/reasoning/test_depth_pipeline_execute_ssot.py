@@ -225,6 +225,9 @@ _FAKE_TERRITORIES = MappingProxyType(
     }
 )
 
+# _enforce_apps_depth reads PROJECT_ROOT_WHITELIST, not SOVEREIGN_TERRITORIES
+_FAKE_WHITELIST = frozenset({APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR, TESTS_DIR, AGENTIC_CORE_DIR})
+
 
 class TestEnforceAppsDepth:
     def test_enforce_apps_all_three_keys_iterated(self, tmp_path):
@@ -233,8 +236,8 @@ class TestEnforceAppsDepth:
         agent._enforce_depth_for_root = MagicMock(return_value=0)
 
         with patch(
-            "agentic_core.L5_safety.reasoning.hierarchy_healer.SOVEREIGN_TERRITORIES",
-            _FAKE_TERRITORIES,
+            "agentic_core.L5_safety.reasoning.hierarchy_healer.PROJECT_ROOT_WHITELIST",
+            _FAKE_WHITELIST,
         ):
             agent._enforce_apps_depth()
 
@@ -243,14 +246,14 @@ class TestEnforceAppsDepth:
         assert set(root_keys) == {APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR}
 
     def test_enforce_apps_missing_key_skipped(self, tmp_path):
-        """Key missing from SOVEREIGN_TERRITORIES → _enforce_depth_for_root not called for it."""
+        """Key missing from PROJECT_ROOT_WHITELIST → _enforce_depth_for_root not called for it."""
         agent = _make_agent(tmp_path)
         agent._enforce_depth_for_root = MagicMock(return_value=0)
 
-        partial = MappingProxyType({APPS_RG_DIR: {"depth": 2}, APPS_LIC_DIR: {"depth": 2}})
+        partial_whitelist = frozenset({APPS_RG_DIR, APPS_LIC_DIR})
         with patch(
-            "agentic_core.L5_safety.reasoning.hierarchy_healer.SOVEREIGN_TERRITORIES",
-            partial,
+            "agentic_core.L5_safety.reasoning.hierarchy_healer.PROJECT_ROOT_WHITELIST",
+            partial_whitelist,
         ):
             agent._enforce_apps_depth()
 
@@ -264,8 +267,8 @@ class TestEnforceAppsDepth:
         agent._enforce_depth_for_root = MagicMock(side_effect=[3, 5, 2])
 
         with patch(
-            "agentic_core.L5_safety.reasoning.hierarchy_healer.SOVEREIGN_TERRITORIES",
-            _FAKE_TERRITORIES,
+            "agentic_core.L5_safety.reasoning.hierarchy_healer.PROJECT_ROOT_WHITELIST",
+            _FAKE_WHITELIST,
         ):
             total = agent._enforce_apps_depth()
 
@@ -280,14 +283,14 @@ class TestEnforceAppsDepth:
         )
 
         with patch(
-            "agentic_core.L5_safety.reasoning.hierarchy_healer.SOVEREIGN_TERRITORIES",
-            _FAKE_TERRITORIES,
+            "agentic_core.L5_safety.reasoning.hierarchy_healer.PROJECT_ROOT_WHITELIST",
+            _FAKE_WHITELIST,
         ):
             agent._enforce_apps_depth()
 
         assert len(captured_checks) == 3
         # Keys emitted in sorted() order — derive expected order from the same SSOT filter
-        expected_keys = sorted(k for k in _FAKE_TERRITORIES if k.startswith("apps_"))
+        expected_keys = sorted(k for k in _FAKE_WHITELIST if k.startswith("apps_"))
         for expected_key, check in zip(expected_keys, captured_checks):
             assert check(expected_key) is True
             for other_key in set(expected_keys) - {expected_key}:

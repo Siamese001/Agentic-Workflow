@@ -1027,6 +1027,7 @@ def run_pipeline(
                     dpo_proposal.timestamp_utc = now_utc
                 except (AttributeError, TypeError):
                     pass
+            # DPO proposals enter before Stage 7 validation loop
             proposals.append(dpo_proposal)
         except (ImportError, AttributeError, ValueError) as e:
             print(f"DPO batch processing failed: {e}")
@@ -1035,6 +1036,7 @@ def run_pipeline(
     from system_learning.validators.replay_validator import replay_validate
     from system_learning.validators.shadow_evaluator import evaluate_shadow
 
+    # Step 7: Validate each proposal
     validated_proposals = []
     for pkg in proposals:
         if cfg.require_replay_validation:

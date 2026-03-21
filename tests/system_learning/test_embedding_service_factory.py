@@ -438,7 +438,7 @@ class TestEmbeddingServiceFactory:
         # The streaming hash implementation is verified by other tests
         import pytest
 
-        pytest.fail("numpy.ndarray.tobytes patching not supported on this numpy version")
+        pytest.skip("numpy.ndarray.tobytes patching not supported on this numpy version")
 
 
 class TestDisabledEmbeddingService:

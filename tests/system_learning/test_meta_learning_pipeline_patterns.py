@@ -198,8 +198,11 @@ class TestMetaLearningPipelinePatterns:
         mock_deps.pattern_analysis_engine = engine
 
         # Create mock aggregate snapshot
-        mock_snapshot = MagicMock()
+        mock_snapshot = MagicMock(spec=[])
         mock_snapshot.outcomes = []
+
+        # Reset singleton to prevent KILL_SWITCH_VIOLATION from prior tests
+        EmbeddingServiceFactory.reset_instance()
 
         # Disable embeddings via environment
         with patch.dict(os.environ, {"EMBEDDING_ENABLED": "false"}):
@@ -323,7 +326,7 @@ class TestMetaLearningPipelinePatterns:
         mock_deps = MagicMock()
         mock_deps.pattern_analysis_engine = engine
 
-        mock_snapshot = MagicMock()
+        mock_snapshot = MagicMock(spec=[])
         mock_snapshot.outcomes = []
 
         with patch.dict(os.environ, {"EMBEDDING_ENABLED": "true"}):
@@ -340,7 +343,7 @@ class TestMetaLearningPipelinePatterns:
         mock_deps.pattern_analysis_engine = engine
 
         # Only 8 data points (below small-N threshold of 10)
-        mock_snapshot = MagicMock()
+        mock_snapshot = MagicMock(spec=[])
         mock_outcomes = []
 
         for i in range(8):
@@ -387,8 +390,11 @@ class TestMetaLearningPipelinePatterns:
         mock_deps = MagicMock()
         mock_deps.pattern_analysis_engine = engine
 
-        mock_snapshot = MagicMock()
+        mock_snapshot = MagicMock(spec=[])
         mock_snapshot.outcomes = []
+
+        # Reset singleton to prevent KILL_SWITCH_VIOLATION from prior tests
+        EmbeddingServiceFactory.reset_instance()
 
         # Enable kill switch
         with patch.dict(os.environ, {"EMBEDDING_ENABLED": "false"}):

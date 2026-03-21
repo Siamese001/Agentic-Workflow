@@ -393,10 +393,10 @@ class TestBoundaryDriftMonitorThresholds:
         snap = RetrievalDriftSnapshot(
             timestamp="t",
             system_version="v1",
-            retrieval_hit_rate=0.70,  # == threshold
+            retrieval_hit_rate=THRESHOLD,  # == threshold
             score_distribution_mean=0.7,
             score_distribution_std=0.10,
-            top_k_stability=0.80,
+            top_k_stability=0.96,
             sample_size=10,
         )
         alerts = self._monitor(hit_threshold=THRESHOLD).check_alerts(snap)
@@ -407,7 +407,7 @@ class TestBoundaryDriftMonitorThresholds:
         snap = RetrievalDriftSnapshot(
             timestamp="t",
             system_version="v1",
-            retrieval_hit_rate=0.699,  # < 0.70
+            retrieval_hit_rate=THRESHOLD - 0.001,  # just below threshold
             score_distribution_mean=0.7,
             score_distribution_std=0.10,
             top_k_stability=0.80,
@@ -422,8 +422,8 @@ class TestBoundaryDriftMonitorThresholds:
             system_version="v1",
             retrieval_hit_rate=0.90,
             score_distribution_mean=0.7,
-            score_distribution_std=0.20,  # == threshold
-            top_k_stability=0.80,
+            score_distribution_std=THRESHOLD,  # == threshold
+            top_k_stability=0.96,
             sample_size=10,
         )
         alerts = self._monitor(std_threshold=THRESHOLD).check_alerts(snap)
@@ -436,7 +436,7 @@ class TestBoundaryDriftMonitorThresholds:
             system_version="v1",
             retrieval_hit_rate=0.90,
             score_distribution_mean=0.7,
-            score_distribution_std=0.201,  # > 0.20
+            score_distribution_std=THRESHOLD + 0.001,  # just above threshold
             top_k_stability=0.80,
             sample_size=10,
         )
@@ -450,7 +450,7 @@ class TestBoundaryDriftMonitorThresholds:
             retrieval_hit_rate=0.90,
             score_distribution_mean=0.7,
             score_distribution_std=0.05,
-            top_k_stability=0.60,  # == threshold
+            top_k_stability=THRESHOLD,  # == threshold
             sample_size=10,
         )
         alerts = self._monitor(stab_threshold=THRESHOLD).check_alerts(snap)
@@ -464,7 +464,7 @@ class TestBoundaryDriftMonitorThresholds:
             retrieval_hit_rate=0.90,
             score_distribution_mean=0.7,
             score_distribution_std=0.05,
-            top_k_stability=0.599,  # < 0.60
+            top_k_stability=THRESHOLD - 0.001,  # just below threshold
             sample_size=10,
         )
         alerts = self._monitor(stab_threshold=THRESHOLD).check_alerts(snap)
@@ -629,8 +629,8 @@ class TestBoundaryEmbeddingDriftMonitor:
             timestamp="t",
             embedding_model_version="v1",
             vector_norm_mean=1.0,
-            vector_norm_std=0.15,  # == threshold
-            similarity_distribution_mean=0.7,
+            vector_norm_std=THRESHOLD,  # == threshold
+            similarity_distribution_mean=0.96,
             similarity_distribution_std=0.05,
             version_mismatch_detected=False,
             sample_size=10,
@@ -644,7 +644,7 @@ class TestBoundaryEmbeddingDriftMonitor:
             timestamp="t",
             embedding_model_version="v1",
             vector_norm_mean=1.0,
-            vector_norm_std=0.151,  # > 0.15
+            vector_norm_std=THRESHOLD + 0.001,  # just above threshold
             similarity_distribution_mean=0.7,
             similarity_distribution_std=0.05,
             version_mismatch_detected=False,
@@ -659,7 +659,7 @@ class TestBoundaryEmbeddingDriftMonitor:
             embedding_model_version="v1",
             vector_norm_mean=1.0,
             vector_norm_std=0.05,
-            similarity_distribution_mean=0.50,  # == threshold
+            similarity_distribution_mean=THRESHOLD,  # == threshold
             similarity_distribution_std=0.05,
             version_mismatch_detected=False,
             sample_size=10,
@@ -674,7 +674,7 @@ class TestBoundaryEmbeddingDriftMonitor:
             embedding_model_version="v1",
             vector_norm_mean=1.0,
             vector_norm_std=0.05,
-            similarity_distribution_mean=0.499,  # < 0.50
+            similarity_distribution_mean=THRESHOLD - 0.001,  # just below threshold
             similarity_distribution_std=0.05,
             version_mismatch_detected=False,
             sample_size=10,
@@ -697,7 +697,7 @@ class TestBoundaryAnswerQualityMonitor:
         snap = AnswerQualitySnapshot(
             timestamp="t",
             system_version="v1",
-            groundedness_rate=0.70,  # == threshold
+            groundedness_rate=THRESHOLD,  # == threshold
             hallucination_rate=0.05,
             human_override_rate=0.10,
             answer_correctness_mean=0.80,
@@ -711,7 +711,7 @@ class TestBoundaryAnswerQualityMonitor:
         snap = AnswerQualitySnapshot(
             timestamp="t",
             system_version="v1",
-            groundedness_rate=0.699,  # < 0.70
+            groundedness_rate=THRESHOLD - 0.001,  # just below threshold
             hallucination_rate=0.05,
             human_override_rate=0.10,
             answer_correctness_mean=0.80,
@@ -724,8 +724,8 @@ class TestBoundaryAnswerQualityMonitor:
         snap = AnswerQualitySnapshot(
             timestamp="t",
             system_version="v1",
-            groundedness_rate=0.90,
-            hallucination_rate=0.15,  # == threshold
+            groundedness_rate=0.96,
+            hallucination_rate=THRESHOLD,  # == threshold
             human_override_rate=0.10,
             answer_correctness_mean=0.80,
             sample_size=10,
@@ -738,8 +738,8 @@ class TestBoundaryAnswerQualityMonitor:
         snap = AnswerQualitySnapshot(
             timestamp="t",
             system_version="v1",
-            groundedness_rate=0.90,
-            hallucination_rate=0.151,  # > 0.15
+            groundedness_rate=0.96,
+            hallucination_rate=THRESHOLD + 0.001,  # just above threshold
             human_override_rate=0.10,
             answer_correctness_mean=0.80,
             sample_size=10,
@@ -751,9 +751,9 @@ class TestBoundaryAnswerQualityMonitor:
         snap = AnswerQualitySnapshot(
             timestamp="t",
             system_version="v1",
-            groundedness_rate=0.90,
+            groundedness_rate=0.96,
             hallucination_rate=0.05,
-            human_override_rate=0.20,  # == threshold
+            human_override_rate=THRESHOLD,  # == threshold
             answer_correctness_mean=0.80,
             sample_size=10,
         )
@@ -765,9 +765,9 @@ class TestBoundaryAnswerQualityMonitor:
         snap = AnswerQualitySnapshot(
             timestamp="t",
             system_version="v1",
-            groundedness_rate=0.90,
+            groundedness_rate=0.96,
             hallucination_rate=0.05,
-            human_override_rate=0.201,  # > 0.20
+            human_override_rate=THRESHOLD + 0.001,  # just above threshold
             answer_correctness_mean=0.80,
             sample_size=10,
         )
@@ -1617,7 +1617,7 @@ class TestStatefulSemanticEdge:
     def test_similarity_threshold_stored(self):
         """similarity_threshold is stored; may be used by injected embedder."""
         p = SemanticChunkPolicy(target_size=50, similarity_threshold=THRESHOLD)
-        assert p.similarity_threshold == pytest.approx(0.90)
+        assert p.similarity_threshold == pytest.approx(THRESHOLD)
 
     def test_embedder_injection_does_not_break_chunking(self):
         """With a mock embedder present, chunking must still complete."""

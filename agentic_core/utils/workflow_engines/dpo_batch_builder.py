@@ -8,6 +8,7 @@ the same query and contrasting positive vs negative annotations.
 
 from __future__ import annotations
 
+import logging
 import uuid
 from typing import Optional
 from datetime import datetime

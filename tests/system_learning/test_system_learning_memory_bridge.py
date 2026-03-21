@@ -416,7 +416,7 @@ class TestRCAPersistence:
 
     def test_query_rca_with_category_filter(self):
         bridge, mock_gmb = self._bridge_with_mock()
-        mock_gmb.search_returns = [{"name": "SLRCAFinding_IMPORT_abc", "observations": []}]
+        mock_gmb.search_returns = [{"name": "SLRCAFinding_IMPORT_abc", "observations": ["category=IMPORT", "signature=test"]}]
         result = bridge.query_rca_pattern_frequency("IMPORT")
         assert len(result) == 1
 

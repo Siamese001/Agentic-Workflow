@@ -417,7 +417,7 @@ class TestRetrievalDriftMonitor:
             system_version="v1",
             retrieval_hit_rate=0.90,
             score_distribution_mean=0.7,
-            score_distribution_std=0.30,  # above 0.20
+            score_distribution_std=0.96,  # above THRESHOLD (0.95)
             top_k_stability=0.80,
             sample_size=10,
         )
@@ -501,7 +501,7 @@ class TestEmbeddingDriftMonitor:
             timestamp="2025-01-01T00:00:00Z",
             embedding_model_version="v1.2",
             vector_norm_mean=1.0,
-            vector_norm_std=0.30,  # above 0.15
+            vector_norm_std=0.96,  # above THRESHOLD (0.95)
             similarity_distribution_mean=0.7,
             similarity_distribution_std=0.05,
             version_mismatch_detected=False,
@@ -530,7 +530,7 @@ class TestEmbeddingDriftMonitor:
             embedding_model_version="v1.2",
             vector_norm_mean=1.0,
             vector_norm_std=0.05,
-            similarity_distribution_mean=0.80,
+            similarity_distribution_mean=0.96,
             similarity_distribution_std=0.05,
             version_mismatch_detected=False,
             sample_size=10,
@@ -598,7 +598,7 @@ class TestAnswerQualityMonitor:
             timestamp="2025-01-01T00:00:00Z",
             system_version="v1",
             groundedness_rate=0.90,
-            hallucination_rate=0.30,  # above 0.15
+            hallucination_rate=0.96,  # above THRESHOLD (0.95)
             human_override_rate=0.10,
             answer_correctness_mean=0.80,
             sample_size=10,
@@ -613,7 +613,7 @@ class TestAnswerQualityMonitor:
             system_version="v1",
             groundedness_rate=0.90,
             hallucination_rate=0.05,
-            human_override_rate=0.35,  # above 0.20
+            human_override_rate=0.96,  # above THRESHOLD (0.95)
             answer_correctness_mean=0.80,
             sample_size=10,
         )
@@ -624,7 +624,7 @@ class TestAnswerQualityMonitor:
         snapshot = AnswerQualitySnapshot(
             timestamp="2025-01-01T00:00:00Z",
             system_version="v1",
-            groundedness_rate=0.90,
+            groundedness_rate=0.96,
             hallucination_rate=0.05,
             human_override_rate=0.10,
             answer_correctness_mean=0.85,

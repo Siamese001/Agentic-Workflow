@@ -235,7 +235,7 @@ class ShadowDriftAnalyzer:
         if not shadow_records:
             return DriftSummary(
                 profile_id=profile_id,
-                batch_size=BATCH_SIZE,
+                batch_size=len(shadow_records),
                 mean_cosine=1.0,
                 p95_cosine=1.0,
                 drift_flag=False,

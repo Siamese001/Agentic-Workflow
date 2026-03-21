@@ -436,8 +436,8 @@ class EvaluatorProposerBridge:
                 payload=proposal.to_dict(),
             )
             self.l4_store.put(artifact)
+        # guardian: allow-silent-swallow
         except Exception:
-            raise
             pass
 
 

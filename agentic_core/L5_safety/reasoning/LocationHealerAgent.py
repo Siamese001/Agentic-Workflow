@@ -1130,16 +1130,14 @@ class LocationHealerAgent(SovereignBaseAgent):
                 if method_name == "_heal_broken_backup":
                     return registry.dispatch(
                         caller="LocationHealerAgent",
-                        target_class=self.__class__.__name__,
-                        method=method_name,
                         target_instance=self,
+                        method=method_name,
                         args=(file_path, dry_run, affected_paths),
                     )
                 return registry.dispatch(
                     caller="LocationHealerAgent",
-                    target_class=self.__class__.__name__,
-                    method=method_name,
                     target_instance=self,
+                    method=method_name,
                     args=(file_path, msg, dry_run, affected_paths, import_touched_paths),
                 )
 

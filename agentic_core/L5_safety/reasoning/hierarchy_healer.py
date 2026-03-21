@@ -131,6 +131,7 @@ from agentic_core.L5_safety.config.structure_blueprint import (
     PROJECT_ROOT_WHITELIST,
     ROOT_PROTECTED_FILES,
     SOVEREIGN_EXCLUDED_FOLDERS,
+    SOVEREIGN_TERRITORIES,
     VARIABLE_DEPTH_SUBFOLDERS,
 )
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper

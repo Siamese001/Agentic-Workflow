@@ -245,7 +245,6 @@ class InstructionPacket:
     def __post_init__(self) -> None:
         """Enforce mandatory signing at construction."""
         if not self.signature:
-            credential_guard.check(operation="credential_access", target="get_current_secret")
             get_credential_guard().check(operation="credential_access", target="get_current_secret")
             secret = get_current_secret()
             mac = hmac.new(secret, self.canonical_bytes(), hashlib.sha256)

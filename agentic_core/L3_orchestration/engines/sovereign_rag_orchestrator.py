@@ -570,7 +570,7 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
             return candidates[:top_k]
         try:
             return await self.engine.rerank(query, candidates)
-        except (AttributeError, TypeError, ValueError) as e:
+        except (AttributeError, TypeError, ValueError, RuntimeError) as e:
             logger.warning("_llm_rerank: rerank_engine raised — returning candidates[:top_k]", exc_info=True)
             return candidates[:top_k]
 

@@ -87,9 +87,13 @@ _emit_updates_meta_learning_state("p4", "credential_guard", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "credential_guard", "exec_snapshot_link")
 
 "\nDeterministic Credential Scanner\n\nRepository Security Gate Maintainer (L5 Safety Surface)\n\nScans repository for exposed credentials using deterministic regex patterns.\nRead-only scanning only - no file modification or auto-remediation.\n"
+import logging
 import re
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+_cg_logger = logging.getLogger("agentic_core.L5_safety.enforcement.credential_guard")
 
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
@@ -182,9 +186,20 @@ _emit_invokes_eval("p1", "credential_guard", "eval_call")
 _emit_proposal_commits_routing("p1", "credential_guard", "routing_commit")
 
 class CredentialGuard:
-    """Runtime credential access guard."""
+    """Runtime credential access guard.
+
+    Modes:
+        - ``warn``: log violations but allow execution (default)
+        - ``enforce``: raise ``CredentialAccessDeniedError`` on violations
+    """
 
     _instance = None
+
+    def __init__(self, mode: str = "warn") -> None:
+        self._mode = mode
+        self._access_counts: dict[str, int] = {}
+        self._log: list[dict[str, Any]] = []
+        self._max_accesses_per_minute = 100
 
     @classmethod
     def get_instance(cls):
@@ -192,10 +207,41 @@ class CredentialGuard:
             cls._instance = cls()
         return cls._instance
 
-    @classmethod
-    def check(cls, operation="", target="", **kwargs):
-        """Validate a credential access operation. No-op by default."""
-        pass
+    def check(self, operation="", target="", **kwargs):
+        """Validate a credential access operation with rate limiting."""
+        count = self._access_counts.get(target, 0)
+        if count >= self._max_accesses_per_minute:
+            verdict = "deny"
+            _cg_logger.debug(
+                "applies_guardrail: credential_guard rate_limit operation=%s target=%s verdict=%s",
+                operation, target, verdict,
+            )
+            entry = {"operation": operation, "target": target, "verdict": verdict}
+            self._log.append(entry)
+            if self._mode == "enforce":
+                from agentic_core.L5_safety.enforcement.credential_guard import CredentialAccessDeniedError
+                raise CredentialAccessDeniedError(
+                    f"Credential guard rate limit exceeded for {target}"
+                )
+            return {"verdict": verdict, "timestamp": datetime.now(timezone.utc).isoformat()}
+
+        self._access_counts[target] = count + 1
+        verdict = "allow"
+        _cg_logger.debug(
+            "applies_guardrail: credential_guard check operation=%s target=%s verdict=%s",
+            operation, target, verdict,
+        )
+        entry = {"operation": operation, "target": target, "verdict": verdict}
+        self._log.append(entry)
+        return {"verdict": verdict, "timestamp": datetime.now(timezone.utc).isoformat()}
+
+    def get_access_log(self) -> list[dict[str, Any]]:
+        """Return the audit log of all checks."""
+        return list(self._log)
+
+    def reset_rate_limits(self) -> None:
+        """Clear rate limit counters."""
+        self._access_counts.clear()
 
     @classmethod
     def reset(cls):

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import logging
 import re
+from datetime import datetime, timezone
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -15,6 +16,7 @@ logger = logging.getLogger(__name__)
 # Dangerous code patterns that should be flagged
 _DANGEROUS_PATTERNS: list[re.Pattern[str]] = [
     re.compile(r"\b__import__\b"),
+    re.compile(r"\bimportlib\.import_module\b"),
     re.compile(r"\bos\.system\b"),
     re.compile(r"\bsubprocess\b"),
     re.compile(r"\bopen\s*\("),
@@ -26,6 +28,11 @@ _DANGEROUS_PATTERNS: list[re.Pattern[str]] = [
     re.compile(r"\bglobals\s*\(\s*\)"),
     re.compile(r"\bsetattr\s*\("),
     re.compile(r"\bdelattr\s*\("),
+    re.compile(r"\bexec\s*\("),
+    re.compile(r"\beval\s*\("),
+    re.compile(r"\bcompile\s*\("),
+    re.compile(r"__builtins__"),
+    re.compile(r"__globals__"),
 ]
 
 
@@ -79,7 +86,7 @@ class EvalGuard:
                 f"Eval guard blocked {operation}: {violations}"
             )
 
-        return {"verdict": verdict, "violations": violations}
+        return {"verdict": verdict, "violations": violations, "timestamp": datetime.now(timezone.utc).isoformat()}
 
     def get_execution_log(self) -> list[dict[str, Any]]:
         """Return the audit log of all checks."""

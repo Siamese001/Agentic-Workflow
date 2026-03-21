@@ -1,5 +1,6 @@
 """Tests for L5 Safety enforcement functionality."""
 
+import re
 from pathlib import Path
 
 import pytest
@@ -85,8 +86,8 @@ class TestEnforcementLayerIntegrity:
             if py_file.name.startswith("__"):
                 continue
             content = py_file.read_text(encoding="utf-8", errors="ignore")
-            # Check for Agent class definitions (not just Agent in name)
-            if "class " in content and "Agent(" in content and "Agent:" in content:
+            # Check for actual Agent class definitions (class FooAgent( or class FooAgent:)
+            if re.search(r"^class\s+\w*Agent\s*[:(]", content, re.MULTILINE):
                 violations.append(str(py_file))
 
         # Note: Some enforcement files may have Agent classes (legacy)

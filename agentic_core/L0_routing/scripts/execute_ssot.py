@@ -1,3 +1,4 @@
+# NOTE: l0_execute.py was planned but never implemented. This file is ACTIVE.
 # guardian: allow-silent_swallower
 """
 Unified Sovereign Compliance Protocol

@@ -98,7 +98,10 @@ from agentic_core.L2_execution.enforcement.budget_enforcer import (
     BudgetExceeded,
     _wall_clock_cap_threading,
 )
+from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
 from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope, ToolBudget
+
+inject_key_source(TestKeySource())
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -258,7 +261,7 @@ class TestBudgetEnforcerComputeCap:
     def test_threading_timer_does_not_fire_within_budget(self):
         """Verify no exception raised when work completes before deadline."""
         with _wall_clock_cap_threading(500):
-            time.sleep(DEFAULT_SLEEP)  # well within 500 ms
+            time.sleep(0.1)  # well within 500 ms
 
 
 class TestBudgetEnforcerReturnContract:

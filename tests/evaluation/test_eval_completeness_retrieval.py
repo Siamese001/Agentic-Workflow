@@ -668,7 +668,7 @@ class TestKeywordAnswerSupportValidator:
 
     def test_invalid_threshold_raises(self):
         with pytest.raises(ValueError):
-            KeywordAnswerSupportValidator(fully_supported_threshold=THRESHOLD)
+            KeywordAnswerSupportValidator(fully_supported_threshold=1.5)
 
 
 # ===========================================================================

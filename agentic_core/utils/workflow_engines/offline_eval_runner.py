@@ -7,6 +7,7 @@ Pipeline: dataset → retrieval → reranking → LLM answer generation →
 
 from __future__ import annotations
 
+import logging
 import uuid
 from datetime import datetime
 from typing import Any, Callable

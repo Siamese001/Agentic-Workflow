@@ -219,8 +219,8 @@ class TestBoundaryValidator:
         verify_mutation_replay_integrity(pre, post, uwg_diff)
 
     def test_mismatched_diff_raises(self):
-        from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
         from agentic_core.L2_execution.sandbox.boundary_validator import verify_mutation_replay_integrity
+        from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
 
         pre = {"a": 1}
         post = {"a": 2}
@@ -383,11 +383,11 @@ class TestLedgerIntegrity:
         validate_ledger_chain(entries)
 
     def test_broken_chain_raises(self):
-        from agentic_core.L5_safety.types.hardening_errors import LedgerIntegrityViolation
         from agentic_core.L4_state.ledger.integrity_validator import (
             append_with_hash,
             validate_ledger_chain,
         )
+        from agentic_core.L5_safety.types.hardening_errors import LedgerIntegrityViolation
 
         entries: list[dict] = []
         append_with_hash(entries, {"action": "create"})
@@ -397,8 +397,8 @@ class TestLedgerIntegrity:
             validate_ledger_chain(entries)
 
     def test_missing_hash_field_raises(self):
-        from agentic_core.L5_safety.types.hardening_errors import LedgerIntegrityViolation
         from agentic_core.L4_state.ledger.integrity_validator import validate_ledger_chain
+        from agentic_core.L5_safety.types.hardening_errors import LedgerIntegrityViolation
 
         entries = [{"action": "create"}]
         with pytest.raises(LedgerIntegrityViolation, match="missing"):
@@ -453,15 +453,15 @@ class TestC0AuthorityLeakGuard:
         guard_c0_payload({"question": "What is X?", "context": "doc snippet"})
 
     def test_authority_field_raises(self):
-        from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
         from agentic_core.L0_routing.context.c0_guard import guard_c0_payload
+        from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
 
         with pytest.raises(C0AuthorityLeakError, match="route_mode"):
             guard_c0_payload({"question": "Q", "route_mode": "FULL"})
 
     def test_multiple_authority_fields_reported(self):
-        from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
         from agentic_core.L0_routing.context.c0_guard import guard_c0_payload
+        from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
 
         with pytest.raises(C0AuthorityLeakError) as exc_info:
             guard_c0_payload({"auth_token": "tok", "execution_tier": "HIGH"})
@@ -470,8 +470,8 @@ class TestC0AuthorityLeakGuard:
         assert "execution_tier" in msg
 
     def test_all_five_forbidden_fields_detected(self):
-        from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
         from agentic_core.L0_routing.context.c0_guard import guard_c0_payload
+        from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
 
         payload = {
             "route_mode": "x",
@@ -502,8 +502,8 @@ class TestC0Immutability:
         verify_c0_immutability(payload, payload)
 
     def test_mutated_payload_raises(self):
-        from agentic_core.L5_safety.types.hardening_errors import C0MutationViolation
         from agentic_core.L0_routing.context.c0_guard import verify_c0_immutability
+        from agentic_core.L5_safety.types.hardening_errors import C0MutationViolation
 
         pre = {"a": 1}
         post = {"a": 2}
@@ -511,8 +511,8 @@ class TestC0Immutability:
             verify_c0_immutability(pre, post)
 
     def test_added_key_is_mutation(self):
-        from agentic_core.L5_safety.types.hardening_errors import C0MutationViolation
         from agentic_core.L0_routing.context.c0_guard import verify_c0_immutability
+        from agentic_core.L5_safety.types.hardening_errors import C0MutationViolation
 
         with pytest.raises(C0MutationViolation):
             verify_c0_immutability({"a": 1}, {"a": 1, "b": 2})
@@ -545,15 +545,15 @@ class TestPatchValidator:
         assert result.reviewer_signature == "reviewer@example.com"
 
     def test_missing_fields_raises(self):
-        from agentic_core.L5_safety.types.hardening_errors import HumanPatchValidationError
         from agentic_core.L5_safety.hitl.patch_validator import validate_patch
+        from agentic_core.L5_safety.types.hardening_errors import HumanPatchValidationError
 
         with pytest.raises(HumanPatchValidationError, match="original_plan_hash"):
             validate_patch({"structured_patch_schema": {}, "reviewer_signature": "r"})
 
     def test_empty_field_treated_as_missing(self):
-        from agentic_core.L5_safety.types.hardening_errors import HumanPatchValidationError
         from agentic_core.L5_safety.hitl.patch_validator import validate_patch
+        from agentic_core.L5_safety.types.hardening_errors import HumanPatchValidationError
 
         patch = self._valid_patch()
         patch["reviewer_signature"] = ""
@@ -683,8 +683,8 @@ class TestRuntimeInvariantChecker:
         assert_mutation_source_is_l2("L2_execution")
 
     def test_inv1_non_l2_raises(self):
-        from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
         from agentic_core.L5_safety.invariants.runtime_invariant_checker import assert_mutation_source_is_l2
+        from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
 
         with pytest.raises(MutationReplayIntegrityViolation, match="Invariant 1"):
             assert_mutation_source_is_l2("L3_orchestration")
@@ -696,8 +696,8 @@ class TestRuntimeInvariantChecker:
         assert_mutation_in_ledger(ledger, "a.py", "write")
 
     def test_inv2_mutation_not_in_ledger_raises(self):
-        from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
         from agentic_core.L5_safety.invariants.runtime_invariant_checker import assert_mutation_in_ledger
+        from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
 
         with pytest.raises(MutationReplayIntegrityViolation, match="Invariant 2"):
             assert_mutation_in_ledger([], "a.py", "write")
@@ -708,8 +708,8 @@ class TestRuntimeInvariantChecker:
         assert_state_read_source_is_l4("L4_state")
 
     def test_inv3_non_l4_raises(self):
-        from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
         from agentic_core.L5_safety.invariants.runtime_invariant_checker import assert_state_read_source_is_l4
+        from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
 
         with pytest.raises(MutationReplayIntegrityViolation, match="Invariant 3"):
             assert_state_read_source_is_l4("L2_execution")
@@ -720,8 +720,8 @@ class TestRuntimeInvariantChecker:
         assert_c0_no_authority_fields({"question": "Q", "context": "C"})
 
     def test_inv4_authority_field_raises(self):
-        from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
         from agentic_core.L5_safety.invariants.runtime_invariant_checker import assert_c0_no_authority_fields
+        from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
 
         with pytest.raises(C0AuthorityLeakError, match="Invariant 4"):
             assert_c0_no_authority_fields({"route_mode": "FULL"})
@@ -734,10 +734,10 @@ class TestRuntimeInvariantChecker:
         assert_telemetry_no_config_mutation(5, config_mutated=False)
 
     def test_inv5_mutation_before_s9_raises(self):
-        from agentic_core.L5_safety.types.hardening_errors import RuntimePolicyMutationViolation
         from agentic_core.L5_safety.invariants.runtime_invariant_checker import (
             assert_telemetry_no_config_mutation,
         )
+        from agentic_core.L5_safety.types.hardening_errors import RuntimePolicyMutationViolation
 
         with pytest.raises(RuntimePolicyMutationViolation, match="Invariant 5"):
             assert_telemetry_no_config_mutation(5, config_mutated=True)
@@ -757,19 +757,19 @@ class TestRuntimeInvariantChecker:
         assert_human_patch_l5_clearance("sig-abc123")
 
     def test_inv6_missing_signature_raises(self):
-        from agentic_core.L5_safety.types.hardening_errors import HumanPatchL5ClearanceError
         from agentic_core.L5_safety.invariants.runtime_invariant_checker import (
             assert_human_patch_l5_clearance,
         )
+        from agentic_core.L5_safety.types.hardening_errors import HumanPatchL5ClearanceError
 
         with pytest.raises(HumanPatchL5ClearanceError, match="Invariant 6"):
             assert_human_patch_l5_clearance(None)
 
     def test_inv6_empty_signature_raises(self):
-        from agentic_core.L5_safety.types.hardening_errors import HumanPatchL5ClearanceError
         from agentic_core.L5_safety.invariants.runtime_invariant_checker import (
             assert_human_patch_l5_clearance,
         )
+        from agentic_core.L5_safety.types.hardening_errors import HumanPatchL5ClearanceError
 
         with pytest.raises(HumanPatchL5ClearanceError, match="Invariant 6"):
             assert_human_patch_l5_clearance("")

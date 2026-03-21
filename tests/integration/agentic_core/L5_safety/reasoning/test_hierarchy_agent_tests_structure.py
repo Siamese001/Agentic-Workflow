@@ -246,10 +246,10 @@ class TestGetApprovedTestsSubfolders:
         """Success path: returns frozenset of subfolders declared in SOVEREIGN_TERRITORIES."""
         from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
-        fake_st = _fake_sovereign_territories({"unit": {}, "support": {}, "integration": {}})
+        fake_map = {"unit": {}, "support": {}, "integration": {}}
         with patch(
-            "agentic_core.L5_safety.config.structure_blueprint_config.SOVEREIGN_TERRITORIES",
-            fake_st,
+            "agentic_core.L5_safety.config.structure_blueprint.TESTS_SUBFOLDER_MAP",
+            fake_map,
         ):
             result = HierarchyAgent._get_approved_tests_subfolders()
 
@@ -259,52 +259,49 @@ class TestGetApprovedTestsSubfolders:
         assert isinstance(result, frozenset)
 
     def test_missing_tests_key_returns_empty(self):
-        """Branch: SOVEREIGN_TERRITORIES has no 'tests' key → frozenset()."""
+        """Branch: empty TESTS_SUBFOLDER_MAP → frozenset()."""
         from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
-        empty_st = MappingProxyType({})
         with patch(
-            "agentic_core.L5_safety.config.structure_blueprint_config.SOVEREIGN_TERRITORIES",
-            empty_st,
+            "agentic_core.L5_safety.config.structure_blueprint.TESTS_SUBFOLDER_MAP",
+            {},
         ):
             result = HierarchyAgent._get_approved_tests_subfolders()
 
         assert result == frozenset()
 
     def test_missing_subfolders_key_returns_empty(self):
-        """Branch: tests config exists but has no 'subfolders' key → frozenset()."""
+        """Branch: empty TESTS_SUBFOLDER_MAP → frozenset()."""
         from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
-        st = MappingProxyType({"tests": MappingProxyType({"depth": 2})})
         with patch(
-            "agentic_core.L5_safety.config.structure_blueprint_config.SOVEREIGN_TERRITORIES",
-            st,
+            "agentic_core.L5_safety.config.structure_blueprint.TESTS_SUBFOLDER_MAP",
+            {},
         ):
             result = HierarchyAgent._get_approved_tests_subfolders()
 
         assert result == frozenset()
 
     def test_subfolders_is_not_dict_returns_empty(self):
-        """Branch: subfolders is a list (invalid schema) → frozenset()."""
+        """Branch: TESTS_SUBFOLDER_MAP is empty → frozenset()."""
         from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
-        st = MappingProxyType({"tests": {"subfolders": ["unit", "integration"]}})
         with patch(
-            "agentic_core.L5_safety.config.structure_blueprint_config.SOVEREIGN_TERRITORIES",
-            st,
+            "agentic_core.L5_safety.config.structure_blueprint.TESTS_SUBFOLDER_MAP",
+            {},
         ):
             result = HierarchyAgent._get_approved_tests_subfolders()
 
         assert result == frozenset()
 
     def test_reflects_live_ssot_not_hardcoded(self):
-        """Metamorphic: adding a new subfolder to SOVEREIGN_TERRITORIES is immediately reflected."""
+        """Metamorphic: adding a new subfolder to TESTS_SUBFOLDER_MAP is immediately reflected."""
         from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
-        st = _fake_sovereign_territories({"unit": {}, "brand_new_folder": {}})
+        fake_map = {"unit": {}, "brand_new_folder": {}}
         with patch(
-            "agentic_core.L5_safety.config.structure_blueprint_config.SOVEREIGN_TERRITORIES",
-            st,
+            "agentic_core.L5_safety.config.structure_blueprint.TESTS_SUBFOLDER_MAP",
+            fake_map,
         ):
             result = HierarchyAgent._get_approved_tests_subfolders()
 
