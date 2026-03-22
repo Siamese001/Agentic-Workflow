@@ -1,0 +1,50 @@
+# ADG Layer Attribution Overrides
+# This file allows explicit layer assignments for specific files or patterns
+# that cannot be automatically inferred from their path.
+
+# Format: file_pattern -> layer
+# Patterns support simple shell-style wildcards (*, ?)
+overrides:
+  # Core framework layers (explicitly defined)
+  "agentic_core/L0_routing/*": "L0"
+  "agentic_core/L1_cognition/*": "L1"
+  "agentic_core/L2_execution/*": "L2"
+  "agentic_core/L3_orchestration/*": "L3"
+  "agentic_core/L4_governance/*": "L4"
+  "agentic_core/L5_safety/*": "L5"
+  "agentic_core/L6_persistence/*": "L6"
+
+  # Application layers
+  "apps_eval/*": "L_APP"
+  "apps_exec/*": "L_APP"
+  "apps_lic/*": "L_APP"
+  "apps_research/*": "L_APP"
+  "apps_rfp/*": "L_APP"
+  "apps_rg/*": "L_APP"
+  "apps_shared/*": "L_APP"
+
+  # Special cases
+  "tools/*": "L_TOOLS"
+  "tests/*": "L_TEST"
+  "docs/*": "L_DOCS"
+  "scripts/*": "L_SCRIPTS"
+  "ops_scripts/*": "L_OPS"
+
+  # Configuration files
+  "*.yaml": "L_CONFIG"
+  "*.yml": "L_CONFIG"
+  "*.json": "L_CONFIG"
+  "*.toml": "L_CONFIG"
+  "*.cfg": "L_CONFIG"
+  "*.ini": "L_CONFIG"
+
+  # Root files
+  "README.md": "L_DOCS"
+  "LICENSE": "L_CONFIG"
+  "pyproject.toml": "L_CONFIG"
+  "pytest.ini": "L_CONFIG"
+  ".gitignore": "L_CONFIG"
+  ".pre-commit-config.yaml": "L_CONFIG"
+
+# Default layer for files not matching any pattern
+default_layer: "L_UNKNOWN"

@@ -284,10 +284,13 @@ class UniversalWriteGateway:
         policy_hash: str = "",
         actor_id: str = "uwg",
         run_id: str = "",
+        parent_snapshot_hash: str = "",
     ):
         self.replay_mode = replay_mode
         self.actor_id = actor_id
         self.run_id = run_id
+        self.parent_snapshot_hash = parent_snapshot_hash
+        self.policy_hash = policy_hash
         self._frozen: bool = False
         self._write_permissions: dict[str, bool] = {}
         self._mutation_ledger: list[MutationRecord] = []
@@ -300,6 +303,31 @@ class UniversalWriteGateway:
             "code_interpreter.run_python",
         }
         self._guardrail_gate: GuardrailGate = GuardrailGate(policy_hash=policy_hash, strict_mode=False)
+
+        # Wave 5: Enforce 4-field requirement for ADG writes
+        self._validate_four_field_requirements()
+
+    def _validate_four_field_requirements(self) -> None:
+        """Wave 5: Validate that all 4 required fields are present for ADG writes.
+
+        Required fields:
+        1. replay_key - for deterministic replay
+        2. policy_hash - for policy verification
+        3. mutation_signature - for signature verification
+        4. parent_snapshot_hash - for snapshot lineage
+
+        In production mode, all fields must be non-empty.
+        In replay mode, validation is relaxed for testing.
+        """
+        if not self.replay_mode:
+            # Production mode - enforce all fields
+            if not self.policy_hash:
+                raise ValueError("Wave 5: policy_hash is required for ADG writes")
+            if not self.parent_snapshot_hash:
+                raise ValueError("Wave 5: parent_snapshot_hash is required for ADG writes")
+        else:
+            # Replay mode - allow empty fields for testing
+            pass
 
     def check_write_permission(self, path: str, operation: str = "write") -> bool:
         """Check if write operation is permitted."""
@@ -352,12 +380,26 @@ class UniversalWriteGateway:
         replay_key: str = "",
         actor_id: str | None = None,
         run_id: str | None = None,
+        mutation_signature: str = "",
     ) -> MutationRecord | SimulationResult:
         """Sovereign write path — all governed writes MUST use this method.
 
         This is the only method that produces a ``writes_through`` ADG edge.
         Direct ``writes_to`` callers must be migrated to this entry point.
+
+        Wave 5: Requires 4 fields for ADG writes:
+        - replay_key: deterministic replay hash
+        - policy_hash: verified via constructor
+        - mutation_signature: for signature verification
+        - parent_snapshot_hash: verified via constructor
         """
+        # Wave 5: Enforce 4-field requirement
+        if not self.replay_mode:
+            if not replay_key:
+                raise ValueError("Wave 5: replay_key is required for ADG writes")
+            if not mutation_signature:
+                raise ValueError("Wave 5: mutation_signature is required for ADG writes")
+
         self._guardrail_gate.check(operation="write_through", target=path)
         if self._frozen:
             raise PermissionError("REQ-091: UWG write_through blocked — gateway is frozen.")
@@ -637,14 +679,23 @@ class UniversalWriteGateway:
     ) -> None:
         """REQ-019/177/354: signature-before-side-effect write gate.
 
-        Enforces three sequential checks before delegating to store.write():
+        Wave 5: Enforces 4-field requirement for ADG writes:
         1. Guardrail pre-check — applies_guardrail before any mutation.
-        2. Signature verification — payload must be signed.
+        2. Signature verification — payload must be signed (mutation_signature).
         3. Replay hash verification — payload hash must match replay_key.
         4. Plan hash verification — mutation must originate from an authorised plan.
 
         All checks must pass.  store is never touched on any failure.
         """
+        # Wave 5: Enforce 4-field requirement
+        if not self.replay_mode:
+            if not replay_key:
+                raise ValueError("Wave 5: replay_key is required for ADG writes")
+            if not signature:
+                raise ValueError("Wave 5: mutation_signature is required for ADG writes")
+            if not plan_hash:
+                raise ValueError("Wave 5: plan_hash is required for ADG writes")
+
         self._guardrail_gate.check(operation="write", target="store")
         if self._frozen:
             raise PermissionError("REQ-091: UWG write blocked — gateway is frozen.")

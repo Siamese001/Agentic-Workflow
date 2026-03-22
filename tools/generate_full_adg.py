@@ -239,9 +239,31 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
     """
     print("[ADG] Starting full scan...")
 
+    # Capture provenance information
+    import subprocess as _subprocess
+    try:
+        commit_sha = _subprocess.check_output(["git", "rev-parse", "HEAD"],
+                                           cwd=ROOT, text=True).strip()
+        print(f"[ADG] Captured commit SHA: {commit_sha}")
+    except Exception as e:
+        print(f"[ADG] Warning: Failed to capture commit SHA: {e}")
+        commit_sha = ""
+
+    # Capture repo state hash (tree hash)
+    try:
+        repo_state_hash = _subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"],
+                                                 cwd=ROOT, text=True).strip()
+        print(f"[ADG] Captured repo state hash: {repo_state_hash}")
+    except Exception as e:
+        print(f"[ADG] Warning: Failed to capture repo state hash: {e}")
+        repo_state_hash = ""
+
     cache_path = adg_artifacts_dir / "scan_result_cache.json"
     scanner = ADGStaticScanner(repo_root=ROOT, cache_path=cache_path)
-    result = scanner.scan(commit_sha="")
+    result = scanner.scan(commit_sha=commit_sha)
+
+    # Set repo_state_hash in the result
+    result.repo_state_hash = repo_state_hash
 
     print(f"[ADG] Scan complete. Digest: {result.digest}")
     print(f"[ADG] Modules: {len(result.modules)}")
@@ -363,6 +385,9 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
 
     # --- Memory MCP persistence ---
     _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summary, ts)
+
+    # --- Wave 6: Generate standardized reports ---
+    _generate_standardized_reports(adg_artifacts_dir, ts, artifact)
 
     # --- Create zip archive of all 6 artifacts ---
     artifact_files = [
@@ -754,7 +779,31 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
 
 
 def _infer_layer(path: str) -> str:
-    """Infer layer label from file path."""
+    """Infer layer label from file path using YAML overrides."""
+    import yaml
+    import fnmatch
+    from pathlib import Path
+
+    # Load layer overrides from YAML
+    overrides_file = Path(__file__).parent / "adg_layer_overrides.yaml"
+    if overrides_file.exists():
+        try:
+            with open(overrides_file, 'r', encoding='utf-8') as f:
+                config = yaml.safe_load(f)
+                overrides = config.get('overrides', {})
+                default_layer = config.get('default_layer', 'L_UNKNOWN')
+
+                # Check each pattern override
+                for pattern, layer in overrides.items():
+                    if fnmatch.fnmatch(path, pattern):
+                        return layer
+
+                return default_layer
+        except Exception as e:
+            print(f"[ADG] Warning: Failed to load layer overrides: {e}")
+            # Fall back to simple inference
+
+    # Fallback to simple path-based inference
     for layer in ("L0", "L1", "L2", "L3", "L4", "L5", "L6"):
         if f"/{layer}_" in path or f"\\{layer}_" in path or f"/{layer}/" in path:
             return layer
@@ -819,6 +868,152 @@ def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> P
         print(f"[ADG] Zip archive created: {zip_path.name} ({zip_size_mb:.1f} MB, 6 ADG + 5 runtime files)")
 
     return zip_path
+
+
+def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact) -> None:
+    """Wave 6: Generate standardized ADG reports.
+
+    Creates 4 standardized reports in artifacts/adg/:
+    1. layer_coverage_report.json
+    2. edge_density_report.json
+    3. provenance_report.json
+    4. replay_determinism_report.json
+    """
+    import json
+    import sqlite3
+    from collections import Counter
+
+    reports_dir = adg_dir
+    sqlite_path = adg_dir / f"adg_indexed_{ts}.sqlite"
+
+    # 1. Layer Coverage Report
+    layer_report = {
+        "timestamp": ts,
+        "schema_version": "1.0",
+        "total_modules": len(artifact.entities),
+        "layer_distribution": {},
+        "unknown_modules": [],
+        "coverage_metrics": {}
+    }
+
+    # Count modules by layer
+    layer_counts = Counter()
+    unknown_modules = []
+
+    for entity in artifact.entities:
+        if entity.entity_type == "module":
+            layer_counts[entity.layer] += 1
+            if entity.layer == "L_UNKNOWN":
+                unknown_modules.append({
+                    "adg_name": entity.adg_name,
+                    "resolved_path": entity.resolved_path,
+                    "identity_kind": entity.identity_kind
+                })
+
+    layer_report["layer_distribution"] = dict(layer_counts)
+    layer_report["unknown_modules"] = unknown_modules[:50]  # Limit to first 50
+    layer_report["coverage_metrics"] = {
+        "known_modules": layer_report["total_modules"] - len(unknown_modules),
+        "unknown_modules": len(unknown_modules),
+        "coverage_percentage": (layer_report["total_modules"] - len(unknown_modules)) / layer_report["total_modules"] * 100 if layer_report["total_modules"] > 0 else 0
+    }
+
+    # 2. Edge Density Report
+    edge_report = {
+        "timestamp": ts,
+        "schema_version": "1.0",
+        "total_edges": len(artifact.relations),
+        "edge_distribution": {},
+        "critical_edge_coverage": {},
+        "density_metrics": {}
+    }
+
+    # Count edges by type
+    edge_counts = Counter()
+    for edge in artifact.relations:
+        edge_counts[edge.relation_type] += 1
+
+    edge_report["edge_distribution"] = dict(edge_counts.most_common())
+
+    # Critical edge types from Wave 4
+    critical_edges = [
+        'determinism_seed',
+        'emits_determinism_digest',
+        'policy_verification',
+        'authorize_and_execute',
+        'dispatches_execution_plan',
+        'enters_sandbox',
+        'guardian_gate'
+    ]
+
+    critical_coverage = {}
+    for edge_type in critical_edges:
+        critical_coverage[edge_type] = edge_counts.get(edge_type, 0)
+
+    edge_report["critical_edge_coverage"] = critical_coverage
+    edge_report["density_metrics"] = {
+        "critical_edges_found": sum(1 for count in critical_coverage.values() if count > 0),
+        "critical_edge_percentage": sum(1 for count in critical_coverage.values() if count > 0) / len(critical_edges) * 100,
+        "top_edge_type": edge_counts.most_common(1)[0] if edge_counts else None
+    }
+
+    # 3. Provenance Report
+    provenance_report = {
+        "timestamp": ts,
+        "schema_version": "1.0",
+        "commit_sha": artifact.commit_sha,
+        "repo_state_hash": getattr(artifact, 'repo_state_hash', ''),
+        "scanner_digest": artifact.scanner_digest,
+        "artifact_digest": artifact.artifact_digest,
+        "validation": {
+            "has_commit_sha": bool(artifact.commit_sha),
+            "has_repo_state_hash": bool(getattr(artifact, 'repo_state_hash', '')),
+            "has_scanner_digest": bool(artifact.scanner_digest),
+            "has_artifact_digest": bool(artifact.artifact_digest)
+        },
+        "generation_metrics": {
+            "scan_duration_seconds": None,  # Would need to track this
+            "modules_scanned": len([e for e in artifact.entities if e.entity_type == "module"]),
+            "symbols_scanned": len([e for e in artifact.entities if e.entity_type == "symbol"]),
+            "total_entities": len(artifact.entities)
+        }
+    }
+
+    # 4. Replay Determinism Report
+    determinism_report = {
+        "timestamp": ts,
+        "schema_version": "1.0",
+        "determinism_metrics": {
+            "determinism_digest_edges": edge_counts.get('emits_determinism_digest', 0),
+            "determinism_seed_edges": edge_counts.get('determinism_seed', 0),
+            "replay_key_edges": edge_counts.get('emits_replay_key', 0),
+            "snapshot_state_edges": edge_counts.get('snapshots_state', 0)
+        },
+        "determinism_coverage": {
+            "modules_with_determinism_digest": 0,  # Would need SQLite query
+            "modules_with_replay_keys": 0,       # Would need SQLite query
+            "determinism_score": 0.0  # Calculated metric
+        },
+        "validation": {
+            "has_determinism_edges": edge_counts.get('emits_determinism_digest', 0) > 0,
+            "has_seed_edges": edge_counts.get('determinism_seed', 0) > 0,
+            "determinism_status": "partial" if edge_counts.get('emits_determinism_digest', 0) > 0 else "missing"
+        }
+    }
+
+    # Write all reports
+    reports = [
+        ("layer_coverage_report.json", layer_report),
+        ("edge_density_report.json", edge_report),
+        ("provenance_report.json", provenance_report),
+        ("replay_determinism_report.json", determinism_report)
+    ]
+
+    for filename, report_data in reports:
+        report_path = reports_dir / filename
+        with open(report_path, 'w', encoding='utf-8') as f:
+            json.dump(report_data, f, indent=2, sort_keys=True)
+        print(f"[ADG] Report generated: {filename}")
 
 
 def main() -> None:

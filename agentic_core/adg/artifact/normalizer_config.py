@@ -230,6 +230,7 @@ class NormalizedGraph:
 
     schema_version: str = _SCHEMA_VERSION_NORMALIZED
     commit_sha: str = ""
+    repo_state_hash: str = ""
     scanner_digest: str = ""
     artifact_digest: str = ""
     nodes: dict[str, dict] = field(default_factory=dict)
@@ -256,6 +257,7 @@ class NormalizedGraph:
         return {
             "schema_version": self.schema_version,
             "commit_sha": self.commit_sha,
+            "repo_state_hash": self.repo_state_hash,
             "scanner_digest": self.scanner_digest,
             "artifact_digest": self.artifact_digest,
             "nodes": self.nodes,
@@ -277,6 +279,7 @@ class NormalizedGraph:
         return cls(
             schema_version=raw.get("schema_version", _SCHEMA_VERSION_NORMALIZED),
             commit_sha=raw.get("commit_sha", ""),
+            repo_state_hash=raw.get("repo_state_hash", ""),
             scanner_digest=raw.get("scanner_digest", ""),
             artifact_digest=raw.get("artifact_digest", ""),
             nodes=raw.get("nodes", {}),
@@ -381,6 +384,7 @@ class ArtifactNormalizer:
 
         ng = NormalizedGraph(
             commit_sha=artifact.commit_sha,
+            repo_state_hash=artifact.repo_state_hash,
             scanner_digest=artifact.scanner_digest,
             nodes=nodes,
             edges=edges,

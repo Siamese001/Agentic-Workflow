@@ -223,6 +223,7 @@ def _build_snapshot(artifact: ADGArtifact) -> dict:
     return {
         "schema_version": "snapshot-1.0",
         "commit_sha": artifact.commit_sha,
+        "repo_state_hash": artifact.repo_state_hash,
         "scanner_digest": artifact.scanner_digest,
         "artifact_digest": artifact.artifact_digest,
         "counts": {
@@ -377,6 +378,7 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
         meta_rows = [
             ("schema_version", ng_full.schema_version),
             ("commit_sha", ng_full.commit_sha),
+            ("repo_state_hash", ng_full.repo_state_hash),
             ("scanner_digest", ng_full.scanner_digest),
             ("artifact_digest", ng_full.artifact_digest),
             ("total_nodes", str(len(ng_full.nodes))),

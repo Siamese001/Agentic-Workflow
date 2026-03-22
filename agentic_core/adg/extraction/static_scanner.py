@@ -27,6 +27,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Iterator
 
+from agentic_core.adg.identity.normalizer import (
+    IdentityKind,
+)
+from agentic_core.adg.schema_util import (
+    canonical_name,
+)
 from agentic_core.adg.schema_util import (
     AGENT_DISPATCH_CLASSES,
     AGENT_DISPATCH_METHODS,
@@ -464,6 +470,7 @@ class ScanResult:
     modules: list[str] = field(default_factory=list)
     digest: str = ""
     commit_sha: str = ""
+    repo_state_hash: str = ""
     manifest: ScanManifest = field(default_factory=ScanManifest)
     syntax_errors: list[str] = field(default_factory=list)
 
@@ -494,21 +501,11 @@ class ScanResult:
     def to_dict(self) -> dict:
         """R2: Serialize to JSON-compatible dict for cache."""
         return {
-            "edges": [
-                {
-                    "from_name": e.from_name,
-                    "relation_type": e.relation_type,
-                    "to_name": e.to_name,
-                    "edge_kind": e.edge_kind,
-                    "source_file": e.source_file,
-                    "line_no": e.line_no,
-                    "symbol": e.symbol,
-                }
-                for e in self.edges
-            ],
+            "edges": [edge.to_dict() for edge in self.edges],
             "modules": self.modules,
             "digest": self.digest,
             "commit_sha": self.commit_sha,
+            "repo_state_hash": self.repo_state_hash,
             "manifest": self.manifest.to_dict(),
             "syntax_errors": self.syntax_errors,
         }
@@ -543,6 +540,7 @@ class ScanResult:
             modules=data.get("modules", []),
             digest=data.get("digest", ""),
             commit_sha=data.get("commit_sha", ""),
+            repo_state_hash=data.get("repo_state_hash", ""),
             manifest=manifest,
             syntax_errors=data.get("syntax_errors", []),
         )
@@ -884,6 +882,7 @@ class _ImportVisitor(ast.NodeVisitor):
         module_adg_name: str,
         source_file: str,
         all_registry: dict[str, list[str]] | None = None,
+        identity_normalizer=None,
     ) -> None:
         self.module_adg_name = module_adg_name
         self.source_file = source_file
@@ -893,6 +892,7 @@ class _ImportVisitor(ast.NodeVisitor):
         self._function_depth: int = 0
         self.star_import_count: int = 0
         self.star_resolved_count: int = 0
+        self._identity_normalizer = identity_normalizer
 
     # ------------------------------------------------------------------
     # Context tracking for E7
@@ -1083,8 +1083,20 @@ class _ImportVisitor(ast.NodeVisitor):
                 )
             )
 
-    @staticmethod
-    def _classify_import_kind(module_name: str) -> str:
+    def _classify_import_kind(self, module_name: str) -> str:
+        """Classify import boundary using IdentityNormalizer."""
+        if self._identity_normalizer:
+            record = self._identity_normalizer.normalize(module_name)
+            if record.kind == IdentityKind.REPO_MODULE:
+                return "internal"
+            elif record.kind == IdentityKind.EXTERNAL_MODULE:
+                return "external"
+            elif record.kind == IdentityKind.UNRESOLVED_IMPORT:
+                return "unresolved"
+            else:
+                return "import"
+
+        # Fallback to static classification if no normalizer
         base = module_name.split(".")[0]
         if base in {s.split(".")[0] for s in PROVIDER_SDK_SYMBOLS}:
             return "network"
@@ -4655,7 +4667,9 @@ def _scan_file(
         return [], True
 
     # G1: Import edges
-    import_visitor = _ImportVisitor(module_adg, rel)
+    from agentic_core.adg.identity.normalizer import IdentityNormalizer
+    identity_normalizer = IdentityNormalizer(repo_root=repo_root)
+    import_visitor = _ImportVisitor(module_adg, rel, identity_normalizer=identity_normalizer)
     import_visitor.visit(tree)
     edges.extend(import_visitor.edges)
 
@@ -4698,6 +4712,11 @@ def _scan_file(
     gov_visitor = _GovernancePlaneVisitor(module_adg, rel)
     gov_visitor.visit(tree)
     edges.extend(gov_visitor.edges)
+
+    # Wave 4: Critical edge densification
+    critical_visitor = _CriticalEdgeVisitor(module_adg, rel)
+    critical_visitor.visit(tree)
+    edges.extend(critical_visitor.edges)
 
     # E1: Symbol inventory / exports graph
     sym_visitor = _SymbolInventoryVisitor(module_adg, rel)
@@ -4983,7 +5002,9 @@ class ConcreteAgent(BaseClass):
     source = "_self_test_"
 
     # G1
-    iv = _ImportVisitor(module_adg, source)
+    from agentic_core.adg.identity.normalizer import IdentityNormalizer
+    identity_normalizer = IdentityNormalizer(repo_root=Path.cwd())
+    iv = _ImportVisitor(module_adg, source, identity_normalizer=identity_normalizer)
     iv.visit(tree)
     if not iv.edges:
         return False
@@ -5290,7 +5311,221 @@ _emit_reads_through("l4", "static_scanner", "urg_read_36")
 _emit_reads_through("l4", "static_scanner", "urg_read_37")
 _emit_reads_through("l4", "static_scanner", "urg_read_38")
 _emit_reads_through("l4", "static_scanner", "urg_read_39")
-_emit_reads_through("l4", "static_scanner", "urg_read_40")
+_emit_reads_through("l4", "static_scanner", "urg_read_640")
+
+
+class _CriticalEdgeVisitor(ast.NodeVisitor):
+    """Wave 4: Capture critical edge types for densification.
+
+    Captures 7 critical edge types:
+    - determinism_seed
+    - policy_verification
+    - guardian_gate
+    - authorize_and_execute (enhanced)
+    - dispatches_execution_plan (enhanced)
+    - enters_sandbox (enhanced)
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_CriticalEdgeVisitor.__init__"
+        )
+
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+
+    def visit_Call(self, node: ast.Call) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_CriticalEdgeVisitor.visit_Call"
+        )
+
+        sym = self._extract_symbol(node.func)
+        if sym:
+            # Enhanced detection for critical patterns
+            if self._is_determinism_seed(sym, node):
+                to_name = canonical_name("Symbol", sym)
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="determinism_seed",
+                        to_name=to_name,
+                        edge_kind="determinism",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=sym,
+                    )
+                )
+            elif self._is_policy_verification(sym, node):
+                to_name = canonical_name("Symbol", sym)
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="policy_verification",
+                        to_name=to_name,
+                        edge_kind="verification",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=sym,
+                    )
+                )
+            elif self._is_guardian_gate(sym, node):
+                to_name = canonical_name("Symbol", sym)
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="guardian_gate",
+                        to_name=to_name,
+                        edge_kind="guardrail",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=sym,
+                    )
+                )
+            elif self._is_authorize_and_execute(sym, node):
+                to_name = canonical_name("Symbol", sym)
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="authorize_and_execute",
+                        to_name=to_name,
+                        edge_kind="authorization",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=sym,
+                    )
+                )
+            elif self._is_dispatches_execution_plan(sym, node):
+                to_name = canonical_name("Symbol", sym)
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="dispatches_execution_plan",
+                        to_name=to_name,
+                        edge_kind="dispatch",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=sym,
+                    )
+                )
+            elif self._is_enters_sandbox(sym, node):
+                to_name = canonical_name("Symbol", sym)
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="enters_sandbox",
+                        to_name=to_name,
+                        edge_kind="sandbox",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=sym,
+                    )
+                )
+        self.generic_visit(node)
+
+    @staticmethod
+    def _extract_symbol(node: ast.expr) -> str:
+        """Extract full symbol name from AST node."""
+        if isinstance(node, ast.Name):
+            return node.id
+        elif isinstance(node, ast.Attribute):
+            parts = []
+            curr = node
+            while isinstance(curr, ast.Attribute):
+                parts.append(curr.attr)
+                curr = curr.value
+            if isinstance(curr, ast.Name):
+                parts.append(curr.id)
+            return ".".join(reversed(parts))
+        return ""
+
+    @staticmethod
+    def _is_determinism_seed(sym: str, node: ast.Call) -> bool:
+        """Detect determinism seed patterns."""
+        seed_patterns = {
+            "random.seed",
+            "numpy.random.seed",
+            "torch.manual_seed",
+            "tf.random.set_seed",
+        }
+        return sym in seed_patterns
+
+    @staticmethod
+    def _is_policy_verification(sym: str, node: ast.Call) -> bool:
+        """Detect policy verification patterns."""
+        verify_patterns = {
+            "verify_policy_config_unchanged",
+            "pin_policy_config",
+            "verify_policy",
+            "validate_policy",
+            "check_policy",
+            "policy_check",
+            "verify_boundary",
+            "validate_boundary",
+        }
+        return sym in verify_patterns
+
+    @staticmethod
+    def _is_guardian_gate(sym: str, node: ast.Call) -> bool:
+        """Detect guardian gate patterns."""
+        gate_patterns = {
+            "run_gateway_bypass_guardian",
+            "run_escalation_determinism_guardian",
+            "guardian_gate",
+            "apply_guardrail",
+            "guardrail_check",
+            "safety_gate",
+            "boundary_gate",
+        }
+        return sym in gate_patterns
+
+    @staticmethod
+    def _is_authorize_and_execute(sym: str, node: ast.Call) -> bool:
+        """Enhanced authorization patterns."""
+        auth_patterns = {
+            "authorize_and_execute",
+            "execute_with_auth",
+            "authorized_execute",
+            "secure_execute",
+            "permission_execute",
+        }
+        return sym in auth_patterns
+
+    @staticmethod
+    def _is_dispatches_execution_plan(sym: str, node: ast.Call) -> bool:
+        """Enhanced execution plan dispatch patterns."""
+        dispatch_patterns = {
+            "dispatch_execution_plan",
+            "execute_plan",
+            "run_execution_plan",
+            "dispatch_plan",
+            "orchestrate_execution",
+        }
+        return sym in dispatch_patterns
+
+    @staticmethod
+    def _is_enters_sandbox(sym: str, node: ast.Call) -> bool:
+        """Enhanced sandbox entry patterns."""
+        sandbox_patterns = {
+            "enter_sandbox",
+            "sandbox_execute",
+            "run_in_sandbox",
+            "create_sandbox",
+            "isolate_execution",
+        }
+        return sym in sandbox_patterns
+
+
+def _is_test_file(filepath: Path) -> bool:
+    return filepath.name.startswith("test_") or filepath.name.endswith("_test.py")
+
+
 _emit_reads_through("l4", "static_scanner", "urg_read_41")
 _emit_reads_through("l4", "static_scanner", "urg_read_42")
 _emit_reads_through("l4", "static_scanner", "urg_read_43")

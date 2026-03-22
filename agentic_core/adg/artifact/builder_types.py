@@ -322,6 +322,7 @@ class ADGArtifact:
 
     schema_version: str = _ARTIFACT_SCHEMA_VERSION
     commit_sha: str = ""
+    repo_state_hash: str = ""
     scanner_digest: str = ""
     entities: list[EntityRecord] = field(default_factory=list)
     relations: list[RelationRecord] = field(default_factory=list)
@@ -335,6 +336,7 @@ class ADGArtifact:
         return {
             "schema_version": self.schema_version,
             "commit_sha": self.commit_sha,
+            "repo_state_hash": self.repo_state_hash,
             "scanner_digest": self.scanner_digest,
             "entities": sorted([e.to_dict() for e in self.entities], key=lambda x: x["adg_name"]),
             "relations": sorted(
@@ -397,6 +399,7 @@ class ADGArtifactBuilder:
         """Build a fully-populated ADGArtifact from a ScanResult."""
         artifact = ADGArtifact(
             commit_sha=result.commit_sha or "",
+            repo_state_hash=result.repo_state_hash or "",
             scanner_digest=result.digest or "",
         )
 
