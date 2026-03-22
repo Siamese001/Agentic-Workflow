@@ -399,19 +399,22 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
         adg_artifacts_dir / f"adg_graphsnap_{ts}.json",
     ]
 
-    # Add Wave 6 standardized reports
+    # Add Wave 6 standardized reports + test surface report
     report_files = [
         adg_artifacts_dir / "layer_coverage_report.json",
         adg_artifacts_dir / "edge_density_report.json",
         adg_artifacts_dir / "provenance_report.json",
         adg_artifacts_dir / "replay_determinism_report.json",
+        adg_artifacts_dir / "boundary_report.json",
+        adg_artifacts_dir / "mutation_integrity_report.json",
+        adg_artifacts_dir / "test_surface_coverage.json",
     ]
 
     # Filter to only include existing reports
     existing_reports = [f for f in report_files if f.exists()]
     if existing_reports:
         artifact_files.extend(existing_reports)
-        print(f"[ADG] Adding {len(existing_reports)} Wave 6 reports to zip archive")
+        print(f"[ADG] Adding {len(existing_reports)} reports to zip archive")
 
     _create_zip_archive(adg_artifacts_dir, ts, artifact_files)
 
@@ -881,7 +884,7 @@ def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> P
     if zip_path.exists():
         zip_size_mb = zip_path.stat().st_size / (1024 * 1024)
         report_count = len([p for p in artifact_paths if p.name.endswith('_report.json')])
-        print(f"[ADG] Zip archive created: {zip_path.name} ({zip_size_mb:.1f} MB, 6 ADG + {report_count} Wave 6 reports + 5 runtime files)")
+        print(f"[ADG] Zip archive created: {zip_path.name} ({zip_size_mb:.1f} MB, 6 ADG + {report_count} reports + 5 runtime files)")
 
     return zip_path
 
@@ -1127,6 +1130,66 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
         "coverage_percentage": (stored_edge_counts.get('mutation_signature', 0) / len([e for e in artifact.entities if e.entity_type == "module"]) * 100) if len([e for e in artifact.entities if e.entity_type == "module"]) > 0 else 0
     }
 
+    # 7. Test Surface Coverage Report
+    test_surface_report = {
+        "timestamp": ts,
+        "schema_version": "1.0",
+        "test_surface_nodes": {},
+        "test_surface_edges": {},
+        "test_coverage_metrics": {},
+        "critical_path_linkage": {}
+    }
+
+    # Query test-related nodes and edges from SQLite
+    conn = sqlite3.connect(sqlite_path)
+    cur = conn.cursor()
+
+    # Test node types
+    test_node_types = ['test_suite', 'test_case', 'invariant_family']
+    test_node_counts = {}
+    for node_type in test_node_types:
+        cur.execute("SELECT COUNT(*) FROM nodes WHERE entity_type = ?", (node_type,))
+        test_node_counts[node_type] = cur.fetchone()[0]
+
+    # Test edge types
+    test_edge_types = [
+        'defines_test_case', 'defines_test_suite', 'defines_invariant',
+        'emits_test_result', 'records_validation_outcome', 'links_to_execution_trace',
+        'gates_promotion', 'detects_regression'
+    ]
+    test_edge_counts = {}
+    for edge_type in test_edge_types:
+        test_edge_counts[edge_type] = stored_edge_counts.get(edge_type, 0)
+
+    # Test coverage by layer
+    cur.execute("""
+        SELECT n.layer, COUNT(*) as count
+        FROM nodes n
+        WHERE n.entity_type IN ('test_suite', 'test_case', 'invariant_family')
+        GROUP BY n.layer
+    """)
+    test_coverage_by_layer = dict(cur.fetchall())
+
+    test_surface_report["test_surface_nodes"] = test_node_counts
+    test_surface_report["test_surface_edges"] = test_edge_counts
+    test_surface_report["test_coverage_metrics"] = {
+        "total_test_nodes": sum(test_node_counts.values()),
+        "total_test_edges": sum(test_edge_counts.values()),
+        "test_edge_types_found": sum(1 for count in test_edge_counts.values() if count > 0),
+        "test_edge_types_total": len(test_edge_types),
+        "test_edge_coverage_percentage": (sum(1 for count in test_edge_counts.values() if count > 0) / len(test_edge_types) * 100) if test_edge_types else 0
+    }
+    test_surface_report["test_coverage_by_layer"] = test_coverage_by_layer
+    test_surface_report["critical_path_linkage"] = {
+        "test_cases_with_execution_trace": test_edge_counts.get('links_to_execution_trace', 0),
+        "test_cases_with_validation": test_edge_counts.get('records_validation_outcome', 0),
+        "test_cases_with_regression_detection": test_edge_counts.get('detects_regression', 0),
+        "test_cases_with_promotion_gates": test_edge_counts.get('gates_promotion', 0),
+        "critical_path_completeness": "partial" if test_edge_counts.get('links_to_execution_trace', 0) > 0 else "missing"
+    }
+
+    conn.close()
+
     # Write all reports
     reports = [
         ("layer_coverage_report.json", layer_report),
@@ -1134,7 +1197,8 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
         ("provenance_report.json", provenance_report),
         ("replay_determinism_report.json", determinism_report),
         ("boundary_report.json", boundary_report),
-        ("mutation_integrity_report.json", mutation_report)
+        ("mutation_integrity_report.json", mutation_report),
+        ("test_surface_coverage.json", test_surface_report)
     ]
 
     for filename, report_data in reports:

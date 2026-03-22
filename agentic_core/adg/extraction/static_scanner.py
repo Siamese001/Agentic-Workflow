@@ -4718,6 +4718,12 @@ def _scan_file(
     critical_visitor.visit(tree)
     edges.extend(critical_visitor.edges)
 
+    # Wave 2: Test surface linking
+    if filepath.name.endswith('_test.py') or 'test_' in filepath.name or str(filepath).startswith('tests/'):
+        test_surface_visitor = _TestSurfaceVisitor(module_adg, str(filepath))
+        test_surface_visitor.visit(tree)
+        edges.extend(test_surface_visitor.edges)
+
     # E1: Symbol inventory / exports graph
     sym_visitor = _SymbolInventoryVisitor(module_adg, rel)
     sym_visitor.visit(tree)
@@ -5520,6 +5526,358 @@ class _CriticalEdgeVisitor(ast.NodeVisitor):
             "isolate_execution",
         }
         return sym in sandbox_patterns
+
+
+class _TestSurfaceVisitor(ast.NodeVisitor):
+    """Wave 2: Capture test surface nodes and edges for critical-path linkage.
+
+    Captures test-related nodes and edges:
+    - test_suite, test_case, invariant_family nodes
+    - emits_test_result, records_validation_outcome edges
+    - links_to_execution_trace, gates_promotion, detects_regression edges
+    """
+
+    def __init__(self, module_adg_name: str, source_file: str) -> None:
+        import uuid as _uuid  # noqa: PLC0415
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_TestSurfaceVisitor.__init__"
+        )
+
+        self.module_adg_name = module_adg_name
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+        self.current_test_function = None
+        self.current_test_class = None
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        """Visit test functions and create test_case nodes."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_TestSurfaceVisitor.visit_FunctionDef"
+        )
+
+        # Check if this is a test function
+        if self._is_test_function(node):
+            self.current_test_function = node.name
+
+            # Create test_case node edge
+            test_case_name = canonical_name("TestCase", node.name)
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="defines_test_case",
+                    to_name=test_case_name,
+                    edge_kind="test_definition",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=node.name,
+                )
+            )
+
+            # Look for test result emissions
+            self._scan_test_function_body(node)
+
+        self.current_test_function = None
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        """Visit test classes and create test_suite nodes."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_TestSurfaceVisitor.visit_ClassDef"
+        )
+
+        if self._is_test_class(node):
+            self.current_test_class = node.name
+
+            # Create test_suite node edge
+            test_suite_name = canonical_name("TestSuite", node.name)
+            self.edges.append(
+                Edge(
+                    from_name=self.module_adg_name,
+                    relation_type="defines_test_suite",
+                    to_name=test_suite_name,
+                    edge_kind="test_definition",
+                    source_file=self.source_file,
+                    line_no=node.lineno,
+                    symbol=node.name,
+                )
+            )
+
+            # Look for invariant family patterns
+            self._scan_test_class_body(node)
+
+        self.current_test_class = None
+
+    def visit_Call(self, node: ast.Call) -> None:
+        """Visit function calls for test-related patterns."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_TestSurfaceVisitor.visit_Call"
+        )
+
+        sym = self._extract_symbol(node.func)
+        if sym:
+            # Test result emissions
+            if self._is_test_result_emission(sym, node):
+                result_name = canonical_name("TestResult", f"result_{node.lineno}")
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="emits_test_result",
+                        to_name=result_name,
+                        edge_kind="test_execution",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=sym,
+                    )
+                )
+
+            # Validation outcomes
+            elif self._is_validation_outcome(sym, node):
+                validation_name = canonical_name("Validation", f"validation_{node.lineno}")
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="records_validation_outcome",
+                        to_name=validation_name,
+                        edge_kind="test_validation",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=sym,
+                    )
+                )
+
+            # Execution trace linkage
+            elif self._is_execution_trace_link(sym, node):
+                trace_name = canonical_name("ExecutionTrace", f"trace_{node.lineno}")
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="links_to_execution_trace",
+                        to_name=trace_name,
+                        edge_kind="test_linkage",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=sym,
+                    )
+                )
+
+            # Promotion gates
+            elif self._is_promotion_gate(sym, node):
+                gate_name = canonical_name("PromotionGate", f"gate_{node.lineno}")
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="gates_promotion",
+                        to_name=gate_name,
+                        edge_kind="test_promotion",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=sym,
+                    )
+                )
+
+            # Regression detection
+            elif self._is_regression_detection(sym, node):
+                regression_name = canonical_name("Regression", f"regression_{node.lineno}")
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="detects_regression",
+                        to_name=regression_name,
+                        edge_kind="test_regression",
+                        source_file=self.source_file,
+                        line_no=node.lineno,
+                        symbol=sym,
+                    )
+                )
+
+    def _scan_test_function_body(self, node: ast.FunctionDef) -> None:
+        """Scan test function body for test patterns."""
+        for stmt in node.body:
+            if isinstance(stmt, ast.Call):
+                sym = self._extract_symbol(stmt.func)
+                if sym and self._is_invariant_family(sym, stmt):
+                    invariant_name = canonical_name("InvariantFamily", f"invariant_{stmt.lineno}")
+                    self.edges.append(
+                        Edge(
+                            from_name=self.module_adg_name,
+                            relation_type="defines_invariant",
+                            to_name=invariant_name,
+                            edge_kind="test_invariant",
+                            source_file=self.source_file,
+                            line_no=stmt.lineno,
+                            symbol=sym,
+                        )
+                    )
+
+    def _scan_test_class_body(self, node: ast.ClassDef) -> None:
+        """Scan test class body for invariant patterns."""
+        for stmt in node.body:
+            if isinstance(stmt, ast.FunctionDef):
+                for inner_stmt in stmt.body:
+                    if isinstance(inner_stmt, ast.Call):
+                        sym = self._extract_symbol(inner_stmt.func)
+                        if sym and self._is_invariant_family(sym, inner_stmt):
+                            invariant_name = canonical_name("InvariantFamily", f"invariant_{inner_stmt.lineno}")
+                            self.edges.append(
+                                Edge(
+                                    from_name=self.module_adg_name,
+                                    relation_type="defines_invariant",
+                                    to_name=invariant_name,
+                                    edge_kind="test_invariant",
+                                    source_file=self.source_file,
+                                    line_no=inner_stmt.lineno,
+                                    symbol=sym,
+                                )
+                            )
+
+    def _extract_symbol(self, node: ast.AST) -> str:
+        """Extract symbol name from AST node."""
+        if isinstance(node, ast.Name):
+            return node.id
+        elif isinstance(node, ast.Attribute):
+            parts = []
+            curr = node
+            while isinstance(curr, ast.Attribute):
+                parts.append(curr.attr)
+                curr = curr.value
+            if isinstance(curr, ast.Name):
+                parts.append(curr.id)
+            return ".".join(reversed(parts))
+        return ""
+
+    def _is_test_function(self, node: ast.FunctionDef) -> bool:
+        """Check if function is a test function."""
+        test_prefixes = {"test_", "should_", "when_", "given_", "then_"}
+        test_suffixes = {"_test", "_spec", "_case"}
+
+        name = node.name
+
+        # Check prefixes
+        if any(name.startswith(prefix) for prefix in test_prefixes):
+            return True
+
+        # Check suffixes
+        if any(name.endswith(suffix) for suffix in test_suffixes):
+            return True
+
+        # Check decorators
+        for decorator in node.decorator_list:
+            if isinstance(decorator, ast.Name):
+                if decorator.id in {"pytest.mark", "unittest.case", "test"}:
+                    return True
+            elif isinstance(decorator, ast.Attribute):
+                if decorator.attr in {"mark", "skip", "xfail"}:
+                    return True
+
+        return False
+
+    def _is_test_class(self, node: ast.ClassDef) -> bool:
+        """Check if class is a test class."""
+        test_class_patterns = {"Test", "TestCase", "Spec"}
+
+        # Check class name
+        if any(pattern in node.name for pattern in test_class_patterns):
+            return True
+
+        # Check inheritance
+        for base in node.bases:
+            if isinstance(base, ast.Name):
+                if any(pattern in base.id for pattern in test_class_patterns):
+                    return True
+
+        return False
+
+    def _is_test_result_emission(self, sym: str, node: ast.Call) -> bool:
+        """Detect test result emission patterns."""
+        result_patterns = {
+            "assert",
+            "assertEqual",
+            "assertTrue",
+            "assertFalse",
+            "assertIn",
+            "assertNotIn",
+            "assertRaises",
+            "assertIs",
+            "assertIsNone",
+            "assertIsNotNone",
+            "expect",
+            "should",
+            "verify",
+            "validate",
+        }
+        return sym in result_patterns
+
+    def _is_validation_outcome(self, sym: str, node: ast.Call) -> bool:
+        """Detect validation outcome patterns."""
+        validation_patterns = {
+            "validate_result",
+            "check_outcome",
+            "verify_validation",
+            "assert_valid",
+            "assert_invalid",
+            "validation_passed",
+            "validation_failed",
+        }
+        return sym in validation_patterns
+
+    def _is_execution_trace_link(self, sym: str, node: ast.Call) -> bool:
+        """Detect execution trace linkage patterns."""
+        trace_patterns = {
+            "trace_execution",
+            "log_execution",
+            "record_trace",
+            "capture_trace",
+            "execution_trace",
+            "trace_id",
+            "trace_context",
+        }
+        return sym in trace_patterns
+
+    def _is_promotion_gate(self, sym: str, node: ast.Call) -> bool:
+        """Detect promotion gate patterns."""
+        promotion_patterns = {
+            "promote_to_production",
+            "deploy_to_staging",
+            "approve_promotion",
+            "gate_promotion",
+            "require_approval",
+            "promote_if_valid",
+        }
+        return sym in promotion_patterns
+
+    def _is_regression_detection(self, sym: str, node: ast.Call) -> bool:
+        """Detect regression detection patterns."""
+        regression_patterns = {
+            "detect_regression",
+            "check_regression",
+            "prevent_regression",
+            "regression_test",
+            "compare_baseline",
+            "validate_no_regression",
+        }
+        return sym in regression_patterns
+
+    def _is_invariant_family(self, sym: str, node: ast.Call) -> bool:
+        """Detect invariant family patterns."""
+        invariant_patterns = {
+            "assert_invariant",
+            "check_invariant",
+            "maintain_invariant",
+            "preserve_invariant",
+            "invariant_holds",
+            "verify_invariant",
+        }
+        return sym in invariant_patterns
 
 
 def _is_test_file(filepath: Path) -> bool:
