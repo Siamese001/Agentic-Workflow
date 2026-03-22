@@ -564,7 +564,7 @@ class ADG1653PrecisionPass:
 def main():
     """Main execution."""
     # Find latest SQLite database
-    adg_dir = ROOT / "artifacts" / "adg"
+    adg_dir = ROOT / "artifacts" / "adg" / "databases"
     sqlite_files = sorted(adg_dir.glob("adg_indexed_*.sqlite"),
                          key=lambda p: p.stat().st_mtime, reverse=True)
 
