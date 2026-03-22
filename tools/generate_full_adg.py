@@ -935,21 +935,26 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
     }
 
     # 2. Edge Density Report
+    # Get total edge count from SQLite
+    conn = sqlite3.connect(sqlite_path)
+    cur = conn.cursor()
+    cur.execute("SELECT COUNT(*) FROM edges")
+    total_edges = cur.fetchone()[0]
+
     edge_report = {
         "timestamp": ts,
         "schema_version": "1.0",
-        "total_edges": len(artifact.relations),
+        "total_edges": total_edges,
         "edge_distribution": {},
         "critical_edge_coverage": {},
         "density_metrics": {}
     }
 
-    # Count edges by type
-    edge_counts = Counter()
-    for edge in artifact.relations:
-        edge_counts[edge.relation_type] += 1
+    # Use SQLite as authoritative source for edge counts
+    cur.execute("SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type")
+    sqlite_edge_counts = dict(cur.fetchall())
 
-    edge_report["edge_distribution"] = dict(edge_counts.most_common())
+    edge_report["edge_distribution"] = dict(sorted(sqlite_edge_counts.items(), key=lambda x: x[1], reverse=True))
 
     # Critical edge types from Wave 4
     critical_edges = [
@@ -964,34 +969,70 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
 
     critical_coverage = {}
     for edge_type in critical_edges:
-        critical_coverage[edge_type] = edge_counts.get(edge_type, 0)
+        critical_coverage[edge_type] = sqlite_edge_counts.get(edge_type, 0)
 
     edge_report["critical_edge_coverage"] = critical_coverage
     edge_report["density_metrics"] = {
         "critical_edges_found": sum(1 for count in critical_coverage.values() if count > 0),
         "critical_edge_percentage": sum(1 for count in critical_coverage.values() if count > 0) / len(critical_edges) * 100,
-        "top_edge_type": edge_counts.most_common(1)[0] if edge_counts else None
+        "top_edge_type": max(sqlite_edge_counts.items(), key=lambda x: x[1])[0] if sqlite_edge_counts else None
     }
 
-    # 3. Provenance Report
+    # Store edge counts for later use
+    stored_edge_counts = sqlite_edge_counts.copy()
+    conn.close()
+
+    # 3. Provenance Report - reconciled with SQLite
+    # Query SQLite for accurate counts
+    conn = sqlite3.connect(sqlite_path)
+    cur = conn.cursor()
+
+    # Get meta table data
+    cur.execute("SELECT * FROM meta LIMIT 1")
+    meta_row = cur.fetchone()
+    if meta_row:
+        meta_columns = [description[0] for description in cur.description]
+        meta_data = dict(zip(meta_columns, meta_row))
+    else:
+        meta_data = {}
+
+    # Get actual node/edge counts
+    cur.execute("SELECT COUNT(*) FROM nodes")
+    total_nodes = cur.fetchone()[0]
+
+    cur.execute("SELECT COUNT(*) FROM edges")
+    total_edges = cur.fetchone()[0]
+
+    cur.execute("SELECT COUNT(*) FROM nodes WHERE entity_type='module'")
+    total_modules = cur.fetchone()[0]
+
+    conn.close()
+
     provenance_report = {
-        "timestamp": ts,
-        "schema_version": "1.0",
-        "commit_sha": artifact.commit_sha,
-        "repo_state_hash": getattr(artifact, 'repo_state_hash', ''),
-        "scanner_digest": artifact.scanner_digest,
-        "artifact_digest": artifact.artifact_digest,
+        "schema_version": meta_data.get('schema_version', '4.0.0'),  # Use SQLite version
+        "commit_sha": meta_data.get('commit_sha', artifact.commit_sha),
+        "repo_state_hash": meta_data.get('repo_state_hash', getattr(artifact, 'repo_state_hash', '')),
+        "scanner_digest": meta_data.get('scanner_digest', artifact.scanner_digest),
+        "artifact_digest": meta_data.get('artifact_digest', artifact.artifact_digest),
         "validation": {
-            "has_commit_sha": bool(artifact.commit_sha),
-            "has_repo_state_hash": bool(getattr(artifact, 'repo_state_hash', '')),
-            "has_scanner_digest": bool(artifact.scanner_digest),
-            "has_artifact_digest": bool(artifact.artifact_digest)
+            "has_commit_sha": bool(meta_data.get('commit_sha')),
+            "has_repo_state_hash": bool(meta_data.get('repo_state_hash')),
+            "has_scanner_digest": bool(meta_data.get('scanner_digest')),
+            "has_artifact_digest": bool(meta_data.get('artifact_digest'))
+        },
+        "reconciliation": {
+            "report_nodes": len(artifact.entities),
+            "db_nodes": total_nodes,
+            "report_edges": len(artifact.relations),
+            "db_edges": total_edges,
+            "nodes_match": len(artifact.entities) == total_nodes,
+            "edges_match": len(artifact.relations) == total_edges
         },
         "generation_metrics": {
-            "scan_duration_seconds": None,  # Would need to track this
-            "modules_scanned": len([e for e in artifact.entities if e.entity_type == "module"]),
-            "symbols_scanned": len([e for e in artifact.entities if e.entity_type == "symbol"]),
-            "total_entities": len(artifact.entities)
+            "scan_duration_seconds": None,
+            "modules_scanned": total_modules,
+            "symbols_scanned": total_nodes - total_modules,
+            "total_entities": total_nodes
         }
     }
 
@@ -1000,10 +1041,10 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
         "timestamp": ts,
         "schema_version": "1.0",
         "determinism_metrics": {
-            "determinism_digest_edges": edge_counts.get('emits_determinism_digest', 0),
-            "determinism_seed_edges": edge_counts.get('determinism_seed', 0),
-            "replay_key_edges": edge_counts.get('emits_replay_key', 0),
-            "snapshot_state_edges": edge_counts.get('snapshots_state', 0)
+            "determinism_digest_edges": stored_edge_counts.get('emits_determinism_digest', 0),
+            "determinism_seed_edges": stored_edge_counts.get('determinism_seed', 0),
+            "replay_key_edges": stored_edge_counts.get('emits_replay_key', 0),
+            "snapshot_state_edges": stored_edge_counts.get('snapshots_state', 0)
         },
         "determinism_coverage": {
             "modules_with_determinism_digest": 0,  # Would need SQLite query
@@ -1011,10 +1052,79 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
             "determinism_score": 0.0  # Calculated metric
         },
         "validation": {
-            "has_determinism_edges": edge_counts.get('emits_determinism_digest', 0) > 0,
-            "has_seed_edges": edge_counts.get('determinism_seed', 0) > 0,
-            "determinism_status": "partial" if edge_counts.get('emits_determinism_digest', 0) > 0 else "missing"
+            "has_determinism_edges": stored_edge_counts.get('emits_determinism_digest', 0) > 0,
+            "has_seed_edges": stored_edge_counts.get('determinism_seed', 0) > 0,
+            "determinism_status": "partial" if stored_edge_counts.get('emits_determinism_digest', 0) > 0 else "missing"
         }
+    }
+
+    # 5. Boundary Report
+    boundary_report = {
+        "timestamp": ts,
+        "schema_version": "1.0",
+        "boundary_edge_counts": {},
+        "unresolved_imports": {},
+        "core_path_analysis": {},
+        "boundary_metrics": {}
+    }
+
+    # Query boundary edge counts from SQLite
+    boundary_edge_types = [
+        'internal_to_internal',
+        'internal_to_external',
+        'external_to_internal',
+        'unresolved_boundary'
+    ]
+
+    boundary_counts = {}
+    for edge_type in boundary_edge_types:
+        boundary_counts[edge_type] = stored_edge_counts.get(edge_type, 0)
+
+    boundary_report["boundary_edge_counts"] = boundary_counts
+
+    # Query unresolved imports by core path
+    unresolved_by_path = {}
+    core_paths = ['agentic_core/L0_', 'agentic_core/L2_', 'agentic_core/L5_']
+
+    for path_prefix in core_paths:
+        # This would require a more complex SQL query to get by path
+        unresolved_by_path[path_prefix] = 0  # Placeholder
+
+    boundary_report["unresolved_imports"] = unresolved_by_path
+    boundary_report["boundary_metrics"] = {
+        "total_unresolved": sum(unresolved_by_path.values()),
+        "critical_path_unresolved": sum(unresolved_by_path[p] for p in core_paths),
+        "boundary_completeness": "incomplete"
+    }
+
+    # 6. Mutation Integrity Report
+    mutation_report = {
+        "timestamp": ts,
+        "schema_version": "1.0",
+        "mutation_integrity_metrics": {},
+        "replay_guarantees": {},
+        "signature_coverage": {},
+        "snapshot_lineage": {}
+    }
+
+    # Query mutation-related edges
+    mutation_edges = {
+        'mutation_signature': stored_edge_counts.get('mutation_signature', 0),
+        'parent_snapshot_hash': stored_edge_counts.get('parent_snapshot_hash', 0),
+        'replay_key': stored_edge_counts.get('emits_replay_key', 0),
+        'policy_hash': stored_edge_counts.get('references_policy_hash', 0)
+    }
+
+    mutation_report["mutation_integrity_metrics"] = mutation_edges
+    mutation_report["replay_guarantees"] = {
+        "determinism_status": "partial" if stored_edge_counts.get('determinism_seed', 0) > 0 else "missing",
+        "replay_completeness": "partial",
+        "signature_coverage": "incomplete"
+    }
+    mutation_report["signature_coverage"] = {
+        "modules_with_signatures": stored_edge_counts.get('mutation_signature', 0),
+        "total_modules": len([e for e in artifact.entities if e.entity_type == "module"]),
+        "coverage_percentage": (stored_edge_counts.get('mutation_signature', 0) / len([e for e in artifact.entities if e.entity_type == "module"]) * 100) if len([e for e in artifact.entities if e.entity_type == "module"]) > 0 else 0
     }
 
     # Write all reports
@@ -1022,7 +1132,9 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
         ("layer_coverage_report.json", layer_report),
         ("edge_density_report.json", edge_report),
         ("provenance_report.json", provenance_report),
-        ("replay_determinism_report.json", determinism_report)
+        ("replay_determinism_report.json", determinism_report),
+        ("boundary_report.json", boundary_report),
+        ("mutation_integrity_report.json", mutation_report)
     ]
 
     for filename, report_data in reports:
