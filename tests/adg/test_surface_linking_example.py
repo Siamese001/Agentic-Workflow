@@ -84,10 +84,17 @@ class IntegrationSpec:
 
         # Promotion gate
         promote_if_valid(validation_passed)
-
-
-def test_edge_cases():
-    """Test edge cases and boundary conditions."""
-    assert_raises(ValueError, risky_operation)
-    assert_is_none(empty_result)
-    assert_is_not_none(valid_result)
+        
+        # Additional patterns for comprehensive testing
+        validate_result(data)
+        check_outcome(result)
+        assert_valid(validation_result)
+        trace_execution(context)
+        log_execution(trace_id)
+        record_trace(trace_id, "operation")
+        promote_to_production()
+        gate_promotion("staging", "production")
+        require_approval("deploy")
+        detect_regression("baseline", "current")
+        check_regression("metrics")
+        prevent_regression("feature")

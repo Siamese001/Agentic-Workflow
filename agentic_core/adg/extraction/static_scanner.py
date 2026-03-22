@@ -5614,6 +5614,29 @@ class _TestSurfaceVisitor(ast.NodeVisitor):
 
         self.current_test_class = None
 
+    def visit_Assert(self, node: ast.Assert) -> None:
+        """Visit assert statements for test result emissions."""
+        import uuid as _uuid  # noqa: PLC0415
+
+        _trace_id = str(_uuid.uuid4())
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_TestSurfaceVisitor.visit_Assert"
+        )
+
+        # Assert statements always emit test results
+        result_name = canonical_name("TestResult", f"result_{node.lineno}")
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg_name,
+                relation_type="emits_test_result",
+                to_name=result_name,
+                edge_kind="test_execution",
+                source_file=self.source_file,
+                line_no=node.lineno,
+                symbol="assert",
+            )
+        )
+
     def visit_Call(self, node: ast.Call) -> None:
         """Visit function calls for test-related patterns."""
         import uuid as _uuid  # noqa: PLC0415
@@ -5703,21 +5726,109 @@ class _TestSurfaceVisitor(ast.NodeVisitor):
     def _scan_test_function_body(self, node: ast.FunctionDef) -> None:
         """Scan test function body for test patterns."""
         for stmt in node.body:
-            if isinstance(stmt, ast.Call):
-                sym = self._extract_symbol(stmt.func)
-                if sym and self._is_invariant_family(sym, stmt):
-                    invariant_name = canonical_name("InvariantFamily", f"invariant_{stmt.lineno}")
-                    self.edges.append(
-                        Edge(
-                            from_name=self.module_adg_name,
-                            relation_type="defines_invariant",
-                            to_name=invariant_name,
-                            edge_kind="test_invariant",
-                            source_file=self.source_file,
-                            line_no=stmt.lineno,
-                            symbol=sym,
-                        )
+            # Handle assert statements
+            if isinstance(stmt, ast.Assert):
+                result_name = canonical_name("TestResult", f"result_{stmt.lineno}")
+                self.edges.append(
+                    Edge(
+                        from_name=self.module_adg_name,
+                        relation_type="emits_test_result",
+                        to_name=result_name,
+                        edge_kind="test_execution",
+                        source_file=self.source_file,
+                        line_no=stmt.lineno,
+                        symbol="assert",
                     )
+                )
+            # Handle Expr nodes that contain Call nodes
+            elif isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
+                call_node = stmt.value
+                sym = self._extract_symbol(call_node.func)
+                if sym:
+                    # Invariant families
+                    if self._is_invariant_family(sym, call_node):
+                        invariant_name = canonical_name("InvariantFamily", f"invariant_{stmt.lineno}")
+                        self.edges.append(
+                            Edge(
+                                from_name=self.module_adg_name,
+                                relation_type="defines_invariant",
+                                to_name=invariant_name,
+                                edge_kind="test_invariant",
+                                source_file=self.source_file,
+                                line_no=stmt.lineno,
+                                symbol=sym,
+                            )
+                        )
+                    # Test result emissions
+                    elif self._is_test_result_emission(sym, call_node):
+                        result_name = canonical_name("TestResult", f"result_{stmt.lineno}")
+                        self.edges.append(
+                            Edge(
+                                from_name=self.module_adg_name,
+                                relation_type="emits_test_result",
+                                to_name=result_name,
+                                edge_kind="test_execution",
+                                source_file=self.source_file,
+                                line_no=stmt.lineno,
+                                symbol=sym,
+                            )
+                        )
+                    # Validation outcomes
+                    elif self._is_validation_outcome(sym, call_node):
+                        validation_name = canonical_name("Validation", f"validation_{stmt.lineno}")
+                        self.edges.append(
+                            Edge(
+                                from_name=self.module_adg_name,
+                                relation_type="records_validation_outcome",
+                                to_name=validation_name,
+                                edge_kind="test_validation",
+                                source_file=self.source_file,
+                                line_no=stmt.lineno,
+                                symbol=sym,
+                            )
+                        )
+                    # Execution trace linkage
+                    elif self._is_execution_trace_link(sym, call_node):
+                        trace_name = canonical_name("ExecutionTrace", f"trace_{stmt.lineno}")
+                        self.edges.append(
+                            Edge(
+                                from_name=self.module_adg_name,
+                                relation_type="links_to_execution_trace",
+                                to_name=trace_name,
+                                edge_kind="test_linkage",
+                                source_file=self.source_file,
+                                line_no=stmt.lineno,
+                                symbol=sym,
+                            )
+                        )
+                    # Promotion gates
+                    elif self._is_promotion_gate(sym, call_node):
+                        gate_name = canonical_name("PromotionGate", f"gate_{stmt.lineno}")
+                        self.edges.append(
+                            Edge(
+                                from_name=self.module_adg_name,
+                                relation_type="gates_promotion",
+                                to_name=gate_name,
+                                edge_kind="test_promotion",
+                                source_file=self.source_file,
+                                line_no=stmt.lineno,
+                                symbol=sym,
+                            )
+                        )
+                    # Regression detection
+                    elif self._is_regression_detection(sym, call_node):
+                        regression_name = canonical_name("Regression", f"regression_{stmt.lineno}")
+                        self.edges.append(
+                            Edge(
+                                from_name=self.module_adg_name,
+                                relation_type="detects_regression",
+                                to_name=regression_name,
+                                edge_kind="test_regression",
+                                source_file=self.source_file,
+                                line_no=stmt.lineno,
+                                symbol=sym,
+                            )
+                        )
 
     def _scan_test_class_body(self, node: ast.ClassDef) -> None:
         """Scan test class body for invariant patterns."""
