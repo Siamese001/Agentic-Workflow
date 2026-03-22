@@ -10,7 +10,7 @@
    - Model requests Tool 1                        - Model writes complete Python/Bash Script
    (Analogy: Researcher asks for 1 book)          (Analogy: Researcher writes a detailed memo of all 3 books needed)
          |                                              | [ gated_by_confidence=37 | routes_path=183 ]
-         v                                              | -> IF Low Confidence/Policy-Ambiguous: 
+         v                                              | -> IF Low Confidence/Policy-Ambiguous:
    [ L2.2: EXECUTION ]                                  |      route to human (requires_human_review=5)
    - API 1 Executes                                     |      (Analogy: Head Librarian reviews the request memo)
          | (Raw data hits context)                      | -> IF Human Modified (MODIFY_DIFF):

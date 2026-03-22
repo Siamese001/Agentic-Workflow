@@ -20,16 +20,16 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 def create_demo_database(db_path: Path) -> None:
     """Create a demo SQLite database with sample ADG data for testing."""
-    
+
     print("🏗️  Creating demo ADG database...")
-    
+
     # Remove existing demo database
     if db_path.exists():
         db_path.unlink()
-    
+
     with sqlite3.connect(db_path) as conn:
         cursor = conn.cursor()
-        
+
         # Create nodes table
         cursor.execute("""
             CREATE TABLE nodes (
@@ -47,7 +47,7 @@ def create_demo_database(db_path: Path) -> None:
                 identity_kind TEXT
             )
         """)
-        
+
         # Create edges table
         cursor.execute("""
             CREATE TABLE edges (
@@ -69,7 +69,7 @@ def create_demo_database(db_path: Path) -> None:
                 FOREIGN KEY (dst_id) REFERENCES nodes (id)
             )
         """)
-        
+
         # Create meta table for provenance
         cursor.execute("""
             CREATE TABLE meta (
@@ -77,12 +77,12 @@ def create_demo_database(db_path: Path) -> None:
                 value TEXT NOT NULL
             )
         """)
-        
+
         # Insert sample nodes
         nodes_data = [
             # First-party modules
-            (1, "ADG::Module::agentic_core/L0_routing/router.py", "module", "L0", "HIGH", 
-             "agentic_core/L0_routing/router.py", "first_party", "runtime", "core", 
+            (1, "ADG::Module::agentic_core/L0_routing/router.py", "module", "L0", "HIGH",
+             "agentic_core/L0_routing/router.py", "first_party", "runtime", "core",
              "agentic_core.L0_routing.router", "abc123", "repo_module"),
             (2, "ADG::Module::agentic_core/L5_safety/guardian.py", "module", "L5", "HIGH",
              "agentic_core/L5_safety/guardian.py", "first_party", "runtime", "safety",
@@ -99,14 +99,14 @@ def create_demo_database(db_path: Path) -> None:
              None, "unknown", "runtime", "core",
              None, None, "unresolved_import"),
         ]
-        
+
         cursor.executemany("""
             INSERT INTO nodes (id, adg_name, entity_type, layer, confidence, resolved_path,
-                             identity_origin, domain, owner_surface, canonical_symbol, 
+                             identity_origin, domain, owner_surface, canonical_symbol,
                              source_hash, identity_kind)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, nodes_data)
-        
+
         # Insert sample edges
         edges_data = [
             # Normal calls
@@ -125,13 +125,13 @@ def create_demo_database(db_path: Path) -> None:
             # Policy validation
             (9, 2, 2, "validated_by_safety_plane", "runtime", "agentic_core/L5_safety/guardian.py", 32, "policy_check"),
         ]
-        
+
         cursor.executemany("""
             INSERT INTO edges (id, src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol,
                              confidence, extraction_rule, authority_level, policy_scope, replay_relevance, learning_relevance)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, NULL, NULL, NULL, NULL)
         """, edges_data)
-        
+
         # Insert provenance metadata
         meta_data = [
             ("commit_sha", "abc123def456789012345678901234567890abcd"),
@@ -145,106 +145,106 @@ def create_demo_database(db_path: Path) -> None:
             ("generation_mode", "full"),
             ("source_snapshot_digest", "sha256:fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321"),
         ]
-        
+
         cursor.executemany("INSERT INTO meta (key, value) VALUES (?, ?)", meta_data)
-        
+
         conn.commit()
         print(f"   ✅ Demo database created: {db_path}")
         print(f"   📊 Nodes: {len(nodes_data)}, Edges: {len(edges_data)}")
 
 def run_demo_verification(adg_dir: Path) -> Dict[str, Any]:
     """Run verification suite on demo data."""
-    
+
     print(f"\n🚀 Running ADG Verification Suite Demo")
     print(f"📁 ADG Directory: {adg_dir}")
-    
+
     # Import and run the verification suite
     try:
         from scripts.run_adg_mandatory_verification import ADGMandatoryVerificationSuite
-        
+
         suite = ADGMandatoryVerificationSuite(adg_dir)
-        
+
         # Run only completed phases for demo
         completed_phases = {
             "provenance": suite.VERIFICATION_PHASES["provenance"],
-            "consistency": suite.VERIFICATION_PHASES["consistency"], 
+            "consistency": suite.VERIFICATION_PHASES["consistency"],
             "identity_completeness": suite.VERIFICATION_PHASES["identity_completeness"],
             "trace_replay_coverage": suite.VERIFICATION_PHASES["trace_replay_coverage"],
             "layer_authority": suite.VERIFICATION_PHASES["layer_authority"],
             "l4_normalization": suite.VERIFICATION_PHASES["l4_normalization"]
         }
-        
+
         suite.VERIFICATION_PHASES = completed_phases
-        
+
         # Run verification
         results = suite.run_verification_suite()
-        
+
         return results
-        
+
     except ImportError as e:
         print(f"❌ Could not import verification suite: {e}")
         return {"status": "ERROR", "error": str(e)}
 
 def analyze_demo_results(results: Dict[str, Any]) -> None:
     """Analyze and present demo results."""
-    
+
     print(f"\n📊 DEMO RESULTS ANALYSIS")
     print(f"{'='*60}")
-    
+
     if results.get("status") == "ERROR":
         print(f"❌ Demo failed with error: {results.get('error')}")
         return
-    
+
     summary = results.get("summary", {})
-    
+
     print(f"Overall Status: {summary.get('overall_status', 'UNKNOWN')}")
     print(f"Total Phases: {summary.get('total_phases', 0)}")
     print(f"Passed: {summary.get('passed_phases', 0)}")
     print(f"Failed: {summary.get('failed_phases', 0)}")
     print(f"Errors: {summary.get('error_phases', 0)}")
     print(f"Blocking Failures: {summary.get('blocking_failures', 0)}")
-    
+
     # Phase-by-phase breakdown
     print(f"\n📋 PHASE BREAKDOWN:")
     phase_results = results.get("phase_results", {})
-    
+
     for phase_name, result in phase_results.items():
         status_icon = "✅" if result["status"] == "PASS" else "❌" if result["status"] == "FAIL" else "💥"
         blocking_mark = " 🔒" if result["blocking"] else ""
         exec_time = result.get("execution_time", 0)
-        
+
         print(f"   {status_icon} {phase_name}: {result['status']}{blocking_mark} ({exec_time:.2f}s)")
-        
+
         # Show specific issues for failed phases
         if result["status"] in ["FAIL", "ERROR"]:
             if "errors" in result and result["errors"]:
                 for error in result["errors"][:2]:  # Show first 2 errors
                     print(f"      • {error}")
-    
+
     # Recommendations
     recommendations = results.get("recommendations", [])
     if recommendations:
         print(f"\n💡 RECOMMENDATIONS:")
         for rec in recommendations[:5]:  # Show first 5
             print(f"   • {rec}")
-    
+
     # Key metrics from completed phases
     print(f"\n📈 KEY METRICS:")
-    
+
     # Trace coverage
     trace_coverage = results.get("phase_results", {}).get("trace_replay_coverage", {})
     if "summary" in trace_coverage:
         tc_summary = trace_coverage["summary"]
         print(f"   Trace Coverage: {tc_summary.get('trace_coverage_percentage', 0):.1f}%")
         print(f"   Complete Coverage: {tc_summary.get('complete_coverage', 0)} modules")
-    
+
     # Layer authority
     layer_auth = results.get("phase_results", {}).get("layer_authority", {})
     if "summary" in layer_auth:
         la_summary = layer_auth["summary"]
         print(f"   Layer Violations: {la_summary.get('layer_violations', 0)}")
         print(f"   UWG Violations: {la_summary.get('uwg_violations', 0)}")
-    
+
     # Identity completeness
     identity_comp = results.get("phase_results", {}).get("identity_completeness", {})
     if "summary" in identity_comp:
@@ -255,33 +255,33 @@ def main():
     """Main demo execution."""
     print("🎯 ADG Hardening Verification Suite Demo")
     print("=" * 60)
-    
+
     # Setup demo environment
     demo_dir = Path("artifacts/demo_adg")
     demo_dir.mkdir(parents=True, exist_ok=True)
-    
+
     demo_db = demo_dir / "adg_indexed_demo.sqlite"
-    
+
     try:
         # Create demo database
         create_demo_database(demo_db)
-        
+
         # Run verification suite
         results = run_demo_verification(demo_dir)
-        
+
         # Analyze results
         analyze_demo_results(results)
-        
+
         # Save results
         results_file = demo_dir / "demo_verification_results.json"
         with open(results_file, 'w') as f:
             json.dump(results, f, indent=2, default=str)
-        
+
         print(f"\n📄 Demo results saved to: {results_file}")
         print(f"\n🎉 Demo completed! Check the results above to see how the verification suite works.")
-        
+
         return 0 if results.get("summary", {}).get("overall_status") == "PASS" else 1
-        
+
     except Exception as e:
         print(f"💥 Demo failed: {e}")
         return 1

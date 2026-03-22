@@ -24,11 +24,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 class ArtifactManifestGenerator:
     """Generates canonical ADG artifact manifests."""
-    
+
     def __init__(self, adg_dir: Path):
         self.adg_dir = Path(adg_dir)
         self.repo_root = self._find_repo_root()
-        
+
     def _find_repo_root(self) -> Path:
         """Find repository root by searching for .git directory."""
         current = Path.cwd()
@@ -37,7 +37,7 @@ class ArtifactManifestGenerator:
                 return current.resolve()
             current = current.parent
         raise RuntimeError("Could not find repository root")
-    
+
     def _calculate_file_hash(self, file_path: Path) -> str:
         """Calculate SHA256 hash of file contents."""
         hasher = hashlib.sha256()
@@ -45,11 +45,11 @@ class ArtifactManifestGenerator:
             for chunk in iter(lambda: f.read(8192), b""):
                 hasher.update(chunk)
         return hasher.hexdigest()
-    
+
     def _scan_source_files(self) -> List[Dict[str, Any]]:
         """Scan all source files included in ADG analysis."""
         source_files = []
-        
+
         # Define source file extensions and patterns
         source_extensions = {'.py', '.json', '.yaml', '.yml', '.md', '.txt', '.cfg', '.ini', '.toml'}
         exclude_patterns = {
@@ -69,37 +69,37 @@ class ArtifactManifestGenerator:
             '.pytest_cache',
             '.tox'
         }
-        
+
         for file_path in self.repo_root.rglob('*'):
             # Skip directories and excluded patterns
             if not file_path.is_file():
                 continue
-                
+
             # Skip if matches exclude patterns
             if any(pattern in file_path.parts for pattern in exclude_patterns):
                 continue
-                
+
             # Skip if no source extension
             if file_path.suffix.lower() not in source_extensions:
                 continue
-            
+
             # Calculate relative path and hash
             rel_path = str(file_path.relative_to(self.repo_root))
             file_hash = self._calculate_file_hash(file_path)
             file_size = file_path.stat().st_size
             file_mtime = file_path.stat().st_mtime
-            
+
             source_files.append({
                 "path": rel_path,
                 "hash": file_hash,
                 "size": file_size,
                 "mtime": file_mtime
             })
-        
+
         # Sort for deterministic ordering
         source_files.sort(key=lambda x: x["path"])
         return source_files
-    
+
     def _calculate_source_snapshot_digest(self, source_files: List[Dict[str, Any]]) -> str:
         """Calculate digest of source file inventory."""
         snapshot_data = {
@@ -113,30 +113,30 @@ class ArtifactManifestGenerator:
             "count": len(source_files),
             "total_size": sum(f["size"] for f in source_files)
         }
-        
+
         snapshot_json = json.dumps(snapshot_data, sort_keys=True, separators=(',', ':'))
         return hashlib.sha256(snapshot_json.encode()).hexdigest()
-    
+
     def _scan_adg_artifacts(self) -> List[Dict[str, Any]]:
         """Scan all ADG artifacts and calculate their hashes."""
         artifacts = []
-        
+
         if not self.adg_dir.exists():
             return artifacts
-        
+
         for artifact_path in self.adg_dir.rglob('*'):
             if not artifact_path.is_file():
                 continue
-            
+
             # Skip temporary files and cache files
             if artifact_path.name.endswith('.tmp') or artifact_path.name.startswith('.'):
                 continue
-            
+
             rel_path = str(artifact_path.relative_to(self.adg_dir))
             file_hash = self._calculate_file_hash(artifact_path)
             file_size = artifact_path.stat().st_size
             file_mtime = artifact_path.stat().st_mtime
-            
+
             artifacts.append({
                 "path": rel_path,
                 "hash": file_hash,
@@ -144,15 +144,15 @@ class ArtifactManifestGenerator:
                 "mtime": file_mtime,
                 "type": self._classify_artifact_type(artifact_path)
             })
-        
+
         # Sort for deterministic ordering
         artifacts.sort(key=lambda x: x["path"])
         return artifacts
-    
+
     def _classify_artifact_type(self, artifact_path: Path) -> str:
         """Classify artifact type based on filename."""
         name = artifact_path.name
-        
+
         if name.startswith("adg_indexed_") and name.endswith(".sqlite"):
             return "sqlite_database"
         elif name.startswith("adg_snapshot_") and name.endswith(".json"):
@@ -169,7 +169,7 @@ class ArtifactManifestGenerator:
             return "sqlite_auxiliary"
         else:
             return "other"
-    
+
     def _calculate_artifact_set_digest(self, artifacts: List[Dict[str, Any]]) -> str:
         """Calculate digest of the complete artifact set."""
         # Only include core artifacts in the digest (exclude cache, temporary files)
@@ -177,7 +177,7 @@ class ArtifactManifestGenerator:
             artifact for artifact in artifacts
             if artifact["type"] in ["sqlite_database", "snapshot", "graph", "archive"]
         ]
-        
+
         artifact_data = {
             "artifacts": [
                 {
@@ -189,64 +189,64 @@ class ArtifactManifestGenerator:
             ],
             "count": len(core_artifacts)
         }
-        
+
         artifact_json = json.dumps(artifact_data, sort_keys=True, separators=(',', ':'))
         return hashlib.sha256(artifact_json.encode()).hexdigest()
-    
+
     def _validate_cross_references(self, source_files: List[Dict[str, Any]], artifacts: List[Dict[str, Any]]) -> List[str]:
         """Validate cross-references between source and artifacts."""
         validation_issues = []
-        
+
         # Check if SQLite database exists
         sqlite_dbs = [a for a in artifacts if a["type"] == "sqlite_database"]
         if not sqlite_dbs:
             validation_issues.append("No SQLite database found")
-        
+
         # Check if snapshot exists
         snapshots = [a for a in artifacts if a["type"] == "snapshot"]
         if not snapshots:
             validation_issues.append("No snapshot file found")
-        
+
         # Check for expected graph types
         graph_types = {a["path"].split("_")[1] for a in artifacts if a["type"] == "graph"}
         expected_graphs = {"file", "symbol", "governance"}
         missing_graphs = expected_graphs - graph_types
         if missing_graphs:
             validation_issues.append(f"Missing graph types: {sorted(missing_graphs)}")
-        
+
         return validation_issues
-    
+
     def generate_manifest(self) -> Dict[str, Any]:
         """Generate complete canonical manifest."""
         print("🔍 Generating ADG Canonical Artifact Manifest...")
         print(f"📁 ADG Directory: {self.adg_dir}")
         print(f"📂 Repository Root: {self.repo_root}")
-        
+
         # Scan source files
         print("📋 Scanning source files...")
         source_files = self._scan_source_files()
         source_snapshot_digest = self._calculate_source_snapshot_digest(source_files)
-        
+
         print(f"   Found {len(source_files)} source files")
         print(f"   Source snapshot digest: {source_snapshot_digest}")
-        
+
         # Scan ADG artifacts
         print("📦 Scanning ADG artifacts...")
         artifacts = self._scan_adg_artifacts()
         artifact_set_digest = self._calculate_artifact_set_digest(artifacts)
-        
+
         print(f"   Found {len(artifacts)} artifacts")
         print(f"   Artifact set digest: {artifact_set_digest}")
-        
+
         # Validate cross-references
         print("🔗 Validating cross-references...")
         validation_issues = self._validate_cross_references(source_files, artifacts)
-        
+
         if validation_issues:
             print("⚠️  Validation issues found:")
             for issue in validation_issues:
                 print(f"   • {issue}")
-        
+
         # Build manifest
         manifest = {
             "manifest_metadata": {
@@ -279,23 +279,23 @@ class ArtifactManifestGenerator:
                 ).hexdigest()
             }
         }
-        
+
         return manifest
-    
+
     def save_manifest(self, manifest: Dict[str, Any], output_path: Path) -> None:
         """Save manifest to file."""
         output_path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(manifest, f, indent=2, sort_keys=True)
-        
+
         print(f"📄 Manifest saved to: {output_path}")
         print(f"🔐 Combined digest: {manifest['canonical_digests']['combined_digest']}")
 
 def main():
     """CLI entry point."""
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="Generate ADG canonical artifact manifest")
     parser.add_argument(
         "--adg-dir",
@@ -314,16 +314,16 @@ def main():
         action="store_true",
         help="Only validate, don't save manifest"
     )
-    
+
     args = parser.parse_args()
-    
+
     try:
         generator = ArtifactManifestGenerator(args.adg_dir)
         manifest = generator.generate_manifest()
-        
+
         if not args.validate_only:
             generator.save_manifest(manifest, args.output)
-        
+
         # Return appropriate exit code
         if manifest["validation"]["status"] == "PASS":
             print("✅ Manifest generation completed successfully")
@@ -331,7 +331,7 @@ def main():
         else:
             print("⚠️  Manifest generation completed with warnings")
             return 0
-        
+
     except Exception as e:
         print(f"💥 Failed to generate manifest: {e}")
         return 1

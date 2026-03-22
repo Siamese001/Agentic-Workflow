@@ -79,7 +79,7 @@ REQUEST FLOW & LIFECYCLE
       FAST RUNTIME LOOKUP                JUDGE / AUDIT / REPLAY
       (Agents / Observability)           escalate to SQLite evidence
       use Redis via MCP first            (archivist pulls exact record)
-      (front desk answer)                
+      (front desk answer)
 
 
 NON-NEGOTIABLE INVARIANT
