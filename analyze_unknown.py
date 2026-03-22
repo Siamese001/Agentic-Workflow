@@ -14,9 +14,9 @@ cur = conn.cursor()
 
 # Get all L_UNKNOWN nodes with their paths
 cur.execute("""
-    SELECT adg_name, entity_type, resolved_path 
-    FROM nodes 
-    WHERE layer = 'L_UNKNOWN' 
+    SELECT adg_name, entity_type, resolved_path
+    FROM nodes
+    WHERE layer = 'L_UNKNOWN'
     ORDER BY resolved_path
 """)
 unknown_nodes = cur.fetchall()

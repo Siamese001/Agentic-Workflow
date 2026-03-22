@@ -235,7 +235,7 @@ def load_or_scan(repo_root: str | None = None, cache_path: Path | None = None, f
     """R2: Load ADG ScanResult from cache if valid, otherwise run fresh scan.
 
     Cache key: commit_sha + scanner_version + schema_version + python_ast_version.
-    
+
     Args:
         repo_root: Repository root path
         cache_path: Custom cache file path

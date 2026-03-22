@@ -27,9 +27,9 @@ print(f"Total: {total_count}")
 
 # Sample empty layer nodes
 cur.execute("""
-    SELECT adg_name, entity_type, identity_kind, confidence, resolved_path 
-    FROM nodes 
-    WHERE layer = '' 
+    SELECT adg_name, entity_type, identity_kind, confidence, resolved_path
+    FROM nodes
+    WHERE layer = ''
     LIMIT 10
 """)
 empty_samples = cur.fetchall()
