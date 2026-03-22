@@ -4,3 +4,6 @@
 *.gz filter=lfs diff=lfs merge=lfs -text
 artifacts/adg/scan_result_cache.json filter=lfs diff=lfs merge=lfs -text
 artifacts/adg/*.json filter=lfs diff=lfs merge=lfs -text
+artifacts/adg/cache/*.json filter=lfs diff=lfs merge=lfs -text
+artifacts/adg/graphs/*.json filter=lfs diff=lfs merge=lfs -text
+artifacts/adg/databases/*.sqlite filter=lfs diff=lfs merge=lfs -text
