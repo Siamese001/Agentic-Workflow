@@ -401,13 +401,13 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
 
     # Add Wave 6 standardized reports + test surface report
     report_files = [
-        adg_artifacts_dir / "layer_coverage_report.json",
-        adg_artifacts_dir / "edge_density_report.json",
-        adg_artifacts_dir / "provenance_report.json",
-        adg_artifacts_dir / "replay_determinism_report.json",
-        adg_artifacts_dir / "boundary_report.json",
-        adg_artifacts_dir / "mutation_integrity_report.json",
-        adg_artifacts_dir / "test_surface_coverage.json",
+        adg_artifacts_dir / f"layer_coverage_report_{ts}.json",
+        adg_artifacts_dir / f"edge_density_report_{ts}.json",
+        adg_artifacts_dir / f"provenance_report_{ts}.json",
+        adg_artifacts_dir / f"replay_determinism_report_{ts}.json",
+        adg_artifacts_dir / f"boundary_report_{ts}.json",
+        adg_artifacts_dir / f"mutation_integrity_report_{ts}.json",
+        adg_artifacts_dir / f"test_surface_coverage_{ts}.json",
     ]
 
     # Filter to only include existing reports
@@ -664,7 +664,7 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
 
     runs = defaultdict(list)
 
-    for pattern in ["adg_*.json", "adg_*.sqlite", "adg_run_*.zip"]:
+    for pattern in ["adg_*.json", "adg_*.sqlite", "adg_run_*.zip", "scan_result_cache.json"]:
         for path in adg_dir.glob(pattern):
             # Skip LATEST files
             if "LATEST" in path.name or "latest" in path.name:
@@ -1192,13 +1192,13 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
 
     # Write all reports
     reports = [
-        ("layer_coverage_report.json", layer_report),
-        ("edge_density_report.json", edge_report),
-        ("provenance_report.json", provenance_report),
-        ("replay_determinism_report.json", determinism_report),
-        ("boundary_report.json", boundary_report),
-        ("mutation_integrity_report.json", mutation_report),
-        ("test_surface_coverage.json", test_surface_report)
+        (f"layer_coverage_report_{ts}.json", layer_report),
+        (f"edge_density_report_{ts}.json", edge_report),
+        (f"provenance_report_{ts}.json", provenance_report),
+        (f"replay_determinism_report_{ts}.json", determinism_report),
+        (f"boundary_report_{ts}.json", boundary_report),
+        (f"mutation_integrity_report_{ts}.json", mutation_report),
+        (f"test_surface_coverage_{ts}.json", test_surface_report)
     ]
 
     for filename, report_data in reports:
