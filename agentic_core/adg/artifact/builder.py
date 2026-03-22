@@ -597,7 +597,7 @@ class ADGArtifactBuilder:
                         EntityRecord(
                             adg_name=adg_target,
                             entity_type="provider",
-                            layer="L_UNKNOWN",
+                            layer="",
                             identity_kind="external_provider",
                             confidence="HIGH",
                             resolved_path="",
@@ -606,7 +606,7 @@ class ADGArtifactBuilder:
                     )
                 else:
                     rec = self._normalizer.normalize(dot_name)
-                    layer = module_path_to_layer(rec.resolved_path) if rec.resolved_path else "L_UNKNOWN"
+                    layer = module_path_to_layer(rec.resolved_path) if rec.resolved_path else ""
                     artifact.entities.append(
                         EntityRecord(
                             adg_name=adg_target,

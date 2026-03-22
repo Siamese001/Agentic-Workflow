@@ -445,6 +445,7 @@ LAYER_PREFIXES: dict[str, str] = {
     "agentic_core/L2_execution": "L2",
     "agentic_core/L3_orchestration": "L3",
     "agentic_core/L4_state": "L4",
+    "agentic_core/L4_persistence": "L4",
     "agentic_core/L5_safety": "L5",
     "agentic_core/L6_observability": "L6",
     "agentic_core/_compat": "L_SHARED",
