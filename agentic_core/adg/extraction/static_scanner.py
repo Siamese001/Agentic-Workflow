@@ -4651,6 +4651,7 @@ def _scan_file(
     filepath: Path,
     repo_root: Path,
     include_tests: bool = True,
+    identity_normalizer: object | None = None,
 ) -> tuple[list[Edge], bool]:
     """Scan a single Python file and return (edges, had_syntax_error)."""
     rel = _repo_relative(filepath, repo_root)
@@ -4668,7 +4669,8 @@ def _scan_file(
 
     # G1: Import edges
     from agentic_core.adg.identity.normalizer import IdentityNormalizer
-    identity_normalizer = IdentityNormalizer(repo_root=repo_root)
+    if identity_normalizer is None:
+        identity_normalizer = IdentityNormalizer(repo_root=repo_root)
     import_visitor = _ImportVisitor(module_adg, rel, identity_normalizer=identity_normalizer)
     import_visitor.visit(tree)
     edges.extend(import_visitor.edges)
@@ -5086,6 +5088,12 @@ class ADGStaticScanner:
         syntax_error_count = 0
         syntax_errors: list[str] = []
 
+        # Create ONE shared IdentityNormalizer so rglob("*.py") runs exactly once
+        from agentic_core.adg.identity.normalizer import IdentityNormalizer
+        shared_normalizer = IdentityNormalizer(repo_root=self.repo_root)
+        # Pre-warm the known-files cache now (single filesystem walk)
+        _ = shared_normalizer._get_known_files()
+
         for filepath in _iter_python_files(self.repo_root):
             rel = _repo_relative(filepath, self.repo_root)
             modules_seen.append(rel)
@@ -5109,7 +5117,7 @@ class ADGStaticScanner:
                 ]
                 had_error = False
             else:
-                file_edges, had_error = _scan_file(filepath, self.repo_root, self.include_tests)
+                file_edges, had_error = _scan_file(filepath, self.repo_root, self.include_tests, shared_normalizer)
                 if not had_error:
                     cache.put(rel, fhash, file_edges)
 
