@@ -20,10 +20,10 @@ edges_added = 0
 for module_adg, module_id in modules:
     # Add emits_replay_key if missing
     cur.execute("""
-        SELECT COUNT(*) FROM edges 
+        SELECT COUNT(*) FROM edges
         WHERE src_id = ? AND relation_type = 'emits_replay_key'
     """, (module_id,))
-    
+
     if cur.fetchone()[0] == 0:
         # Create replay_key node
         replay_adg = f"ADG::ReplayKey::{module_adg}::replay_key"
@@ -31,7 +31,7 @@ for module_adg, module_id in modules:
             SELECT id FROM nodes WHERE adg_name = ?
         """, (replay_adg,))
         result = cur.fetchone()
-        
+
         if not result:
             cur.execute("""
                 INSERT INTO nodes (adg_name, entity_type, layer, identity_kind, confidence, resolved_path)
@@ -40,20 +40,20 @@ for module_adg, module_id in modules:
             replay_id = cur.lastrowid
         else:
             replay_id = result[0]
-        
+
         # Add edge
         cur.execute("""
             INSERT INTO edges (src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol)
             VALUES (?, ?, 'emits_replay_key', 'replay', ?, 1, 'emits_replay_key')
         """, (module_id, replay_id, module_adg))
         edges_added += 1
-    
+
     # Add references_policy_hash if missing
     cur.execute("""
-        SELECT COUNT(*) FROM edges 
+        SELECT COUNT(*) FROM edges
         WHERE src_id = ? AND relation_type = 'references_policy_hash'
     """, (module_id,))
-    
+
     if cur.fetchone()[0] == 0:
         # Create policy_hash node
         policy_adg = f"ADG::PolicyHash::{module_adg}::policy_hash"
@@ -61,7 +61,7 @@ for module_adg, module_id in modules:
             SELECT id FROM nodes WHERE adg_name = ?
         """, (policy_adg,))
         result = cur.fetchone()
-        
+
         if not result:
             cur.execute("""
                 INSERT INTO nodes (adg_name, entity_type, layer, identity_kind, confidence, resolved_path)
@@ -70,7 +70,7 @@ for module_adg, module_id in modules:
             policy_id = cur.lastrowid
         else:
             policy_id = result[0]
-        
+
         # Add edge
         cur.execute("""
             INSERT INTO edges (src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol)

@@ -40,10 +40,10 @@ for edge_id, src_id, dst_id, relation_type, src_layer, dst_layer in edges_to_cla
     else:
         # Both external or unknown
         edge_kind = 'unresolved_boundary'
-    
+
     # Update edge
     cur.execute("""
-        UPDATE edges 
+        UPDATE edges
         SET edge_kind = ?
         WHERE id = ?
     """, (edge_kind, edge_id))
