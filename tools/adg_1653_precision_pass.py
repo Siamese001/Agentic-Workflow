@@ -80,7 +80,8 @@ class ADG1653PrecisionPass:
         results["overall_success"] = all(check.get("success", False) for check in results["checks"].values())
 
         # Save comprehensive report
-        self.save_comprehensive_report(results)
+        report_path = ROOT / "artifacts" / "adg" / "adg_precision_report.json"
+        self.save_comprehensive_report(results, report_path)
 
         return results
 
@@ -481,15 +482,11 @@ class ADG1653PrecisionPass:
 
         return hasher.hexdigest()
 
-    def save_comprehensive_report(self, results: Dict[str, Any]):
+    def save_comprehensive_report(self, results: Dict[str, Any], report_path: Path) -> None:
         """Save comprehensive precision report."""
-        report_dir = ROOT / "artifacts" / "adg"
-        report_path = report_dir / f"adg_1653_precision_report_{self.timestamp}.json"
-
-        with open(report_path, 'w', encoding='utf-8') as f:
-            json.dump(results, f, indent=2, sort_keys=True)
-
-        print(f"\n📄 Report saved: {report_path}")
+        with open(report_path, 'w') as f:
+            json.dump(results, f, indent=2)
+        print(f"  Report saved: {report_path}")
 
         # Save individual reports for CI gates
         self.save_ci_gate_reports(results)
