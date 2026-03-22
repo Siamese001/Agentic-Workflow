@@ -276,12 +276,12 @@ def _warn_non_canonical_keys(result: dict[str, Any], agent_name: str) -> None:
         "error_message",
     }
 
-    for key in result:
-        if key not in canonical_keys:
-            Logger.warning(
-                f"[standard_heal] {agent_name}: Non-canonical key '{key}' detected. "
-                f"Consider using canonical keys for better schema compliance.",
-            )
+    non_canonical = sorted(k for k in result if k not in canonical_keys)
+    if non_canonical:
+        Logger.warning(
+            f"[standard_heal] {agent_name}: {len(non_canonical)} non-canonical key(s): "
+            f"{', '.join(non_canonical[:5])}{'...' if len(non_canonical) > 5 else ''}",
+        )
 
 
 def _normalize_heal_result(

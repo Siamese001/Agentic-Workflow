@@ -301,6 +301,7 @@ def _write_post_validation_json(
         "validators_rerun": ["Phase3Validator"],
     }
     output_path = output_dir / "post_validation.json"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(post_validation, f, indent=2, ensure_ascii=True)
     logger.info(

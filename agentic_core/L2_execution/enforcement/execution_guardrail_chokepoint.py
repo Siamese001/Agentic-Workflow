@@ -645,14 +645,8 @@ def authorize_and_execute(
                 guardrail_decision_id=decision_id,
                 policy_hash=bound_ctx.policy_hash,
             )
-            exec_context = ExecutionContext.create(
-                execution_request_id=bound_ctx.execution_request_id,
-                execution_start_tick=_time.monotonic(),  # Use current time as start
-                execution_end_tick=_time.monotonic(),  # Immediate end for blocked
-                execution_status=ExecutionStatus.BLOCKED_BY_POLICY,
-            )
             record_policy_block(
-                execution_context=exec_context,
+                execution_context=bound_ctx,
                 observability_context=obs_context,
                 block_reason=f"Guardrail {outcome.value} for {_tgt}",
             )
@@ -733,16 +727,8 @@ def authorize_and_execute(
                 guardrail_decision_id=decision_id,
                 policy_hash=bound_ctx.policy_hash,
             )
-            exec_context = ExecutionContext.create(
-                execution_request_id=bound_ctx.execution_request_id,
-                execution_start_tick=_exec_start,
-                execution_end_tick=_time.monotonic(),
-                execution_status=ExecutionStatus.FAILED,
-                failure_classification=FailureClassification.TOOL_ERROR,
-                failure_reason=f"Tool contract violation: {type(exc).__name__}",
-            )
             record_execution_failure(
-                execution_context=exec_context,
+                execution_context=bound_ctx,
                 observability_context=obs_context,
                 failure_classification=FailureClassification.TOOL_ERROR,
                 failure_reason=f"Tool contract violation: {type(exc).__name__}",
@@ -762,16 +748,8 @@ def authorize_and_execute(
                 guardrail_decision_id=decision_id,
                 policy_hash=bound_ctx.policy_hash,
             )
-            exec_context = ExecutionContext.create(
-                execution_request_id=bound_ctx.execution_request_id,
-                execution_start_tick=_exec_start,
-                execution_end_tick=_time.monotonic(),
-                execution_status=ExecutionStatus.FAILED,
-                failure_classification=FailureClassification.UNKNOWN_FAILURE,
-                failure_reason=f"Execution error: {type(exc).__name__}",
-            )
             record_execution_failure(
-                execution_context=exec_context,
+                execution_context=bound_ctx,
                 observability_context=obs_context,
                 failure_classification=FailureClassification.UNKNOWN_FAILURE,
                 failure_reason=f"Execution error: {type(exc).__name__}",
@@ -816,16 +794,9 @@ def authorize_and_execute(
         )
 
         # Create execution context with timing
-        exec_context = ExecutionContext.create(
-            execution_request_id=bound_ctx.execution_request_id,
-            execution_start_tick=_exec_start,
-            execution_end_tick=_exec_start + (_elapsed_ms / 1000.0),
-            execution_status=ExecutionStatus.SUCCEEDED,
-        )
-
         # Record observability
         observability_record = record_execution_observability(
-            execution_context=exec_context,
+            execution_context=bound_ctx,
             observability_context=obs_context,
         )
 

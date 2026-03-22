@@ -631,6 +631,9 @@ def execute_phase1_discovery_impl(
     location_validator = get_location_validator_agent()(project_root=REPO_ROOT)
     repo_root_resolved = REPO_ROOT.resolve()
     territory_path = (repo_root_resolved / territory).resolve()
+    # Canonicalize L-layer territories: L0_routing → agentic_core/L0_routing
+    if not territory_path.exists() and territory.startswith(("L0_", "L1_", "L2_", "L3_", "L4_", "L5_", "L6_")):
+        territory_path = (repo_root_resolved / AGENTIC_CORE_DIR / territory).resolve()
     if not territory_path.is_relative_to(repo_root_resolved):
         logger.critical(f"SECURITY ALERT: Path traversal attempt detected for territory '{territory}'")
         state_mgr.add_event("security", "Path traversal blocked")

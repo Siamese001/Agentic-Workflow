@@ -335,6 +335,13 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         """
 
         _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, "HierarchyAgent.heal")
+        if not isinstance(violation, dict):
+            return {
+                "status": "failed",
+                "details": f"Expected dict violation, got {type(violation).__name__}",
+                "artifacts": [],
+                "errors": [f"TypeError: violation is {type(violation).__name__}, not dict"],
+            }
         try:
             violation_type = violation.get("type", "")
             file_path = violation.get("file")
@@ -1704,6 +1711,8 @@ class HierarchyHealerAgent(SovereignBaseAgent):
         """
         [SOVEREIGN CONTRACT] Standardized healing interface for Hierarchy violations.
         """
+        if not isinstance(violation, dict):
+            return {"status": "error", "error": f"Expected dict, got {type(violation).__name__}"}
         try:
             target = violation.get("file")
             violation.get("type", "")

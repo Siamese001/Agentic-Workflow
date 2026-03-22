@@ -234,7 +234,7 @@ class CognitiveDispositionAgent(PromptRenderingMixin, SovereignBaseAgent):
         self.analytics["analyses_performed"] += 1
         cache_key = f"cda:{file_path.name}:{violation_type}"
         cached = self.cache_get(cache_key)
-        if cached:
+        if cached and isinstance(cached, dict):
             self.analytics["cache_hits"] += 1
             return DispositionDecision(**cached)
         prompt = self._build_prompt(file_path, violation_type, context)
