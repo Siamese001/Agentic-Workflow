@@ -665,7 +665,7 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
 
     runs = defaultdict(list)
 
-    for pattern in ["adg_*.json", "adg_*.sqlite", "adg_run_*.zip", "scan_result_cache.json"]:
+    for pattern in ["adg_*.json", "adg_*.sqlite", "adg_run_*.zip", "scan_result_cache.json", "*_report_*.json", "test_surface_coverage_*.json"]:
         for path in adg_dir.glob(pattern):
             # Skip LATEST files
             if "LATEST" in path.name or "latest" in path.name:
@@ -754,10 +754,11 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
 
 
 def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
-    """Clean up old validation packages and MANIFEST files.
+    """Clean up old validation packages, MANIFEST files, and non-timestamped reports.
 
     Keeps only the latest validation package (matching current_ts).
     Removes all MANIFEST files (low value).
+    Removes non-timestamped report files (legacy cleanup).
 
     Args:
         adg_dir: ADG artifacts directory
@@ -775,6 +776,30 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
             cleaned_count += 1
         except OSError as e:
             print(f"[ADG] Cleanup: error removing {manifest_file.name}: {e}")
+
+    # Remove non-timestamped report files (legacy cleanup)
+    for report_file in adg_dir.glob("*_report.json"):
+        # Skip if it has a timestamp (format: *_report_MMDDYYYY_HHMM.json)
+        if "_" in report_file.stem and len(report_file.stem.split("_")) >= 3:
+            # Check if the last part looks like a timestamp
+            last_part = report_file.stem.split("_")[-1]
+            if len(last_part) == 13 and "_" in last_part:  # MMDDYYYY_HHMM format
+                continue  # This is a timestamped file, keep it
+        try:
+            report_file.unlink()
+            cleaned_count += 1
+            print(f"[ADG] Cleanup: removed legacy report {report_file.name}")
+        except OSError as e:
+            print(f"[ADG] Cleanup: error removing {report_file.name}: {e}")
+
+    # Remove non-timestamped test_surface_coverage files (legacy cleanup)
+    for test_file in adg_dir.glob("test_surface_coverage.json"):
+        try:
+            test_file.unlink()
+            cleaned_count += 1
+            print(f"[ADG] Cleanup: removed legacy test_surface_coverage.json")
+        except OSError as e:
+            print(f"[ADG] Cleanup: error removing {test_file.name}: {e}")
 
     # Clean up old validation packages (keep only current timestamp)
     validation_patterns = [
