@@ -13,7 +13,6 @@ import logging
 import uuid
 from typing import Any, Callable
 
-from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure  # noqa: F401
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -200,6 +199,7 @@ class TwoPhaseCoordinator:
         Returns (resource_result, ledger_result) on success.
         Raises MutationCommitFailure if either ACK fails.
         """
+        from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure  # noqa: F401
         _emit_snapshots_state(str(uuid.uuid4()), "TwoPhaseCoordinator.execute_commit", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
 

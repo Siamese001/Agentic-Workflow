@@ -145,7 +145,6 @@ from agentic_core.L0_routing.types.routing_contracts_types import (
     PolicyConfigGuard,
     PolicyMutationIncident,
 )
-from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -238,6 +237,7 @@ class ExecutionGatewayError(RuntimeError):
     """Raised when critical execution gateway operations fail."""
 
     def __init__(self, message: str, original_error: Exception | None = None):
+        from agentic_core.L2_execution.providers import get_clock
         super().__init__(message)
         self.original_error = original_error
 
@@ -360,6 +360,8 @@ class V15ExecutionGateway:
         **kwargs: Any,
     ) -> GatewayResult:
         """Execute with explicit L2 envelope separation."""
+        from agentic_core.L2_execution.providers import get_clock  # noqa: PLC0415
+
         manifest = self._validate_manifest(execution_input, trace_id)
         self._guardian_validate(manifest, trace_id, **kwargs)
         _clk = get_clock()

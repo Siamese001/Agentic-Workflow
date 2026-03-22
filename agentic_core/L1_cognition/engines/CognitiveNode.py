@@ -84,7 +84,6 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import BATCH_SIZE
-from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
@@ -177,6 +176,7 @@ _emit_proposal_commits_routing("p1", "CognitiveNode", "routing_commit")
 
 
 def _get_reason_and_record():
+    from agentic_core.L2_execution.providers import get_clock
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_snapshots_state(str(_uuid.uuid4()), "_get_reason_and_record", "state_snapshot")

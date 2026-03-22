@@ -24,7 +24,6 @@ from agentic_core.L1_cognition.types.observability_types import (
     HealthStatus,
     MetricPoint,
 )
-from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,  # noqa: E402
@@ -258,6 +257,7 @@ class MetaLearningObservability:
 
     def __post_init__(self) -> None:
         """Initialize observability components."""
+        from agentic_core.L2_execution.providers import get_clock
         self._initialize_health_checks()
         Logger.info("[MetaLearningObservability] Initialized")
 

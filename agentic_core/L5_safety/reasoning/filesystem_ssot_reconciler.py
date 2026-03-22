@@ -274,6 +274,7 @@ class ReconciliationViolation:
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
+        **kwargs,
     ) -> dict[str, int]:
         """L0 maintenance agent - operational only."""
 
@@ -1275,6 +1276,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
         max_depth: int = 3,
         _call_path: set | None = None,
         force: bool = False,
+        **kwargs,
     ) -> dict[str, int]:
         """L0 maintenance agent - operational only.
 

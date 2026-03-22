@@ -35,7 +35,6 @@ from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR, TESTS_DIR
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
@@ -369,6 +368,7 @@ def should_exclude_path(path: Path) -> bool:
     2. Filename matches EXCLUDED_FILENAME_PATTERNS
     3. Path contains EXCLUDED_PATH_PATTERNS
     """
+    from agentic_core.L2_execution.providers import get_clock
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_snapshots_state(str(_uuid.uuid4()), "should_exclude_path", "state_snapshot")

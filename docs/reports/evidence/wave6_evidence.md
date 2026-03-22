@@ -3685,3 +3685,42 @@ HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agen
   wrong_target=w
   correct_target=c
   confidence=0.1
+
+HITL_DECISION_1: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\interfaces\execution.py
+  Violation=ARTIFACT ROUTING VIOLATION: Forbidden extension .py for destination docs/reports/missions | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_2: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\interfaces\execution_contracts.py
+  Violation=ARTIFACT ROUTING VIOLATION: Forbidden extension .py for destination docs/reports/missions | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_3: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\interfaces\meta_learning.py
+  Violation=ARTIFACT ROUTING VIOLATION: Forbidden keyword 'class Sovereign' for destination agentic_core/L0_routing/scripts | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_1: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\base_agents\SovereignBaseAgent.py
+  Violation=ARTIFACT ROUTING VIOLATION: Forbidden keyword 'class Sovereign' for destination agentic_core/L0_routing/scripts | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_2: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\L2_execution\trace_context.py
+  Violation=ARTIFACT ROUTING VIOLATION: Forbidden extension .py for destination docs/reports/missions | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_3: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\L2_execution\trace_context.py
+  Violation=ARTIFACT ROUTING VIOLATION: Forbidden extension .py for destination docs/reports/missions | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_1: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\L2_execution\trace_context.py
+  Violation=ARTIFACT ROUTING VIOLATION: Forbidden extension .py for destination docs/reports/missions | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_2: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\mixins\atomic_execution_mixin.py
+  Violation=ARTIFACT ROUTING VIOLATION: Forbidden extension .py for destination docs/reports/missions | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_3: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\L2_execution\trace_context.py
+  Violation=ARTIFACT ROUTING VIOLATION: Forbidden extension .py for destination docs/reports/missions | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_4: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\mixins\atomic_execution_mixin.py
+  Violation=ARTIFACT ROUTING VIOLATION: Forbidden extension .py for destination docs/reports/missions | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_5: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\L2_execution\trace_context.py
+  Violation=ARTIFACT ROUTING VIOLATION: Forbidden extension .py for destination docs/reports/missions | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_6: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\mixins\atomic_execution_mixin.py
+  Violation=ARTIFACT ROUTING VIOLATION: Forbidden extension .py for destination docs/reports/missions | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_7: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\mixins\hardening_mixin.py
+  Violation=ARTIFACT ROUTING VIOLATION: Forbidden extension .py for destination docs/reports/security | Proposed=ARCHIVE | Decision=APPROVED

@@ -48,7 +48,6 @@ from agentic_core.L0_routing.optimization.optimization_orchestrator import (
     RoutingHistory,
     optimize_simple_routing,
 )
-from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -268,6 +267,7 @@ class RoutingContext:
 
     def validate(self) -> None:
         """Raise RoutingContractValidationError on missing required fields."""
+        from agentic_core.L2_execution.providers import get_clock
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_snapshots_state(str(_uuid.uuid4()), "RoutingContext.validate", "state_snapshot")

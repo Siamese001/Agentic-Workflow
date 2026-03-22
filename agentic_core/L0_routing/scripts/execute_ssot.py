@@ -3439,6 +3439,8 @@ def execute_phase3_alignment_impl(agents, territory, decision_engine, state_mgr,
                 if isinstance(heal_result, dict)
                 else 0
             )
+            # Cap healed to violations to prevent reversed-number parse errors
+            healed = min(healed, violations) if violations > 0 else healed
             state_mgr.state["hierarchy_fixed"] = healed
             _archived_root = 0
             if isinstance(heal_result, dict):
@@ -7066,8 +7068,8 @@ def _legacy_main(
                                 confidence=pascal_confidence.value
                                 if hasattr(pascal_confidence, "value")
                                 else 1.0,
-                                fix_summary=f"Fixed {healed} file classification violation(s) in {territory}",
-                                outcome="SUCCESS" if healed > 0 else "PARTIAL",
+                                fix_summary=f"Fixed {healed} of {total_violations} file classification violation(s) in {territory}",
+                                outcome="SUCCESS" if healed > 0 or total_violations == 0 else "PARTIAL",
                             )
                         elif not pascal_proceed:
                             state_mgr.skip_agent("FileClassificationHealerAgent", pascal_reason)

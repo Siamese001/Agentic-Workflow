@@ -225,6 +225,7 @@ class CodeToolRunnerCapability:
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set[str] | None = None,
+        **kwargs,
     ) -> dict[str, int]:
         """Execute L5 safety healing operations.
 

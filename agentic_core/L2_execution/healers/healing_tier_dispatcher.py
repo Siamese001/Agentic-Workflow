@@ -31,7 +31,6 @@ from agentic_core.L2_execution.healers.healing_tier_types import (
     HealingInput,
     HealingTier,
 )
-from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
@@ -218,6 +217,7 @@ def _get_l4_prior_provider() -> Any:
 
     Falls back to NeutralMetaPriorProvider if the adapter is unavailable (cold start).
     """
+    from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
     import hashlib as _hashlib  # noqa: PLC0415
     import uuid as _uuid  # noqa: PLC0415
 

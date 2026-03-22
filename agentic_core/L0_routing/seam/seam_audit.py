@@ -11,7 +11,6 @@ from dataclasses import asdict, dataclass
 from functools import wraps
 from typing import Any
 
-from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,  # noqa: E402
@@ -200,6 +199,7 @@ class SeamAuditRecord:
     metadata: dict[str, Any] = None
 
     def __post_init__(self):
+        from agentic_core.L2_execution.providers import get_clock
         if self.metadata is None:
             object.__setattr__(self, "metadata", {})
 

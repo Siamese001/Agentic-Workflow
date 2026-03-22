@@ -95,7 +95,6 @@ from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L2_execution.providers import get_clock
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
-from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
 from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
 from agentic_core.L5_safety.enforcement.policy_action_contract import (
     ActionClass,
@@ -225,6 +224,7 @@ class NervousSystemAgent(SovereignBaseAgent):
             config: Orchestrator configuration
         """
         # guardian: allow-magic-config
+        from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
         self.safety_layer = create_l5_safety_layer(cost_limit_usd=10.0)
         storage_adapter = create_storage_adapter("local", base_path="./agentic_core")
         self.CheckpointManager = VerifiableCheckpointManager(storage_adapter)
@@ -920,6 +920,7 @@ class NervousSystemAgent(SovereignBaseAgent):
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
+        **kwargs,
     ) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         if _call_path is None:

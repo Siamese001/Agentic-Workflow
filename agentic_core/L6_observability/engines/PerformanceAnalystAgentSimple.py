@@ -243,6 +243,7 @@ class PerformanceAnalystAgentSimple:
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
+        **kwargs,
     ) -> dict[str, int]:
         """
         Performance analyst healing - reports metrics status.

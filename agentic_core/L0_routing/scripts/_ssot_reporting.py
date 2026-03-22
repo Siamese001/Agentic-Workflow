@@ -821,7 +821,7 @@ def _write_heal_run_complete(state_mgr: Any, decision_engine: Any) -> dict:
         logger.warning(f"Failed to get git commit hash: {e}")
     run_ts = _dt.datetime.now().isoformat()
     run_id = "run_" + run_ts.replace(":", "").replace("-", "").replace("T", "_")[:19]
-    _fix_pat = _re.compile(r"(?:Fixed|Healed|Resolved|Repaired)\s+(\d+)\s+of\s+(\d+)", _re.IGNORECASE)
+    _fix_pat = _re.compile(r"(?:Fixed|Healed|Resolved|Repaired|Cleaned)\s+(\d+)\s+of\s+(\d+)", _re.IGNORECASE)
     _total_found = _total_fixed = 0
     _zero_fix_agents: list[str] = []
     _summaries_with_text = _summaries_parsed = 0

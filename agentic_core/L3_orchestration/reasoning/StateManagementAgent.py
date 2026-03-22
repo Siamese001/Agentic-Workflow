@@ -106,7 +106,6 @@ from agentic_core.L2_execution.enforcement.write_governor_mixin import WriteGove
 from agentic_core.L4_persistence.lifecycle.lifecycle_policy_applier import (
     apply_simple_lifecycle_policy,
 )
-from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
 from agentic_core.L5_safety.enforcement.policy_action_contract import (
     ActionClass,
     PolicyEnforcementError,
@@ -219,6 +218,7 @@ class StateEntry:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
+        from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(str(_uuid.uuid4()), "StateEntry.to_dict", "p0_governance")
@@ -916,6 +916,7 @@ class StateManagementAgent(WriteGovernorMixin, SovereignBaseAgent):
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set[str] | None = None,
+        **kwargs,
     ) -> dict[str, Any]:
         """
         Repository-wide state healing.

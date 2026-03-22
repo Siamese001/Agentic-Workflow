@@ -18,8 +18,6 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from agentic_core.L0_routing.providers.clock_provider import ClockProvider as clock_provider
-from agentic_core.L5_safety.enforcement.credential_guard import CredentialGuard as credential_guard
-from agentic_core.L5_safety.enforcement.credential_guard import get_credential_guard
 
 from agentic_core.L2_execution.enforcement.key_source import get_current_secret
 from agentic_core.runtime.lifecycle_trace_contract import (
@@ -196,6 +194,8 @@ _emit_proposal_commits_routing("p1", "instruction_packet_types", "routing_commit
 
 def _canonical_bytes(data: dict[str, Any]) -> bytes:
     """Return deterministic UTF-8 bytes from *data* (sorted keys, no spaces)."""
+    from agentic_core.L5_safety.enforcement.credential_guard import get_credential_guard
+    from agentic_core.L5_safety.enforcement.credential_guard import CredentialGuard as credential_guard
     return json.dumps(data, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
 
 

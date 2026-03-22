@@ -43,7 +43,6 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -302,6 +301,7 @@ class RoutingTelemetry:
         target_load_snapshot: Any = None,
         routing_failure_reason: str = "",
     ) -> RoutingTelemetry:
+        from agentic_core.L2_execution.providers import get_clock
         telemetry_id = f"rt-{uuid.uuid4().hex[:12]}"
         chosen_route_hash = hashlib.sha256(chosen_route.encode()).hexdigest()[:16]
         duration_ms = max(0.0, (routing_end_tick - routing_start_tick) * 1000.0)

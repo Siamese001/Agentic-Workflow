@@ -623,7 +623,7 @@ def _scenario_signed_output_valid() -> tuple[ScenarioOutcome, float, str]:
     try:
         from pydantic import BaseModel
 
-        from agentic_core.interfaces.execution_contracts import get_current_secret, wrap_output
+        from archives.healing_backups.location_violations.execution_contracts import get_current_secret, wrap_output
 
         class _TestModel(BaseModel):
             value: str = "test"

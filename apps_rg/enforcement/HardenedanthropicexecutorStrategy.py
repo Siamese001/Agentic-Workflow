@@ -17,7 +17,7 @@ from apps_rg.utils.agent_executor import AgentMessage, AgentResponse
 
 from agentic_core.interfaces.observability import SystemTelemetry
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.mixins.hardening_mixin import HardeningMixin, TokenLimitError
+from archives.healing_backups.location_violations.hardening_mixin import HardeningMixin, TokenLimitError
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_authorize_and_execute,

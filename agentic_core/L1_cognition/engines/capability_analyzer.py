@@ -12,7 +12,6 @@ from agentic_core.L1_cognition.planning.capability_analyzer_types import (
     RecommendationType,
 )
 
-from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
@@ -188,6 +187,7 @@ Logger: Any = logging.getLogger(__name__)
 
 
 def _get_reason_and_record():
+    from agentic_core.L2_execution.providers import get_clock
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_snapshots_state(str(_uuid.uuid4()), "_get_reason_and_record", "state_snapshot")

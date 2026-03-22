@@ -27,7 +27,6 @@ import logging
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
@@ -202,6 +201,7 @@ _BUILD_LOG = logging.getLogger("adg.observes_runtime_state")
 
 
 def _hash_prompt(prompt: Any) -> str:
+    from agentic_core.L2_execution.providers import get_clock
     return hashlib.sha256(repr(prompt).encode()).hexdigest()[:32]
 
 

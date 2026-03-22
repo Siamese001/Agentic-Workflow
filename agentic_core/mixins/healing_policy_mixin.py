@@ -221,6 +221,7 @@ class HealingPolicyMixin:
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set[str] | None = None,
+        **kwargs,
     ) -> dict[str, Any]:
         """
         Autonomous diagnostic and healing loop.

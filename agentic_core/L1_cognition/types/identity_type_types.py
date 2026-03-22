@@ -87,7 +87,6 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
@@ -222,6 +221,7 @@ class AgentIdentity:
         Returns:
             True if expired
         """
+        from agentic_core.L2_execution.providers import get_clock
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_snapshots_state(str(_uuid.uuid4()), "AgentIdentity.is_expired", "state_snapshot")

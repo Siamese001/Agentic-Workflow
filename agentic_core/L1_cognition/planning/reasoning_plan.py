@@ -17,7 +17,6 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,  # noqa: E402
@@ -273,6 +272,7 @@ class ReasoningPlan:
         parent_plan_id: str | None = None,
     ) -> ReasoningPlan:
         """Factory to create ReasoningPlan with computed fields."""
+        from agentic_core.L2_execution.providers import get_clock
         reasoning_plan_id = str(uuid.uuid4())
 
         # Compute hashes

@@ -12,7 +12,6 @@ from dataclasses import dataclass, field
 from typing import Any, Final
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
-from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
@@ -215,6 +214,7 @@ class HealingPattern:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert pattern to dictionary for storage."""
+        from agentic_core.L2_execution.providers import get_clock
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_snapshots_state(str(_uuid.uuid4()), "HealingPattern.to_dict", "state_snapshot")

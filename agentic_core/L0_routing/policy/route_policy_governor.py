@@ -31,7 +31,6 @@ from agentic_core.L0_routing.enforcement.routing_contract import (
 from agentic_core.L0_routing.enforcement.routing_contract import (
     create_and_commit_routing_contract,
 )
-from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,  # noqa: E402
@@ -219,6 +218,7 @@ class RoutingProposal:
 
     def satisfies_policy(self) -> bool:
         """Return True if the proposal was committed against a non-empty policy hash."""
+        from agentic_core.L2_execution.providers import get_clock
         return bool(self.policy_hash) and self.boundary_verified
 
 

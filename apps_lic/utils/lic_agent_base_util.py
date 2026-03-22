@@ -26,9 +26,9 @@ from typing import Any, Final
 
 from apps_shared.utils.AppBase import AppBase
 
-from agentic_core.interfaces.meta_learning import HealingPattern, MetaLearningGuardrails, get_guardrails
-from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient as MetaLearningClient
-from agentic_core.interfaces.meta_learning import get_sovereign_meta_client as get_meta_learning_client
+from archives.healing_backups.location_violations.meta_learning import HealingPattern, MetaLearningGuardrails, get_guardrails
+from archives.healing_backups.location_violations.meta_learning import SovereignMetaLearningClient as MetaLearningClient
+from archives.healing_backups.location_violations.meta_learning import get_sovereign_meta_client as get_meta_learning_client
 from agentic_core.L0_routing.config import APPS_LIC_DIR
 from agentic_core.L0_routing.config.path_constants import APPS_LIC_DIR
 from agentic_core.runtime.lifecycle_trace_contract import (

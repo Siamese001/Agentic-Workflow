@@ -30,7 +30,6 @@ from agentic_core.L1_cognition.types.cache_types import (
     DomainConfig,
     EvictionPolicy,
 )
-from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
@@ -242,6 +241,7 @@ class CacheStrategyManager:
 
     def __new__(cls, *args, **kwargs):
         """Singleton constructor."""
+        from agentic_core.L2_execution.providers import get_clock
         global _csm_singleton
         if _csm_singleton is None:
             _csm_singleton = super().__new__(cls)

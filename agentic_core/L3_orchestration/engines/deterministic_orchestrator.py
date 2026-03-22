@@ -28,7 +28,6 @@ from agentic_core.L3_orchestration.types.execution_trace_types import (
 from agentic_core.L3_orchestration.types.human_decision_artifact_types import (
     create_human_review_draft,
 )
-from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
 from agentic_core.L5_safety.enforcement.policy_action_contract import (
     ActionClass,
     PolicyEnforcementError,
@@ -217,6 +216,7 @@ def canonical_json(data: dict[str, Any]) -> str:
 
     Alphabetical key sort, UTF-8, no whitespace variance.
     """
+    from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
     import hashlib as _hashlib  # noqa: PLC0415
     import uuid as _uuid  # noqa: PLC0415
 

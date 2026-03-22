@@ -135,7 +135,6 @@ from agentic_core.L1_cognition.types.client_types import (
     CacheEntry,
     HealingPattern,
 )
-from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
@@ -270,6 +269,7 @@ class MetaLearningClient:
 
     def __new__(cls, *args, **kwargs):
         """Singleton constructor."""
+        from agentic_core.L2_execution.providers import get_clock
         global _singleton_instance
         if _singleton_instance is None:
             _singleton_instance = super().__new__(cls)

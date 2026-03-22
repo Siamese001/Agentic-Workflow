@@ -22,7 +22,6 @@ import threading
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.execution_trace import get_active_execution_trace
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
@@ -206,6 +205,7 @@ class RetrievalResult:
 
     @classmethod
     def from_raw(cls, source: str, content: Any, confidence: float = 1.0) -> RetrievalResult:
+        from agentic_core.L2_execution.providers import get_clock
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_snapshots_state(str(_uuid.uuid4()), "RetrievalResult.from_raw", "state_snapshot")

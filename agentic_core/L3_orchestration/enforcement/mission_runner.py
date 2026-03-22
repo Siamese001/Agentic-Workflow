@@ -95,7 +95,6 @@ from agentic_core.L3_orchestration.contracts.coordination_ledger import (
     update_coordination_ledger,
 )
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
-from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
 from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
 from agentic_core.L5_safety.enforcement.policy_action_contract import (
     ActionClass,
@@ -237,6 +236,7 @@ def _get_imports():
     self-healing agents with mutation logic. The agentic_core/agents/ versions
     are detection-only stubs without healing capabilities.
     """
+    from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_snapshots_state(str(_uuid.uuid4()), "_get_imports", "state_snapshot")

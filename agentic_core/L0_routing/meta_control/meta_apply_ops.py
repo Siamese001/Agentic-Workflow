@@ -22,7 +22,6 @@ from agentic_core.L0_routing.types.determinism_types import (
     SemanticClockSnapshot,
     validate_semantic_clock,
 )
-from agentic_core.L2_execution.providers import get_clock
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
@@ -193,6 +192,7 @@ _emit_proposal_commits_routing("p1", "meta_apply_ops", "routing_commit")
 
 
 def _get_apply_attempt_types():
+    from agentic_core.L2_execution.providers import get_clock
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_snapshots_state(str(_uuid.uuid4()), "_get_apply_attempt_types", "state_snapshot")

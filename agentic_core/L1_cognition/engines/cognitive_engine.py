@@ -91,12 +91,12 @@ from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import DEFAULT_SLEEP
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
-from agentic_core.L2_execution.providers import get_clock
 
 _proof_emitter = ExecutionProofEmitter("L1.cognitive_engine")
 
 
 def _get_reason_and_record():
+    from agentic_core.L2_execution.providers import get_clock
     _emit_transcripts_response(str(uuid.uuid4()), "Module._get_reason_and_record", "model")
     from agentic_core.L1_cognition.enforcement.reasoning_chokepoint import reason_and_record  # noqa: PLC0415
 

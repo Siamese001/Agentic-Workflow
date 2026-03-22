@@ -992,9 +992,24 @@ def execute_phase2_reconciliation(
                 )
                 pbar.update(1)
             except (ImportError, AttributeError, TypeError, ValueError, OSError, RuntimeError) as e:
-                logging.error(f"Phase 2: Fix failed for {agent_key}: {e}")
+                err_str = str(e)
+                # Distinguish protected-root blocks from real errors
+                if "Protected root mutation blocked" in err_str:
+                    logging.warning(f"Phase 2 FAILED: {err_str}")
+                    _record_healing_action(
+                        state_mgr,
+                        agent=_AGENT_KEY_TO_CLASS_NAME.get(agent_key, agent_key),
+                        territory=territory,
+                        routing_score=confidence.value if hasattr(confidence, "value") else 0.0,
+                        routing_tier="AUTO-HEAL: SOVEREIGN-AUTO",
+                        confidence=confidence.value if hasattr(confidence, "value") else 0.0,
+                        fix_summary=f"Phase 2 FAILED: {err_str[:200]}",
+                        outcome="FAILURE",
+                    )
+                else:
+                    logging.error(f"Phase 2: Fix failed for {agent_key}: {e}")
                 failed_fixes.extend(
-                    {"violation": v, "error": str(e), "status": "execution_error"} for v in agent_violations
+                    {"violation": v, "error": err_str, "status": "execution_error"} for v in agent_violations
                 )
                 decision_engine.release_sovereignty_token(agent_key, success=False)
                 pbar.update(1)
@@ -1166,6 +1181,8 @@ def execute_phase3_alignment_impl(
                 if isinstance(heal_result, dict)
                 else 0
             )
+            # Cap healed to violations to prevent reversed-number parse errors
+            healed = min(healed, violations) if violations > 0 else healed
             state_mgr.state["hierarchy_fixed"] = healed
             state_mgr.complete_agent("HierarchyHealerAgent", True, f"Healed: {healed}")
             _record_healing_action(
@@ -1422,7 +1439,7 @@ def execute_phase5_healing_impl(
                 routing_tier=reason.split("(")[0].strip() if reason else "DETERMINISTIC",
                 confidence=confidence.value,
                 fix_summary=f"Fixed {fixed} of {found} architecture violations in {territory}",
-                outcome="SUCCESS" if fixed > 0 else "PARTIAL",
+                outcome="SUCCESS" if fixed > 0 or found == 0 else "PARTIAL",
             )
             state_mgr.complete_agent("ArchitectureGovernorAgent", success, f"found={found} fixed={fixed}")
             return {

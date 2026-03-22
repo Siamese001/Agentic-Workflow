@@ -61,7 +61,6 @@ from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
 )
 from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
 from agentic_core.L3_orchestration.types import AgentResult, ExecutionContext, ExecutionPhase, MissionResult
-from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
 from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
 from agentic_core.L5_safety.enforcement.policy_action_contract import (
     ActionClass,
@@ -259,6 +258,7 @@ class L3OrchestrationStrategy(OrchestrationStrategy):
 
     def __init__(self, config: dict[str, Any], mode: str = "unified") -> None:
         """Initialize with orchestration configuration."""
+        from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_snapshots_state(str(_uuid.uuid4()), "L3OrchestrationStrategy.__init__", "state_snapshot")

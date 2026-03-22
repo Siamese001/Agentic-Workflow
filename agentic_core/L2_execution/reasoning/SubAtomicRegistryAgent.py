@@ -96,7 +96,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
-from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
     _emit_applies_guardrail,
@@ -191,6 +190,7 @@ _emit_proposal_commits_routing("p1", "SubAtomicRegistryAgent", "routing_commit")
 
 def _get_RedisSovereignAgent():
     """Lazy load RedisSovereignAgent to avoid upward import."""
+    from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_snapshots_state(str(_uuid.uuid4()), "_get_RedisSovereignAgent", "state_snapshot")

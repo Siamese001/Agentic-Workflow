@@ -641,6 +641,7 @@ class SubatomicHopAgent(SovereignBaseAgent):
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
+        **kwargs,
     ) -> dict[str, int]:
         """L3 orchestration agent - operational only."""
         import uuid  # noqa: PLC0415

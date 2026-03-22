@@ -307,6 +307,7 @@ class DomainPlannerAgent(L3OrchestrationBase):
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
+        **kwargs,
     ) -> dict[str, int]:
         """
         L3 Orchestration Agent - Domain Planner Healing.
@@ -420,6 +421,7 @@ class RiskAssessorAgent(SovereignBaseAgent):
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
+        **kwargs,
     ) -> dict[str, int]:
         """L3 Orchestration Agent - Risk Assessor Healing."""
         if _call_path is None:
@@ -528,6 +530,7 @@ class FeasibilityAnalystAgent(SovereignBaseAgent):
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
+        **kwargs,
     ) -> dict[str, int]:
         """L3 Orchestration Agent - Feasibility Analyst Healing."""
         if _call_path is None:
@@ -668,6 +671,7 @@ class StrategyScenarioSimulatorAgent(SovereignBaseAgent):
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
+        **kwargs,
     ) -> dict[str, int]:
         """L3 Orchestration Agent - Strategy Scenario Simulator Healing."""
         if _call_path is None:
@@ -828,6 +832,7 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set | None = None,
+        **kwargs,
     ) -> dict[str, int]:
         """L3 Orchestration Agent - Strategy Coordinator Healing."""
         if _call_path is None:
