@@ -389,7 +389,7 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
     # --- Wave 6: Generate standardized reports ---
     _generate_standardized_reports(adg_artifacts_dir, ts, artifact)
 
-    # --- Create zip archive of all 6 artifacts ---
+    # --- Create zip archive of all 6 artifacts + 4 Wave 6 reports ---
     artifact_files = [
         paths.snapshot,
         paths.sqlite,
@@ -398,6 +398,21 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
         paths.governance_graph,
         adg_artifacts_dir / f"adg_graphsnap_{ts}.json",
     ]
+
+    # Add Wave 6 standardized reports
+    report_files = [
+        adg_artifacts_dir / "layer_coverage_report.json",
+        adg_artifacts_dir / "edge_density_report.json",
+        adg_artifacts_dir / "provenance_report.json",
+        adg_artifacts_dir / "replay_determinism_report.json",
+    ]
+
+    # Filter to only include existing reports
+    existing_reports = [f for f in report_files if f.exists()]
+    if existing_reports:
+        artifact_files.extend(existing_reports)
+        print(f"[ADG] Adding {len(existing_reports)} Wave 6 reports to zip archive")
+
     _create_zip_archive(adg_artifacts_dir, ts, artifact_files)
 
     # --- Archive old artifacts ---
@@ -865,7 +880,8 @@ def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> P
 
     if zip_path.exists():
         zip_size_mb = zip_path.stat().st_size / (1024 * 1024)
-        print(f"[ADG] Zip archive created: {zip_path.name} ({zip_size_mb:.1f} MB, 6 ADG + 5 runtime files)")
+        report_count = len([p for p in artifact_paths if p.name.endswith('_report.json')])
+        print(f"[ADG] Zip archive created: {zip_path.name} ({zip_size_mb:.1f} MB, 6 ADG + {report_count} Wave 6 reports + 5 runtime files)")
 
     return zip_path
 
