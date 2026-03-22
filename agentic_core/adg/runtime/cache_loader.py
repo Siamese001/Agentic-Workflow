@@ -231,7 +231,9 @@ def _is_cache_valid(cached: dict) -> bool:
         return False
 
 
-def load_or_scan(repo_root: str | None = None, cache_path: Path | None = None, force_cache: bool = False) -> ScanResult:
+def load_or_scan(
+    repo_root: str | None = None, cache_path: Path | None = None, force_cache: bool = False
+) -> ScanResult:
     """R2: Load ADG ScanResult from cache if valid, otherwise run fresh scan.
 
     Cache key: commit_sha + scanner_version + schema_version + python_ast_version.
