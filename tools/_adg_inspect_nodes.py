@@ -1,8 +1,8 @@
 """Inspect actual node structure in the ADG file_graph."""
 import glob
 import json
-import os
 from pathlib import Path
+
 ADG_DIR = 'C:\\Git\\Agentic-Workflow\\artifacts\\adg'
 fg_path = sorted(glob.glob(Path(ADG_DIR) / 'adg_file_graph_*.json'))[-1]
 print(f'Loading: {Path(fg_path).name}')

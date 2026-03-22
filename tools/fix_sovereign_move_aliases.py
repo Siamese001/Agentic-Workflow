@@ -3,7 +3,7 @@ after all class definitions, to avoid forward reference errors."""
 import re
 
 fp = r"C:\Git\Agentic-Workflow\apps_shared\types\sovereign_severity_types.py"
-src = open(fp, "r", encoding="utf-8").read()
+src = open(fp, encoding="utf-8").read()
 
 # Pattern: standalone alias lines like "AgentResponse = agent_response"
 # These are simple assignments where both sides are identifiers

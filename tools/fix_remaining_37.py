@@ -1,13 +1,12 @@
 """Fix ALL remaining ~37 test collection errors with targeted per-file fixes."""
 
 import os
-import re
 
 ROOT = r"C:\Git\Agentic-Workflow"
 
 def read(rel):
     fp = os.path.join(ROOT, rel.replace("/", os.sep))
-    with open(fp, "r", encoding="utf-8") as f:
+    with open(fp, encoding="utf-8") as f:
         return f.read()
 
 def write(rel, content):

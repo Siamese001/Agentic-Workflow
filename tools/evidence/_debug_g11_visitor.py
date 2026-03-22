@@ -1,7 +1,7 @@
 """Debug: Run G11 _DeterminismControlVisitor directly on a blocker module."""
 import ast
-import sys
 import os
+import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
@@ -17,7 +17,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 
 for rel in TEST_FILES:
     fpath = os.path.join(ROOT, rel)
-    with open(fpath, "r", encoding="utf-8") as f:
+    with open(fpath, encoding="utf-8") as f:
         source = f.read()
 
     tree = ast.parse(source, filename=rel)

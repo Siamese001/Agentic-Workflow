@@ -1,6 +1,17 @@
 """Classify all skip sites by legitimacy category."""
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 lines = Path('c:/Git/Agentic-Workflow/skip_audit.txt').read_text(encoding='utf-8').splitlines()
 LEGITIMATE_EXTERNAL = []
 LEGITIMATE_ENV_FLAG = []
@@ -20,7 +31,7 @@ for line in lines:
     if kind == 'importorskip':
         ILLEGITIMATE_IMPORTORSKIP.append(entry)
         continue
-    if any((k in r for k in ['redis not running', 'playwright not installed', 'playwright visual tests should be run separately'])):
+    if any(k in r for k in ['redis not running', 'playwright not installed', 'playwright visual tests should be run separately']):
         LEGITIMATE_EXTERNAL.append(entry)
         continue
     if 'ssot_orch_negctrl_tamper' in r or 'activate tamper' in r:
@@ -32,16 +43,16 @@ for line in lines:
     if 'faiss-gpu' in r:
         LEGITIMATE_CONDITIONAL.append(entry)
         continue
-    if any((k in r for k in ['cannot import', 'not importable', 'not found in module', 'not available (import commented out)', 'not available', 'module not available', 'scanner not available'])):
+    if any(k in r for k in ['cannot import', 'not importable', 'not found in module', 'not available (import commented out)', 'not available', 'module not available', 'scanner not available']):
         ILLEGITIMATE_MODULE_MISSING.append(entry)
         continue
-    if any((k in r for k in ['not found', 'not present', 'does not exist', 'directory not found', 'not found at'])):
+    if any(k in r for k in ['not found', 'not present', 'does not exist', 'directory not found', 'not found at']):
         ILLEGITIMATE_FILE_MISSING.append(entry)
         continue
-    if any((k in r for k in ['not yet implemented', 'using mock for tests', 'method not implemented yet', 'should be run separately'])):
+    if any(k in r for k in ['not yet implemented', 'using mock for tests', 'method not implemented yet', 'should be run separately']):
         ILLEGITIMATE_NOT_IMPLEMENTED.append(entry)
         continue
-    if any((k in r for k in ['dashboard html not found', 'discovery artifact not found', 'discovery output not found', 'no snapshot yet'])):
+    if any(k in r for k in ['dashboard html not found', 'discovery artifact not found', 'discovery output not found', 'no snapshot yet']):
         ILLEGITIMATE_ARTIFACT_MISSING.append(entry)
         continue
     ILLEGITIMATE_OTHER.append(entry)

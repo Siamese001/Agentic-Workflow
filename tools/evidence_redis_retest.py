@@ -6,18 +6,20 @@ Usage:
     python tools/evidence_redis_retest.py --code-commit <sha> --evidence-commit <sha>  (seal mode)
 """
 from __future__ import annotations
+
 import argparse
 import re
 import subprocess
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
     emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "evidence_redis_retest", "uwg_governed_write")
 _emit_writes_through("p1", "evidence_redis_retest", "uwg_governed_write_2")
 _emit_pulls_context("p1", "evidence_redis_retest", "context_retrieval")
@@ -84,11 +86,11 @@ def main() -> None:
     h('- Malformed-plausible: directory path degrades gracefully without phantom cache hit (rules s4:116-117)')
     h('- Invalidate exception swallow: policy invalidate silently handles delete errors (rules s4:141-144)')
     blank()
-    h(f'## CODE_COMMIT')
+    h('## CODE_COMMIT')
     blank()
     h(code_commit)
     blank()
-    h(f'## EVIDENCE_COMMIT')
+    h('## EVIDENCE_COMMIT')
     blank()
     h(evidence_commit)
     blank()
@@ -123,7 +125,7 @@ def main() -> None:
     blank()
     collect_out, collect_rc = run(['python', '-m', 'pytest', 'tests/architecture/test_discovery_cache.py', 'tests/architecture/test_new_cache_opportunities.py', '--collect-only', '-q', '--color=no'])
     h('```')
-    h(f'$ python -m pytest tests/architecture/test_discovery_cache.py tests/architecture/test_new_cache_opportunities.py --collect-only -q --color=no')
+    h('$ python -m pytest tests/architecture/test_discovery_cache.py tests/architecture/test_new_cache_opportunities.py --collect-only -q --color=no')
     h(collect_out.rstrip())
     h('```')
     if collect_rc != 0:
@@ -145,7 +147,7 @@ def main() -> None:
     blank()
     exec_out, exec_rc = run(['python', '-m', 'pytest', 'tests/architecture/test_discovery_cache.py', 'tests/architecture/test_new_cache_opportunities.py', '-q', '--color=no', '--tb=short'])
     h('```')
-    h(f'$ python -m pytest tests/architecture/test_discovery_cache.py tests/architecture/test_new_cache_opportunities.py -q --color=no --tb=short')
+    h('$ python -m pytest tests/architecture/test_discovery_cache.py tests/architecture/test_new_cache_opportunities.py -q --color=no --tb=short')
     h(exec_out.rstrip())
     h('```')
     if exec_rc != 0:
@@ -171,7 +173,7 @@ def main() -> None:
     if collected_count == executed_count and executed_count > 0:
         h(f'OK: all {executed_count} collected tests executed, no deselection')
     else:
-        h(f'EXIT CODE: 1')
+        h('EXIT CODE: 1')
         h(f'ERROR: collected={collected_count} executed={executed_count} — counts differ')
     h('```')
     blank()
@@ -192,12 +194,12 @@ def main() -> None:
     h('## TestCountSummary')
     blank()
     h('```')
-    h(f'AgentDiscoveryCache:    21 tests (was 13, +8 new)')
-    h(f'ToolEmbeddingCache:     15 tests (was  6, +9 new)')
-    h(f'SchemaValidatorCache:   13 tests (was  6, +7 new)')
-    h(f'PolicyRegistryCache:    15 tests (was  6, +9 new)')
-    h(f'ConfigFileCache:        14 tests (was  7, +7 new)')
-    h(f'Total:                  78 tests (was 38, +40 new)')
+    h('AgentDiscoveryCache:    21 tests (was 13, +8 new)')
+    h('ToolEmbeddingCache:     15 tests (was  6, +9 new)')
+    h('SchemaValidatorCache:   13 tests (was  6, +7 new)')
+    h('PolicyRegistryCache:    15 tests (was  6, +9 new)')
+    h('ConfigFileCache:        14 tests (was  7, +7 new)')
+    h('Total:                  78 tests (was 38, +40 new)')
     h('```')
     blank()
     h('## GapAnalysis')
@@ -238,7 +240,7 @@ def main() -> None:
     h('       Tests: test_policy_registry_cache_invalidate_exception_does_not_propagate')
     h('```')
     blank()
-    content = '\n'.join((line.rstrip() for line in lines))
+    content = '\n'.join(line.rstrip() for line in lines)
     byte_scan(content)
     EVIDENCE_PATH.parent.mkdir(parents=True, exist_ok=True)
     EVIDENCE_PATH.write_text(content + '\n', encoding='ascii', errors='strict', newline='\n')

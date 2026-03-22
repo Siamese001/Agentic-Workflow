@@ -13,7 +13,7 @@ import re
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 TARGETS_JSON = os.path.join(ROOT, "artifacts", "adg", "_convergence_blocker_targets.json")
 
-with open(TARGETS_JSON, "r") as f:
+with open(TARGETS_JSON) as f:
     data = json.load(f)
 
 trace_blockers = data["trace_blockers"]
@@ -45,7 +45,7 @@ for entry in trace_blockers:
         missing_files.append(module)
         continue
 
-    with open(fpath, "r", encoding="utf-8", errors="replace") as f:
+    with open(fpath, encoding="utf-8", errors="replace") as f:
         content = f.read()
 
     # Check emits_determinism_digest
@@ -75,25 +75,25 @@ print("CONVERGENCE WIRING AUDIT")
 print("=" * 70)
 print(f"\nTotal blocker modules: {len(trace_blockers)}")
 print(f"Missing files: {len(missing_files)}")
-print(f"\n--- emits_determinism_digest ---")
+print("\n--- emits_determinism_digest ---")
 print(f"Already have emit_determinism_digest() call (schema fix sufficient): {len(has_digest_call)}")
 print(f"Need new emit_determinism_digest() call: {len(needs_digest_call)}")
-print(f"\n--- records_execution_trace ---")
+print("\n--- records_execution_trace ---")
 print(f"Already have scanner-visible trace call: {len(has_trace_call)}")
 print(f"Need new record_execution_trace() call: {len(needs_trace_call)}")
 
 if needs_digest_call:
-    print(f"\nModules needing emit_determinism_digest() call:")
+    print("\nModules needing emit_determinism_digest() call:")
     for m in sorted(needs_digest_call):
         print(f"  {m}")
 
 if needs_trace_call:
-    print(f"\nModules needing record_execution_trace() call:")
+    print("\nModules needing record_execution_trace() call:")
     for m in sorted(needs_trace_call):
         print(f"  {m}")
 
 if missing_files:
-    print(f"\nMissing files:")
+    print("\nMissing files:")
     for m in sorted(missing_files):
         print(f"  {m}")
 

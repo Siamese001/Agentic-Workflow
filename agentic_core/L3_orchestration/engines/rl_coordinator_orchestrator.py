@@ -89,8 +89,6 @@ _emit_links_execution_to_snapshot("p4", "rl_coordinator_orchestrator", "exec_sna
 "\nSpecialized Coordinators for Unified Workflow Engine\n\n10 coordinators replacing 35+ overlapping orchestrators:\n1. RLCoordinatorOrchestrator - RL strategies (PPO, Q-learning, A2C)\n2. TerritoryCoordinator - Territory management\n3. MCPCoordinator - Tool management\n4. MissionCoordinator - Mission execution\n5. ModelCoordinator - Provider management\n6. HealthCoordinator - System health\n7. GovernanceCoordinator - Policy enforcement\n8. UtilityCoordinator - Support functions\n9. CachingCoordinator - Optimization\n10. SecurityCoordinator - Hardening\n"
 from typing import Any
 
-from agentic_core.runtime.trace_context import get_trace_context
-
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
 from agentic_core.L3_orchestration.engines.coordinator_capability_orchestrator import (
@@ -132,6 +130,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from agentic_core.runtime.trace_context import get_trace_context
 
 _emit_emits_metric_event("rl_coordinator_orchestrator", "p4obs", "metric_1")
 _emit_emits_metric_event("rl_coordinator_orchestrator", "p4obs", "metric_2")

@@ -1,6 +1,6 @@
 """Analyze test failures and errors from JUnit XML files."""
-import xml.etree.ElementTree as ET
 import os
+import xml.etree.ElementTree as ET
 from collections import Counter
 
 xml_dir = os.path.join("artifacts", "xml")
@@ -28,11 +28,11 @@ for xml_file in sorted(os.listdir(xml_dir)):
         print(f"\n=== {subdir} ({len(failures)} failures, {len(errors)} errors) ===")
         if errors:
             err_counter = Counter(errors)
-            print(f"  ERRORS:")
+            print("  ERRORS:")
             for msg, cnt in err_counter.most_common(5):
                 print(f"    [{cnt:3d}] {msg}")
         if failures:
             fail_counter = Counter(failures)
-            print(f"  FAILURES:")
+            print("  FAILURES:")
             for msg, cnt in fail_counter.most_common(10):
                 print(f"    [{cnt:3d}] {msg}")

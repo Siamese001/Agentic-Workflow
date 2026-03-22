@@ -1,7 +1,7 @@
 """Check emits_determinism_digest and records_execution_trace edge counts in the latest ADG."""
-import sqlite3
 import glob
 import os
+import sqlite3
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 ADG_DIR = os.path.join(ROOT, "artifacts", "adg")

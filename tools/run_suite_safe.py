@@ -1,5 +1,6 @@
 """Run full test suite with capture disabled to avoid fd exhaustion."""
-import subprocess, os
+import os
+import subprocess
 
 env = os.environ.copy()
 env["PYTHONDONTWRITEBYTECODE"] = "1"

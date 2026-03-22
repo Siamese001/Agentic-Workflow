@@ -18,7 +18,6 @@ Naming convention:
 """
 
 from __future__ import annotations
-from pathlib import Path
 
 from typing import Literal
 
@@ -98,6 +97,9 @@ EntityType = Literal[
     "state_observation_report",
     "antipattern_record",
     "antipattern_category",
+    "test_suite",
+    "test_case",
+    "invariant_family",
     "healing_run",
     "orchestration_step",
     "nondeterminism_site",
@@ -261,6 +263,16 @@ RelationType = Literal[
     "dispatches_execution_plan",
     "validates_agent_capability",
     "checks_agent_registry",
+    "mutation_signature",
+    "parent_snapshot_hash",
+    "defines_test_case",
+    "defines_test_suite",
+    "defines_invariant",
+    "emits_test_result",
+    "records_validation_outcome",
+    "links_to_execution_trace",
+    "gates_promotion",
+    "detects_regression",
 ]
 EdgeKind = Literal[
     "import",

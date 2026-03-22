@@ -69,7 +69,7 @@ def check_agent_deletions() -> bool:
         if ref_count > 0:
             print(f"      ⚠️  WARNING: {ref_count} references found in codebase!")
         else:
-            print(f"      ✅ No active references found")
+            print("      ✅ No active references found")
 
     print()
     print("Agent deletion is a DESTRUCTIVE operation that can break production systems.")

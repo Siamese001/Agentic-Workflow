@@ -4,7 +4,18 @@ scripts/repair_legacy_agents_util.py
 import ast
 import re
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 LEGACY_ROOT = Path('apps_shared/legacy')
 STUB_IMPORTS = '\nfrom typing import Any, List, Dict, Optional, Union, Tuple\nfrom dataclasses import dataclass, field\nfrom enum import Enum\ntry:\n    from pydantic import BaseModel, Field\nexcept ImportError:\n    class BaseModel: pass\n    def Field(*args, **kwargs): return None\n'
 
@@ -17,7 +28,7 @@ def repair_file(file_path: Path):
         if line.strip() == 'try:':
             if i + 1 < len(lines) and (lines[i + 1].strip().startswith('except') or lines[i + 1].strip() == ''):
                 fixed_lines.append('    pass')
-        elif line.strip().endswith(':') and any((keyword in line for keyword in ['def', 'class', 'if', 'for', 'while', 'with', 'else', 'elif', 'except', 'finally'])):
+        elif line.strip().endswith(':') and any(keyword in line for keyword in ['def', 'class', 'if', 'for', 'while', 'with', 'else', 'elif', 'except', 'finally']):
             if i + 1 >= len(lines) or not lines[i + 1].strip() or lines[i + 1].strip().startswith('#') or lines[i + 1].strip().endswith(':'):
                 fixed_lines.append('    pass')
     content = '\n'.join(fixed_lines)

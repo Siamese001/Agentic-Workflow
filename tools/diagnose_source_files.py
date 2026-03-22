@@ -4,9 +4,9 @@ Runs pytest --co --tb=short on the unit/ subdirectories and extracts the
 production file paths from the traceback lines.
 """
 
-import subprocess
-import re
 import os
+import re
+import subprocess
 from collections import Counter
 
 ROOT = r"C:\Git\Agentic-Workflow"
@@ -53,7 +53,7 @@ for subdir in ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_lea
 
         i += 1
 
-print(f"=== Top source files causing test collection errors ===\n")
+print("=== Top source files causing test collection errors ===\n")
 for src, count in source_errors.most_common(30):
     err = error_types.get(src, "unknown")
     print(f"[{count:3d}] {src}")

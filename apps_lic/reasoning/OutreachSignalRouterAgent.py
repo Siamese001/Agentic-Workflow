@@ -8,13 +8,12 @@ Provides self-healing capabilities for outreach campaigns:
 """
 
 from __future__ import annotations
-from typing import Any
 
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.runtime.lifecycle_trace_contract import (

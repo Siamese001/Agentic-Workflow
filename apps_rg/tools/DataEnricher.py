@@ -6,6 +6,7 @@ Enriches bullet pool with canonical verbs and deduplication.
 """
 
 from __future__ import annotations
+
 from typing import Any
 
 

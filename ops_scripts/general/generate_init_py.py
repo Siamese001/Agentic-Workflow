@@ -1,8 +1,20 @@
 """Generate the new __init__.py for the modular structure_blueprint package."""
 from __future__ import annotations
+
 import ast
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
 MOD_DIR = ROOT / AGENTIC_CORE_DIR / 'L5_safety' / 'config' / 'structure_blueprint'
 
@@ -78,7 +90,7 @@ def generate_init(by_module: dict[str, list[str]]) -> str:
         mod_names = by_module.get(mod, [])
         if not mod_names:
             continue
-        names_set = '{' + ', '.join((f'"{n}"' for n in sorted(mod_names))) + '}'
+        names_set = '{' + ', '.join(f'"{n}"' for n in sorted(mod_names)) + '}'
         parts.append(f'    if name in {names_set}:')
         parts.append(f'        from agentic_core.L5_safety.config.structure_blueprint import {mod}')
         parts.append(f'        return getattr({mod}, name)')
@@ -104,7 +116,7 @@ def generate_init(by_module: dict[str, list[str]]) -> str:
 
 def main() -> None:
     by_module = collect_public_names()
-    total = sum((len(v) for v in by_module.values()))
+    total = sum(len(v) for v in by_module.values())
     print(f'Collected {total} public names across {len(by_module)} modules')
     content = generate_init(by_module)
     target = MOD_DIR / '__init__.py'

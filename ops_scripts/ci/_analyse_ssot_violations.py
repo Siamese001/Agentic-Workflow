@@ -3,11 +3,23 @@ Analyse the hardcoded SSOT violations JSON and categorise findings.
 Outputs a structured report to artifacts/adg/ssot_violation_report.md
 """
 from __future__ import annotations
+
 import json
 import re
 from collections import defaultdict
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / 'artifacts' / 'adg' / 'hardcoded_ssot_violations.json'
 OUT = ROOT / 'artifacts' / 'adg' / 'ssot_violation_report.md'
@@ -31,7 +43,7 @@ for fpath, hits in data.items():
         else:
             genuine.append(entry)
 total_files = len(data)
-total_hits = sum((len(v) for v in data.values()))
+total_hits = sum(len(v) for v in data.values())
 const_counts = {c: len(v) for c, v in by_const.items()}
 lines: list[str] = []
 a = lines.append

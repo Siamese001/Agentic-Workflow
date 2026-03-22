@@ -9,8 +9,8 @@ Responsibilities:
 
 from agentic_core.adg.identity.normalizer import (
     IdentityKind,
-    IdentityRecord,
     IdentityNormalizer,
+    IdentityRecord,
     normalize_identity,
 )
 

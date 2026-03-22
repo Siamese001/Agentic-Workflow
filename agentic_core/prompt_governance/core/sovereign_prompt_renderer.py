@@ -72,7 +72,6 @@ _emit_links_execution_to_snapshot("p4", "sovereign_prompt_renderer", "exec_snaps
 "Sovereign Prompt Renderer - Safe Jinja2 template rendering with validation.\n\nResponsibilities:\n- Load templates exclusively from prompt_governance/templates\n- Perform safe Jinja2 rendering with strict variable scoping\n- Enforce sovereignty: no inline prompt strings > 50 lines outside this layer\n- Validate template schemas and required variables\n"
 import os
 import re
-from typing import Optional
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any

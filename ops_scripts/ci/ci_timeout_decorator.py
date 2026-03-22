@@ -135,8 +135,8 @@ def generate_rca(
     error_type: str,
     error_message: str,
     elapsed_time: float,
-    traceback_info: Optional[str] = None,
-    context: Optional[dict] = None
+    traceback_info: str | None = None,
+    context: dict | None = None
 ) -> Path:
     """
     Generate RCA (Root Cause Analysis) report for CI failures.
@@ -189,7 +189,7 @@ def generate_rca(
 ```
 """
 
-    rca_content += f"""
+    rca_content += """
 ## Diagnostic Steps
 
 1. **Review Operation Logs**: Check CI output for detailed error messages
@@ -237,7 +237,7 @@ def generate_rca(
 - Add unit tests for error paths
 """
 
-    rca_content += f"""
+    rca_content += """
 ## Related Documentation
 
 - CI Guardrail Strategy: `docs/reports/plans/ci-guardrail-enforcement-strategies-9f4e1d.md`

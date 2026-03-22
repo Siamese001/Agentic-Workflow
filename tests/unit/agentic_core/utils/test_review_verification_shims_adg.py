@@ -39,8 +39,8 @@ class TestReviewProtocolShim:
             assert name in __all__
 
     def test_identity_matches_canonical(self):
-        from agentic_core.utils.review_protocol_util import ReviewRequest as shim
         from agentic_core.runtime.config.review_config import ReviewRequest as canon
+        from agentic_core.utils.review_protocol_util import ReviewRequest as shim
         assert shim is canon
 
 
@@ -70,6 +70,6 @@ class TestVerificationTypesShim:
             assert name in __all__
 
     def test_identity_matches_canonical(self):
-        from agentic_core.utils.verification_types_util import VerificationRequest as shim
         from agentic_core.L5_safety.types.verification_types import VerificationRequest as canon
+        from agentic_core.utils.verification_types_util import VerificationRequest as shim
         assert shim is canon

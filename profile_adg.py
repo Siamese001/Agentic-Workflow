@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Timed checkpoint profiler for generate_full_adg.py hang diagnosis"""
 
-import time
-import sys
 import signal
+import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -38,7 +38,6 @@ except AttributeError:
 T.checkpoint("START")
 
 # Step 1: imports
-from datetime import datetime, timezone, timedelta
 T.checkpoint("imports done")
 
 # Step 2: sys.path
@@ -48,12 +47,12 @@ T.checkpoint("sys.path set")
 
 # Step 3: import lifecycle_trace_contract (this fires hard_fails_untranscripted)
 T.checkpoint("about to import lifecycle_trace_contract")
-from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace
 T.checkpoint("lifecycle_trace_contract imported")
 
 # Step 4: import ADGStaticScanner
 T.checkpoint("about to import ADGStaticScanner")
 from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+
 T.checkpoint("ADGStaticScanner imported")
 
 # Step 5: instantiate scanner
@@ -67,6 +66,7 @@ T.checkpoint("about to call scanner.scan()")
 
 # Patch _scan_file to track per-file timing
 import agentic_core.adg.extraction.static_scanner as sm
+
 original_scan_file = sm._scan_file
 file_count = [0]
 slow_files = []
@@ -93,7 +93,7 @@ T.checkpoint(f"scanner.scan() complete: {len(result.modules)} modules, {len(resu
 T.checkpoint(f"cache hits={result.manifest.cache_hits} misses={result.manifest.cache_misses} rate={result.manifest.cache_hit_rate:.1%}")
 
 if slow_files:
-    print(f"\n[PROFILE] TOP SLOW FILES:")
+    print("\n[PROFILE] TOP SLOW FILES:")
     for elapsed, path in sorted(slow_files, reverse=True)[:10]:
         print(f"  {elapsed:.2f}s  {path}")
 

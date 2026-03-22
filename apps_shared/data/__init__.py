@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
+
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
 BUFFER_SIZE = 8192

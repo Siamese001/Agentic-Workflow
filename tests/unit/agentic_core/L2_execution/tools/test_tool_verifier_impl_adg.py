@@ -6,8 +6,8 @@ import pytest
 pytestmark = pytest.mark.unit
 
 from agentic_core.L2_execution.tools.tool_verifier_impl import (
-    VerificationResult,
     VerificationIssue,
+    VerificationResult,
 )
 
 

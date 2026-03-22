@@ -6,9 +6,8 @@ Resolve rebase conflicts by accepting both sides:
 Strategy: strip conflict markers, merge both sides.
 """
 from __future__ import annotations
-import re
+
 import subprocess
-import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent

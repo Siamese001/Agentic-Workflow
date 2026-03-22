@@ -1,6 +1,5 @@
 """P2/P3 scope analysis — finds live SOVEREIGN_TERRITORIES usage outside structure_blueprint."""
 from pathlib import Path
-import re
 
 root = Path('c:/Git/Agentic-Workflow')
 SKIP = {'archives', '.healing_backups', '.backup', '__pycache__', '.git', 'structure_blueprint'}

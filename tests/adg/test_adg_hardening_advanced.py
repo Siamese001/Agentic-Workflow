@@ -17,14 +17,10 @@ Innovative testing patterns beyond standard unit tests:
 
 from __future__ import annotations
 
-import copy
 import hashlib
-import json
 import sqlite3
 import sys
-import time
 from pathlib import Path
-from typing import Any, Dict, List, Set, Tuple
 
 import pytest
 
@@ -346,8 +342,8 @@ class TestDifferential:
         db = make_db(tmp_path, nodes=nodes, edges=edges)
         d = wrap_adg_dir(tmp_path, db)
 
-        from scripts.verify_trace_replay_coverage import ADGTraceReplayCoverageVerifier
         from scripts.report_behavioral_coverage_ratios import ADGRuntimeStructuralBalanceVerifier
+        from scripts.verify_trace_replay_coverage import ADGTraceReplayCoverageVerifier
 
         trace_v = ADGTraceReplayCoverageVerifier(d)
         cov = trace_v._analyze_execution_surface_coverage(1, "ADG::Module::a.py")

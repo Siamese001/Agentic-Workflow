@@ -14,7 +14,7 @@ else:
     print(f"Cache version: {cache.get('version')}")
     print(f"Cache entries: {len(cache.get('entries', {}))}")
     print(f"Has _cache_key: {'_cache_key' in cache}")
-    
+
     # Check if this is a ScanCache format or ScanResult format
     if 'version' in cache and 'entries' in cache:
         print("\n✅ This is a ScanCache format (used by scanner)")

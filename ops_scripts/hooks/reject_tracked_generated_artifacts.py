@@ -4,10 +4,22 @@ Deterministic, zero-network, no external dependencies.
 Windows-safe (ASCII only).
 """
 from __future__ import annotations
+
 import fnmatch
 import subprocess
 import sys
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 FORBIDDEN_PATTERNS: list[str] = ['**/guardian_report.json', '**/.core_golden_seal', 'v15_d_evidence_*.json']
 
 def _match(path: str, pattern: str) -> bool:

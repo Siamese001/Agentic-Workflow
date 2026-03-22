@@ -13,17 +13,19 @@ Runner hard-fails if any required command exits non-zero.
 import re
 import sys
 from pathlib import Path
+
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent))
 from evidence_contract_v2 import EvidenceContractV2
+
 from agentic_core.L5_safety.config.structure_blueprint.ssot import DOCS_REPORTS_PLANS
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 _ANSI_RE = re.compile('\\x1b\\[[0-9;]*[mABCDEFGHJKSTfhilmnprsu]')
 
 def strip_ansi(text: str) -> str:
     """Remove ANSI escape sequences and replace remaining non-ASCII with '?'."""
     text = _ANSI_RE.sub('', text)
-    return ''.join((c if ord(c) < 128 else '?' for c in text))
+    return ''.join(c if ord(c) < 128 else '?' for c in text)
 
 def main():
     """Generate Phases 10C-11-12 consolidated evidence using Contract v2."""
@@ -73,7 +75,7 @@ def main():
         for title, rc in failed_commands:
             print(f'  - {title}: exit {rc}')
         sys.exit(1)
-    evidence_content = '\n'.join((line.rstrip() for line in evidence_lines))
+    evidence_content = '\n'.join(line.rstrip() for line in evidence_lines)
     evidence_file.parent.mkdir(parents=True, exist_ok=True)
     evidence_file.write_text(evidence_content, encoding='utf-8', newline='\n')
     content_start = evidence_file.read_text(encoding='utf-8')[:200]

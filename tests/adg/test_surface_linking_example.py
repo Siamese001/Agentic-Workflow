@@ -3,8 +3,6 @@ Test file to vigorously test the Test Surface Linking implementation.
 This file contains various test patterns to verify the visitor captures them correctly.
 """
 
-import pytest
-import unittest
 from unittest import TestCase
 
 
@@ -84,7 +82,7 @@ class IntegrationSpec:
 
         # Promotion gate
         promote_if_valid(validation_passed)
-        
+
         # Additional patterns for comprehensive testing
         validate_result(data)
         check_outcome(result)

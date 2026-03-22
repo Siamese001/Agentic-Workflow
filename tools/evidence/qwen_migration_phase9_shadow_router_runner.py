@@ -9,8 +9,8 @@ import os
 import re
 import subprocess
 import sys
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 from pathlib import Path
+
 
 def validate_64hex(value: str, field_name: str) -> None:
     """Validate that a value is a 64-character hex string.
@@ -24,7 +24,7 @@ def validate_64hex(value: str, field_name: str) -> None:
     """
     assert isinstance(value, str), f'{field_name} must be a string'
     assert len(value) == 64, f'{field_name} must be 64 characters, got {len(value)}'
-    assert all((c in '0123456789abcdef' for c in value)), f'{field_name} must be hex, got: {value}'
+    assert all(c in '0123456789abcdef' for c in value), f'{field_name} must be hex, got: {value}'
 
 def run_subprocess_command(argv: list[str], cwd: str=None) -> str:
     """Run subprocess command safely without shell=True.
@@ -61,7 +61,13 @@ def execute_shadow_router_proofs():
     # guardian: allow-global-mutation
     sys.path.insert(0, 'tests/unit_min_deps')
     try:
-        from test_shadow_router_classifier import RouteDecisionArtifact, RoutePath, RoutingRationale, ShadowRouterClassifier, validate_64hex
+        from test_shadow_router_classifier import (
+            RouteDecisionArtifact,
+            RoutePath,
+            RoutingRationale,
+            ShadowRouterClassifier,
+            validate_64hex,
+        )
     except ImportError as e:
         print(f'FAIL: Could not import test modules: {e}')
         sys.exit(1)

@@ -1,5 +1,5 @@
+
 import redis
-import json
 
 # Connect to Redis
 r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
@@ -12,11 +12,11 @@ for k, v in sorted(meta.items()):
 
 # 2. Get L_UNKNOWN node IDs
 l_unknown_ids = r.smembers('adg:nodes:by_layer:L_UNKNOWN')
-print(f"\n=== L_UNKNOWN Node Count ===")
+print("\n=== L_UNKNOWN Node Count ===")
 print(f"Total L_UNKNOWN nodes: {len(l_unknown_ids)}")
 
 # 3. Sample 50 L_UNKNOWN nodes and categorize
-print(f"\n=== Sampling 50 L_UNKNOWN nodes ===")
+print("\n=== Sampling 50 L_UNKNOWN nodes ===")
 sample_ids = list(l_unknown_ids)[:50]
 identity_kind_counts = {}
 entity_type_counts = {}
@@ -39,7 +39,7 @@ for node_id in sample_ids:
     if len([k for k in identity_kind_counts.values()]) <= 10:
         print(f"  [{entity_type}|{identity_kind}] {node.get('adg_name', 'N/A')} -> {resolved_path or '(null)'}")
 
-print(f"\n=== Sample breakdown (50 nodes) ===")
+print("\n=== Sample breakdown (50 nodes) ===")
 print("By identity_kind:")
 for k, v in sorted(identity_kind_counts.items(), key=lambda x: -x[1]):
     print(f"  {k}: {v}")

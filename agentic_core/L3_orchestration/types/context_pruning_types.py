@@ -15,7 +15,6 @@ Phase: 2 - Advanced Features
 from __future__ import annotations
 
 import logging
-from typing import Optional
 import sys
 import uuid
 from dataclasses import dataclass, field

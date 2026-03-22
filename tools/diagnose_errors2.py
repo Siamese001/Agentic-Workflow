@@ -1,7 +1,7 @@
 """Diagnose test collection errors — captures both stdout and stderr."""
 
-import subprocess
 import re
+import subprocess
 
 ROOT = r"C:\Git\Agentic-Workflow"
 

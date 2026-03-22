@@ -8,7 +8,18 @@ import json
 import logging
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 logger = logging.getLogger(__name__)
 ARCHIVE_ROOTS = ['C:\\Git\\Agentic-Workflow\\archives\\Reachout Engine Archive', 'C:\\Git\\Agentic-Workflow\\archives\\resume_gen_json']
@@ -47,9 +58,9 @@ class LogicHasher(ast.NodeVisitor):
         return hashlib.md5(content_to_hash.encode('utf-8')).hexdigest()
 
     def visit_ClassDef(self, node):
-        is_stateful = any((n.name in ['__init__', 'execute', 'run', 'process', 'act'] for n in node.body if isinstance(n, ast.FunctionDef)))
+        is_stateful = any(n.name in ['__init__', 'execute', 'run', 'process', 'act'] for n in node.body if isinstance(n, ast.FunctionDef))
         bases = [b.id for b in node.bases if isinstance(b, ast.Name)]
-        is_type = any((b in ['Enum', 'BaseModel', 'TypedDict'] for b in bases))
+        is_type = any(b in ['Enum', 'BaseModel', 'TypedDict'] for b in bases)
         sig_type = 'type' if is_type else 'class'
         sig = LogicSignature(name=node.name, type=sig_type, content_hash=self._normalize_and_hash(node), line_count=node.end_lineno - node.lineno, is_stateful=is_stateful, docstring=ast.get_docstring(node) or '')
         self.signatures.append(sig)
@@ -71,13 +82,13 @@ def scan_file(filepath: Path) -> FileAudit | None:
             return None
         classification = 'unknown'
         sigs = hasher.signatures
-        if any((s.type == 'type' for s in sigs)):
+        if any(s.type == 'type' for s in sigs):
             classification = 'Type'
-        elif any((s.type == 'class' and s.is_stateful for s in sigs)):
+        elif any(s.type == 'class' and s.is_stateful for s in sigs):
             classification = 'Engine'
-        elif any((s.type == 'class' for s in sigs)):
+        elif any(s.type == 'class' for s in sigs):
             classification = 'Tool'
-        elif any((s.type == 'function' for s in sigs)):
+        elif any(s.type == 'function' for s in sigs):
             classification = 'Tool'
         return FileAudit(path=str(filepath), signatures=sigs, classification=classification)
     except Exception as e:
@@ -105,7 +116,7 @@ def main():
             audit = scan_file(py_file)
             if not audit:
                 continue
-            matches = sum((1 for s in audit.signatures if s.content_hash in rg_signatures))
+            matches = sum(1 for s in audit.signatures if s.content_hash in rg_signatures)
             total = len(audit.signatures)
             audit.redundancy_score = matches / total if total > 0 else 0.0
             if audit.redundancy_score == 1.0:

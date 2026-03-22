@@ -1,10 +1,22 @@
 """CI guard G13: model string literals must only appear in config/registry, not agent code."""
 from __future__ import annotations
+
 import ast
 import re
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MODEL_PATTERN = re.compile('(gpt-[0-9]|claude-[0-9]|gemini-[0-9]|text-embedding-3|qwen|llama)', re.I)
 ALLOWED_PATHS = {'agentic_core/config/core/sovereign_config.py', 'agentic_core/agents/agent_registry.py', 'agentic_core/L2_execution/enforcement/SovereignLLMGateway.py', 'data/sdks_mcps/client_wrappers.py'}

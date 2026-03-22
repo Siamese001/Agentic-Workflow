@@ -1010,7 +1010,6 @@ class TestAdgCliGuardianScope:
 class TestAdgCliExecutionImpact:
     def test_execution_impact_returns_pre_run_report(self, tmp_path):
         from agentic_core.adg.applications.execute_ssot_integration import PreRunADGReport
-
         from tools import adg_cli
 
         mock_report = PreRunADGReport(
@@ -1061,7 +1060,6 @@ class TestAdgCliExecutionImpact:
     def test_execution_impact_partial_labeling_for_unavailable(self, tmp_path):
         """Evidence output must explicitly mark when ADG is unavailable."""
         from agentic_core.adg.applications.execute_ssot_integration import PreRunADGReport
-
         from tools import adg_cli
 
         mock_report = PreRunADGReport.unavailable(

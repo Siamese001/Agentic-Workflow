@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 from agentic_core.L0_routing.config.path_constants import (
     APPS_LIC_DIR,
-    APPS_SHARED_DIR,
     APPS_RG_DIR,
+    APPS_SHARED_DIR,
 )
+
 """
 scripts/maintenance/territory_ssot_definitions.py
 -------------------------------------------------

@@ -12,7 +12,6 @@ Must not override S0 or D0. Must be deterministic and hashable.
 """
 
 from __future__ import annotations
-from typing import Optional
 
 from dataclasses import dataclass
 from enum import Enum

@@ -20,7 +20,6 @@ import json
 import os
 import re
 import uuid
-from typing import Optional
 from dataclasses import asdict, dataclass, field
 from enum import Enum
 from pathlib import Path, PurePosixPath

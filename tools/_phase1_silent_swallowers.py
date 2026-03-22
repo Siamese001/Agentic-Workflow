@@ -3,10 +3,10 @@ Phase 1: Fix Silent Swallower anti-patterns.
 Target: Replace bare except Exception with proper error handling.
 """
 from __future__ import annotations
-import ast
+
 import re
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 REPO = Path(__file__).resolve().parent.parent
 
 def fix_file_silent_swallowers(file_path: Path) -> int:
@@ -47,18 +47,18 @@ def main() -> None:
     total_fixed = 0
     files_fixed = 0
     for py_file in python_files:
-        if any((skip in py_file.parts for skip in skip_dirs)):
+        if any(skip in py_file.parts for skip in skip_dirs):
             continue
         fixed = fix_file_silent_swallowers(py_file)
         if fixed > 0:
             print(f'  Fixed {fixed} violations in {py_file.relative_to(REPO)}')
             total_fixed += fixed
             files_fixed += 1
-    print(f'\nPhase 1 Summary:')
+    print('\nPhase 1 Summary:')
     print(f'  Files fixed: {files_fixed}')
     print(f'  Violations fixed: {total_fixed}')
-    import subprocess
     import os
+    import subprocess
     env = os.environ.copy()
     env['ALLOW_LANDMINE_BASELINE_WRITE'] = '1'
     result = subprocess.run(['python', 'ops_scripts/ci/check_anti_patterns.py', '--write-baseline'], capture_output=True, text=True, cwd=REPO, env=env)

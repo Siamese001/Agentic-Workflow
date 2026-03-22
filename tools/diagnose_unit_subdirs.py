@@ -1,8 +1,8 @@
 """Diagnose unit test errors by subdirectory."""
 
-import subprocess
-import re
 import os
+import re
+import subprocess
 
 ROOT = r"C:\Git\Agentic-Workflow"
 UNIT = os.path.join(ROOT, "tests", "unit")

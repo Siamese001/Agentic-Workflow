@@ -5,7 +5,6 @@ Re-exported from L5_safety for backwards compatibility.
 """
 
 import logging
-from typing import Optional
 import uuid
 from fnmatch import fnmatch
 from pathlib import Path

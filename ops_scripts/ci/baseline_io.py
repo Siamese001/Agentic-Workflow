@@ -9,12 +9,24 @@ Provides safe JSON baseline file operations:
 All baseline/snapshot writers must use this module.
 """
 from __future__ import annotations
+
 import json
 import os
 import sys
 import tempfile
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 
 class CIWriteBlockedError(RuntimeError):
     """Raised when a write is attempted in CI without explicit override."""

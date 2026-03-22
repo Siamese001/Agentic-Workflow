@@ -1,9 +1,9 @@
 """Test that the postgres MCP server can start and connect to mcp_db."""
+import json
+import os
 import subprocess
 import sys
-import os
 import time
-import json
 
 CONN = "postgresql://postgres:postgres@localhost:5432/mcp_db"
 

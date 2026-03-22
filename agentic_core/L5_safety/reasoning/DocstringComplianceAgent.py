@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import ast
-from typing import Optional
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.tools import write_gateway as _wg

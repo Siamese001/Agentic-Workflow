@@ -5,7 +5,6 @@ Wrap those reads in try/except.
 """
 import ast
 import os
-import re
 import subprocess
 import sys
 
@@ -48,7 +47,7 @@ def get_fnf_source_files():
 def wrap_file_read_block(filepath, error_lineno):
     """Wrap the module-level block containing the file read in try/except."""
     global fixed
-    src = open(filepath, "r", encoding="utf-8").read()
+    src = open(filepath, encoding="utf-8").read()
     lines = src.split("\n")
 
     if error_lineno <= 0 or error_lineno > len(lines):

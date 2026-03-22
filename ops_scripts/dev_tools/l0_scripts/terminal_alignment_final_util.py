@@ -4,13 +4,24 @@ Fixes all remaining apps_lic.engines failures to achieve 100% PASS.
 """
 import re
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
     emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "terminal_alignment_final_util", "uwg_governed_write")
 _emit_writes_through("p1", "terminal_alignment_final_util", "uwg_governed_write_2")
 _emit_pulls_context("p1", "terminal_alignment_final_util", "context_retrieval")
@@ -133,7 +144,7 @@ def main():
                 print(f'    - {f}')
             if len(files) > 5:
                 print(f'    ... and {len(files) - 5} more')
-    total_fixes = sum((len(f) for f in fixes.values()))
+    total_fixes = sum(len(f) for f in fixes.values())
     print('\n' + '=' * 60)
     print(f'✅ Applied {total_fixes} fixes across all categories')
     print('\n🔍 Run: python scripts/generate_certificate.py')

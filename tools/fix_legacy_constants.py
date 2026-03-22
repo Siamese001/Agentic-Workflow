@@ -2,7 +2,7 @@
 import re
 
 fp = r"C:\Git\Agentic-Workflow\apps_shared\utils\configuration_service_util.py"
-src = open(fp, "r", encoding="utf-8").read()
+src = open(fp, encoding="utf-8").read()
 
 # Pattern: lines like "UPPER_CASE = None" preceded by "# Legacy constant"
 def replace_none_constants(src):
@@ -24,6 +24,7 @@ def replace_none_constants(src):
 new_src = replace_none_constants(src)
 # Verify syntax
 import ast
+
 try:
     ast.parse(new_src)
     open(fp, "w", encoding="utf-8").write(new_src)

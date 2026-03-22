@@ -4,9 +4,11 @@ Blocked in those layers: open(w/a/x/b), Path.write_*, sqlite3.connect,
 shutil.copy/move/rmtree, subprocess.run/Popen, os.remove/rename.
 """
 from __future__ import annotations
+
 import ast
 import sys
 from pathlib import Path
+
 from agentic_core.L0_routing.config.path_constants import (
     BATCH_SIZE,
     BUFFER_SIZE,
@@ -19,6 +21,7 @@ from agentic_core.L0_routing.config.path_constants import (
     MAX_RETRIES,
     THRESHOLD,
 )
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 WRITE_LAYERS = [L0_MAINTENANCE_DIR, L4_STATE_DIR, 'L6_observability']
 _ALLOWED_WRITE_PATH_SEGMENTS = frozenset({'scripts', 'meta_control', 'reasoning', 'utils', 'types', 'storage', 'enforcement'})
@@ -37,7 +40,7 @@ def _is_write_open(node: ast.Call) -> bool:
     for kw in node.keywords:
         if kw.arg == 'mode' and isinstance(kw.value, ast.Constant):
             mode_val = kw.value.value
-    return isinstance(mode_val, str) and any((m in mode_val for m in WRITE_MODES))
+    return isinstance(mode_val, str) and any(m in mode_val for m in WRITE_MODES)
 
 def _is_exempt_from_write_check(rel: str) -> bool:
     """Return True if this file is allowed to contain write calls."""

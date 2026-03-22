@@ -14,12 +14,11 @@ from __future__ import annotations
 import json
 import os
 import re
-import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 AUDIT_JSON = os.path.join(ROOT, "artifacts", "adg", "_convergence_wiring_audit.json")
 
-with open(AUDIT_JSON, "r") as f:
+with open(AUDIT_JSON) as f:
     audit = json.load(f)
 
 digest_needs = set(audit["digest_needs_call"])
@@ -54,7 +53,7 @@ def wire_module(module_rel: str) -> None:
         stats["errors"].append(f"MISSING: {module_rel}")
         return
 
-    with open(fpath, "r", encoding="utf-8", errors="replace") as f:
+    with open(fpath, encoding="utf-8", errors="replace") as f:
         content = f.read()
 
     original = content
@@ -91,9 +90,9 @@ def wire_module(module_rel: str) -> None:
                 if line.strip() == ")":
                     insert_idx = max(insert_idx, i + 1)
             import_block = (
-                f"\nfrom agentic_core.runtime.lifecycle_trace_contract import (\n"
-                f"    emit_determinism_digest,\n"
-                f")\n"
+                "\nfrom agentic_core.runtime.lifecycle_trace_contract import (\n"
+                "    emit_determinism_digest,\n"
+                ")\n"
             )
             lines.insert(insert_idx, import_block)
             content = "\n".join(lines)
@@ -125,9 +124,9 @@ def wire_module(module_rel: str) -> None:
                 if line.strip() == ")":
                     insert_idx = max(insert_idx, i + 1)
             import_block = (
-                f"\nfrom agentic_core.runtime.lifecycle_trace_contract import (\n"
-                f"    record_execution_trace,\n"
-                f")\n"
+                "\nfrom agentic_core.runtime.lifecycle_trace_contract import (\n"
+                "    record_execution_trace,\n"
+                ")\n"
             )
             lines.insert(insert_idx, import_block)
             content = "\n".join(lines)

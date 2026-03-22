@@ -2,8 +2,6 @@
 """Tests for agentic_core.L5_safety.reasoning.FileClassificationAgent."""
 import importlib
 
-import pytest
-
 
 def test_agentic_core_L5_safety_reasoning_FileClassificationAgent_importable():
     """Module must be importable without error."""

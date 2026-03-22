@@ -24,7 +24,6 @@ from agentic_core.evaluation.judges.types import (
     EvidenceRequirement,
     RubricDefinition,
     ScoringCriterion,
-    ScoringMethod,
 )
 
 _log = logging.getLogger(__name__)

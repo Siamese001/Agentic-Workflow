@@ -1,8 +1,8 @@
 """Comprehensive error categorization across all test directories."""
 
-import subprocess
-import re
 import os
+import re
+import subprocess
 
 ROOT = r"C:\Git\Agentic-Workflow"
 

@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import sqlite3
 import subprocess
 import sys
@@ -334,7 +333,7 @@ def section3_canonical_path(db_path):
     overlap_calls_writes = len(calls_srcs & writes_srcs)
     overlap_calls_trace = len(calls_srcs & trace_srcs)
 
-    print(f"\nTransitive connectivity (source file overlap):")
+    print("\nTransitive connectivity (source file overlap):")
     print(f"  calls ∩ reads_from:              {overlap_calls_reads} modules")
     print(f"  calls ∩ writes_to:               {overlap_calls_writes} modules")
     print(f"  calls ∩ records_execution_trace:  {overlap_calls_trace} modules")

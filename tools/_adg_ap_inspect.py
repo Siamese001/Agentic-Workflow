@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Inspect the 9 stuck violations - show evidence text and surrounding lines."""
 from __future__ import annotations
-import subprocess, sys
+
+import subprocess
+import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent

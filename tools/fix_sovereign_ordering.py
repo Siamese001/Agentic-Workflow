@@ -1,9 +1,8 @@
 """Fix sovereign_severity_types.py: ensure aliases come before registry, both after all classes."""
-import ast
 import re
 
 fp = r"C:\Git\Agentic-Workflow\apps_shared\types\sovereign_severity_types.py"
-src = open(fp, "r", encoding="utf-8").read()
+src = open(fp, encoding="utf-8").read()
 lines = src.split('\n')
 
 # Step 1: Find and extract the registry block + CORE_CONTRACTS_REGISTRY alias

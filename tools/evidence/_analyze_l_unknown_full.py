@@ -1,5 +1,5 @@
-import sqlite3
 import collections
+import sqlite3
 
 db_path = r'C:\Git\Agentic-Workflow\artifacts\adg\adg_indexed_03132026_1902.sqlite'
 conn = sqlite3.connect(db_path)

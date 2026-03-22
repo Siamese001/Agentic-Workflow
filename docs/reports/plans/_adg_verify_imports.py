@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Verify all 7 formerly-violating files now import from L0 path_constants correctly."""
-import sys, importlib
+import importlib
+import sys
 from pathlib import Path
+
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT))
 
@@ -27,6 +29,7 @@ for modname in MODULES:
 print()
 print("=== path_constants has all needed symbols? ===")
 from agentic_core.L0_routing.config import path_constants as pc
+
 needed = [
     "DEPTH_RULES", "PROJECT_ROOT_WHITELIST", "CORE_SUBFOLDER_MAP",
     "APPS_LIC_SUBFOLDER_MAP", "APPS_RG_SUBFOLDER_MAP", "APPS_SHARED_SUBFOLDER_MAP",

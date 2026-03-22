@@ -8,8 +8,8 @@ Strategy:
 import ast
 import os
 import re
-import sys
 import subprocess
+import sys
 
 ROOT = r"C:\Git\Agentic-Workflow"
 fixed = 0
@@ -60,7 +60,7 @@ def get_all_errors():
 def add_import_before_line(filepath, lineno, import_stmt):
     """Add an import statement before a specific line number."""
     global fixed
-    lines = open(filepath, "r", encoding="utf-8").readlines()
+    lines = open(filepath, encoding="utf-8").readlines()
     if lineno <= 0 or lineno > len(lines):
         return False
 
@@ -83,7 +83,7 @@ def add_import_before_line(filepath, lineno, import_stmt):
 def wrap_module_level_code(filepath, lineno):
     """Wrap module-level file reads in try/except starting at lineno."""
     global fixed
-    lines = open(filepath, "r", encoding="utf-8").readlines()
+    lines = open(filepath, encoding="utf-8").readlines()
     if lineno <= 0 or lineno > len(lines):
         return False
 

@@ -22,7 +22,7 @@ def main() -> None:
 
     print(f"Old: {old_path.name} — {old_path.stat().st_size:,} bytes (16.7 MB)")
     print(f"New: {new_path.name} — {new_path.stat().st_size:,} bytes (11.0 MB)")
-    print(f"Reduction: 5.7 MB (34.0%)")
+    print("Reduction: 5.7 MB (34.0%)")
     print()
 
     # Compare content sizes

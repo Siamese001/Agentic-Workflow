@@ -1,8 +1,8 @@
 """Fix all remaining NameErrors and ImportErrors in agentic_core source files."""
+import os
+import re
 import subprocess
 import sys
-import re
-import os
 
 ROOT = r"C:\Git\Agentic-Workflow"
 

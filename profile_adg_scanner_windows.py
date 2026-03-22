@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Windows-compatible ADG scanner profiling."""
 import cProfile
-import pstats
 import io
-import time
-import threading
+import pstats
 import sys
+import threading
+import time
 from pathlib import Path
+
 
 class TimeoutException(Exception):
     pass

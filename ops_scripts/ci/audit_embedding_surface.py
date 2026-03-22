@@ -13,7 +13,18 @@ import ast
 import sys
 from pathlib import Path
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 EMBEDDING_PRIMITIVES = {'AutoModel', 'AutoTokenizer', 'AutoModelForSeq2SeqLM', 'AutoModelForMaskedLM', 'sentence_transformers', 'SentenceTransformer', 'OpenAI', 'EmbeddingServiceFactory', 'EmbeddingResult', 'text-embedding-3', 'all-MiniLM'}
@@ -58,7 +69,7 @@ class EmbeddingUsageScanner(ast.NodeVisitor):
         if self.is_in_factory or self.is_in_allowlist:
             return self.generic_visit(node)
         for alias in node.names:
-            if any((primitive in alias.name for primitive in EMBEDDING_PRIMITIVES)):
+            if any(primitive in alias.name for primitive in EMBEDDING_PRIMITIVES):
                 self.violations.append(EmbeddingUsageViolation(self.file_path, node.lineno, 'EMBEDDING_IMPORT', f"Import of '{alias.name}' outside factory"))
         self.generic_visit(node)
 
@@ -69,7 +80,7 @@ class EmbeddingUsageScanner(ast.NodeVisitor):
         if node.module:
             if 'transformers' in node.module:
                 for alias in node.names:
-                    if any((primitive in alias.name for primitive in EMBEDDING_PRIMITIVES)):
+                    if any(primitive in alias.name for primitive in EMBEDDING_PRIMITIVES):
                         self.violations.append(EmbeddingUsageViolation(self.file_path, node.lineno, 'EMBEDDING_IMPORT', f"From import '{alias.name}' from transformers outside factory"))
             if 'sentence_transformers' in node.module:
                 self.violations.append(EmbeddingUsageViolation(self.file_path, node.lineno, 'EMBEDDING_IMPORT', 'From import from sentence_transformers outside factory'))

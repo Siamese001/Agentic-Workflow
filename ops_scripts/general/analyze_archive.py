@@ -1,7 +1,18 @@
 """Analyze archives for files that should be restored to apps_* folders."""
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    ARCHIVES_DIR,
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 RESUME_KEYWORDS = {'resume', 'cv', 'ats', 'job', 'skill', 'experience', 'bullet', 'section'}
 OUTREACH_KEYWORDS = {'outreach', 'linkedin', 'recipient', 'campaign', 'personalization', 'message', 'sender'}
 
@@ -16,8 +27,8 @@ def analyze_archive(archive_path: Path):
             continue
         try:
             content = f.read_text(encoding='utf-8', errors='replace').lower()
-            has_resume = any((kw in content for kw in RESUME_KEYWORDS))
-            has_outreach = any((kw in content for kw in OUTREACH_KEYWORDS))
+            has_resume = any(kw in content for kw in RESUME_KEYWORDS)
+            has_outreach = any(kw in content for kw in OUTREACH_KEYWORDS)
             if has_resume or has_outreach:
                 tag = 'SHARED' if has_resume and has_outreach else 'RG' if has_resume else 'LIC'
                 first_sig_line = ''
@@ -74,9 +85,9 @@ def main():
     print('\n' + '=' * 80)
     print('RESTORE RECOMMENDATIONS SUMMARY')
     print('=' * 80)
-    rg_count = sum((1 for r in all_restore_candidates if r['tag'] == 'RG'))
-    lic_count = sum((1 for r in all_restore_candidates if r['tag'] == 'LIC'))
-    shared_count = sum((1 for r in all_restore_candidates if r['tag'] == 'SHARED'))
+    rg_count = sum(1 for r in all_restore_candidates if r['tag'] == 'RG')
+    lic_count = sum(1 for r in all_restore_candidates if r['tag'] == 'LIC')
+    shared_count = sum(1 for r in all_restore_candidates if r['tag'] == 'SHARED')
     print(f'\nTotal app-relevant files in archives: {len(all_restore_candidates)}')
     print(f'  - Resume Engine (RG):     {rg_count} files')
     print(f'  - Outreach Engine (LIC):  {lic_count} files')

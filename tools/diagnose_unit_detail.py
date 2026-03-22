@@ -1,8 +1,7 @@
 """Get error details for unit test subdirectories with errors."""
 
-import subprocess
 import re
-import os
+import subprocess
 
 ROOT = r"C:\Git\Agentic-Workflow"
 

@@ -18,7 +18,6 @@ NOTE: adg_LATEST_* copies not generated (create_latest_symlinks=False by default
 from __future__ import annotations
 
 import gzip
-import os
 import shutil
 import sys
 import zipfile
@@ -828,7 +827,7 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
         try:
             test_file.unlink()
             cleaned_count += 1
-            print(f"[ADG] Cleanup: removed legacy test_surface_coverage.json")
+            print("[ADG] Cleanup: removed legacy test_surface_coverage.json")
         except OSError as e:
             print(f"[ADG] Cleanup: error removing {test_file.name}: {e}")
 
@@ -855,15 +854,16 @@ def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
 
 def _infer_layer(path: str) -> str:
     """Infer layer label from file path using YAML overrides."""
-    import yaml
     import fnmatch
     from pathlib import Path
+
+    import yaml
 
     # Load layer overrides from YAML
     overrides_file = Path(__file__).parent / "adg_layer_overrides.yaml"
     if overrides_file.exists():
         try:
-            with open(overrides_file, 'r', encoding='utf-8') as f:
+            with open(overrides_file, encoding='utf-8') as f:
                 config = yaml.safe_load(f)
                 overrides = config.get('overrides', {})
                 default_layer = config.get('default_layer', 'L_UNKNOWN')

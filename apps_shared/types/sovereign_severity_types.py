@@ -6,13 +6,12 @@ No inline BaseModel definitions allowed outside schemas/.
 from __future__ import annotations
 
 import logging
-from pydantic import ConfigDict
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel, Field, field_validator, validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, validator
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 from agentic_core.runtime.lifecycle_trace_contract import (
@@ -399,7 +398,7 @@ class agent_thought_process(BaseModel):
         ..., description="Step-by-step logic leading to the decision. Each step should be clear and atomic."
     )
     relevant_context_keys: list[str] = Field(...)
-    tool_choice: Literal["SEARCH", "CODE", "ANSWER", "DELEGATE", "TERMINATE"] = Field(
+    tool_choice: Literal[SEARCH, CODE, ANSWER, DELEGATE, TERMINATE] = Field(
         ..., description="The action type to take"
     )
     tool_arguments: dict[str, Any] = Field(default_factory=dict, description="Arguments for the chosen tool")
@@ -441,7 +440,7 @@ class research_result(BaseModel):
     query_understanding: str = Field(..., description="How you interpreted the research question")
     sources: list[dict[str, str]] = Field(..., description="List of sources with 'url' and 'relevance' keys")
     key_findings: list[str] = Field(..., description="Main findings from the research")
-    confidence_level: Literal["high", "medium", "low"] = Field(
+    confidence_level: Literal[high, medium, low] = Field(
         ..., description="Confidence in the research results"
     )
     follow_up_questions: list[str] = Field(
@@ -661,7 +660,7 @@ class hard_state:
     execution_trace: list[dict[str, Any]] = field(default_factory=list)
     created_at: datetime = field(default_factory=datetime.utcnow)
 
-    def add_trace(self, event: str, data: dict[str, Any]) -> "HardState":
+    def add_trace(self, event: str, data: dict[str, Any]) -> HardState:
         """Add an event to the execution trace (returns new instance)."""
         import uuid  # noqa: PLC0415
 
@@ -917,7 +916,7 @@ class golden_output(BaseModel):
     correctness_map: dict[str, bool]
     safety_decisions: dict[str, Any]
     metacognition_summary: dict[str, Any]
-    final_verdict: Literal["pass", "fail", "borderline"]
+    final_verdict: Literal["pass", fail, borderline]
 
 GoldenOutput = golden_output
 
@@ -991,7 +990,7 @@ ResidualAgentMessage = residual_agent_message
 class agent_response:
     """Response from agent execution."""
 
-    message: "ResidualAgentMessage"
+    message: ResidualAgentMessage
     success: bool
     error: str | None = None
     usage: dict[str, int] | None = None
@@ -1473,7 +1472,7 @@ class research_context:
     recipient_insights: list[str]
     company_context: list[str]
     recent_activity: list[str]
-    rag_results: list["EnforcementRAGResult"]
+    rag_results: list[EnforcementRAGResult]
     sender_grounding: SenderGroundingWhitelists | None = None
     adversarial_findings: list[str] = field(default_factory=list)
 
@@ -1523,7 +1522,7 @@ class qa_report:
     """DEPRECATED v13.0: QA report output (kept for backward compatibility)"""
 
     mission_id: str
-    validation_results: list["EnforcementValidationResult"]
+    validation_results: list[EnforcementValidationResult]
     passed: bool
     timestamp: str
 QAReport = qa_report
@@ -1874,7 +1873,7 @@ class immutable_staging_buffer:
     timestamp: str | None = None
     checksum: str | None = None
 
-    def with_data(self, new_data: dict[str, Any]) -> "ImmutableStagingBuffer":
+    def with_data(self, new_data: dict[str, Any]) -> ImmutableStagingBuffer:
         """Return a new buffer with updated data."""
         from datetime import datetime
 
@@ -1885,7 +1884,7 @@ class immutable_staging_buffer:
             _checksum=None,
         )
 
-    def clear(self) -> "ImmutableStagingBuffer":
+    def clear(self) -> ImmutableStagingBuffer:
         """Return a new empty buffer."""
         from datetime import datetime
 
@@ -2144,7 +2143,7 @@ class rg_creative_brief:
     """Complete creative brief for resume generation."""
 
     headline: HeadlineBrief = field(default_factory=HeadlineBrief)
-    executive_summary: "ExecutiveSummaryBrief" = None
+    executive_summary: ExecutiveSummaryBrief = None
     experience_bullets: ExperienceBulletsBrief = field(default_factory=ExperienceBulletsBrief)
     leadership_competencies: LeadershipCompetenciesBrief = field(default_factory=LeadershipCompetenciesBrief)
     cover_letter: CoverLetterBrief = field(default_factory=CoverLetterBrief)
@@ -3284,34 +3283,34 @@ class mission_plan(sovereign_base_model_types):
             self._risk_assessment: dict = {}
             self._phase_names: set = set()
 
-        def with_mission_id(self, mission_id: str) -> "MissionPlan.Builder":
+        def with_mission_id(self, mission_id: str) -> MissionPlan.Builder:
             self._mission_id = mission_id
             return self
 
-        def with_cycle(self, cycle_id: int) -> "MissionPlan.Builder":
+        def with_cycle(self, cycle_id: int) -> MissionPlan.Builder:
             self._cycle_id = cycle_id
             return self
 
-        def with_priority(self, priority: MissionPriority) -> "MissionPlan.Builder":
+        def with_priority(self, priority: MissionPriority) -> MissionPlan.Builder:
             self._priority = priority
             return self
 
-        def with_objective(self, objective: str) -> "MissionPlan.Builder":
+        def with_objective(self, objective: str) -> MissionPlan.Builder:
             self._objective = objective
             return self
 
-        def add_phase(self, phase: MissionPhase) -> "MissionPlan.Builder":
+        def add_phase(self, phase: MissionPhase) -> MissionPlan.Builder:
             if phase.name in self._phase_names:
                 raise ValueError(f"Sovereignty Violation: Duplicate phase name detected: {phase.name}")
             self._phase_names.add(phase.name)
             self._phases.append(phase)
             return self
 
-        def with_risk_assessment(self, assessment: dict) -> "MissionPlan.Builder":
+        def with_risk_assessment(self, assessment: dict) -> MissionPlan.Builder:
             self._risk_assessment = assessment
             return self
 
-        def build(self) -> "MissionPlan":
+        def build(self) -> MissionPlan:
             """Construct immutable MissionPlan with sovereign validation"""
             if not self._mission_id:
                 raise ValueError("mission_id is required")
@@ -3425,36 +3424,36 @@ class thought_chain(sovereign_base_model_types):
             self._success: bool = False
             self._duration_seconds: float = 0.0
 
-        def with_chain_id(self, chain_id: str) -> "ThoughtChain.Builder":
+        def with_chain_id(self, chain_id: str) -> ThoughtChain.Builder:
             self._chain_id = chain_id
             return self
 
-        def with_goal(self, goal: str) -> "ThoughtChain.Builder":
+        def with_goal(self, goal: str) -> ThoughtChain.Builder:
             self._goal = goal
             return self
 
-        def add_step(self, step: ThinkingStep) -> "ThoughtChain.Builder":
+        def add_step(self, step: ThinkingStep) -> ThoughtChain.Builder:
             """Adds a step while enforcing sequential ID integrity."""
             if self._steps and step.step_id <= self._steps[-1].step_id:
                 raise ValueError(f"Step ID {step.step_id} is not sequential.")
             self._steps.append(step)
             return self
 
-        def add_hypothesis(self, hypothesis: Hypothesis) -> "ThoughtChain.Builder":
+        def add_hypothesis(self, hypothesis: Hypothesis) -> ThoughtChain.Builder:
             self._hypotheses.append(hypothesis)
             return self
 
-        def with_final_conclusion(self, conclusion: str) -> "ThoughtChain.Builder":
+        def with_final_conclusion(self, conclusion: str) -> ThoughtChain.Builder:
             """Seals the chain with a conclusion and auto-marks success."""
             self._final_conclusion = conclusion
             self._success = True
             return self
 
-        def mark_failed(self) -> "ThoughtChain.Builder":
+        def mark_failed(self) -> ThoughtChain.Builder:
             self._success = False
             return self
 
-        def build(self) -> "ThoughtChain":
+        def build(self) -> ThoughtChain:
             """Construct immutable ThoughtChain with constitutional validation."""
             if not self._chain_id or not self._goal:
                 raise ValueError("ThoughtChain construction failed: chain_id and goal are mandatory.")
@@ -3520,15 +3519,15 @@ class constitutional_violation(sovereign_base_model_types):
             self._evidence: str | None = None
             self._suggested_fix: str | None = None
 
-        def with_guardian(self, guardian: str) -> "ConstitutionalViolation.Builder":
+        def with_guardian(self, guardian: str) -> ConstitutionalViolation.Builder:
             self._guardian = guardian
             return self
 
-        def in_dimension(self, dimension: str) -> "ConstitutionalViolation.Builder":
+        def in_dimension(self, dimension: str) -> ConstitutionalViolation.Builder:
             self._dimension = dimension
             return self
 
-        def with_severity(self, severity: str) -> "ConstitutionalViolation.Builder":
+        def with_severity(self, severity: str) -> ConstitutionalViolation.Builder:
             if severity not in ["CRITICAL", "HIGH", "MEDIUM", "LOW"]:
                 raise ValueError(f"Sovereignty Violation: Invalid severity: {severity}")
             self._severity = severity
@@ -3536,24 +3535,24 @@ class constitutional_violation(sovereign_base_model_types):
 
         def at_location(
             self, file_path: str, line_number: int | None = None
-        ) -> "ConstitutionalViolation.Builder":
+        ) -> ConstitutionalViolation.Builder:
             self._file_path = file_path
             self._line_number = line_number
             return self
 
-        def with_description(self, description: str) -> "ConstitutionalViolation.Builder":
+        def with_description(self, description: str) -> ConstitutionalViolation.Builder:
             self._description = description
             return self
 
-        def with_evidence(self, evidence: str) -> "ConstitutionalViolation.Builder":
+        def with_evidence(self, evidence: str) -> ConstitutionalViolation.Builder:
             self._evidence = evidence
             return self
 
-        def with_suggested_fix(self, fix: str) -> "ConstitutionalViolation.Builder":
+        def with_suggested_fix(self, fix: str) -> ConstitutionalViolation.Builder:
             self._suggested_fix = fix
             return self
 
-        def build(self) -> "ConstitutionalViolation":
+        def build(self) -> ConstitutionalViolation:
             """Construct immutable ConstitutionalViolation with final validation."""
             required = {
                 "guardian": self._guardian,
@@ -3630,42 +3629,42 @@ class healing_action(sovereign_base_model_types):
             self._backup_path: str | None = None
             self._transaction_id: str | None = None
 
-        def with_strategy(self, strategy: str) -> "HealingAction.Builder":
+        def with_strategy(self, strategy: str) -> HealingAction.Builder:
             self._strategy = strategy
             return self
 
-        def with_action_type(self, action_type: str) -> "HealingAction.Builder":
+        def with_action_type(self, action_type: str) -> HealingAction.Builder:
             self._action_type = action_type
             return self
 
-        def targeting(self, file: str, line: int | None = None) -> "HealingAction.Builder":
+        def targeting(self, file: str, line: int | None = None) -> HealingAction.Builder:
             self._target_file = file
             self._target_line = line
             return self
 
-        def for_reason(self, reason: str) -> "HealingAction.Builder":
+        def for_reason(self, reason: str) -> HealingAction.Builder:
             self._reason = reason
             return self
 
-        def succeeded(self) -> "HealingAction.Builder":
+        def succeeded(self) -> HealingAction.Builder:
             self._success = True
             self._error_message = None
             return self
 
-        def failed(self, error: str) -> "HealingAction.Builder":
+        def failed(self, error: str) -> HealingAction.Builder:
             self._success = False
             self._error_message = error
             return self
 
-        def with_backup(self, backup_path: str) -> "HealingAction.Builder":
+        def with_backup(self, backup_path: str) -> HealingAction.Builder:
             self._backup_path = backup_path
             return self
 
-        def in_transaction(self, transaction_id: str) -> "HealingAction.Builder":
+        def in_transaction(self, transaction_id: str) -> HealingAction.Builder:
             self._transaction_id = transaction_id
             return self
 
-        def build(self) -> "HealingAction":
+        def build(self) -> HealingAction:
             """Construct immutable HealingAction with final constitutional validation."""
             required = {
                 "strategy": self._strategy,
@@ -3739,30 +3738,30 @@ class healing_cycle(sovereign_base_model_types):
             self._success: bool | None = None
             self._duration_seconds: float = 0.0
 
-        def with_cycle_id(self, cycle_id: str) -> "HealingCycle.Builder":
+        def with_cycle_id(self, cycle_id: str) -> HealingCycle.Builder:
             self._cycle_id = cycle_id
             return self
 
-        def triggered_by_score(self, score: float) -> "HealingCycle.Builder":
+        def triggered_by_score(self, score: float) -> HealingCycle.Builder:
             self._trigger_score = score
             return self
 
-        def achieved_score(self, score: float) -> "HealingCycle.Builder":
+        def achieved_score(self, score: float) -> HealingCycle.Builder:
             """Sets final score and auto-calculates success status."""
             self._target_score = score
             if self._trigger_score is not None:
                 self._success = score > self._trigger_score and score >= 95.0
             return self
 
-        def add_action(self, action: HealingAction) -> "HealingCycle.Builder":
+        def add_action(self, action: HealingAction) -> HealingCycle.Builder:
             self._actions.append(action)
             return self
 
-        def with_duration(self, seconds: float) -> "HealingCycle.Builder":
+        def with_duration(self, seconds: float) -> HealingCycle.Builder:
             self._duration_seconds = seconds
             return self
 
-        def build(self) -> "HealingCycle":
+        def build(self) -> HealingCycle:
             """Construct immutable HealingCycle with sovereign validation."""
             if self._trigger_score is None or self._target_score is None:
                 raise ValueError("Healing Integrity Error: Both trigger and target scores are required.")
@@ -3833,11 +3832,11 @@ class healing_report(sovereign_base_model_types):
             self._success: bool = False
             self._strategies_used: list[str] = []
 
-        def with_report_id(self, report_id: str) -> "HealingReport.Builder":
+        def with_report_id(self, report_id: str) -> HealingReport.Builder:
             self._report_id = report_id
             return self
 
-        def with_violations(self, found: int, fixed: int) -> "HealingReport.Builder":
+        def with_violations(self, found: int, fixed: int) -> HealingReport.Builder:
             """Enforces the invariant that fixed violations cannot exceed found ones."""
             if fixed > found:
                 raise ValueError("Sovereignty Violation: violations_fixed cannot exceed violations_found")
@@ -3845,7 +3844,7 @@ class healing_report(sovereign_base_model_types):
             self._violations_fixed = fixed
             return self
 
-        def add_healing_action(self, action: dict[str, Any]) -> "HealingReport.Builder":
+        def add_healing_action(self, action: dict[str, Any]) -> HealingReport.Builder:
             """Adds an action and automatically tracks the strategy used."""
             self._healing_actions.append(action)
             strategy = action.get("strategy", "unknown")
@@ -3853,14 +3852,14 @@ class healing_report(sovereign_base_model_types):
                 self._strategies_used.append(strategy)
             return self
 
-        def with_scores(self, pre: float, post: float) -> "HealingReport.Builder":
+        def with_scores(self, pre: float, post: float) -> HealingReport.Builder:
             """Sets scores and determines mission success (threshold >= 95%)."""
             self._pre_healing_score = pre
             self._post_healing_score = post
             self._success = post >= 95.0
             return self
 
-        def build(self) -> "HealingReport":
+        def build(self) -> HealingReport:
             """Construct immutable HealingReport with final constitutional validation."""
             if not self._report_id:
                 self._report_id = f"heal-{uuid.uuid4().hex[:8]}"
@@ -3943,7 +3942,7 @@ class sovereign_event(sovereign_base_model_types):
             self._payload: dict[str, Any] = {}
             self._correlation_id: str | None = None
 
-        def with_type(self, event_type: Any) -> "SovereignEvent.Builder":
+        def with_type(self, event_type: Any) -> SovereignEvent.Builder:
             """Supports both Enum and String types with immediate validation."""
             try:
                 self._event_type = sovereign_event_type(event_type)
@@ -3951,7 +3950,7 @@ class sovereign_event(sovereign_base_model_types):
                 raise ValueError(f"Invalid Event Type: {event_type}. Use SovereignEventType.")
             return self
 
-        def with_severity(self, severity: Any) -> "SovereignEvent.Builder":
+        def with_severity(self, severity: Any) -> SovereignEvent.Builder:
             """Hardens the event emission with canonical weight."""
             try:
                 self._severity = sovereign_severity(severity)
@@ -3959,23 +3958,23 @@ class sovereign_event(sovereign_base_model_types):
                 raise ValueError(f"Invalid Severity: {severity}. Choose from {list(SOVEREIGN_SEVERITIES)}")
             return self
 
-        def from_source(self, source: str) -> "SovereignEvent.Builder":
+        def from_source(self, source: str) -> SovereignEvent.Builder:
             self._source = source
             return self
 
-        def in_dimension(self, dimension: str | None) -> "SovereignEvent.Builder":
+        def in_dimension(self, dimension: str | None) -> SovereignEvent.Builder:
             self._dimension = dimension
             return self
 
-        def with_payload(self, **kwargs) -> "SovereignEvent.Builder":
+        def with_payload(self, **kwargs) -> SovereignEvent.Builder:
             self._payload.update(kwargs)
             return self
 
-        def correlated_with(self, correlation_id: str) -> "SovereignEvent.Builder":
+        def correlated_with(self, correlation_id: str) -> SovereignEvent.Builder:
             self._correlation_id = correlation_id
             return self
 
-        def build(self) -> "SovereignEvent":
+        def build(self) -> SovereignEvent:
             """Construct immutable SovereignEvent with L6 log emission."""
             if self._event_type is None:
                 raise ValueError("event_type is mandatory for SovereignEvent.")

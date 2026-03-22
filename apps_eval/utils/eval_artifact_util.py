@@ -12,12 +12,14 @@ import json
 import logging
 from pathlib import Path
 from typing import Any
+
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
     emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "eval_artifact_util", "uwg_governed_write")
 _emit_writes_through("p1", "eval_artifact_util", "uwg_governed_write_2")
 _emit_pulls_context("p1", "eval_artifact_util", "context_retrieval")

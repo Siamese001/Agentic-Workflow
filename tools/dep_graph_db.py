@@ -23,19 +23,27 @@ CLI:
     python tools/dep_graph_db.py --stats          # summary counts
 """
 from __future__ import annotations
+
 import ast
 import json
 import pickle
 import sqlite3
 from pathlib import Path
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 try:
     import networkx as nx
 except ImportError as _e:
     raise ImportError('networkx required: pip install networkx') from _e
 ROOT = Path(__file__).resolve().parent.parent
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    SYSTEM_LEARNING_DIR,
+)
+
 SSOT_DIRS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR]
 SSOT_DIR_PATHS = [ROOT / d for d in SSOT_DIRS]
 DB_PATH = ROOT / 'artifacts' / 'dep_graph.sqlite'
@@ -64,7 +72,7 @@ def _get_layer(mod: str) -> tuple[int, str | None]:
     return (-1, None)
 
 def _is_intra_repo(dep: str) -> bool:
-    return any((dep == d or dep.startswith(d + '.') for d in SSOT_DIRS))
+    return any(dep == d or dep.startswith(d + '.') for d in SSOT_DIRS)
 
 def _build_graph() -> tuple[nx.DiGraph, dict[str, str], list]:
     """Parse all SSOT Python files and return (DiGraph, module_to_file)."""
@@ -171,7 +179,7 @@ class DepGraph:
 
     def pinecone_nodes(self) -> list[str]:
         """Nodes whose module name contains a Pinecone marker."""
-        return [n for n in self._g.nodes if any((m.lower() in n.lower() for m in PINECONE_MARKERS))]
+        return [n for n in self._g.nodes if any(m.lower() in n.lower() for m in PINECONE_MARKERS)]
 
     def pinecone_importers(self) -> list[str]:
         """All modules that (transitively) import any Pinecone node."""
@@ -213,7 +221,7 @@ class DepGraph:
             reachable = nx.descendants(self._g, root) | {root}
         except nx.NodeNotFound:
             reachable = set()
-        return sorted((n for n in self._g.nodes if n not in reachable))
+        return sorted(n for n in self._g.nodes if n not in reachable)
 
     def cycles(self) -> list[list[str]]:
         """All simple cycles in the import graph."""

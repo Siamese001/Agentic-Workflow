@@ -3,10 +3,22 @@ Categorise the dry-run ssot_fixes_applied.json into GOOD (safe to apply)
 vs BAD (would break code) and print a summary.
 """
 from __future__ import annotations
+
 import json
 import re
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / 'artifacts' / 'adg' / 'ssot_fixes_applied.json'
 data: dict = json.loads(DATA.read_text(encoding='utf-8'))
@@ -17,7 +29,7 @@ bad: list[dict] = []
 for fpath, fixes in data.items():
     for fix in fixes:
         orig = fix['original_line']
-        is_bad = any((pat.search(orig) for pat in BAD_PATTERNS))
+        is_bad = any(pat.search(orig) for pat in BAD_PATTERNS)
         entry = {'file': fpath, 'line': fix['lineno'], 'const': fix['const'], 'orig': orig.strip()[:110], 'fixed': fix['fixed_line'].strip()[:110]}
         if is_bad:
             bad.append(entry)

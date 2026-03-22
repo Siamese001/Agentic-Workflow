@@ -1,7 +1,7 @@
 """Get specific error details for remaining failing directories."""
 
-import subprocess
 import re
+import subprocess
 
 ROOT = r"C:\Git\Agentic-Workflow"
 

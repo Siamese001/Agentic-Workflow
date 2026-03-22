@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Comprehensive ADG performance testing suite."""
-import time
-import subprocess
 import json
 import sqlite3
-from pathlib import Path
-from typing import Dict, List, Tuple
 import statistics
+import subprocess
+import time
+from pathlib import Path
+
 
 class ADGPerformanceTester:
     def __init__(self):
@@ -14,7 +14,7 @@ class ADGPerformanceTester:
         self.adg_dir = self.root / "artifacts/adg"
         self.results = []
 
-    def run_adg_generation(self, label: str) -> Dict:
+    def run_adg_generation(self, label: str) -> dict:
         """Run ADG generation and collect metrics."""
         print(f"\n=== Running {label} ===")
 
@@ -50,7 +50,7 @@ class ADGPerformanceTester:
             return metrics
 
         except subprocess.TimeoutExpired:
-            print(f"✗ TIMEOUT after 300s")
+            print("✗ TIMEOUT after 300s")
             return {
                 'label': label,
                 'total_time_seconds': 300,
@@ -68,7 +68,7 @@ class ADGPerformanceTester:
                 'error': str(e)
             }
 
-    def _parse_adg_output(self, lines: List[str]) -> Dict:
+    def _parse_adg_output(self, lines: list[str]) -> dict:
         """Parse ADG output for key metrics."""
         metrics = {}
 
@@ -96,7 +96,7 @@ class ADGPerformanceTester:
 
         return metrics
 
-    def get_sqlite_metrics(self, sqlite_path: Path) -> Dict:
+    def get_sqlite_metrics(self, sqlite_path: Path) -> dict:
         """Extract detailed metrics from SQLite database."""
         if not sqlite_path.exists():
             return {}
@@ -122,7 +122,7 @@ class ADGPerformanceTester:
         conn.close()
         return metrics
 
-    def test_cache_performance(self) -> Dict:
+    def test_cache_performance(self) -> dict:
         """Test cache performance scenarios."""
         print("\n=== Cache Performance Test ===")
 
@@ -154,7 +154,7 @@ class ADGPerformanceTester:
             'cache_speedup': cold_metrics['total_time_seconds'] / warm_metrics['total_time_seconds'] if warm_metrics['success'] else 0
         }
 
-    def test_incremental_vs_full(self) -> Dict:
+    def test_incremental_vs_full(self) -> dict:
         """Test incremental update vs full regeneration."""
         print("\n=== Incremental vs Full Test ===")
 
@@ -212,7 +212,7 @@ class ADGPerformanceTester:
             'incremental_speedup': full_metrics['total_time_seconds'] / incremental_metrics['total_time_seconds'] if incremental_metrics['success'] else 0
         }
 
-    def run_comprehensive_test(self) -> Dict:
+    def run_comprehensive_test(self) -> dict:
         """Run comprehensive performance test suite."""
         print("🚀 Starting Comprehensive ADG Performance Test")
         print("=" * 60)
@@ -248,7 +248,7 @@ class ADGPerformanceTester:
 
         return results
 
-    def save_results(self, results: Dict):
+    def save_results(self, results: dict):
         """Save test results to file."""
         results_file = self.root / "adg_performance_test_results.json"
         with open(results_file, 'w') as f:
@@ -259,7 +259,7 @@ class ADGPerformanceTester:
         # Print summary
         if 'summary' in results:
             summary = results['summary']
-            print(f"\n📈 Performance Summary:")
+            print("\n📈 Performance Summary:")
             print(f"  Total runs: {summary['total_runs']}")
             print(f"  Fastest: {summary['fastest_run']:.2f}s")
             print(f"  Slowest: {summary['slowest_run']:.2f}s")

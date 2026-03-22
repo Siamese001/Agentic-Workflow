@@ -6,6 +6,7 @@ Verifies file inventory, class inheritance, and void compliance.
 
 import ast
 from pathlib import Path
+
 from agentic_core.L0_routing.config import (
     APPS_RG_DIR,
     ARCHIVES_DIR,

@@ -16,11 +16,23 @@ Usage:
   python ops_scripts/ci/check_system_learning_boundary.py [--repo-root <path>]
 """
 from __future__ import annotations
+
 import ast
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import SYSTEM_LEARNING_DIR
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    SYSTEM_LEARNING_DIR,
+    THRESHOLD,
+)
+
 _FORBIDDEN_PREFIXES: tuple[str, ...] = ('agentic_core.L6_observability', 'agentic_core.L6')
 _EXEMPTIONS: frozenset[str] = frozenset()
 
@@ -59,7 +71,7 @@ def check_boundary(repo_root: Path) -> list[tuple[str, str]]:
         except OSError:
             continue
         for module in _extract_imports(source, str(py_file)):
-            if any((module.startswith(prefix) for prefix in _FORBIDDEN_PREFIXES)):
+            if any(module.startswith(prefix) for prefix in _FORBIDDEN_PREFIXES):
                 violations.append((rel, module))
     return violations
 

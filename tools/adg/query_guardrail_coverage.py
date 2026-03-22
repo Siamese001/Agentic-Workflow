@@ -1,7 +1,7 @@
 """Query applies_guardrail coverage from ADG SQLite database."""
 import sqlite3
 from pathlib import Path
-from collections import defaultdict
+
 
 def query_guardrail_coverage():
     adg_dir = Path(__file__).resolve().parents[2] / 'artifacts' / 'adg'

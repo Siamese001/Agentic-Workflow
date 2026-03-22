@@ -198,11 +198,6 @@ _emit_proposal_commits_routing("p1", "case_library", "routing_commit")
 if TYPE_CHECKING:
     from system_learning.types.case_memory_types import (
         CaseBundle,
-        CaseRecord,
-        GovernancePrecedent,
-        HealerBundle,
-        HITLPreferenceRecord,
-        PromptBundle,
     )
 
 

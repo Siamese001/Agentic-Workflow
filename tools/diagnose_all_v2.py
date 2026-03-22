@@ -1,8 +1,8 @@
 """Comprehensive error categorization — parse E   lines from --tb=short."""
 
-import subprocess
-import re
 import os
+import re
+import subprocess
 
 ROOT = r"C:\Git\Agentic-Workflow"
 

@@ -10,7 +10,18 @@ import ast
 import sys
 from pathlib import Path
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 ALLOWLIST_MODULES = {'data/sdks_mcps/client_wrappers', 'agentic_core/L2_execution/enforcement/SovereignLLMGateway', 'agentic_core/config/core', 'ops_scripts/ci', TESTS_DIR}
@@ -54,7 +65,7 @@ class GenerationRoutingScanner(ast.NodeVisitor):
             return
         for alias in node.names:
             module = alias.name
-            if any((module.startswith(forbidden) for forbidden in FORBIDDEN_IMPORTS)):
+            if any(module.startswith(forbidden) for forbidden in FORBIDDEN_IMPORTS):
                 self.violations.append(RoutingViolation(self.file_path, node.lineno, 'FORBIDDEN_IMPORT', f"Import of '{module}' not allowed outside allowlist modules"))
         self.generic_visit(node)
 
@@ -63,7 +74,7 @@ class GenerationRoutingScanner(ast.NodeVisitor):
         if self.is_in_allowlist:
             return
         if node.module:
-            if any((node.module.startswith(forbidden) for forbidden in FORBIDDEN_IMPORTS)):
+            if any(node.module.startswith(forbidden) for forbidden in FORBIDDEN_IMPORTS):
                 self.violations.append(RoutingViolation(self.file_path, node.lineno, 'FORBIDDEN_IMPORT', f"Import from '{node.module}' not allowed outside allowlist modules"))
         self.generic_visit(node)
 
@@ -97,8 +108,8 @@ class GenerationRoutingScanner(ast.NodeVisitor):
             return
         model_patterns = {'gpt-4', 'gpt-4o', 'gpt-3.5', 'gpt-4-turbo', 'claude-3', 'claude-2', 'claude-instant', 'gemini', 'gemini-pro', 'gemini-3', 'text-embedding-3', 'text-davinci', 'text-curie'}
         value_lower = value.lower()
-        if any((pattern in value_lower for pattern in model_patterns)):
-            if not any((allowed in self.file_path for allowed in ALLOWED_MODEL_CONFIGS)):
+        if any(pattern in value_lower for pattern in model_patterns):
+            if not any(allowed in self.file_path for allowed in ALLOWED_MODEL_CONFIGS):
                 self.violations.append(RoutingViolation(self.file_path, line, 'MODEL_LITERAL', f"Model string literal '{value}' not allowed outside config files"))
 
 def scan_file(file_path: Path) -> list[RoutingViolation]:

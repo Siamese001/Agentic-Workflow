@@ -7,8 +7,9 @@ PowerShell detection via argv-level checks only (no output scanning).
 import subprocess
 import sys
 from pathlib import Path
+
 from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 def run_cmd(args, cwd=None):
     """Execute command and return (rc, stdout, stderr)."""
@@ -92,7 +93,7 @@ def main():
         evidence_lines.append(content)
         evidence_lines.append('```')
         evidence_lines.append('')
-    evidence_content = '\n'.join((line.rstrip() for line in evidence_lines))
+    evidence_content = '\n'.join(line.rstrip() for line in evidence_lines)
     evidence_file.parent.mkdir(parents=True, exist_ok=True)
     evidence_file.write_text(evidence_content, encoding='utf-8', newline='\n')
     print(f'Evidence generated successfully at: {evidence_file}')

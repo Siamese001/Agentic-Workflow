@@ -7,7 +7,18 @@ in the active codebase (not in archives).
 import json
 import re
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 PROJECT_ROOT = Path('C:/Git/Agentic-Workflow')
 FLAGGED_AGENTS = ['BareExceptValidatorAgent.py', 'DangerousBuiltinsValidatorAgent.py', 'DebuggerValidatorAgent.py', 'EmptyExceptValidatorAgent.py', 'EvalExecValidatorAgent.py', 'AutonomousCheckpointManagerAgent.py', 'AutonomousStateGuardianAgent.py', 'CheckpointManagerAgent.py', 'L4Agent.py', 'ManifestManagerAgent.py', 'MemoryManagerAgent.py', 'BaseClassEnforcerAgent.py', 'HygieneGuardianAgent.py', 'HygieneValidatorAgent.py', 'PatternEnforcerAgent.py', 'TypeHintEnforcementAgent.py']
 
@@ -16,7 +27,7 @@ def find_orphaned_agents():
     orphaned = []
     for agent_file in FLAGGED_AGENTS:
         for path in PROJECT_ROOT.rglob(agent_file):
-            if any((skip in str(path) for skip in [ARCHIVES_DIR, '.sovereign_healing_backup', '__pycache__'])):
+            if any(skip in str(path) for skip in [ARCHIVES_DIR, '.sovereign_healing_backup', '__pycache__']):
                 continue
             is_used = check_if_used(path, agent_file)
             orphaned.append({'file': agent_file, 'path': str(path.relative_to(PROJECT_ROOT)), 'absolute_path': str(path), 'is_used': is_used, 'action': 'KEEP' if is_used else 'DELETE'})
@@ -28,7 +39,7 @@ def check_if_used(file_path, agent_file):
     import_pattern = f'from.*{agent_class} import|import.*{agent_class}'
     inheritance_pattern = f'class.*\\({agent_class}\\)'
     for py_file in PROJECT_ROOT.rglob('*.py'):
-        if any((skip in str(py_file) for skip in [ARCHIVES_DIR, '.sovereign_healing_backup', '__pycache__'])):
+        if any(skip in str(py_file) for skip in [ARCHIVES_DIR, '.sovereign_healing_backup', '__pycache__']):
             continue
         if py_file == file_path:
             continue

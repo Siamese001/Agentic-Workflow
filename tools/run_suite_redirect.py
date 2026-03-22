@@ -1,6 +1,6 @@
 """Run test suite with all output redirected to file to avoid fd exhaustion."""
-import subprocess
 import os
+import subprocess
 import sys
 
 # Suppress all lifecycle trace logging via env var
@@ -26,7 +26,7 @@ with open("artifacts/test_output.txt", "w", encoding="utf-8") as outf:
         print("TIMEOUT after 600s")
 
 # Read last 10 lines
-with open("artifacts/test_output.txt", "r", encoding="utf-8", errors="replace") as f:
+with open("artifacts/test_output.txt", encoding="utf-8", errors="replace") as f:
     lines = f.readlines()
     for line in lines[-10:]:
         print(line.rstrip())

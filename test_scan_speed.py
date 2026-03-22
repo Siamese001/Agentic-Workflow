@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
 """Rigorous test: verify the shared-normalizer fix eliminates per-file rglob cost."""
 
-import time
-import sys
 import logging
+import sys
+import time
+
 logging.disable(logging.CRITICAL)
 
 from pathlib import Path
+
 ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from agentic_core.adg.extraction.static_scanner import _scan_file, _iter_python_files
+from agentic_core.adg.extraction.static_scanner import _iter_python_files, _scan_file
 from agentic_core.adg.identity.normalizer import IdentityNormalizer
 
 files = list(_iter_python_files(ROOT))

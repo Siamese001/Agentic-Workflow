@@ -11,6 +11,7 @@ Usage:
     python ops_scripts/ci/evidence_collect_phase2.py --output evidence.json --repo-root .
 """
 from __future__ import annotations
+
 import argparse
 import ast
 import hashlib
@@ -19,7 +20,18 @@ import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 INVENTORY_REL = 'docs/reports/plans/v15_phase2_wave2_1_runtime_entrypoints.json'
 
 def compute_sha256(path: Path) -> str:

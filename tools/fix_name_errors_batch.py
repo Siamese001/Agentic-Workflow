@@ -1,5 +1,7 @@
 """Batch fix NameErrors in agentic_core source files."""
-import re, ast, os
+import ast
+import os
+import re
 
 ROOT_DIR = r"C:\Git\Agentic-Workflow"
 fixed_count = 0
@@ -7,7 +9,7 @@ fixed_count = 0
 def safe_edit(filepath, old, new):
     """Replace old with new in file, verify syntax."""
     global fixed_count
-    src = open(filepath, "r", encoding="utf-8").read()
+    src = open(filepath, encoding="utf-8").read()
     if old not in src:
         return False
     new_src = src.replace(old, new, 1)
@@ -24,7 +26,7 @@ def safe_edit(filepath, old, new):
 def add_import_after_last_import(filepath, import_line):
     """Add an import line after the last import/emit statement."""
     global fixed_count
-    src = open(filepath, "r", encoding="utf-8").read()
+    src = open(filepath, encoding="utf-8").read()
     if import_line.split("import ")[-1].split(" as ")[0].strip() in src:
         return False  # Already imported
 
@@ -66,7 +68,7 @@ for rel in ROOT_FILES:
     if not os.path.exists(fp):
         print(f"  SKIP (missing): {rel}")
         continue
-    src = open(fp, "r", encoding="utf-8").read()
+    src = open(fp, encoding="utf-8").read()
     # Pattern: lowercase `root` defined but `ROOT` used
     if re.search(r'^root\s*[:=]', src, re.MULTILINE) and 'ROOT' in src:
         # Change lowercase root definition to uppercase ROOT
@@ -95,7 +97,7 @@ for rel in GED_FILES:
     fp = os.path.join(ROOT_DIR, rel)
     if not os.path.exists(fp):
         continue
-    src = open(fp, "r", encoding="utf-8").read()
+    src = open(fp, encoding="utf-8").read()
     # Find the line using GLOBAL_EXCLUDED_DIRS and add a definition before it
     lines = src.split("\n")
     for i, line in enumerate(lines):
@@ -123,7 +125,7 @@ for rel in APPS_LIC_FILES:
     fp = os.path.join(ROOT_DIR, rel)
     if not os.path.exists(fp):
         continue
-    src = open(fp, "r", encoding="utf-8").read()
+    src = open(fp, encoding="utf-8").read()
     if "APPS_LIC_DIR" in src and "from agentic_core.L0_routing.config.path_constants import" in src:
         # Already has an import from path_constants — add APPS_LIC_DIR to it
         # Or add a new import
@@ -145,7 +147,7 @@ for rel in EWT_FILES:
     fp = os.path.join(ROOT_DIR, rel)
     if not os.path.exists(fp):
         continue
-    src = open(fp, "r", encoding="utf-8").read()
+    src = open(fp, encoding="utf-8").read()
     if "_emit_writes_through" in src and "_emit_writes_through" not in [l.strip() for l in src.split("\n") if "import" in l and "_emit_writes_through" in l]:
         add_import_after_last_import(fp,
             "from agentic_core.runtime.lifecycle_trace_contract import _emit_writes_through")
@@ -177,7 +179,7 @@ for rel, (name, imp) in INDIVIDUAL_FIXES.items():
 # Fix L0_MAINTENANCE_DIR inline
 fp = os.path.join(ROOT_DIR, "agentic_core/config/core/domain_constitution_config.py")
 if os.path.exists(fp):
-    src = open(fp, "r", encoding="utf-8").read()
+    src = open(fp, encoding="utf-8").read()
     if "L0_MAINTENANCE_DIR" in src and 'L0_MAINTENANCE_DIR =' not in src:
         lines = src.split("\n")
         for i, line in enumerate(lines):
@@ -188,7 +190,7 @@ if os.path.exists(fp):
                     ast.parse(new_src)
                     open(fp, "w", encoding="utf-8").write(new_src)
                     fixed_count += 1
-                    print(f"  FIXED L0_MAINTENANCE_DIR in domain_constitution_config.py")
+                    print("  FIXED L0_MAINTENANCE_DIR in domain_constitution_config.py")
                 except SyntaxError as e:
                     print(f"  SYNTAX ERROR: {e}")
                 break
@@ -196,7 +198,7 @@ if os.path.exists(fp):
 # Fix MCPHardenedMixin stub
 fp = os.path.join(ROOT_DIR, "agentic_core/runtime/config/security_level_config.py")
 if os.path.exists(fp):
-    src = open(fp, "r", encoding="utf-8").read()
+    src = open(fp, encoding="utf-8").read()
     if "MCPHardenedMixin" in src and "class MCPHardenedMixin" not in src:
         lines = src.split("\n")
         for i, line in enumerate(lines):
@@ -208,7 +210,7 @@ if os.path.exists(fp):
                     ast.parse(new_src)
                     open(fp, "w", encoding="utf-8").write(new_src)
                     fixed_count += 1
-                    print(f"  FIXED MCPHardenedMixin stub in security_level_config.py")
+                    print("  FIXED MCPHardenedMixin stub in security_level_config.py")
                 except SyntaxError as e:
                     print(f"  SYNTAX ERROR: {e}")
                 break

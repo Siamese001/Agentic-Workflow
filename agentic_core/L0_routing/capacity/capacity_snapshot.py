@@ -258,7 +258,6 @@ class RouteCapacityMetrics:
         failure_rate: float = 0.0,
         degradation_state: RouteDegradationState = RouteDegradationState.HEALTHY,
     ) -> RouteCapacityMetrics:
-        from agentic_core.L2_execution.providers import get_clock
         return cls(
             route_name=route_name,
             queue_depth=queue_depth,

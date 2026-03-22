@@ -90,7 +90,6 @@ import asyncio
 import hashlib
 import json
 import logging
-from typing import Optional
 import threading
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -218,7 +217,6 @@ class StateEntry:
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
-        from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_applies_guardrail(str(_uuid.uuid4()), "StateEntry.to_dict", "p0_governance")

@@ -1,8 +1,7 @@
 """Diagnose test collection errors by directory."""
 
-import subprocess
 import re
-import os
+import subprocess
 
 ROOT = r"C:\Git\Agentic-Workflow"
 

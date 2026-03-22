@@ -1,5 +1,6 @@
-import redis
 import json
+
+import redis
 
 r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
 
@@ -53,6 +54,6 @@ for p in sorted(l_shared_patterns):
 
 # 5. New snapshot summary
 snapshot = json.loads(r.get('adg:snapshot'))
-print(f"\n=== Updated snapshot by_layer ===")
+print("\n=== Updated snapshot by_layer ===")
 for layer, count in sorted(snapshot['by_layer'].items()):
     print(f"  {layer}: {count}")

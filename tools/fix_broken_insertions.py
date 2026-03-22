@@ -8,7 +8,6 @@ causing syntax errors or NameErrors. This script:
 """
 
 import os
-import re
 
 ROOT = r"C:\Git\Agentic-Workflow"
 SCAN_DIRS = [
@@ -30,7 +29,7 @@ for scan_dir in SCAN_DIRS:
                 continue
             fpath = os.path.join(dirpath, fn)
             try:
-                with open(fpath, "r", encoding="utf-8") as f:
+                with open(fpath, encoding="utf-8") as f:
                     content = f.read()
             except Exception:
                 continue

@@ -160,12 +160,12 @@ def main():
     print(f"By severity: {dict(by_severity)}")
 
     by_missing = Counter(g["missing"] for g in gaps)
-    print(f"By missing relation:")
+    print("By missing relation:")
     for k, v in by_missing.most_common():
         print(f"  {k}: {v}")
 
     by_risk = Counter(g["risk_type"] for g in gaps)
-    print(f"By risk type:")
+    print("By risk type:")
     for k, v in by_risk.most_common():
         print(f"  {k}: {v}")
 
@@ -246,10 +246,10 @@ def main():
     print(f"\n{'='*60}")
     print("BURN-DOWN SUMMARY")
     print(f"{'='*60}")
-    print(f"Original raw gaps:           10,916")
+    print("Original raw gaps:           10,916")
     print(f"After exclusion refinement:  {len(gaps)}")
     print(f"Reduction:                   {(1 - len(gaps)/10916)*100:.1f}%")
-    print(f"")
+    print("")
     print(f"TRACE/DETERMINISM BLOCKERS:  {len(trace_modules)} modules (Critical)")
     print(f"ROUTING/EXECUTION GAPS:      {len(non_trace_modules)} modules (High/Moderate)")
     print(f"TOTAL GENUINE BLOCKERS:      {len(trace_modules) + len(non_trace_modules)} modules")

@@ -1,6 +1,8 @@
 """Full audit of ALL collection errors across ALL test directories."""
-import subprocess, re, os
-from collections import Counter, defaultdict
+import os
+import re
+import subprocess
+from collections import Counter
 
 root = r"C:\Git\Agentic-Workflow"
 # Scan each testpath independently to avoid cross-collection
@@ -83,7 +85,7 @@ for cause, count in cause_counter.most_common(30):
     print(f"  [{count:3d}] {cause}")
 
 # Group errors by source file
-print(f"\nErrors by source file:")
+print("\nErrors by source file:")
 src_counter = Counter()
 for e in all_errors:
     s = e["src"] if e["src"] else "unknown"

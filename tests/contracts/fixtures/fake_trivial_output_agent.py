@@ -6,7 +6,6 @@ Post-hardening: only "artifacts"/"artifact" accepted → violation.
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
-
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95

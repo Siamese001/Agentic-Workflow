@@ -8,8 +8,8 @@ Handles:
 import ast
 import os
 import re
-import sys
 import subprocess
+import sys
 
 ROOT = r"C:\Git\Agentic-Workflow"
 fixed_total = 0
@@ -26,7 +26,7 @@ def parse_ok(src):
 def fix_self_shadow(filepath):
     """Fix X = expr / X patterns by renaming LHS to _X_PATH."""
     global fixed_total
-    src = open(filepath, "r", encoding="utf-8").read()
+    src = open(filepath, encoding="utf-8").read()
 
     # Find all self-shadowing assignments at module level (no indent)
     pattern = re.compile(r'^(\w+)(\s*=\s*)(\w+\s*/\s*)(\1)\s*$', re.MULTILINE)
@@ -82,7 +82,7 @@ def fix_self_shadow(filepath):
 def add_import_or_stub(filepath, name):
     """Add missing import or stub for a name."""
     global fixed_total
-    src = open(filepath, "r", encoding="utf-8").read()
+    src = open(filepath, encoding="utf-8").read()
 
     # Already present?
     if re.search(rf'\bclass {name}\b', src) or re.search(rf'\bdef {name}\b', src):
@@ -154,7 +154,7 @@ def add_import_or_stub(filepath, name):
 def fix_import_error(filepath, bad_import):
     """Guard an import that fails with try/except."""
     global fixed_total
-    src = open(filepath, "r", encoding="utf-8").read()
+    src = open(filepath, encoding="utf-8").read()
 
     # Find the line with the bad import
     for pattern in [bad_import]:
@@ -177,7 +177,7 @@ def main():
                 continue
             fp = os.path.join(dirpath, fn)
             try:
-                src = open(fp, "r", encoding="utf-8").read()
+                src = open(fp, encoding="utf-8").read()
             except Exception:
                 continue
             # Quick check for self-shadow pattern

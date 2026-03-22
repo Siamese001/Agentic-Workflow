@@ -2,8 +2,6 @@
 """Tests for agentic_core.config.core.sovereign_config."""
 import importlib
 
-import pytest
-
 
 def test_agentic_core_config_core_sovereign_config_importable():
     """Module must be importable without error."""

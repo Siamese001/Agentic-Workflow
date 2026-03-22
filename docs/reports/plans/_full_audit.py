@@ -68,16 +68,16 @@ print("=" * 60)
 print("P1: SCAN_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS, GLOBAL_EXCLUDED_DIRS")
 try:
     from agentic_core.L5_safety.config.structure_blueprint import (
+        GLOBAL_EXCLUDED_DIRS,
         SCAN_EXCLUDED_DIRS,
         SOVEREIGN_EXCLUDED_FOLDERS,
-        GLOBAL_EXCLUDED_DIRS,
     )
     bad = {"data", "docs", "tests", "reports"}
     both = bad & (SOVEREIGN_EXCLUDED_FOLDERS | GLOBAL_EXCLUDED_DIRS)
     if both:
         print(f"  [FAIL] Real directories in exclusion sets: {both}")
     else:
-        print(f"  [OK] No real dirs in exclusion sets")
+        print("  [OK] No real dirs in exclusion sets")
     print(f"  [OK] SCAN_EXCLUDED_DIRS exists ({len(SCAN_EXCLUDED_DIRS)} entries)")
 except Exception as e:
     print(f"  [FAIL] {e}")

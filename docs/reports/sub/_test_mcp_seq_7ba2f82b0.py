@@ -12,7 +12,6 @@ import json
 import sys
 from pathlib import Path
 
-
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95

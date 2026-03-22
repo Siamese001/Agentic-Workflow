@@ -2,8 +2,6 @@
 """Tests for agentic_core.base_agents.L2ExecutionBase."""
 import importlib
 
-import pytest
-
 
 def test_agentic_core_base_agents_L2ExecutionBase_importable():
     """Module must be importable without error."""

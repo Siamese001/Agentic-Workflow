@@ -15,12 +15,11 @@ import ast
 import json
 import os
 import re
-import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 AUDIT_JSON = os.path.join(ROOT, "artifacts", "adg", "_convergence_wiring_audit.json")
 
-with open(AUDIT_JSON, "r") as f:
+with open(AUDIT_JSON) as f:
     audit = json.load(f)
 
 digest_needs = set(audit["digest_needs_call"])
@@ -78,7 +77,7 @@ def wire_module(module_rel: str) -> None:
         stats["errors"].append(f"MISSING: {module_rel}")
         return
 
-    with open(fpath, "r", encoding="utf-8", errors="replace") as f:
+    with open(fpath, encoding="utf-8", errors="replace") as f:
         content = f.read()
 
     original = content

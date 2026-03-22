@@ -28,12 +28,14 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import Any
+
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
     emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "check_dedup_violations", "uwg_governed_write")
 _emit_writes_through("p1", "check_dedup_violations", "uwg_governed_write_2")
 _emit_pulls_context("p1", "check_dedup_violations", "context_retrieval")

@@ -10,10 +10,22 @@ Strategy:
 - Add missing constants to the import block
 """
 from __future__ import annotations
+
 import ast
 import re
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
 ALL_CONSTANTS = {'AGENTIC_CORE_DIR', 'APPS_LIC_DIR', 'APPS_RG_DIR', 'APPS_SHARED_DIR', 'SYSTEM_LEARNING_DIR', 'TOOLS_DIR', 'TESTS_DIR', 'OPS_SCRIPTS_DIR', 'L0_ROUTING_DIR', 'L1_COGNITION_DIR', 'L2_EXECUTION_DIR', 'L3_ORCHESTRATION_DIR', 'L4_STATE_DIR', 'L5_SAFETY_DIR', 'L6_OBSERVABILITY_DIR', 'ARCHIVES_DIR', 'DASHBOARD_DIR', 'SCRIPTS_DIR', 'L0_MAINTENANCE_DIR'}
 IMPORT_BLOCK_RE = re.compile('from agentic_core\\.L0_routing\\.config\\.path_constants import \\(([^)]*)\\)', re.DOTALL)
@@ -72,7 +84,7 @@ def get_imported_constants(src: str) -> set[str]:
         imported.update(re.findall('\\b([A-Z_]{3,})\\b', m.group(1)))
     m2 = SINGLE_IMPORT_RE.search(src)
     if m2:
-        imported.update((n.strip() for n in m2.group(1).split(',')))
+        imported.update(n.strip() for n in m2.group(1).split(','))
     return imported & ALL_CONSTANTS
 
 def add_missing_to_import(src: str, missing: set[str]) -> str:

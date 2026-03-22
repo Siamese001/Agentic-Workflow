@@ -1,17 +1,29 @@
 from __future__ import annotations
+
 '\nSovereign PDF Parser - L0 Document Ingestion\nEnhanced PDF parsing with OCR fallback, metadata extraction, and async processing\n'
 import asyncio
 import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
     emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "sovereign_pdf_parser", "uwg_governed_write")
 _emit_writes_through("p1", "sovereign_pdf_parser", "uwg_governed_write_2")
 _emit_pulls_context("p1", "sovereign_pdf_parser", "context_retrieval")
@@ -73,7 +85,7 @@ class SovereignPdfParser:
         cleaned: Any = []
         for line in lines:
             line: Any = line.strip()
-            if not line or any((p.match(line) for p in self.footer_patterns)):
+            if not line or any(p.match(line) for p in self.footer_patterns):
                 continue
             if len(line) < 3 and (not re.match('^[•\\-\\*\\d]', line)):
                 continue
@@ -87,7 +99,7 @@ class SovereignPdfParser:
         for line in lines:
             if metadata['author'] == 'unknown' and 'author' in line.lower():
                 metadata['author'] = line.split(':', 1)[1].strip() if ':' in line else line
-            if metadata['date'] == 'unknown' and any((m in line.lower() for m in ['2024', '2025'])):
+            if metadata['date'] == 'unknown' and any(m in line.lower() for m in ['2024', '2025']):
                 metadata['date'] = line.strip()
         return metadata
 

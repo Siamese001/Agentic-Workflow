@@ -11,6 +11,7 @@ Fix all import issues in agentic_core after bulk hierarchy heal.
 import re
 from pathlib import Path
 from typing import Any
+
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
@@ -20,6 +21,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "fix_all_agentic_imports", "uwg_governed_write")
 _emit_writes_through("p1", "fix_all_agentic_imports", "uwg_governed_write_2")
 _emit_pulls_context("p1", "fix_all_agentic_imports", "context_retrieval")

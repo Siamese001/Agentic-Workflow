@@ -14,7 +14,6 @@ Fix: Move the lifecycle import block to AFTER all other imports.
 """
 
 import os
-import re
 
 ROOT = r"C:\Git\Agentic-Workflow"
 LTC = "agentic_core.runtime.lifecycle_trace_contract"
@@ -31,7 +30,7 @@ for base_dir in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_l
                 continue
             fpath = os.path.join(dirpath, fn)
             try:
-                with open(fpath, "r", encoding="utf-8") as f:
+                with open(fpath, encoding="utf-8") as f:
                     content = f.read()
             except Exception:
                 continue

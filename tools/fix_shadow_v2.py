@@ -8,7 +8,6 @@ Safer approach: only fix the specific known patterns.
 import ast
 import os
 import re
-import sys
 
 ROOT = r"C:\Git\Agentic-Workflow"
 fixed_count = 0
@@ -17,7 +16,7 @@ fixed_count = 0
 def fix_shadow_in_file(filepath):
     """Fix self-shadowing assignments like X = Y / X."""
     global fixed_count
-    src = open(filepath, "r", encoding="utf-8").read()
+    src = open(filepath, encoding="utf-8").read()
     lines = src.split("\n")
 
     changed = False
@@ -78,7 +77,7 @@ for dirpath, dirnames, filenames in os.walk(os.path.join(ROOT, "agentic_core")):
             continue
         fp = os.path.join(dirpath, fn)
         try:
-            src = open(fp, "r", encoding="utf-8").read()
+            src = open(fp, encoding="utf-8").read()
         except Exception:
             continue
         if pattern.search(src):

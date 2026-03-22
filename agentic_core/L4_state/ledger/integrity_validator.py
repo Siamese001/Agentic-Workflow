@@ -178,9 +178,10 @@ _GENESIS_HASH = "0" * 64
 
 def compute_entry_hash(prev_hash: str, entry: dict[str, Any]) -> str:
     """Compute chained SHA256: hash(prev_hash || entry_bytes)."""
-    from agentic_core.L5_safety.types.hardening_errors import LedgerIntegrityViolation  # noqa: F401
     import hashlib as _hashlib  # noqa: PLC0415
     import uuid as _uuid  # noqa: PLC0415
+
+    from agentic_core.L5_safety.types.hardening_errors import LedgerIntegrityViolation  # noqa: F401
 
     _tid = str(_uuid.uuid4())
     _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)

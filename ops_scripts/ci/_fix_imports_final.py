@@ -5,10 +5,22 @@ Final idempotent import fixer:
 3. Fixes double-path: AGENTIC_CORE_DIR / L*_DIR -> L*_DIR
 """
 from __future__ import annotations
+
 import ast
 import re
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
 LAYER_DIRS = {'L0_ROUTING_DIR', 'L1_COGNITION_DIR', 'L2_EXECUTION_DIR', 'L3_ORCHESTRATION_DIR', 'L4_STATE_DIR', 'L5_SAFETY_DIR', 'L6_OBSERVABILITY_DIR'}
 ALL_CONSTANTS = {'AGENTIC_CORE_DIR', 'APPS_LIC_DIR', 'APPS_RG_DIR', 'APPS_SHARED_DIR', 'SYSTEM_LEARNING_DIR', 'TOOLS_DIR', 'TESTS_DIR', 'OPS_SCRIPTS_DIR', 'L0_ROUTING_DIR', 'L1_COGNITION_DIR', 'L2_EXECUTION_DIR', 'L3_ORCHESTRATION_DIR', 'L4_STATE_DIR', 'L5_SAFETY_DIR', 'L6_OBSERVABILITY_DIR', 'ARCHIVES_DIR'}
@@ -82,7 +94,7 @@ def audit(fp: Path) -> list[str]:
         return [f'parse error: {e}']
     for node in ast.walk(tree):
         if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
-            left_has_agentic = any((isinstance(c, ast.Name) and c.id == 'AGENTIC_CORE_DIR' for c in ast.walk(node.left)))
+            left_has_agentic = any(isinstance(c, ast.Name) and c.id == 'AGENTIC_CORE_DIR' for c in ast.walk(node.left))
             right_name = node.right.id if isinstance(node.right, ast.Name) else ''
             if left_has_agentic and right_name in LAYER_DIRS:
                 issues.append(f'double-path L{node.lineno}: AGENTIC_CORE_DIR / {right_name}')

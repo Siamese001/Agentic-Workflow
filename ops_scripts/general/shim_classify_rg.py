@@ -1,7 +1,18 @@
 """Classify shims in apps_rg/reasoning and across all SSOT dirs."""
 import ast
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 ROOT = Path('c:/Git/Agentic-Workflow')
 SSOT_DIRS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR]
 
@@ -13,8 +24,8 @@ def classify_file(py_file):
     except SyntaxError:
         return None
     body = tree.body
-    has_func = any((isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) for n in body))
-    has_import = any((isinstance(n, (ast.Import, ast.ImportFrom)) for n in body))
+    has_func = any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) for n in body)
+    has_import = any(isinstance(n, (ast.Import, ast.ImportFrom)) for n in body)
     imports = []
     for node in body:
         if isinstance(node, ast.Import):
@@ -23,7 +34,7 @@ def classify_file(py_file):
         elif isinstance(node, ast.ImportFrom):
             names = [a.name for a in node.names]
             imports.append(('From', node.module or '', names))
-    all_assigns = [n for n in body if isinstance(n, ast.Assign) and any((isinstance(t, ast.Name) and t.id == '__all__' for t in n.targets))]
+    all_assigns = [n for n in body if isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == '__all__' for t in n.targets)]
     all_value = None
     if all_assigns:
         node = all_assigns[0]

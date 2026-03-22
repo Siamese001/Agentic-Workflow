@@ -26,11 +26,23 @@ Also fixes "unexpected indent" cases where the import was injected after an
 indented block without proper dedent.
 """
 from __future__ import annotations
+
 import ast
 import pathlib
 import re
 import sys
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SSOT_IMPORT_BLOCK = 'from agentic_core.L5_safety.config.structure_blueprint.ssot import (\nfrom agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR\n    DISCOVERY_EXCLUDED_TERRITORIES,\n    GLOBAL_EXCLUDED_DIRS,\n    SOVEREIGN_EXCLUDED_FOLDERS,\n)'
 SSOT_IMPORT_LINES = SSOT_IMPORT_BLOCK.splitlines()
@@ -175,7 +187,7 @@ def main(dry_run: bool=False) -> int:
     fixed = 0
     errors = 0
     for p in sorted(ROOT.rglob('*.py')):
-        if any((part in SKIP_DIRS for part in p.parts)):
+        if any(part in SKIP_DIRS for part in p.parts):
             continue
         try:
             result = fix_file(p, dry_run=dry_run)

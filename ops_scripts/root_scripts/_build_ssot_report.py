@@ -2,13 +2,24 @@
 import json
 import re
 from collections import defaultdict
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
     emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "_build_ssot_report", "uwg_governed_write")
 _emit_writes_through("p1", "_build_ssot_report", "uwg_governed_write_2")
 _emit_pulls_context("p1", "_build_ssot_report", "context_retrieval")
@@ -99,7 +110,7 @@ for line in stderr.split('\n'):
         if m:
             old_name, ftype, new_name = (m.group(1), m.group(2), m.group(3))
             rename_by_territory[current_territory].append((old_name, ftype, new_name))
-total_renames = sum((len(v) for v in rename_by_territory.values()))
+total_renames = sum(len(v) for v in rename_by_territory.values())
 W(f'**Total proposed renames**: {total_renames}')
 W('')
 for territory in data['territories_scanned']:

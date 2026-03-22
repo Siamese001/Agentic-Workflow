@@ -42,7 +42,7 @@ def get_erroring_test_files():
 
 def rewrite_test_file(fp):
     """Rewrite a test file to guard all agentic_core imports."""
-    src = open(fp, "r", encoding="utf-8").read()
+    src = open(fp, encoding="utf-8").read()
     lines = src.split("\n")
 
     # Strategy: find all lines that import from agentic_core (bare or in try blocks)

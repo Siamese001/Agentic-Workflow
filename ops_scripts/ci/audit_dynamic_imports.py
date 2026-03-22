@@ -10,7 +10,18 @@ import ast
 import sys
 from pathlib import Path
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 DANGEROUS_FUNCTIONS = {'importlib.import_module', '__import__', 'eval', 'exec', 'getattr', 'hasattr', 'setattr'}
@@ -65,7 +76,7 @@ class DynamicImportScanner(ast.NodeVisitor):
         for arg in node.args:
             if isinstance(arg, ast.Str) or (isinstance(arg, ast.Constant) and isinstance(arg.value, str)):
                 value = arg.value if isinstance(arg, ast.Constant) else arg.s
-                if any((provider in value for provider in PROVIDER_MODULES)):
+                if any(provider in value for provider in PROVIDER_MODULES):
                     self.violations.append(DynamicImportViolation(self.file_path, node.lineno, 'DYNAMIC_IMPORT', f"{func_name} with provider module '{value}'"))
         if func_name in {'eval', 'exec'}:
             self.violations.append(DynamicImportViolation(self.file_path, node.lineno, 'CODE_EXECUTION', f'Use of {func_name} - potential bypass vector'))
@@ -118,10 +129,10 @@ def scan_directory(root_dir: Path) -> list[DynamicImportViolation]:
     third_party_patterns = ['.nox/', 'venv/', 'env/', '__pycache__/', '.git/', 'site-packages/', 'build/', 'dist/', '.pytest_cache/']
     for py_file in root_dir.rglob('*.py'):
         file_str = str(py_file)
-        if any((pattern in file_str for pattern in third_party_patterns)):
+        if any(pattern in file_str for pattern in third_party_patterns):
             continue
-        if not any((py_file.is_relative_to(Path(p)) if Path(p).exists() else file_str.startswith(p) for p in first_party_prefixes)):
-            if not any((file_str.startswith(p) for p in first_party_prefixes)):
+        if not any(py_file.is_relative_to(Path(p)) if Path(p).exists() else file_str.startswith(p) for p in first_party_prefixes):
+            if not any(file_str.startswith(p) for p in first_party_prefixes):
                 continue
         file_violations = scan_file(py_file)
         violations.extend(file_violations)

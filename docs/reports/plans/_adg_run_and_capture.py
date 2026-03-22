@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Run ADG SQLite validation and capture full output to file."""
-import subprocess, sys, os
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]

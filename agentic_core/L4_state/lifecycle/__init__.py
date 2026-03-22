@@ -15,9 +15,9 @@ from agentic_core.L4_state.lifecycle.lifecycle_policy_applier import (
     record_lifecycle_transition,
     record_state_archival,
     record_state_deletion,
+    state_active,
     state_archived,
     state_deleted,
-    state_active,
 )
 from agentic_core.L4_state.lifecycle.lifecycle_policy_applier import (
     get_state_lifecycle_registry as get_applier_registry,

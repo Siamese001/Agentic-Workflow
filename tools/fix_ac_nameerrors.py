@@ -61,7 +61,7 @@ def find_first_import_block_end(lines):
 
 def try_fix_file(filepath, missing_name):
     """Attempt to fix a missing name in a file."""
-    src = open(filepath, "r", encoding="utf-8").read()
+    src = open(filepath, encoding="utf-8").read()
 
     # Skip if already defined/imported
     if missing_name in IMPORT_FIXES:

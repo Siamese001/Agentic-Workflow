@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 ADG SQLite Validation: Query the live dependency graph to verify SOVEREIGN_TERRITORIES
 elimination and validate all import refactoring work.
@@ -11,10 +10,11 @@ All queries are graph traversals on ADG edges - no string pattern matching.
 """
 
 from __future__ import annotations
+
 import sqlite3
 import sys
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -281,7 +281,7 @@ FIXED_FILES_PATTERN = [
 ]
 
 # Build OR clause dynamically
-where_clause = ' OR '.join(f'e.source_file LIKE ?' for _ in FIXED_FILES_PATTERN)
+where_clause = ' OR '.join('e.source_file LIKE ?' for _ in FIXED_FILES_PATTERN)
 params = tuple(FIXED_FILES_PATTERN)
 
 layer_violations = q(f"""

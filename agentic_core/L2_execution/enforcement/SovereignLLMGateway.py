@@ -211,7 +211,6 @@ emit_determinism_digest("trace_SovereignLLMGateway", "SovereignLLMGateway_policy
 
 
 def _get_injection_detector_class():
-    from agentic_core.L5_safety.enforcement.policy_enforcement_point import get_policy_enforcement_point
     from agentic_core.prompt_governance.security.detectors.injection_detector import InjectionDetector
 
     return InjectionDetector

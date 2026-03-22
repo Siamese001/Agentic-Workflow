@@ -320,6 +320,7 @@ def _cmd_refactor(args: argparse.Namespace) -> int:
 
     if getattr(args, "analyze", None):
         from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
+
         from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
         from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
         from agentic_core.adg.applications.placement_advisor_types import PlacementAdvisor
@@ -408,6 +409,7 @@ def _cmd_coupling(args: argparse.Namespace) -> int:
     import json
 
     from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
+
     from agentic_core.adg.runtime.cache_loader import load_or_scan
 
     repo_root = Path(args.repo_root)

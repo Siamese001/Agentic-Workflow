@@ -15,7 +15,6 @@ are exercised in a real execution path.
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 import uuid
 from dataclasses import dataclass, field
 from typing import Any, Callable
@@ -237,7 +236,6 @@ class ExecutionGatewayError(RuntimeError):
     """Raised when critical execution gateway operations fail."""
 
     def __init__(self, message: str, original_error: Exception | None = None):
-        from agentic_core.L2_execution.providers import get_clock
         super().__init__(message)
         self.original_error = original_error
 

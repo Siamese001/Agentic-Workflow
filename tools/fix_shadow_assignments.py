@@ -19,7 +19,7 @@ SHADOW_PATTERN = re.compile(
 
 def fix_file(filepath):
     """Fix self-shadowing constant assignments in a file."""
-    src = open(filepath, "r", encoding="utf-8").read()
+    src = open(filepath, encoding="utf-8").read()
 
     matches = list(SHADOW_PATTERN.finditer(src))
     if not matches:
@@ -61,7 +61,6 @@ def fix_file(filepath):
 
 
 # Find all source files with self-shadowing assignments
-import subprocess, sys
 
 # Get list of source files with NameErrors
 SOURCE_FILES = [
@@ -76,7 +75,7 @@ for dirpath, dirnames, filenames in os.walk(os.path.join(ROOT, "agentic_core")):
             continue
         fp = os.path.join(dirpath, fn)
         try:
-            src = open(fp, "r", encoding="utf-8").read()
+            src = open(fp, encoding="utf-8").read()
         except Exception:
             continue
         if SHADOW_PATTERN.search(src):

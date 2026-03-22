@@ -10,14 +10,14 @@ Wires P1 edge emit calls into files that lack them. Supports all 4 P1 dimensions
 import argparse
 import ast
 from pathlib import Path
+
 from agentic_core.runtime.lifecycle_trace_contract import (
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_validated_by_safety_plane,
-    emit_determinism_digest,
     _emit_pulls_context,
+    _emit_validated_by_safety_plane,
     _emit_writes_through,
+    emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "p1_fallback_wirer", "uwg_governed_write")
 _emit_writes_through("p1", "p1_fallback_wirer", "uwg_governed_write_2")
 _emit_pulls_context("p1", "p1_fallback_wirer", "context_retrieval")

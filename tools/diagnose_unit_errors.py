@@ -1,7 +1,7 @@
 """Categorize unit test collection errors by error type."""
 
-import subprocess
 import re
+import subprocess
 
 ROOT = r"C:\Git\Agentic-Workflow"
 

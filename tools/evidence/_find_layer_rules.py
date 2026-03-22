@@ -18,7 +18,7 @@ for nid in la_ids:
 
 # Also check the static_scanner for path->layer assignment logic
 scanner_ids = r.smembers('adg:nodes:by_file:agentic_core/adg/extraction/static_scanner.py')
-print(f"\n=== static_scanner.py symbols that mention 'layer' ===")
+print("\n=== static_scanner.py symbols that mention 'layer' ===")
 for nid in scanner_ids:
     node = r.hgetall(f'adg:node:{nid}')
     name = node.get('adg_name', '')

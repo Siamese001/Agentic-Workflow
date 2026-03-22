@@ -12,12 +12,14 @@ from __future__ import annotations
 import subprocess
 import sys
 from pathlib import Path
+
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
     emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "_prove_zero_violations", "uwg_governed_write")
 _emit_writes_through("p1", "_prove_zero_violations", "uwg_governed_write_2")
 _emit_pulls_context("p1", "_prove_zero_violations", "context_retrieval")
@@ -136,7 +138,7 @@ def main() -> None:
         print("✅ PASS: Zero new anti-pattern violations")
         print()
         print(f"Total existing violations (baselined): {total_violations}")
-        print(f"New violations introduced: 0")
+        print("New violations introduced: 0")
         print()
         print("All {total_violations} existing violations are suppressed with guardian tokens.")
         print("No new violations have been introduced.")

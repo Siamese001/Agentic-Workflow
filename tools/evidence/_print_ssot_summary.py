@@ -1,7 +1,7 @@
 """Print key findings from ssot_healing_detailed_report.json."""
 import json
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 PATH = Path('docs/reports/plans/ssot_healing_detailed_report.json')
 with open(PATH, encoding='utf-8') as f:
     r = json.load(f)

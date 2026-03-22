@@ -1,11 +1,27 @@
 """Search for truly fixable SSOT hardcoding cases."""
-import sys, os, ast
+import ast
+import os
+import sys
 from pathlib import Path
+
 # guardian: allow-global-mutation
 sys.path.insert(0, '.')
-from agentic_core.L5_safety.config.structure_blueprint.ssot import ENFORCED_TERRITORIES, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    ENFORCED_TERRITORIES,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 from ops_scripts.ci._fix_hardcoded_ssot_literals import CONST_DEFS
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 ROOT = Path('.')
 truly_fixable = []
 literal_to_const = {literal: (const, module) for const, literal, module in CONST_DEFS}

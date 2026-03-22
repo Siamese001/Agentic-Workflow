@@ -1,14 +1,27 @@
 from __future__ import annotations
+
 'Data Layer Integration Example - Batch Embeddings + In-Memory Vector cache.\n\nDemonstrates how to use BatchEmbeddingService and InMemoryVectorCache together\nfor 5-10x performance improvement in resume generation pipeline.\n'
 import asyncio
 import logging
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 try:
     import numpy as np
 except ImportError as _err:
     raise ImportError("numpy is required for this module. Install with: pip install -e '.[infra]'") from _err
 from batch_embeddings import create_batch_embedding_service
+
 logging.basicConfig(level=logging.INFO)
 Logger: Any = logging.getLogger(__name__)
 

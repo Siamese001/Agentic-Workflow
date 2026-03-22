@@ -10,11 +10,12 @@ legacy Phase 1 models during the final migration.
 """
 
 from __future__ import annotations
-from pydantic import BaseModel
 
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
+
+from pydantic import BaseModel
 
 # ==========================================
 # Messaging & Communication

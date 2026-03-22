@@ -32,6 +32,6 @@ class TestMetaLearningTypesShim:
             assert name in __all__
 
     def test_identity_matches_canonical(self):
-        from agentic_core.utils.meta_learning_types_util import LearningContext as shim
         from agentic_core.L5_safety.types.meta_learning_types import LearningContext as canon
+        from agentic_core.utils.meta_learning_types_util import LearningContext as shim
         assert shim is canon

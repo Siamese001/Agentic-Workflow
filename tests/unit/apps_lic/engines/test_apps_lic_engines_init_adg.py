@@ -55,6 +55,7 @@ class TestAppsLicEnginesGracefulDegradation:
 
     def test_import_does_not_raise(self):
         import importlib
+
         import apps_lic.engines as m
         importlib.reload(m)  # second import must also succeed
 

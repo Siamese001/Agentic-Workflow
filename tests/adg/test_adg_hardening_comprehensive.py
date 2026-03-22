@@ -11,22 +11,20 @@ Tests all 6 waves:
 """
 
 import json
-import sqlite3
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
 from agentic_core.adg.extraction.static_scanner import (
     ADGStaticScanner,
-    _ImportVisitor,
     _CriticalEdgeVisitor,
-    Edge,
+    _ImportVisitor,
 )
-from agentic_core.adg.identity.normalizer import IdentityNormalizer, IdentityKind
+from agentic_core.adg.identity.normalizer import IdentityKind, IdentityNormalizer
 from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
-from tools.generate_full_adg import _infer_layer, _generate_standardized_reports
+from tools.generate_full_adg import _generate_standardized_reports, _infer_layer
 
 
 class TestWave1ProvenanceHardening(unittest.TestCase):

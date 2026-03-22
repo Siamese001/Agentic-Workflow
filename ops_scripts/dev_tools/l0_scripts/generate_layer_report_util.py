@@ -1,8 +1,20 @@
 from pathlib import Path
+
 'Generate agent report by L0-L6 layers from agent_discovery_full.json.'
 import json
 from collections import defaultdict
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 PROJECT_ROOT = Path(__file__).parent.parent
 with open(PROJECT_ROOT / 'agent_discovery_full.json') as f:
     agents = json.load(f)
@@ -29,7 +41,7 @@ for layer in layer_order:
         count = len(by_layer[layer])
         total += count
         bar = '#' * (count // 2)
-healing_count = sum((1 for a in agents if a.get('has_healing')))
-mcp_count = sum((1 for a in agents if a.get('mcp_hardened')))
-subatomic_count = sum((1 for a in agents if a.get('has_subatomic')))
-tools_count = sum((1 for a in agents if a.get('has_tools')))
+healing_count = sum(1 for a in agents if a.get('has_healing'))
+mcp_count = sum(1 for a in agents if a.get('mcp_hardened'))
+subatomic_count = sum(1 for a in agents if a.get('has_subatomic'))
+tools_count = sum(1 for a in agents if a.get('has_tools'))

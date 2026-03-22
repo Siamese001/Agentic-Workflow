@@ -5,9 +5,6 @@ that may block on import in CI environments.
 """
 from __future__ import annotations
 
-import subprocess
-import sys
-
 import pytest
 
 pytestmark = pytest.mark.unit

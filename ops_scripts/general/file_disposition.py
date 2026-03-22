@@ -5,9 +5,20 @@ Context: New diagnostic tool to perform zero-loss analysis of common_utils using
 import ast
 import os
 from dataclasses import dataclass
-from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 from pathlib import Path
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
 TARGET_DIR = 'C:\\Git\\Agentic-Workflow\\apps_shared\\common_utils'
 
 @dataclass
@@ -28,13 +39,13 @@ class AgentVisitor(ast.NodeVisitor):
 
     def visit_Import(self, node):
         for alias in node.names:
-            if any((imp in alias.name for imp in self.agent_imports)):
+            if any(imp in alias.name for imp in self.agent_imports):
                 self.is_agent = True
                 self.signals.append(f'Import detected: {alias.name}')
         self.generic_visit(node)
 
     def visit_ImportFrom(self, node):
-        if node.module and any((imp in node.module for imp in self.agent_imports)):
+        if node.module and any(imp in node.module for imp in self.agent_imports):
             self.is_agent = True
             self.signals.append(f'From-Import detected: {node.module}')
         self.generic_visit(node)

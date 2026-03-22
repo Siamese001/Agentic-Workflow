@@ -25,7 +25,6 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95

@@ -6,11 +6,23 @@ Enforces:
   - Blocks silent suite contraction via ignore/testpaths edits.
 """
 from __future__ import annotations
+
 import argparse
 import subprocess
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 PYTEST_INI = Path('pytest.ini')
 GOV_DOC = Path('docs/rules/governance.md')
 
@@ -24,7 +36,7 @@ def _git_diff(path: Path) -> str:
 
 def _touched_keywords(diff: str) -> bool:
     kws = ('testpaths', 'addopts', '--ignore', '-k', '-m', 'python_files', 'norecursedirs')
-    return any((k in diff for k in kws))
+    return any(k in diff for k in kws)
 
 def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser()

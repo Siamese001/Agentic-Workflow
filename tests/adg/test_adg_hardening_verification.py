@@ -29,17 +29,11 @@ Test categories:
 from __future__ import annotations
 
 import hashlib
-import json
-import os
 import shutil
 import sqlite3
-import subprocess
 import sys
-import tempfile
-from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
-from unittest.mock import patch
+from typing import Any
 
 import pytest
 
@@ -113,7 +107,7 @@ class ADGFixtureFactory:
 
     _db_counter = 0
 
-    def _create_base_db(self, name: str = "") -> Tuple[Path, sqlite3.Connection]:
+    def _create_base_db(self, name: str = "") -> tuple[Path, sqlite3.Connection]:
         if not name:
             ADGFixtureFactory._db_counter += 1
             name = f"adg_indexed_test_{ADGFixtureFactory._db_counter}.sqlite"
@@ -127,7 +121,7 @@ class ADGFixtureFactory:
         conn.commit()
         return db_path, conn
 
-    def _insert_meta(self, conn: sqlite3.Connection, overrides: Optional[Dict[str, str]] = None):
+    def _insert_meta(self, conn: sqlite3.Connection, overrides: dict[str, str] | None = None):
         defaults = {
             "schema_version": "4.0.0",
             "commit_sha": "abc123def456789012345678901234567890abcd",
@@ -141,7 +135,7 @@ class ADGFixtureFactory:
         conn.executemany("INSERT INTO meta (key, value) VALUES (?, ?)", defaults.items())
         conn.commit()
 
-    def _insert_nodes(self, conn: sqlite3.Connection, nodes: List[Dict[str, Any]]):
+    def _insert_nodes(self, conn: sqlite3.Connection, nodes: list[dict[str, Any]]):
         for n in nodes:
             conn.execute(
                 "INSERT INTO nodes (adg_name, entity_type, layer, identity_kind, confidence, resolved_path) VALUES (?,?,?,?,?,?)",
@@ -149,7 +143,7 @@ class ADGFixtureFactory:
             )
         conn.commit()
 
-    def _insert_edges(self, conn: sqlite3.Connection, edges: List[Dict[str, Any]]):
+    def _insert_edges(self, conn: sqlite3.Connection, edges: list[dict[str, Any]]):
         for e in edges:
             conn.execute(
                 "INSERT INTO edges (src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol) VALUES (?,?,?,?,?,?,?)",
@@ -1007,8 +1001,8 @@ class TestCrossScriptIntegration:
         db_path = factory.l4_unknown_layer()
         adg_dir = adg_dir_with(db_path)
 
-        from scripts.verify_identity_completeness import ADGIdentityCompletenessVerifier
         from scripts.verify_adg_consistency import ADGConsistencyVerifier
+        from scripts.verify_identity_completeness import ADGIdentityCompletenessVerifier
 
         # Identity should have errors
         identity = ADGIdentityCompletenessVerifier(adg_dir)

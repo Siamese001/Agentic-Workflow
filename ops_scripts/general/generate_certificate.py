@@ -7,7 +7,18 @@ import pkgutil
 import sys
 from dataclasses import is_dataclass
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -37,7 +48,7 @@ def generate():
                 try:
                     module = importlib.import_module(f'{domain}.{name}')
                     for cls_name, cls in inspect.getmembers(module, inspect.isclass):
-                        if cls.__module__ == module.__name__ and any((x in cls_name for x in ['Agent', 'Specialist', 'Architect'])) and (cls_name not in ['BaseAgent', 'OutreachAgent', 'OutreachAgentFactory']) and (not cls_name.startswith('_')):
+                        if cls.__module__ == module.__name__ and any(x in cls_name for x in ['Agent', 'Specialist', 'Architect']) and (cls_name not in ['BaseAgent', 'OutreachAgent', 'OutreachAgentFactory']) and (not cls_name.startswith('_')):
                             base, data, status = analyze_agent(domain, cls_name, cls)
                             row = f"| {domain.split('.')[0]} | {cls_name} | {base} | {data} | {status} |"
                             output.append(row)

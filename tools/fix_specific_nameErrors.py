@@ -1,7 +1,6 @@
 """Find and fix specific files still missing _emit_writes_through/_emit_reads_through/_emit_links_incident_trace."""
 
 import os
-import re
 
 ROOT = r"C:\Git\Agentic-Workflow"
 SYMS = ["_emit_reads_through", "_emit_writes_through", "_emit_links_incident_trace"]
@@ -14,7 +13,7 @@ for dirpath, _, filenames in os.walk(os.path.join(ROOT, "agentic_core")):
             continue
         fpath = os.path.join(dirpath, fn)
         try:
-            with open(fpath, "r", encoding="utf-8") as f:
+            with open(fpath, encoding="utf-8") as f:
                 content = f.read()
         except Exception:
             continue

@@ -6,10 +6,11 @@ Updated to use Evidence Contract v2 helper for scope isolation and self-verifica
 """
 import sys
 from pathlib import Path
+
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent))
 from evidence_contract_v2 import EvidenceContractV2
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 
 def main():
     """Generate Phase 2 consolidated evidence using Contract v2."""
@@ -58,7 +59,7 @@ def main():
         evidence_lines.append(content)
         evidence_lines.append('```')
         evidence_lines.append('')
-    evidence_content = '\n'.join((line.rstrip() for line in evidence_lines))
+    evidence_content = '\n'.join(line.rstrip() for line in evidence_lines)
     evidence_file.parent.mkdir(parents=True, exist_ok=True)
     evidence_file.write_text(evidence_content, encoding='utf-8', newline='\n')
     content_start = evidence_file.read_text(encoding='utf-8')[:200]

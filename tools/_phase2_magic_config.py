@@ -5,7 +5,6 @@ Target: Externalize hardcoded timeouts, thresholds, and magic numbers.
 """
 from __future__ import annotations
 
-import ast
 import re
 from pathlib import Path
 
@@ -151,13 +150,13 @@ def main() -> None:
             total_fixed += fixed
             files_fixed += 1
 
-    print(f"\nPhase 2 Summary:")
+    print("\nPhase 2 Summary:")
     print(f"  Files fixed: {files_fixed}")
     print(f"  Violations fixed: {total_fixed}")
 
     # Update baseline
-    import subprocess
     import os
+    import subprocess
     env = os.environ.copy()
     env["ALLOW_LANDMINE_BASELINE_WRITE"] = "1"
 

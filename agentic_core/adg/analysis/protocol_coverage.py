@@ -3,13 +3,10 @@
 Detects abstract bases (classes extending Protocol or ABC) and checks
 whether they have concrete implementors in the scanned codebase.
 """
-from dataclasses import field
-from typing import Any
-
 from __future__ import annotations
 
-from dataclasses import dataclass, field, field
-from typing import TYPE_CHECKING, Any
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from agentic_core.adg.extraction.static_scanner import ScanResult

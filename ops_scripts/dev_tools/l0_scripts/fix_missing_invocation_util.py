@@ -19,6 +19,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_through,
     emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "fix_missing_invocation_util", "uwg_governed_write")
 _emit_writes_through("p1", "fix_missing_invocation_util", "uwg_governed_write_2")
 _emit_pulls_context("p1", "fix_missing_invocation_util", "context_retrieval")

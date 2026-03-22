@@ -1,15 +1,50 @@
 """Count remaining hardcoded SSOT path literal violations after fixes."""
 from __future__ import annotations
+
 import os
 import re
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 sys.path.insert(0, str(ROOT))
-from agentic_core.L5_safety.config.structure_blueprint.ssot import ENFORCED_TERRITORIES, SOVEREIGN_EXCLUDED_FOLDERS, ARCHIVES_DIR, REPORTS_DIR, DOCS_REPORTS_PLANS
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR, OPS_SCRIPTS_DIR, TESTS_DIR, TOOLS_DIR, SYSTEM_LEARNING_DIR, L0_MAINTENANCE_DIR, L1_COGNITION_DIR, L2_EXECUTION_DIR, L3_ORCHESTRATION_DIR, L4_STATE_DIR, L5_SAFETY_DIR, L6_OBSERVABILITY_DIR
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    OPS_SCRIPTS_DIR,
+    SYSTEM_LEARNING_DIR,
+    TESTS_DIR,
+    TOOLS_DIR,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    ARCHIVES_DIR,
+    DOCS_REPORTS_PLANS,
+    ENFORCED_TERRITORIES,
+    REPORTS_DIR,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 CONSTS: list[tuple[str, str]] = sorted([('ARCHIVES_DIR', ARCHIVES_DIR), ('AGENTIC_CORE_DIR', AGENTIC_CORE_DIR), ('APPS_RG_DIR', APPS_RG_DIR), ('APPS_LIC_DIR', APPS_LIC_DIR), ('APPS_SHARED_DIR', APPS_SHARED_DIR), ('OPS_SCRIPTS_DIR', OPS_SCRIPTS_DIR), ('TESTS_DIR', TESTS_DIR), ('TOOLS_DIR', TOOLS_DIR), ('SYSTEM_LEARNING_DIR', SYSTEM_LEARNING_DIR), ('L0_MAINTENANCE_DIR', L0_MAINTENANCE_DIR), ('L1_COGNITION_DIR', L1_COGNITION_DIR), ('L2_EXECUTION_DIR', L2_EXECUTION_DIR), ('L3_ORCHESTRATION_DIR', L3_ORCHESTRATION_DIR), ('L4_STATE_DIR', L4_STATE_DIR), ('L5_SAFETY_DIR', L5_SAFETY_DIR), ('L6_OBSERVABILITY_DIR', L6_OBSERVABILITY_DIR), ('DOCS_REPORTS_PLANS', DOCS_REPORTS_PLANS), ('REPORTS_DIR', REPORTS_DIR)], key=lambda x: -len(x[1]))
 SSOT_SKIP = ('agentic_core/L5_safety/config/structure_blueprint/', 'agentic_core/L0_routing/config/path_constants')
 
@@ -27,7 +62,7 @@ def main() -> None:
                     continue
                 fpath = Path(dirpath) / fname
                 rel = fpath.relative_to(ROOT).as_posix()
-                if any((rel.startswith(p) for p in SSOT_SKIP)):
+                if any(rel.startswith(p) for p in SSOT_SKIP):
                     continue
                 try:
                     content = fpath.read_text(encoding='utf-8', errors='replace')
@@ -51,7 +86,7 @@ def main() -> None:
                             by_const[const] = by_const.get(const, 0) + 1
                             break
     total_files = len(remaining)
-    total_hits = sum((len(v) for v in remaining.values()))
+    total_hits = sum(len(v) for v in remaining.values())
     print(f'Remaining violations: {total_files} files, {total_hits} hits')
     print()
     print('BY CONSTANT:')

@@ -6,7 +6,18 @@ Categorizes files into: CORE FOUNDATION, ACTIVE SPECIALISTS, STATELESS TOOLS, LE
 """
 import ast
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 
 class AgentDispositionAnalyzer:
     """Analyzes agent files for functional DNA classification."""
@@ -40,7 +51,7 @@ class AgentDispositionAnalyzer:
             if isinstance(node, ast.ClassDef):
                 bases = [base.id if isinstance(base, ast.Name) else str(base) for base in node.bases]
                 is_agent = node.name.endswith('Agent')
-                is_dataclass = any((isinstance(dec, ast.Name) and dec.id == 'dataclass' or (isinstance(dec, ast.Attribute) and dec.attr == 'dataclass') for dec in node.decorator_list))
+                is_dataclass = any(isinstance(dec, ast.Name) and dec.id == 'dataclass' or (isinstance(dec, ast.Attribute) and dec.attr == 'dataclass') for dec in node.decorator_list)
                 classes.append({'name': node.name, 'bases': bases, 'is_agent': is_agent, 'is_dataclass': is_dataclass, 'has_agent_suffix': 'Agent' in node.name, 'line_count': node.end_lineno - node.lineno if hasattr(node, 'end_lineno') else 0})
         return classes
 
@@ -68,21 +79,21 @@ class AgentDispositionAnalyzer:
     def _classify_disposition(self, filename: str, content: str, classes: list[dict], imports: list[str], functions: list[dict]) -> tuple[str, dict]:
         """Classify file based on functional DNA analysis."""
         legacy_indicators = ['deprecated', 'v107', 'v12', 'old', 'legacy', 'obsolete']
-        if any((indicator in content.lower() for indicator in legacy_indicators)):
+        if any(indicator in content.lower() for indicator in legacy_indicators):
             return ('LEGACY_ARTIFACTS', {'reason': 'Contains legacy/deprecated markers'})
         core_patterns = ['Mixin', 'Base', 'Interface', 'Protocol', 'Abstract', 'HealerMixin', 'MCPHardenedMixin', 'SubatomicTestingMixin', 'canon_base_agent_interface', 'foundation']
-        if any((pattern in filename.lower() or pattern in content for pattern in core_patterns)):
+        if any(pattern in filename.lower() or pattern in content for pattern in core_patterns):
             return ('CORE_FOUNDATION', {'reason': 'Contains core foundation patterns'})
         agent_classes = [c for c in classes if c['is_agent'] or c['has_agent_suffix']]
         if agent_classes and len(classes) == 1:
-            has_init = any((f['name'] == '__init__' for f in functions))
-            has_process = any((f['name'] in ['_process', 'run_phase', 'execute'] for f in functions))
+            has_init = any(f['name'] == '__init__' for f in functions)
+            has_process = any(f['name'] in ['_process', 'run_phase', 'execute'] for f in functions)
             if has_init and (has_process or len(functions) > 3):
                 return ('ACTIVE_SPECIALISTS', {'reason': 'Complete agent with initialization and processing logic', 'agent_class': agent_classes[0]['name']})
         if not agent_classes and len(functions) > 0:
             return ('STATELESS_TOOLS', {'reason': 'Functional utilities without agent state', 'function_count': len(functions)})
         validator_patterns = ['validator', 'validatoragent', 'enforcer', 'healer', 'detector']
-        if any((pattern in filename.lower() for pattern in validator_patterns)):
+        if any(pattern in filename.lower() for pattern in validator_patterns):
             if agent_classes:
                 return ('ACTIVE_SPECIALISTS', {'reason': 'Specialized validator/enforcer agent'})
             else:

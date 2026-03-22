@@ -7,10 +7,22 @@ Covers OpenAI, BGE, HuggingFace, local, and vLLM embedding classes.
 Exit code 1 on any violation.
 """
 from __future__ import annotations
+
 import ast
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 BLOCKED_CONSTRUCTORS = {'OpenAIEmbedder', 'OpenAIEmbeddingClient', 'LocalFAISSStore', 'FAISSStore', 'SentenceTransformerEmbedder', 'BGEEmbedder', 'LocalEmbedder', 'HuggingFaceEmbedder', 'VLLMEmbedder'}
 ALLOWED_PATHS = {'system_learning/engines/embedding_service_factory.py', 'agentic_core/embeddings/embedding_factory.py', 'system_learning/engines/historical_ingestion_orchestrator.py'}

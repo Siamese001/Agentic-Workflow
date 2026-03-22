@@ -1,6 +1,5 @@
 """Probe which modules the stub test files are supposed to test."""
 import importlib
-import sys
 
 CANDIDATES = [
     "agentic_core.config.core.config_loader",

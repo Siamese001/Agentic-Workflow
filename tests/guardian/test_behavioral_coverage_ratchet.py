@@ -29,10 +29,10 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 from agentic_core.L0_routing.types.guardian_registry_types import (
     ALL_GUARDIANS,
 )
-from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 pytestmark = pytest.mark.guardian
 

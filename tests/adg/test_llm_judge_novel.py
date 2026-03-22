@@ -21,22 +21,17 @@ from __future__ import annotations
 
 import asyncio
 import json
-import textwrap
 import uuid
 from datetime import datetime, timezone
-from pathlib import Path
 
 import pytest
 
 from agentic_core.evaluation.judges.types import (
     EvidenceBundle,
-    EvidenceItem,
     JudgeReport,
-    JudgeReportRow,
     JudgeVerdict,
     VerdictOutcome,
 )
-
 
 # ===================================================================
 # Helpers
@@ -150,8 +145,6 @@ class TestJudgeProviderRegistry:
 
     def test_summary(self):
         from agentic_core.evaluation.judges.provider_registry import (
-            JudgeProviderRegistry,
-            NullJudgeProvider,
             create_default_registry,
         )
 

@@ -1,6 +1,7 @@
 """Audit Qwen/healing routing wiring - find all usages of key symbols."""
 import os
 from pathlib import Path
+
 search_terms = ['QwenInvokerAdapter', 'GeminiInvokerAdapter', 'LocalAgentAdapter', 'healing_provider_adapters', 'validate_qwen_startup_state', 'qwen_vllm_inference', 'QWEN_VLLM_ENABLED', 'invoke_qwen_vllm', 'DefaultHealingProviderInvoker', 'dispatch_healing']
 SKIP_DIRS = {'__pycache__', '.git', 'archives', '.backup', '.healing_backups'}
 root = 'c:/Git/Agentic-Workflow'

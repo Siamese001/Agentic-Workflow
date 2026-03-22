@@ -35,7 +35,7 @@ def strip_prefix(s):
 sqlite_gap_paths = set(strip_prefix(entry[1]) for entry in sqlite_gaps_raw)
 sqlite_gap_count = len(sqlite_gap_paths)
 
-print(f"\n=== SQLITE ANALYSIS ===")
+print("\n=== SQLITE ANALYSIS ===")
 print(f"  Uncovered modules:     {sqlite_gap_count}")
 
 # ── Cross-comparison ──────────────────────────────────────────────────────────
@@ -48,14 +48,14 @@ print(f"  Uncovered modules:     {sqlite_gap_count}")
 sqlite_gaps_also_covered_by_accel = sqlite_gap_paths & accel_covered
 sqlite_gaps_not_in_accel_covered = sqlite_gap_paths - accel_covered
 
-print(f"\n=== CROSS-COMPARISON ===")
+print("\n=== CROSS-COMPARISON ===")
 print(f"  SQLite gaps also in accelerator covered:      {len(sqlite_gaps_also_covered_by_accel)}")
-print(f"    → These are FALSE GAPS in SQLite (accelerator found coverage)")
+print("    → These are FALSE GAPS in SQLite (accelerator found coverage)")
 print(f"  SQLite gaps NOT in accelerator covered:       {len(sqlite_gaps_not_in_accel_covered)}")
-print(f"    → Potential true gaps (both agree)")
+print("    → Potential true gaps (both agree)")
 
 # ── Modules SQLite calls gaps but accelerator covers ─────────────────────────
-print(f"\n=== FALSE GAPS IN SQLITE (sample 20) ===")
+print("\n=== FALSE GAPS IN SQLITE (sample 20) ===")
 for p in sorted(sqlite_gaps_also_covered_by_accel)[:20]:
     print(f"  {p}")
 if len(sqlite_gaps_also_covered_by_accel) > 20:
@@ -66,7 +66,7 @@ layer_buckets: dict[str, list] = {}
 for layer, raw in sqlite_gaps_raw:
     layer_buckets.setdefault(layer, []).append(strip_prefix(raw))
 
-print(f"\n=== SQLITE GAPS BY LAYER ===")
+print("\n=== SQLITE GAPS BY LAYER ===")
 for lyr in sorted(layer_buckets, key=lambda k: -len(layer_buckets[k])):
     items = layer_buckets[lyr]
     print(f"  {lyr:<15} {len(items):>4} gaps")
@@ -104,7 +104,7 @@ for p in sqlite_gap_paths:
     else:
         categories["other"].append(p)
 
-print(f"\n=== SQLITE GAPS CATEGORIZED ===")
+print("\n=== SQLITE GAPS CATEGORIZED ===")
 total_cat = 0
 for cat, items in sorted(categories.items(), key=lambda x: -len(x[1])):
     print(f"  {cat:<25} {len(items):>4}")
@@ -125,7 +125,7 @@ critical_utils = [
     "json_formatter_util.py",
 ]
 
-print(f"\n=== CRITICAL UTILS CHECK (are they in SQLite gaps?) ===")
+print("\n=== CRITICAL UTILS CHECK (are they in SQLite gaps?) ===")
 for cu in sorted(critical_utils):
     in_sqlite_gap = any(cu in p for p in sqlite_gap_paths)
     in_accel_covered = any(cu in p for p in accel_covered)
@@ -139,7 +139,7 @@ for cu in sorted(critical_utils):
     print(f"  {cu:<45} {' | '.join(status)}")
 
 # ── apps_rg/config check ──────────────────────────────────────────────────────
-print(f"\n=== apps_rg/config MODULES IN SQLITE GAPS ===")
+print("\n=== apps_rg/config MODULES IN SQLITE GAPS ===")
 apps_rg_gaps = [p for p in sqlite_gap_paths if p.startswith("apps_rg/") or p.startswith("apps_shared/") or p.startswith("apps_lic/")]
 for p in sorted(apps_rg_gaps)[:20]:
     in_accel = p in accel_covered
@@ -149,7 +149,7 @@ if len(apps_rg_gaps) > 20:
 print(f"  Total apps_*/system_learning gaps: {len(apps_rg_gaps)}")
 
 # ── Guardian reference check ──────────────────────────────────────────────────
-print(f"\n=== HARDCODED COVERAGE THRESHOLDS (from grep results) ===")
+print("\n=== HARDCODED COVERAGE THRESHOLDS (from grep results) ===")
 print("  coverage_rate 0.4976 found in:")
 print("    docs/reports/plans/adg_coverage_report_03122026.json")
 print("    docs/reports/plans/ssot_healing_detailed_report.json")
@@ -157,7 +157,7 @@ print("    docs/reports/plans/ssot_healing_run_report.json")
 print("  → None in .github/workflows/ or tests/ (safe to change definitions)")
 
 # ── Summary ───────────────────────────────────────────────────────────────────
-print(f"\n=== PHASE 0 SUMMARY ===")
+print("\n=== PHASE 0 SUMMARY ===")
 print(f"  SQLite gap count:                  {sqlite_gap_count}")
 print(f"  Accelerator covered count:         {accel_covered_count}")
 print(f"  Accelerator inferred gap:          {accel_gap_inferred}")

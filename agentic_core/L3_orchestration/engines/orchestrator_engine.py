@@ -31,13 +31,11 @@ Phase 3 Enhancement (Jan 31, 2026):
 from __future__ import annotations
 
 import logging
-from typing import Optional
 import uuid
 from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.trace_context import get_trace_context
 from agentic_core.utils.ssot_discovery_validator import get_agent_paths
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -111,6 +109,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.runtime.trace_context import get_trace_context
 
 _emit_authorize_and_execute("p2", "orchestrator_engine", "execution_auth")
 _emit_validates_capability("p2", "orchestrator_engine", "capability_check")
@@ -258,7 +257,6 @@ class L3OrchestrationStrategy(OrchestrationStrategy):
 
     def __init__(self, config: dict[str, Any], mode: str = "unified") -> None:
         """Initialize with orchestration configuration."""
-        from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
         import uuid as _uuid  # noqa: PLC0415
 
         _emit_snapshots_state(str(_uuid.uuid4()), "L3OrchestrationStrategy.__init__", "state_snapshot")

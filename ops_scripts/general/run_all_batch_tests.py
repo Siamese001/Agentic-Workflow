@@ -4,7 +4,18 @@ Run all 6-batch test suites and validate 100% pass rate
 import subprocess
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -31,7 +42,7 @@ def main():
     print('\n' + '=' * 60)
     print('FINAL SUMMARY')
     print('=' * 60)
-    passed = sum((1 for v in results.values() if v))
+    passed = sum(1 for v in results.values() if v)
     total = len(results)
     for suite, success in results.items():
         status = '✅ PASS' if success else '❌ FAIL'

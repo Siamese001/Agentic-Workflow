@@ -1,5 +1,7 @@
 """Diagnose agentic_core collection errors and output source file + error pairs."""
-import subprocess, sys, os, re
+import re
+import subprocess
+import sys
 from collections import Counter
 
 root = r"C:\Git\Agentic-Workflow"
@@ -30,6 +32,7 @@ while i < len(lines):
 
 # Group by source file
 from collections import defaultdict
+
 by_src = defaultdict(list)
 for tf, sf, em in errors:
     by_src[sf or "unknown"].append((tf, em))
@@ -52,7 +55,7 @@ for tf, sf, em in errors:
     elif "FileNotFoundError" in em:
         cats["FileNotFoundError"] += 1
     elif "ImportError" in em:
-        cats[f"ImportError"] += 1
+        cats["ImportError"] += 1
     elif "ModuleNotFoundError" in em:
         cats["ModuleNotFoundError"] += 1
     elif "TypeError" in em:

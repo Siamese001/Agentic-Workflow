@@ -1,10 +1,27 @@
 """Search for potentially fixable SSOT hardcoding cases that might have been missed."""
-import sys, os, ast, re
+import ast
+import os
+import re
+import sys
 from pathlib import Path
+
 # guardian: allow-global-mutation
 sys.path.insert(0, '.')
-from agentic_core.L5_safety.config.structure_blueprint.ssot import ENFORCED_TERRITORIES, SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    ENFORCED_TERRITORIES,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 ROOT = Path('.')
 fixable_found = []
 for territory in sorted(ENFORCED_TERRITORIES):

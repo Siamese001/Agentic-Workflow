@@ -10,26 +10,20 @@ Covers:
 
 from __future__ import annotations
 
-import json
-import tempfile
 import textwrap
-from pathlib import Path
 
 import pytest
 
 from agentic_core.evaluation.judges.types import (
     EvidenceBundle,
     EvidenceItem,
-    EvidenceRequirement,
     JudgeVerdict,
     RubricDefinition,
-    ScoringCriterion,
     ScoringMethod,
     Severity,
     SourceSnippet,
     VerdictOutcome,
 )
-
 
 # ===================================================================
 # Types tests

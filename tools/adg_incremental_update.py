@@ -26,7 +26,6 @@ sys.path.insert(0, str(ROOT))
 from agentic_core.adg.extraction.scan_cache import ScanCache, file_hash
 from agentic_core.adg.extraction.static_scanner import Edge, _scan_file
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------

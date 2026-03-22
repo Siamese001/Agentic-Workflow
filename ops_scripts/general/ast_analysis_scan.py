@@ -2,7 +2,18 @@
 import ast
 import json
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 ROOT = Path('c:/Git/Agentic-Workflow')
 SSOT_DIRS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR, 'tools/evidence', OPS_SCRIPTS_DIR]
 
@@ -57,15 +68,15 @@ def scan_semantic_cache(rel, src, tree, imports):
 
 def classify_shim(rel, tree):
     body = tree.body
-    has_func = any((isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) for n in body))
-    has_import = any((isinstance(n, (ast.Import, ast.ImportFrom)) for n in body))
+    has_func = any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) for n in body)
+    has_import = any(isinstance(n, (ast.Import, ast.ImportFrom)) for n in body)
     if has_func or not has_import:
         return None
     if len(body) > 20:
         return None
-    all_assigns = [n for n in body if isinstance(n, ast.Assign) and any((isinstance(t, ast.Name) and t.id == '__all__' for t in n.targets))]
+    all_assigns = [n for n in body if isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == '__all__' for t in n.targets)]
     stmt_types = [type(n).__name__ for n in body]
-    is_pure_shim = all((t in ('Expr', 'Import', 'ImportFrom', 'Assign') for t in stmt_types))
+    is_pure_shim = all(t in ('Expr', 'Import', 'ImportFrom', 'Assign') for t in stmt_types)
     return {'file': rel, 'body_count': len(body), 'has_all': bool(all_assigns), 'is_pure_shim': is_pure_shim, 'stmt_types': stmt_types}
 pinecone_refs = []
 semantic_cache_refs = []

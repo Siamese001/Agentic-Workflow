@@ -4,10 +4,22 @@ Scans apps_rg/engines/*.py and apps_lic/engines/*.py for classes inheriting
 BaseRGEngine.  Hard-fails if any concrete class has no AGENT_ID class var.
 """
 from __future__ import annotations
+
 import ast
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ENGINE_GLOBS = ['apps_rg/engines/*.py', 'apps_lic/engines/*.py']
 BASE_NAMES = {'BaseRGEngine'}
@@ -45,7 +57,7 @@ def main() -> int:
                     continue
                 if not _inherits_base(node):
                     continue
-                has_abstract = any((isinstance(d, ast.Name) and d.id == 'abstractmethod' or (isinstance(d, ast.Attribute) and d.attr == 'abstractmethod') for child in ast.walk(node) for d in getattr(child, 'decorator_list', [])))
+                has_abstract = any(isinstance(d, ast.Name) and d.id == 'abstractmethod' or (isinstance(d, ast.Attribute) and d.attr == 'abstractmethod') for child in ast.walk(node) for d in getattr(child, 'decorator_list', []))
                 if has_abstract:
                     continue
                 attrs = _get_class_attr_names(node)

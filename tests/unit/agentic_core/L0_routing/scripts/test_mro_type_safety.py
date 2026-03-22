@@ -27,9 +27,9 @@ def test_mro_integrity_and_initialization_order():
     """
     print("\n[TEST 1] MRO Integrity and Initialization Order...")
 
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
     from dataclasses import dataclass
+
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     @dataclass
     class TestAgent(SovereignBaseAgent):

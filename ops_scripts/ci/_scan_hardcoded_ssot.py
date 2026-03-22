@@ -5,16 +5,32 @@ use SSOT-defined path constants from structure_blueprint_config.py.
 Outputs findings to artifacts/adg/hardcoded_ssot_violations.json
 """
 from __future__ import annotations
+
 import json
 import os
 import re
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 sys.path.insert(0, str(ROOT))
-from agentic_core.L5_safety.config.structure_blueprint.ssot import ENFORCED_TERRITORIES, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    ENFORCED_TERRITORIES,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 SSOT_PATH_CONSTANTS: dict[str, str] = {'ARCHIVES_DIR': 'archives', 'AGENTIC_CORE_DIR': 'agentic_core', 'APPS_RG_DIR': 'apps_rg', 'APPS_LIC_DIR': 'apps_lic', 'APPS_SHARED_DIR': 'apps_shared', 'OPS_SCRIPTS_DIR': 'ops_scripts', 'TESTS_DIR': 'tests', 'L0_MAINTENANCE_DIR': 'agentic_core/L0_routing', 'L1_COGNITION_DIR': 'agentic_core/L1_cognition', 'L2_EXECUTION_DIR': 'agentic_core/L2_execution', 'L3_ORCHESTRATION_DIR': 'agentic_core/L3_orchestration', 'L4_STATE_DIR': 'agentic_core/L4_state', 'L5_SAFETY_DIR': 'agentic_core/L5_safety', 'L6_OBSERVABILITY_DIR': 'agentic_core/L6_observability', 'DOCS_REPORTS_PLANS': 'docs/reports/plans', 'REPORTS_DIR': 'reports', 'TOOLS_DIR': 'tools', 'SYSTEM_LEARNING_DIR': 'system_learning', 'DASHBOARD_DIR': 'agentic_core/L6_observability/dashboards', 'TESTS_UNIT_DIR': 'tests/unit', 'TESTS_INTEGRATION_DIR': 'tests/integration', 'TESTS_E2E_DIR': 'tests/e2e'}
 SORTED_LITERALS = sorted(SSOT_PATH_CONSTANTS.items(), key=lambda x: -len(x[1]))
 
@@ -66,7 +82,7 @@ def main() -> None:
     out_path = out_dir / 'hardcoded_ssot_violations.json'
     out_path.write_text(json.dumps(violations, indent=2), encoding='utf-8')
     total_files = len(violations)
-    total_hits = sum((len(v) for v in violations.values()))
+    total_hits = sum(len(v) for v in violations.values())
     print(f'[SCAN] Done. {total_files} files with violations, {total_hits} total hits.')
     print(f'[SCAN] Output: {out_path}')
     print()

@@ -9,7 +9,11 @@ Generates evidence file with:
 import subprocess
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    DEFAULT_TIMEOUT,
+)
+
 
 def run_command(argv: list[str], cwd: Path) -> tuple[str, int]:
     """Run command and return (output, exit_code)."""

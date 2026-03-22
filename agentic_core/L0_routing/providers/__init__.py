@@ -2,12 +2,12 @@
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,
-    _emit_records_execution_trace,
     _emit_reads_policy_state,
-    _emit_snapshots_state,
+    _emit_records_execution_trace,
     _emit_signs_execution_trace,
-    emit_replay_key,
+    _emit_snapshots_state,
     emit_determinism_digest,
+    emit_replay_key,
 )
 
 _emit_records_execution_trace("p0", "evidence", "L0_providers")

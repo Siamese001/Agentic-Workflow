@@ -3,7 +3,18 @@ import ast
 import json
 from collections import defaultdict
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 ROOT = Path('c:/Git/Agentic-Workflow')
 SSOT_DIRS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR]
 
@@ -37,7 +48,7 @@ for d in SSOT_DIRS:
             syntax_errors.append((rel, str(e)))
             continue
         for dep in get_imports(tree):
-            if any((dep.startswith(d.replace('/', '.')) for d in SSOT_DIRS)):
+            if any(dep.startswith(d.replace('/', '.')) for d in SSOT_DIRS):
                 import_graph[mod].add(dep)
 
 def find_cycles(graph):
@@ -123,7 +134,7 @@ for py in ROOT.rglob('*.py'):
     # guardian: allow-silent-swallow
     except:
         continue
-    if any((kw in src for kw in ['import_graph', 'dependency_graph', 'dep_graph', 'cycle_detect', 'ImportGraph'])):
+    if any(kw in src for kw in ['import_graph', 'dependency_graph', 'dep_graph', 'cycle_detect', 'ImportGraph']):
         rel = py.relative_to(ROOT).as_posix()
         existing_tools.append(rel)
 print()

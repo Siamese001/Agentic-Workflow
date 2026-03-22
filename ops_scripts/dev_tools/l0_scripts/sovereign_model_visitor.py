@@ -1,10 +1,22 @@
 from __future__ import annotations
+
 '\nSovereign Guard: Block Inline Pydantic models\nEnforces that all Pydantic models must live in core_contracts_types.py\n\nUsage: Called automatically by pre-commit hook\n'
 import ast
 import sys
 from pathlib import Path
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 exempt: Any = {'agentic_core/schemas/models/core_contracts_types.py'}
 
 class SovereignModelVisitor(ast.NodeVisitor):
@@ -29,7 +41,7 @@ class SovereignModelVisitor(ast.NodeVisitor):
 def check_file(filepath: Any) -> Any:
     """Check a single file for inline Pydantic models."""
     normalized_path: Any = str(Path(filepath)).replace('\\', '/')
-    if any((exempt in normalized_path for exempt in EXEMPT)):
+    if any(exempt in normalized_path for exempt in EXEMPT):
         return True
     try:
         with open(filepath, encoding='utf-8') as f:

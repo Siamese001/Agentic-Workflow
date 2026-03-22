@@ -1,7 +1,8 @@
 """ADG Redis analysis: HITL mixin integration with system_learning confidence infrastructure."""
 
+
 import redis
-import json
+
 
 def query_redis():
     """Query ADG Redis cache for HITL and system_learning integration points."""

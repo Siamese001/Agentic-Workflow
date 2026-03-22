@@ -6,11 +6,23 @@ Targets files that have a SyntaxError due to the SSOT block appearing at col-0
 inside an indented context.
 """
 from __future__ import annotations
+
 import ast
 import pathlib
 import re
 import sys
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SSOT_IMPORT_LINES = ['from agentic_core.L5_safety.config.structure_blueprint.ssot import (', '    DISCOVERY_EXCLUDED_TERRITORIES,', '    GLOBAL_EXCLUDED_DIRS,', '    SOVEREIGN_EXCLUDED_FOLDERS,', ')']
 SSOT_IMPORT_PARTIAL_2 = ['from agentic_core.L5_safety.config.structure_blueprint.ssot import (', '    GLOBAL_EXCLUDED_DIRS,', '    SOVEREIGN_EXCLUDED_FOLDERS,', ')']
@@ -86,7 +98,7 @@ def fix_file(path: pathlib.Path) -> str | None:
     test_src = '\n'.join(candidate)
     if _has_syntax_error(test_src):
         return 'skip'
-    has_ssot = any(('from agentic_core.L5_safety.config.structure_blueprint.ssot import' in l for l in candidate))
+    has_ssot = any('from agentic_core.L5_safety.config.structure_blueprint.ssot import' in l for l in candidate)
     if not has_ssot:
         insert_pt = _module_level_insert_point(candidate)
         candidate = candidate[:insert_pt] + SSOT_IMPORT_LINES + [''] + candidate[insert_pt:]
@@ -101,7 +113,7 @@ def fix_file(path: pathlib.Path) -> str | None:
 def main() -> int:
     fixed = skipped = errors = 0
     for p in sorted(ROOT.rglob('*.py')):
-        if any((part in SKIP_DIRS for part in p.parts)):
+        if any(part in SKIP_DIRS for part in p.parts):
             continue
         result = fix_file(p)
         if result == 'fixed':

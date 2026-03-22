@@ -1,8 +1,8 @@
 """ADG analysis: HITL mixin integration with system_learning confidence infrastructure."""
 
-import sys
 import subprocess
-import json
+import sys
+
 
 def run_query(description, query):
     """Execute ADG SQLite query and return results."""

@@ -12,6 +12,7 @@ import ast
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+
 from agentic_core.L0_routing.config.path_constants import (
     APPS_LIC_DIR,
     APPS_RG_DIR,

@@ -17,20 +17,22 @@ Usage:
       language: python
 """
 import argparse
+import io
 import json
+import locale
 import os
 import sys
 from pathlib import Path
-import io
-import locale
 
-from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace  # noqa: E402
-from agentic_core.runtime.lifecycle_trace_contract import _emit_applies_guardrail  # noqa: E402
-from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_policy_state  # noqa: E402
-from agentic_core.runtime.lifecycle_trace_contract import _emit_snapshots_state  # noqa: E402
-from agentic_core.runtime.lifecycle_trace_contract import emit_replay_key  # noqa: E402
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest  # noqa: E402
-from agentic_core.runtime.lifecycle_trace_contract import _emit_signs_execution_trace  # noqa: E402
+from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_applies_guardrail,  # noqa: E402
+    _emit_reads_policy_state,  # noqa: E402
+    _emit_records_execution_trace,  # noqa: E402
+    _emit_signs_execution_trace,  # noqa: E402
+    _emit_snapshots_state,  # noqa: E402
+    emit_determinism_digest,  # noqa: E402
+    emit_replay_key,  # noqa: E402
+)
 
 _emit_records_execution_trace("p0", "evidence", "check_anti_patterns")
 _emit_applies_guardrail("p0", "check_anti_patterns", "p0_governance")
@@ -52,57 +54,83 @@ if sys.platform == 'win32':
 
 # Now safe to import from agentic_core
 from agentic_core.L0_routing.config.path_constants import (
-    BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT,
-    MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD,
-    OPS_SCRIPTS_DIR, get_validated_project_root
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    OPS_SCRIPTS_DIR,
+    THRESHOLD,
+    get_validated_project_root,
 )
+
 PROJECT_ROOT = get_validated_project_root()
 # guardian: allow-global-mutation
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import AntiPatternScanner
 from agentic_core.L5_safety.validators.base_detector_validator import EnforcementLevel
-from agentic_core.L5_safety.config.structure_blueprint.ssot import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
-
 from agentic_core.runtime.lifecycle_trace_contract import (
-    _emit_authorize_and_execute,
-    _emit_validates_capability,
-    _emit_routes_to_capability,
-    _emit_writes_via_uwg,
-    _emit_blocks_direct_write,
-    _emit_records_tool_invocation,
-    _emit_captures_execution_output,
-    _emit_dispatches_agent,
-    _emit_coordinates_agents,
-    _emit_records_workflow_lineage,
-    _emit_records_healing_outcome,
-    _emit_escalates_failure,
-    _emit_orchestrates_workflow,
-    _emit_dispatches_healing_run,
-    _emit_invokes_evaluation,
-    _emit_records_telemetry_event,
-    _emit_captures_evaluation_metric,
-    _emit_stores_embedding,
-    _emit_updates_meta_learning_state,
-    _emit_links_execution_to_snapshot,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
     _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
+    _emit_authorize_and_execute,
+    _emit_blocks_direct_write,
+    _emit_captures_evaluation_metric,
+    _emit_captures_execution_output,
+    _emit_captures_pattern,
+    _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_coordinates_agents,
+    _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
+    _emit_dispatches_healing_run,
+    _emit_emits_metric_event,
+    _emit_escalates_failure,
     _emit_escalates_to_human,
+    _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
+    _emit_improves_agent_policy,
+    _emit_invokes_evaluation,
+    _emit_links_execution_to_snapshot,
+    _emit_links_incident_trace,
+    _emit_observes_runtime_state,
+    _emit_orchestrates_workflow,
+    _emit_reads_environ,
+    _emit_reads_runtime_state,
+    _emit_records_execution_trace,
+    _emit_records_healing_outcome,
+    _emit_records_incident_event,
+    _emit_records_learning_event,
+    _emit_records_telemetry_event,
+    _emit_records_tool_invocation,
+    _emit_records_workflow_lineage,
     _emit_routes_through,
+    _emit_routes_to_agent,
+    _emit_routes_to_capability,
+    _emit_stores_embedding,
+    _emit_stores_learning_state,
+    _emit_transcripts_response,
+    _emit_triggers_alert,
+    _emit_updates_meta_learning_state,
+    _emit_updates_monitoring_state,
+    _emit_updates_routing_strategy,
+    _emit_validates_agent_capability,
+    _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
+    _emit_writes_learning_snapshot,
+    _emit_writes_observability_log,
+    _emit_writes_via_uwg,
 )
-from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace, _emit_reads_environ, _emit_reads_runtime_state
-from agentic_core.runtime.lifecycle_trace_contract import _emit_captures_pattern, _emit_records_learning_event, _emit_writes_learning_snapshot, _emit_feeds_meta_learning, _emit_updates_routing_strategy, _emit_improves_agent_policy, _emit_stores_learning_state
-from agentic_core.runtime.lifecycle_trace_contract import _emit_emits_metric_event, _emit_records_incident_event, _emit_captures_runtime_anomaly, _emit_writes_observability_log, _emit_updates_monitoring_state, _emit_triggers_alert, _emit_links_incident_trace
+
 _emit_emits_metric_event("check_anti_patterns", "p4obs", "metric_1")
 _emit_emits_metric_event("check_anti_patterns", "p4obs", "metric_2")
 _emit_emits_metric_event("check_anti_patterns", "p4obs", "metric_3")
@@ -184,7 +212,7 @@ def load_baseline() -> set[str]:
         return set()
     try:
         content = BASELINE_FILE.read_text(encoding='utf-8')
-        return set((line.strip() for line in content.splitlines() if line.strip()))
+        return set(line.strip() for line in content.splitlines() if line.strip())
     except (OSError, UnicodeDecodeError):
         return set()
 
@@ -222,7 +250,7 @@ def check_files(file_paths: list[str]) -> int:
     """
     if not file_paths:
         all_python_files = sorted(PROJECT_ROOT.rglob('*.py'))
-        python_files = [f for f in all_python_files if not set(f.relative_to(PROJECT_ROOT).parts) & _EXCLUDE_DIRS and (not any((f.match(pattern) for pattern in _EXCLUDE_FILE_PATTERNS)))]
+        python_files = [f for f in all_python_files if not set(f.relative_to(PROJECT_ROOT).parts) & _EXCLUDE_DIRS and (not any(f.match(pattern) for pattern in _EXCLUDE_FILE_PATTERNS))]
     else:
         python_files = []
         for f in file_paths:
@@ -310,7 +338,7 @@ def main() -> int:
             print('        To authorize: ALLOW_LANDMINE_BASELINE_WRITE=1 python ops_scripts/ci/check_anti_patterns.py --write-baseline')
             return 1
         all_python_files = sorted(PROJECT_ROOT.rglob('*.py'))
-        all_python_files = [f for f in all_python_files if not set(f.relative_to(PROJECT_ROOT).parts) & _EXCLUDE_DIRS and (not any((f.match(pattern) for pattern in _EXCLUDE_FILE_PATTERNS)))]
+        all_python_files = [f for f in all_python_files if not set(f.relative_to(PROJECT_ROOT).parts) & _EXCLUDE_DIRS and (not any(f.match(pattern) for pattern in _EXCLUDE_FILE_PATTERNS))]
         scanner = AntiPatternScanner(project_root=PROJECT_ROOT, enforcement_level=EnforcementLevel.WARNING)
         report = scanner.scan_changed_files(all_python_files)
         write_baseline(report.all_violations)

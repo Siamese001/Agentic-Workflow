@@ -18,12 +18,10 @@ from __future__ import annotations
 
 import hashlib
 import importlib
-import json
 import shutil
 import sqlite3
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
 
 import pytest
 
@@ -348,7 +346,9 @@ class TestErrorHandlingContracts:
         """Error handling edge detection must return structured results."""
         db = self._make_error_handling_db(tmp_path)
         d = _wrap(tmp_path, db)
-        from scripts.verify_error_handling_contracts import ADGErrorHandlingEnforcementVerifier as ADGErrorHandlingVerifier
+        from scripts.verify_error_handling_contracts import (
+            ADGErrorHandlingEnforcementVerifier as ADGErrorHandlingVerifier,
+        )
         v = ADGErrorHandlingVerifier(d)
         result = v._verify_error_handling_edge_detection()
         assert isinstance(result, dict)
@@ -357,7 +357,9 @@ class TestErrorHandlingContracts:
         """Retry pattern compliance check must not crash on empty retry data."""
         db = self._make_error_handling_db(tmp_path)
         d = _wrap(tmp_path, db)
-        from scripts.verify_error_handling_contracts import ADGErrorHandlingEnforcementVerifier as ADGErrorHandlingVerifier
+        from scripts.verify_error_handling_contracts import (
+            ADGErrorHandlingEnforcementVerifier as ADGErrorHandlingVerifier,
+        )
         v = ADGErrorHandlingVerifier(d)
         result = v._verify_retry_pattern_compliance()
         assert isinstance(result, dict)
@@ -366,7 +368,9 @@ class TestErrorHandlingContracts:
         """Exception hygiene by layer must produce per-layer breakdown."""
         db = self._make_error_handling_db(tmp_path)
         d = _wrap(tmp_path, db)
-        from scripts.verify_error_handling_contracts import ADGErrorHandlingEnforcementVerifier as ADGErrorHandlingVerifier
+        from scripts.verify_error_handling_contracts import (
+            ADGErrorHandlingEnforcementVerifier as ADGErrorHandlingVerifier,
+        )
         v = ADGErrorHandlingVerifier(d)
         result = v._verify_exception_hygiene_by_layer()
         assert "layer_analysis" in result
@@ -375,7 +379,9 @@ class TestErrorHandlingContracts:
         """Full verify() must return dict with status."""
         db = self._make_error_handling_db(tmp_path)
         d = _wrap(tmp_path, db)
-        from scripts.verify_error_handling_contracts import ADGErrorHandlingEnforcementVerifier as ADGErrorHandlingVerifier
+        from scripts.verify_error_handling_contracts import (
+            ADGErrorHandlingEnforcementVerifier as ADGErrorHandlingVerifier,
+        )
         v = ADGErrorHandlingVerifier(d)
         result = v.verify()
         assert result["status"] in ("PASS", "FAIL")
@@ -488,8 +494,8 @@ class TestComposability:
         db = _make_db(tmp_path, nodes=nodes)
         d = _wrap(tmp_path, db)
 
-        from scripts.verify_identity_completeness import ADGIdentityCompletenessVerifier
         from scripts.verify_adg_consistency import ADGConsistencyVerifier
+        from scripts.verify_identity_completeness import ADGIdentityCompletenessVerifier
 
         # Identity verifier SHOULD have errors
         id_v = ADGIdentityCompletenessVerifier(d)

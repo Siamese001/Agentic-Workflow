@@ -5,12 +5,13 @@ Validation script for the restructured YAML to ensure all 14 Windsurf completion
 
 import yaml
 
+
 def validate_yaml_structure():
     """Validate the restructured YAML against all completion criteria"""
 
     # Load YAML
     try:
-        with open('unified_structure_restructured.yaml', 'r', encoding='utf-8') as f:
+        with open('unified_structure_restructured.yaml', encoding='utf-8') as f:
             data = yaml.safe_load(f)
         print("✅ YAML parses correctly")
     except Exception as e:

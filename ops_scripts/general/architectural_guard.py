@@ -5,9 +5,20 @@ Context: Now that the 'common_utils' folder is purged of Agents, we must install
 import ast
 import os
 import sys
-from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
 from pathlib import Path
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
 TARGET_DIR = 'C:\\Git\\Agentic-Workflow\\apps_shared\\common_utils'
 BANNED_SUFFIXES = ['Executor', 'Agent', 'Orchestrator', 'Strategist']
 BANNED_IMPORTS = ['langchain', 'crewai', 'autogen', 'semantic_kernel']
@@ -34,10 +45,10 @@ def scan_for_violations() -> list[str]:
                 for node in ast.walk(tree):
                     if isinstance(node, ast.Import):
                         for name in node.names:
-                            if any((banned in name.name for banned in BANNED_IMPORTS)):
+                            if any(banned in name.name for banned in BANNED_IMPORTS):
                                 violations.append(f"[Import Violation] {file} imports banned module '{name.name}'")
                     elif isinstance(node, ast.ImportFrom):
-                        if node.module and any((banned in node.module for banned in BANNED_IMPORTS)):
+                        if node.module and any(banned in node.module for banned in BANNED_IMPORTS):
                             violations.append(f"[Import Violation] {file} imports from banned module '{node.module}'")
                     if isinstance(node, ast.ClassDef):
                         for base in node.bases:

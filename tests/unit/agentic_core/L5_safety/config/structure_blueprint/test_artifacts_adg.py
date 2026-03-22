@@ -6,8 +6,8 @@ import pytest
 pytestmark = pytest.mark.unit
 
 from agentic_core.L5_safety.config.structure_blueprint.artifacts import (
-    APP_SPECIFIC_PREFIXES,
     APP_SPECIFIC_PATTERN_STRINGS,
+    APP_SPECIFIC_PREFIXES,
     APP_SPECIFIC_TARGET_SUBFOLDER,
     STUTTERING_PREFIX_MAP,
 )

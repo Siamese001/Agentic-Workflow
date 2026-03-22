@@ -1,6 +1,6 @@
 """Debug: dump all edges for specific blocker modules from the latest ADG."""
-import sqlite3
 import os
+import sqlite3
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 db_path = os.path.join(ROOT, "artifacts", "adg", "adg_indexed_03162026_2358.sqlite")

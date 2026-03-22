@@ -17,8 +17,8 @@ import os
 
 import pytest
 
-from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 # ---------------------------------------------------------------------------
 # Constants

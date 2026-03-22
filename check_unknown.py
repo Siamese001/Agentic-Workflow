@@ -59,7 +59,7 @@ cur.execute("""
 """)
 patterns = cur.fetchall()
 
-print(f"\nL_UNKNOWN by path prefix:")
+print("\nL_UNKNOWN by path prefix:")
 for prefix, count in patterns:
     print(f"  {prefix}/*: {count}")
 

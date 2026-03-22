@@ -1,6 +1,6 @@
 """Run test suite with JUnit XML output to get results reliably."""
-import subprocess
 import os
+import subprocess
 import sys
 import xml.etree.ElementTree as ET
 

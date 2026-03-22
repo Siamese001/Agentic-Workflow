@@ -5,8 +5,10 @@ agentic_core/mixins/state_validation_mixin.py — the types/ file is a shim.
 Tests point at the mixin (the real SSOT) using AST inspection.
 """
 from __future__ import annotations
+
 import pathlib
 import re
+
 import pytest
 
 pytestmark = pytest.mark.unit

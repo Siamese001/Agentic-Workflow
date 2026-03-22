@@ -18,7 +18,6 @@ No runtime route selection may ignore capacity data once capacity governance is 
 from __future__ import annotations
 
 import logging
-from typing import Optional
 from dataclasses import dataclass
 
 from agentic_core.L0_routing.capacity.capacity_snapshot import (

@@ -9,7 +9,7 @@ class GoogleSearchClient:
     Centralized client for all Google Custom Search API calls with circuit breaker protection
     """
 
-    def __init__(self, circuit_breaker: "CircuitBreaker"):
+    def __init__(self, circuit_breaker: CircuitBreaker):
         self.api_key = os.environ.get("GOOGLE_API_KEY")
         self.cse_id = os.environ.get("GOOGLE_CSE_ID")
         if not (self.api_key and self.cse_id):

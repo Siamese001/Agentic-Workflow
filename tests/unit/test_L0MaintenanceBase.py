@@ -5,7 +5,6 @@ Test suite for L0RoutingBase.
 
 import agentic_core.base_agents.L0RoutingBase
 
-
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95

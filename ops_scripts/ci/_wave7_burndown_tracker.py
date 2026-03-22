@@ -236,7 +236,7 @@ def main() -> int:
 
     if args.no_ruff:
         dead_total = adg_counts.get("dead_imports", -1)
-        dead_by_layer = {layer: -1 for layer in _LAYER_DIRS}
+        dead_by_layer = dict.fromkeys(_LAYER_DIRS, -1)
         dead_by_layer["__total__"] = dead_total
     else:
         print("Scanning layers for F401 dead imports (this may take a moment)...")

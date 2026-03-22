@@ -11,7 +11,6 @@ Also includes IHealable and ITieredAgent protocols (merged from L5_safety/types/
 """
 
 from __future__ import annotations
-from typing import Optional
 
 from typing import Any, Protocol, runtime_checkable
 

@@ -7,7 +7,6 @@ characteristics for testing AST extraction and classification logic.
 
 from __future__ import annotations
 
-
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95

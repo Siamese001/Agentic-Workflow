@@ -6,17 +6,23 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.utils.ssot_discovery_util import get_python_files
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
     _emit_captures_execution_output,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,  # noqa: E402
     _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_healing_outcome,
@@ -24,25 +30,19 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
     _emit_routes_through,  # noqa: E402
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
 )
 
 emit_replay_key("p0", "GovernanceAgent")
@@ -89,7 +89,6 @@ _emit_links_execution_to_snapshot("p4", "GovernanceAgent", "exec_snapshot_link")
 "\nL6 Sovereign Code Graph & Governance Infrastructure\n\nImplements the DependencyGraph class and impact radius analysis\nfor calculating blast radius of file modifications.\n\nFeatures:\n- AST-based dependency extraction\n- Impact radius calculation\n- Architecture governance laws enforcement (DECISION-ONLY as of P4 consolidation)\n- Blast radius visualization\n\n[P4 CONSOLIDATION] 2025-12-31:\nFile move operations have been centralized into StructuralHealerAgent.\nGovernanceAgent now provides DECISION-ONLY functions:\n- check_depth_law() -> Returns Violation info, does NOT move files\n- check_atomicity_law() -> Returns Violation info, does NOT split files\n\nFor file operations, use:\n    from agentic_core.L5_safety.enforcement.StructuralHealerAgent import StructuralHealerAgent\n    healer = StructuralHealerAgent(project_root)\n    healer.heal_file_moves(violations)  # For depth violations\n    healer.heal_fission(large_files)    # For atomicity violations\n\nGOLD STANDARD UPGRADE (2026-01-02):\n- Structured Violation dataclass with severity levels\n- HierarchyAgent integration for structure validation\n- ImportAgent integration for gravity compliance\n- Post-heal validation with blast radius analysis\n- Batch post-heal reporting with FULL_SUCCESS/PARTIAL/NEEDS_REVIEW\n- cleanup_violations with multi-stage healing coordination\n- run_with_cleanup returning comprehensive summaries\n\nDOMAIN-SPECIFIC INTEGRATIONS:\n- HierarchyAgent: Validate structure after governance fixes\n- ImportAgent: Check gravity compliance after moves\n- DependencyGraph: Calculate blast radius for all changes\n"
 import ast
 import logging
-from typing import Optional
 import uuid
 from dataclasses import dataclass
 from datetime import datetime
@@ -124,15 +123,21 @@ except ImportError:
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, TESTS_DIR
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
+    _emit_dispatches_execution_plan,
     _emit_emits_metric_event,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -140,37 +145,20 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_execution_trace,
     _emit_records_incident_event,
     _emit_records_learning_event,
+    _emit_routes_to_agent,
     _emit_snapshots_state,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
 )
 from agentic_core.utils.timeout_decorator_util import timeout
 
@@ -212,6 +200,7 @@ _emit_validated_by_safety_plane("p1", "GovernanceAgent", "safety_validation")
 _emit_invokes_eval("p1", "GovernanceAgent", "eval_call")
 _emit_proposal_commits_routing("p1", "GovernanceAgent", "routing_commit")
 from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+
 emit_determinism_digest("trace_GovernanceAgent", "GovernanceAgent_dispatch_entry")
 emit_determinism_digest("trace_GovernanceAgent", "GovernanceAgent_dispatch_exit")
 emit_determinism_digest("trace_GovernanceAgent", "GovernanceAgent_tool_invoke")

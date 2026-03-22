@@ -7,12 +7,27 @@ It FAILS if any non-doc/non-artifact file introduces the string "apps_shared.uti
 import argparse
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 _ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
-from agentic_core.L5_safety.config.structure_blueprint.ssot import GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 
 def check_forbidden_imports(repo_root: Path) -> int:
     """Check for forbidden imports of apps_shared instructional_layer."""
@@ -23,7 +38,7 @@ def check_forbidden_imports(repo_root: Path) -> int:
     for file_path in repo_root.rglob('*'):
         if not file_path.is_file():
             continue
-        if any((exclude_dir in file_path.parts for exclude_dir in exclude_dirs)):
+        if any(exclude_dir in file_path.parts for exclude_dir in exclude_dirs):
             continue
         if file_path.suffix in exclude_extensions:
             continue

@@ -4,8 +4,20 @@ Scan for duplicate files across the codebase and generate deletion review table.
 import asyncio
 import sys
 from pathlib import Path
+
 from tabulate import tabulate
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 project_root = Path(__file__).parent.parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
@@ -47,8 +59,8 @@ async def main():
     print('SUMMARY')
     print('=' * 80)
     print(f'Total duplicate sets: {len(recommendations)}')
-    print(f"Total files to delete: {sum((len(rec['delete']) for rec in recommendations))}")
-    print(f"Total space to reclaim: {sum((rec['size'] for rec in recommendations)) / 1024:.1f} KB")
+    print(f"Total files to delete: {sum(len(rec['delete']) for rec in recommendations)}")
+    print(f"Total space to reclaim: {sum(rec['size'] for rec in recommendations) / 1024:.1f} KB")
     print()
     by_type = {}
     for rec in recommendations:

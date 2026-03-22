@@ -1,7 +1,7 @@
 """Get detailed info about each remaining error: test file, source file, line, error."""
-import subprocess
-import re
 import os
+import re
+import subprocess
 
 ROOT = r"C:\Git\Agentic-Workflow"
 unit_dir = os.path.join(ROOT, "tests", "unit")

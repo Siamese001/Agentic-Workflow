@@ -11,10 +11,8 @@ Constitutional Compliance: §3.4, §3.5, §3.6, §3.7
 
 import ast
 import sys
-from pathlib import Path
-from collections import defaultdict
 from dataclasses import dataclass
-from typing import Dict, List, Set, Optional
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -40,8 +38,8 @@ class SOVEREIGNTERRITORIESAnalyzer(ast.NodeVisitor):
 
     def __init__(self, filepath: str):
         self.filepath = filepath
-        self.imports: List[ImportNode] = []
-        self.usages: List[UsageNode] = []
+        self.imports: list[ImportNode] = []
+        self.usages: list[UsageNode] = []
         self.current_line = 0
 
     def visit_Import(self, node: ast.Import):
@@ -99,7 +97,7 @@ class SOVEREIGNTERRITORIESAnalyzer(ast.NodeVisitor):
             ))
         self.generic_visit(node)
 
-def parse_file_ast(filepath: Path) -> Optional[ast.AST]:
+def parse_file_ast(filepath: Path) -> ast.AST | None:
     """Parse Python file to AST. Returns None on failure (fail-closed per §3.6)."""
     try:
         content = filepath.read_text(encoding='utf-8', errors='ignore')
@@ -112,7 +110,7 @@ def parse_file_ast(filepath: Path) -> Optional[ast.AST]:
         print(f"⚠️  Read Error: {filepath.relative_to(ROOT)}: {e}")
         return None
 
-def analyze_file(filepath: Path) -> tuple[List[ImportNode], List[UsageNode], bool]:
+def analyze_file(filepath: Path) -> tuple[list[ImportNode], list[UsageNode], bool]:
     """
     Analyze a single Python file for SOVEREIGN_TERRITORIES references.
 
@@ -153,7 +151,7 @@ def categorize_file(filepath: Path) -> str:
 
     return 'production'
 
-def build_dependency_graph() -> Dict[str, Dict]:
+def build_dependency_graph() -> dict[str, dict]:
     """
     Build AST-based dependency graph for SOVEREIGN_TERRITORIES.
 
@@ -197,7 +195,7 @@ def build_dependency_graph() -> Dict[str, Dict]:
 
     return graph
 
-def generate_report(graph: Dict) -> str:
+def generate_report(graph: dict) -> str:
     """Generate graph-backed verification report per §3.7."""
 
     report = []

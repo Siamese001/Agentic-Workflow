@@ -68,6 +68,19 @@ _DISPATCHES_PLAN_LOG = logging.getLogger("adg.dispatches_execution_plan")
 _VALIDATES_CAPABILITY_LOG = logging.getLogger("adg.validates_agent_capability")
 _CHECKS_REGISTRY_LOG = logging.getLogger("adg.checks_agent_registry")
 
+# ── 1608 Hardening loggers ────────────────────────────────────────────
+_MUTATION_SIGNATURE_LOG = logging.getLogger("adg.mutation_signature")
+_PARENT_SNAPSHOT_LOG = logging.getLogger("adg.parent_snapshot_hash")
+_POLICY_VERIFICATION_LOG = logging.getLogger("adg.policy_verification")
+_DEFINES_TEST_CASE_LOG = logging.getLogger("adg.defines_test_case")
+_DEFINES_TEST_SUITE_LOG = logging.getLogger("adg.defines_test_suite")
+_DEFINES_INVARIANT_LOG = logging.getLogger("adg.defines_invariant")
+_EMITS_TEST_RESULT_LOG = logging.getLogger("adg.emits_test_result")
+_RECORDS_VALIDATION_LOG = logging.getLogger("adg.records_validation_outcome")
+_LINKS_TRACE_LOG = logging.getLogger("adg.links_to_execution_trace")
+_GATES_PROMOTION_LOG = logging.getLogger("adg.gates_promotion")
+_DETECTS_REGRESSION_LOG = logging.getLogger("adg.detects_regression")
+
 # ── P2 Execution Capability loggers ───────────────────────────────────────────
 _AUTHORIZE_EXECUTE_LOG = logging.getLogger("adg.authorize_and_execute")
 _VALIDATES_CAP_LOG = logging.getLogger("adg.validates_capability")
@@ -1166,31 +1179,63 @@ def get_lifecycle_recorder(run_id: str = "") -> LifecycleTraceRecorder:
     return LifecycleTraceRecorder(run_id=run_id)
 
 
+
+# 1608 Hardening - Missing emitters for final gap closure
+def _emit_mutation_signature(trace_id: str, function_name: str, signature: str = "") -> None:
+    """Emit mutation signature for replay convergence."""
+    _MUTATION_SIGNATURE_LOG.debug(f"[TRACE] mutation_signature: {trace_id} -> {function_name}")
+
+def _emit_parent_snapshot_hash(trace_id: str, function_name: str, snapshot_hash: str = "") -> None:
+    """Emit parent snapshot hash for replay convergence."""
+    _PARENT_SNAPSHOT_LOG.debug(f"[TRACE] parent_snapshot_hash: {trace_id} -> {function_name}")
+
+def _emit_policy_verification(trace_id: str, function_name: str, policy_id: str = "") -> None:
+    """Emit policy verification for critical edge distribution."""
+    _POLICY_VERIFICATION_LOG.debug(f"[TRACE] policy_verification: {trace_id} -> {function_name}")
+
+def _emit_dispatches_execution_plan(trace_id: str, function_name: str, plan_id: str = "") -> None:
+    """Emit execution plan dispatch for critical edge distribution."""
+    _DISPATCHES_PLAN_LOG.debug(f"[TRACE] dispatches_execution_plan: {trace_id} -> {function_name}")
+
+def _emit_defines_test_case(trace_id: str, function_name: str, test_case: str = "") -> None:
+    """Emit test case definition for test surface binding."""
+    _DEFINES_TEST_CASE_LOG.debug(f"[TRACE] defines_test_case: {trace_id} -> {function_name}")
+
+def _emit_defines_test_suite(trace_id: str, function_name: str, test_suite: str = "") -> None:
+    """Emit test suite definition for test surface binding."""
+    _DEFINES_TEST_SUITE_LOG.debug(f"[TRACE] defines_test_suite: {trace_id} -> {function_name}")
+
+def _emit_defines_invariant(trace_id: str, function_name: str, invariant: str = "") -> None:
+    """Emit invariant definition for test surface binding."""
+    _DEFINES_INVARIANT_LOG.debug(f"[TRACE] defines_invariant: {trace_id} -> {function_name}")
+
+def _emit_emits_test_result(trace_id: str, function_name: str, result: str = "") -> None:
+    """Emit test result for test surface binding."""
+    _EMITS_TEST_RESULT_LOG.debug(f"[TRACE] emits_test_result: {trace_id} -> {function_name}")
+
+def _emit_records_validation_outcome(trace_id: str, function_name: str, outcome: str = "") -> None:
+    """Emit validation outcome for test surface binding."""
+    _RECORDS_VALIDATION_LOG.debug(f"[TRACE] records_validation_outcome: {trace_id} -> {function_name}")
+
+def _emit_links_to_execution_trace(trace_id: str, function_name: str, trace_link: str = "") -> None:
+    """Emit execution trace link for test surface binding."""
+    _LINKS_TRACE_LOG.debug(f"[TRACE] links_to_execution_trace: {trace_id} -> {function_name}")
+
+def _emit_gates_promotion(trace_id: str, function_name: str, gate_id: str = "") -> None:
+    """Emit promotion gate for test surface binding."""
+    _GATES_PROMOTION_LOG.debug(f"[TRACE] gates_promotion: {trace_id} -> {function_name}")
+
+def _emit_detects_regression(trace_id: str, function_name: str, regression: str = "") -> None:
+    """Emit regression detection for test surface binding."""
+    _DETECTS_REGRESSION_LOG.debug(f"[TRACE] detects_regression: {trace_id} -> {function_name}")
+
 __all__ = [
-    "LayerSegment",
-    "TraceSegment",
-    "LifecycleTraceContract",
-    "LifecycleTraceRecorder",
-    "UntraceableRunError",
-    "get_lifecycle_recorder",
-    "get_lifecycle_contracts",
-    "emit_replay_key",
-    "emit_determinism_digest",
-    "record_execution_trace",
+    # Original emitters
     "_emit_records_execution_trace",
+    "_emit_applies_guardrail",
+    "_emit_reads_policy_state",
+    "_emit_snapshots_state",
     "_emit_signs_execution_trace",
-    "_emit_transcripts_response",
-    "_emit_hard_fails_untranscripted",
-    "_emit_writes_through",
-    "_emit_reads_through",
-    "_emit_escalates_to_human",
-    "_emit_routes_through",
-    "_emit_dispatches_healing_run",
-    "_emit_routes_to_agent",
-    "_emit_orchestrates_workflow",
-    "_emit_dispatches_execution_plan",
-    "_emit_validates_agent_capability",
-    "_emit_checks_agent_registry",
     "_emit_authorize_and_execute",
     "_emit_validates_capability",
     "_emit_routes_to_capability",
@@ -1203,32 +1248,29 @@ __all__ = [
     "_emit_records_workflow_lineage",
     "_emit_records_healing_outcome",
     "_emit_escalates_failure",
+    "_emit_orchestrates_workflow",
+    "_emit_dispatches_healing_run",
     "_emit_invokes_evaluation",
     "_emit_records_telemetry_event",
     "_emit_captures_evaluation_metric",
     "_emit_stores_embedding",
     "_emit_updates_meta_learning_state",
     "_emit_links_execution_to_snapshot",
-    "_emit_pulls_context",
-    "_emit_execution_terminates_at_uwg",
-    "_emit_invokes_eval",
-    "_emit_proposal_commits_routing",
-    "_emit_reads_environ",
-    "_emit_reads_runtime_state",
-    "_emit_captures_pattern",
-    "_emit_records_learning_event",
-    "_emit_writes_learning_snapshot",
-    "_emit_feeds_meta_learning",
-    "_emit_updates_routing_strategy",
-    "_emit_improves_agent_policy",
-    "_emit_stores_learning_state",
-    "_emit_emits_metric_event",
-    "_emit_records_incident_event",
-    "_emit_captures_runtime_anomaly",
-    "_emit_writes_observability_log",
-    "_emit_updates_monitoring_state",
-    "_emit_triggers_alert",
-    "_emit_links_incident_trace",
+    emit_replay_key,
+    emit_determinism_digest,
+    # 1608 Hardening emitters
+    "_emit_mutation_signature",
+    "_emit_parent_snapshot_hash",
+    "_emit_policy_verification",
+    "_emit_dispatches_execution_plan",
+    "_emit_defines_test_case",
+    "_emit_defines_test_suite",
+    "_emit_defines_invariant",
+    "_emit_emits_test_result",
+    "_emit_records_validation_outcome",
+    "_emit_links_to_execution_trace",
+    "_emit_gates_promotion",
+    "_emit_detects_regression",
 ]
 
 _emit_reads_through("l4", "lifecycle_trace_contract", "urg_read_1")

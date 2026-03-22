@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Profile individual visitor costs per file to find the bottleneck."""
 import ast
-import time
 import sys
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -11,28 +11,60 @@ if str(ROOT) not in sys.path:
 
 # suppress hard_fails noise
 import logging
+
 logging.disable(logging.CRITICAL)
 
 from agentic_core.adg.extraction.static_scanner import (
-    _ImportVisitor, _CallVisitor, _InheritanceVisitor, _AttributeVisitor,
-    _CompositionVisitor, _DynamicExecutionVisitor, _InternalCallGraphVisitor,
-    _TestTraceabilityVisitor, _GovernancePlaneVisitor, _CriticalEdgeVisitor,
-    _SymbolInventoryVisitor, _DecoratorVisitor, _TypeAnnotationVisitor,
-    _UnusedImportVisitor, _AntipatternVisitor, _PromptSlotVisitor,
-    _ExecutionTraceVisitor, _HealerValidatorVisitor, _EmbeddingPipelineVisitor,
-    _HITLVisitor, _SafetyEnforcementVisitor, _SandboxAirlockVisitor,
-    _CapabilityBudgetVisitor, _JITContextVisitor, _BoundaryVerifierVisitor,
-    _DeterminismControlVisitor, _IOInterceptionVisitor, _MutationTransportVisitor,
-    _ExecutionProofVisitor, _PathControlVisitor, _EvalSpineVisitor,
-    _DuplicateMethodVisitor, _UnreachableCodeAfterRaiseVisitor, _SecretAccessVisitor,
-    _AgentDispatchVisitor, _DynamicInvocationVisitor, _NondeterminismVisitor,
-    _L5ValidationProofVisitor, _LearningProvenanceVisitor,
-    _P1OrchestrationGovernanceVisitor, _P2ExecutionCapabilityVisitor,
-    _P3OrchestrationHealingVisitor, _P3LearningMaturityVisitor,
-    _P4ObservabilityGovernanceVisitor, _P4StateTelemetryVisitor,
-    _AntipatternRegistryVisitor, _ConfigGovernanceVisitor,
-    _PolicyStateObserverVisitor, _HealingOrchestratorVisitor,
-    canonical_name, _repo_relative,
+    _AgentDispatchVisitor,
+    _AntipatternRegistryVisitor,
+    _AntipatternVisitor,
+    _AttributeVisitor,
+    _BoundaryVerifierVisitor,
+    _CallVisitor,
+    _CapabilityBudgetVisitor,
+    _CompositionVisitor,
+    _ConfigGovernanceVisitor,
+    _CriticalEdgeVisitor,
+    _DecoratorVisitor,
+    _DeterminismControlVisitor,
+    _DuplicateMethodVisitor,
+    _DynamicExecutionVisitor,
+    _DynamicInvocationVisitor,
+    _EmbeddingPipelineVisitor,
+    _EvalSpineVisitor,
+    _ExecutionProofVisitor,
+    _ExecutionTraceVisitor,
+    _GovernancePlaneVisitor,
+    _HealerValidatorVisitor,
+    _HealingOrchestratorVisitor,
+    _HITLVisitor,
+    _ImportVisitor,
+    _InheritanceVisitor,
+    _InternalCallGraphVisitor,
+    _IOInterceptionVisitor,
+    _JITContextVisitor,
+    _L5ValidationProofVisitor,
+    _LearningProvenanceVisitor,
+    _MutationTransportVisitor,
+    _NondeterminismVisitor,
+    _P1OrchestrationGovernanceVisitor,
+    _P2ExecutionCapabilityVisitor,
+    _P3LearningMaturityVisitor,
+    _P3OrchestrationHealingVisitor,
+    _P4ObservabilityGovernanceVisitor,
+    _P4StateTelemetryVisitor,
+    _PathControlVisitor,
+    _PolicyStateObserverVisitor,
+    _PromptSlotVisitor,
+    _SafetyEnforcementVisitor,
+    _SandboxAirlockVisitor,
+    _SecretAccessVisitor,
+    _SymbolInventoryVisitor,
+    _TestTraceabilityVisitor,
+    _TypeAnnotationVisitor,
+    _UnreachableCodeAfterRaiseVisitor,
+    _UnusedImportVisitor,
+    canonical_name,
 )
 from agentic_core.adg.identity.normalizer import IdentityNormalizer
 

@@ -15,7 +15,6 @@ Judges implemented:
 
 from __future__ import annotations
 
-import hashlib
 import json
 import logging
 import uuid
@@ -512,7 +511,7 @@ def judge_sec_002(bundle: EvidenceBundle) -> JudgeVerdict:
             rubric_id="SEC-002",
             outcome=VerdictOutcome.SKIP.value,
             score=1.0,
-            reasoning=f"Module in allowlisted path — import restrictions relaxed",
+            reasoning="Module in allowlisted path — import restrictions relaxed",
             severity="HIGH",
             adg_digest=bundle.adg_digest,
             provider_id="deterministic",

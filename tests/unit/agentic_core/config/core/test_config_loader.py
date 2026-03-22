@@ -2,8 +2,6 @@
 """Tests for agentic_core.config.core.config_loader."""
 import importlib
 
-import pytest
-
 
 def test_agentic_core_config_core_config_loader_importable():
     """Module must be importable without error."""

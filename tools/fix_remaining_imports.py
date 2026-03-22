@@ -8,7 +8,6 @@ lifecycle_trace_contract import block or create a new one.
 
 import os
 import re
-import sys
 
 ROOT = r"C:\Git\Agentic-Workflow"
 SCAN_DIRS = [
@@ -33,7 +32,7 @@ for scan_dir in SCAN_DIRS:
                 continue
             fpath = os.path.join(dirpath, fn)
             try:
-                with open(fpath, "r", encoding="utf-8") as f:
+                with open(fpath, encoding="utf-8") as f:
                     content = f.read()
             except Exception:
                 continue

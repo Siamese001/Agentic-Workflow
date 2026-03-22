@@ -2,11 +2,12 @@
 """Verify ALLOW_ROOT_PY_TERRITORIES is in structure_blueprint package __all__."""
 import sys
 from pathlib import Path
+
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT))
 
-from agentic_core.L5_safety.config import structure_blueprint_config as sbc
 from agentic_core.L5_safety.config import structure_blueprint as sb
+from agentic_core.L5_safety.config import structure_blueprint_config as sbc
 
 print("=== structure_blueprint package __all__ check ===")
 pkg_all = getattr(sb, '__all__', [])
@@ -18,7 +19,7 @@ print("\n=== structure_blueprint_config shim check ===")
 has_arpt = hasattr(sbc, 'ALLOW_ROOT_PY_TERRITORIES')
 print(f"  hasattr(structure_blueprint_config, 'ALLOW_ROOT_PY_TERRITORIES'): {has_arpt}")
 if has_arpt:
-    val = getattr(sbc, 'ALLOW_ROOT_PY_TERRITORIES')
+    val = sbc.ALLOW_ROOT_PY_TERRITORIES
     print(f"  value type: {type(val).__name__}  len: {len(val) if hasattr(val, '__len__') else 'N/A'}")
 
 print("\n=== sbc.__all__ contains it? ===")

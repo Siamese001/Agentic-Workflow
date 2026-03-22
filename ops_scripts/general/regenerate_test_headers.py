@@ -2,7 +2,18 @@
 Regenerate proper Python headers for all test files.
 """
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 
 def regenerate_headers(project_root: Path):
     """Add proper Python headers to test files."""
@@ -15,7 +26,7 @@ def regenerate_headers(project_root: Path):
             content = test_file.read_text(encoding='utf-8')
             if not content.startswith('"""') and (not content.startswith('import')) and (not content.startswith('from')):
                 class_name = test_file.stem.replace('test_', '')
-                class_name = ''.join((word.capitalize() for word in class_name.split('_')))
+                class_name = ''.join(word.capitalize() for word in class_name.split('_'))
                 header = f'"""\nTest file for {class_name}\n\nMECE Test Categories:\n- Initialization: Constructor and __post_init__ behavior\n- Core Methods: Primary business logic\n- Edge Cases: Boundary conditions and error handling\n- Type Boundaries: Input/output type validation\n\nValidation Points:\n- Acronym Protection: Using _to_smart_snake_case for all references\n- Suffix Hygiene: No stuttering patterns like AgentOrchestrator\n- Primary Class Focus: {class_name} only, secondaries mocked\n"""\n\n'
                 lines = content.split('\n')
                 cleaned_lines = []

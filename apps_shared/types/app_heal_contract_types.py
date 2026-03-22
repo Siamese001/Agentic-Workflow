@@ -39,11 +39,11 @@ class AppHealResult:
         }
 
     @classmethod
-    def skipped(cls, check_id: str, app: str, reason: str) -> "AppHealResult":
+    def skipped(cls, check_id: str, app: str, reason: str) -> AppHealResult:
         return cls(check_id=check_id, app=app, status=AppHealStatus.SKIPPED, detail=reason)
 
     @classmethod
-    def failed(cls, check_id: str, app: str, reason: str) -> "AppHealResult":
+    def failed(cls, check_id: str, app: str, reason: str) -> AppHealResult:
         return cls(check_id=check_id, app=app, status=AppHealStatus.FAILED, detail=reason)
 
 

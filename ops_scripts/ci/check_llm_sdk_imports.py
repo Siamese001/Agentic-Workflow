@@ -4,10 +4,22 @@ Blocks: openai, anthropic, google.generativeai, vertexai,
         requests, httpx, aiohttp, urllib.request (outside allowed boundary).
 """
 from __future__ import annotations
+
 import ast
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 BLOCKED_TOP_LEVEL = {'openai', 'anthropic', 'vertexai', 'requests', 'httpx', 'aiohttp', 'faiss', 'sentence_transformers', 'tiktoken'}
 BLOCKED_FROM = {('google', 'generativeai'), ('urllib', 'request')}

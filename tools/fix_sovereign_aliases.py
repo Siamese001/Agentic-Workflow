@@ -1,9 +1,9 @@
 """Find all missing capitalized aliases in sovereign_severity_types.py and add them."""
-import re
 import ast
+import re
 
 fp = r"C:\Git\Agentic-Workflow\apps_shared\types\sovereign_severity_types.py"
-src = open(fp, "r", encoding="utf-8").read()
+src = open(fp, encoding="utf-8").read()
 
 # Find all capitalized names in the registry dict
 registry_match = re.search(r"core_contracts_types_registry\s*=\s*\{(.*?)\}", src, re.DOTALL)

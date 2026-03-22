@@ -11,21 +11,20 @@ Provides deterministic execution proof infrastructure for ADG runtime:
 from __future__ import annotations
 
 import hashlib
-from dataclasses import field
 import time
 import uuid
-from dataclasses import dataclass, field, field
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,
-    _emit_records_execution_trace,
     _emit_reads_policy_state,
-    _emit_snapshots_state,
+    _emit_records_execution_trace,
     _emit_signs_execution_trace,
-    emit_replay_key,
+    _emit_snapshots_state,
     emit_determinism_digest,
+    emit_replay_key,
 )
 
 _emit_records_execution_trace("p0", "evidence", "execution_proof")

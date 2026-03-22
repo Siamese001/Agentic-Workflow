@@ -1,8 +1,7 @@
 from __future__ import annotations
-from pathlib import Path
-from typing import Optional
 
 from dataclasses import dataclass
+from pathlib import Path
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
@@ -224,7 +223,6 @@ class NervousSystemAgent(SovereignBaseAgent):
             config: Orchestrator configuration
         """
         # guardian: allow-magic-config
-        from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
         self.safety_layer = create_l5_safety_layer(cost_limit_usd=10.0)
         storage_adapter = create_storage_adapter("local", base_path="./agentic_core")
         self.CheckpointManager = VerifiableCheckpointManager(storage_adapter)

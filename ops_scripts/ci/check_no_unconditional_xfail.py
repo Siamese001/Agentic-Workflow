@@ -13,10 +13,22 @@ Exit codes:
     1 — unconditional xfail found
 """
 from __future__ import annotations
+
 import ast
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 _DEFAULT_SCAN_DIRS = ['tests/governance', 'tests/guardian', 'tests/architecture']
 _ENV_GATE_KEYWORDS = ('environ', 'getenv', 'os.environ', 'os.getenv', 'env', 'CI', 'PYTEST_')
 
@@ -47,7 +59,7 @@ def _is_unconditional_xfail(decorator: ast.expr) -> bool:
         if kw.arg == 'reason':
             if isinstance(kw.value, ast.Constant) and isinstance(kw.value.value, str):
                 reason_lower = kw.value.value.lower()
-                if any((k.lower() in reason_lower for k in _ENV_GATE_KEYWORDS)):
+                if any(k.lower() in reason_lower for k in _ENV_GATE_KEYWORDS):
                     return False
     return True
 

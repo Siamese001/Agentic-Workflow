@@ -1,5 +1,7 @@
 """Fix missing NameErrors in agentic_core source files by adding imports."""
-import re, ast, os
+import ast
+import os
+import re
 
 ROOT_DIR = r"C:\Git\Agentic-Workflow"
 
@@ -28,7 +30,7 @@ NAMEERROR_FILES = {
 
 def fix_root_in_file(filepath):
     """Add ROOT definition after imports if missing."""
-    src = open(filepath, "r", encoding="utf-8").read()
+    src = open(filepath, encoding="utf-8").read()
     if re.search(r"^ROOT\s*=", src, re.MULTILINE):
         return False  # Already defined
 
@@ -69,7 +71,7 @@ def fix_root_in_file(filepath):
 
 def fix_global_excluded_dirs(filepath):
     """Add GLOBAL_EXCLUDED_DIRS definition."""
-    src = open(filepath, "r", encoding="utf-8").read()
+    src = open(filepath, encoding="utf-8").read()
     if "GLOBAL_EXCLUDED_DIRS" in src and "=" in src.split("GLOBAL_EXCLUDED_DIRS")[0].split("\n")[-1]:
         return False  # Already defined somewhere
 

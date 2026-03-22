@@ -18,7 +18,7 @@ FILES = [
 fixed = 0
 for f in FILES:
     fp = os.path.join(ROOT, f)
-    src = open(fp, "r", encoding="utf-8").read()
+    src = open(fp, encoding="utf-8").read()
     lines = src.split("\n")
 
     # Split into: header (docstring, future, pytest, pytestmark) and rest

@@ -3,7 +3,7 @@ import ast
 import re
 
 fp = r"C:\Git\Agentic-Workflow\apps_shared\types\sovereign_severity_types.py"
-src = open(fp, "r", encoding="utf-8").read()
+src = open(fp, encoding="utf-8").read()
 
 # Step 1: Remove ALL existing standalone alias lines (CamelCase = snake_case)
 # except ThermalProfile which we already placed correctly

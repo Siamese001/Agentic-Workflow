@@ -2,8 +2,8 @@
 """Comprehensive scan for all SOVEREIGN_TERRITORIES references in production code."""
 
 import re
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
 

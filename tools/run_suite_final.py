@@ -1,5 +1,8 @@
 """Run test suite per-subdir to avoid fd crash, aggregate via JUnit XML."""
-import subprocess, os, sys, xml.etree.ElementTree as ET
+import os
+import subprocess
+import sys
+import xml.etree.ElementTree as ET
 
 root = r"C:\Git\Agentic-Workflow"
 unit_dir = os.path.join(root, "tests", "unit")

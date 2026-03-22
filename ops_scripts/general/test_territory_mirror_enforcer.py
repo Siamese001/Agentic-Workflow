@@ -17,10 +17,10 @@ from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
-    TESTS_DIR,
-    APPS_SHARED_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    TESTS_DIR,
 )
 
 

@@ -3,8 +3,10 @@
 Uses AST-based source inspection -- immune to broken transitive deps.
 """
 from __future__ import annotations
+
 import ast
 import pathlib
+
 import pytest
 
 pytestmark = pytest.mark.unit
@@ -31,7 +33,7 @@ class TestBrandComplianceAgentSource:
         assert "BrandComplianceAgent" in _src_text()
 
     def test_no_network_calls_on_import(self):
-        from unittest.mock import patch, Mock
+        from unittest.mock import patch
         network_calls = []
         def track(*a, **k): network_calls.append(1)
         with patch("requests.get", track), patch("requests.post", track):

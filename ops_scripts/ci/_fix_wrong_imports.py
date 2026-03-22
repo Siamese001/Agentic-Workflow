@@ -12,11 +12,23 @@ Usage:
     python ops_scripts/ci/_fix_wrong_imports.py [--dry-run]
 """
 from __future__ import annotations
+
 import json
 import re
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 ROOT = Path(__file__).resolve().parent.parent.parent
 DRY_RUN = '--dry-run' in sys.argv
 report = json.loads((ROOT / 'artifacts' / 'ssot_violation_scan.json').read_text())

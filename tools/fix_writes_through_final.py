@@ -37,7 +37,7 @@ for base_dir in ["agentic_core", "tests", "system_learning"]:
                 continue
             fpath = os.path.join(dirpath, fn)
             try:
-                with open(fpath, "r", encoding="utf-8") as f:
+                with open(fpath, encoding="utf-8") as f:
                     content = f.read()
             except Exception:
                 continue

@@ -14,8 +14,9 @@ Usage:
 # guardian: allow-global-mutation
 """
 from __future__ import annotations
-import ast
+
 import argparse
+import ast
 import sys
 from pathlib import Path
 from typing import Any
@@ -219,7 +220,7 @@ def main():
                         print(f"    L{detail['line']}: {detail['type']} - {detail['original'][:80]}")
 
     print(f"\n{'='*60}")
-    print(f"Summary:")
+    print("Summary:")
     print(f"  Total files scanned: {total_files}")
     print(f"  Files with mutations: {migrated_files}")
     print(f"  Total mutations: {total_mutations}")

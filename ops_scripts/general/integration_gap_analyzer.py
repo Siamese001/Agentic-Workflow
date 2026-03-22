@@ -17,8 +17,19 @@ import json
 import re
 from collections import defaultdict
 from pathlib import Path
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 CRITICAL_MIXINS = {'MetaLearningMixin': 'P0', 'AuditTrailMixin': 'P1', 'CostGuardrailMixin': 'P1', 'HITLMixin': 'P0', 'PineconeVectorMixin': 'P1', 'RedisCacheMixin': 'P1', 'HealerMixin': 'P0'}
 CRITICAL_COMPONENTS = {'DetectionSignal': 'P0', 'VerificationGate': 'P0', 'HumanReviewQueue': 'P0'}
@@ -143,8 +154,8 @@ def print_report(results):
     print('=== LAYER DISTRIBUTION ===')
     for layer in sorted(results['by_layer'].keys()):
         agents_in_layer = results['by_layer'][layer]
-        p0_count = sum((1 for a in agents_in_layer if a['priority'] == 'P0'))
-        p1_count = sum((1 for a in agents_in_layer if a['priority'] == 'P1'))
+        p0_count = sum(1 for a in agents_in_layer if a['priority'] == 'P0')
+        p1_count = sum(1 for a in agents_in_layer if a['priority'] == 'P1')
         print(f'  {layer}: {len(agents_in_layer)} agents (P0: {p0_count}, P1: {p1_count})')
     print()
     print('=== COMPONENT USAGE (AST VERIFIED) ===')

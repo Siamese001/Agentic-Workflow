@@ -1,6 +1,9 @@
 """Diagnose agentic_core collection errors per subdirectory."""
-import subprocess, sys, os, re
-from collections import Counter, defaultdict
+import os
+import re
+import subprocess
+import sys
+from collections import Counter
 
 root = r"C:\Git\Agentic-Workflow"
 ac_dir = os.path.join(root, "tests", "unit", "agentic_core")
@@ -68,10 +71,10 @@ for sd, tf, sf, em in all_errors:
         cats["AttributeError"] += 1
         print(f"[AttrError] {em[:100]}  src={sf[:60]}")
     else:
-        cats[f"Other"] += 1
+        cats["Other"] += 1
         if em:
             print(f"[Other] {em[:100]}")
 
-print(f"\n=== Summary by category ===")
+print("\n=== Summary by category ===")
 for cat, cnt in cats.most_common():
     print(f"  [{cnt:2d}] {cat}")

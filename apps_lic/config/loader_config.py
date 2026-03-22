@@ -8,9 +8,10 @@ import json
 import logging
 from pathlib import Path
 
+from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
+
 from .archetype_indicator_config import AgentSpecs
 
-from apps_shared.config.pipeline_constants_config import MAX_RETRIES  # noqa: F401
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
 BUFFER_SIZE = 8192

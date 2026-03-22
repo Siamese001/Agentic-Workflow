@@ -31,12 +31,10 @@ from agentic_core.evaluation.judges.evidence_assembler import EvidenceAssembler
 from agentic_core.evaluation.judges.llm_judges import LLM_JUDGES, run_llm_judge
 from agentic_core.evaluation.judges.provider_registry import (
     JudgeProviderRegistry,
-    NullJudgeProvider,
     create_default_registry,
 )
 from agentic_core.evaluation.judges.rubric_engine import RubricEngine
 from agentic_core.evaluation.judges.types import (
-    EvidenceBundle,
     JudgeReport,
     JudgeReportRow,
     JudgeVerdict,

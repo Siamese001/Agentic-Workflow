@@ -16,14 +16,12 @@ Usage::
 
 from __future__ import annotations
 
-import json
 import logging
 from datetime import datetime, timezone
 from typing import Any
 
 from agentic_core.evaluation.judges.types import (
     JudgeReport,
-    JudgeReportRow,
     VerdictOutcome,
 )
 from agentic_core.evaluation.judges.verdict_store import VerdictStore

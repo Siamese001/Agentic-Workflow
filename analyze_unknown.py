@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Analyze L_UNKNOWN nodes to find missing layer mappings."""
 import sqlite3
-from pathlib import Path
 from collections import Counter
+from pathlib import Path
 
 sqlite_path = Path("artifacts/adg/adg_indexed_03222026_1546.sqlite")
 if not sqlite_path.exists():

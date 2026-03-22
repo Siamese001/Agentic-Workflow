@@ -1,7 +1,7 @@
 """Capture unit test collection errors to a file, then parse them."""
-import subprocess
-import re
 import os
+import re
+import subprocess
 from collections import Counter
 
 ROOT = r"C:\Git\Agentic-Workflow"
@@ -76,6 +76,6 @@ print(f"=== {len(all_errors)} total unit test collection errors ===\n")
 for k, v in cats.most_common(30):
     print(f"[{v:3d}] {k}")
 
-print(f"\nTop source files causing errors:")
+print("\nTop source files causing errors:")
 for k, v in srcs.most_common(15):
     print(f"  [{v:3d}] {k}")

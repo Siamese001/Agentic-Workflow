@@ -2,8 +2,6 @@
 """Tests for agentic_core.interfaces.IValidatorProtocol."""
 import importlib
 
-import pytest
-
 
 def test_agentic_core_interfaces_IValidatorProtocol_importable():
     """Module must be importable without error."""

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.runtime.lifecycle_trace_contract import (
+    _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
     _emit_captures_evaluation_metric,
@@ -13,8 +14,11 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_dispatches_healing_run,  # noqa: E402
     _emit_escalates_failure,
     _emit_escalates_to_human,  # noqa: E402
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_healing_outcome,
@@ -25,17 +29,13 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_stores_embedding,
+    _emit_transcripts_response,
     _emit_updates_meta_learning_state,
     _emit_validates_agent_capability,
     _emit_validates_capability,
-    _emit_writes_via_uwg,
-    _emit_agent_executes_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
     _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
+    _emit_verifies_policy,
+    _emit_writes_via_uwg,
 )
 
 _emit_dispatches_healing_run("p1", "mission_runner", "L3")
@@ -82,8 +82,6 @@ import time
 import uuid
 from pathlib import Path
 
-from agentic_core.utils.security_util import safe_git_execute
-
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L2_execution.providers import get_clock
 from agentic_core.L3_orchestration.contracts.coordination_ledger import (
@@ -108,6 +106,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,
     emit_replay_key,
 )
+from agentic_core.utils.security_util import safe_git_execute
 
 _proof_emitter = ExecutionProofEmitter("L3.mission_runner")
 _mission_breaker = get_breaker("mission_runner")
@@ -147,9 +146,12 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_emits_metric_event,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_links_incident_trace,
+    _emit_observes_runtime_state,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
     _emit_reads_environ,
@@ -164,19 +166,11 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("mission_runner", "p4obs", "metric_1")
@@ -217,6 +211,7 @@ _emit_validated_by_safety_plane("p1", "mission_runner", "safety_validation")
 _emit_invokes_eval("p1", "mission_runner", "eval_call")
 _emit_proposal_commits_routing("p1", "mission_runner", "routing_commit")
 from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+
 emit_determinism_digest("trace_mission_runner", "mission_runner_dispatch_entry")
 emit_determinism_digest("trace_mission_runner", "mission_runner_dispatch_exit")
 emit_determinism_digest("trace_mission_runner", "mission_runner_tool_invoke")
@@ -236,7 +231,6 @@ def _get_imports():
     self-healing agents with mutation logic. The agentic_core/agents/ versions
     are detection-only stubs without healing capabilities.
     """
-    from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_snapshots_state(str(_uuid.uuid4()), "_get_imports", "state_snapshot")

@@ -216,7 +216,6 @@ def canonical_json(data: dict[str, Any]) -> str:
 
     Alphabetical key sort, UTF-8, no whitespace variance.
     """
-    from agentic_core.L4_state.authority.run_state_authority import get_run_state_authority
     import hashlib as _hashlib  # noqa: PLC0415
     import uuid as _uuid  # noqa: PLC0415
 

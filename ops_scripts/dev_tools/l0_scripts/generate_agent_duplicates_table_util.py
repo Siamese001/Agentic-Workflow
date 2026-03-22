@@ -5,13 +5,24 @@ Filters to actual production/blueprint agent files only.
 import json
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
     emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "generate_agent_duplicates_table_util", "uwg_governed_write")
 _emit_writes_through("p1", "generate_agent_duplicates_table_util", "uwg_governed_write_2")
 _emit_pulls_context("p1", "generate_agent_duplicates_table_util", "context_retrieval")
@@ -27,10 +38,10 @@ def extract_basename(path: str) -> str:
 def infer_rationale(canonical: str, duplicates: list, action: str) -> str:
     """Infer rationale based on path patterns."""
     dup_paths = [d['path'] for d in duplicates]
-    if any(('blueprint_sovereign' in p for p in dup_paths)):
+    if any('blueprint_sovereign' in p for p in dup_paths):
         return 'Leftover blueprint template — production version is canonical'
-    if 'validators' in canonical or any(('validators' in p for p in dup_paths)):
-        if 'agents' in canonical or any(('agents' in p for p in dup_paths)):
+    if 'validators' in canonical or any('validators' in p for p in dup_paths):
+        if 'agents' in canonical or any('agents' in p for p in dup_paths):
             return 'Location overlap: same agent in agents/ vs validators/ directories'
     if action == 'REVIEW':
         return 'Minor differences detected (comments/formatting/incomplete features) — manual merge needed'
@@ -68,8 +79,8 @@ def generate_table(json_file: Path, output_file: Path):
         f.write('# Duplicated Agents Table\n')
         f.write(f'**Generated:** {Path(json_file).stat().st_mtime}\n')
         f.write(f'**Total Duplicates:** {len(agent_duplicates)}\n\n')
-        delete_count = sum((1 for d in agent_duplicates if d['action'] == 'DELETE'))
-        review_count = sum((1 for d in agent_duplicates if d['action'] == 'REVIEW'))
+        delete_count = sum(1 for d in agent_duplicates if d['action'] == 'DELETE')
+        review_count = sum(1 for d in agent_duplicates if d['action'] == 'REVIEW')
         f.write(f'**Action Summary:** {delete_count} auto-delete, {review_count} manual review\n\n')
         f.write('| Agent Name | Canonical Path | Duplicate Path | Action | Quality (C/D) | Rationale |\n')
         f.write('| --- | --- | --- | --- | --- | --- |\n')

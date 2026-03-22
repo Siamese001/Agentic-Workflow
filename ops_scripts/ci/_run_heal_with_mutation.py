@@ -3,13 +3,24 @@ import os
 import pathlib
 import subprocess
 import sys
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
     emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "_run_heal_with_mutation", "uwg_governed_write")
 _emit_writes_through("p1", "_run_heal_with_mutation", "uwg_governed_write_2")
 _emit_pulls_context("p1", "_run_heal_with_mutation", "context_retrieval")
@@ -37,7 +48,7 @@ pathlib.Path('docs/evidence/heal_full_stderr.txt').write_text(err, encoding='utf
 print('\n=== GPU / BGE / QWEN / MUTATION LOG LINES ===')
 for line in err.splitlines():
     lo = line.lower()
-    if any((k in lo for k in ['[bmg]', '[bmg-gpu]', '[routing]', '[qwen14b]', 'cuda', 'bge-m3', 'model loaded', 'healing: active', 'llm: enabled', 'mutation_prohib', 'allow_mutation', 'violations_fixed', 'fix', 'delete', 'rename', 'heal', 'phase 4', 'phase 5'])):
+    if any(k in lo for k in ['[bmg]', '[bmg-gpu]', '[routing]', '[qwen14b]', 'cuda', 'bge-m3', 'model loaded', 'healing: active', 'llm: enabled', 'mutation_prohib', 'allow_mutation', 'violations_fixed', 'fix', 'delete', 'rename', 'heal', 'phase 4', 'phase 5']):
         print(line)
 print('\n=== STDOUT CERT (last 120 lines) ===')
 slines = out.splitlines()

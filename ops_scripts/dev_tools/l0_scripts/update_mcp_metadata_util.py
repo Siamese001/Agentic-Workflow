@@ -4,11 +4,22 @@ This scans all agent files and updates the mcp_hardened flag based on actual cod
 """
 import json
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 data = json.load(open('agent_discovery_full.json'))
 print('Updating MCP hardening metadata...')
 print()
-before_count = sum((1 for a in data if a.get('mcp_hardened')))
+before_count = sum(1 for a in data if a.get('mcp_hardened'))
 updated = 0
 for agent in data:
     path = Path(agent['path'])
@@ -31,7 +42,7 @@ for agent in data:
         print(f"❌ {agent['class_name']}: error - {e}")
 with open('agent_discovery_full.json', 'w', encoding='utf-8') as f:
     json.dump(data, f, indent=2)
-after_count = sum((1 for a in data if a.get('mcp_hardened')))
+after_count = sum(1 for a in data if a.get('mcp_hardened'))
 print()
 print('=' * 80)
 print('MCP METADATA UPDATE COMPLETE')

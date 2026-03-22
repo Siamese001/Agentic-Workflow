@@ -2,8 +2,6 @@
 """Tests for agentic_core.L5_safety.core_kernel.classification_kernel."""
 import importlib
 
-import pytest
-
 
 def test_agentic_core_L5_safety_core_kernel_classification_kernel_importable():
     """Module must be importable without error."""

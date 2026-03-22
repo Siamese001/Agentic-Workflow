@@ -20,7 +20,18 @@ import argparse
 import re
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 PROJECT_ROOT = Path(__file__).parent.parent
 IMPORT_REPLACEMENTS: dict[str, tuple[str, str]] = {'CachedOrchestratorAgent': ('agentic_core.L3_orchestration.unified.CoreOrchestrationAgent', 'CoreOrchestrationAgent'), 'SelfRecoveringOrchestratorAgent': ('agentic_core.L3_orchestration.unified.CoreOrchestrationAgent', 'CoreOrchestrationAgent'), 'IntelligentOrchestratorAgent': ('agentic_core.L3_orchestration.unified.CoreOrchestrationAgent', 'CoreOrchestrationAgent'), 'HardenedWorkflowOrchestratorAgent': ('agentic_core.L3_orchestration.unified.CoreOrchestrationAgent', 'CoreOrchestrationAgent'), 'ConsolidatedOrchestratorAgent': ('agentic_core.L3_orchestration.unified.CoreOrchestrationAgent', 'CoreOrchestrationAgent'), 'OrchestratorAgentAndScopeManagerAgent': ('agentic_core.L3_orchestration.unified.CoreOrchestrationAgent', 'CoreOrchestrationAgent'), 'ScriptsPlanningOrchestratorAgent': ('agentic_core.L3_orchestration.unified.CoreOrchestrationAgent', 'CoreOrchestrationAgent'), 'PilotOrchestratorAgent': ('agentic_core.L3_orchestration.unified.CoreOrchestrationAgent', 'CoreOrchestrationAgent'), 'WorkflowOrchestratorAgent': ('agentic_core.L3_orchestration.unified.CoreOrchestrationAgent', 'CoreOrchestrationAgent'), 'ResumeOrchestratorAgent': ('agentic_core.L3_orchestration.unified.CoreOrchestrationAgent', 'CoreOrchestrationAgent'), 'LicWorkflowOrchestratorAgent': ('agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent', 'AppWorkflowOrchestratorAgent'), 'OutreachPhase5Orchestrator': ('agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent', 'AppWorkflowOrchestratorAgent'), 'Phase4OrchestratorAgent': ('agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent', 'AppWorkflowOrchestratorAgent'), 'Phase6OrchestratorAgent': ('agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent', 'AppWorkflowOrchestratorAgent'), 'Phase7OrchestratorAgent': ('agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent', 'AppWorkflowOrchestratorAgent'), 'HOPOrchestratorAgent': ('agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent', 'AppWorkflowOrchestratorAgent'), 'LicHealingOrchestrator': ('agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent', 'AppWorkflowOrchestratorAgent'), 'RgHealingOrchestrator': ('agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent', 'AppWorkflowOrchestratorAgent'), 'RgResumeOrchestrator': ('agentic_core.L3_orchestration.unified.AppWorkflowOrchestratorAgent', 'AppWorkflowOrchestratorAgent')}
 
@@ -51,7 +62,7 @@ def update_imports_in_file(file_path: Path, dry_run: bool=False) -> list[str]:
             new_import = f'from {unified_module} import {unified_class}'
             content = re.sub(pattern1, new_import, content)
             changes.append(f'Updated import: {legacy_name} -> {unified_class}')
-        if any((legacy_name in c for c in changes)):
+        if any(legacy_name in c for c in changes):
             usage_pattern = f'\\b{legacy_name}\\b'
             if re.search(usage_pattern, content):
                 content = re.sub(usage_pattern, unified_class, content)

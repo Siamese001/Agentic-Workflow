@@ -47,13 +47,13 @@ if len(func_crit_modules) > 30:
 
 # Dominant missing relation in functional critical
 func_crit_missing = Counter(g["missing"] for g in func_critical)
-print(f"\nDominant missing in functional critical:")
+print("\nDominant missing in functional critical:")
 for k, v in func_crit_missing.most_common():
     print(f"  {k}: {v}")
 
 # Root cause: agent_executes_agent is missing from almost everything because
 # only 112 edges exist in the whole ADG for it
-print(f"\n--- Root Cause Analysis ---")
+print("\n--- Root Cause Analysis ---")
 print(f"agent_executes_agent total edges in ADG: {raw['s1']['runs'][0]['agent_executes_agent']}")
 print(f"calls total edges in ADG: {raw['s1']['runs'][0]['calls']}")
 print(f"dispatches_healing_run total edges in ADG: {raw['s1']['runs'][0]['dispatches_healing_run']}")

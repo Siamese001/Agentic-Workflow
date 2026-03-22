@@ -9,17 +9,36 @@ Usage:
     python ops_scripts/ci/scan_llm_validator_calls.py --allowlist ops_scripts/ci/llm_validator_allowlist.json
 """
 from __future__ import annotations
+
 import ast
 import json
 import sys
 from pathlib import Path
 from typing import NamedTuple
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    SYSTEM_LEARNING_DIR,
+)
+
 DEFAULT_ALLOWLIST = Path(__file__).parent / 'llm_validator_allowlist.json'
 SCAN_ROOTS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR]
 VALIDATION_FUNC_PATTERNS = {'validate', 'score', 'evaluate', 'check', 'review', 'judge', 'inspect', 'verify', 'assess', 'audit', 'scan'}
@@ -36,7 +55,7 @@ class LLMValidatorHit(NamedTuple):
 
 def _func_name_is_validation(name: str) -> bool:
     low = name.lower()
-    return any((p in low for p in VALIDATION_FUNC_PATTERNS))
+    return any(p in low for p in VALIDATION_FUNC_PATTERNS)
 
 def _call_is_llm(node: ast.Call) -> str | None:
     """Return a description if this Call node looks like an LLM call."""

@@ -1,9 +1,20 @@
 """Verify L2 Execution data is now correct (user's specific example)."""
 import json
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 agents = json.load(open('agent_discovery_full.json'))
 l2_agents = [a for a in agents if 'L2_execution' in a.get('path', '')]
-mcp_count = sum((1 for a in l2_agents if a.get('mcp_hardened')))
+mcp_count = sum(1 for a in l2_agents if a.get('mcp_hardened'))
 expected_mcp_pct = round(mcp_count / len(l2_agents) * 100, 1) if l2_agents else 0
 print('=' * 70)
 print("L2 EXECUTION DATA VERIFICATION (User's Example)")

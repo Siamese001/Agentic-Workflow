@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+
 def main():
     file_path = Path("apps_lic/engines/LicS2SupervisorAgent.py")
     content = file_path.read_text(encoding="utf-8")

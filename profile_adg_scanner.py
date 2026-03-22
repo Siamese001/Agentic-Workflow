@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Profile ADG scanner to identify bottlenecks."""
 import cProfile
-import pstats
 import io
+import pstats
 import time
 from pathlib import Path
+
 from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+
 
 def profile_scanner():
     """Profile the ADG scanner with detailed metrics."""
@@ -32,12 +34,12 @@ def profile_scanner():
     stats.print_stats(50)  # Top 50 functions
 
     # Print summary
-    print(f"\n📊 Scanner Profile Summary:")
+    print("\n📊 Scanner Profile Summary:")
     print(f"  Total scan time: {end_time - start_time:.2f}s")
     print(f"  Modules scanned: {len(result.module_graph)}")
     print(f"  Edges found: {len(result.edges)}")
 
-    print(f"\n🔥 Top 20 Bottlenecks (by cumulative time):")
+    print("\n🔥 Top 20 Bottlenecks (by cumulative time):")
     lines = s.getvalue().split('\n')
 
     # Skip header and find actual function data

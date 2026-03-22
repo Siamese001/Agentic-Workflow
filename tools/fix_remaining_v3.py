@@ -6,7 +6,6 @@ and add the import. For class/function stubs, add try/except guards.
 import ast
 import os
 import re
-import sys
 
 ROOT = r"C:\Git\Agentic-Workflow"
 
@@ -80,7 +79,7 @@ for rel, name, imp in FIXES:
         print(f"  SKIP (missing): {rel}")
         continue
 
-    src = open(fp, "r", encoding="utf-8").read()
+    src = open(fp, encoding="utf-8").read()
 
     # Check if name is already defined/imported
     if imp and name in imp.split("import ")[-1]:
@@ -146,7 +145,7 @@ for rel, name, imp in FIXES:
 # Special fix: root_hygiene_util.py has ImportError for REPORTS_DIR from wrong module
 fp = os.path.join(ROOT, "agentic_core/L0_routing/scripts/root_hygiene_util.py")
 if os.path.exists(fp):
-    src = open(fp, "r", encoding="utf-8").read()
+    src = open(fp, encoding="utf-8").read()
     if "from agentic_core.L0_routing.config import" in src and "REPORTS_DIR" in src:
         # Check if REPORTS_DIR is in the import
         m = re.search(r"from agentic_core\.L0_routing\.config import \((.*?)\)", src, re.DOTALL)
@@ -157,7 +156,7 @@ if os.path.exists(fp):
 # Fix: check if REPORTS_DIR is exported from config/__init__.py
 init_fp = os.path.join(ROOT, "agentic_core/L0_routing/config/__init__.py")
 if os.path.exists(init_fp):
-    init_src = open(init_fp, "r", encoding="utf-8").read()
+    init_src = open(init_fp, encoding="utf-8").read()
     if "REPORTS_DIR" not in init_src:
         # Add it
         if "ARCHIVES_DIR," in init_src:
@@ -165,7 +164,7 @@ if os.path.exists(init_fp):
             try:
                 ast.parse(new_init)
                 open(init_fp, "w", encoding="utf-8").write(new_init)
-                print(f"  FIXED: Added REPORTS_DIR to config/__init__.py")
+                print("  FIXED: Added REPORTS_DIR to config/__init__.py")
                 fixed += 1
             except SyntaxError as e:
                 print(f"  SYNTAX ERROR in __init__: {e}")

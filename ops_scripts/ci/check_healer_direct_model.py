@@ -1,9 +1,21 @@
 """CI guard G18: healers must not invoke LLM models directly; only route_healing_tier()."""
 from __future__ import annotations
+
 import ast
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 HEALER_PATTERNS = ['*healer*', '*Healer*', '*healing*', '*Healing*']
 BLOCKED_CALLS = {'route_generation', 'generate_content', 'create_openai_client', 'create_anthropic_client', 'create_vertex_client'}

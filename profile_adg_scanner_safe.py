@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Safe ADG scanner profiling with timeout and hang detection."""
 import cProfile
-import pstats
 import io
-import time
+import pstats
 import signal
 import sys
-from pathlib import Path
+import time
 from contextlib import contextmanager
+from pathlib import Path
+
 
 @contextmanager
 def timeout_context(seconds):

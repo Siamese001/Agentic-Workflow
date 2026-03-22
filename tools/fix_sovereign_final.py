@@ -3,7 +3,7 @@ import ast
 import re
 
 fp = r"C:\Git\Agentic-Workflow\apps_shared\types\sovereign_severity_types.py"
-src = open(fp, "r", encoding="utf-8").read()
+src = open(fp, encoding="utf-8").read()
 
 # Step 1: Remove all existing alias lines (CamelCase = snake_case at module level)
 alias_pattern = re.compile(r'^([A-Z][A-Za-z]+)\s*=\s*([a-z][a-z_]+)\s*$', re.MULTILINE)

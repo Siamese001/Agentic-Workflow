@@ -1,6 +1,7 @@
 """P2 verification — confirms all SOVEREIGN_TERRITORIES app-code usages are removed."""
 import ast
 import sys
+
 sys.path.insert(0, 'c:/Git/Agentic-Workflow')
 
 errors = []
@@ -44,6 +45,7 @@ for name, rel in files.items():
 # Test 8: no remaining SOVEREIGN_TERRITORIES live usage in app code (non-tests, non-structure_blueprint)
 import re
 from pathlib import Path
+
 st_pattern = re.compile(r'SOVEREIGN_TERRITORIES')
 SKIP = {'archives', '.healing_backups', '.backup', '__pycache__', '.git',
         'structure_blueprint', 'tests', '_p2_scope.py', '_p2_verify.py'}

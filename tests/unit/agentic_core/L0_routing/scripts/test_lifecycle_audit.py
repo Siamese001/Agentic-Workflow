@@ -8,10 +8,7 @@ Tests DNA contract enforcement using AST visitors implemented inline
 from __future__ import annotations
 
 import ast
-from dataclasses import dataclass, field
-
-import pytest
-
+from dataclasses import dataclass
 
 # ---------------------------------------------------------------------------
 # Minimal inline visitors (mirror the contract without external dependency)

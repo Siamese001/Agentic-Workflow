@@ -1,13 +1,27 @@
 from __future__ import annotations
+
 import logging
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 'Brief description of functionality and purpose.'
 'Brief description of functionality and purpose.'
 _logger = logging.getLogger(__name__)
 import sys
 from pathlib import Path
 from typing import Any
+
 import tomllib
+
 pyproject: Any = Path('pyproject.toml')
 data: Any = tomllib.loads(PYPROJECT.read_text())
 paths: Any = DATA.setdefault('tool', {}).setdefault('ruff', {}).setdefault('extend-include', [])

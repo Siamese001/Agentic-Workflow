@@ -6,12 +6,23 @@ termination point of the heal chain.
 """
 import json
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 discovery_path = Path('agent_discovery_full.json')
 with open(discovery_path) as f:
     agents = json.load(f)
 print(f'Total agents: {len(agents)}')
-not_yes = sum((1 for a in agents if a.get('invocation') != 'Yes'))
+not_yes = sum(1 for a in agents if a.get('invocation') != 'Yes')
 print(f"Currently NOT 'Yes': {not_yes}")
 for agent in agents:
     agent['invocation'] = 'Yes'

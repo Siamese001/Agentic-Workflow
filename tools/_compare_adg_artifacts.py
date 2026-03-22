@@ -20,7 +20,7 @@ def analyze_structure(data: dict, label: str) -> None:
 
     if "stats" in data:
         stats = data["stats"]
-        print(f"  Stats:")
+        print("  Stats:")
         for k, v in stats.items():
             print(f"    {k}: {v}")
 

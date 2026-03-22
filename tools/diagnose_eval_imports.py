@@ -1,7 +1,7 @@
 """Trace all missing modules in the evaluation import chain."""
 
-import subprocess
 import re
+import subprocess
 
 ROOT = r"C:\Git\Agentic-Workflow"
 

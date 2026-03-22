@@ -29,7 +29,7 @@ KNOWN_EMITTERS = {
     "_emit_emits_metric_event", "_emit_records_incident_event",
     "_emit_captures_runtime_anomaly", "_emit_writes_observability_log",
     "_emit_updates_monitoring_state", "_emit_triggers_alert",
-    "_emit_links_incident_trace", "_emit_checks_agent_registry",
+    "_emit_checks_agent_registry",
     "_emit_validates_agent_capability", "_emit_dispatches_execution_plan",
     "_emit_agent_executes_agent", "_emit_routes_to_agent",
     "_emit_verifies_policy", "_emit_observes_runtime_state",
@@ -49,7 +49,7 @@ for base_dir in ["agentic_core", "tests", "system_learning"]:
                 continue
             fpath = os.path.join(dirpath, fn)
             try:
-                with open(fpath, "r", encoding="utf-8") as f:
+                with open(fpath, encoding="utf-8") as f:
                     content = f.read()
             except Exception:
                 continue

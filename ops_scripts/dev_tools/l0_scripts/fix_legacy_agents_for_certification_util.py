@@ -5,7 +5,18 @@ Fix all legacy agents to inherit from SovereignBaseAgent for final certification
 import re
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
@@ -16,7 +27,7 @@ def fix_agent_file(file_path: Path) -> bool:
         if 'SovereignBaseAgent' in content:
             print(f'Skipping {file_path}: already uses SovereignBaseAgent')
             return False
-        if not any((re.search(pattern, content, re.MULTILINE | re.DOTALL) for pattern in ['class\\s+\\w*Agent', 'class\\s+\\w*Specialist', 'class\\s+\\w*Architect'])):
+        if not any(re.search(pattern, content, re.MULTILINE | re.DOTALL) for pattern in ['class\\s+\\w*Agent', 'class\\s+\\w*Specialist', 'class\\s+\\w*Architect']):
             print(f'Skipping {file_path}: no agent class found')
             return False
         if 'MCPHardenedMixin' not in content:

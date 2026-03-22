@@ -3,8 +3,10 @@
 Uses regex/AST source inspection — immune to SyntaxError in source.
 """
 from __future__ import annotations
+
 import pathlib
 import re
+
 import pytest
 
 pytestmark = pytest.mark.unit

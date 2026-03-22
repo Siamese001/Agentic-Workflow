@@ -1,8 +1,8 @@
 """Get specific error messages per directory."""
 
-import subprocess
-import re
 import os
+import re
+import subprocess
 
 ROOT = r"C:\Git\Agentic-Workflow"
 TESTS_DIR = os.path.join(ROOT, "tests")

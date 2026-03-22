@@ -11,17 +11,33 @@ No hardcoded directory names. All exclusion logic is SSOT-driven.
 Usage: python ops_scripts/ci/_audit_scan.py
 """
 from __future__ import annotations
+
 import pathlib
 import re
 import sys
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 TESTS_DIR = ROOT / TESTS_DIR
 # guardian: allow-global-mutation
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 try:
-    from agentic_core.L5_safety.config.structure_blueprint.ssot import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+    from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+        DISCOVERY_EXCLUDED_TERRITORIES,
+        GLOBAL_EXCLUDED_DIRS,
+        SOVEREIGN_EXCLUDED_FOLDERS,
+    )
 except ImportError as _e:
     raise RuntimeError('Cannot import SSOT exclusion constants. Ensure agentic_core is importable before running this script.') from _e
 EXCLUDE_DIRS: frozenset[str] = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
@@ -139,7 +155,7 @@ def scan_ci_config(out: list[str]) -> int:
                 continue
             stripped = line.strip()
             # guardian: allow-config-with-logic
-            if any((approved in stripped for approved in APPROVED_CI_SUPPRESSIONS)):
+            if any(approved in stripped for approved in APPROVED_CI_SUPPRESSIONS):
                 out.append(f'CI_SUPPRESSION_APPROVED  {rel}:{i + 1}  {stripped[:100]}')
             else:
                 out.append(f'CI_SUPPRESSION  {rel}:{i + 1}  {stripped[:100]}')

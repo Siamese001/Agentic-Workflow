@@ -23,8 +23,6 @@ import ast
 import hashlib
 import json
 import logging
-from dataclasses import dataclass
-from pydantic import BaseModel
 import os
 import platform
 import sys
@@ -126,6 +124,7 @@ except ImportError:
 sys.path.insert(0, str(Path(__file__).parent))
 # guardian: allow-global-mutation
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, ARCHIVES_DIR  # noqa: E402
+
 sys.path.insert(0, str(Path(__file__).parent.parent / AGENTIC_CORE_DIR / "L0_routing" / "scripts"))
 try:
     from territory_ssot_definitions import get_territory_from_path, refine_territory_by_ast
@@ -368,7 +367,6 @@ def should_exclude_path(path: Path) -> bool:
     2. Filename matches EXCLUDED_FILENAME_PATTERNS
     3. Path contains EXCLUDED_PATH_PATTERNS
     """
-    from agentic_core.L2_execution.providers import get_clock
     import uuid as _uuid  # noqa: PLC0415
 
     _emit_snapshots_state(str(_uuid.uuid4()), "should_exclude_path", "state_snapshot")

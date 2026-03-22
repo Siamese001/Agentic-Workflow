@@ -1029,7 +1029,6 @@ def cmd_guardian_scope(
 ) -> int:
     """Produce ADG-prioritized guardian execution scope."""
     from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
-
     from agentic_core.adg.schema_util import module_path_to_layer
 
     result = _load_scan(repo_root)

@@ -72,7 +72,6 @@ _emit_links_execution_to_snapshot("p4", "file_cache_util", "exec_snapshot_link")
 
 "\nFileCache: Singleton-based file discovery cache for reducing I/O overhead.\n\nThis module provides a centralized, cached file discovery mechanism to eliminate\nredundant rglob/glob calls across the codebase. All agents should use this cache\ninstead of direct path.rglob() calls.\n\nOpportunity #3: rglob Scan Proliferation\n- Consolidates 100+ redundant rglob calls into single cached SSOT\n- Lazy loading: only scans disk on first request\n- Built-in filtering for *.py and *.md extensions\n- Automatic exclusion of .git, __pycache__, .sovereign_healing_backup\n- Invalidation method for healer agents that modify files\n- Uses os.walk with directory pruning for performance (not rglob)\n\nUsage:\n\n    cache = FileCache.get_instance()\n    all_py_files = cache.get_files_by_extension('.py')\n    all_files = cache.get_all_files()\n\n    # After file modifications (healers):\n    cache.invalidate()\n"
 import logging
-from typing import Optional
 import os
 import threading
 from pathlib import Path

@@ -15,11 +15,23 @@ Exit codes:
     1 — one or more violations detected
 """
 from __future__ import annotations
+
 import ast
 import json
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 _v3 = PROJECT_ROOT / 'artifacts' / 'consolidation' / 'target_manifest_v3.json'
 _manifest = json.loads(_v3.read_text(encoding='utf-8'))

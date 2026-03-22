@@ -1,5 +1,6 @@
 """Get detailed error breakdown from pytest collection."""
-import subprocess, re
+import re
+import subprocess
 from collections import Counter
 
 r = subprocess.run(

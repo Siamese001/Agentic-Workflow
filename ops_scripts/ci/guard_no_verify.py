@@ -19,12 +19,14 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
+
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
     emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "guard_no_verify", "uwg_governed_write")
 _emit_writes_through("p1", "guard_no_verify", "uwg_governed_write_2")
 _emit_pulls_context("p1", "guard_no_verify", "context_retrieval")

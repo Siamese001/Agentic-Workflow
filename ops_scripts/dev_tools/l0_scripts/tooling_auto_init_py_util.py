@@ -1,9 +1,21 @@
 from __future__ import annotations
+
 "\nAuto-initialize __init__.py files for Python packages.\n\nThis utility script automatically creates __init__.py files in directories\nto ensure they are recognized as Python packages. It's useful for setting up\nnew modules or ensuring proper package structure in the Agentic-Workflow system.\n\nUsage:\n    python auto_init_py.py <path1> <path2> ...\n\nThe script will:\n1. Create parent directories if they don't exist\n2. Create __init__.py files in each parent directory\n3. Skip existing __init__.py files\n\nAuthor: Agentic-Workflow Team\nVersion: 1.0.0\nimport logging\n\n# NAMING FIXED: LOGGER → Logger\nLogger = logging.getLogger(__name__)\n\n"
 import pathlib
 import sys
 from typing import Any
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 
 def create_init_files(paths: list[str]) -> int:
     """

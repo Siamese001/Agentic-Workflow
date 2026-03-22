@@ -18,7 +18,7 @@ ROOT = r"C:\Git\Agentic-Workflow"
 
 def read(rel):
     fp = os.path.join(ROOT, rel)
-    with open(fp, "r", encoding="utf-8") as f:
+    with open(fp, encoding="utf-8") as f:
         return f.read()
 
 def write(rel, content):
@@ -197,7 +197,7 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
                 continue
             fp = os.path.join(dp, fn)
             try:
-                with open(fp, "r", encoding="utf-8") as f:
+                with open(fp, encoding="utf-8") as f:
                     content = f.read()
             except Exception:
                 continue

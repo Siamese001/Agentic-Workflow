@@ -19,7 +19,6 @@ Phase: 1 - Foundation & Zero-Loss Protocols
 """
 
 from __future__ import annotations
-from typing import Optional
 
 from dataclasses import dataclass, field
 from enum import Enum

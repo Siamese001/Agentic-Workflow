@@ -5,17 +5,17 @@ Targets: 688 violations of bare except Exception without proper handling.
 Strategy: Replace with specific exceptions or add proper error handling.
 """
 from __future__ import annotations
-import ast
+
 import re
 from pathlib import Path
-from typing import List, Tuple
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_validated_by_safety_plane,
     _emit_writes_through,
     emit_determinism_digest,
 )
+
 _emit_writes_through("p1", "_fix_silent_swallowers", "uwg_governed_write")
 _emit_writes_through("p1", "_fix_silent_swallowers", "uwg_governed_write_2")
 _emit_pulls_context("p1", "_fix_silent_swallowers", "context_retrieval")
@@ -25,7 +25,7 @@ emit_determinism_digest("trace__fix_silent_swallowers", "_fix_silent_swallowers_
 _emit_validated_by_safety_plane("p1", "_fix_silent_swallowers", "safety_validation")
 REPO = Path(__file__).resolve().parent.parent
 
-def find_silent_swallowers(file_path: Path) -> List[Tuple[int, str]]:
+def find_silent_swallowers(file_path: Path) -> list[tuple[int, str]]:
     """Find silent swallower patterns in a Python file."""
     content = file_path.read_text(encoding='utf-8', errors='ignore')
     lines = content.splitlines()
@@ -46,7 +46,7 @@ def find_silent_swallowers(file_path: Path) -> List[Tuple[int, str]]:
                 violations.append((i, line.strip()))
     return violations
 
-def fix_silent_swallower(file_path: Path, violations: List[Tuple[int, str]]) -> bool:
+def fix_silent_swallower(file_path: Path, violations: list[tuple[int, str]]) -> bool:
     """Fix silent swallower violations in a file."""
     content = file_path.read_text(encoding='utf-8', errors='ignore')
     lines = content.splitlines()

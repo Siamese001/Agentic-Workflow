@@ -1,7 +1,7 @@
 """Dump meta-learning and healing action state from runtime_state.json."""
 import json
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
 d = json.loads(Path('runtime_state.json').read_text(encoding='utf-8'))
 ha = d.get('healing_actions', [])
 ml = d['meta_learning']
@@ -22,10 +22,11 @@ for i, a in enumerate(ha):
     print(f"       time: {a['timestamp']}")
     print()
 from collections import Counter
-agent_counts = Counter((a['agent'] for a in ha))
-territory_counts = Counter((a['territory'] for a in ha))
-tier_counts = Counter((a['routing_tier'] for a in ha))
-outcome_counts = Counter((a['outcome'] for a in ha))
+
+agent_counts = Counter(a['agent'] for a in ha)
+territory_counts = Counter(a['territory'] for a in ha)
+tier_counts = Counter(a['routing_tier'] for a in ha)
+outcome_counts = Counter(a['outcome'] for a in ha)
 print('=== AGGREGATE STATS ===')
 print(f'  By agent:     {dict(agent_counts)}')
 print(f'  By territory: {dict(territory_counts)}')

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """ADG prep: read whitelist comments from all validators, then list violations."""
 from __future__ import annotations
+
 import re
 from pathlib import Path
 
@@ -34,6 +35,7 @@ for cat, fname in validators.items():
 print()
 print("=== Current violations (file:line  category) ===")
 import subprocess
+
 r = subprocess.run(
     ["python", "ops_scripts/ci/check_anti_patterns.py"],
     capture_output=True, text=True, cwd=str(REPO)

@@ -64,7 +64,7 @@ def cmd_cluster_status() -> int:
     top = clusters.get("top_clusters", [])
     unresolved = [c for c in top if not c.get("resolved", False)]
 
-    print(f"\n=== ADG CLUSTER STATUS ===")
+    print("\n=== ADG CLUSTER STATUS ===")
     print(f"Total clusters: {len(top)}")
     print(f"Unresolved:     {len(unresolved)}")
     print()
@@ -134,7 +134,7 @@ def cmd_litmus(cluster_id: str) -> int:
     print()
     print("Q2. Root definition node?")
     print(f"    → {root_module}")
-    print(f"    → Check: does the failing symbol originate HERE (not a call site)?")
+    print("    → Check: does the failing symbol originate HERE (not a call site)?")
     print()
     print("Q3. Scoped tests?")
     test_files = sorted(set(t.split("::")[0] for t in tests))
@@ -144,7 +144,7 @@ def cmd_litmus(cluster_id: str) -> int:
         if len(test_files) > 5:
             print(f"    → ... and {len(test_files) - 5} more")
     else:
-        print(f"    → WARNING: No scoped tests found in ADG surface map")
+        print("    → WARNING: No scoped tests found in ADG surface map")
     print()
     print("Q4. Blast radius justification?")
     print("    → Trace import edges in artifacts/adg_semantic_graph.json")

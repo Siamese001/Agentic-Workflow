@@ -1,6 +1,6 @@
 """Get detailed breakdown of all collection errors grouped by root cause."""
-import subprocess
 import re
+import subprocess
 from collections import Counter
 
 r = subprocess.run(
@@ -29,7 +29,7 @@ for line in error_lines:
         source_to_tests.setdefault(error, []).append(test_file)
 
 print(f"Total collection errors: {len(error_lines)}")
-print(f"\nErrors by root cause:")
+print("\nErrors by root cause:")
 for cause, count in causes.most_common(20):
     print(f"  [{count:3d}] {cause[:120]}")
     if count <= 3:

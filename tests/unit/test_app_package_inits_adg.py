@@ -21,11 +21,13 @@ class TestAppsLicUtils:
 
     def test_package_is_in_apps_lic(self):
         from pathlib import Path
+
         import apps_lic.utils as pkg
         assert "apps_lic" in str(Path(pkg.__file__).parent)
 
     def test_utils_modules_discoverable(self):
         from pathlib import Path
+
         import apps_lic.utils as pkg
         pkg_path = Path(pkg.__file__).parent
         py_files = [f for f in pkg_path.glob("*.py") if f.name != "__init__.py"]
@@ -33,6 +35,7 @@ class TestAppsLicUtils:
 
     def test_no_import_error_on_reimport(self):
         import importlib
+
         import apps_lic.utils as pkg
         importlib.reload(pkg)
 
@@ -45,11 +48,13 @@ class TestAppsRgTypes:
 
     def test_package_is_in_apps_rg(self):
         from pathlib import Path
+
         import apps_rg.types as pkg
         assert "apps_rg" in str(Path(pkg.__file__).parent)
 
     def test_types_modules_discoverable(self):
         from pathlib import Path
+
         import apps_rg.types as pkg
         pkg_path = Path(pkg.__file__).parent
         py_files = [f for f in pkg_path.glob("*.py") if f.name != "__init__.py"]
@@ -57,6 +62,7 @@ class TestAppsRgTypes:
 
     def test_no_import_error_on_reimport(self):
         import importlib
+
         import apps_rg.types as pkg
         importlib.reload(pkg)
 
@@ -69,11 +75,13 @@ class TestL4StateReasoningPackage:
 
     def test_package_in_l4(self):
         from pathlib import Path
+
         import agentic_core.L4_state.reasoning as pkg
         assert "L4_state" in str(Path(pkg.__file__).parent)
 
     def test_reasoning_modules_discoverable(self):
         from pathlib import Path
+
         import agentic_core.L4_state.reasoning as pkg
         pkg_path = Path(pkg.__file__).parent
         py_files = [f for f in pkg_path.glob("*.py") if f.name != "__init__.py"]
@@ -88,11 +96,13 @@ class TestL4StateUtilsPackage:
 
     def test_package_in_l4(self):
         from pathlib import Path
+
         import agentic_core.L4_state.utils as pkg
         assert "L4_state" in str(Path(pkg.__file__).parent)
 
     def test_utils_modules_discoverable(self):
         from pathlib import Path
+
         import agentic_core.L4_state.utils as pkg
         pkg_path = Path(pkg.__file__).parent
         py_files = [f for f in pkg_path.glob("*.py") if f.name != "__init__.py"]

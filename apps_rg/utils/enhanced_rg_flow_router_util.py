@@ -4,7 +4,7 @@ Integration Plan: Historical K-Node Patterns into apps_rg
 Step-by-step integration guide for incorporating proven patterns from 60+ legacy versions
 into the current apps_rg architecture.
 """
-from typing import Any, Dict, List
+from typing import Any
 
 # ============================================================================
 # INTEGRATION ROADMAP
@@ -88,14 +88,14 @@ class RGFlowOutput:
 class EnhancedRGFlowRouter(RGFlowRouter):
     """Enhanced flow router with K.0 thematic analysis integration."""
 
-    def __init__(self, config: Dict[str, Any] = None):
+    def __init__(self, config: dict[str, Any] = None):
         super().__init__(config)
         # Add K.0 thematic analysis node
         from .thematic_analysis_node import ThematicAnalysisNode
 
         self.thematic_node = ThematicAnalysisNode(config.get("thematic_config", {}))
 
-    def __call__(self, state: Dict[str, Any]) -> RGFlowOutput:
+    def __call__(self, state: dict[str, Any]) -> RGFlowOutput:
         """
         Enhanced routing with K.0 thematic analysis.
 
@@ -151,7 +151,7 @@ class ResumeSectionNode:
 class EnhancedResumeSectionNode(ResumeSectionNode):
     """Enhanced section node with two-phase generation."""
 
-    def __init__(self, config: Dict[str, Any] = None):
+    def __init__(self, config: dict[str, Any] = None):
         super().__init__(config)
         # Add two-phase generation
         from .two_phase_generation_node import TwoPhaseGenerationNode
@@ -166,9 +166,9 @@ class EnhancedResumeSectionNode(ResumeSectionNode):
     def generate_experience_section(
         self,
         job_description: str,
-        candidate_profile: Dict[str, Any],
+        candidate_profile: dict[str, Any],
         thematic_output: ThematicAnalysisOutput,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Generate experience section using two-phase pattern.
 
@@ -266,9 +266,9 @@ class EnhancedGapClosureEngine(GapClosureEngine):
 
     def _generate_thematic_competencies(
         self,
-        gap_skills: List[str],
+        gap_skills: list[str],
         thematic_output: ThematicAnalysisOutput,
-    ) -> List[CompetencyItem]:
+    ) -> list[CompetencyItem]:
         """Generate competencies aligned with thematic analysis."""
         competencies = []
 
@@ -301,12 +301,12 @@ class WordCountEnforcementEngine:
     Based on v61.27.10 production-hardened validation system.
     """
 
-    def __init__(self, config: Dict[str, Any] = None):
+    def __init__(self, config: dict[str, Any] = None):
         self.config = config or {}
         self.constraints = self._load_constraints()
         self.regeneration_engine = RegenerationEngine()
 
-    def _load_constraints(self) -> Dict[str, Dict[str, int]]:
+    def _load_constraints(self) -> dict[str, dict[str, int]]:
         """Load word count constraints from legacy system."""
         return {
             "executive_summary": {"min": 120, "max": 140},
@@ -496,13 +496,13 @@ class ComprehensiveValidationSuite:
     Integrates all validation mechanisms from legacy system.
     """
 
-    def __init__(self, config: Dict[str, Any] = None):
+    def __init__(self, config: dict[str, Any] = None):
         self.config = config or {}
         self.word_enforcer = WordCountEnforcementEngine(config.get("word_count", {}))
         self.provenance_validator = ProvenanceValidator(config.get("provenance", {}))
         self.validation_gate = ValidationGate("COMPREHENSIVE_VALIDATION")
 
-    def validate_resume_output(self, resume_data: Dict[str, Any]) -> Dict[str, Any]:
+    def validate_resume_output(self, resume_data: dict[str, Any]) -> dict[str, Any]:
         """
         Comprehensive validation of resume output.
 
@@ -591,6 +591,7 @@ if __name__ == "__main__":
     asyncio.run(example_enhanced_workflow())
 from agentic_core.runtime.lifecycle_trace_contract import (
     LayerSegment,
+    _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -598,18 +599,24 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_captures_execution_output,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
+    _emit_checks_agent_registry,
     _emit_coordinates_agents,
     _emit_dispatches_agent,
+    _emit_dispatches_execution_plan,
     _emit_dispatches_healing_run,
     _emit_emits_metric_event,
     _emit_escalates_failure,
+    _emit_escalates_to_human,
     _emit_execution_terminates_at_uwg,
     _emit_feeds_meta_learning,
+    _emit_gated_by_confidence,
+    _emit_hard_fails_untranscripted,
     _emit_improves_agent_policy,
     _emit_invokes_eval,
     _emit_invokes_evaluation,
     _emit_links_execution_to_snapshot,
     _emit_links_incident_trace,
+    _emit_observes_runtime_state,
     _emit_orchestrates_workflow,
     _emit_proposal_commits_routing,
     _emit_pulls_context,
@@ -623,36 +630,29 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
+    _emit_routes_through,
+    _emit_routes_to_agent,
     _emit_routes_to_capability,
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
     _emit_stores_learning_state,
+    _emit_transcripts_response,
     _emit_triggers_alert,
     _emit_updates_meta_learning_state,
     _emit_updates_monitoring_state,
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
+    _emit_validates_agent_capability,
     _emit_validates_capability,
+    _emit_verifies_boundary,
+    _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
-    _emit_escalates_to_human,
-    _emit_routes_through,
-    _emit_checks_agent_registry,
-    _emit_validates_agent_capability,
-    _emit_dispatches_execution_plan,
-    _emit_agent_executes_agent,
-    _emit_routes_to_agent,
-    _emit_verifies_policy,
-    _emit_observes_runtime_state,
-    _emit_verifies_boundary,
-    _emit_transcripts_response,
-    _emit_hard_fails_untranscripted,
-    _emit_gated_by_confidence,
 )
 
 _emit_emits_metric_event("enhanced_rg_flow_router_util", "p4obs", "metric_1")

@@ -15,7 +15,6 @@ import json
 import sys
 from pathlib import Path
 
-
 REPO_ROOT = Path(__file__).resolve().parents[2]
 PLANS_DIR = REPO_ROOT / "docs" / "reports" / "plans"
 
@@ -80,7 +79,7 @@ def main() -> int:
             print(f"  {v}")
         return 1
 
-    print(f"OK: §15 ADG proof-artifact truthfulness — all artifacts clean.")
+    print("OK: §15 ADG proof-artifact truthfulness — all artifacts clean.")
     return 0
 
 

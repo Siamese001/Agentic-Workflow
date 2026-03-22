@@ -23,7 +23,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.evaluation.judges.types import (
-    EvidenceItem,
     JudgeVerdict,
     VerdictOutcome,
 )

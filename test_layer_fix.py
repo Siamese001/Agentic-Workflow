@@ -1,6 +1,7 @@
 import sqlite3
-from pathlib import Path
 import sys
+from pathlib import Path
+
 sys.path.append('tools')
 from generate_full_adg import _infer_layer
 

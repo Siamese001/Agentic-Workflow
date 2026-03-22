@@ -13,13 +13,34 @@ import ast
 import re
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 _ROOT = Path(__file__).resolve().parents[2]
 # guardian: allow-global-mutation
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR
-from agentic_core.L5_safety.config.structure_blueprint.ssot import DISCOVERY_EXCLUDED_TERRITORIES, GLOBAL_EXCLUDED_DIRS, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 _EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 def _is_excluded(path: Path) -> bool:
@@ -33,7 +54,7 @@ def check_agent_placement():
     for py_file in sorted(Path('.').rglob('*.py')):
         if _is_excluded(py_file):
             continue
-        if not any((project_dir in py_file.parts for project_dir in project_dirs)):
+        if not any(project_dir in py_file.parts for project_dir in project_dirs):
             continue
         try:
             content = py_file.read_text(encoding='utf-8')
@@ -62,7 +83,7 @@ def check_types_purity():
     for py_file in sorted(Path('.').rglob('*_types.py')):
         if _is_excluded(py_file):
             continue
-        if not any((project_dir in py_file.parts for project_dir in project_dirs)):
+        if not any(project_dir in py_file.parts for project_dir in project_dirs):
             continue
         try:
             rel_path = str(py_file).replace('\\', '/')
@@ -103,7 +124,7 @@ def check_engine_placement():
         if _is_excluded(py_file):
             continue
         rel_path = str(py_file).replace('\\', '/')
-        if not any((part in py_file.parts for part in project_dirs)):
+        if not any(part in py_file.parts for part in project_dirs):
             continue
         if '/engines/' not in rel_path:
             violations.append(f'X {rel_path}: Executor must be in engines/')
@@ -116,7 +137,7 @@ def is_type_class(node):
         return True
     if class_name.endswith(('Exception', 'Error')):
         return True
-    has_dataclass = any((isinstance(dec, ast.Name) and dec.id == 'dataclass' or (isinstance(dec, ast.Attribute) and dec.attr == 'dataclass') for dec in node.decorator_list))
+    has_dataclass = any(isinstance(dec, ast.Name) and dec.id == 'dataclass' or (isinstance(dec, ast.Attribute) and dec.attr == 'dataclass') for dec in node.decorator_list)
     if has_dataclass:
         for item in node.body:
             if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):

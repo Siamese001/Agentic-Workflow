@@ -20,7 +20,7 @@ LTC = "agentic_core.runtime.lifecycle_trace_contract"
 ALL_EMITTERS = set()
 # Read them from the actual module
 ltc_path = os.path.join(ROOT, "agentic_core", "runtime", "lifecycle_trace_contract.py")
-with open(ltc_path, "r", encoding="utf-8") as f:
+with open(ltc_path, encoding="utf-8") as f:
     for line in f:
         m = re.match(r'^def (_emit_\w+)\(', line.strip())
         if m:
@@ -44,7 +44,7 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
                 continue
             fp = os.path.join(dp, fn)
             try:
-                with open(fp, "r", encoding="utf-8") as f:
+                with open(fp, encoding="utf-8") as f:
                     content = f.read()
             except Exception:
                 continue

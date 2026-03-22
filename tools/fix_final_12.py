@@ -16,7 +16,7 @@ def guard_test_import(test_file):
     if not os.path.exists(fp):
         print(f"  SKIP (missing): {test_file}")
         return
-    src = open(fp, "r", encoding="utf-8").read()
+    src = open(fp, encoding="utf-8").read()
 
     # Already guarded?
     if "_AVAILABLE = False\ntry:" in src:
@@ -98,7 +98,7 @@ def fix_source_import(source_file, import_line):
     if not os.path.exists(fp):
         print(f"  SKIP (missing): {source_file}")
         return False
-    src = open(fp, "r", encoding="utf-8").read()
+    src = open(fp, encoding="utf-8").read()
     if import_line.split("import ")[-1].split(",")[0].strip().split(" ")[0] in src.split("\n")[0:5]:
         return False  # already there
 
@@ -134,7 +134,7 @@ def fix_source_import(source_file, import_line):
 
 # === FIX 1: compare_autonomy_guardian_files_util.py needs 're' ===
 fp = os.path.join(ROOT, "agentic_core/L0_routing/scripts/compare_autonomy_guardian_files_util.py")
-src = open(fp, "r", encoding="utf-8").read()
+src = open(fp, encoding="utf-8").read()
 if "import re" not in src:
     # Add 'import re' after the last import
     lines = src.split("\n")
@@ -150,7 +150,7 @@ if "import re" not in src:
 
 # === FIX 2: compliance_gate_util.py DiscoveredAgent not defined at module level ===
 fp = os.path.join(ROOT, "agentic_core/L0_routing/scripts/compliance_gate_util.py")
-src = open(fp, "r", encoding="utf-8").read()
+src = open(fp, encoding="utf-8").read()
 if "DiscoveredAgent = _get_DiscoveredAgent()" in src:
     pass  # already fixed
 else:
@@ -176,7 +176,7 @@ guard_test_import("tests/unit/agentic_core/L0_routing/scripts/test_run_naming_sc
 
 # === FIX 4: verify_base_agent_names_util.py 'data' not defined ===
 fp = os.path.join(ROOT, "agentic_core/L0_routing/scripts/verify_base_agent_names_util.py")
-src = open(fp, "r", encoding="utf-8").read()
+src = open(fp, encoding="utf-8").read()
 lines = src.split("\n")
 for i, line in enumerate(lines):
     if "data" in line and i > 160 and line.strip().startswith("for ") or (line.strip().startswith("data") and "=" not in line):
@@ -188,7 +188,7 @@ guard_test_import("tests/unit/agentic_core/L0_routing/scripts/test_verify_base_a
 # === FIX 5: force_annexation_util.py ARCHIVES_DIR ===
 fp = os.path.join(ROOT, "agentic_core/L0_routing/utils/force_annexation_util.py")
 if os.path.exists(fp):
-    src = open(fp, "r", encoding="utf-8").read()
+    src = open(fp, encoding="utf-8").read()
     if "ARCHIVES_DIR" in src and "from agentic_core.L0_routing.config.path_constants import" not in src:
         # Find first usage of ARCHIVES_DIR
         lines = src.split("\n")
@@ -214,7 +214,7 @@ guard_test_import("tests/unit/agentic_core/L1_cognition/core/test_cognitive_endu
 # === FIX 7: transcript_freezer.py _emit_pulls_context ===
 # _emit_pulls_context is used but imported later. Add to first import block.
 fp = os.path.join(ROOT, "agentic_core/L2_execution/enforcement/transcript_freezer.py")
-src = open(fp, "r", encoding="utf-8").read()
+src = open(fp, encoding="utf-8").read()
 if "_emit_pulls_context," not in src.split(")\n")[0]:
     # It's not in the first import block
     src = src.replace(
@@ -234,7 +234,7 @@ guard_test_import("tests/unit/agentic_core/L2_execution/healers/test_healing_out
 
 # === FIX 9: dag_manager.py L3SubatomicTestingMixin before class ===
 fp = os.path.join(ROOT, "agentic_core/L3_orchestration/engines/dag_manager.py")
-src = open(fp, "r", encoding="utf-8").read()
+src = open(fp, encoding="utf-8").read()
 # Move the stub before the class
 if "\ntry:\n    from agentic_core.mixins.subatomic_testing_mixin import L3SubatomicTestingMixin" in src:
     # Remove misplaced stub
@@ -263,7 +263,7 @@ except SyntaxError as e:
 
 # === FIX 10: DuplicateCodeDetectorAgent.py 'timeout' not defined ===
 fp = os.path.join(ROOT, "agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py")
-src = open(fp, "r", encoding="utf-8").read()
+src = open(fp, encoding="utf-8").read()
 if "timeout" in src and "def timeout(" not in src:
     # Add timeout stub before class
     stub = """
@@ -291,7 +291,7 @@ except ImportError:
 
 # === FIX 11: redis_coordination_fabric.py _emit_pulls_context ===
 fp = os.path.join(ROOT, "agentic_core/cache/redis_coordination_fabric.py")
-src = open(fp, "r", encoding="utf-8").read()
+src = open(fp, encoding="utf-8").read()
 # Check if _emit_pulls_context is in the first import block
 first_block_end = src.find(")\n\n_emit")
 if first_block_end > 0:

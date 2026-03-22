@@ -6,8 +6,9 @@ instead of numbered nodes. All references to K.X have been eliminated.
 """
 
 from __future__ import annotations
-from typing import Any
+
 from enum import Enum
+from typing import Any
 
 
 class AgentRole(Enum):

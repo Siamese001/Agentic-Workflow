@@ -13,11 +13,23 @@ Exit 0 = pass, exit 1 = violations found.
 Hardening V2 — Outcome E.
 """
 from __future__ import annotations
+
 import ast
 import json
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, DEFAULT_TIMEOUT, MAX_DEPTH, MAX_FILES, MAX_RETRIES, THRESHOLD
+
+from agentic_core.L0_routing.config.path_constants import (
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    DEFAULT_TIMEOUT,
+    MAX_DEPTH,
+    MAX_FILES,
+    MAX_RETRIES,
+    THRESHOLD,
+)
+
 SCAN_ROOTS = [TESTS_DIR]
 QUARANTINE_MANIFEST = 'tests/_quarantine/QUARANTINE_MANIFEST.json'
 KNOWN_FAILING_MD = 'docs/reports/plans/KNOWN_FAILING_TESTS.md'

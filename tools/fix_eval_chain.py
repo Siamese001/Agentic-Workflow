@@ -37,7 +37,7 @@ def create_file(path, content):
 
 # 1. Create base.py in workflow_engines (for from .base import)
 # Check what's expected
-with open(os.path.join(WE, "groundedness.py"), "r") as f:
+with open(os.path.join(WE, "groundedness.py")) as f:
     content = f.read()
 
 # groundedness imports from .base import GenerationMetric

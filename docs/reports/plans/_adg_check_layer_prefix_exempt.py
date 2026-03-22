@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Check LAYER_PREFIX_EXEMPT_TERRITORIES - where defined, where imported, gap status."""
-import sqlite3, sys
+import sqlite3
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -44,12 +45,14 @@ print(f"  structure_blueprint:        hasattr={has_sb}")
 print(f"  structure_blueprint_config: hasattr={has_sbc}")
 
 if has_sb:
-    val = getattr(sb, 'LAYER_PREFIX_EXEMPT_TERRITORIES')
+    val = sb.LAYER_PREFIX_EXEMPT_TERRITORIES
     print(f"  value type: {type(val).__name__}  value: {val}")
     print(f"  in pkg __all__: {'LAYER_PREFIX_EXEMPT_TERRITORIES' in getattr(sb, '__all__', [])}")
 
 print("\n=== Find which file defines it ===")
-import ast, os
+import ast
+import os
+
 target = 'LAYER_PREFIX_EXEMPT_TERRITORIES'
 for dirpath, _, fnames in os.walk(str(ROOT / "agentic_core")):
     for fname in fnames:

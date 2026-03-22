@@ -24,8 +24,10 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_SHARED_DIR,
     OPS_SCRIPTS_DIR,
     SYSTEM_LEARNING_DIR,
-    TESTS_DIR as _TESTS_DIR_STR,
     TOOLS_DIR,
+)
+from agentic_core.L0_routing.config.path_constants import (
+    TESTS_DIR as _TESTS_DIR_STR,
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,

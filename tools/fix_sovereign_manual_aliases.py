@@ -2,7 +2,7 @@
 import ast
 
 fp = r"C:\Git\Agentic-Workflow\apps_shared\types\sovereign_severity_types.py"
-src = open(fp, "r", encoding="utf-8").read()
+src = open(fp, encoding="utf-8").read()
 tree = ast.parse(src)
 
 # Manual mapping: CamelCase -> actual class name

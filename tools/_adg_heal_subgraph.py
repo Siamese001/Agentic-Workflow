@@ -4,9 +4,9 @@ Uses the compact edge format: s=src_id, d=dst_id, r=relation, k=kind, f=file, ln
 """
 import glob
 import json
-import os
 from collections import defaultdict
 from pathlib import Path
+
 ADG_DIR = 'C:\\Git\\Agentic-Workflow\\artifacts\\adg'
 fg_path = sorted(glob.glob(Path(ADG_DIR) / 'adg_file_graph_*.json'))[-1]
 print(f'Loading: {Path(fg_path).name}')
@@ -20,7 +20,7 @@ HEAL_PATTERNS = ['healing_tier_router', 'healing_tier_dispatcher', 'healing_tier
 
 def matches(nd: dict) -> bool:
     name = (nd.get('n') or nd.get('p') or '').lower()
-    return any((p.lower() in name for p in HEAL_PATTERNS))
+    return any(p.lower() in name for p in HEAL_PATTERNS)
 heal_ids = {int(k) for k, v in nodes.items() if matches(v)}
 print(f'\nHealing/routing nodes matched: {len(heal_ids)}')
 sorted_nodes = sorted([(nid, id_to_node[nid]) for nid in heal_ids if id_to_node[nid].get('t') == 'module'], key=lambda x: (x[1].get('l', ''), x[1].get('n', '')))

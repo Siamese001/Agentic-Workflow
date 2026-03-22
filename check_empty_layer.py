@@ -34,7 +34,7 @@ cur.execute("""
 """)
 empty_samples = cur.fetchall()
 
-print(f"\nSample empty layer nodes:")
+print("\nSample empty layer nodes:")
 for name, entity_type, identity_kind, confidence, path in empty_samples:
     print(f"  {name}")
     print(f"    type={entity_type} kind={identity_kind} conf={confidence} path={path}")
