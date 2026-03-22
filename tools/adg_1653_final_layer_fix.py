@@ -116,9 +116,9 @@ cur.execute("SELECT COUNT(*) FROM nodes WHERE layer = 'L4_PERSISTENCE'")
 l4_persistence_count = cur.fetchone()[0]
 
 cur.execute("""
-    SELECT layer, COUNT(*) 
-    FROM nodes 
-    GROUP BY layer 
+    SELECT layer, COUNT(*)
+    FROM nodes
+    GROUP BY layer
     ORDER BY COUNT(*) DESC
     LIMIT 15
 """)

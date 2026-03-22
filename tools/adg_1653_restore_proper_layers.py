@@ -51,7 +51,7 @@ print(f"  Fixed {provider_fixes} providers")
 # 4) Check if any modules should be L4_PERSISTENCE
 print("\n[4] Checking for L4_PERSISTENCE modules...")
 cur.execute("""
-    SELECT COUNT(*) FROM nodes 
+    SELECT COUNT(*) FROM nodes
     WHERE entity_type = 'module'
     AND resolved_path LIKE '%persistence%'
     AND layer != 'L4'
@@ -107,9 +107,9 @@ cur.execute("SELECT COUNT(*) FROM nodes WHERE layer = 'L4_PERSISTENCE'")
 l4_persistence_count = cur.fetchone()[0]
 
 cur.execute("""
-    SELECT layer, COUNT(*) 
-    FROM nodes 
-    GROUP BY layer 
+    SELECT layer, COUNT(*)
+    FROM nodes
+    GROUP BY layer
     ORDER BY COUNT(*) DESC
     LIMIT 15
 """)
