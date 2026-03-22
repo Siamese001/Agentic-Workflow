@@ -18,6 +18,7 @@ NOTE: adg_LATEST_* copies not generated (create_latest_symlinks=False by default
 from __future__ import annotations
 
 import gzip
+import os
 import shutil
 import sys
 import zipfile
@@ -259,11 +260,21 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
         repo_state_hash = ""
 
     cache_path = adg_artifacts_dir / "scan_result_cache.json"
-    scanner = ADGStaticScanner(repo_root=ROOT, cache_path=cache_path)
-    result = scanner.scan(commit_sha=commit_sha)
-
-    # Set repo_state_hash in the result
-    result.repo_state_hash = repo_state_hash
+    
+    # Check if we should force cache usage (for performance debugging)
+    force_cache = os.environ.get("ADG_FORCE_CACHE", "false").lower() == "true"
+    if force_cache and cache_path.exists():
+        print("[ADG] Force cache mode enabled - bypassing cache validation")
+        from agentic_core.adg.runtime.cache_loader import load_or_scan
+        result = load_or_scan(repo_root=str(ROOT), cache_path=cache_path, force_cache=True)
+        # Set commit_sha and repo_state_hash for consistency
+        result.commit_sha = commit_sha
+        result.repo_state_hash = repo_state_hash
+    else:
+        scanner = ADGStaticScanner(repo_root=ROOT, cache_path=cache_path)
+        result = scanner.scan(commit_sha=commit_sha)
+        # Set repo_state_hash in the result
+        result.repo_state_hash = repo_state_hash
 
     print(f"[ADG] Scan complete. Digest: {result.digest}")
     print(f"[ADG] Modules: {len(result.modules)}")

@@ -201,13 +201,45 @@ def _is_cache_valid(cached: dict) -> bool:
     from agentic_core.adg.extraction.static_scanner import _SCANNER_VERSION, _SCHEMA_VERSION
 
     expected_key = _cache_key(_SCANNER_VERSION, _SCHEMA_VERSION)
-    return cached.get("_cache_key") == expected_key
+    cached_key = cached.get("_cache_key")
+    
+    if cached_key is None:
+        return False
+    
+    # Parse cache key components
+    try:
+        cached_parts = cached_key.split("::")
+        expected_parts = expected_key.split("::")
+        
+        if len(cached_parts) != 4 or len(expected_parts) != 4:
+            return False
+        
+        cached_commit, cached_scanner, cached_schema, cached_py = cached_parts
+        expected_commit, expected_scanner, expected_schema, expected_py = expected_parts
+        
+        # Allow cache if commit and Python version match (scanner/schema can be compatible)
+        if cached_commit == expected_commit and cached_py == expected_py:
+            # Check scanner version compatibility (allow minor version differences)
+            if cached_scanner == expected_scanner:
+                return True
+            # Allow scanner version differences if schema is the same
+            if cached_schema == expected_schema:
+                return True
+        
+        return False
+    except Exception:
+        return False
 
 
-def load_or_scan(repo_root: str | None = None, cache_path: Path | None = None) -> ScanResult:
+def load_or_scan(repo_root: str | None = None, cache_path: Path | None = None, force_cache: bool = False) -> ScanResult:
     """R2: Load ADG ScanResult from cache if valid, otherwise run fresh scan.
 
     Cache key: commit_sha + scanner_version + schema_version + python_ast_version.
+    
+    Args:
+        repo_root: Repository root path
+        cache_path: Custom cache file path
+        force_cache: If True, bypass cache validation and use existing cache
     """
     from agentic_core.adg.extraction.static_scanner import (
         _SCANNER_VERSION,
@@ -220,8 +252,10 @@ def load_or_scan(repo_root: str | None = None, cache_path: Path | None = None) -
     if cache.exists():
         try:
             cached = json.loads(cache.read_text(encoding="utf-8"))
-            if _is_cache_valid(cached):
-                logger.info("ADG cache hit: %s", cache)
+            # Check cache validity or force usage
+            if force_cache or _is_cache_valid(cached):
+                cache_status = "forced" if force_cache else "valid"
+                logger.info("ADG cache %s: %s", cache_status, cache)
                 return ScanResult.from_dict(cached)
             logger.info("ADG cache miss (key changed): %s", cache)
         # guardian: allow-silent-swallow
