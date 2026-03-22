@@ -103,7 +103,7 @@ from agentic_core.utils.ssot_discovery_validator import get_data_files
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L2_execution.enforcement.write_governor_mixin import WriteGovernorMixin
-from agentic_core.L4_persistence.lifecycle.lifecycle_policy_applier import (
+from agentic_core.L4_state.lifecycle.lifecycle_policy_applier import (
     apply_simple_lifecycle_policy,
 )
 from agentic_core.L5_safety.enforcement.policy_action_contract import (

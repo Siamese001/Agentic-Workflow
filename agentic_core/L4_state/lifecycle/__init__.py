@@ -6,7 +6,7 @@ from creation through update, retention, expiration, archival, and deletion.
 from enum import Enum
 
 # P3/L4 State Lifecycle Governance exports
-from agentic_core.L4_persistence.lifecycle.lifecycle_policy_applier import (
+from agentic_core.L4_state.lifecycle.lifecycle_policy_applier import (
     StateLifecycleContext,
     apply_state_lifecycle_policy,
     lifecycle_policy_applied,
@@ -17,14 +17,15 @@ from agentic_core.L4_persistence.lifecycle.lifecycle_policy_applier import (
     record_state_deletion,
     state_archived,
     state_deleted,
+    state_active,
 )
-from agentic_core.L4_persistence.lifecycle.lifecycle_policy_applier import (
+from agentic_core.L4_state.lifecycle.lifecycle_policy_applier import (
     get_state_lifecycle_registry as get_applier_registry,
 )
-from agentic_core.L4_persistence.lifecycle.lifecycle_policy_applier import (
+from agentic_core.L4_state.lifecycle.lifecycle_policy_applier import (
     reset_state_lifecycle_registry as reset_applier_registry,
 )
-from agentic_core.L4_persistence.lifecycle.state_lifecycle import (
+from agentic_core.L4_state.lifecycle.state_lifecycle import (
     # Enum values for ADG scanner detection
     ACTIVE,
     ARCHIVED,

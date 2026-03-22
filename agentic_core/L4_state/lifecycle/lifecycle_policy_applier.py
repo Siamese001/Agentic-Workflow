@@ -1,7 +1,11 @@
 """
-agentic_core/L4_persistence/lifecycle/lifecycle_policy_applier.py
+agentic_core/L4_state/lifecycle/lifecycle_policy_applier.py
 
 P3/L4 mandatory entrypoint for state lifecycle policy application.
+
+This module provides the canonical interface for applying state lifecycle
+policies within the L4 state layer. All state transitions must flow through
+this governed interface to ensure auditability and compliance.
 
 apply_state_lifecycle_policy() — 5 mandatory steps (in order):
   1. classify state by namespace
@@ -20,7 +24,7 @@ import time
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L4_persistence.lifecycle.state_lifecycle import (
+from agentic_core.L4_state.lifecycle.state_lifecycle import (
     LifecycleStatus,
     RetentionClass,
     StateLifecycleError,
@@ -441,7 +445,7 @@ def _create_default_policy(
     deletion_seconds: int,
 ) -> Any:
     """Create default lifecycle policy."""
-    from agentic_core.L4_persistence.lifecycle.state_lifecycle import LifecyclePolicy
+    from agentic_core.L4_state.lifecycle.state_lifecycle import LifecyclePolicy
 
     policy = LifecyclePolicy.create(
         policy_id=policy_id,

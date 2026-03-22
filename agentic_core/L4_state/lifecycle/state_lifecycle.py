@@ -1,5 +1,5 @@
 """
-agentic_core/L4_persistence/lifecycle/state_lifecycle.py
+agentic_core/L4_state/lifecycle/state_lifecycle.py
 
 P3/L4 State Lifecycle Governance — state lifecycle record and metrics.
 
