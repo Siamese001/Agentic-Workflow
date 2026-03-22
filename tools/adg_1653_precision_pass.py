@@ -49,7 +49,7 @@ class ADG1653PrecisionPass:
         }
 
         # 1. Report ↔ SQLite Hard Parity
-        print("\n[1] Report ↔ SQLite Hard Parity...")
+        print("\n[1] Report <-> SQLite Hard Parity...")
         results["checks"]["parity"] = self.check_report_sqlite_parity()
 
         # 2. Critical Path Boundary Zero Tolerance
@@ -134,9 +134,9 @@ class ADG1653PrecisionPass:
         print(f"  SQLite: {sqlite_nodes} nodes, {sqlite_edges} edges")
         print(f"  Edge types: {len(sqlite_edge_dist)}")
         if result["success"]:
-            print("  ✅ Parity check passed")
+            print("  PASS Parity check passed")
         else:
-            print("  ❌ Parity check failed")
+            print("  FAIL Parity check failed")
 
         return result
 
