@@ -19,7 +19,7 @@ import sqlite3
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Tuple, Any
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -36,7 +36,7 @@ class ADGPrecisionPass:
         self.timestamp = datetime.now().strftime("%Y%m%d_%H%M")
         self.reports = {}
 
-    def run_all_checks(self) -> Dict[str, Any]:
+    def run_all_checks(self) -> dict[str, Any]:
         """Run all precision checks."""
         print("=" * 80)
         print("ADG PRECISION PASS")
@@ -85,7 +85,7 @@ class ADGPrecisionPass:
 
         return results
 
-    def check_report_sqlite_parity(self) -> Dict[str, Any]:
+    def check_report_sqlite_parity(self) -> dict[str, Any]:
         """Check exact parity between reports and SQLite."""
         result = {"success": True, "details": {}}
 
@@ -120,7 +120,7 @@ class ADGPrecisionPass:
 
         return result
 
-    def check_boundary_zero_tolerance(self) -> Dict[str, Any]:
+    def check_boundary_zero_tolerance(self) -> dict[str, Any]:
         """Check for zero unresolved imports in critical path."""
         result = {"success": True, "details": {}}
 
@@ -168,7 +168,7 @@ class ADGPrecisionPass:
 
         return result
 
-    def check_replay_determinism(self) -> Dict[str, Any]:
+    def check_replay_determinism(self) -> dict[str, Any]:
         """Check replay determinism through hash equality."""
         result = {"success": True, "details": {}}
 
@@ -220,7 +220,7 @@ class ADGPrecisionPass:
 
         return result
 
-    def check_symbol_layer_propagation(self) -> Dict[str, Any]:
+    def check_symbol_layer_propagation(self) -> dict[str, Any]:
         """Check symbol-layer consistency."""
         result = {"success": True, "details": {}}
 
@@ -263,7 +263,7 @@ class ADGPrecisionPass:
 
         return result
 
-    def check_core_edge_coverage(self) -> Dict[str, Any]:
+    def check_core_edge_coverage(self) -> dict[str, Any]:
         """Check core modules have minimum required edge coverage."""
         result = {"success": True, "details": {}}
 
@@ -342,7 +342,7 @@ class ADGPrecisionPass:
 
         return result
 
-    def check_test_surface_binding(self) -> Dict[str, Any]:
+    def check_test_surface_binding(self) -> dict[str, Any]:
         """Check test surface is properly bound."""
         result = {"success": True, "details": {}}
 
@@ -376,7 +376,7 @@ class ADGPrecisionPass:
 
         return result
 
-    def final_system_lock(self) -> Dict[str, Any]:
+    def final_system_lock(self) -> dict[str, Any]:
         """Final system lock validation."""
         result = {"success": True, "details": {}}
 
@@ -421,7 +421,7 @@ class ADGPrecisionPass:
 
         return hasher.hexdigest()
 
-    def save_comprehensive_report(self, results: Dict[str, Any], report_path: Path) -> None:
+    def save_comprehensive_report(self, results: dict[str, Any], report_path: Path) -> None:
         """Save comprehensive precision report."""
         with open(report_path, 'w') as f:
             json.dump(results, f, indent=2)
@@ -430,7 +430,7 @@ class ADGPrecisionPass:
         # Save individual reports for CI gates
         self.save_ci_gate_reports(results)
 
-    def save_ci_gate_reports(self, results: Dict[str, Any]):
+    def save_ci_gate_reports(self, results: dict[str, Any]):
         """Save individual reports for CI gates."""
         report_dir = ROOT / "artifacts" / "adg"
 
