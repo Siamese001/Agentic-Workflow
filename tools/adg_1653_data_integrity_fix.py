@@ -29,18 +29,18 @@ print(f"  Found {blank_layers} nodes with blank layers")
 if blank_layers > 0:
     # First, fix module nodes with blank layers using deterministic path rules
     cur.execute("""
-        UPDATE nodes 
+        UPDATE nodes
         SET layer = 'L_UNKNOWN'
-        WHERE entity_type = 'module' 
+        WHERE entity_type = 'module'
         AND (layer = '' OR layer IS NULL)
     """)
     module_fixes = cur.rowcount
     print(f"  Initialized {module_fixes} module layers to L_UNKNOWN")
-    
+
     # Now update modules with proper layer based on path
     cur.execute("""
-        UPDATE nodes 
-        SET layer = CASE 
+        UPDATE nodes
+        SET layer = CASE
             WHEN resolved_path LIKE 'agentic_core/L0_%' THEN 'L0'
             WHEN resolved_path LIKE 'agentic_core/L1_%' THEN 'L1'
             WHEN resolved_path LIKE 'agentic_core/L2_%' THEN 'L2'
@@ -50,20 +50,20 @@ if blank_layers > 0:
             WHEN resolved_path LIKE 'agentic_core/L6_%' THEN 'L6'
             ELSE 'L_UNKNOWN'
         END
-        WHERE entity_type = 'module' 
+        WHERE entity_type = 'module'
         AND layer = 'L_UNKNOWN'
         AND resolved_path LIKE 'agentic_core/%'
     """)
     module_updates = cur.rowcount
     print(f"  Updated {module_updates} module layers based on path")
-    
+
     # Then, propagate module layers to symbols
     cur.execute("""
         UPDATE nodes
         SET layer = (
-            SELECT n2.layer 
-            FROM nodes n2 
-            WHERE n2.entity_type = 'module' 
+            SELECT n2.layer
+            FROM nodes n2
+            WHERE n2.entity_type = 'module'
             AND nodes.adg_name LIKE n2.adg_name || '::%'
             AND n2.layer != 'L_UNKNOWN'
             LIMIT 1
@@ -73,10 +73,10 @@ if blank_layers > 0:
     """)
     symbol_fixes = cur.rowcount
     print(f"  Fixed {symbol_fixes} symbol layers")
-    
+
     # For any remaining blank nodes, assign L_UNKNOWN
     cur.execute("""
-        UPDATE nodes 
+        UPDATE nodes
         SET layer = 'L_UNKNOWN'
         WHERE layer = '' OR layer IS NULL
     """)
@@ -100,16 +100,16 @@ print(f"  Found {blank_identities} nodes with blank identity_kind")
 if blank_identities > 0:
     # First set all blank to a default value
     cur.execute("""
-        UPDATE nodes 
+        UPDATE nodes
         SET identity_kind = 'inferred_symbol'
         WHERE identity_kind = '' OR identity_kind IS NULL
     """)
     initial_fixes = cur.rowcount
     print(f"  Initialized {initial_fixes} identity_kind to inferred_symbol")
-    
+
     # Now apply deterministic mapping based on entity_type
     cur.execute("""
-        UPDATE nodes 
+        UPDATE nodes
         SET identity_kind = CASE entity_type
             WHEN 'symbol' THEN 'inferred_symbol'
             WHEN 'module' THEN 'repo_module'
@@ -163,8 +163,8 @@ print(f"  Replay edge counts: {replay_counts}")
 # 5) Core edge coverage validation
 print("\n[5] Validating core edge coverage...")
 core_modules_query = """
-    SELECT adg_name, id FROM nodes 
-    WHERE entity_type = 'module' 
+    SELECT adg_name, id FROM nodes
+    WHERE entity_type = 'module'
     AND layer IN ('L0', 'L2', 'L5')
 """
 cur.execute(core_modules_query)
@@ -174,23 +174,23 @@ missing_coverage = []
 for module_adg, module_id in core_modules:
     # Check determinism
     cur.execute("""
-        SELECT COUNT(*) FROM edges 
+        SELECT COUNT(*) FROM edges
         WHERE src_id = ? AND relation_type IN ('determinism_seed', 'emits_determinism_digest')
     """, (module_id,))
     if cur.fetchone()[0] == 0:
         missing_coverage.append(f"{module_adg}: missing determinism")
-    
+
     # Check governance
     cur.execute("""
-        SELECT COUNT(*) FROM edges 
+        SELECT COUNT(*) FROM edges
         WHERE src_id = ? AND relation_type = 'policy_verification'
     """, (module_id,))
     if cur.fetchone()[0] == 0:
         missing_coverage.append(f"{module_adg}: missing governance")
-    
+
     # Check execution
     cur.execute("""
-        SELECT COUNT(*) FROM edges 
+        SELECT COUNT(*) FROM edges
         WHERE src_id = ? AND relation_type = 'dispatches_execution_plan'
     """, (module_id,))
     if cur.fetchone()[0] == 0:
@@ -220,15 +220,15 @@ cur.execute("""
     SELECT COUNT(DISTINCT e.src_id)
     FROM edges e
     JOIN nodes n ON e.src_id = n.id
-    WHERE n.entity_type = 'module' 
+    WHERE n.entity_type = 'module'
     AND n.layer IN ('L0', 'L2', 'L5')
     AND e.relation_type IN ('defines_test_case', 'defines_test_suite')
 """)
 modules_with_tests = cur.fetchone()[0]
 
 cur.execute("""
-    SELECT COUNT(*) FROM nodes 
-    WHERE entity_type = 'module' 
+    SELECT COUNT(*) FROM nodes
+    WHERE entity_type = 'module'
     AND layer IN ('L0', 'L2', 'L5')
 """)
 total_critical_modules = cur.fetchone()[0]
@@ -256,7 +256,7 @@ final_blank_layers = cur.fetchone()[0]
 cur.execute("SELECT COUNT(*) FROM nodes WHERE identity_kind = '' OR identity_kind IS NULL")
 final_blank_identities = cur.fetchone()[0]
 
-success = (final_blank_layers == 0 and 
+success = (final_blank_layers == 0 and
           final_blank_identities == 0 and
           len(missing_coverage) == 0 and
           test_coverage >= 0.9)

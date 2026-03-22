@@ -28,17 +28,17 @@ print(f"  Found {empty_layers} nodes with empty layers")
 if empty_layers > 0:
     # Disable foreign keys temporarily
     cur.execute("PRAGMA foreign_keys = OFF")
-    
+
     # Update all empty layers at once
     cur.execute("""
-        UPDATE nodes 
+        UPDATE nodes
         SET layer = 'L_UNKNOWN'
         WHERE layer = ''
     """)
-    
+
     updated = cur.rowcount
     print(f"  Fixed {updated} empty layers")
-    
+
     # Re-enable foreign keys
     cur.execute("PRAGMA foreign_keys = ON")
 
@@ -51,20 +51,20 @@ print(f"  Found {empty_identities} nodes with empty identity_kind")
 if empty_identities > 0:
     # Disable foreign keys temporarily
     cur.execute("PRAGMA foreign_keys = OFF")
-    
+
     # Update all empty identity_kinds at once
     cur.execute("""
-        UPDATE nodes 
+        UPDATE nodes
         SET identity_kind = 'inferred_symbol'
         WHERE identity_kind = ''
     """)
-    
+
     updated = cur.rowcount
     print(f"  Fixed {updated} empty identity_kinds")
-    
+
     # Now apply proper mapping
     cur.execute("""
-        UPDATE nodes 
+        UPDATE nodes
         SET identity_kind = CASE entity_type
             WHEN 'symbol' THEN 'inferred_symbol'
             WHEN 'module' THEN 'repo_module'
@@ -79,10 +79,10 @@ if empty_identities > 0:
         WHERE identity_kind = 'inferred_symbol'
         AND entity_type IN ('symbol', 'module', 'test_suite', 'test_case', 'invariant_family', 'replay_key', 'policy_hash', 'determinism_digest')
     """)
-    
+
     # Re-enable foreign keys
     cur.execute("PRAGMA foreign_keys = ON")
-    
+
     print(f"  Fixed {updated} empty identity_kinds")
 
 # 3) Now apply proper layer propagation
@@ -94,8 +94,8 @@ print(f"  Found {unknown_layers} nodes with L_UNKNOWN")
 if unknown_layers > 0:
     # Update modules based on path
     cur.execute("""
-        UPDATE nodes 
-        SET layer = CASE 
+        UPDATE nodes
+        SET layer = CASE
             WHEN resolved_path LIKE 'agentic_core/L0_%' THEN 'L0'
             WHEN resolved_path LIKE 'agentic_core/L1_%' THEN 'L1'
             WHEN resolved_path LIKE 'agentic_core/L2_%' THEN 'L2'
@@ -105,20 +105,20 @@ if unknown_layers > 0:
             WHEN resolved_path LIKE 'agentic_core/L6_%' THEN 'L6'
             ELSE 'L_UNKNOWN'
         END
-        WHERE entity_type = 'module' 
+        WHERE entity_type = 'module'
         AND layer = 'L_UNKNOWN'
         AND resolved_path LIKE 'agentic_core/%'
     """)
     module_updates = cur.rowcount
     print(f"  Updated {module_updates} module layers")
-    
+
     # Propagate to symbols
     cur.execute("""
         UPDATE nodes
         SET layer = COALESCE((
-            SELECT n2.layer 
-            FROM nodes n2 
-            WHERE n2.entity_type = 'module' 
+            SELECT n2.layer
+            FROM nodes n2
+            WHERE n2.entity_type = 'module'
             AND nodes.adg_name LIKE n2.adg_name || '::%'
             AND n2.layer != 'L_UNKNOWN'
             LIMIT 1
