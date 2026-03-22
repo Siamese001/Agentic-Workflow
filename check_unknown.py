@@ -3,10 +3,15 @@
 import sqlite3
 from pathlib import Path
 
-sqlite_path = Path("artifacts/adg/adg_indexed_03222026_1608.sqlite")
-if not sqlite_path.exists():
+adg_dir = Path("artifacts/adg")
+sqlite_candidates = sorted(adg_dir.glob("adg_indexed_*.sqlite"), key=lambda p: p.stat().st_mtime)
+sqlite_path = sqlite_candidates[-1] if sqlite_candidates else None
+
+if not sqlite_path or not sqlite_path.exists():
     print("SQLite file not found")
     exit(1)
+
+print(f"Using SQLite: {sqlite_path.name}")
 
 conn = sqlite3.connect(sqlite_path)
 cur = conn.cursor()
@@ -29,10 +34,10 @@ for layer, count in layers:
 
 # Sample unknown nodes
 cur.execute("""
-    SELECT adg_name, entity_type, identity_kind, confidence, resolved_path 
-    FROM nodes 
-    WHERE layer = 'L_UNKNOWN' 
-    ORDER BY adg_name 
+    SELECT adg_name, entity_type, identity_kind, confidence, resolved_path
+    FROM nodes
+    WHERE layer = 'L_UNKNOWN'
+    ORDER BY adg_name
     LIMIT 20
 """)
 unknown_samples = cur.fetchall()
@@ -44,12 +49,12 @@ for name, entity_type, identity_kind, confidence, path in unknown_samples:
 
 # Check patterns
 cur.execute("""
-    SELECT 
+    SELECT
         SUBSTR(resolved_path, 1, 3) as prefix,
         COUNT(*) as count
-    FROM nodes 
-    WHERE layer = 'L_UNKNOWN' 
-    GROUP BY prefix 
+    FROM nodes
+    WHERE layer = 'L_UNKNOWN'
+    GROUP BY prefix
     ORDER BY count DESC
 """)
 patterns = cur.fetchall()

@@ -464,7 +464,7 @@ def _auto_ingest_to_redis(adg_dir: Path, sqlite_path: Path) -> None:
             timeout=config.ingest_timeout,
             check=True,
         )
-        print("[ADG] ✓ Redis ingest complete — ADG cache is HOT")
+        print("[ADG] Redis ingest complete - ADG cache is HOT")
         # Show last 3 lines of output for confirmation
         lines = [line for line in result.stdout.strip().split("\n") if line.strip()]
         for line in lines[-3:]:
@@ -511,9 +511,23 @@ def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: 
             f"adg_graphsnap_{ts}.json",
         ]
 
+        staged_count = 0
+        skipped_ignored_count = 0
+
         for pattern in artifact_patterns:
             artifact_path = adg_dir / pattern
             if artifact_path.exists():
+                # Skip ignored artifacts to avoid repeated git add failures/noise
+                check_ignore = subprocess.run(
+                    ["git", "check-ignore", str(artifact_path)],
+                    cwd=str(ROOT),
+                    capture_output=True,
+                    text=True,
+                )
+                if check_ignore.returncode == 0:
+                    skipped_ignored_count += 1
+                    continue
+
                 subprocess.run(
                     ["git", "add", str(artifact_path)],
                     cwd=str(ROOT),
@@ -521,6 +535,7 @@ def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: 
                     text=True,
                     check=True,
                 )
+                staged_count += 1
 
         # Stage deletions of old artifacts (moved to _archive/)
         subprocess.run(
@@ -530,6 +545,22 @@ def _auto_commit_artifacts(adg_dir: Path, ts: str, node_count: int, edge_count: 
             text=True,
             check=True,
         )
+
+        if skipped_ignored_count:
+            print(
+                f"[ADG] Git: skipped {skipped_ignored_count} ignored artifacts; staged {staged_count} trackable artifacts"
+            )
+
+        # If nothing is staged, skip commit cleanly
+        staged_check = subprocess.run(
+            ["git", "diff", "--cached", "--quiet"],
+            cwd=str(ROOT),
+            capture_output=True,
+            text=True,
+        )
+        if staged_check.returncode == 0:
+            print("[ADG] Git: no staged artifact changes to commit")
+            return
 
         # Commit with descriptive message, bypassing pre-commit hooks
         # ADG artifacts are auto-generated and don't need validation

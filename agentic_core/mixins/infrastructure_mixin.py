@@ -66,7 +66,7 @@ from agentic_core.mixins.cost_mixin import CostGuardrailMixin
 from agentic_core.mixins.healer_mixin import HealerMixin
 from agentic_core.mixins.hitl_mixin import HITLMixin
 from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin
-from agentic_core.mixins.performance_mixin import PerformanceMixin
+from agentic_core.mixins.batching_mixin import BatchingMixin
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.mixins.tool_reliability_mixin import ToolReliabilityMixin
 from agentic_core.mixins.tracing_mixin import TracingMixin
@@ -238,7 +238,7 @@ class InfrastructureMixin(
     ContextManagementMixin,
     ToolReliabilityMixin,
     HITLMixin,
-    PerformanceMixin,
+    BatchingMixin,
     HealerMixin,
     MCPHardenedMixin,
     SubatomicTestingMixin,
@@ -260,7 +260,7 @@ class InfrastructureMixin(
 
     4. Human-in-the-loop (HITLMixin) [PHASE 3 Feb 2026]
 
-    5. Performance optimization (PerformanceMixin) [PHASE 4 Feb 2026]
+    5. Performance optimization (BatchingMixin) [PHASE 4 Feb 2026]
 
     7. Healing capabilities (HealerMixin)
 
@@ -280,9 +280,7 @@ class InfrastructureMixin(
 
         ContextManagementMixin -> ToolReliabilityMixin -> HITLMixin ->
 
-        PerformanceMixin -> HealerMixin ->
-
-        MCPHardenedMixin -> SubatomicTestingMixin -> TracingMixin -> object
+        BatchingMixin -> HealerMixin -> MCPHardenedMixin -> SubatomicTestingMixin -> TracingMixin -> object
 
 
 

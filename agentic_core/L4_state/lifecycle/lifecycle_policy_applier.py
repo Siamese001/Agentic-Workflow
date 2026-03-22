@@ -30,6 +30,7 @@ from agentic_core.L4_state.lifecycle.state_lifecycle import (
     StateLifecycleError,
     StateLifecycleRecord,
     get_state_lifecycle_registry,
+    reset_state_lifecycle_registry,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_applies_guardrail,  # noqa: E402
@@ -204,6 +205,11 @@ def lifecycle_policy_applied(namespace: str, policy_id: str, status: str, retent
 
 def lifecycle_transition_recorded(namespace: str, from_status: str, to_status: str, reason: str) -> None:
     """ADG edge emitter for lifecycle_transition_recorded."""
+    pass
+
+
+def state_active(namespace: str, location: str, actor: str) -> None:
+    """ADG edge emitter for state_active."""
     pass
 
 
@@ -693,6 +699,9 @@ __all__ = [
     "apply_simple_lifecycle_policy",
     "lifecycle_policy_applied",
     "lifecycle_transition_recorded",
+    "state_active",
     "state_archived",
     "state_deleted",
+    "get_state_lifecycle_registry",
+    "reset_state_lifecycle_registry",
 ]
