@@ -1,6 +1,10 @@
 1. REDIS (EXACT MATCH / KV CACHE)         2. SEMANTIC CACHING                       3. SEMANTIC RETRIEVAL (RAG)
 (Simplest: Literal Match)                 (Intermediate: Meaning Match)             (Most Complex: Generate Answer)
 
+MENTAL MODEL                              MENTAL MODEL                              MENTAL MODEL
+-------------------------------           -------------------------------           -------------------------------
+Layer 1: Instant recall (exact)           Layer 2: Reuse thinking (similar)         Layer 3: Generate new thinking (novel)
+
 WHAT IT IS                                WHAT IT IS                                WHAT IT IS
 -------------------------------           -------------------------------           -------------------------------
 Fast in-memory datastore                  Reuse previously computed LLM             Retrieve relevant knowledge
@@ -71,3 +75,9 @@ PRIMARY FAILURE MODE                      PRIMARY FAILURE MODE                  
 Cache Misses & Stale Data                 False Positives (Drift)                   Hallucination & Poor Retrieval
 Memory fills up, or main                  Assumes nuanced query is                  Irrelevant docs retrieved,
 data changes without update               identical to past generic one             LLM uses bad context
+
+THE UPGRADE OPPORTUNITY                   THE UPGRADE OPPORTUNITY                   THE UPGRADE OPPORTUNITY
+-------------------------------           -------------------------------           -------------------------------
+Maintain exact-match baseline,            Make Layer 2 first-class. Operationalize  Do NOT replace RAG. Integrate it
+but bind to unified telemetry             with governed policy, admission gates,    with the unified embedding system,
+and state lineage.                        and embedding lifecycle management.       cache admission, and telemetry.
