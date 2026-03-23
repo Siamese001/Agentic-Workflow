@@ -158,6 +158,12 @@ class SimpleMLModel:
         return max(0.0, min(1.0, prediction))  # Clamp to [0, 1]
 
 
+class ModelRegistry(dict):
+    """Dictionary-like model registry with compatibility attributes."""
+
+    ModelType = ModelType
+
+
 class PerformanceAnalyzer:
     """Analyzes performance data and extracts features for ML models."""
 
@@ -328,7 +334,7 @@ class AdaptiveOptimizer:
     def __init__(self):
         self.performance_analyzer = PerformanceAnalyzer()
         self.cost_analyzer = CostAnalyzer()
-        self.models: dict[ModelType, SimpleMLModel] = {}
+        self.models: ModelRegistry = ModelRegistry()
         self.current_parameters: dict[LayerType, OptimizationParameters] = {}
         self.optimization_history: list[OptimizationResult] = []
         self.strategy = OptimizationStrategy.BALANCED

@@ -136,6 +136,14 @@ class DataClassifier:
     """Classifies data based on content and context."""
 
     def __init__(self):
+        self.classification_rank = {
+            DataClassification.PUBLIC: 0,
+            DataClassification.INTERNAL: 1,
+            DataClassification.CONFIDENTIAL: 2,
+            DataClassification.RESTRICTED: 3,
+            DataClassification.SENSITIVE_PII: 4,
+        }
+
         self.classification_rules = {
             DataClassification.PUBLIC: ["public", "general", "announcement", "news"],
             DataClassification.INTERNAL: ["internal", "company", "employee", "internal_use"],
@@ -202,7 +210,7 @@ class DataClassifier:
         if isinstance(value, str):
             value_classification = self.classify_text(value)
             # Return higher classification
-            if value_classification.value > key_classification.value:
+            if self.classification_rank[value_classification] > self.classification_rank[key_classification]:
                 return value_classification
 
         # Layer-specific classification rules
@@ -220,7 +228,7 @@ class DataClassifier:
         if isinstance(value, str):
             classifications.append(self.classify_text(value))
 
-        return max(classifications, key=lambda c: c.value)
+        return max(classifications, key=lambda c: self.classification_rank[c])
 
 
 class AccessController:
@@ -302,7 +310,7 @@ class PrivacyEngine:
         self.masking_rules = {
             DataClassification.SENSITIVE_PII: {
                 "email": lambda x: x[:2] + "***@" + x.split("@")[1] if "@" in x else "***",
-                "phone": lambda x: x[:3] + "***" + x[-4:] if len(x) > 7 else "***",
+                "phone": lambda x: "***-" + x[-4:] if len(x) > 7 else "***",
                 "ssn": lambda x: "***-**-" + x[-4:] if len(x) > 4 else "***",
                 "credit_card": lambda x: "****-****-****-" + x[-4:] if len(x) > 4 else "***",
                 "default": lambda x: "***",
@@ -435,6 +443,7 @@ class AuditLogger:
         description: str,
         affected_resources: list[str],
         user_id: str | None = None,
+        compliance_tags: list[str] | None = None,
     ):
         """Log security incident."""
         await self.log_access(
@@ -452,7 +461,7 @@ class AuditLogger:
                 "description": description,
                 "affected_resources": affected_resources,
             },
-            compliance_tags=["security", "incident"],
+            compliance_tags=["security", "incident", *(compliance_tags or [])],
         )
 
     async def generate_compliance_report(
@@ -604,6 +613,10 @@ class SecurityGateway:
 
     async def authenticate_request(self, request: QueryRequest, security_context: SecurityContext) -> bool:
         """Authenticate incoming request."""
+        for role in security_context.roles:
+            if role in self.access_controller.role_permissions:
+                self.access_controller.assign_user_role(security_context.user_id, role)
+
         # Check if user has basic access
         has_access = await self.access_controller.check_access(
             security_context.user_id,

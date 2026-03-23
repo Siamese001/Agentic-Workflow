@@ -417,7 +417,27 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
         artifact_files.extend(existing_reports)
         print(f"[ADG] Adding {len(existing_reports)} reports to zip archive")
 
-    _create_zip_archive(adg_artifacts_dir, ts, artifact_files)
+    # --- Pre-flight validation for runtime files ---
+    missing_runtime = []
+    for rel_path in _RUNTIME_ENFORCEMENT_FILES:
+        if not (ROOT / rel_path).exists():
+            missing_runtime.append(rel_path)
+
+    if missing_runtime:
+        print(f"[ADG] ERROR: Cannot create zip - missing runtime files: {missing_runtime}")
+        print("[ADG] Continuing with individual files only (zip will be created later)")
+        # Skip zip creation and proceed to archiving
+        zip_created = False
+    else:
+        # --- Create zip archive ---
+        try:
+            _create_zip_archive(adg_artifacts_dir, ts, artifact_files)
+            zip_created = True
+            print(f"[ADG] Zip creation successful for {ts}")
+        except RuntimeError as e:
+            print(f"[ADG] WARNING: Zip creation failed: {e}")
+            print("[ADG] Individual files will be archived using legacy path")
+            zip_created = False
 
     # --- Archive old artifacts ---
     if archive_old:
@@ -747,74 +767,28 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
 
         # Check if this run has a zip file (preferred storage)
         zip_files = [f for f in files if f.name.startswith("adg_run_") and f.suffix == ".zip"]
-        
+
         if zip_files:
             # Archive only the zip file (most efficient)
-            for zip_file in zip_files:
-                if not zip_file.exists():
-                    continue
+            print(f"[ADG] Archive: Processing run {ts} with {len(zip_files)} zip file(s)")
+            zip_archived, zip_bytes_original, zip_bytes_archived = _archive_zip_files(zip_files, archive_month_dir)
+            archived_count += zip_archived
+            bytes_original += zip_bytes_original
+            bytes_archived += zip_bytes_archived
 
-                try:
-                    original_size = zip_file.stat().st_size
-                    bytes_original += original_size
-
-                    # Compress and archive the zip file
-                    archive_path = archive_month_dir / f"{zip_file.name}.gz"
-
-                    with open(zip_file, "rb") as f_in:
-                        with gzip.open(archive_path, "wb", compresslevel=9) as f_out:
-                            shutil.copyfileobj(f_in, f_out)
-
-                    # Verify compressed file before deleting original
-                    if archive_path.exists() and archive_path.stat().st_size > 0:
-                        bytes_archived += archive_path.stat().st_size
-                        zip_file.unlink()
-                        archived_count += 1
-                        
-                        # Remove all individual files for this run (they're in the zip)
-                        for file_path in files:
-                            if file_path != zip_file and file_path.exists():
-                                file_path.unlink()
-                                archived_count += 1
-                                bytes_original += file_path.stat().st_size
-                    else:
-                        # Clean up failed compression
-                        if archive_path.exists():
-                            archive_path.unlink()
-
-                except OSError as e:
-                    print(f"[ADG] Archive: error archiving {zip_file.name}: {e}")
-                    continue
-        else:
-            # No zip file - archive individual files (legacy behavior)
+            # Remove all individual files for this run (they're in the zip)
             for file_path in files:
-                if not file_path.exists():
-                    continue
-
-                try:
-                    original_size = file_path.stat().st_size
-                    bytes_original += original_size
-
-                    # Compress and archive
-                    archive_path = archive_month_dir / f"{file_path.name}.gz"
-
-                    with open(file_path, "rb") as f_in:
-                        with gzip.open(archive_path, "wb", compresslevel=9) as f_out:
-                            shutil.copyfileobj(f_in, f_out)
-
-                    # Verify compressed file before deleting original
-                    if archive_path.exists() and archive_path.stat().st_size > 0:
-                        bytes_archived += archive_path.stat().st_size
-                        file_path.unlink()
-                        archived_count += 1
-                    else:
-                        # Clean up failed compression
-                        if archive_path.exists():
-                            archive_path.unlink()
-
-                except OSError as e:
-                    print(f"[ADG] Archive: error archiving {file_path.name}: {e}")
-                    continue
+                if file_path not in zip_files and file_path.exists():
+                    file_path.unlink()
+                    archived_count += 1
+                    bytes_original += file_path.stat().st_size
+        else:
+            # No zip file - archive individual files (legacy behavior for orphaned runs)
+            print(f"[ADG] Archive: Found orphaned run {ts} with {len(files)} individual files")
+            individual_archived, individual_bytes_original, individual_bytes_archived = _archive_individual_files(files, archive_month_dir)
+            archived_count += individual_archived
+            bytes_original += individual_bytes_original
+            bytes_archived += individual_bytes_archived
 
     if archived_count > 0:
         savings = bytes_original - bytes_archived
@@ -952,6 +926,90 @@ _RUNTIME_ENFORCEMENT_FILES = [
 ]
 
 
+def _archive_zip_files(zip_files: list[Path], archive_month_dir: Path) -> tuple[int, int, int]:
+    """Archive zip files with compression.
+
+    Returns:
+        Tuple of (archived_count, bytes_original, bytes_archived)
+    """
+    archived_count = 0
+    bytes_original = 0
+    bytes_archived = 0
+
+    for zip_file in zip_files:
+        if not zip_file.exists():
+            continue
+
+        try:
+            original_size = zip_file.stat().st_size
+            bytes_original += original_size
+
+            # Compress and archive the zip file
+            archive_path = archive_month_dir / f"{zip_file.name}.gz"
+
+            with open(zip_file, "rb") as f_in:
+                with gzip.open(archive_path, "wb", compresslevel=9) as f_out:
+                    shutil.copyfileobj(f_in, f_out)
+
+            # Verify compressed file before deleting original
+            if archive_path.exists() and archive_path.stat().st_size > 0:
+                bytes_archived += archive_path.stat().st_size
+                zip_file.unlink()
+                archived_count += 1
+            else:
+                # Clean up failed compression
+                if archive_path.exists():
+                    archive_path.unlink()
+
+        except OSError as e:
+            print(f"[ADG] Archive: error archiving {zip_file.name}: {e}")
+            continue
+
+    return archived_count, bytes_original, bytes_archived
+
+
+def _archive_individual_files(files: list[Path], archive_month_dir: Path) -> tuple[int, int, int]:
+    """Archive individual files (legacy fallback for orphaned runs).
+
+    Returns:
+        Tuple of (archived_count, bytes_original, bytes_archived)
+    """
+    archived_count = 0
+    bytes_original = 0
+    bytes_archived = 0
+
+    for file_path in files:
+        if not file_path.exists():
+            continue
+
+        try:
+            original_size = file_path.stat().st_size
+            bytes_original += original_size
+
+            # Compress and archive
+            archive_path = archive_month_dir / f"{file_path.name}.gz"
+
+            with open(file_path, "rb") as f_in:
+                with gzip.open(archive_path, "wb", compresslevel=9) as f_out:
+                    shutil.copyfileobj(f_in, f_out)
+
+            # Verify compressed file before deleting original
+            if archive_path.exists() and archive_path.stat().st_size > 0:
+                bytes_archived += archive_path.stat().st_size
+                file_path.unlink()
+                archived_count += 1
+            else:
+                # Clean up failed compression
+                if archive_path.exists():
+                    archive_path.unlink()
+
+        except OSError as e:
+            print(f"[ADG] Archive: error archiving {file_path.name}: {e}")
+            continue
+
+    return archived_count, bytes_original, bytes_archived
+
+
 def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> Path:
     """Create a zip archive of all ADG artifacts + runtime enforcement files for the current run.
 
@@ -966,24 +1024,57 @@ def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> P
 
     Returns:
         Path to the created zip file
+
+    Raises:
+        RuntimeError: If critical runtime files are missing or zip creation fails
     """
     zip_path = adg_dir / f"adg_run_{ts}.zip"
     repo_root = adg_dir.parents[1]
 
-    with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
-        for artifact_path in artifact_paths:
-            if artifact_path.exists():
-                zf.write(artifact_path, f"adg/{artifact_path.name}")
+    try:
+        with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as zf:
+            # Add ADG artifacts with validation
+            missing_artifacts = []
+            for artifact_path in artifact_paths:
+                if artifact_path.exists():
+                    zf.write(artifact_path, f"adg/{artifact_path.name}")
+                else:
+                    missing_artifacts.append(artifact_path.name)
+                    print(f"[ADG] WARNING: Missing artifact {artifact_path.name}")
 
-        for rel_path in _RUNTIME_ENFORCEMENT_FILES:
-            full_path = repo_root / rel_path
-            if full_path.exists():
-                zf.write(full_path, f"runtime/{rel_path}")
+            # Add runtime files with explicit error handling
+            missing_runtime = []
+            for rel_path in _RUNTIME_ENFORCEMENT_FILES:
+                full_path = repo_root / rel_path
+                if full_path.exists():
+                    zf.write(full_path, f"runtime/{rel_path}")
+                else:
+                    missing_runtime.append(rel_path)
+                    print(f"[ADG] ERROR: Missing runtime file {rel_path}")
 
-    if zip_path.exists():
-        zip_size_mb = zip_path.stat().st_size / (1024 * 1024)
-        report_count = len([p for p in artifact_paths if p.name.endswith('_report.json')])
-        print(f"[ADG] Zip archive created: {zip_path.name} ({zip_size_mb:.1f} MB, 6 ADG + {report_count} reports + 5 runtime files)")
+            # Fail fast if critical runtime files missing
+            if missing_runtime:
+                zip_path.unlink()  # Remove incomplete zip
+                raise RuntimeError(f"Missing critical runtime files: {missing_runtime}")
+
+            # Warn about missing artifacts but don't fail
+            if missing_artifacts:
+                print(f"[ADG] WARNING: Zip created with missing artifacts: {missing_artifacts}")
+
+    except Exception as e:
+        print(f"[ADG] CRITICAL: Zip creation failed: {e}")
+        if zip_path.exists():
+            zip_path.unlink()
+        raise RuntimeError(f"Zip creation failed for {ts}: {e}") from e
+
+    # Verify zip was created successfully
+    if not zip_path.exists():
+        raise RuntimeError(f"Zip file not created after successful completion for {ts}")
+
+    zip_size_mb = zip_path.stat().st_size / (1024 * 1024)
+    report_count = len([p for p in artifact_paths if p.name.endswith('_report.json')])
+    runtime_count = len(_RUNTIME_ENFORCEMENT_FILES) - len(missing_runtime)
+    print(f"[ADG] Zip archive created: {zip_path.name} ({zip_size_mb:.1f} MB, 6 ADG + {report_count} reports + {runtime_count} runtime files)")
 
     return zip_path
 

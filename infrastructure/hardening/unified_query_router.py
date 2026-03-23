@@ -15,6 +15,8 @@ from enum import Enum
 from typing import Any
 
 from .implementation_plan import (
+    FourLayerContractError,
+    FourLayerContractGuard,
     HealthStatus,
     LayerResponse,
     LayerType,
@@ -56,6 +58,8 @@ class LoadBalancerConfig:
 class CircuitBreaker:
     """Circuit breaker implementation for layer protection."""
 
+    CircuitState = CircuitState
+
     def __init__(self, layer_type: LayerType, config: CircuitBreakerConfig):
         self.layer_type = layer_type
         self.config = config
@@ -76,6 +80,8 @@ class CircuitBreaker:
 
         try:
             result = await func(*args, **kwargs)
+            if result is None:
+                raise Exception("Circuit breaker operation returned no result")
             self._on_success()
             return result
         except Exception as e:
@@ -84,6 +90,8 @@ class CircuitBreaker:
 
     def _should_attempt_reset(self) -> bool:
         """Check if circuit should attempt reset."""
+        if self.last_failure_time is None:
+            return False
         return (
             datetime.now() - self.last_failure_time
         ).total_seconds() >= self.config.recovery_timeout_seconds
@@ -281,13 +289,19 @@ class HealthChecker:
 class UnifiedQueryRouter:
     """Unified query router with load balancing and circuit breaking."""
 
-    def __init__(self):
+    def __init__(self, l4_rate_limit_per_minute: int = 30):
         self.load_balancers: dict[LayerType, LoadBalancer] = {}
-        self.circuit_breakers: dict[LayerType, CircuitBreaker] = {}
+        self.circuit_breakers: dict[LayerType, CircuitBreaker] = {
+            layer_type: CircuitBreaker(layer_type, CircuitBreakerConfig())
+            for layer_type in LayerType
+        }
         self.health_checker = HealthChecker()
         self.query_stats = defaultdict(lambda: {"total": 0, "success": 0, "failed": 0})
         self._routing_rules = []
         self._lock = asyncio.Lock()
+        self.contract_guard = FourLayerContractGuard(
+            l4_rate_limit_per_minute=l4_rate_limit_per_minute
+        )
 
     def add_layer_instances(self, layer_type: LayerType, instances: list[tuple[str, str, int]]):
         """Add instances for a layer."""
@@ -316,6 +330,24 @@ class UnifiedQueryRouter:
     async def route_query(self, request: QueryRequest, target_layers: list[LayerType]) -> list[LayerResponse]:
         """Route query through specified layers."""
         responses = []
+
+        try:
+            self.contract_guard.validate_query_request(request)
+            self.contract_guard.validate_layer_sequence(target_layers)
+
+            if LayerType.AGENTIC_ACTION in target_layers:
+                security_context = request.security_context or {}
+                user_id = security_context.get("user_id") or request.query_id
+                self.contract_guard.enforce_l4_rate_limit(user_id)
+        except FourLayerContractError as e:
+            fail_layer = target_layers[0] if target_layers else LayerType.REDIS_EXACT_MATCH
+            return [
+                LayerResponse(
+                    layer_type=fail_layer,
+                    status=QueryStatus.FAILED,
+                    error_message=f"Contract violation: {e}",
+                )
+            ]
 
         for layer_type in target_layers:
             try:

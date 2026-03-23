@@ -9,13 +9,14 @@ import hashlib
 import json
 import logging
 import time
+import uuid
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 from typing import Any, Callable
 
-from .implementation_plan import LayerType
+from .implementation_plan import FourLayerContractError, FourLayerContractGuard, LayerType
 
 logger = logging.getLogger(__name__)
 
@@ -59,7 +60,7 @@ class CacheEntry:
 
     def _calculate_checksum(self) -> str:
         """Calculate checksum for integrity verification."""
-        content = f"{self.key}:{self.version}:{json.dumps(self.value, sort_keys=True)}"
+        content = f"{self.key}:{self.version}:{json.dumps(self.value, sort_keys=True, default=str)}"
         return hashlib.sha256(content.encode()).hexdigest()
 
     def is_expired(self) -> bool:
@@ -69,6 +70,10 @@ class CacheEntry:
     def is_stale(self, max_age_seconds: int) -> bool:
         """Check if entry is stale."""
         return datetime.now() > self.created_at + timedelta(seconds=max_age_seconds)
+
+    def verify_integrity(self) -> bool:
+        """Verify that current payload matches checksum."""
+        return self.checksum == self._calculate_checksum()
 
 
 @dataclass
@@ -202,7 +207,7 @@ class VersionManager:
                     return False
 
             return len(v1_parts) > len(v2_parts)
-        except:
+        except Exception:
             return version1 > version2
 
 
@@ -247,7 +252,9 @@ class DistributedLockManager:
         """Release distributed lock."""
         async with self._lock:
             if self.lock_holders.get(key) == holder:
-                self.locks[key].release()
+                lock_obj = self.locks.get(key)
+                if lock_obj and lock_obj.locked():
+                    lock_obj.release()
                 del self.lock_holders[key]
                 del self.lock_timeouts[key]
                 logger.info(f"Lock released for {key} by {holder}")
@@ -290,6 +297,10 @@ class ConsistencyMonitor:
     async def stop_monitoring(self):
         """Stop consistency monitoring."""
         self._running = False
+
+    def record_invalidation(self, layer_type: LayerType, key: str, reason: str):
+        """Record invalidation event for tracking."""
+        self.inconsistencies[key].append(f"Invalidated in {layer_type.value}: {reason}")
 
     async def _check_consistency(self, coherence_manager):
         """Check consistency across layers."""
@@ -389,6 +400,7 @@ class CrossLayerCoherenceManager:
         self.version_manager = VersionManager()
         self.lock_manager = DistributedLockManager()
         self.consistency_monitor = ConsistencyMonitor()
+        self.contract_guard = FourLayerContractGuard()
 
         # Subscribe layers to invalidation events
         for layer_type in LayerType:
@@ -426,6 +438,14 @@ class CrossLayerCoherenceManager:
         dependencies: set[str] | None = None,
     ) -> bool:
         """Add cache entry to layer."""
+        try:
+            self.contract_guard.validate_exact_lookup_key(key)
+        except FourLayerContractError as e:
+            raise ValueError(f"Invalid cache key: {e}") from e
+
+        if ttl_seconds <= 0:
+            raise ValueError("ttl_seconds must be > 0")
+
         lock_acquired = await self.lock_manager.acquire_lock(key, f"add_{layer_type.value}")
         if not lock_acquired:
             return False
@@ -468,6 +488,14 @@ class CrossLayerCoherenceManager:
         self, layer_type: LayerType, key: str, value: Any, version: str, ttl_seconds: int = 3600
     ) -> bool:
         """Update cache entry."""
+        try:
+            self.contract_guard.validate_exact_lookup_key(key)
+        except FourLayerContractError as e:
+            raise ValueError(f"Invalid cache key: {e}") from e
+
+        if ttl_seconds <= 0:
+            raise ValueError("ttl_seconds must be > 0")
+
         lock_acquired = await self.lock_manager.acquire_lock(key, f"update_{layer_type.value}")
         if not lock_acquired:
             return False
@@ -506,6 +534,11 @@ class CrossLayerCoherenceManager:
 
     async def invalidate_cache_entry(self, layer_type: LayerType, key: str, reason: str = "") -> bool:
         """Invalidate cache entry."""
+        try:
+            self.contract_guard.validate_exact_lookup_key(key)
+        except FourLayerContractError as e:
+            raise ValueError(f"Invalid cache key: {e}") from e
+
         lock_acquired = await self.lock_manager.acquire_lock(key, f"invalidate_{layer_type.value}")
         if not lock_acquired:
             return False
@@ -514,17 +547,20 @@ class CrossLayerCoherenceManager:
             if key in self.layer_caches[layer_type]:
                 del self.layer_caches[layer_type][key]
 
-                # Publish invalidation event
+                # Create invalidation message
                 message = InvalidationMessage(
-                    event_id=f"invalidate_{int(time.time())}_{key}",
+                    event_id=str(uuid.uuid4()),
                     event_type=InvalidationEvent.MANUAL_INVALIDATION,
                     layer_type=layer_type,
                     affected_keys=[key],
-                    reason=reason or "Manual invalidation",
                     cascade_to_layers=self._get_dependent_layers(layer_type),
                 )
 
+                # Send to invalidation bus
                 await self.invalidation_bus.publish(message)
+
+                # Update consistency monitor
+                self.consistency_monitor.record_invalidation(layer_type, key, reason)
 
                 logger.info(f"Invalidated cache entry {key} in {layer_type}")
                 return True
@@ -536,6 +572,11 @@ class CrossLayerCoherenceManager:
 
     async def get_cache_entry(self, layer_type: LayerType, key: str) -> CacheEntry | None:
         """Get cache entry."""
+        try:
+            self.contract_guard.validate_exact_lookup_key(key)
+        except FourLayerContractError:
+            return None
+
         entry = self.layer_caches[layer_type].get(key)
 
         if entry:
@@ -586,6 +627,12 @@ class CrossLayerCoherenceManager:
                                 message.version,
                                 existing_entry.ttl_seconds,
                             )
+
+            elif message.event_type == InvalidationEvent.MANUAL_INVALIDATION:
+                for target_layer in message.cascade_to_layers:
+                    if target_layer != layer_type:
+                        if message.affected_keys[0] in self.layer_caches[target_layer]:
+                            del self.layer_caches[target_layer][message.affected_keys[0]]
 
             # Update sync status
             self.sync_status[layer_type].status = SyncStatus.SYNCED

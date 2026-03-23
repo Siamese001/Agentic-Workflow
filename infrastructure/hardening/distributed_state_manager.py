@@ -21,6 +21,33 @@ from .implementation_plan import LayerType
 logger = logging.getLogger(__name__)
 
 
+class _ChecksumTrackingDict(dict):
+    """Dictionary that keeps parent snapshot checksum in sync on mutations."""
+
+    def __init__(self, initial: dict[str, Any], owner: "StateSnapshot"):
+        super().__init__(initial)
+        self._owner = owner
+
+    def _refresh(self):
+        self._owner.checksum = self._owner._calculate_checksum()
+
+    def __setitem__(self, key, value):
+        super().__setitem__(key, value)
+        self._refresh()
+
+    def __delitem__(self, key):
+        super().__delitem__(key)
+        self._refresh()
+
+    def update(self, *args, **kwargs):
+        super().update(*args, **kwargs)
+        self._refresh()
+
+    def clear(self):
+        super().clear()
+        self._refresh()
+
+
 class Region(Enum):
     """Geographic regions for distributed deployment."""
 
@@ -60,11 +87,13 @@ class StateSnapshot:
     region: Region
     timestamp: datetime
     data: dict[str, Any]
-    checksum: str
+    checksum: str = ""
     version: str = "v1.0"
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
+        if not isinstance(self.data, _ChecksumTrackingDict):
+            self.data = _ChecksumTrackingDict(self.data, self)
         if not self.checksum:
             self.checksum = self._calculate_checksum()
 
@@ -72,7 +101,7 @@ class StateSnapshot:
         """Calculate checksum for integrity verification."""
         import hashlib
 
-        content = f"{self.snapshot_id}:{self.state_type}:{self.layer_type}:{self.version}:{json.dumps(self.data, sort_keys=True)}"
+        content = f"{self.snapshot_id}:{self.state_type}:{self.layer_type}:{self.version}:{json.dumps(dict(self.data), sort_keys=True, default=str)}"
         return hashlib.sha256(content.encode()).hexdigest()
 
     def verify_integrity(self) -> bool:
@@ -281,6 +310,7 @@ class MultiRegionReplicator:
                         region=region,
                         timestamp=snapshot.timestamp,
                         data=snapshot.data.copy(),
+                        checksum="",
                         version=snapshot.version,
                         metadata=snapshot.metadata.copy(),
                     )
@@ -445,27 +475,30 @@ class HealthChecker:
 
             return result
 
-    async def get_health_summary(self) -> dict[str, Any]:
+    def get_health_summary(self) -> dict[str, Any]:
         """Get health summary."""
-        async with self._lock:
-            status_counts = defaultdict(int)
-            region_status = defaultdict(lambda: defaultdict(int))
-            layer_status = defaultdict(lambda: defaultdict(int))
+        status_counts = defaultdict(int)
+        region_status = defaultdict(lambda: defaultdict(int))
+        layer_status = defaultdict(lambda: defaultdict(int))
 
-            for result in self.health_status.values():
-                status_counts[result.status.value] += 1
-                region_status[result.region.value][result.status.value] += 1
-                layer_status[result.layer_type.value][result.status.value] += 1
+        for result in self.health_status.values():
+            status_counts[result.status.value] += 1
+            region_status[result.region.value][result.status.value] += 1
+            layer_status[result.layer_type.value][result.status.value] += 1
 
-            return {
-                "total_components": len(self.health_status),
-                "status_counts": dict(status_counts),
-                "region_status": {k: dict(v) for k, v in region_status.items()},
-                "layer_status": {k: dict(v) for k, v in layer_status.items()},
-                "last_check": max(
-                    (r.timestamp for r in self.health_status.values()), default=datetime.now()
-                ).isoformat(),
-            }
+        return {
+            "total_components": len(self.health_status),
+            "status_counts": dict(status_counts),
+            "region_status": {k: dict(v) for k, v in region_status.items()},
+            "layer_status": {k: dict(v) for k, v in layer_status.items()},
+            "last_check": max(
+                (r.timestamp for r in self.health_status.values()), default=datetime.now()
+            ).isoformat(),
+        }
+
+    async def get_health_summary_async(self) -> dict[str, Any]:
+        """Async wrapper for health summary."""
+        return self.get_health_summary()
 
 
 class DisasterRecoveryManager:
@@ -503,8 +536,6 @@ class DisasterRecoveryManager:
 
     async def _check_recovery_needs(self):
         """Check if recovery procedures need to be triggered."""
-        health_summary = self.health_checker.get_health_summary()
-
         # Check for region failures
         for region in Region:
             region_components = [c for c in self.health_checker.health_status.values() if c.region == region]
@@ -686,6 +717,7 @@ class DisasterRecoveryManager:
             region=self.replicator.primary_region,
             timestamp=datetime.now(),
             data=data,
+            checksum="",
             metadata={"backup_type": "manual", "created_by": "disaster_recovery_manager"},
         )
 
@@ -715,10 +747,29 @@ class DisasterRecoveryManager:
 
     def get_recovery_status(self) -> dict[str, Any]:
         """Get recovery status."""
+        status_counts = defaultdict(int)
+        region_status = defaultdict(lambda: defaultdict(int))
+        layer_status = defaultdict(lambda: defaultdict(int))
+
+        for result in self.health_checker.health_status.values():
+            status_counts[result.status.value] += 1
+            region_status[result.region.value][result.status.value] += 1
+            layer_status[result.layer_type.value][result.status.value] += 1
+
+        last_check = max(
+            (r.timestamp for r in self.health_checker.health_status.values()), default=datetime.now()
+        ).isoformat()
+
         return {
             "recovery_history": self.recovery_history[-50:],  # Last 50 recovery operations
             "replication_status": self.replicator.get_replication_status(),
-            "health_summary": self.health_checker.get_health_summary(),
+            "health_summary": {
+                "total_components": len(self.health_checker.health_status),
+                "status_counts": dict(status_counts),
+                "region_status": {k: dict(v) for k, v in region_status.items()},
+                "layer_status": {k: dict(v) for k, v in layer_status.items()},
+                "last_check": last_check,
+            },
             "registered_components": len(self.health_checker.component_registry),
         }
 
@@ -743,6 +794,10 @@ class DistributedStateManager:
 
     async def start(self):
         """Start distributed state management."""
+        try:
+            asyncio.get_event_loop()
+        except RuntimeError:
+            asyncio.set_event_loop(asyncio.new_event_loop())
         await self.replicator.start_replication()
         await self.health_checker.start_health_checks()
         await self.disaster_recovery.start_recovery_monitoring()

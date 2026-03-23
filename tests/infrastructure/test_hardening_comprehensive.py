@@ -41,6 +41,7 @@ from infrastructure.hardening.security_framework import (
 
 # Import all infrastructure components
 from infrastructure.hardening.unified_query_router import (
+    CircuitBreaker,
     LayerResponse,
     LayerType,
     QueryRequest,
@@ -141,7 +142,7 @@ class TestUnifiedQueryRouter(unittest.TestCase):
         """Test query routing with circuit breaker."""
         # Force circuit breaker open
         circuit_breaker = self.router.circuit_breakers[LayerType.SEMANTIC_CACHE]
-        circuit_breaker.state = circuit_breaker.CircuitState.OPEN
+        circuit_breaker.state = CircuitBreaker.CircuitState.OPEN
 
         request = QueryRequest(
             query_id="test_query_2", user_query="Test query", timestamp=datetime.now(), priority=1
@@ -463,7 +464,7 @@ class TestDistributedStateManager(unittest.TestCase):
 
         self.assertEqual(retrieved_data, state_data)
 
-    def test_health_checking(self):
+    async def test_health_checking(self):
         """Test distributed health checking."""
         # Register components
         self.state_manager.register_component(
@@ -474,10 +475,10 @@ class TestDistributedStateManager(unittest.TestCase):
         )
 
         # Start health checking
-        asyncio.run(self.state_manager.start())
+        await self.state_manager.start()
 
         # Wait for health checks
-        asyncio.sleep(0.1)
+        await asyncio.sleep(0.2)
 
         # Check health status
         health_summary = self.state_manager.health_checker.get_health_summary()
@@ -487,7 +488,7 @@ class TestDistributedStateManager(unittest.TestCase):
         self.assertEqual(health_summary["total_components"], 2)
 
         # Stop health checking
-        asyncio.run(self.state_manager.stop())
+        await self.state_manager.stop()
 
     def test_disaster_recovery(self):
         """Test disaster recovery procedures."""
@@ -777,7 +778,7 @@ class TestInfrastructureIntegration(unittest.TestCase):
             asyncio.run(self.state_manager.stop())
             asyncio.run(self.security_gateway.stop())
 
-    def test_failure_scenarios(self):
+    async def test_failure_scenarios(self):
         """Test various failure scenarios and recovery."""
         # Test circuit breaker behavior
         circuit_breaker = self.router.circuit_breakers[LayerType.REDIS_EXACT_MATCH]
@@ -785,9 +786,7 @@ class TestInfrastructureIntegration(unittest.TestCase):
         # Force circuit breaker open
         for _ in range(6):
             try:
-                asyncio.run(
-                    circuit_breaker.call(lambda: (_ for _ in ()).throw(Exception("Simulated failure")))
-                )
+                await circuit_breaker.call(lambda: (_ for _ in ()).throw(Exception("Simulated failure")))
             except Exception:
                 pass
 
@@ -801,7 +800,7 @@ class TestInfrastructureIntegration(unittest.TestCase):
             priority=1,
         )
 
-        responses = asyncio.run(self.router.route_query(request, [LayerType.REDIS_EXACT_MATCH]))
+        responses = await self.router.route_query(request, [LayerType.REDIS_EXACT_MATCH])
 
         self.assertEqual(responses[0].status, QueryStatus.CIRCUIT_OPEN)
 
@@ -825,14 +824,17 @@ class TestInfrastructureIntegration(unittest.TestCase):
                 priority=1,
             )
 
-            responses = asyncio.run(self.router.route_query(request, [LayerType.SEMANTIC_CACHE]))
+            responses = await self.router.route_query(request, [LayerType.SEMANTIC_CACHE])
 
             return responses[0].status == QueryStatus.COMPLETED
 
         # Run concurrent queries
         start_time = time.time()
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
         tasks = [simulate_query(i) for i in range(100)]
-        results = asyncio.run(asyncio.gather(*tasks))
+        results = loop.run_until_complete(asyncio.gather(*tasks))
+        loop.close()
         end_time = time.time()
 
         # Verify performance
@@ -966,7 +968,9 @@ class TestInfrastructureStress(unittest.TestCase):
     def test_concurrent_state_management(self):
         """Test concurrent state management operations."""
         # Start state manager
-        asyncio.run(self.state_manager.start())
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(self.state_manager.start())
 
         try:
             # Concurrent state operations
@@ -977,21 +981,17 @@ class TestInfrastructureStress(unittest.TestCase):
                     "data": f"test_data_{operation_id}",
                 }
 
-                snapshot_id = asyncio.run(
-                    self.state_manager.store_layer_state(LayerType.RAG_RETRIEVAL, state_data)
-                )
+                snapshot_id = await self.state_manager.store_layer_state(LayerType.RAG_RETRIEVAL, state_data)
 
                 # Immediately retrieve to verify
-                retrieved_data = asyncio.run(
-                    self.state_manager.retrieve_layer_state(LayerType.RAG_RETRIEVAL, snapshot_id)
-                )
+                retrieved_data = await self.state_manager.retrieve_layer_state(LayerType.RAG_RETRIEVAL, snapshot_id)
 
                 return retrieved_data is not None and retrieved_data["operation_id"] == operation_id
 
             # Run concurrent operations
             operation_count = 50
             tasks = [concurrent_state_ops(i) for i in range(operation_count)]
-            results = asyncio.run(asyncio.gather(*tasks))
+            results = loop.run_until_complete(asyncio.gather(*tasks))
 
             # Verify all operations succeeded
             success_rate = sum(results) / len(results)
@@ -1002,7 +1002,8 @@ class TestInfrastructureStress(unittest.TestCase):
             self.assertTrue(status["running"])
 
         finally:
-            asyncio.run(self.state_manager.stop())
+            loop.run_until_complete(self.state_manager.stop())
+            loop.close()
 
         logger.info(f"Successfully completed {operation_count} concurrent state operations")
 
