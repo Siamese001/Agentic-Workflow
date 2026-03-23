@@ -223,7 +223,7 @@ class SystemLearningCacheAdmissionGate:
             # Fail closed on errors
             return SystemLearningAdmissionDecision(
                 admitted=False,
-                reason=DenialReason.ERROR,
+                reason="error",
                 explanation=f"Admission evaluation failed: {e}",
                 learning_context=context,
             )

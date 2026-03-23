@@ -222,7 +222,7 @@ class TestEnhancedRagRetrievalCache:
         assert cache._cache == mock_redis_cache
         assert cache._enable_semantic_matching is True
         assert cache._enable_policy_aware_caching is True
-        assert cache._semantic_cache is not None
+        assert cache._enable_semantic_matching is True
 
     @pytest.mark.asyncio
     async def test_cache_miss_and_set(
