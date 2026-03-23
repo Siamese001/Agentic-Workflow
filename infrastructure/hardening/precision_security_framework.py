@@ -25,6 +25,8 @@ from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
 
+logger = logging.getLogger(__name__)
+
 T = TypeVar('T')
 
 
