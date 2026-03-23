@@ -141,7 +141,7 @@ class ADG1653FinalGapClosure:
             "parity_status": "EXACT" if result["success"] else "DRIFT_DETECTED"
         }
 
-        report_path = ROOT / "artifacts" / "adg" / "reconciliation_report.json"
+        report_path = ROOT / "artifacts" / "adg" / f"reconciliation_report_{self.timestamp}.json"
         with open(report_path, 'w') as f:
             json.dump(reconciliation_report, f, indent=2, sort_keys=True)
 
@@ -268,7 +268,7 @@ class ADG1653FinalGapClosure:
             "determinism_status": "PROVEN" if result["success"] else "UNPROVEN"
         }
 
-        report_path = ROOT / "artifacts" / "adg" / "replay_convergence_report.json"
+        report_path = ROOT / "artifacts" / "adg" / f"replay_convergence_report_{self.timestamp}.json"
         with open(report_path, 'w') as f:
             json.dump(replay_report, f, indent=2, sort_keys=True)
 
@@ -376,7 +376,7 @@ class ADG1653FinalGapClosure:
             "coverage_status": "COMPLETE" if result["success"] else "INCOMPLETE"
         }
 
-        report_path = ROOT / "artifacts" / "adg" / "critical_edge_coverage.json"
+        report_path = ROOT / "artifacts" / "adg" / f"critical_edge_coverage_{self.timestamp}.json"
         with open(report_path, 'w') as f:
             json.dump(coverage_report, f, indent=2, sort_keys=True)
 
@@ -452,7 +452,7 @@ class ADG1653FinalGapClosure:
             "test_status": "BOUND" if result["success"] else "UNBOUND"
         }
 
-        report_path = ROOT / "artifacts" / "adg" / "test_surface_coverage.json"
+        report_path = ROOT / "artifacts" / "adg" / f"test_surface_coverage_{self.timestamp}.json"
         with open(report_path, 'w') as f:
             json.dump(test_report, f, indent=2, sort_keys=True)
 
@@ -531,32 +531,36 @@ class ADG1653FinalGapClosure:
 def main():
     """Run the 1653 Final Gap Closure."""
     ROOT = Path(__file__).resolve().parents[1]
-    sqlite_path = ROOT / "artifacts" / "adg" / "adg_indexed_03222026_1653.sqlite"
-
-    if not sqlite_path.exists():
-        print(f"❌ SQLite database not found: {sqlite_path}")
+    # Find the most recent SQLite database
+    sqlite_files = list((ROOT / "artifacts" / "adg").glob("*.sqlite"))
+    if not sqlite_files:
+        print(f"❌ No SQLite database found in artifacts/adg/")
         sys.exit(1)
-
+    
+    # Use the most recent database
+    sqlite_files.sort(key=lambda x: x.stat().st_mtime, reverse=True)
+    sqlite_path = sqlite_files[0]
+    
     print(f"Using database: {sqlite_path.name}")
-
+    
     closure = ADG1653FinalGapClosure(sqlite_path)
     results = closure.run_all_checks()
-
+    
     # Save comprehensive report
-    report_path = ROOT / "artifacts" / "adg" / "adg_1653_final_gap_closure_report.json"
+    report_path = ROOT / "artifacts" / "adg" / f"adg_1653_final_gap_closure_report_{closure.timestamp}.json"
     with open(report_path, 'w') as f:
         json.dump(results, f, indent=2, sort_keys=True)
-
+    
     print("\n" + "=" * 80)
     print("1653 FINAL GAP CLOSURE RESULTS")
     print("=" * 80)
-
+    
     for check_name, result in results["checks"].items():
         status = "PASS" if result.get("success", False) else "FAIL"
         print(f"{status}: {check_name.upper()}")
-
+    
     print(f"\nOVERALL: {'SUCCESS' if results['overall_success'] else 'FAILURE'}")
-
+    
     if results["overall_success"]:
         print("\n🎉 ADG 1653 FINAL GAP CLOSURE COMPLETED SUCCESSFULLY")
         print("System is precision-complete with exact parity")

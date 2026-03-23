@@ -258,7 +258,8 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
         print(f"[ADG] Warning: Failed to capture repo state hash: {e}")
         repo_state_hash = ""
 
-    cache_path = adg_artifacts_dir / "scan_result_cache.json"
+    cache_path = adg_artifacts_dir / "cache" / "scan_result_cache.json"
+    cache_path.parent.mkdir(exist_ok=True)
     scanner = ADGStaticScanner(repo_root=ROOT, cache_path=cache_path)
     result = scanner.scan(commit_sha=commit_sha)
 
