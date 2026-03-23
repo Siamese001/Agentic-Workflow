@@ -8,6 +8,7 @@ import sqlite3
 import json
 import pickle
 import hashlib
+import threading
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Any, Optional, Union
@@ -73,6 +74,7 @@ class UnifiedMemoryManager:
         self.db_path = db_path
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self.conn = None
+        self._lock = threading.Lock()
         self._initialize_database()
     
     def _initialize_database(self):
@@ -237,34 +239,35 @@ class UnifiedMemoryManager:
     
     def store_model_checkpoint(self, checkpoint: ModelCheckpoint) -> int:
         """Store a model checkpoint in persistent memory."""
-        try:
-            # Serialize weights and metadata
-            weights_blob = pickle.dumps(checkpoint.weights)
-            metadata_json = json.dumps(checkpoint.metadata)
-            metrics_json = json.dumps(checkpoint.performance_metrics)
-            
-            cursor = self.conn.execute("""
-                INSERT OR REPLACE INTO learning_models 
-                (model_name, version, model_type, weights, metadata, performance_metrics)
-                VALUES (?, ?, ?, ?, ?, ?)
-            """, (
-                checkpoint.model_name,
-                checkpoint.version,
-                checkpoint.model_type,
-                weights_blob,
-                metadata_json,
-                metrics_json
-            ))
-            
-            model_id = cursor.lastrowid
-            self.conn.commit()
-            
-            logger.info(f"Stored model checkpoint: {checkpoint.model_name} v{checkpoint.version}")
-            return model_id
-            
-        except Exception as e:
-            logger.error(f"Failed to store model checkpoint: {e}")
-            raise
+        with self._lock:
+            try:
+                # Serialize weights and metadata
+                weights_blob = pickle.dumps(checkpoint.weights)
+                metadata_json = json.dumps(checkpoint.metadata)
+                metrics_json = json.dumps(checkpoint.performance_metrics)
+                
+                cursor = self.conn.execute("""
+                    INSERT OR REPLACE INTO learning_models 
+                    (model_name, version, model_type, weights, metadata, performance_metrics)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (
+                    checkpoint.model_name,
+                    checkpoint.version,
+                    checkpoint.model_type,
+                    weights_blob,
+                    metadata_json,
+                    metrics_json
+                ))
+                
+                model_id = cursor.lastrowid
+                self.conn.commit()
+                
+                logger.info(f"Stored model checkpoint: {checkpoint.model_name} v{checkpoint.version}")
+                return model_id
+                
+            except Exception as e:
+                logger.error(f"Failed to store model checkpoint: {e}")
+                raise
     
     def load_model_checkpoint(self, model_name: str, version: str = "latest") -> Optional[ModelCheckpoint]:
         """Load a model checkpoint from persistent memory."""
