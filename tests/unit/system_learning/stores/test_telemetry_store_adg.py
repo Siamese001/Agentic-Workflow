@@ -1,7 +1,9 @@
 """ADG-driven tests for system_learning/stores/telemetry_store.py — fan_in=1."""
+
 from __future__ import annotations
 
 import json
+from unittest.mock import patch
 
 import pytest
 
@@ -195,3 +197,50 @@ class TestFileBackedTelemetryStore:
 
     def test_has_read_events(self):
         assert hasattr(FileBackedTelemetryStore, "read_events")
+
+    def test_read_events_persists_window(self, tmp_path):
+        path = tmp_path / "events.jsonl"
+        event = {"timestamp_utc": 1000, "event_type": "heal", "payload": {"ok": True}}
+        path.write_text(json.dumps(event) + "\n", encoding="utf-8")
+        store = FileBackedTelemetryStore(telemetry_path=path)
+
+        class _Bridge:
+            def __init__(self):
+                self.calls = []
+
+            def persist_telemetry_window(self, source, events, *, window_start=0, window_end=0):
+                self.calls.append((source, list(events), window_start, window_end))
+                return True
+
+        bridge = _Bridge()
+        with patch("system_learning.stores.telemetry_store.get_sl_memory_bridge", return_value=bridge):
+            events = store.read_events(900, 1100)
+
+        assert events == ((1000, "heal", b'{"ok":true}'),)
+        assert bridge.calls == [
+            (
+                "telemetry_store",
+                [(1000, "heal", b'{"ok":true}')],
+                900,
+                1100,
+            )
+        ]
+
+    def test_telemetry_persistence_handles_failure(self, tmp_path):
+        """Test that telemetry reading still works even if bridge persistence fails."""
+        path = tmp_path / "events.jsonl"
+        event = {"timestamp_utc": 1000, "event_type": "heal", "payload": {"ok": True}}
+        path.write_text(json.dumps(event) + "\n", encoding="utf-8")
+        store = FileBackedTelemetryStore(telemetry_path=path)
+
+        class _FailingBridge:
+            def persist_telemetry_window(self, source, events, *, window_start=0, window_end=0):
+                raise RuntimeError("Bridge down")
+
+        bridge = _FailingBridge()
+        with patch("system_learning.stores.telemetry_store.get_sl_memory_bridge", return_value=bridge):
+            # Should not raise exception
+            events = store.read_events(900, 1100)
+
+        # Telemetry reading should still succeed
+        assert events == ((1000, "heal", b'{"ok":true}'),)

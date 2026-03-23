@@ -247,6 +247,24 @@ class _MockPolicyRecommendation:
     deterministic_digest: str = "feedface12345678" * 4
 
 
+class _MockSqliteMemory:
+    def __init__(self):
+        self.states: list[tuple[str, object, str]] = []
+        self.metrics: list[tuple[str, float, dict | None, str | None]] = []
+
+    def store_application_state(
+        self, key: str, value: object, state_type: str = "json", expires_at=None
+    ) -> bool:
+        self.states.append((key, value, state_type))
+        return True
+
+    def store_performance_metric(
+        self, name: str, value: float, unit: str = None, context: dict = None, component: str = None
+    ) -> int:
+        self.metrics.append((name, value, context, component))
+        return len(self.metrics)
+
+
 @dataclass
 class _MockAggKey:
     healer_name: str
@@ -284,8 +302,92 @@ class TestSLMemoryBridgeInit:
         assert a is b
 
     def test_get_sl_memory_bridge_alias(self):
-        bridge = get_sl_memory_bridge()
-        assert isinstance(bridge, SystemLearningMemoryBridge)
+        assert get_sl_memory_bridge() is SystemLearningMemoryBridge.get_instance()
+
+    def test_persist_active_version_uses_sqlite_memory(self):
+        bridge = SystemLearningMemoryBridge.__new__(SystemLearningMemoryBridge)
+        bridge._bridge = None
+        bridge._sqlite_memory = _MockSqliteMemory()
+
+        result = bridge.persist_active_version("router", "v3")
+
+        assert result is True
+        assert bridge._sqlite_memory.states == [
+            (
+                "system_learning.active_version.router",
+                {"component": "router", "version_id": "v3", "ts": ""},
+                "json",
+            )
+        ]
+
+    def test_persist_config_snapshot_uses_sqlite_memory(self):
+        bridge = SystemLearningMemoryBridge.__new__(SystemLearningMemoryBridge)
+        bridge._bridge = None
+        bridge._sqlite_memory = _MockSqliteMemory()
+
+        result = bridge.persist_config_snapshot("surface", b'{"alpha":1}')
+
+        assert result is True
+        key, value, state_type = bridge._sqlite_memory.states[0]
+        assert key == "system_learning.config_snapshot.surface"
+        assert value["payload"] == {"alpha": 1}
+        assert state_type == "json"
+
+    def test_persist_telemetry_window_records_metric(self):
+        bridge = SystemLearningMemoryBridge.__new__(SystemLearningMemoryBridge)
+        bridge._bridge = None
+        bridge._sqlite_memory = _MockSqliteMemory()
+
+        result = bridge.persist_telemetry_window(
+            "telemetry_store", ((10, "heal", b'{"ok":true}'),), window_start=5, window_end=15
+        )
+
+        assert result is True
+        assert bridge._sqlite_memory.states[0][0] == "system_learning.telemetry_window.telemetry_store"
+        assert bridge._sqlite_memory.metrics == [
+            (
+                "telemetry_event_count",
+                1.0,
+                {"source": "telemetry_store", "window_start": 5, "window_end": 15},
+                "system_learning",
+            )
+        ]
+
+    def test_persist_l1_drift_signal_records_metric(self):
+        bridge = SystemLearningMemoryBridge.__new__(SystemLearningMemoryBridge)
+        bridge._bridge = None
+        bridge._sqlite_memory = _MockSqliteMemory()
+
+        result = bridge.persist_l1_drift_signal(_MockDriftSummary())
+
+        assert result is True
+        assert bridge._sqlite_memory.states[0][0] == "system_learning.l1_drift.unknown"
+        assert bridge._sqlite_memory.metrics[0][0] == "l1_drift_magnitude"
+
+    def test_persist_version_metadata(self):
+        bridge = SystemLearningMemoryBridge.__new__(SystemLearningMemoryBridge)
+        bridge._bridge = None
+        bridge._sqlite_memory = _MockSqliteMemory()
+
+        result = bridge.persist_active_version("version_store", "v_abc123def4567890", ts="test-ts")
+
+        assert result is True
+        assert bridge._sqlite_memory.states == [
+            (
+                "system_learning.active_version.version_store",
+                {"component": "version_store", "version_id": "v_abc123def4567890", "ts": "test-ts"},
+                "json",
+            )
+        ]
+
+    def test_bridge_handles_unified_memory_unavailability(self):
+        bridge = SystemLearningMemoryBridge.__new__(SystemLearningMemoryBridge)
+        bridge._bridge = None
+        bridge._sqlite_memory = False  # Simulate UnifiedMemoryManager unavailable
+
+        result = bridge.persist_active_version("test", "v1")
+
+        assert result is False  # Should gracefully return False when unavailable
 
     def test_is_available_bool(self):
         bridge = SystemLearningMemoryBridge()
@@ -414,7 +516,9 @@ class TestRCAPersistence:
 
     def test_query_rca_with_category_filter(self):
         bridge, mock_gmb = self._bridge_with_mock()
-        mock_gmb.search_returns = [{"name": "SLRCAFinding_IMPORT_abc", "observations": ["category=IMPORT", "signature=test"]}]
+        mock_gmb.search_returns = [
+            {"name": "SLRCAFinding_IMPORT_abc", "observations": ["category=IMPORT", "signature=test"]}
+        ]
         result = bridge.query_rca_pattern_frequency("IMPORT")
         assert len(result) == 1
 

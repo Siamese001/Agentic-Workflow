@@ -1,5 +1,8 @@
 """ADG-driven tests for system_learning/stores/activator.py — fan_in=0."""
+
 from __future__ import annotations
+
+from unittest.mock import patch
 
 import pytest
 
@@ -7,72 +10,69 @@ pytestmark = pytest.mark.unit
 
 try:
     from system_learning.stores.activator import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_DEPTH,
-        MAX_RETRIES,
-        THRESHOLD,
         FileBackedActivator,
         InMemoryActivator,
     )
+
     _AVAILABLE = True
 except ImportError:
     _AVAILABLE = False
     InMemoryActivator = None  # type: ignore[assignment,misc]
     FileBackedActivator = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
-    MAX_DEPTH = None  # type: ignore[assignment,misc]
 
 
 @pytest.mark.skipif(not _AVAILABLE, reason="activator.py deps unavailable")
 class TestInMemoryActivator:
     def test_is_dataclass(self):
         import dataclasses
+
         assert dataclasses.is_dataclass(InMemoryActivator)
+
     def test_importable(self):
         assert InMemoryActivator is not None
+
 
 @pytest.mark.skipif(not _AVAILABLE, reason="activator.py deps unavailable")
 class TestFileBackedActivator:
     def test_is_class(self):
         assert isinstance(FileBackedActivator, type)
+
     def test_importable(self):
         assert FileBackedActivator is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="activator.py deps unavailable")
-class TestMaxRetriesConstant:
-    def test_is_not_none(self):
-        assert MAX_RETRIES is not None
+    def test_activate_persists_active_version(self, tmp_path):
+        activator = FileBackedActivator(tmp_path)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="activator.py deps unavailable")
-class TestDefaultSleepConstant:
-    def test_is_not_none(self):
-        assert DEFAULT_SLEEP is not None
+        class _Bridge:
+            def __init__(self):
+                self.calls = []
 
-@pytest.mark.skipif(not _AVAILABLE, reason="activator.py deps unavailable")
-class TestThresholdConstant:
-    def test_is_not_none(self):
-        assert THRESHOLD is not None
+            def persist_active_version(self, component, version_id, *, ts=""):
+                self.calls.append((component, version_id, ts))
+                return True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="activator.py deps unavailable")
-class TestBufferSizeConstant:
-    def test_is_not_none(self):
-        assert BUFFER_SIZE is not None
+        bridge = _Bridge()
+        with patch("system_learning.stores.activator.get_sl_memory_bridge", return_value=bridge):
+            activator.activate("router", "v2")
 
-@pytest.mark.skipif(not _AVAILABLE, reason="activator.py deps unavailable")
-class TestBatchSizeConstant:
-    def test_is_not_none(self):
-        assert BATCH_SIZE is not None
+        assert bridge.calls == [("router", "v2", "")]
+        assert activator.get_active("router") == "v2"
 
-@pytest.mark.skipif(not _AVAILABLE, reason="activator.py deps unavailable")
-class TestMaxDepthConstant:
-    def test_is_not_none(self):
-        assert MAX_DEPTH is not None
+    def test_activate_handles_bridge_failure(self, tmp_path):
+        """Test that activation still works even if bridge persistence fails."""
+        activator = FileBackedActivator(tmp_path)
+
+        class _FailingBridge:
+            def persist_active_version(self, component, version_id, *, ts=""):
+                raise RuntimeError("Bridge down")
+
+        bridge = _FailingBridge()
+        with patch("system_learning.stores.activator.get_sl_memory_bridge", return_value=bridge):
+            # Should not raise exception
+            activator.activate("router", "v3")
+
+        # Activation should still succeed locally
+        assert activator.get_active("router") == "v3"
 
 
 def test_module_importable():

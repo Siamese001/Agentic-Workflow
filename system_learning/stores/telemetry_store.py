@@ -56,6 +56,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
     record_execution_trace,
 )
+from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
 
 _emit_applies_guardrail("p0", "telemetry_store", "p0_governance")
 _emit_reads_policy_state("p0", "telemetry_store", "policy_binding")
@@ -205,8 +206,11 @@ class FileBackedTelemetryStore:
         """
         _emit_writes_through(str(uuid.uuid4()), "FileBackedTelemetryStore.read_events", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FileBackedTelemetryStore.read_events")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "FileBackedTelemetryStore.read_events"
+        )
 
         if not self._path.exists():
             return ()
@@ -229,6 +233,16 @@ class FileBackedTelemetryStore:
                     continue
         except OSError as exc:
             logger.debug("Failed to read telemetry file %s: %s", self._path, exc)
+        if events:
+            try:
+                get_sl_memory_bridge().persist_telemetry_window(
+                    "telemetry_store",
+                    events,
+                    window_start=window_start_utc,
+                    window_end=window_end_utc,
+                )
+            except Exception as exc:  # guardian: allow-silent-swallower
+                logger.debug("Failed to persist telemetry window for %s: %s", self._path, exc)
         return tuple(events)
 
 

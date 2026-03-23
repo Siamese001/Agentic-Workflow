@@ -59,6 +59,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
 
 _emit_applies_guardrail("p0", "l1_meta_adapter", "p0_governance")
 _emit_reads_policy_state("p0", "l1_meta_adapter", "policy_binding")
@@ -227,8 +228,11 @@ class L1MetaAdapter:
             ``TelemetryStore``.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "L1MetaAdapter.extract_telemetry")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "L1MetaAdapter.extract_telemetry"
+        )
 
         events: list[L1TelemetryEvent] = []
         for outcome in l1_state.get("recall_outcomes", []):
@@ -259,6 +263,17 @@ class L1MetaAdapter:
             events.append(
                 L1TelemetryEvent(timestamp_utc=now_utc, event_type="l1_cache_stats", payload_bytes=payload)
             )
+        if events:
+            try:
+                timestamps = [event.timestamp_utc for event in events]
+                get_sl_memory_bridge().persist_telemetry_window(
+                    "l1_meta_adapter",
+                    events,
+                    window_start=min(timestamps),
+                    window_end=max(timestamps),
+                )
+            except Exception as exc:  # guardian: allow-silent-swallower
+                logger.debug("Failed to persist L1 telemetry events: %s", exc)
         return events
 
     def detect_drift(self, l1_state: dict[str, Any], *, snapshot_id: str) -> L1DriftSignal | None:
@@ -292,13 +307,18 @@ class L1MetaAdapter:
         drift = new_mean - old_mean
         if abs(drift) < 0.05:
             return None
-        return L1DriftSignal(
+        signal = L1DriftSignal(
             surface_name="l1_model_confidence",
             drift_magnitude=round(abs(drift), 4),
             direction="increase" if drift > 0 else "decrease",
             observation_count=len(floats),
             snapshot_id=snapshot_id,
         )
+        try:
+            get_sl_memory_bridge().persist_l1_drift_signal(signal)
+        except Exception as exc:  # guardian: allow-silent-swallower
+            logger.debug("Failed to persist L1 drift signal: %s", exc)
+        return signal
 
 
 __all__ = ["L1MetaAdapter", "L1TelemetryEvent", "L1DriftSignal"]

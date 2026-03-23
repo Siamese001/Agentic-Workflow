@@ -1,7 +1,9 @@
 """ADG-driven tests for system_learning/stores/config_provider.py — fan_in=1."""
+
 from __future__ import annotations
 
 import json
+from unittest.mock import patch
 
 import pytest
 
@@ -190,3 +192,65 @@ class TestFileBackedConfigProvider:
 
     def test_has_get_current_configs(self):
         assert hasattr(FileBackedConfigProvider, "get_current_configs")
+
+    def test_runtime_state_configs_are_persisted(self, tmp_path):
+        state = {"meta_learning": {"threshold": 0.8}, "routing_config": {"route": "primary"}}
+        state_path = tmp_path / "runtime_state.json"
+        state_path.write_text(json.dumps(state), encoding="utf-8")
+        provider = FileBackedConfigProvider(runtime_state_path=state_path)
+
+        class _Bridge:
+            def __init__(self):
+                self.calls = []
+
+            def persist_config_snapshot(self, surface_name, config_bytes, *, source="config_provider", ts=""):
+                self.calls.append((surface_name, json.loads(config_bytes.decode("utf-8")), source, ts))
+                return True
+
+        bridge = _Bridge()
+        with patch("system_learning.stores.config_provider.get_sl_memory_bridge", return_value=bridge):
+            configs = provider.get_current_configs()
+
+        assert sorted(configs) == ["meta_learning", "routing_config"]
+        assert [call[0] for call in bridge.calls] == ["meta_learning", "routing_config"]
+
+    def test_config_dir_configs_are_persisted(self, tmp_path):
+        state_path = tmp_path / "runtime_state.json"
+        config_dir = tmp_path / "configs"
+        config_dir.mkdir()
+        (config_dir / "surface_a.json").write_text(json.dumps({"alpha": 1}), encoding="utf-8")
+        provider = FileBackedConfigProvider(runtime_state_path=state_path, config_dir=config_dir)
+
+        class _Bridge:
+            def __init__(self):
+                self.calls = []
+
+            def persist_config_snapshot(self, surface_name, config_bytes, *, source="config_provider", ts=""):
+                self.calls.append((surface_name, json.loads(config_bytes.decode("utf-8")), source, ts))
+                return True
+
+        bridge = _Bridge()
+        with patch("system_learning.stores.config_provider.get_sl_memory_bridge", return_value=bridge):
+            configs = provider.get_current_configs()
+
+        assert list(configs) == ["surface_a"]
+        assert bridge.calls == [("surface_a", {"alpha": 1}, "config_provider", "")]
+
+    def test_config_persistence_handles_failure(self, tmp_path):
+        """Test that config reading still works even if bridge persistence fails."""
+        state_path = tmp_path / "runtime_state.json"
+        state = {"meta_learning": {"threshold": 0.8}}
+        state_path.write_text(json.dumps(state), encoding="utf-8")
+        provider = FileBackedConfigProvider(runtime_state_path=state_path)
+
+        class _FailingBridge:
+            def persist_config_snapshot(self, surface_name, config_bytes, *, source="config_provider", ts=""):
+                raise RuntimeError("Bridge down")
+
+        bridge = _FailingBridge()
+        with patch("system_learning.stores.config_provider.get_sl_memory_bridge", return_value=bridge):
+            # Should not raise exception
+            configs = provider.get_current_configs()
+
+        # Config reading should still succeed
+        assert "meta_learning" in configs

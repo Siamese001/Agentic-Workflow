@@ -54,6 +54,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
 
 _emit_applies_guardrail("p0", "activator", "p0_governance")
 _emit_reads_policy_state("p0", "activator", "policy_binding")
@@ -183,6 +184,7 @@ class InMemoryActivator:
     def activate(self, component: str, version_id: str) -> None:
         """Activate a specific version for a component."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InMemoryActivator.activate")
 
@@ -219,12 +221,19 @@ class FileBackedActivator:
     def activate(self, component: str, version_id: str) -> None:
         """Activate a specific version for a component."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FileBackedActivator.activate")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "FileBackedActivator.activate"
+        )
 
         logger.info("Activating component=%s version=%s", component, version_id)
         self._active[component] = version_id
         self._save()
+        try:
+            get_sl_memory_bridge().persist_active_version(component, version_id)
+        except Exception as exc:  # guardian: allow-silent-swallower
+            logger.debug("Failed to persist active version for %s: %s", component, exc)
 
     def get_active(self, component: str) -> str | None:
         return self._active.get(component)

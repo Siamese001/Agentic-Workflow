@@ -55,6 +55,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
 
 _emit_applies_guardrail("p0", "config_provider", "p0_governance")
 _emit_reads_policy_state("p0", "config_provider", "policy_binding")
@@ -219,8 +220,11 @@ class FileBackedConfigProvider:
         """
         _emit_snapshots_state(str(uuid.uuid4()), "FileBackedConfigProvider.get_current_configs", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FileBackedConfigProvider.get_current_configs")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "FileBackedConfigProvider.get_current_configs"
+        )
 
         configs: dict[str, bytes] = {}
 
@@ -240,9 +244,15 @@ class FileBackedConfigProvider:
             for key in ("meta_learning", "healing_config", "routing_config"):
                 section = state.get(key)
                 if section is not None:
-                    configs[key] = json.dumps(
-                        section, separators=(",", ":"), sort_keys=True
-                    ).encode("utf-8")
+                    configs[key] = json.dumps(section, separators=(",", ":"), sort_keys=True).encode("utf-8")
+
+        if configs:
+            try:
+                bridge = get_sl_memory_bridge()
+                for surface_name, raw in configs.items():
+                    bridge.persist_config_snapshot(surface_name, raw)
+            except Exception as exc:  # guardian: allow-silent-swallower
+                logger.debug("Failed to persist config snapshots: %s", exc)
 
         return configs
 
@@ -305,8 +315,11 @@ class InMemoryConfigProvider:
 
     def get_param_history(self, surface_name: str, n: int) -> tuple[float, ...]:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InMemoryConfigProvider.get_param_history")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "InMemoryConfigProvider.get_param_history"
+        )
 
         history = self._histories.get(surface_name, [])
         return tuple(history[-n:])

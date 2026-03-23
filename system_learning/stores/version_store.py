@@ -58,6 +58,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
 
 _emit_applies_guardrail("p0", "version_store", "p0_governance")
 _emit_reads_policy_state("p0", "version_store", "policy_binding")
@@ -193,8 +194,11 @@ class InMemoryVersionStore:
         _emit_snapshots_state(str(uuid.uuid4()), "InMemoryVersionStore.commit_change_package", "L4_STATE")
         _emit_writes_through(str(uuid.uuid4()), "InMemoryVersionStore.commit_change_package", "L4_STATE")
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "InMemoryVersionStore.commit_change_package")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "InMemoryVersionStore.commit_change_package"
+        )
 
         if hasattr(pkg, "canonical_bytes"):
             payload = pkg.canonical_bytes()
@@ -244,8 +248,11 @@ class FileBackedVersionStore:
     def commit_change_package(self, pkg: Any) -> str:
         """Commit a change package and return its version_id."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "FileBackedVersionStore.commit_change_package")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "FileBackedVersionStore.commit_change_package"
+        )
 
         if hasattr(pkg, "canonical_bytes"):
             payload = pkg.canonical_bytes()
@@ -267,6 +274,10 @@ class FileBackedVersionStore:
         entry_path.write_text(json.dumps(meta, indent=2), encoding="utf-8")
         self._index[version_id] = content_hash
         self._save_index()
+        try:
+            get_sl_memory_bridge().persist_active_version("version_store", version_id, ts=str(uuid.uuid4()))
+        except Exception as exc:  # guardian: allow-silent-swallower
+            logger.debug("Failed to persist version metadata for %s: %s", version_id, exc)
         return version_id
 
     def get(self, version_id: str) -> bytes | None:

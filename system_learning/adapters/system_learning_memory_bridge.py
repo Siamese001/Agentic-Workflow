@@ -246,12 +246,16 @@ class SystemLearningMemoryBridge:
 
     def __init__(self) -> None:
         self._bridge = self._load_bridge()
+        self._sqlite_memory: Any = None
 
     @classmethod
     def get_instance(cls) -> SystemLearningMemoryBridge:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SystemLearningMemoryBridge.get_instance")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "SystemLearningMemoryBridge.get_instance"
+        )
 
         if cls._instance is None:
             cls._instance = cls()
@@ -262,14 +266,154 @@ class SystemLearningMemoryBridge:
             from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
 
             return GraphMemoryBridge.get_instance()
-        # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-silent-swallower
+        except Exception as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
             logger.debug("[SLMemoryBridge] GraphMemoryBridge unavailable: %s", e)
             return None
 
     @property
     def is_available(self) -> bool:
         return self._bridge is not None and getattr(self._bridge, "is_available", False)
+
+    def _get_unified_memory_manager(self) -> Any:
+        if self._sqlite_memory is False:
+            return None
+        if self._sqlite_memory is not None:
+            return self._sqlite_memory
+        try:
+            from tools.implement_unified_memory import UnifiedMemoryManager
+
+            self._sqlite_memory = UnifiedMemoryManager()
+        except Exception as e:  # guardian: allow-silent-swallower
+            logger.debug("[SLMemoryBridge] UnifiedMemoryManager unavailable: %s", e)
+            self._sqlite_memory = False
+        return None if self._sqlite_memory is False else self._sqlite_memory
+
+    @staticmethod
+    def _normalize_persistable_event(event: Any) -> dict[str, Any]:
+        if isinstance(event, tuple) and len(event) == 3:
+            timestamp_utc, event_type, payload = event
+            if isinstance(payload, bytes):
+                try:
+                    payload = payload.decode("utf-8")
+                except UnicodeDecodeError:
+                    payload = payload.hex()
+            return {
+                "timestamp_utc": int(timestamp_utc),
+                "event_type": str(event_type),
+                "payload": payload,
+            }
+
+        payload = getattr(event, "payload_bytes", None)
+        if isinstance(payload, bytes):
+            try:
+                payload = payload.decode("utf-8")
+            except UnicodeDecodeError:
+                payload = payload.hex()
+        return {
+            "timestamp_utc": int(getattr(event, "timestamp_utc", 0) or 0),
+            "event_type": str(getattr(event, "event_type", event.__class__.__name__)),
+            "payload": payload,
+        }
+
+    def persist_active_version(self, component: str, version_id: str, *, ts: str = "") -> bool:
+        store = self._get_unified_memory_manager()
+        if not store:
+            return False
+        return bool(
+            store.store_application_state(
+                key=f"system_learning.active_version.{component}",
+                value={"component": component, "version_id": version_id, "ts": ts},
+                state_type="json",
+            )
+        )
+
+    def persist_config_snapshot(
+        self,
+        surface_name: str,
+        config_bytes: bytes,
+        *,
+        source: str = "config_provider",
+        ts: str = "",
+    ) -> bool:
+        store = self._get_unified_memory_manager()
+        if not store:
+            return False
+        payload: Any = config_bytes
+        state_type = "pickle"
+        try:
+            decoded = config_bytes.decode("utf-8")
+            payload = json.loads(decoded)
+            state_type = "json"
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            payload = config_bytes
+            state_type = "pickle"
+        return bool(
+            store.store_application_state(
+                key=f"system_learning.config_snapshot.{surface_name}",
+                value={"surface_name": surface_name, "payload": payload, "source": source, "ts": ts},
+                state_type=state_type,
+            )
+        )
+
+    def persist_telemetry_window(
+        self,
+        source: str,
+        events: Any,
+        *,
+        window_start: int = 0,
+        window_end: int = 0,
+    ) -> bool:
+        store = self._get_unified_memory_manager()
+        if not store:
+            return False
+        normalized = [self._normalize_persistable_event(event) for event in list(events)]
+        persisted = bool(
+            store.store_application_state(
+                key=f"system_learning.telemetry_window.{source}",
+                value={
+                    "source": source,
+                    "window_start": window_start,
+                    "window_end": window_end,
+                    "events": normalized,
+                },
+                state_type="json",
+            )
+        )
+        if normalized:
+            store.store_performance_metric(
+                name="telemetry_event_count",
+                value=float(len(normalized)),
+                context={"source": source, "window_start": window_start, "window_end": window_end},
+                component="system_learning",
+            )
+        return persisted
+
+    def persist_l1_drift_signal(self, drift_signal: Any, *, source: str = "l1_meta_adapter") -> bool:
+        store = self._get_unified_memory_manager()
+        if not store:
+            return False
+        payload = {
+            "surface_name": str(getattr(drift_signal, "surface_name", "unknown")),
+            "drift_magnitude": float(getattr(drift_signal, "drift_magnitude", 0.0) or 0.0),
+            "direction": str(getattr(drift_signal, "direction", "unknown")),
+            "observation_count": int(getattr(drift_signal, "observation_count", 0) or 0),
+            "snapshot_id": str(getattr(drift_signal, "snapshot_id", "")),
+            "source": source,
+        }
+        persisted = bool(
+            store.store_application_state(
+                key=f"system_learning.l1_drift.{payload['surface_name']}",
+                value=payload,
+                state_type="json",
+            )
+        )
+        store.store_performance_metric(
+            name="l1_drift_magnitude",
+            value=payload["drift_magnitude"],
+            context=payload,
+            component=source,
+        )
+        return persisted
 
     # ------------------------------------------------------------------
     # 1. Healing Success Rates — persist/restore EMA rates cross-session
@@ -294,7 +438,9 @@ class SystemLearningMemoryBridge:
         Returns:
             True if persisted, False if MCP unavailable.
         """
-        _emit_snapshots_state(str(uuid.uuid4()), "SystemLearningMemoryBridge.persist_healing_success_rate", "L4_STATE")
+        _emit_snapshots_state(
+            str(uuid.uuid4()), "SystemLearningMemoryBridge.persist_healing_success_rate", "L4_STATE"
+        )
         if not self._bridge:
             return False
         sig_hash = _content_hash(error_signature)
@@ -307,13 +453,11 @@ class SystemLearningMemoryBridge:
                     _trunc(f"error_signature={error_signature}"),
                     f"rate={rate:.6f}",
                     f"count={count}",
-                    f"ts={ts}",
                 ],
             )
             return True
-        # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-silent-swallower
-            logger.debug("[SLMemoryBridge] persist_healing_success_rate failed: %s", e)
+        except Exception as exc:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
+            logger.debug("Failed to persist healing success rate %s: %s", error_signature, exc)
             return False
 
     def persist_all_healing_rates(
@@ -351,8 +495,7 @@ class SystemLearningMemoryBridge:
             return {}
         try:
             results = self._bridge.search_entities(self.ENTITY_TYPE_HEALING_RATE)
-        # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-silent-swallower
+        except Exception as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
             logger.debug("[SLMemoryBridge] restore_healing_success_rates failed: %s", e)
             return {}
 
@@ -431,8 +574,7 @@ class SystemLearningMemoryBridge:
                 agent_type=self.ENTITY_TYPE_RCA_REPORT,
                 observations=obs,
             )
-        # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-silent-swallower
+        except Exception as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
             logger.debug("[SLMemoryBridge] persist_rca_findings report failed: %s", e)
             return False
 
@@ -456,8 +598,7 @@ class SystemLearningMemoryBridge:
                     ],
                 )
                 self._bridge.create_relation(finding_name, report_name, self.RELATION_TRIGGERED)
-            # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-silent-swallower
+            except Exception as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
                 logger.debug("[SLMemoryBridge] persist rca finding entity failed: %s", e)
 
         logger.info(
@@ -480,8 +621,7 @@ class SystemLearningMemoryBridge:
             return []
         try:
             results = self._bridge.search_entities("SLRCAFinding")
-        # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-silent-swallower
+        except Exception as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
             logger.debug("[SLMemoryBridge] query_rca_pattern_frequency failed: %s", e)
             return []
         if not category:
@@ -543,8 +683,7 @@ class SystemLearningMemoryBridge:
                 drift_score,
             )
             return True
-        # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-silent-swallower
+        except Exception as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
             logger.debug("[SLMemoryBridge] persist_drift_summary failed: %s", e)
             return False
 
@@ -561,8 +700,7 @@ class SystemLearningMemoryBridge:
             return []
         try:
             results = self._bridge.search_entities("SLDriftSummary")
-        # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-silent-swallower
+        except Exception as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
             logger.debug("[SLMemoryBridge] query_drift_history failed: %s", e)
             return []
         if not profile_id:
@@ -630,8 +768,7 @@ class SystemLearningMemoryBridge:
                 applied,
             )
             return True
-        # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-silent-swallower
+        except Exception as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
             logger.debug("[SLMemoryBridge] persist_policy_recommendation failed: %s", e)
             return False
 
@@ -648,8 +785,7 @@ class SystemLearningMemoryBridge:
             return False
         try:
             return self._bridge.add_observation(entity_name, "applied=true")
-        # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-silent-swallower
+        except Exception as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
             logger.debug("[SLMemoryBridge] mark_recommendation_applied failed: %s", e)
             return False
 
@@ -673,8 +809,7 @@ class SystemLearningMemoryBridge:
             if applied_only:
                 results = [r for r in results if any("applied=true" in o for o in r.get("observations", []))]
             return results
-        # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-silent-swallower
+        except Exception as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
             logger.debug("[SLMemoryBridge] query_policy_recommendations failed: %s", e)
             return []
 
@@ -728,8 +863,7 @@ class SystemLearningMemoryBridge:
                 total,
             )
             return True
-        # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-silent-swallower
+        except Exception as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
             logger.debug("[SLMemoryBridge] persist_healing_aggregate_snapshot failed: %s", e)
             return False
 
@@ -775,8 +909,7 @@ class SystemLearningMemoryBridge:
                 ],
             )
             return True
-        # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-silent-swallower
+        except Exception as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
             logger.debug("[SLMemoryBridge] persist_failure_pattern failed: %s", e)
             return False
 
@@ -786,8 +919,7 @@ class SystemLearningMemoryBridge:
             return []
         try:
             return self._bridge.search_entities("SLFailurePattern")
-        # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-silent-swallower
+        except Exception as e:  # guardian: allow-silent-swallow -- MCP write-back is non-critical telemetry; failure logged above
             logger.debug("[SLMemoryBridge] query_failure_patterns failed: %s", e)
             return []
 
