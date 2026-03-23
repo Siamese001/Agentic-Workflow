@@ -745,35 +745,76 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
             print(f"[ADG] Archive: failed to create archive dir for {ts}: {e}")
             continue
 
-        # Archive each file in the run
-        for file_path in files:
-            if not file_path.exists():
-                continue
+        # Check if this run has a zip file (preferred storage)
+        zip_files = [f for f in files if f.name.startswith("adg_run_") and f.suffix == ".zip"]
+        
+        if zip_files:
+            # Archive only the zip file (most efficient)
+            for zip_file in zip_files:
+                if not zip_file.exists():
+                    continue
 
-            try:
-                original_size = file_path.stat().st_size
-                bytes_original += original_size
+                try:
+                    original_size = zip_file.stat().st_size
+                    bytes_original += original_size
 
-                # Compress and archive
-                archive_path = archive_month_dir / f"{file_path.name}.gz"
+                    # Compress and archive the zip file
+                    archive_path = archive_month_dir / f"{zip_file.name}.gz"
 
-                with open(file_path, "rb") as f_in:
-                    with gzip.open(archive_path, "wb", compresslevel=9) as f_out:
-                        shutil.copyfileobj(f_in, f_out)
+                    with open(zip_file, "rb") as f_in:
+                        with gzip.open(archive_path, "wb", compresslevel=9) as f_out:
+                            shutil.copyfileobj(f_in, f_out)
 
-                # Verify compressed file before deleting original
-                if archive_path.exists() and archive_path.stat().st_size > 0:
-                    bytes_archived += archive_path.stat().st_size
-                    file_path.unlink()
-                    archived_count += 1
-                else:
-                    # Clean up failed compression
-                    if archive_path.exists():
-                        archive_path.unlink()
+                    # Verify compressed file before deleting original
+                    if archive_path.exists() and archive_path.stat().st_size > 0:
+                        bytes_archived += archive_path.stat().st_size
+                        zip_file.unlink()
+                        archived_count += 1
+                        
+                        # Remove all individual files for this run (they're in the zip)
+                        for file_path in files:
+                            if file_path != zip_file and file_path.exists():
+                                file_path.unlink()
+                                archived_count += 1
+                                bytes_original += file_path.stat().st_size
+                    else:
+                        # Clean up failed compression
+                        if archive_path.exists():
+                            archive_path.unlink()
 
-            except OSError as e:
-                print(f"[ADG] Archive: error archiving {file_path.name}: {e}")
-                continue
+                except OSError as e:
+                    print(f"[ADG] Archive: error archiving {zip_file.name}: {e}")
+                    continue
+        else:
+            # No zip file - archive individual files (legacy behavior)
+            for file_path in files:
+                if not file_path.exists():
+                    continue
+
+                try:
+                    original_size = file_path.stat().st_size
+                    bytes_original += original_size
+
+                    # Compress and archive
+                    archive_path = archive_month_dir / f"{file_path.name}.gz"
+
+                    with open(file_path, "rb") as f_in:
+                        with gzip.open(archive_path, "wb", compresslevel=9) as f_out:
+                            shutil.copyfileobj(f_in, f_out)
+
+                    # Verify compressed file before deleting original
+                    if archive_path.exists() and archive_path.stat().st_size > 0:
+                        bytes_archived += archive_path.stat().st_size
+                        file_path.unlink()
+                        archived_count += 1
+                    else:
+                        # Clean up failed compression
+                        if archive_path.exists():
+                            archive_path.unlink()
+
+                except OSError as e:
+                    print(f"[ADG] Archive: error archiving {file_path.name}: {e}")
+                    continue
 
     if archived_count > 0:
         savings = bytes_original - bytes_archived
