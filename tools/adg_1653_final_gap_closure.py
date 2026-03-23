@@ -536,31 +536,31 @@ def main():
     if not sqlite_files:
         print(f"❌ No SQLite database found in artifacts/adg/")
         sys.exit(1)
-    
+
     # Use the most recent database
     sqlite_files.sort(key=lambda x: x.stat().st_mtime, reverse=True)
     sqlite_path = sqlite_files[0]
-    
+
     print(f"Using database: {sqlite_path.name}")
-    
+
     closure = ADG1653FinalGapClosure(sqlite_path)
     results = closure.run_all_checks()
-    
+
     # Save comprehensive report
     report_path = ROOT / "artifacts" / "adg" / f"adg_1653_final_gap_closure_report_{closure.timestamp}.json"
     with open(report_path, 'w') as f:
         json.dump(results, f, indent=2, sort_keys=True)
-    
+
     print("\n" + "=" * 80)
     print("1653 FINAL GAP CLOSURE RESULTS")
     print("=" * 80)
-    
+
     for check_name, result in results["checks"].items():
         status = "PASS" if result.get("success", False) else "FAIL"
         print(f"{status}: {check_name.upper()}")
-    
+
     print(f"\nOVERALL: {'SUCCESS' if results['overall_success'] else 'FAILURE'}")
-    
+
     if results["overall_success"]:
         print("\n🎉 ADG 1653 FINAL GAP CLOSURE COMPLETED SUCCESSFULLY")
         print("System is precision-complete with exact parity")
