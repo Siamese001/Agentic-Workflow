@@ -10,27 +10,27 @@ from .precision_schema import (
     PrecisionNodeType,
     NodeSpan,
     PrecisionNodeAttributes,
-    
-    # Edge types  
+
+    # Edge types
     SemanticEdgeType,
     SemanticEdgeAttributes,
-    
+
     # Type surfaces
     TypeSurface,
     VariableAttributes,
-    
+
     # Graph structure
     PrecisionGraph,
-    
+
     # Configuration
     PrecisionConfig,
-    
+
     # Metrics
     PrecisionMetrics,
-    
+
     # Validation
     ValidationReport,
-    
+
     __all__
 )
 
@@ -40,7 +40,7 @@ from .precision_validator import PrecisionValidator
 __all__ = [
     # Schema
     "PrecisionNodeType",
-    "NodeSpan", 
+    "NodeSpan",
     "PrecisionNodeAttributes",
     "SemanticEdgeType",
     "SemanticEdgeAttributes",
@@ -50,9 +50,9 @@ __all__ = [
     "PrecisionConfig",
     "PrecisionMetrics",
     "ValidationReport",
-    
+
     # Core components
     "PrecisionExtractor",
-    "PrecisionHardeningEngine", 
+    "PrecisionHardeningEngine",
     "PrecisionValidator",
 ]

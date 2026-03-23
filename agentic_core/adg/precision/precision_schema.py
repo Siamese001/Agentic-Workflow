@@ -18,7 +18,7 @@ import hashlib
 class PrecisionNodeType(Enum):
     """Enhanced node types for precision hardening"""
     SYMBOL = "symbol"           # Original functions, classes, modules
-    CODE_BLOCK = "code_block"   # Function decomposition blocks  
+    CODE_BLOCK = "code_block"   # Function decomposition blocks
     EXPRESSION_UNIT = "expression_unit"  # Fine-grained expressions
     CONTROL_BRANCH = "control_branch"    # Control flow branches
     DATA_ORIGIN = "data_origin"         # Data source nodes
@@ -117,41 +117,41 @@ class PrecisionGraph:
     nodes: Dict[str, PrecisionNodeAttributes] = field(default_factory=dict)
     edges: Dict[str, SemanticEdgeAttributes] = field(default_factory=dict)
     edge_types: Dict[str, SemanticEdgeType] = field(default_factory=dict)
-    
+
     # Type surfaces
     type_surfaces: Dict[str, TypeSurface] = field(default_factory=dict)
     variable_attributes: Dict[str, VariableAttributes] = field(default_factory=dict)
-    
+
     # Coverage tracking
     functions_analyzed: Set[str] = field(default_factory=set)
     functions_with_blocks: Set[str] = field(default_factory=set)
     variables_with_lineage: Set[str] = field(default_factory=set)
     side_effects_modeled: Set[str] = field(default_factory=set)
     calls_resolved: Set[str] = field(default_factory=set)
-    
+
     def add_node(self, node_id: str, attributes: PrecisionNodeAttributes) -> None:
         """Add a precision node"""
         self.nodes[node_id] = attributes
-    
+
     def add_edge(self, edge_id: str, attributes: SemanticEdgeAttributes) -> None:
         """Add a semantic edge"""
         self.edges[edge_id] = attributes
         self.edge_types[edge_id] = attributes.edge_type
-    
+
     def _compute_graph_hash(self) -> str:
         """Compute deterministic graph hash"""
         hash_input = ""
-        
+
         # Hash nodes
         for node_id in sorted(self.nodes.keys()):
             attrs = self.nodes[node_id]
             hash_input += f"{node_id}:{attrs.node_type.value}:{attrs.logical_sequence_id}"
-        
+
         # Hash edges
         for edge_id in sorted(self.edges.keys()):
             attrs = self.edges[edge_id]
             hash_input += f"{edge_id}:{attrs.edge_type.value}"
-        
+
         return hashlib.sha256(hash_input.encode()).hexdigest()[:16]
 
 # =============================================================================
@@ -202,7 +202,7 @@ class ValidationReport:
 @dataclass(frozen=True)
 class PrecisionConfig:
     """Configuration for precision hardening"""
-    
+
     # Coverage thresholds (Section 11)
     BLOCK_LEVEL_COVERAGE_THRESHOLD = 0.95
     LINEAGE_COMPLETENESS_THRESHOLD = 0.90
@@ -212,11 +212,11 @@ class PrecisionConfig:
     TYPE_ANNOTATION_COVERAGE_THRESHOLD = 0.90
     TEST_TO_EXECUTION_LINK_THRESHOLD = 0.90
     VIOLATION_TRACE_COMPLETENESS_THRESHOLD = 0.95
-    
+
     # Quality thresholds
     GENERIC_EDGE_RATIO_TARGET = 0.0
     ORDERING_COMPLETENESS_TARGET = 1.0
-    
+
     # Graph stability
     MAX_DENSITY_CHANGE_PERCENT = 10.0
     MIN_NODE_COUNT = 1000
@@ -228,22 +228,22 @@ __all__ = [
     "PrecisionNodeType",
     "NodeSpan",
     "PrecisionNodeAttributes",
-    
+
     # Edge types
-    "SemanticEdgeType", 
+    "SemanticEdgeType",
     "SemanticEdgeAttributes",
-    
+
     # Type surfaces
     "TypeSurface",
     "VariableAttributes",
-    
+
     # Graph structure
     "PrecisionGraph",
-    
+
     # Metrics and validation
     "PrecisionMetrics",
     "ValidationReport",
-    
+
     # Configuration
     "PrecisionConfig",
 ]
