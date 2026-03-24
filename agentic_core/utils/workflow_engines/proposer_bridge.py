@@ -291,8 +291,11 @@ class EvaluatorProposerBridge:
             ImprovementProposal for the Meta Learning Pipeline
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "EvaluatorProposerBridge.propose")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "EvaluatorProposerBridge.propose"
+        )
 
         signals: list[ImprovementSignal] = []
         if eval_report is not None:
@@ -436,7 +439,7 @@ class EvaluatorProposerBridge:
                 payload=proposal.to_dict(),
             )
             self.l4_store.put(artifact)
-        # guardian: allow-silent-swallow
+        # guardian: allow-silent-swallow -- L4 persistence failure is non-critical; proposal already processed
         except Exception:
             pass
 

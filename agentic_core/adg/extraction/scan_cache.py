@@ -30,7 +30,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -198,13 +198,15 @@ _emit_gated_by_confidence("p1", "scan_cache", "confidence_gate")
 
 logger = logging.getLogger(__name__)
 
-CACHE_VERSION = "1"
+CACHE_VERSION = "2"
 
 
 @dataclass
 class _CacheEntry:
     file_hash: str
     edges: list[dict]
+    type_surface_map: dict[str, str]
+    surface_evidence: dict[str, int]
 
 
 class ScanCache:
@@ -230,6 +232,7 @@ class ScanCache:
     def load(cls, cache_path: Path) -> ScanCache:
         """Load cache from disk.  Returns empty cache on any error."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ScanCache.load")
 
@@ -245,9 +248,11 @@ class ScanCache:
                 entries[rel] = _CacheEntry(
                     file_hash=entry["file_hash"],
                     edges=entry["edges"],
+                    type_surface_map=entry.get("type_surface_map", {}),
+                    surface_evidence=entry.get("surface_evidence", {}),
                 )
             return cls(entries)
-        # guardian: allow-silent-swallow
+        # guardian: allow-silent-swallow -- Cache corruption is non-critical; fallback to fresh scan
         except Exception as exc:
             logger.debug("ScanCache load error (%s) — starting fresh", exc)
             return cls()
@@ -257,52 +262,60 @@ class ScanCache:
         payload = {
             "version": CACHE_VERSION,
             "entries": {
-                rel: {"file_hash": e.file_hash, "edges": e.edges} for rel, e in self._entries.items()
+                rel: {
+                    "file_hash": e.file_hash,
+                    "edges": e.edges,
+                    "type_surface_map": e.type_surface_map,
+                    "surface_evidence": e.surface_evidence,
+                }
+                for rel, e in self._entries.items()
             },
         }
         tmp = cache_path.with_suffix(".tmp")
         try:
             tmp.write_text(json.dumps(payload, indent=2), encoding="utf-8")
             tmp.replace(cache_path)
-        # guardian: allow-silent-swallow
+        # guardian: allow-silent-swallow -- Cache write failure is non-critical; scan can continue without persistence
         except Exception as exc:
             logger.warning("ScanCache save failed: %s", exc)
 
-    def get(self, rel_path: str, file_hash: str) -> tuple[list[dict] | None, bool]:
+    def get(
+        self, rel_path: str, file_hash: str
+    ) -> tuple[list[dict] | None, dict[str, str], dict[str, int], bool]:
         """Check cache for a file.
 
         Returns:
-            (edge_dicts, True)  if the file hash matches the cached entry.
-            (None, False)       if the entry is absent or stale.
+            (edge_dicts, type_surface_map, surface_evidence, True)
+                if the file hash matches the cached entry.
+            (None, {}, {}, False)
+                if the entry is absent or stale.
         """
         entry = self._entries.get(rel_path)
         if entry is None:
             self.misses += 1
-            return None, False
+            return None, {}, {}, False
         if entry.file_hash != file_hash:
             self.evictions += 1
             del self._entries[rel_path]
             self.misses += 1
-            return None, False
+            return None, {}, {}, False
         self.hits += 1
-        return entry.edges, True
+        return entry.edges, entry.type_surface_map, entry.surface_evidence, True
 
-    def put(self, rel_path: str, file_hash: str, edges: list[Edge]) -> None:
-        """Store edges for a file in the cache."""
+    def put(
+        self,
+        rel_path: str,
+        file_hash: str,
+        edges: list[Edge],
+        type_surface_map: dict[str, str],
+        surface_evidence: dict[str, int],
+    ) -> None:
+        """Store edges and per-file evidence for a file in the cache."""
         self._entries[rel_path] = _CacheEntry(
             file_hash=file_hash,
-            edges=[
-                {
-                    "from_name": e.from_name,
-                    "relation_type": e.relation_type,
-                    "to_name": e.to_name,
-                    "edge_kind": e.edge_kind,
-                    "source_file": e.source_file,
-                    "line_no": e.line_no,
-                    "symbol": e.symbol,
-                }
-                for e in edges
-            ],
+            edges=[asdict(e) for e in edges],
+            type_surface_map=dict(type_surface_map),
+            surface_evidence=dict(surface_evidence),
         )
 
     @property

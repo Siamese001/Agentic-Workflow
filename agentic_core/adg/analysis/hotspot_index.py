@@ -240,6 +240,7 @@ class HotspotIndex:
         symbol-level addressing.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "HotspotIndex.build")
 
@@ -252,9 +253,9 @@ class HotspotIndex:
 
         def _to_path(name: str) -> str | None:
             if name.startswith(_mod):
-                return name[len(_mod):]
+                return name[len(_mod) :]
             if name.startswith(_sym):
-                sym = name[len(_sym):]
+                sym = name[len(_sym) :]
                 parts = sym.split(".")
                 # Try from most-specific to least-specific:
                 # a.b.c.func -> a/b/c/func.py, a/b/c.py, a/b/__init__.py ...
@@ -262,21 +263,25 @@ class HotspotIndex:
                     prefix = "/".join(parts[:n])
                     if prefix + ".py" in module_set:
                         return prefix + ".py"
-                    # guardian: allow-path-string
+                    # guardian: allow-path-string -- Module path construction for ADG analysis; validated against module_set
                     if prefix + "/__init__.py" in module_set:
-                        # guardian: allow-path-string
+                        # guardian: allow-path-string -- Module path construction for ADG analysis; validated against module_set
                         return prefix + "/__init__.py"
             return None
 
         for edge in result.edges:
             if edge.relation_type not in (
-                "imports", "reads_from", "calls", "instantiates", "implements",
+                "imports",
+                "reads_from",
+                "calls",
+                "instantiates",
+                "implements",
             ):
                 continue
             if not edge.from_name.startswith(_mod):
                 continue
 
-            from_path = edge.from_name[len(_mod):]
+            from_path = edge.from_name[len(_mod) :]
             to_path = _to_path(edge.to_name)
             if to_path is None or from_path == to_path:
                 continue

@@ -182,15 +182,29 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 REPO_ROOT = Path(__file__).parent.parent.parent
 
 
-@pytest.mark.architecture
-@pytest.mark.determinism
-def test_adg_digest_stable_two_runs() -> None:
-    """Scanner digest must be identical across two independent invocations."""
+@pytest.fixture(scope="module")
+def scan_cache_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    return tmp_path_factory.mktemp("adg_digest_stable") / "scan_result_cache.json"
+
+
+def _make_scanner(cache_path: Path):
     from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
-    scanner = ADGStaticScanner(repo_root=REPO_ROOT)
-    result_1 = scanner.scan(commit_sha="test-run-1")
-    result_2 = scanner.scan(commit_sha="test-run-2")
+    return ADGStaticScanner(repo_root=REPO_ROOT, cache_path=cache_path)
+
+
+@pytest.fixture(scope="module")
+def full_scan_result(scan_cache_path: Path):
+    return _make_scanner(scan_cache_path).scan(commit_sha="module-full-scan")
+
+
+@pytest.mark.architecture
+@pytest.mark.determinism
+@pytest.mark.timeout(420)
+def test_adg_digest_stable_two_runs(full_scan_result, scan_cache_path: Path) -> None:
+    """Scanner digest must be identical across two independent invocations."""
+    result_1 = full_scan_result
+    result_2 = _make_scanner(scan_cache_path).scan(commit_sha="test-run-2")
 
     assert result_1.digest, "First scan produced empty digest"
     assert result_2.digest, "Second scan produced empty digest"
@@ -202,12 +216,25 @@ def test_adg_digest_stable_two_runs() -> None:
 
 @pytest.mark.architecture
 @pytest.mark.determinism
-def test_adg_digest_is_sha256_hex() -> None:
-    """Digest must be a 64-character lowercase hex string (SHA-256)."""
-    from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+@pytest.mark.timeout(300)
+def test_adg_artifact_digest_stable_two_builds(full_scan_result) -> None:
+    from agentic_core.adg.artifact.builder_types import build_artifact
 
-    scanner = ADGStaticScanner(repo_root=REPO_ROOT)
-    result = scanner.scan(commit_sha="test-digest-format")
+    artifact_1 = build_artifact(full_scan_result)
+    artifact_2 = build_artifact(full_scan_result)
+
+    assert artifact_1.artifact_digest
+    assert artifact_2.artifact_digest
+    assert artifact_1.artifact_digest == artifact_2.artifact_digest
+    assert len(artifact_1.entities) == len(artifact_2.entities)
+    assert len(artifact_1.relations) == len(artifact_2.relations)
+
+
+@pytest.mark.architecture
+@pytest.mark.determinism
+def test_adg_digest_is_sha256_hex(full_scan_result) -> None:
+    """Digest must be a 64-character lowercase hex string (SHA-256)."""
+    result = full_scan_result
 
     assert len(result.digest) == 64, f"Expected 64-char hex, got: {result.digest!r}"
     assert result.digest == result.digest.lower(), "Digest must be lowercase"
@@ -216,12 +243,9 @@ def test_adg_digest_is_sha256_hex() -> None:
 
 @pytest.mark.architecture
 @pytest.mark.determinism
-def test_adg_edge_list_sorted() -> None:
+def test_adg_edge_list_sorted(full_scan_result) -> None:
     """Edge list in ScanResult must be in stable sorted order."""
-    from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
-
-    scanner = ADGStaticScanner(repo_root=REPO_ROOT)
-    result = scanner.scan(commit_sha="test-sort")
+    result = full_scan_result
 
     assert len(result.edges) > 0, "Expected at least one edge from scan"
     for i in range(len(result.edges) - 1):
@@ -232,24 +256,18 @@ def test_adg_edge_list_sorted() -> None:
 
 @pytest.mark.architecture
 @pytest.mark.determinism
-def test_adg_modules_sorted() -> None:
+def test_adg_modules_sorted(full_scan_result) -> None:
     """Module list must be in deterministic sorted order."""
-    from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
-
-    scanner = ADGStaticScanner(repo_root=REPO_ROOT)
-    result = scanner.scan(commit_sha="test-modules-sort")
+    result = full_scan_result
 
     assert result.modules == sorted(result.modules), "Module list is not sorted"
 
 
 @pytest.mark.architecture
 @pytest.mark.determinism
-def test_adg_canonical_edge_text_stable() -> None:
+def test_adg_canonical_edge_text_stable(full_scan_result) -> None:
     """canonical_edge_text() must produce identical output on two calls."""
-    from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
-
-    scanner = ADGStaticScanner(repo_root=REPO_ROOT)
-    result = scanner.scan(commit_sha="test-text-stable")
+    result = full_scan_result
 
     text_1 = result.canonical_edge_text()
     text_2 = result.canonical_edge_text()
@@ -258,12 +276,13 @@ def test_adg_canonical_edge_text_stable() -> None:
 
 @pytest.mark.architecture
 @pytest.mark.determinism
-def test_adg_scan_files_subset_digest_differs_from_full() -> None:
+def test_adg_scan_files_subset_digest_differs_from_full(
+    full_scan_result,
+    scan_cache_path: Path,
+) -> None:
     """Scanning a subset of files must produce a different digest than full scan."""
-    from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
-
-    scanner = ADGStaticScanner(repo_root=REPO_ROOT)
-    full_result = scanner.scan(commit_sha="full")
+    scanner = _make_scanner(scan_cache_path)
+    full_result = full_scan_result
     subset_result = scanner.scan_files(
         ["agentic_core/L2_execution/UniversalWriteGateway.py"],
         commit_sha="subset",

@@ -19,6 +19,7 @@ from agentic_core.adg.extraction.static_scanner import (
     _emit_layer_violation_edges,
     _GovernancePlaneVisitor,
     _InternalCallGraphVisitor,
+    _propagate_violations,
     _TestTraceabilityVisitor,
 )
 from agentic_core.runtime.lifecycle_trace_contract import (
@@ -552,6 +553,36 @@ replay_run(session_id)
         assert all(e.edge_kind == "call" for e in rt)
 
 
+class TestViolationPropagationCoverage:
+    def test_propagation_not_truncated_at_legacy_cap(self):
+        violating_module = "ADG::Module::agentic_core/L0_routing/bad.py"
+        edges = [
+            Edge(
+                from_name=violating_module,
+                relation_type="violates",
+                to_name="ADG::Layer::L5",
+                edge_kind="import",
+                source_file="agentic_core/L0_routing/bad.py",
+                line_no=1,
+                symbol="violates",
+            )
+        ]
+        for index in range(6001):
+            edges.append(
+                Edge(
+                    from_name=f"ADG::Module::consumers/importer_{index}.py",
+                    relation_type="imports",
+                    to_name="ADG::Symbol::agentic_core.L0_routing.bad::run",
+                    edge_kind="import",
+                    source_file=f"consumers/importer_{index}.py",
+                    line_no=1,
+                    symbol="agentic_core.L0_routing.bad",
+                )
+            )
+        propagated = _propagate_violations(ScanResult(edges=edges))
+        assert len(propagated) == 6001
+
+
 # ---------------------------------------------------------------------------
 # ScanManifest new field tests
 # ---------------------------------------------------------------------------
@@ -588,6 +619,30 @@ class TestScanManifestNewFields:
         assert hasattr(m, "governance_plane_count")
         assert m.governance_plane_count == 0
 
+    def test_manifest_has_closure_evidence_fields(self):
+        from agentic_core.adg.extraction.static_scanner import ScanManifest
+
+        m = ScanManifest()
+        for field_name in (
+            "decomposes_into_expected_count",
+            "controls_flow_expected_count",
+            "flows_to_expected_count",
+            "emits_side_effect_expected_count",
+            "resolves_callsite_expected_count",
+            "tests_execution_of_expected_count",
+            "type_surface_candidate_count",
+            "type_surface_expected_count",
+            "violation_propagation_eligible_count",
+            "violation_propagation_target_count",
+            "semantic_preexisting_count",
+            "semantic_exact_map_count",
+            "semantic_fallback_count",
+            "semantic_raw_edge_kind_count",
+            "execution_generic_semantic_count",
+        ):
+            assert hasattr(m, field_name)
+            assert getattr(m, field_name) == 0
+
     def test_manifest_to_dict_includes_new_fields(self):
         from agentic_core.adg.extraction.static_scanner import ScanManifest
 
@@ -596,12 +651,18 @@ class TestScanManifestNewFields:
             test_covers_count=10,
             inter_module_call_count=42,
             governance_plane_count=5,
+            controls_flow_expected_count=8,
+            type_surface_expected_count=11,
+            semantic_exact_map_count=12,
         )
         d = m.to_dict()
         assert d["layer_violation_count"] == 3
         assert d["test_covers_count"] == 10
         assert d["inter_module_call_count"] == 42
         assert d["governance_plane_count"] == 5
+        assert d["controls_flow_expected_count"] == 8
+        assert d["type_surface_expected_count"] == 11
+        assert d["semantic_exact_map_count"] == 12
 
 
 # ---------------------------------------------------------------------------

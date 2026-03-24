@@ -309,7 +309,7 @@ def build_pre_run_report(
             adg_error="",
         )
 
-    # guardian: allow-silent-swallow
+    # guardian: allow-silent-swallow -- ADG pre-run report is optional; failure logged and execution continues
     except Exception as exc:  # guardian: allow-silent-swallower
         logger.warning(
             "ADG pre-run report unavailable: %s — proceeding without impact analysis",

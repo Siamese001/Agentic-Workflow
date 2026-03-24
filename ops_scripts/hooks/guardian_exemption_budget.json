@@ -1341,10 +1341,16 @@
   "agentic_core/L6_observability/reasoning/observability_probe_executor.py": {
     "type-erasure": 10
   },
+  "agentic_core/adg/analysis/hotspot_index.py": {
+    "path-string": 2
+  },
   "agentic_core/adg/analysis/hotspot_index_types.py": {
     "path-string": 2
   },
   "agentic_core/adg/applications/PreRunADGReport.py": {
+    "silent-swallow": 1
+  },
+  "agentic_core/adg/applications/execute_ssot_integration.py": {
     "silent-swallow": 1
   },
   "agentic_core/adg/extraction/incremental.py": {
@@ -1491,9 +1497,6 @@
   "agentic_core/mixins/mcp_operation_mixin.py": {
     "silent-swallow": 1
   },
-  "agentic_core/mixins/performance_mixin.py": {
-    "silent-swallow": 4
-  },
   "agentic_core/mixins/redis_cache_mixin.py": {
     "magic-config": 1,
     "silent-swallow": 3
@@ -1593,6 +1596,12 @@
   "agentic_core/utils/workflow_engines/policies.py": {
     "magic-config": 2
   },
+  "agentic_core/utils/workflow_engines/proposer_bridge.py": {
+    "silent-swallow": 1
+  },
+  "agentic_core/utils/workflow_engines/replay_eval_runner.py": {
+    "silent-swallow": 1
+  },
   "agentic_core/utils/workflow_engines/validators.py": {
     "magic-config": 3
   },
@@ -1670,9 +1679,6 @@
   "apps_lic/types/action_call_generator_types.py": {
     "path-string": 1
   },
-  "apps_lic/types/code_quality_guardrail_types.py": {
-    "magic-config": 4
-  },
   "apps_lic/types/competitor_recon_agent_types.py": {
     "silent-swallow": 7
   },
@@ -1705,10 +1711,6 @@
   },
   "apps_rg/__main__.py": {
     "silent-swallow": 1
-  },
-  "apps_rg/config/void_compliance_config.py": {
-    "path-string": 2,
-    "silent-swallow": 2
   },
   "apps_rg/enforcement/HardenedanthropicexecutorStrategy.py": {
     "magic-config": 2
@@ -1839,10 +1841,6 @@
     "magic-config": 2,
     "silent-swallow": 5
   },
-  "apps_shared/enforcement/execution_strategy.py": {
-    "magic-config": 2,
-    "silent-swallow": 1
-  },
   "apps_shared/reasoning/BaseDispatchAgent.py": {
     "config-with-logic": 3,
     "silent-swallow": 3,
@@ -1868,14 +1866,8 @@
   "apps_shared/scripts/assess_dependencies.py": {
     "path-string": 3
   },
-  "apps_shared/scripts/benchmark_consolidation_performance.py": {
-    "global-mutation": 1
-  },
   "apps_shared/scripts/fix_global_variables.py": {
     "path-string": 1
-  },
-  "apps_shared/scripts/fix_mcp_hardening_smart.py": {
-    "silent-swallow": 2
   },
   "apps_shared/scripts/fix_specific_long_lines.py": {
     "path-string": 1
@@ -2170,9 +2162,6 @@
   },
   "apps_shared/validators/validation_context_manager_validator.py": {
     "magic-config": 1
-  },
-  "system_learning/adapters/system_learning_memory_bridge.py": {
-    "silent-swallow": 14
   },
   "system_learning/confidence/engine.py": {
     "magic-config": 2

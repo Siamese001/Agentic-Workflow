@@ -17,10 +17,17 @@ NOTE: adg_LATEST_* copies not generated (create_latest_symlinks=False by default
 
 from __future__ import annotations
 
+import ast
 import gzip
+import hashlib
+import json
+import os
 import shutil
+import sqlite3
 import sys
+import tempfile
 import zipfile
+from collections import Counter, defaultdict
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -113,7 +120,16 @@ from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry, _infer_
 from agentic_core.adg.analysis.RepairRoute import repair_routing_summary, route_violations
 from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 from agentic_core.adg.artifact.builder_types import build_artifact
-from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+from agentic_core.adg.extraction.static_scanner import (
+    ADGStaticScanner,
+    _BlockDecompositionVisitor,
+    _ExecutionSemanticVisitor,
+    _iter_python_files,
+    _repo_relative,
+    _TestExecutionLinkageVisitor,
+    _TypeSurfaceCollector,
+)
+from agentic_core.adg.schema_util import canonical_name
 from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
@@ -389,7 +405,18 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
     _persist_adg_to_memory(result, artifact, snapshot, graph_diff, routing_summary, ts)
 
     # --- Wave 6: Generate standardized reports ---
-    _generate_standardized_reports(adg_artifacts_dir, ts, artifact)
+    closure_report = _generate_standardized_reports(
+        adg_artifacts_dir,
+        ts,
+        artifact,
+        result=result,
+        repo_root=ROOT,
+        enable_determinism_probe=os.environ.get("ADG_ENABLE_DETERMINISM_PROBE", "1").strip().lower()
+        not in ("0", "false", "no"),
+    )
+    if closure_report is not None and not closure_report["summary"]["all_gaps_passed"]:
+        failed_caps = [row["capability"] for row in closure_report["closure_rows"] if not row["passed"]]
+        raise RuntimeError(f"ADG closure validation failed: {failed_caps}")
 
     # --- Create zip archive of all 6 artifacts + 4 Wave 6 reports ---
     artifact_files = [
@@ -410,6 +437,7 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
         adg_artifacts_dir / f"boundary_report_{ts}.json",
         adg_artifacts_dir / f"mutation_integrity_report_{ts}.json",
         adg_artifacts_dir / f"test_surface_coverage_{ts}.json",
+        adg_artifacts_dir / f"closure_validation_report_{ts}.json",
     ]
 
     # Filter to only include existing reports
@@ -445,10 +473,12 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
         _archive_old_artifacts(adg_artifacts_dir, ts, keep_runs=1)
 
     # --- Auto-ingest to Redis hot cache ---
-    _auto_ingest_to_redis(adg_artifacts_dir, paths.sqlite)
+    if os.environ.get("ADG_SKIP_REDIS", "").strip().lower() not in ("1", "true", "yes"):
+        _auto_ingest_to_redis(adg_artifacts_dir, paths.sqlite)
 
     # --- Auto-commit artifacts to git ---
-    _auto_commit_artifacts(adg_artifacts_dir, ts, len(result.modules), len(result.edges))
+    if os.environ.get("ADG_SKIP_GIT", "").strip().lower() not in ("1", "true", "yes"):
+        _auto_commit_artifacts(adg_artifacts_dir, ts, len(result.modules), len(result.edges))
 
 
 def _auto_ingest_to_redis(adg_dir: Path, sqlite_path: Path) -> None:
@@ -810,13 +840,321 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
             bytes_original += individual_bytes_original
             bytes_archived += individual_bytes_archived
 
-    if archived_count > 0:
+    if bytes_original > 0:
         savings = bytes_original - bytes_archived
         pct = (savings / bytes_original * 100) if bytes_original > 0 else 0
         print(f"[ADG] Archive: archived {len(to_archive)} runs, {archived_count} files (saved {pct:.0f}%)")
 
     # Clean up old validation packages and MANIFEST files
     _cleanup_validation_files(adg_dir, current_ts)
+
+
+def _ratio(numerator: int, denominator: int) -> float:
+    if denominator <= 0:
+        return 1.0
+    return round(numerator / denominator, 4)
+
+
+def _stable_digest(payload: object) -> str:
+    text = json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str)
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _sqlite_table_digest(sqlite_path: Path, table_name: str) -> str:
+    conn = sqlite3.connect(sqlite_path)
+    cur = conn.cursor()
+    col_rows = cur.execute(f"PRAGMA table_info({table_name})").fetchall()
+    columns = [row[1] for row in col_rows]
+    if not columns:
+        conn.close()
+        return ""
+    order_by = "id" if "id" in columns else ", ".join(columns)
+    rows = cur.execute(f"SELECT {', '.join(columns)} FROM {table_name} ORDER BY {order_by}").fetchall()
+    conn.close()
+    return _stable_digest(rows)
+
+
+def _audit_semantic_surfaces(repo_root: Path, realized_node_names: set[str]) -> dict[str, int]:
+    counts: Counter[str] = Counter()
+    realized_type_candidates: set[str] = set()
+
+    for filepath in _iter_python_files(repo_root):
+        rel = _repo_relative(filepath, repo_root)
+        try:
+            source = filepath.read_text(encoding="utf-8", errors="replace")
+            tree = ast.parse(source, filename=str(filepath))
+        except SyntaxError:
+            counts["syntax_error_files"] += 1
+            continue
+        except OSError:
+            counts["io_error_files"] += 1
+            continue
+
+        module_adg = canonical_name("Module", rel)
+
+        execution_visitor = _ExecutionSemanticVisitor(module_adg, rel)
+        execution_visitor.visit(tree)
+        unique_execution_edges = set(execution_visitor.edges)
+        counts["execution_expected"] += len(unique_execution_edges)
+        counts["controls_flow_expected"] += sum(
+            1 for edge in unique_execution_edges if edge.relation_type == "controls_flow"
+        )
+        counts["flows_to_expected"] += sum(
+            1 for edge in unique_execution_edges if edge.relation_type == "flows_to"
+        )
+        counts["emits_side_effect_expected"] += sum(
+            1 for edge in unique_execution_edges if edge.relation_type == "emits_side_effect"
+        )
+        counts["resolves_callsite_expected"] += sum(
+            1 for edge in unique_execution_edges if edge.relation_type == "resolves_callsite"
+        )
+
+        block_visitor = _BlockDecompositionVisitor(module_adg, rel)
+        block_visitor.visit(tree)
+        counts["decomposes_into_expected"] += len(set(block_visitor.edges))
+
+        type_collector = _TypeSurfaceCollector(rel)
+        type_collector.visit(tree)
+        realized_type_candidates.update(
+            name for name in type_collector.type_map if name in realized_node_names
+        )
+
+        test_link_visitor = _TestExecutionLinkageVisitor(module_adg, rel)
+        test_link_visitor.visit(tree)
+        counts["tests_execution_of_expected"] += len(set(test_link_visitor.edges))
+
+    counts["type_surface_expected"] = len(realized_type_candidates)
+    return dict(counts)
+
+
+def _semantic_precision_stats(conn: sqlite3.Connection) -> dict[str, int | float]:
+    cur = conn.cursor()
+    total_edges = cur.execute("SELECT COUNT(*) FROM edges").fetchone()[0]
+    semantic_edges = cur.execute("SELECT COUNT(*) FROM edges WHERE semantic_type != ''").fetchone()[0]
+    execution_total = cur.execute("SELECT COUNT(*) FROM edges WHERE edge_kind='execution'").fetchone()[0]
+    ordered_execution = cur.execute(
+        "SELECT COUNT(*) FROM edges WHERE edge_kind='execution' AND dynamic_resolution LIKE 'seq=%'"
+    ).fetchone()[0]
+    controls_flow_total = cur.execute(
+        "SELECT COUNT(*) FROM edges WHERE relation_type='controls_flow'"
+    ).fetchone()[0]
+    flows_to_total = cur.execute("SELECT COUNT(*) FROM edges WHERE relation_type='flows_to'").fetchone()[0]
+    side_effect_total = cur.execute(
+        "SELECT COUNT(*) FROM edges WHERE relation_type='emits_side_effect'"
+    ).fetchone()[0]
+    callsite_total = cur.execute(
+        "SELECT COUNT(*) FROM edges WHERE relation_type='resolves_callsite'"
+    ).fetchone()[0]
+    controls_flow_specific = cur.execute(
+        "SELECT COUNT(*) FROM edges WHERE relation_type='controls_flow' "
+        "AND semantic_type IN ('branch','loop','exception_handler')"
+    ).fetchone()[0]
+    flows_to_specific = cur.execute(
+        "SELECT COUNT(*) FROM edges WHERE relation_type='flows_to' AND semantic_type='data_lineage'"
+    ).fetchone()[0]
+    side_effect_specific = cur.execute(
+        "SELECT COUNT(*) FROM edges WHERE relation_type='emits_side_effect' "
+        "AND semantic_type IN ('io','mutation')"
+    ).fetchone()[0]
+    callsite_specific = cur.execute(
+        "SELECT COUNT(*) FROM edges WHERE relation_type='resolves_callsite' "
+        "AND semantic_type='attribute_dispatch'"
+    ).fetchone()[0]
+    execution_generic = cur.execute(
+        "SELECT COUNT(*) FROM edges WHERE edge_kind='execution' "
+        "AND semantic_type IN ('execution','call','read','write','controls_flow','flows_to','emits_side_effect','resolves_callsite')"
+    ).fetchone()[0]
+    return {
+        "total_edges": total_edges,
+        "semantic_edges": semantic_edges,
+        "semantic_edge_ratio": _ratio(semantic_edges, total_edges),
+        "execution_total": execution_total,
+        "ordered_execution": ordered_execution,
+        "temporal_ordering_ratio": _ratio(ordered_execution, execution_total),
+        "controls_flow_total": controls_flow_total,
+        "flows_to_total": flows_to_total,
+        "side_effect_total": side_effect_total,
+        "callsite_total": callsite_total,
+        "controls_flow_specific": controls_flow_specific,
+        "flows_to_specific": flows_to_specific,
+        "side_effect_specific": side_effect_specific,
+        "callsite_specific": callsite_specific,
+        "controls_flow_specific_ratio": _ratio(controls_flow_specific, controls_flow_total),
+        "flows_to_specific_ratio": _ratio(flows_to_specific, flows_to_total),
+        "side_effect_specific_ratio": _ratio(side_effect_specific, side_effect_total),
+        "callsite_specific_ratio": _ratio(callsite_specific, callsite_total),
+        "execution_generic_semantic_count": execution_generic,
+    }
+
+
+def _violation_surface_stats(conn: sqlite3.Connection) -> dict[str, int | bool]:
+    cur = conn.cursor()
+    tables = {row[0] for row in cur.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()}
+    violation_table_count = 0
+    if "violations" in tables:
+        violation_table_count = cur.execute("SELECT COUNT(*) FROM violations").fetchone()[0]
+    layer_violation_edges = cur.execute(
+        "SELECT COUNT(*) FROM edges WHERE relation_type='violates'"
+    ).fetchone()[0]
+    layer_violation_sources = cur.execute(
+        "SELECT COUNT(DISTINCT src_id) FROM edges WHERE relation_type='violates'"
+    ).fetchone()[0]
+    antipattern_edges = cur.execute(
+        "SELECT COUNT(*) FROM edges WHERE relation_type='antipattern'"
+    ).fetchone()[0]
+    surfaces_reconciled = bool(
+        "violations" in tables
+        and violation_table_count >= antipattern_edges
+        and violation_table_count >= layer_violation_edges
+        and layer_violation_edges >= layer_violation_sources
+    )
+    return {
+        "violations_table_exists": "violations" in tables,
+        "violations_table_count": violation_table_count,
+        "antipattern_edge_count": antipattern_edges,
+        "layer_violation_edge_count": layer_violation_edges,
+        "layer_violation_source_count": layer_violation_sources,
+        "surfaces_reconciled": surfaces_reconciled,
+    }
+
+
+def _violation_propagation_stats(conn: sqlite3.Connection) -> dict[str, int | float]:
+    cur = conn.cursor()
+    rows = cur.execute(
+        "SELECT src.adg_name, e.relation_type, dst.adg_name "
+        "FROM edges e "
+        "JOIN nodes src ON src.id = e.src_id "
+        "JOIN nodes dst ON dst.id = e.dst_id "
+        "WHERE e.relation_type IN ('imports','violates')"
+    ).fetchall()
+
+    def _symbol_to_module_key(adg_name: str) -> str:
+        raw = adg_name.replace("ADG::Symbol::", "").replace("ADG::Module::", "")
+        return raw.split("::")[0].replace(".", "/")
+
+    def _module_to_key(adg_name: str) -> str:
+        raw = adg_name.replace("ADG::Module::", "")
+        return raw.replace("/__init__.py", "").replace(".py", "")
+
+    def _key_prefixes(module_key: str) -> tuple[str, ...]:
+        parts = [part for part in module_key.split("/") if part]
+        return tuple("/".join(parts[:idx]) for idx in range(1, len(parts) + 1))
+
+    importers_of: dict[str, set[str]] = defaultdict(set)
+    violating_modules: set[str] = set()
+
+    for src_name, relation_type, dst_name in rows:
+        if relation_type == "imports" and src_name.startswith("ADG::Module::"):
+            for prefix in _key_prefixes(_symbol_to_module_key(dst_name)):
+                importers_of[prefix].add(src_name)
+        elif relation_type == "violates":
+            violating_modules.add(src_name)
+
+    eligible_edge_count = 0
+    eligible_module_targets: set[str] = set()
+
+    for violating_module in violating_modules:
+        violating_key = _module_to_key(violating_module)
+        visited: set[str] = {violating_module}
+        frontier = {
+            importer
+            for importer in importers_of.get(violating_key, set())
+            if importer not in violating_modules and importer not in visited
+        }
+        visited |= frontier
+        eligible_module_targets |= frontier
+        eligible_edge_count += len(frontier)
+        for _depth in range(2, 4):
+            next_frontier: set[str] = set()
+            for node in frontier:
+                node_key = _module_to_key(node)
+                for importer in importers_of.get(node_key, set()):
+                    if importer not in visited:
+                        visited.add(importer)
+                        next_frontier.add(importer)
+            frontier = next_frontier
+            eligible_module_targets |= frontier
+            eligible_edge_count += len(frontier)
+
+    actual_edge_count = cur.execute(
+        "SELECT COUNT(*) FROM edges WHERE relation_type='violation_propagates_through'"
+    ).fetchone()[0]
+    actual_depth_counts = dict(
+        cur.execute(
+            "SELECT symbol, COUNT(*) FROM edges WHERE relation_type='violation_propagates_through' GROUP BY symbol"
+        ).fetchall()
+    )
+    return {
+        "eligible_edge_count": eligible_edge_count,
+        "eligible_target_module_count": len(eligible_module_targets),
+        "actual_edge_count": actual_edge_count,
+        "coverage_ratio": _ratio(actual_edge_count, eligible_edge_count),
+        "depth_counts": actual_depth_counts,
+    }
+
+
+def _artifact_determinism_probe(
+    adg_dir: Path,
+    ts: str,
+    artifact,
+    result,
+    repo_root: Path,
+    enable_probe: bool,
+) -> dict[str, object]:
+    sqlite_path = adg_dir / f"adg_indexed_{ts}.sqlite"
+    current_node_row_digest = _sqlite_table_digest(sqlite_path, "nodes")
+    current_edge_row_digest = _sqlite_table_digest(sqlite_path, "edges")
+    proof: dict[str, object] = {
+        "probe_enabled": enable_probe,
+        "scanner_digest": result.digest if result is not None else "",
+        "artifact_digest": artifact.artifact_digest,
+        "current_node_row_digest": current_node_row_digest,
+        "current_edge_row_digest": current_edge_row_digest,
+        "scanner_digest_match": False,
+        "artifact_digest_match": False,
+        "node_row_digest_match": False,
+        "edge_row_digest_match": False,
+        "determinism_status": "skipped",
+    }
+    if not enable_probe or result is None:
+        return proof
+
+    cache_path = adg_dir / "scan_result_cache.json"
+    probe_scanner = ADGStaticScanner(repo_root=repo_root, cache_path=cache_path)
+    probe_result = probe_scanner.scan(commit_sha=result.commit_sha or "determinism-probe")
+    probe_result.repo_state_hash = result.repo_state_hash
+    probe_artifact = build_artifact(probe_result)
+    with tempfile.TemporaryDirectory() as tmpdir_str:
+        tmpdir = Path(tmpdir_str)
+        probe_paths = write_all_artifacts(probe_artifact, out_dir=tmpdir, ts=f"{ts}_probe")
+        probe_node_row_digest = _sqlite_table_digest(probe_paths.sqlite, "nodes")
+        probe_edge_row_digest = _sqlite_table_digest(probe_paths.sqlite, "edges")
+    proof.update(
+        {
+            "probe_scanner_digest": probe_result.digest,
+            "probe_artifact_digest": probe_artifact.artifact_digest,
+            "probe_node_row_digest": probe_node_row_digest,
+            "probe_edge_row_digest": probe_edge_row_digest,
+            "scanner_digest_match": result.digest == probe_result.digest,
+            "artifact_digest_match": artifact.artifact_digest == probe_artifact.artifact_digest,
+            "node_row_digest_match": current_node_row_digest == probe_node_row_digest,
+            "edge_row_digest_match": current_edge_row_digest == probe_edge_row_digest,
+        }
+    )
+    proof["determinism_status"] = (
+        "closed"
+        if all(
+            proof[key]
+            for key in (
+                "scanner_digest_match",
+                "artifact_digest_match",
+                "node_row_digest_match",
+                "edge_row_digest_match",
+            )
+        )
+        else "partial"
+    )
+    return proof
 
 
 def _cleanup_validation_files(adg_dir: Path, current_ts: str) -> None:
@@ -1101,7 +1439,14 @@ def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> P
     return zip_path
 
 
-def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact) -> None:
+def _generate_standardized_reports(
+    adg_dir: Path,
+    ts: str,
+    artifact: ADGArtifact,
+    result=None,
+    repo_root: Path | None = None,
+    enable_determinism_probe: bool = False,
+) -> dict[str, object] | None:
     """Wave 6: Generate standardized ADG reports.
 
     Creates 4 standardized reports in artifacts/adg/:
@@ -1110,14 +1455,12 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
     3. provenance_report.json
     4. replay_determinism_report.json
     """
-    import json
-    import sqlite3
-    from collections import Counter
-
     reports_dir = adg_dir
     sqlite_path = adg_dir / f"adg_indexed_{ts}.sqlite"
+    repo_root = repo_root or ROOT
+    if not sqlite_path.exists():
+        write_all_artifacts(artifact, out_dir=adg_dir, ts=ts)
 
-    # 1. Layer Coverage Report
     layer_report = {
         "timestamp": ts,
         "schema_version": "1.0",
@@ -1126,11 +1469,8 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
         "unknown_modules": [],
         "coverage_metrics": {},
     }
-
-    # Count modules by layer
     layer_counts = Counter()
     unknown_modules = []
-
     for entity in artifact.entities:
         if entity.entity_type == "module":
             layer_counts[entity.layer] += 1
@@ -1142,9 +1482,8 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
                         "identity_kind": entity.identity_kind,
                     }
                 )
-
     layer_report["layer_distribution"] = dict(layer_counts)
-    layer_report["unknown_modules"] = unknown_modules[:50]  # Limit to first 50
+    layer_report["unknown_modules"] = unknown_modules[:50]
     layer_report["coverage_metrics"] = {
         "known_modules": layer_report["total_modules"] - len(unknown_modules),
         "unknown_modules": len(unknown_modules),
@@ -1155,31 +1494,22 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
         else 0,
     }
 
-    # 2. Edge Density Report
-    # Get total edge count from SQLite
     conn = sqlite3.connect(sqlite_path)
     cur = conn.cursor()
-    cur.execute("SELECT COUNT(*) FROM edges")
-    total_edges = cur.fetchone()[0]
+    total_edges = cur.execute("SELECT COUNT(*) FROM edges").fetchone()[0]
+    sqlite_edge_counts = dict(
+        cur.execute("SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type").fetchall()
+    )
+    stored_edge_counts = sqlite_edge_counts.copy()
 
     edge_report = {
         "timestamp": ts,
         "schema_version": "1.0",
         "total_edges": total_edges,
-        "edge_distribution": {},
+        "edge_distribution": dict(sorted(sqlite_edge_counts.items(), key=lambda x: x[1], reverse=True)),
         "critical_edge_coverage": {},
         "density_metrics": {},
     }
-
-    # Use SQLite as authoritative source for edge counts
-    cur.execute("SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type")
-    sqlite_edge_counts = dict(cur.fetchall())
-
-    edge_report["edge_distribution"] = dict(
-        sorted(sqlite_edge_counts.items(), key=lambda x: x[1], reverse=True)
-    )
-
-    # Critical edge types from Wave 4
     critical_edges = [
         "determinism_seed",
         "emits_determinism_digest",
@@ -1189,11 +1519,7 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
         "enters_sandbox",
         "guardian_gate",
     ]
-
-    critical_coverage = {}
-    for edge_type in critical_edges:
-        critical_coverage[edge_type] = sqlite_edge_counts.get(edge_type, 0)
-
+    critical_coverage = {edge_type: sqlite_edge_counts.get(edge_type, 0) for edge_type in critical_edges}
     edge_report["critical_edge_coverage"] = critical_coverage
     edge_report["density_metrics"] = {
         "critical_edges_found": sum(1 for count in critical_coverage.values() if count > 0),
@@ -1205,16 +1531,6 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
         else None,
     }
 
-    # Store edge counts for later use
-    stored_edge_counts = sqlite_edge_counts.copy()
-    conn.close()
-
-    # 3. Provenance Report - reconciled with SQLite
-    # Query SQLite for accurate counts
-    conn = sqlite3.connect(sqlite_path)
-    cur = conn.cursor()
-
-    # Get meta table data
     cur.execute("SELECT * FROM meta LIMIT 1")
     meta_row = cur.fetchone()
     if meta_row:
@@ -1223,20 +1539,40 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
     else:
         meta_data = {}
 
-    # Get actual node/edge counts
-    cur.execute("SELECT COUNT(*) FROM nodes")
-    total_nodes = cur.fetchone()[0]
-
-    cur.execute("SELECT COUNT(*) FROM edges")
-    total_edges = cur.fetchone()[0]
-
-    cur.execute("SELECT COUNT(*) FROM nodes WHERE entity_type='module'")
-    total_modules = cur.fetchone()[0]
-
-    conn.close()
+    total_nodes = cur.execute("SELECT COUNT(*) FROM nodes").fetchone()[0]
+    total_modules = cur.execute("SELECT COUNT(*) FROM nodes WHERE entity_type='module'").fetchone()[0]
+    node_names = {row[0] for row in cur.execute("SELECT adg_name FROM nodes").fetchall()}
+    type_surface_count = cur.execute(
+        "SELECT COUNT(*) FROM nodes WHERE type_surface IS NOT NULL AND type_surface != ''"
+    ).fetchone()[0]
+    test_node_types = ["test_suite", "test_case", "invariant_family"]
+    test_node_counts = {
+        node_type: cur.execute("SELECT COUNT(*) FROM nodes WHERE entity_type = ?", (node_type,)).fetchone()[0]
+        for node_type in test_node_types
+    }
+    test_edge_types = [
+        "defines_test_case",
+        "defines_test_suite",
+        "defines_invariant",
+        "emits_test_result",
+        "records_validation_outcome",
+        "links_to_execution_trace",
+        "gates_promotion",
+        "detects_regression",
+    ]
+    test_edge_counts = {edge_type: stored_edge_counts.get(edge_type, 0) for edge_type in test_edge_types}
+    test_coverage_by_layer = dict(
+        cur.execute(
+            "SELECT n.layer, COUNT(*) as count "
+            "FROM nodes n "
+            "WHERE n.entity_type IN ('test_suite', 'test_case', 'invariant_family') "
+            "GROUP BY n.layer"
+        ).fetchall()
+    )
 
     provenance_report = {
-        "schema_version": meta_data.get("schema_version", "4.0.0"),  # Use SQLite version
+        "timestamp": ts,
+        "schema_version": meta_data.get("schema_version", "4.0.0"),
         "commit_sha": meta_data.get("commit_sha", artifact.commit_sha),
         "repo_state_hash": meta_data.get("repo_state_hash", getattr(artifact, "repo_state_hash", "")),
         "scanner_digest": meta_data.get("scanner_digest", artifact.scanner_digest),
@@ -1263,10 +1599,17 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
         },
     }
 
-    # 4. Replay Determinism Report
+    determinism_proof = _artifact_determinism_probe(
+        adg_dir,
+        ts,
+        artifact,
+        result,
+        repo_root,
+        enable_determinism_probe,
+    )
     determinism_report = {
         "timestamp": ts,
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "determinism_metrics": {
             "determinism_digest_edges": stored_edge_counts.get("emits_determinism_digest", 0),
             "determinism_seed_edges": stored_edge_counts.get("determinism_seed", 0),
@@ -1274,166 +1617,361 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
             "snapshot_state_edges": stored_edge_counts.get("snapshots_state", 0),
         },
         "determinism_coverage": {
-            "modules_with_determinism_digest": 0,  # Would need SQLite query
-            "modules_with_replay_keys": 0,  # Would need SQLite query
-            "determinism_score": 0.0,  # Calculated metric
+            "modules_with_determinism_digest": cur.execute(
+                "SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type='emits_determinism_digest'"
+            ).fetchone()[0],
+            "modules_with_replay_keys": cur.execute(
+                "SELECT COUNT(DISTINCT source_file) FROM edges WHERE relation_type='emits_replay_key'"
+            ).fetchone()[0],
+            "determinism_score": _ratio(
+                sum(
+                    1
+                    for key in (
+                        "scanner_digest_match",
+                        "artifact_digest_match",
+                        "node_row_digest_match",
+                        "edge_row_digest_match",
+                    )
+                    if determinism_proof.get(key)
+                ),
+                4,
+            ),
         },
         "validation": {
             "has_determinism_edges": stored_edge_counts.get("emits_determinism_digest", 0) > 0,
             "has_seed_edges": stored_edge_counts.get("determinism_seed", 0) > 0,
-            "determinism_status": "partial"
-            if stored_edge_counts.get("emits_determinism_digest", 0) > 0
-            else "missing",
+            "determinism_status": determinism_proof["determinism_status"],
         },
+        "proof": determinism_proof,
     }
 
-    # 5. Boundary Report
-    boundary_report = {
-        "timestamp": ts,
-        "schema_version": "1.0",
-        "boundary_edge_counts": {},
-        "unresolved_imports": {},
-        "core_path_analysis": {},
-        "boundary_metrics": {},
-    }
-
-    # Query boundary edge counts from SQLite
     boundary_edge_types = [
         "internal_to_internal",
         "internal_to_external",
         "external_to_internal",
         "unresolved_boundary",
     ]
-
-    boundary_counts = {}
-    for edge_type in boundary_edge_types:
-        boundary_counts[edge_type] = stored_edge_counts.get(edge_type, 0)
-
-    boundary_report["boundary_edge_counts"] = boundary_counts
-
-    # Query unresolved imports by core path
-    unresolved_by_path = {}
-    core_paths = ["agentic_core/L0_", "agentic_core/L2_", "agentic_core/L5_"]
-
-    for path_prefix in core_paths:
-        # This would require a more complex SQL query to get by path
-        unresolved_by_path[path_prefix] = 0  # Placeholder
-
-    boundary_report["unresolved_imports"] = unresolved_by_path
-    boundary_report["boundary_metrics"] = {
-        "total_unresolved": sum(unresolved_by_path.values()),
-        "critical_path_unresolved": sum(unresolved_by_path[p] for p in core_paths),
-        "boundary_completeness": "incomplete",
-    }
-
-    # 6. Mutation Integrity Report
-    mutation_report = {
+    boundary_report = {
         "timestamp": ts,
         "schema_version": "1.0",
-        "mutation_integrity_metrics": {},
-        "replay_guarantees": {},
-        "signature_coverage": {},
-        "snapshot_lineage": {},
+        "boundary_edge_counts": {
+            edge_type: stored_edge_counts.get(edge_type, 0) for edge_type in boundary_edge_types
+        },
+        "unresolved_imports": {"agentic_core/L0_": 0, "agentic_core/L2_": 0, "agentic_core/L5_": 0},
+        "core_path_analysis": {},
+        "boundary_metrics": {
+            "total_unresolved": 0,
+            "critical_path_unresolved": 0,
+            "boundary_completeness": "incomplete",
+        },
     }
 
-    # Query mutation-related edges
+    module_entity_count = len([entity for entity in artifact.entities if entity.entity_type == "module"])
     mutation_edges = {
         "mutation_signature": stored_edge_counts.get("mutation_signature", 0),
         "parent_snapshot_hash": stored_edge_counts.get("parent_snapshot_hash", 0),
         "replay_key": stored_edge_counts.get("emits_replay_key", 0),
         "policy_hash": stored_edge_counts.get("references_policy_hash", 0),
     }
-
-    mutation_report["mutation_integrity_metrics"] = mutation_edges
-    mutation_report["replay_guarantees"] = {
-        "determinism_status": "partial" if stored_edge_counts.get("determinism_seed", 0) > 0 else "missing",
-        "replay_completeness": "partial",
-        "signature_coverage": "incomplete",
+    mutation_report = {
+        "timestamp": ts,
+        "schema_version": "2.0",
+        "mutation_integrity_metrics": mutation_edges,
+        "replay_guarantees": {
+            "determinism_status": determinism_proof["determinism_status"],
+            "replay_completeness": "closed"
+            if determinism_proof.get("edge_row_digest_match")
+            and determinism_proof.get("node_row_digest_match")
+            else "partial",
+            "signature_coverage": "closed" if mutation_edges["mutation_signature"] > 0 else "incomplete",
+        },
+        "signature_coverage": {
+            "modules_with_signatures": mutation_edges["mutation_signature"],
+            "total_modules": module_entity_count,
+            "coverage_percentage": (mutation_edges["mutation_signature"] / module_entity_count * 100)
+            if module_entity_count > 0
+            else 0,
+        },
+        "snapshot_lineage": {
+            "parent_snapshot_hash_edges": mutation_edges["parent_snapshot_hash"],
+            "replay_key_edges": mutation_edges["replay_key"],
+        },
     }
-    mutation_report["signature_coverage"] = {
-        "modules_with_signatures": stored_edge_counts.get("mutation_signature", 0),
-        "total_modules": len([e for e in artifact.entities if e.entity_type == "module"]),
-        "coverage_percentage": (
-            stored_edge_counts.get("mutation_signature", 0)
-            / len([e for e in artifact.entities if e.entity_type == "module"])
-            * 100
-        )
-        if len([e for e in artifact.entities if e.entity_type == "module"]) > 0
-        else 0,
-    }
 
-    # 7. Test Surface Coverage Report
     test_surface_report = {
         "timestamp": ts,
         "schema_version": "1.0",
-        "test_surface_nodes": {},
-        "test_surface_edges": {},
-        "test_coverage_metrics": {},
-        "critical_path_linkage": {},
+        "test_surface_nodes": test_node_counts,
+        "test_surface_edges": test_edge_counts,
+        "test_coverage_metrics": {
+            "total_test_nodes": sum(test_node_counts.values()),
+            "total_test_edges": sum(test_edge_counts.values()),
+            "test_edge_types_found": sum(1 for count in test_edge_counts.values() if count > 0),
+            "test_edge_types_total": len(test_edge_types),
+            "test_edge_coverage_percentage": (
+                sum(1 for count in test_edge_counts.values() if count > 0) / len(test_edge_types) * 100
+            )
+            if test_edge_types
+            else 0,
+        },
+        "test_coverage_by_layer": test_coverage_by_layer,
+        "critical_path_linkage": {
+            "test_cases_with_execution_trace": test_edge_counts.get("links_to_execution_trace", 0),
+            "test_cases_with_validation": test_edge_counts.get("records_validation_outcome", 0),
+            "test_cases_with_regression_detection": test_edge_counts.get("detects_regression", 0),
+            "test_cases_with_promotion_gates": test_edge_counts.get("gates_promotion", 0),
+            "critical_path_completeness": "partial"
+            if test_edge_counts.get("links_to_execution_trace", 0) > 0
+            else "missing",
+        },
     }
 
-    # Query test-related nodes and edges from SQLite
-    conn = sqlite3.connect(sqlite_path)
-    cur = conn.cursor()
-
-    # Test node types
-    test_node_types = ["test_suite", "test_case", "invariant_family"]
-    test_node_counts = {}
-    for node_type in test_node_types:
-        cur.execute("SELECT COUNT(*) FROM nodes WHERE entity_type = ?", (node_type,))
-        test_node_counts[node_type] = cur.fetchone()[0]
-
-    # Test edge types
-    test_edge_types = [
-        "defines_test_case",
-        "defines_test_suite",
-        "defines_invariant",
-        "emits_test_result",
-        "records_validation_outcome",
-        "links_to_execution_trace",
-        "gates_promotion",
-        "detects_regression",
-    ]
-    test_edge_counts = {}
-    for edge_type in test_edge_types:
-        test_edge_counts[edge_type] = stored_edge_counts.get(edge_type, 0)
-
-    # Test coverage by layer
-    cur.execute("""
-        SELECT n.layer, COUNT(*) as count
-        FROM nodes n
-        WHERE n.entity_type IN ('test_suite', 'test_case', 'invariant_family')
-        GROUP BY n.layer
-    """)
-    test_coverage_by_layer = dict(cur.fetchall())
-
-    test_surface_report["test_surface_nodes"] = test_node_counts
-    test_surface_report["test_surface_edges"] = test_edge_counts
-    test_surface_report["test_coverage_metrics"] = {
-        "total_test_nodes": sum(test_node_counts.values()),
-        "total_test_edges": sum(test_edge_counts.values()),
-        "test_edge_types_found": sum(1 for count in test_edge_counts.values() if count > 0),
-        "test_edge_types_total": len(test_edge_types),
-        "test_edge_coverage_percentage": (
-            sum(1 for count in test_edge_counts.values() if count > 0) / len(test_edge_types) * 100
+    closure_report = None
+    if result is not None:
+        audited = {
+            "decomposes_into_expected": result.manifest.decomposes_into_expected_count,
+            "controls_flow_expected": result.manifest.controls_flow_expected_count,
+            "flows_to_expected": result.manifest.flows_to_expected_count,
+            "emits_side_effect_expected": result.manifest.emits_side_effect_expected_count,
+            "resolves_callsite_expected": result.manifest.resolves_callsite_expected_count,
+            "type_surface_candidate_count": result.manifest.type_surface_candidate_count,
+            "type_surface_expected": result.manifest.type_surface_expected_count,
+            "tests_execution_of_expected": result.manifest.tests_execution_of_expected_count,
+            "violation_propagation_eligible_count": result.manifest.violation_propagation_eligible_count,
+            "violation_propagation_target_count": result.manifest.violation_propagation_target_count,
+        }
+        semantic_stats = _semantic_precision_stats(conn)
+        semantic_stats.update(
+            {
+                "semantic_preexisting_count": result.manifest.semantic_preexisting_count,
+                "semantic_exact_map_count": result.manifest.semantic_exact_map_count,
+                "semantic_fallback_count": result.manifest.semantic_fallback_count,
+                "semantic_raw_edge_kind_count": result.manifest.semantic_raw_edge_kind_count,
+                "execution_generic_semantic_count": result.manifest.execution_generic_semantic_count,
+            }
         )
-        if test_edge_types
-        else 0,
-    }
-    test_surface_report["test_coverage_by_layer"] = test_coverage_by_layer
-    test_surface_report["critical_path_linkage"] = {
-        "test_cases_with_execution_trace": test_edge_counts.get("links_to_execution_trace", 0),
-        "test_cases_with_validation": test_edge_counts.get("records_validation_outcome", 0),
-        "test_cases_with_regression_detection": test_edge_counts.get("detects_regression", 0),
-        "test_cases_with_promotion_gates": test_edge_counts.get("gates_promotion", 0),
-        "critical_path_completeness": "partial"
-        if test_edge_counts.get("links_to_execution_trace", 0) > 0
-        else "missing",
-    }
+        violation_stats = _violation_surface_stats(conn)
+        propagation_stats = {
+            "eligible_edge_count": result.manifest.violation_propagation_eligible_count,
+            "eligible_target_module_count": result.manifest.violation_propagation_target_count,
+            "actual_edge_count": stored_edge_counts.get("violation_propagates_through", 0),
+            "coverage_ratio": _ratio(
+                stored_edge_counts.get("violation_propagates_through", 0),
+                result.manifest.violation_propagation_eligible_count,
+            ),
+            "depth_counts": dict(
+                cur.execute(
+                    "SELECT symbol, COUNT(*) FROM edges "
+                    "WHERE relation_type='violation_propagates_through' GROUP BY symbol"
+                ).fetchall()
+            ),
+        }
+        closure_rows = [
+            {
+                "id": 1,
+                "capability": "STRUCTURAL COVERAGE",
+                "numerator": result.manifest.parsed_module_count,
+                "denominator": max(result.manifest.discovered_module_count, 1),
+                "ratio": _ratio(result.manifest.parsed_module_count, result.manifest.discovered_module_count),
+                "threshold": 0.99,
+                "passed": _ratio(result.manifest.parsed_module_count, result.manifest.discovered_module_count)
+                >= 0.99,
+            },
+            {
+                "id": 2,
+                "capability": "GOVERNANCE VISIBILITY",
+                "numerator": 1 if violation_stats["surfaces_reconciled"] else 0,
+                "denominator": 1,
+                "ratio": 1.0 if violation_stats["surfaces_reconciled"] else 0.0,
+                "threshold": 1.0,
+                "passed": bool(violation_stats["surfaces_reconciled"]),
+                "evidence": violation_stats,
+            },
+            {
+                "id": 3,
+                "capability": "DETERMINISM (ARTIFACT LEVEL)",
+                "numerator": sum(
+                    1
+                    for key in (
+                        "scanner_digest_match",
+                        "artifact_digest_match",
+                        "node_row_digest_match",
+                        "edge_row_digest_match",
+                    )
+                    if determinism_proof.get(key)
+                ),
+                "denominator": 4,
+                "ratio": _ratio(
+                    sum(
+                        1
+                        for key in (
+                            "scanner_digest_match",
+                            "artifact_digest_match",
+                            "node_row_digest_match",
+                            "edge_row_digest_match",
+                        )
+                        if determinism_proof.get(key)
+                    ),
+                    4,
+                ),
+                "threshold": 1.0,
+                "passed": determinism_proof["determinism_status"] == "closed",
+                "evidence": determinism_proof,
+            },
+            {
+                "id": 4,
+                "capability": "NODE GRANULARITY (BLOCK / EXPRESSION)",
+                "numerator": stored_edge_counts.get("decomposes_into", 0),
+                "denominator": max(result.manifest.decomposes_into_expected_count, 1),
+                "ratio": _ratio(
+                    stored_edge_counts.get("decomposes_into", 0),
+                    result.manifest.decomposes_into_expected_count,
+                ),
+                "threshold": 0.95,
+                "passed": _ratio(
+                    stored_edge_counts.get("decomposes_into", 0),
+                    result.manifest.decomposes_into_expected_count,
+                )
+                >= 0.95,
+            },
+            {
+                "id": 5,
+                "capability": "EDGE SEMANTIC PRECISION",
+                "numerator": semantic_stats["semantic_edges"],
+                "denominator": max(semantic_stats["total_edges"], 1),
+                "ratio": semantic_stats["semantic_edge_ratio"],
+                "threshold": 1.0,
+                "passed": bool(
+                    semantic_stats["semantic_edge_ratio"] >= 1.0
+                    and semantic_stats["execution_generic_semantic_count"] == 0
+                    and semantic_stats["semantic_raw_edge_kind_count"] == 0
+                    and semantic_stats["controls_flow_specific_ratio"] >= 0.95
+                    and semantic_stats["flows_to_specific_ratio"] >= 0.95
+                    and semantic_stats["side_effect_specific_ratio"] >= 0.95
+                    and semantic_stats["callsite_specific_ratio"] >= 0.95
+                ),
+                "evidence": semantic_stats,
+            },
+            {
+                "id": 6,
+                "capability": "DATA LINEAGE",
+                "numerator": semantic_stats["flows_to_total"],
+                "denominator": max(result.manifest.flows_to_expected_count, 1),
+                "ratio": _ratio(semantic_stats["flows_to_total"], result.manifest.flows_to_expected_count),
+                "threshold": 0.95,
+                "passed": _ratio(semantic_stats["flows_to_total"], result.manifest.flows_to_expected_count)
+                >= 0.95,
+            },
+            {
+                "id": 7,
+                "capability": "CONTROL FLOW",
+                "numerator": semantic_stats["controls_flow_total"],
+                "denominator": max(result.manifest.controls_flow_expected_count, 1),
+                "ratio": _ratio(
+                    semantic_stats["controls_flow_total"],
+                    result.manifest.controls_flow_expected_count,
+                ),
+                "threshold": 0.95,
+                "passed": _ratio(
+                    semantic_stats["controls_flow_total"],
+                    result.manifest.controls_flow_expected_count,
+                )
+                >= 0.95,
+            },
+            {
+                "id": 8,
+                "capability": "SIDE EFFECT MODELING",
+                "numerator": semantic_stats["side_effect_total"],
+                "denominator": max(result.manifest.emits_side_effect_expected_count, 1),
+                "ratio": _ratio(
+                    semantic_stats["side_effect_total"],
+                    result.manifest.emits_side_effect_expected_count,
+                ),
+                "threshold": 0.95,
+                "passed": _ratio(
+                    semantic_stats["side_effect_total"],
+                    result.manifest.emits_side_effect_expected_count,
+                )
+                >= 0.95,
+            },
+            {
+                "id": 9,
+                "capability": "TEMPORAL ORDERING",
+                "numerator": semantic_stats["ordered_execution"],
+                "denominator": max(semantic_stats["execution_total"], 1),
+                "ratio": semantic_stats["temporal_ordering_ratio"],
+                "threshold": 0.95,
+                "passed": semantic_stats["temporal_ordering_ratio"] >= 0.95,
+            },
+            {
+                "id": 10,
+                "capability": "CALLSITE RESOLUTION",
+                "numerator": semantic_stats["callsite_total"],
+                "denominator": max(result.manifest.resolves_callsite_expected_count, 1),
+                "ratio": _ratio(
+                    semantic_stats["callsite_total"],
+                    result.manifest.resolves_callsite_expected_count,
+                ),
+                "threshold": 0.95,
+                "passed": _ratio(
+                    semantic_stats["callsite_total"],
+                    result.manifest.resolves_callsite_expected_count,
+                )
+                >= 0.95,
+            },
+            {
+                "id": 11,
+                "capability": "TYPE ENRICHMENT",
+                "numerator": type_surface_count,
+                "denominator": max(result.manifest.type_surface_expected_count, 1),
+                "ratio": _ratio(type_surface_count, result.manifest.type_surface_expected_count),
+                "threshold": 0.95,
+                "passed": _ratio(type_surface_count, result.manifest.type_surface_expected_count) >= 0.95,
+            },
+            {
+                "id": 12,
+                "capability": "TEST → EXECUTION LINKAGE",
+                "numerator": stored_edge_counts.get("tests_execution_of", 0),
+                "denominator": max(result.manifest.tests_execution_of_expected_count, 1),
+                "ratio": _ratio(
+                    stored_edge_counts.get("tests_execution_of", 0),
+                    result.manifest.tests_execution_of_expected_count,
+                ),
+                "threshold": 0.95,
+                "passed": _ratio(
+                    stored_edge_counts.get("tests_execution_of", 0),
+                    result.manifest.tests_execution_of_expected_count,
+                )
+                >= 0.95,
+            },
+            {
+                "id": 13,
+                "capability": "VIOLATION TRACE DEPTH",
+                "numerator": propagation_stats["actual_edge_count"],
+                "denominator": max(propagation_stats["eligible_edge_count"], 1),
+                "ratio": propagation_stats["coverage_ratio"],
+                "threshold": 0.95,
+                "passed": propagation_stats["coverage_ratio"] >= 0.95,
+                "evidence": propagation_stats,
+            },
+        ]
+        closure_report = {
+            "timestamp": ts,
+            "schema_version": "1.0",
+            "closure_rows": closure_rows,
+            "semantic_surface_audit": audited,
+            "violation_surfaces": violation_stats,
+            "semantic_precision": semantic_stats,
+            "determinism": determinism_proof,
+            "summary": {
+                "all_gaps_passed": all(row["passed"] for row in closure_rows),
+                "passed_count": sum(1 for row in closure_rows if row["passed"]),
+                "total_count": len(closure_rows),
+            },
+        }
 
     conn.close()
 
-    # Write all reports
     reports = [
         (f"layer_coverage_report_{ts}.json", layer_report),
         (f"edge_density_report_{ts}.json", edge_report),
@@ -1443,12 +1981,16 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
         (f"mutation_integrity_report_{ts}.json", mutation_report),
         (f"test_surface_coverage_{ts}.json", test_surface_report),
     ]
+    if closure_report is not None:
+        reports.append((f"closure_validation_report_{ts}.json", closure_report))
 
     for filename, report_data in reports:
         report_path = reports_dir / filename
         with open(report_path, "w", encoding="utf-8") as f:
             json.dump(report_data, f, indent=2, sort_keys=True)
         print(f"[ADG] Report generated: {filename}")
+
+    return closure_report
 
 
 def main() -> None:

@@ -32,7 +32,7 @@ class TestWave1ProvenanceHardening(unittest.TestCase):
 
     def test_commit_sha_capture(self):
         """Test that git commit SHA is captured during ADG generation."""
-        with patch('subprocess.check_output') as mock_subprocess:
+        with patch("subprocess.check_output") as mock_subprocess:
             mock_subprocess.return_value = "abc123def456\n"
 
             scanner = ADGStaticScanner(repo_root=Path.cwd())
@@ -46,7 +46,7 @@ class TestWave1ProvenanceHardening(unittest.TestCase):
         result = scanner.scan(commit_sha="test_sha")
 
         # Should have repo_state_hash attribute
-        self.assertTrue(hasattr(result, 'repo_state_hash'))
+        self.assertTrue(hasattr(result, "repo_state_hash"))
 
     def test_provenance_in_artifact(self):
         """Test provenance fields are preserved in ADGArtifact."""
@@ -61,7 +61,7 @@ class TestWave1ProvenanceHardening(unittest.TestCase):
 
         # Check provenance fields
         self.assertEqual(artifact.commit_sha, "test_sha")
-        self.assertTrue(hasattr(artifact, 'repo_state_hash'))
+        self.assertTrue(hasattr(artifact, "repo_state_hash"))
 
     def test_provenance_in_snapshot(self):
         """Test provenance is written to snapshot JSON."""
@@ -78,14 +78,15 @@ class TestWave1ProvenanceHardening(unittest.TestCase):
 
             # Write snapshot
             from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+
             paths = write_all_artifacts(artifact, out_dir=tmpdir, ts="test_123")
 
             # Check snapshot contains provenance
             with open(paths.snapshot) as f:
                 snapshot = json.load(f)
 
-            self.assertEqual(snapshot['commit_sha'], "test_sha")
-            self.assertEqual(snapshot['repo_state_hash'], "test_repo_hash")
+            self.assertEqual(snapshot["commit_sha"], "test_sha")
+            self.assertEqual(snapshot["repo_state_hash"], "test_repo_hash")
 
 
 class TestWave2ExternalDependencyNormalization(unittest.TestCase):
@@ -95,9 +96,7 @@ class TestWave2ExternalDependencyNormalization(unittest.TestCase):
         """Test _ImportVisitor accepts IdentityNormalizer."""
         normalizer = IdentityNormalizer(Path.cwd())
         visitor = _ImportVisitor(
-            module_adg_name="test_module",
-            source_file="test.py",
-            identity_normalizer=normalizer
+            module_adg_name="test_module", source_file="test.py", identity_normalizer=normalizer
         )
 
         self.assertIsNotNone(visitor._identity_normalizer)
@@ -108,9 +107,7 @@ class TestWave2ExternalDependencyNormalization(unittest.TestCase):
         normalizer.normalize.return_value = MagicMock(kind=IdentityKind.REPO_MODULE)
 
         visitor = _ImportVisitor(
-            module_adg_name="test_module",
-            source_file="test.py",
-            identity_normalizer=normalizer
+            module_adg_name="test_module", source_file="test.py", identity_normalizer=normalizer
         )
 
         edge_kind = visitor._classify_import_kind("agentic_core.L0_routing")
@@ -122,9 +119,7 @@ class TestWave2ExternalDependencyNormalization(unittest.TestCase):
         normalizer.normalize.return_value = MagicMock(kind=IdentityKind.EXTERNAL_MODULE)
 
         visitor = _ImportVisitor(
-            module_adg_name="test_module",
-            source_file="test.py",
-            identity_normalizer=normalizer
+            module_adg_name="test_module", source_file="test.py", identity_normalizer=normalizer
         )
 
         edge_kind = visitor._classify_import_kind("requests")
@@ -136,9 +131,7 @@ class TestWave2ExternalDependencyNormalization(unittest.TestCase):
         normalizer.normalize.return_value = MagicMock(kind=IdentityKind.UNRESOLVED_IMPORT)
 
         visitor = _ImportVisitor(
-            module_adg_name="test_module",
-            source_file="test.py",
-            identity_normalizer=normalizer
+            module_adg_name="test_module", source_file="test.py", identity_normalizer=normalizer
         )
 
         edge_kind = visitor._classify_import_kind("nonexistent_module")
@@ -147,9 +140,7 @@ class TestWave2ExternalDependencyNormalization(unittest.TestCase):
     def test_fallback_without_normalizer(self):
         """Test fallback behavior when no IdentityNormalizer provided."""
         visitor = _ImportVisitor(
-            module_adg_name="test_module",
-            source_file="test.py",
-            identity_normalizer=None
+            module_adg_name="test_module", source_file="test.py", identity_normalizer=None
         )
 
         # Should use legacy classification
@@ -221,13 +212,13 @@ class TestWave4CriticalEdgeDensification(unittest.TestCase):
         from agentic_core.adg.schema import RELATION_TYPES
 
         critical_types = [
-            'determinism_seed',
-            'emits_determinism_digest',
-            'policy_verification',
-            'authorize_and_execute',
-            'dispatches_execution_plan',
-            'enters_sandbox',
-            'guardian_gate'
+            "determinism_seed",
+            "emits_determinism_digest",
+            "policy_verification",
+            "authorize_and_execute",
+            "dispatches_execution_plan",
+            "enters_sandbox",
+            "guardian_gate",
         ]
 
         for edge_type in critical_types:
@@ -244,7 +235,7 @@ class TestWave5UWGMutationGuarantees(unittest.TestCase):
             policy_hash="test_policy_hash",
             actor_id="test_actor",
             run_id="test_run",
-            parent_snapshot_hash="test_parent_hash"
+            parent_snapshot_hash="test_parent_hash",
         )
 
         self.assertEqual(uwg.policy_hash, "test_policy_hash")
@@ -271,9 +262,7 @@ class TestWave5UWGMutationGuarantees(unittest.TestCase):
     def test_write_through_four_fields(self):
         """Test write_through requires mutation_signature."""
         uwg = UniversalWriteGateway(
-            replay_mode=False,
-            policy_hash="test_policy",
-            parent_snapshot_hash="test_parent"
+            replay_mode=False, policy_hash="test_policy", parent_snapshot_hash="test_parent"
         )
 
         with self.assertRaises(ValueError) as cm:
@@ -284,9 +273,7 @@ class TestWave5UWGMutationGuarantees(unittest.TestCase):
     def test_write_method_four_fields(self):
         """Test write method requires all fields."""
         uwg = UniversalWriteGateway(
-            replay_mode=False,
-            policy_hash="test_policy",
-            parent_snapshot_hash="test_parent"
+            replay_mode=False, policy_hash="test_policy", parent_snapshot_hash="test_parent"
         )
 
         with self.assertRaises(ValueError) as cm:
@@ -316,14 +303,17 @@ class TestWave6OutputArtifacts(unittest.TestCase):
             artifact = builder.build(result)
 
             # Generate reports
-            _generate_standardized_reports(tmpdir, "test_123", artifact)
+            _generate_standardized_reports(tmpdir, "test_123", artifact, result=result, repo_root=tmpdir)
 
             # Check all reports exist
             expected_reports = [
-                "layer_coverage_report.json",
-                "edge_density_report.json",
-                "provenance_report.json",
-                "replay_determinism_report.json"
+                "layer_coverage_report_test_123.json",
+                "edge_density_report_test_123.json",
+                "provenance_report_test_123.json",
+                "replay_determinism_report_test_123.json",
+                "boundary_report_test_123.json",
+                "mutation_integrity_report_test_123.json",
+                "test_surface_coverage_test_123.json",
             ]
 
             for report_name in expected_reports:
@@ -353,7 +343,7 @@ class TestWave6OutputArtifacts(unittest.TestCase):
             _generate_standardized_reports(tmpdir, "test_123", artifact)
 
             # Check provenance report
-            with open(tmpdir / "provenance_report.json") as f:
+            with open(tmpdir / "provenance_report_test_123.json") as f:
                 report = json.load(f)
 
             validation = report["validation"]
@@ -378,7 +368,7 @@ class TestWave6OutputArtifacts(unittest.TestCase):
             _generate_standardized_reports(tmpdir, "test_123", artifact)
 
             # Check layer report structure
-            with open(tmpdir / "layer_coverage_report.json") as f:
+            with open(tmpdir / "layer_coverage_report_test_123.json") as f:
                 report = json.load(f)
 
             required_fields = [
@@ -387,7 +377,7 @@ class TestWave6OutputArtifacts(unittest.TestCase):
                 "total_modules",
                 "layer_distribution",
                 "unknown_modules",
-                "coverage_metrics"
+                "coverage_metrics",
             ]
 
             for field in required_fields:
@@ -425,7 +415,7 @@ def test_function():
             artifact = builder.build(result)
 
             # Generate reports
-            _generate_standardized_reports(tmpdir, "test_123", artifact)
+            _generate_standardized_reports(tmpdir, "test_123", artifact, result=result, repo_root=tmpdir)
 
             # Verify all components worked
             self.assertEqual(result.commit_sha, "test_sha")
@@ -433,10 +423,14 @@ def test_function():
 
             # Check reports exist and are valid
             for report_name in [
-                "layer_coverage_report.json",
-                "edge_density_report.json",
-                "provenance_report.json",
-                "replay_determinism_report.json"
+                "layer_coverage_report_test_123.json",
+                "edge_density_report_test_123.json",
+                "provenance_report_test_123.json",
+                "replay_determinism_report_test_123.json",
+                "boundary_report_test_123.json",
+                "mutation_integrity_report_test_123.json",
+                "test_surface_coverage_test_123.json",
+                "closure_validation_report_test_123.json",
             ]:
                 report_path = tmpdir / report_name
                 self.assertTrue(report_path.exists())
@@ -444,6 +438,13 @@ def test_function():
                 with open(report_path) as f:
                     data = json.load(f)
                     self.assertIsInstance(data, dict)
+
+            with open(tmpdir / "closure_validation_report_test_123.json") as f:
+                closure = json.load(f)
+
+            self.assertIn("violation_surfaces", closure)
+            self.assertIn("summary", closure)
+            self.assertEqual(len(closure["closure_rows"]), 13)
 
 
 if __name__ == "__main__":

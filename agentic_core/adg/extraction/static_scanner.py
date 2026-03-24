@@ -23,7 +23,7 @@ import ast
 import hashlib
 import logging
 import os
-from dataclasses import dataclass, field, replace
+from dataclasses import asdict, dataclass, field, fields, replace
 from pathlib import Path
 from typing import Iterator
 
@@ -476,6 +476,21 @@ class ScanManifest:
     cache_misses: int = 0
     cache_hit_rate: float = 0.0
     type_annotation_count: int = 0
+    decomposes_into_expected_count: int = 0
+    controls_flow_expected_count: int = 0
+    flows_to_expected_count: int = 0
+    emits_side_effect_expected_count: int = 0
+    resolves_callsite_expected_count: int = 0
+    tests_execution_of_expected_count: int = 0
+    type_surface_candidate_count: int = 0
+    type_surface_expected_count: int = 0
+    violation_propagation_eligible_count: int = 0
+    violation_propagation_target_count: int = 0
+    semantic_preexisting_count: int = 0
+    semantic_exact_map_count: int = 0
+    semantic_fallback_count: int = 0
+    semantic_raw_edge_kind_count: int = 0
+    execution_generic_semantic_count: int = 0
     # Semantic depth metrics (Section 6: Metric Enforcement)
     semantic_edge_ratio: float = 0.0
     control_path_coverage: float = 0.0
@@ -531,40 +546,25 @@ class ScanResult:
     def to_dict(self) -> dict:
         """R2: Serialize to JSON-compatible dict for cache."""
         return {
-            "edges": [edge.to_dict() for edge in self.edges],
+            "edges": [asdict(edge) for edge in self.edges],
             "modules": self.modules,
             "digest": self.digest,
             "commit_sha": self.commit_sha,
             "repo_state_hash": self.repo_state_hash,
             "manifest": self.manifest.to_dict(),
             "syntax_errors": self.syntax_errors,
+            "type_surface_map": self.type_surface_map,
         }
 
     @classmethod
     def from_dict(cls, data: dict) -> ScanResult:
         """R2: Deserialize from cache dict."""
-        import dataclasses
+        edge_field_names = {f.name for f in fields(Edge)}
+        manifest_field_names = {f.name for f in fields(ScanManifest)}
 
-        edges = [
-            Edge(
-                from_name=e["from_name"],
-                relation_type=e["relation_type"],
-                to_name=e["to_name"],
-                edge_kind=e["edge_kind"],
-                source_file=e["source_file"],
-                line_no=e["line_no"],
-                symbol=e.get("symbol", ""),
-            )
-            for e in data.get("edges", [])
-        ]
+        edges = [Edge(**{k: v for k, v in e.items() if k in edge_field_names}) for e in data.get("edges", [])]
         manifest_data = data.get("manifest", {})
-        manifest = ScanManifest(
-            **{
-                k: v
-                for k, v in manifest_data.items()
-                if k in {f.name for f in dataclasses.fields(ScanManifest)}
-            }
-        )
+        manifest = ScanManifest(**{k: v for k, v in manifest_data.items() if k in manifest_field_names})
         return cls(
             edges=edges,
             modules=data.get("modules", []),
@@ -573,6 +573,7 @@ class ScanResult:
             repo_state_hash=data.get("repo_state_hash", ""),
             manifest=manifest,
             syntax_errors=data.get("syntax_errors", []),
+            type_surface_map=data.get("type_surface_map", {}),
         )
 
     def compute_digest(self) -> str:
@@ -584,6 +585,56 @@ class ScanResult:
     def print_digest(self) -> None:
         """Print the determinism digest exactly once per run."""
         print(f"ADG-DETERMINISM-DIGEST: {self.digest}")
+
+
+def _edge_from_dict(data: dict) -> Edge:
+    edge_field_names = {f.name for f in fields(Edge)}
+    return Edge(**{k: v for k, v in data.items() if k in edge_field_names})
+
+
+def _empty_surface_evidence() -> dict[str, int]:
+    return {
+        "decomposes_into_expected_count": 0,
+        "controls_flow_expected_count": 0,
+        "flows_to_expected_count": 0,
+        "emits_side_effect_expected_count": 0,
+        "resolves_callsite_expected_count": 0,
+        "tests_execution_of_expected_count": 0,
+        "type_surface_candidate_count": 0,
+        "semantic_preexisting_count": 0,
+        "semantic_exact_map_count": 0,
+        "semantic_fallback_count": 0,
+        "semantic_raw_edge_kind_count": 0,
+    }
+
+
+def _merge_surface_evidence(target: dict[str, int], delta: dict[str, int]) -> None:
+    for key, value in delta.items():
+        target[key] = target.get(key, 0) + int(value)
+
+
+def _realized_node_names(result: ScanResult) -> set[str]:
+    names = {canonical_name("Module", rel) for rel in result.modules}
+    for edge in result.edges:
+        names.add(edge.from_name)
+        names.add(edge.to_name)
+    return names
+
+
+def _count_execution_generic_semantics(edges: list[Edge]) -> int:
+    generic_semantics = {
+        "execution",
+        "call",
+        "read",
+        "write",
+        "controls_flow",
+        "flows_to",
+        "emits_side_effect",
+        "resolves_callsite",
+    }
+    return sum(
+        1 for edge in edges if edge.edge_kind == "execution" and edge.semantic_type in generic_semantics
+    )
 
 
 class _P1608HardeningVisitor(ast.NodeVisitor):
@@ -5430,8 +5481,8 @@ def _scan_file(
     repo_root: Path,
     include_tests: bool = True,
     identity_normalizer: object | None = None,
-) -> tuple[list[Edge], bool, dict[str, str]]:
-    """Scan a single Python file and return (edges, had_syntax_error, type_surface_map)."""
+) -> tuple[list[Edge], bool, dict[str, str], dict[str, int]]:
+    """Scan a single Python file and return edges, syntax flag, type surface, and evidence."""
     rel = _repo_relative(filepath, repo_root)
     module_adg = canonical_name("Module", rel)
     edges: list[Edge] = []
@@ -5440,10 +5491,10 @@ def _scan_file(
         tree = ast.parse(source, filename=str(filepath))
     except SyntaxError as exc:
         logger.debug("SyntaxError in %s: %s", filepath, exc)
-        return [], True, {}  # A4: parse failures tracked
+        return [], True, {}, {}  # A4: parse failures tracked
     except OSError as exc:
         logger.debug("OSError reading %s: %s", filepath, exc)
-        return [], True, {}
+        return [], True, {}, {}
 
     # G1: Import edges
     from agentic_core.adg.identity.normalizer import IdentityNormalizer
@@ -5744,13 +5795,33 @@ def _scan_file(
     test_link_visitor.visit(tree)
     edges.extend(test_link_visitor.edges)
 
+    unique_execution_edges = set(exec_visitor.edges)
+    surface_evidence = {
+        "decomposes_into_expected_count": len(set(block_visitor.edges)),
+        "controls_flow_expected_count": sum(
+            1 for edge in unique_execution_edges if edge.relation_type == "controls_flow"
+        ),
+        "flows_to_expected_count": sum(
+            1 for edge in unique_execution_edges if edge.relation_type == "flows_to"
+        ),
+        "emits_side_effect_expected_count": sum(
+            1 for edge in unique_execution_edges if edge.relation_type == "emits_side_effect"
+        ),
+        "resolves_callsite_expected_count": sum(
+            1 for edge in unique_execution_edges if edge.relation_type == "resolves_callsite"
+        ),
+        "tests_execution_of_expected_count": len(set(test_link_visitor.edges)),
+        "type_surface_candidate_count": len(type_surface_map),
+    }
+
     # -----------------------------------------------------------------------
     # SEMANTIC ENRICHMENT: stamp semantic_type on ALL edges (zero new edges)
     # Ensures semantic_edge_ratio → 1.0 by classifying every structural edge.
     # -----------------------------------------------------------------------
-    edges = _stamp_semantic_types(edges)
+    edges, semantic_stamp_stats = _stamp_semantic_types_with_stats(edges)
+    surface_evidence.update(semantic_stamp_stats)
 
-    return edges, False, type_surface_map
+    return edges, False, type_surface_map, surface_evidence
 
 
 # ---------------------------------------------------------------------------
@@ -5899,6 +5970,38 @@ _SEMANTIC_TYPE_MAP: dict[tuple[str, str], str] = {
     ("decomposition", "decomposes_into"): "block_decomposition",
     ("test_linkage", "tests_execution_of"): "test_execution_linkage",
     ("violation_propagation", "violation_propagates_through"): "violation_trace",
+    # ── Gap-5 closure: explicit semantic mappings for remaining raw-fallback combos ──
+    ("reads_config", "reads_config"): "reads_governed_config",
+    ("healing_dispatch", "orchestrates_healing"): "orchestrates_healing",
+    ("dpo_build", "builds_dpo_batch"): "dpo_batch_build",
+    ("eval_score", "scores_groundedness"): "groundedness_score",
+    ("replay_patch", "patches_time"): "replay_time_patch",
+    ("replay_patch", "guards_replay"): "replay_guard",
+    ("diff_package", "packages_diff"): "diff_packaging",
+    ("blast_radius_check", "validates_blast_radius"): "blast_radius_validation",
+    ("verification", "policy_verification"): "policy_verification_inline",
+    ("embedding_pipeline", "stores_embedding"): "embedding_storage",
+    ("network", "invokes_provider"): "provider_invocation",
+    ("runtime_state_snapshot", "observes_runtime_state"): "runtime_observation",
+    ("determinism_seed", "seeds_rng"): "rng_seed",
+    ("io_transcript", "transcripts_response"): "response_transcript",
+    ("guardrail", "guardian_gate"): "guardian_gate_check",
+    ("io_transcript", "intercepts_io"): "io_interception",
+    ("duplicate_method", "duplicate_method"): "antipattern_duplicate_method",
+    ("antipattern_classification", "registers_antipattern"): "antipattern_registration",
+    ("path_stall", "forces_stall"): "forced_stall",
+    ("prompt_consumption", "consumes_prompt"): "prompt_consumption",
+    ("path_vigilance_reroute", "vigilance_reroute"): "vigilance_path_reroute",
+    ("trace_prompt_link", "triggered_telemetry"): "telemetry_trigger",
+    ("boundary_accept", "certifies_envelope"): "envelope_certification",
+    ("io_hard_fail", "hard_fails_untranscripted"): "untranscripted_hard_fail",
+    ("path_safety_reentry", "reenters_safety"): "safety_reentry",
+    ("determinism", "determinism_seed"): "determinism_seed_link",
+    ("execution_plan_dispatch", "dispatches_execution_plan"): "execution_plan_dispatch",
+    ("healer_action", "heals"): "healer_remediation",
+    ("context_pull", "unfreezes_context"): "context_unfreeze",
+    ("capability_validation", "validates_agent_capability"): "agent_capability_validation",
+    ("dynamic_exec", "invokes_dynamic"): "dynamic_invocation",
 }
 
 # Fallback: classify by relation_type alone when (edge_kind, relation_type) not in map
@@ -5922,21 +6025,40 @@ _SEMANTIC_FALLBACK: dict[str, str] = {
 }
 
 
+def _stamp_semantic_types_with_stats(edges: list[Edge]) -> tuple[list[Edge], dict[str, int]]:
+    stats = {
+        "semantic_preexisting_count": 0,
+        "semantic_exact_map_count": 0,
+        "semantic_fallback_count": 0,
+        "semantic_raw_edge_kind_count": 0,
+    }
+    result: list[Edge] = []
+    for e in edges:
+        if e.semantic_type:
+            stats["semantic_preexisting_count"] += 1
+            result.append(e)
+            continue
+        st = _SEMANTIC_TYPE_MAP.get((e.edge_kind, e.relation_type))
+        if st is not None:
+            stats["semantic_exact_map_count"] += 1
+        else:
+            st = _SEMANTIC_FALLBACK.get(e.relation_type)
+            if st is not None:
+                stats["semantic_fallback_count"] += 1
+            else:
+                st = e.edge_kind
+                stats["semantic_raw_edge_kind_count"] += 1
+        result.append(replace(e, semantic_type=st))
+    return result, stats
+
+
 def _stamp_semantic_types(edges: list[Edge]) -> list[Edge]:
     """Post-process: stamp semantic_type on every edge that lacks one.
 
     Frozen dataclass → uses dataclasses.replace(). No new edges created.
     """
-    result: list[Edge] = []
-    for e in edges:
-        if e.semantic_type:
-            result.append(e)
-            continue
-        st = _SEMANTIC_TYPE_MAP.get((e.edge_kind, e.relation_type))
-        if st is None:
-            st = _SEMANTIC_FALLBACK.get(e.relation_type, e.edge_kind)
-        result.append(replace(e, semantic_type=st))
-    return result
+    stamped_edges, _ = _stamp_semantic_types_with_stats(edges)
+    return stamped_edges
 
 
 def _check_semantic_depth(result: ScanResult) -> dict[str, float]:
@@ -5949,6 +6071,12 @@ def _check_semantic_depth(result: ScanResult) -> dict[str, float]:
     """
     edges = result.edges
     total = len(edges)
+
+    def _coverage(numerator: int, denominator: int) -> float:
+        if denominator <= 0:
+            return 1.0
+        return min(1.0, numerator / denominator)
+
     if total == 0:
         return {
             "semantic_edge_ratio": 0.0,
@@ -5963,28 +6091,35 @@ def _check_semantic_depth(result: ScanResult) -> dict[str, float]:
     semantic_count = sum(1 for e in edges if e.semantic_type)
     semantic_edge_ratio = semantic_count / total
 
-    # 2. control_path_coverage: fraction of modules with ≥1 controls_flow edge
-    modules_with_cf = len({e.source_file for e in edges if e.relation_type == "controls_flow"})
-    total_modules = len(result.modules) if result.modules else 1
-    control_path_coverage = min(1.0, modules_with_cf / total_modules)
+    # 2. control_path_coverage: fraction of eligible control-flow sites materialized
+    controls_flow_total = sum(1 for e in edges if e.relation_type == "controls_flow")
+    control_path_coverage = _coverage(
+        controls_flow_total,
+        result.manifest.controls_flow_expected_count,
+    )
 
-    # 3. lineage_completeness: fraction of modules with ≥1 flows_to edge
-    modules_with_lineage = len({e.source_file for e in edges if e.relation_type == "flows_to"})
-    lineage_completeness = min(1.0, modules_with_lineage / total_modules)
+    # 3. lineage_completeness: fraction of eligible lineage sites materialized
+    flows_to_total = sum(1 for e in edges if e.relation_type == "flows_to")
+    lineage_completeness = _coverage(flows_to_total, result.manifest.flows_to_expected_count)
 
-    # 4. side_effect_coverage: fraction of modules with ≥1 emits_side_effect edge
-    modules_with_se = len({e.source_file for e in edges if e.relation_type == "emits_side_effect"})
-    side_effect_coverage = min(1.0, modules_with_se / total_modules)
+    # 4. side_effect_coverage: fraction of eligible side-effect callsites materialized
+    side_effect_total = sum(1 for e in edges if e.relation_type == "emits_side_effect")
+    side_effect_coverage = _coverage(
+        side_effect_total,
+        result.manifest.emits_side_effect_expected_count,
+    )
 
-    # 5. call_resolution_rate: fraction of call edges that have semantic_type
-    call_edges = [e for e in edges if e.relation_type in ("calls", "resolves_callsite")]
-    resolved = sum(1 for e in call_edges if e.semantic_type)
-    call_resolution_rate = resolved / len(call_edges) if call_edges else 1.0
+    # 5. call_resolution_rate: fraction of eligible dynamic callsites resolved
+    callsite_total = sum(1 for e in edges if e.relation_type == "resolves_callsite")
+    call_resolution_rate = _coverage(
+        callsite_total,
+        result.manifest.resolves_callsite_expected_count,
+    )
 
     # 6. temporal_ordering_ratio: fraction of execution edges with seq= metadata
     exec_edges = [e for e in edges if e.edge_kind == "execution"]
     ordered = sum(1 for e in exec_edges if "seq=" in e.dynamic_resolution)
-    temporal_ordering_ratio = ordered / len(exec_edges) if exec_edges else 0.0
+    temporal_ordering_ratio = _coverage(ordered, len(exec_edges)) if exec_edges else 0.0
 
     return {
         "semantic_edge_ratio": round(semantic_edge_ratio, 4),
@@ -6007,13 +6142,70 @@ _SEMANTIC_DEPTH_THRESHOLDS: dict[str, float] = {
 }
 
 
+def _violation_propagation_eligibility(result: ScanResult) -> dict[str, int]:
+    def _symbol_to_module_key(sym_name: str) -> str:
+        raw = sym_name.replace("ADG::Symbol::", "").replace("ADG::Module::", "")
+        mod_part = raw.split("::")[0]
+        return mod_part.replace(".", "/")
+
+    def _module_to_key(mod_name: str) -> str:
+        raw = mod_name.replace("ADG::Module::", "")
+        return raw.replace("/__init__.py", "").replace(".py", "")
+
+    def _key_prefixes(module_key: str) -> tuple[str, ...]:
+        parts = [part for part in module_key.split("/") if part]
+        return tuple("/".join(parts[:idx]) for idx in range(1, len(parts) + 1))
+
+    importers_of: dict[str, set[str]] = {}
+    violating_modules: set[str] = set()
+
+    for edge in result.edges:
+        if edge.relation_type == "imports" and edge.from_name.startswith("ADG::Module::"):
+            for prefix in _key_prefixes(_symbol_to_module_key(edge.to_name)):
+                importers_of.setdefault(prefix, set()).add(edge.from_name)
+        elif edge.relation_type == "violates":
+            violating_modules.add(edge.from_name)
+
+    eligible_edge_count = 0
+    eligible_module_targets: set[str] = set()
+    for violating_module in violating_modules:
+        violating_key = _module_to_key(violating_module)
+        visited: set[str] = {violating_module}
+        frontier = {
+            importer
+            for importer in importers_of.get(violating_key, set())
+            if importer not in violating_modules and importer not in visited
+        }
+        visited |= frontier
+        eligible_module_targets |= frontier
+        eligible_edge_count += len(frontier)
+        for _depth in range(2, _MAX_PROPAGATION_DEPTH + 1):
+            next_frontier: set[str] = set()
+            for node in frontier:
+                node_key = _module_to_key(node)
+                for importer in importers_of.get(node_key, set()):
+                    if importer not in visited:
+                        visited.add(importer)
+                        next_frontier.add(importer)
+            frontier = next_frontier
+            eligible_module_targets |= frontier
+            eligible_edge_count += len(frontier)
+            if not frontier:
+                break
+
+    return {
+        "violation_propagation_eligible_count": eligible_edge_count,
+        "violation_propagation_target_count": len(eligible_module_targets),
+    }
+
+
 # ---------------------------------------------------------------------------
 # Phase 3d: Violation Trace Depth — propagate violations through lineage
 # For each violation edge, traces forward through flows_to and controls_flow
 # to find downstream modules affected by the violation.
 # ---------------------------------------------------------------------------
 _MAX_PROPAGATION_DEPTH = 3  # max hops for violation propagation
-_MAX_PROPAGATION_EDGES = 5000  # cap total propagation edges
+_MAX_PROPAGATION_EDGES = 50000  # cap total propagation edges
 
 
 def _propagate_violations(result: ScanResult) -> list[Edge]:
@@ -6039,12 +6231,17 @@ def _propagate_violations(result: ScanResult) -> list[Edge]:
         raw = raw.replace("/__init__.py", "").replace(".py", "")
         return raw
 
+    def _key_prefixes(module_key: str) -> tuple[str, ...]:
+        parts = [part for part in module_key.split("/") if part]
+        return tuple("/".join(parts[:idx]) for idx in range(1, len(parts) + 1))
+
     # Build reverse import adjacency: package_key → {importing module names}
     importers_of: dict[str, set[str]] = {}
     for e in result.edges:
         if e.relation_type == "imports" and e.from_name.startswith("ADG::Module::"):
             target_key = _symbol_to_module_key(e.to_name)
-            importers_of.setdefault(target_key, set()).add(e.from_name)
+            for prefix in _key_prefixes(target_key):
+                importers_of.setdefault(prefix, set()).add(e.from_name)
 
     # Collect violating modules (from_name of violates edges)
     violating_modules: set[str] = set()
@@ -6063,64 +6260,55 @@ def _propagate_violations(result: ScanResult) -> list[Edge]:
     propagation_edges: list[Edge] = []
     for v_module in violating_modules:
         v_key = module_key_map[v_module]
-        # Collect all import keys that start with this violating package
-        # (catches imports of any submodule within the violating package)
-        matching_keys: set[str] = set()
-        for k in importers_of:
-            if k == v_key or k.startswith(v_key + "/"):
-                matching_keys.add(k)
 
-        # BFS depth 1: direct importers of the violating module/package
         visited: set[str] = {v_module}
-        depth1_importers: set[str] = set()
-        for mk in matching_keys:
-            for importer in importers_of.get(mk, ()):
-                if importer not in visited and importer not in violating_modules:
-                    depth1_importers.add(importer)
-                    visited.add(importer)
-                    propagation_edges.append(
-                        Edge(
-                            from_name=v_module,
-                            relation_type="violation_propagates_through",
-                            to_name=importer,
-                            edge_kind="violation_propagation",
-                            source_file="",
-                            line_no=0,
-                            symbol="depth=1",
-                            semantic_type="violation_trace",
-                            confidence=0.8,
-                        )
-                    )
-                    if len(propagation_edges) >= _MAX_PROPAGATION_EDGES:
-                        return propagation_edges
+        depth1_importers = {
+            importer
+            for importer in importers_of.get(v_key, set())
+            if importer not in violating_modules and importer not in visited
+        }
+        for importer in depth1_importers:
+            visited.add(importer)
+            propagation_edges.append(
+                Edge(
+                    from_name=v_module,
+                    relation_type="violation_propagates_through",
+                    to_name=importer,
+                    edge_kind="violation_propagation",
+                    source_file="",
+                    line_no=0,
+                    symbol="depth=1",
+                    semantic_type="violation_trace",
+                    confidence=0.8,
+                )
+            )
+            if len(propagation_edges) >= _MAX_PROPAGATION_EDGES:
+                return propagation_edges
 
-        # BFS depths 2+: transitive importers
         frontier = list(depth1_importers)
         for depth in range(2, _MAX_PROPAGATION_DEPTH + 1):
             next_frontier: list[str] = []
             for node in frontier:
                 node_key = _module_to_key(node)
-                for k in importers_of:
-                    if k == node_key or k.startswith(node_key + "/"):
-                        for importer in importers_of.get(k, ()):
-                            if importer not in visited:
-                                visited.add(importer)
-                                next_frontier.append(importer)
-                                propagation_edges.append(
-                                    Edge(
-                                        from_name=v_module,
-                                        relation_type="violation_propagates_through",
-                                        to_name=importer,
-                                        edge_kind="violation_propagation",
-                                        source_file="",
-                                        line_no=0,
-                                        symbol=f"depth={depth}",
-                                        semantic_type="violation_trace",
-                                        confidence=max(0.3, 1.0 - depth * 0.2),
-                                    )
-                                )
-                                if len(propagation_edges) >= _MAX_PROPAGATION_EDGES:
-                                    return propagation_edges
+                for importer in importers_of.get(node_key, set()):
+                    if importer not in visited:
+                        visited.add(importer)
+                        next_frontier.append(importer)
+                        propagation_edges.append(
+                            Edge(
+                                from_name=v_module,
+                                relation_type="violation_propagates_through",
+                                to_name=importer,
+                                edge_kind="violation_propagation",
+                                source_file="",
+                                line_no=0,
+                                symbol=f"depth={depth}",
+                                semantic_type="violation_trace",
+                                confidence=max(0.3, 1.0 - depth * 0.2),
+                            )
+                        )
+                        if len(propagation_edges) >= _MAX_PROPAGATION_EDGES:
+                            return propagation_edges
             frontier = next_frontier
             if not frontier:
                 break
@@ -6275,6 +6463,7 @@ class ADGStaticScanner:
         modules_seen: list[str] = []
         syntax_error_count = 0
         syntax_errors: list[str] = []
+        surface_evidence_totals = _empty_surface_evidence()
 
         # Create ONE shared IdentityNormalizer so rglob("*.py") runs exactly once
         from agentic_core.adg.identity.normalizer import IdentityNormalizer
@@ -6290,34 +6479,26 @@ class ADGStaticScanner:
 
             # E9: Check cache before scanning
             fhash = file_hash(filepath)
-            cached_edge_dicts, cache_hit = cache.get(rel, fhash)
+            cached_edge_dicts, cached_type_map, cached_surface_evidence, cache_hit = cache.get(rel, fhash)
             if cache_hit and cached_edge_dicts is not None:
-                file_edges = [
-                    Edge(
-                        from_name=d["from_name"],
-                        relation_type=d["relation_type"],
-                        to_name=d["to_name"],
-                        edge_kind=d["edge_kind"],
-                        source_file=d["source_file"],
-                        line_no=d["line_no"],
-                        symbol=d.get("symbol", ""),
-                    )
-                    for d in cached_edge_dicts
-                ]
+                file_edges = [_edge_from_dict(d) for d in cached_edge_dicts]
+                file_type_map = cached_type_map
+                file_surface_evidence = cached_surface_evidence
                 had_error = False
             else:
-                file_edges, had_error, file_type_map = _scan_file(
+                file_edges, had_error, file_type_map, file_surface_evidence = _scan_file(
                     filepath, self.repo_root, self.include_tests, shared_normalizer
                 )
                 if not had_error:
-                    cache.put(rel, fhash, file_edges)
-                    all_type_surface.update(file_type_map)
+                    cache.put(rel, fhash, file_edges, file_type_map, file_surface_evidence)
 
             if had_error:
                 syntax_error_count += 1
                 syntax_errors.append(rel)
             else:
                 manifest.parsed_module_count += 1
+                all_type_surface.update(file_type_map)
+                _merge_surface_evidence(surface_evidence_totals, file_surface_evidence)
             all_edges.extend(file_edges)
 
         if self.cache_path:
@@ -6337,10 +6518,75 @@ class ADGStaticScanner:
         result.type_surface_map = all_type_surface
         result.compute_digest()
 
+        # GV: Layer violation post-scan pass
+        violation_edges = _emit_layer_violation_edges(result)
+        if violation_edges:
+            violation_edges, violation_stamp_stats = _stamp_semantic_types_with_stats(violation_edges)
+            _merge_surface_evidence(surface_evidence_totals, violation_stamp_stats)
+            result.edges = sorted(set(result.edges) | set(violation_edges))
+            result.compute_digest()
+
+        propagation_evidence = _violation_propagation_eligibility(result)
+        manifest.violation_propagation_eligible_count = propagation_evidence[
+            "violation_propagation_eligible_count"
+        ]
+        manifest.violation_propagation_target_count = propagation_evidence[
+            "violation_propagation_target_count"
+        ]
+
+        # Phase 3d: Violation trace depth — propagate violations through lineage
+        propagation_edges = _propagate_violations(result)
+        if propagation_edges:
+            propagation_edges, propagation_stamp_stats = _stamp_semantic_types_with_stats(propagation_edges)
+            _merge_surface_evidence(surface_evidence_totals, propagation_stamp_stats)
+            result.edges = sorted(set(result.edges) | set(propagation_edges))
+            result.compute_digest()
+
+        # E5: Cyclic dependency detection post-scan pass
+        cycle_edges = _detect_cycles(result)
+        if cycle_edges:
+            cycle_edges, cycle_stamp_stats = _stamp_semantic_types_with_stats(cycle_edges)
+            _merge_surface_evidence(surface_evidence_totals, cycle_stamp_stats)
+            result.edges = sorted(set(result.edges) | set(cycle_edges))
+            result.compute_digest()
+
         # A2: evidence floors
         manifest.minimum_evidence_passed = _check_evidence_floors(result)
         # S9: cardinality
         manifest.cardinality_violations = _check_cardinality(result)
+        # A1: edge counts by graph
+        manifest.edge_counts_by_graph = result.edge_counts_by_relation()
+        manifest.syntax_error_count = syntax_error_count
+        # S4: unknown layer count
+        from agentic_core.adg.schema_util import module_path_to_layer
+
+        manifest.unknown_layer_count = sum(1 for m in modules_seen if module_path_to_layer(m) == "L_UNKNOWN")
+        # dynamic exec count
+        manifest.dynamic_execution_count = sum(1 for e in result.edges if e.edge_kind == "dynamic_exec")
+
+        manifest.decomposes_into_expected_count = surface_evidence_totals["decomposes_into_expected_count"]
+        manifest.controls_flow_expected_count = surface_evidence_totals["controls_flow_expected_count"]
+        manifest.flows_to_expected_count = surface_evidence_totals["flows_to_expected_count"]
+        manifest.emits_side_effect_expected_count = surface_evidence_totals[
+            "emits_side_effect_expected_count"
+        ]
+        manifest.resolves_callsite_expected_count = surface_evidence_totals[
+            "resolves_callsite_expected_count"
+        ]
+        manifest.tests_execution_of_expected_count = surface_evidence_totals[
+            "tests_execution_of_expected_count"
+        ]
+        manifest.type_surface_candidate_count = surface_evidence_totals["type_surface_candidate_count"]
+        manifest.semantic_preexisting_count = surface_evidence_totals["semantic_preexisting_count"]
+        manifest.semantic_exact_map_count = surface_evidence_totals["semantic_exact_map_count"]
+        manifest.semantic_fallback_count = surface_evidence_totals["semantic_fallback_count"]
+        manifest.semantic_raw_edge_kind_count = surface_evidence_totals["semantic_raw_edge_kind_count"]
+        realized_node_names = _realized_node_names(result)
+        manifest.type_surface_expected_count = len(
+            {name for name in result.type_surface_map if name in realized_node_names}
+        )
+        manifest.execution_generic_semantic_count = _count_execution_generic_semantics(result.edges)
+
         # Section 6: semantic depth enforcement
         depth_metrics = _check_semantic_depth(result)
         manifest.semantic_edge_ratio = depth_metrics["semantic_edge_ratio"]
@@ -6362,35 +6608,6 @@ class ADGStaticScanner:
                         depth_metrics[k],
                         threshold,
                     )
-        # A1: edge counts by graph
-        manifest.edge_counts_by_graph = result.edge_counts_by_relation()
-        manifest.syntax_error_count = syntax_error_count
-        # S4: unknown layer count
-        from agentic_core.adg.schema_util import module_path_to_layer
-
-        manifest.unknown_layer_count = sum(1 for m in modules_seen if module_path_to_layer(m) == "L_UNKNOWN")
-        # dynamic exec count
-        manifest.dynamic_execution_count = sum(1 for e in result.edges if e.edge_kind == "dynamic_exec")
-
-        # GV: Layer violation post-scan pass
-        violation_edges = _emit_layer_violation_edges(result)
-        if violation_edges:
-            violation_edges = _stamp_semantic_types(violation_edges)
-            result.edges = sorted(set(result.edges) | set(violation_edges))
-            result.compute_digest()
-
-        # Phase 3d: Violation trace depth — propagate violations through lineage
-        propagation_edges = _propagate_violations(result)
-        if propagation_edges:
-            propagation_edges = _stamp_semantic_types(propagation_edges)
-            result.edges = sorted(set(result.edges) | set(propagation_edges))
-            result.compute_digest()
-
-        # E5: Cyclic dependency detection post-scan pass
-        cycle_edges = _detect_cycles(result)
-        if cycle_edges:
-            result.edges = sorted(set(result.edges) | set(cycle_edges))
-            result.compute_digest()
 
         # Gap manifest counts
         manifest.inter_module_call_count = sum(1 for e in result.edges if e.relation_type == "calls")
@@ -6449,7 +6666,7 @@ class ADGStaticScanner:
             if not filepath.exists() or not rel.endswith(".py"):
                 continue
             modules_seen.append(rel)
-            file_edges, _, file_type_map = _scan_file(filepath, self.repo_root)
+            file_edges, _, file_type_map, _ = _scan_file(filepath, self.repo_root)
             all_edges.extend(file_edges)
             all_type_surface.update(file_type_map)
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from agentic_core.adg.extraction.scan_cache import ScanCache
 from agentic_core.adg.extraction.static_scanner import (
     Edge,
     ScanManifest,
@@ -359,11 +360,32 @@ class TestScanManifest:
     def test_scan_result_to_dict_roundtrip(self):
         result = ScanResult(
             edges=[
-                _edge(f"{_M}a.py", "imports", f"{_M}b.py"),
+                Edge(
+                    from_name=f"{_M}a.py",
+                    relation_type="controls_flow",
+                    to_name=f"{_M}b.py",
+                    edge_kind="execution",
+                    source_file="a.py",
+                    line_no=7,
+                    symbol="if@L7",
+                    semantic_type="branch",
+                    confidence=0.95,
+                    source_span_start=10,
+                    source_span_end=20,
+                    source_span_line=7,
+                    source_span_column=4,
+                    target_span_start=21,
+                    target_span_end=30,
+                    target_span_line=8,
+                    target_span_column=2,
+                    dynamic_resolution="seq=1",
+                ),
             ],
             modules=["a.py", "b.py"],
             digest="abc123",
             commit_sha="sha1",
+            manifest=ScanManifest(controls_flow_expected_count=1, semantic_exact_map_count=1),
+            type_surface_map={f"{_M}a.py::func": "int"},
         )
         d = result.to_dict()
         restored = ScanResult.from_dict(d)
@@ -371,3 +393,42 @@ class TestScanManifest:
         assert restored.commit_sha == "sha1"
         assert len(restored.edges) == 1
         assert restored.modules == ["a.py", "b.py"]
+        assert restored.edges[0].semantic_type == "branch"
+        assert restored.edges[0].dynamic_resolution == "seq=1"
+        assert restored.manifest.controls_flow_expected_count == 1
+        assert restored.manifest.semantic_exact_map_count == 1
+        assert restored.type_surface_map == {f"{_M}a.py::func": "int"}
+
+    def test_scan_cache_roundtrip_preserves_semantic_evidence(self, tmp_path):
+        cache = ScanCache()
+        edge = Edge(
+            from_name=f"{_M}a.py",
+            relation_type="controls_flow",
+            to_name=f"{_M}b.py",
+            edge_kind="execution",
+            source_file="a.py",
+            line_no=3,
+            symbol="if@L3",
+            semantic_type="branch",
+            dynamic_resolution="seq=2",
+        )
+        cache.put(
+            "a.py",
+            "hash-1",
+            [edge],
+            {f"{_M}a.py::func": "str"},
+            {"controls_flow_expected_count": 1, "semantic_exact_map_count": 1},
+        )
+        cache_path = tmp_path / "scan_cache.json"
+        cache.save(cache_path)
+
+        loaded = ScanCache.load(cache_path)
+        cached_edges, cached_type_map, cached_surface_evidence, hit = loaded.get("a.py", "hash-1")
+
+        assert hit is True
+        assert cached_edges is not None
+        assert cached_edges[0]["semantic_type"] == "branch"
+        assert cached_edges[0]["dynamic_resolution"] == "seq=2"
+        assert cached_type_map == {f"{_M}a.py::func": "str"}
+        assert cached_surface_evidence["controls_flow_expected_count"] == 1
+        assert cached_surface_evidence["semantic_exact_map_count"] == 1

@@ -1,3 +1,84 @@
++================================================================================================================================================+
+|                                                               THE THREE PIPELINES                                                              |
++================================================================================================================================================+
+| [ PIPELINE A: TRAINING ]                                                                                                                       |
+| Public / licensed corpora -> model training -> model weights                                                                                   |
+| (No vector DB population)                                                                                                                      |
+|                                                                                                                                                |
+| [ PIPELINE B: INGESTION / INDEXING ]                                                                                                           |
+| Your documents -> chunk -> embed -> vector DB                                                                                                  |
+| (Builds retrieval substrate)                                                                                                                   |
+|                                                                                                                                                |
+| [ PIPELINE C: INFERENCE / RUNTIME ]                                                                                                            |
+| User query -> exact cache -> semantic cache -> RAG -> agentic action                                                                           |
+| (Consumes prebuilt stores; never creates chunks)                                                                                               |
++================================================================================================================================================+
+
++================================================================================================================================================+
+|                                           [ STAGE 0: INGESTION / INDEX BUILD (OFFLINE, PRE-RUNTIME) ]                                          |
++================================================================================================================================================+
+| SOURCES:                                                                                                                                       |
+| - PDFs / Docs / SharePoint / DB / Web fetch                                                                                                    |
+|                                                                                                                                                |
+| PIPELINE:                                                                                                                                      |
+| Document -> Extract text -> Normalize -> Chunk -> Attach metadata                                                                              |
+|          -> Embed chunks -> Store {vector + chunk text + metadata}                                                                             |
+|                                                                                                                                                |
+| OUTPUTS:                                                                                                                                       |
+| - Source-of-truth document store                                                                                                               |
+| - Vector database / ANN index                                                                                                                  |
+|                                                                                                                                                |
+| HARD RULE:                                                                                                                                     |
+| No ingestion -> no chunks -> empty vector DB -> no RAG retrieval                                                                               |
++================================================================================================================================================+
+
++----------------------------------------------------------------------+-------------------------------------------------------------------------+
+|                  EMBEDDINGS: TWO DIFFERENT STRUCTURES                |                            SYSTEM INVARIANTS                            |
++----------------------------------------------------------------------+-------------------------------------------------------------------------+
+| A. LLM INTERNAL TOKEN EMBEDDING MATRIX                               | NO MAGIC DATA INVARIANT:                                                |
+| - part of model weights                                              | If a source was not trained into model weights and was not ingested     |
+| - rows = vocabulary tokens                                           | into retrieval storage, the system cannot retrieve it.                  |
+| - columns = hidden dimensions                                        |                                                                         |
+| - used for model computation / generation                            |-------------------------------------------------------------------------|
+|                                                                      | EMBEDDING CONSISTENCY RULE:                                             |
+| B. RAG CHUNK EMBEDDINGS                                              | The embedding model used to index chunks must match the embedding       |
+| - one vector per chunk / passage                                     | model used for query search. Changing the embedding model requires      |
+| - generated by embedding model                                       | re-embedding the corpus.                                                |
+| - stored externally in vector DB                                     |                                                                         |
+| - used only for retrieval                                            |                                                                         |
+|                                                                      |                                                                         |
+| RULE: Vector DB does not store token rows from the LLM embedding     |                                                                         |
+| matrix. It stores final chunk-level vectors + text + metadata.       |                                                                         |
++----------------------------------------------------------------------+-------------------------------------------------------------------------+
+
++----------------------------------------------------------------------+-------------------------------------------------------------------------+
+|                            VECTOR DB RECORD                          |                          SEMANTIC CACHE RECORD                          |
++----------------------------------------------------------------------+-------------------------------------------------------------------------+
+| {                                                                    | {                                                                       |
+|   chunk_id,                                                          |   query_text,                                                           |
+|   doc_id,                                                            |   query_embedding,                                                      |
+|   chunk_text,                                                        |   cached_response,                                                      |
+|   embedding_vector,                                                  |   metadata: {model, version, timestamp, threshold}                      |
+|   metadata: {source, page, timestamp, tags}                          | }                                                                       |
+| }                                                                    |                                                                         |
+|                                                                      | PURPOSE:                                                                |
+| SEARCH ON:                                                           | reuse prior computation                                                 |
+| - embedding_vector                                                   |                                                                         |
+|                                                                      | NOT:                                                                    |
+| RETURN TO RUNTIME:                                                   | document storage                                                        |
+| - chunk_text + metadata + score                                      |                                                                         |
++----------------------------------------------------------------------+-------------------------------------------------------------------------+
+
++------------------------------------------------------------------------------------------------------------------------------------------------+
+|                                                     L1 vs L2 CACHE DEFINITIONS (PRE-CASCADE)                                                   |
++------------------------------------------------------------------------------------------------------------------------------------------------+
+| L1 = EXACT CACHE (Redis KV / hash lookup)                            | L2 = SEMANTIC CACHE                                                     |
+| - exact normalized key match                                         | - query embedding similarity                                            |
+| - no embeddings required                                             | - stores prior query -> response artifacts                              |
+|                                                                      | - thresholded reuse                                                     |
++------------------------------------------------------------------------------------------------------------------------------------------------+
+
+
 [ START: INBOUND USER QUERY ]
           |
           v
@@ -35,7 +116,7 @@
 +-----------------------+
 
 
-1. REDIS (EXACT MATCH)         2. SEMANTIC CACHING            3. SEMANTIC RETRIEVAL (RAG)    4. AGENTIC ACTION (TOOL USE)
+1. L1: EXACT CACHE (REDIS KV)  2. L2: SEMANTIC CACHE          3. SEMANTIC RETRIEVAL (RAG)    4. AGENTIC ACTION (TOOL USE)
 (Simplest: Literal Match)      (Intermediate: Safe Reuse)     (Complex: Broad Recall)        (Most Complex: Execute & Mutate)
 
 MENTAL MODEL                   MENTAL MODEL                   MENTAL MODEL                   MENTAL MODEL
