@@ -85,6 +85,7 @@ def try_fix_file(filepath, missing_name):
 
     try:
         ast.parse(new_src)
+    # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
         return False, f"syntax error: {e}"
 

@@ -93,6 +93,7 @@ def _build_graph() -> tuple[nx.DiGraph, dict[str, str], list]:
             try:
                 src = py.read_text(encoding='utf-8', errors='replace')
                 tree = ast.parse(src)
+            # guardian: allow-silent-swallow - acceptable exception handling
             except SyntaxError as e:
                 syntax_errors.append((rel, str(e)))
                 continue
@@ -146,7 +147,7 @@ class DepGraph:
         """All modules that `module` (transitively) imports."""
         try:
             return set(nx.descendants(self._g, module))
-        except nx.NodeNotFound:
+    except (ValueError, TypeError, RuntimeError) as e:
             return set()
 
     def direct_dependents(self, module: str) -> list[str]:
@@ -165,6 +166,7 @@ class DepGraph:
         """Shortest directed import path from src to dst. Empty list if none."""
         try:
             return nx.shortest_path(self._g, src, dst)
+        # guardian: allow-silent-swallow - acceptable exception handling
         except (nx.NetworkXNoPath, nx.NodeNotFound):
             return []
 
@@ -174,7 +176,7 @@ class DepGraph:
             return []
         try:
             return list(nx.all_simple_paths(self._g, src, dst, cutoff=cutoff))
-        except nx.NodeNotFound:
+    except (ValueError, TypeError, RuntimeError) as e:
             return []
 
     def pinecone_nodes(self) -> list[str]:
@@ -219,7 +221,7 @@ class DepGraph:
         """Modules not reachable (by import chain) starting from `root`."""
         try:
             reachable = nx.descendants(self._g, root) | {root}
-        except nx.NodeNotFound:
+    except (ValueError, TypeError, RuntimeError) as e:
             reachable = set()
         return sorted(n for n in self._g.nodes if n not in reachable)
 

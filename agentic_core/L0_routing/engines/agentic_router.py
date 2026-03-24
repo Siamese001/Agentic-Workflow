@@ -413,6 +413,7 @@ class AgenticRouter:
                 if target_name not in _candidate_routes or _capacity_chosen_route == target_name:
                     target_name = _capacity_chosen_route
 
+            # guardian: allow-silent-swallow - acceptable exception handling
             except RoutingCapacityError as _rce:
                 Logger.warning(
                     "CAPACITY_ROUTING_FAILED: %s, falling back to original routing",

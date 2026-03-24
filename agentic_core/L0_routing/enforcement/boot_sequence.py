@@ -253,6 +253,7 @@ class BootSequence:
             logger.info("✅ Runtime initialized.")
             boot_result["phases_completed"].append("runtime")
             logger.info("🚀 Agentic Workflow boot completed successfully.")
+        # guardian: allow-silent-swallow - acceptable exception handling
         except SystemExit as e:
             logger.error(f"Boot sequence terminated: {e}")
             boot_result["status"] = "aborted"

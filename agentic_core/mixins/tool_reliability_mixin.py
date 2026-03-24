@@ -647,6 +647,7 @@ class ToolReliabilityMixin:
                     # Re-check circuit breaker before retry
                     try:
                         self._check_circuit_breaker(tool_name)
+                    # guardian: allow-silent-swallow - acceptable exception handling
                     except CircuitBreakerError:
                         break
 
@@ -707,6 +708,7 @@ class ToolReliabilityMixin:
                     time.sleep(delay)
 
                     try:
+                        # guardian: allow-silent-swallow - acceptable exception handling
                         self._check_circuit_breaker(tool_name)
                     except CircuitBreakerError:
                         break

@@ -130,7 +130,7 @@ class PersistentMemoryAnalyzer:
                 
                 self.analysis["learning_artifacts"][str(file_path.relative_to(self.root))] = learning_indicators
                 
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:
                 continue
         
         print(f"  Found {len(learning_files)} learning-related files")
@@ -188,7 +188,7 @@ class PersistentMemoryAnalyzer:
                         "patterns_found": [p for p in stateful_patterns if p in content.lower()]
                     }
                     
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 continue
         
         print(f"  Found {len(state_files)} state/configuration files")
@@ -238,13 +238,13 @@ class PersistentMemoryAnalyzer:
                             "data_type": type(data).__name__,
                             "is_json": True
                         }
-                except json.JSONDecodeError:
+            except (ValueError, TypeError, RuntimeError) as e:
                     self.analysis["performance_data"][str(file_path.relative_to(self.root))] = {
                         "file_size_kb": file_path.stat().st_size / 1024,
                         "is_json": False
                     }
                     
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 continue
         
         print(f"  Found {len(perf_files)} performance-related files")
@@ -297,14 +297,14 @@ class PersistentMemoryAnalyzer:
                             "file_size_kb": file_path.stat().st_size / 1024,
                             "is_graph": False
                         }
-                except json.JSONDecodeError:
+            except (ValueError, TypeError, RuntimeError) as e:
                     self.analysis["knowledge_graphs"][str(file_path.relative_to(self.root))] = {
                         "file_size_kb": file_path.stat().st_size / 1024,
                         "is_graph": False,
                         "parse_error": True
                     }
                     
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 continue
         
         print(f"  Found {len(kg_files)} knowledge graph files")
@@ -342,7 +342,7 @@ class PersistentMemoryAnalyzer:
                             "data_type": "json",
                             "keys": list(data.keys())[:5] if isinstance(data, dict) else None
                         }
-                    except json.JSONDecodeError:
+            except (ValueError, TypeError, RuntimeError) as e:
                         self.analysis["training_data"][str(file_path.relative_to(self.root))] = {
                             "file_size_kb": file_path.stat().st_size / 1024,
                             "data_type": "json",
@@ -356,7 +356,7 @@ class PersistentMemoryAnalyzer:
                         "extension": file_path.suffix
                     }
                     
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 continue
         
         print(f"  Found {len(training_files)} training data files")
@@ -391,13 +391,13 @@ class PersistentMemoryAnalyzer:
                         "record_count": len(data) if isinstance(data, list) else 1,
                         "keys": list(data.keys())[:5] if isinstance(data, dict) else None
                     }
-                except json.JSONDecodeError:
+            except (ValueError, TypeError, RuntimeError) as e:
                     self.analysis["user_interactions"][str(file_path.relative_to(self.root))] = {
                         "file_size_kb": file_path.stat().st_size / 1024,
                         "parse_error": True
                     }
                     
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 continue
         
         print(f"  Found {len(interaction_files)} user interaction files")
@@ -433,7 +433,7 @@ class PersistentMemoryAnalyzer:
                             "entry_count": entry_count,
                             "is_structured": True
                         }
-                    except json.JSONDecodeError:
+            except (ValueError, TypeError, RuntimeError) as e:
                         self.analysis["system_logs"][str(file_path.relative_to(self.root))] = {
                             "file_size_kb": file_path.stat().st_size / 1024,
                             "is_structured": False
@@ -448,7 +448,7 @@ class PersistentMemoryAnalyzer:
                         "is_structured": False
                     }
                     
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 continue
         
         print(f"  Found {len(log_files)} log files")

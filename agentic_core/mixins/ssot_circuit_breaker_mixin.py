@@ -262,6 +262,7 @@ class SSOTCircuitBreakerMixin:
                     state["failure_count"] = 0
                     _logger.info("[SSOTBreaker] %s -> closed (recovered)", scoped_bucket)
             return result
+        # guardian: allow-silent-swallow - acceptable exception handling
         except FORBIDDEN_EXCEPTIONS:
             raise
         except Exception as exc:

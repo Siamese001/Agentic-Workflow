@@ -242,7 +242,7 @@ def analyze_file(file_path: Path) -> dict:
             'violations': threshold_count,
             'can_fix': threshold_count > 0,
         }
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         return {
             'file': str(file_path.relative_to(PROJECT_ROOT)),
             'error': str(e),

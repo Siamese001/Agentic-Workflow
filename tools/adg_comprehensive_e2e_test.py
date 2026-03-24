@@ -116,7 +116,7 @@ class ADGComprehensiveE2ETest:
             print(f"  Cached modules: {module_count:,}")
             print(f"  Cache timestamp: {result['details']['cache_timestamp']}")
 
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             result["success"] = False
             result["details"]["error"] = str(e)
             print(f"  Cache verification failed: {e}")
@@ -165,11 +165,11 @@ class ADGComprehensiveE2ETest:
             print(f"  Cache used: ✅")
             print(f"  Generation timestamp: {self.timestamp}")
 
-        except subprocess.TimeoutExpired:
+        except (ValueError, TypeError, RuntimeError) as e:
             result["success"] = False
             result["details"]["error"] = "ADG generation timed out after 10 minutes"
             print("  ADG generation timed out")
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             result["success"] = False
             result["details"]["error"] = str(e)
             print(f"  ADG generation failed: {e}")
@@ -292,7 +292,7 @@ class ADGComprehensiveE2ETest:
 
             conn.close()
 
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             result["success"] = False
             result["details"]["error"] = str(e)
             print(f"  Database integrity test failed: {e}")
@@ -339,7 +339,7 @@ class ADGComprehensiveE2ETest:
                         "keys": list(report_data.keys())
                     }
 
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:
                 report_results[report_name] = {"status": "error", "error": str(e)}
 
         result["details"] = report_results
@@ -393,7 +393,7 @@ class ADGComprehensiveE2ETest:
             print(f"  Cache hit rate: {cache_hit_rate:.1f}%")
             print(f"  Effectiveness: {result['details']['cache_effectiveness']}")
 
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             result["success"] = False
             result["details"]["error"] = str(e)
             print(f"  Cache performance test failed: {e}")
@@ -446,7 +446,7 @@ class ADGComprehensiveE2ETest:
                 status = "PASS" if check_result.get("success", False) else "FAIL"
                 print(f"    {status}: {check_name.upper()}")
 
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             result["success"] = False
             result["details"]["error"] = str(e)
             print(f"  Precision pass test failed: {e}")

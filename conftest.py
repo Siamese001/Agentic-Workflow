@@ -43,7 +43,7 @@ def _build_adg_index():
         scanner = ADGStaticScanner(include_tests=True)
         result = scanner.scan()
         return ADGIndex(result)
-    except Exception as exc:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"[ADG conftest] index build failed: {exc}", file=sys.stderr)
         return None
 

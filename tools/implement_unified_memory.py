@@ -265,7 +265,7 @@ class UnifiedMemoryManager:
                 logger.info(f"Stored model checkpoint: {checkpoint.model_name} v{checkpoint.version}")
                 return model_id
                 
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:
                 logger.error(f"Failed to store model checkpoint: {e}")
                 raise
     
@@ -308,7 +308,7 @@ class UnifiedMemoryManager:
             logger.info(f"Loaded model checkpoint: {model_name} v{version}")
             return checkpoint
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Failed to load model checkpoint: {e}")
             return None
     
@@ -336,7 +336,7 @@ class UnifiedMemoryManager:
             logger.info(f"Stored embedding: {embedding.entity_id} ({embedding.entity_type})")
             return embedding_id
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Failed to store embedding: {e}")
             raise
     
@@ -370,7 +370,7 @@ class UnifiedMemoryManager:
             logger.info(f"Loaded embedding: {entity_id} ({entity_type})")
             return embedding
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Failed to load embedding: {e}")
             return None
     
@@ -401,7 +401,7 @@ class UnifiedMemoryManager:
             logger.info(f"Created training session: {session.session_id}")
             return session_id
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Failed to create training session: {e}")
             raise
     
@@ -437,7 +437,7 @@ class UnifiedMemoryManager:
             logger.info(f"Updated training session: {session_id}")
             return True
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Failed to update training session: {e}")
             return False
     
@@ -467,7 +467,7 @@ class UnifiedMemoryManager:
             logger.info(f"Stored learning experience: {experience.experience_type}")
             return experience_id
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Failed to store learning experience: {e}")
             raise
     
@@ -508,7 +508,7 @@ class UnifiedMemoryManager:
             logger.info(f"Retrieved {len(experiences)} learning experiences")
             return experiences
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Failed to get learning experiences: {e}")
             return []
     
@@ -535,7 +535,7 @@ class UnifiedMemoryManager:
             logger.info(f"Stored application state: {key}")
             return True
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Failed to store application state: {e}")
             return False
     
@@ -563,7 +563,7 @@ class UnifiedMemoryManager:
             else:
                 return state_blob.decode()
                 
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Failed to load application state: {e}")
             return None
     
@@ -584,7 +584,7 @@ class UnifiedMemoryManager:
             logger.info(f"Stored performance metric: {name} = {value} {unit or ''}")
             return metric_id
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Failed to store performance metric: {e}")
             raise
     
@@ -624,7 +624,7 @@ class UnifiedMemoryManager:
             logger.info(f"Retrieved {len(metrics)} performance metrics")
             return metrics
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Failed to get performance metrics: {e}")
             return []
     
@@ -652,13 +652,13 @@ class UnifiedMemoryManager:
                     cursor = self.conn.execute(f"SELECT MAX(created_at) as latest FROM {table}")
                     latest = cursor.fetchone()['latest']
                     stats[f"{table}_latest"] = latest
-                except sqlite3.OperationalError:
+            except (ValueError, TypeError, RuntimeError) as e:
                     # Skip tables without created_at column
                     continue
             
             return stats
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Failed to get database stats: {e}")
             return {}
     

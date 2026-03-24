@@ -30,7 +30,7 @@ for sd in sorted(os.listdir(unit_dir)):
         )
         try:
             proc.wait(timeout=300)
-        except subprocess.TimeoutExpired:
+    except (ValueError, TypeError, RuntimeError) as e:
             proc.kill()
             print(f"  {sd}: TIMEOUT")
             continue

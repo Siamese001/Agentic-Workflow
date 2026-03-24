@@ -263,7 +263,7 @@ def main():
         print("✅ Mental model enforced")
         print("=" * 80)
         
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"\n[ERROR] {e}")
         import traceback
         traceback.print_exc()

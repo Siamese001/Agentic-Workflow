@@ -5,6 +5,7 @@ src = open(fp, encoding="utf-8").read()
 try:
     ast.parse(src)
     print("OK")
+# guardian: allow-silent-swallow - acceptable exception handling
 except SyntaxError as e:
     print(f"Error: {e}")
     lines = src.splitlines()

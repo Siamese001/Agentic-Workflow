@@ -113,7 +113,7 @@ class ADGEndToEndTest:
             
             print(f"✅ DATABASE INTEGRITY: {'PASS' if success else 'FAIL'}")
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             result["success"] = False
             result["error"] = str(e)
             print(f"❌ DATABASE INTEGRITY: FAIL - {e}")
@@ -166,7 +166,7 @@ class ADGEndToEndTest:
             
             print(f"✅ LAYER DISTRIBUTION: {'PASS' if success else 'FAIL'}")
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             result["success"] = False
             result["error"] = str(e)
             print(f"❌ LAYER DISTRIBUTION: FAIL - {e}")
@@ -234,7 +234,7 @@ class ADGEndToEndTest:
             
             print(f"✅ EDGE CONNECTIVITY: {'PASS' if success else 'FAIL'}")
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             result["success"] = False
             result["error"] = str(e)
             print(f"❌ EDGE CONNECTIVITY: FAIL - {e}")
@@ -295,7 +295,7 @@ class ADGEndToEndTest:
             
             print(f"✅ SYSTEM DETERMINISM: {'PASS' if success else 'FAIL'}")
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             result["success"] = False
             result["error"] = str(e)
             print(f"❌ SYSTEM DETERMINISM: FAIL - {e}")
@@ -360,7 +360,7 @@ class ADGEndToEndTest:
             
             print(f"✅ ARTIFACT COMPLETENESS: {'PASS' if success else 'FAIL'}")
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             result["success"] = False
             result["error"] = str(e)
             print(f"❌ ARTIFACT COMPLETENESS: FAIL - {e}")
@@ -427,7 +427,7 @@ class ADGEndToEndTest:
             
             print(f"✅ PERFORMANCE METRICS: {'PASS' if success else 'FAIL'}")
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             result["success"] = False
             result["error"] = str(e)
             print(f"❌ PERFORMANCE METRICS: FAIL - {e}")

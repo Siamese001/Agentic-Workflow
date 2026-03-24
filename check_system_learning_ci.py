@@ -20,7 +20,7 @@ def check_adg_status():
         print(f"🔗 Edges: {data['edge_count']}")
         print(f"⏱️  Age: {data['age_seconds']:.1f}s")
         return data["is_fresh"]
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"❌ ADG Status Error: {e}")
         return False
 
@@ -55,7 +55,7 @@ def run_system_learning_tests():
         else:
             print(f"❌ Tests Failed: {result.stderr}")
             return False
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"❌ Test Error: {e}")
         return False
 

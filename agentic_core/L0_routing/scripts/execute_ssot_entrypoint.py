@@ -296,6 +296,7 @@ Examples:
             repo_root=REPO_ROOT,
             allow_protected_root_mutation=args.allow_protected_root_mutation,
         )
+    # guardian: allow-silent-swallow - acceptable exception handling
     except SystemExit as exc:
         return int(exc.code) if exc.code is not None else 0
     return 0

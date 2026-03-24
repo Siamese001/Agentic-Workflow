@@ -86,10 +86,11 @@ def _test_agent_file_autonomy(agent_file_path: str) -> None:
             print(f"COMPLIANT: Agent autonomy validated in {agent_file}")
             sys.exit(0)
 
+    # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
         print(f"VIOLATION: Syntax error in {agent_file}: {e}")
         sys.exit(1)
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"VIOLATION: Error processing {agent_file}: {e}")
         sys.exit(1)
 

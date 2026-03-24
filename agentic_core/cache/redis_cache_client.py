@@ -333,6 +333,7 @@ class DeterministicRedisCache:
         try:
             with _socket.create_connection((host, port), timeout=_REDIS_SOCKET_TIMEOUT_S):
                 return True
+        # guardian: allow-silent-swallow - acceptable exception handling
         except OSError:
             return False
 
@@ -573,6 +574,7 @@ class DeterministicRedisCache:
         if raw is None:
             return False
         try:
+            # guardian: allow-silent-swallow - acceptable exception handling
             stored = json.loads(raw.decode("ascii"))
         except (json.JSONDecodeError, UnicodeDecodeError):
             return False

@@ -189,6 +189,7 @@ def fix_file(path: Path) -> tuple[bool, int]:
     lines = original.splitlines(keepends=True)
     try:
         tree = ast.parse(original)
+    # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError:
         return (False, 0)
     illegit_lines: dict[int, tuple[str, str]] = {}

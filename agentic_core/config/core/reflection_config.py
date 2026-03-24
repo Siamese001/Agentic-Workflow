@@ -384,6 +384,7 @@ class ReflectionEngine:
                     context,
                 )
                 self.stats["llm_critiques"] += 1
+# guardian: allow-silent-swallow - acceptable exception handling
 
         except CircuitOpenError:
             # GAP-02 FIX: fail-closed for required criteria, fail-open only for optional

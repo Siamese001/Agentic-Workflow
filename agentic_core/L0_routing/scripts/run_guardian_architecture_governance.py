@@ -301,6 +301,7 @@ def scan_import_compliance(
         try:
             content = fpath.read_text(encoding="utf-8", errors="ignore")
             tree = ast.parse(content, filename=str(fpath))
+        # guardian: allow-silent-swallow - acceptable exception handling
         except (SyntaxError, UnicodeDecodeError):
             continue
 

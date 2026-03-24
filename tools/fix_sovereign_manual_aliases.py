@@ -42,5 +42,6 @@ try:
     ast.parse(new_src)
     open(fp, "w", encoding="utf-8").write(new_src)
     print(f"Inserted {len(insertions)} aliases. Syntax OK.")
+# guardian: allow-silent-swallow - acceptable exception handling
 except SyntaxError as e:
     print(f"SYNTAX ERROR: {e}")

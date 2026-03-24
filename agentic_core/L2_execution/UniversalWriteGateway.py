@@ -859,7 +859,7 @@ def append_to_file(path: str, content: str, **kwargs) -> MutationRecord | Simula
             new_content = content
 
         return gateway.write_through(path, new_content, **kwargs)
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         Logger.error(f"Append operation failed for {path}: {e}")
         raise
 
@@ -915,7 +915,7 @@ def atomic_write(path: str, data: Any, **kwargs) -> MutationRecord | SimulationR
             data=content,
             permitted=True,
         )
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         Logger.error(f"Atomic write failed for {path}: {e}")
         # Clean up temp file if it exists
         if temp_path.exists():
@@ -939,6 +939,6 @@ def write_pickle(path: str, obj: Any, **kwargs) -> MutationRecord | SimulationRe
     try:
         pickle_data = pickle.dumps(obj)
         return get_write_gateway().write_through(path, pickle_data, **kwargs)
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         Logger.error(f"Pickle write failed for {path}: {e}")
         raise

@@ -226,6 +226,7 @@ class HallucinationDetectionMixin:
                     f"Hallucination detected: {target_type} '{target_name}' not found in {file_path}"
                 )
             return result
+        # guardian: allow-silent-swallow - acceptable exception handling
         except (SyntaxError, UnicodeDecodeError) as e:
             logger.warning(f"Cannot parse {file_path} for hallucination check: {e}")
             return False

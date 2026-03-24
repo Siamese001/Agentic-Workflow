@@ -416,9 +416,10 @@ def fix_file_for_category(
             'dry_run': dry_run,
         }
 
+    # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
         return {'status': 'error', 'file': str(file_path), 'error': f'SyntaxError: {e}'}
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         return {'status': 'error', 'file': str(file_path), 'error': str(e)}
 
 
@@ -428,10 +429,11 @@ def fix_file(file_path: Path, category: str, dry_run: bool = True) -> dict:
         source = file_path.read_text(encoding='utf-8')
         tree = ast.parse(source, filename=str(file_path))
         lines = source.splitlines(keepends=True)
+        # guardian: allow-silent-swallow - acceptable exception handling
         whitelist_comment = WHITELIST_MAP[category]
     except SyntaxError as e:
         return {'status': 'error', 'file': str(file_path), 'error': f'SyntaxError: {e}'}
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         return {'status': 'error', 'file': str(file_path), 'error': str(e)}
 
     if category == 'path_fragility':

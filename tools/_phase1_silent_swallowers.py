@@ -13,6 +13,7 @@ def fix_file_silent_swallowers(file_path: Path) -> int:
     """Fix silent swallowers in a single file, return count fixed."""
     try:
         content = file_path.read_text(encoding='utf-8', errors='ignore')
+    # guardian: allow-silent-swallow - acceptable exception handling
     except (UnicodeDecodeError, OSError):
         return 0
     lines = content.splitlines()

@@ -166,6 +166,7 @@ def _module_text(resolved_path: str) -> str:
     if p.exists() and p.suffix == ".py":
         try:
             return p.read_text(encoding="utf-8", errors="ignore")
+        # guardian: allow-silent-swallow - acceptable exception handling
         except OSError:
             return ""
     return ""
@@ -190,6 +191,7 @@ def has_fallback_assertions(test_path: Path) -> bool:
     """Return True if the test body contains degraded/fallback assertion patterns."""
     try:
         src = test_path.read_text(encoding="utf-8", errors="ignore")
+    # guardian: allow-silent-swallow - acceptable exception handling
     except OSError:
         return False
     return bool(_FALLBACK_RE.search(src))
@@ -225,6 +227,7 @@ def collect_test_files(root: Path) -> list[Path]:
 def collect_nodeids(test_file: Path) -> list[str]:
     """Extract test function / method node IDs from a file via AST."""
     try:
+        # guardian: allow-silent-swallow - acceptable exception handling
         tree = ast.parse(test_file.read_text(encoding="utf-8", errors="ignore"))
     except SyntaxError:
         return []

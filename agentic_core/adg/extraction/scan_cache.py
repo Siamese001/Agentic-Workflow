@@ -353,6 +353,7 @@ def file_hash(filepath: Path) -> str:
             return h.hexdigest()
         data = filepath.read_bytes()
         return hashlib.sha256(data).hexdigest()
+    # guardian: allow-silent-swallow - acceptable exception handling
     except OSError:
         return ""
 

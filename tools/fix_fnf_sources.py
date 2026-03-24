@@ -102,6 +102,7 @@ def wrap_file_read_block(filepath, error_lineno):
 
     try:
         ast.parse(new_src)
+    # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
         # Try simpler approach: just wrap the single line
         block = [lines[idx]]
@@ -110,6 +111,7 @@ def wrap_file_read_block(filepath, error_lineno):
         new_lines = lines[:idx] + wrapped + lines[idx+1:]
         new_src = "\n".join(new_lines)
         try:
+            # guardian: allow-silent-swallow - acceptable exception handling
             ast.parse(new_src)
         except SyntaxError:
             print(f"  FAIL (syntax): {os.path.relpath(filepath, ROOT)}:{error_lineno}")

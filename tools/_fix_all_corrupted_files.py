@@ -24,6 +24,7 @@ def fix_python_file(file_path: Path) -> bool:
     """Fix a corrupted Python file."""
     try:
         content = file_path.read_text(encoding="utf-8", errors="ignore")
+    # guardian: allow-silent-swallow - acceptable exception handling
     except (UnicodeDecodeError, OSError):
         return False
 

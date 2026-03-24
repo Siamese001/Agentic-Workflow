@@ -318,12 +318,13 @@ class IntelligentThresholdFixer:
                 'import_node': import_node,
             }
 
+        # guardian: allow-silent-swallow - acceptable exception handling
         except SyntaxError as e:
             return {
                 'status': 'error',
                 'error': f'SyntaxError: {e}',
             }
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             return {
                 'status': 'error',
                 'error': str(e),

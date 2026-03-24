@@ -113,7 +113,7 @@ class ADGFinalGapValidator:
 
             # Check if dictionaries are sorted (JSON dump with sort_keys=True)
             return True  # Assuming reports are generated with sort_keys=True
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             return False
 
     # ==================== 2. CRITICAL PATH BOUNDARY ZERO-LEAK ====================

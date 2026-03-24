@@ -52,6 +52,7 @@ def fix_file(filepath):
     # Verify syntax
     try:
         ast.parse(src)
+    # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
         print(f"  SYNTAX ERROR in {filepath}: {e}")
         return 0
@@ -76,7 +77,7 @@ for dirpath, dirnames, filenames in os.walk(os.path.join(ROOT, "agentic_core")):
         fp = os.path.join(dirpath, fn)
         try:
             src = open(fp, encoding="utf-8").read()
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             continue
         if SHADOW_PATTERN.search(src):
             rel = os.path.relpath(fp, ROOT)

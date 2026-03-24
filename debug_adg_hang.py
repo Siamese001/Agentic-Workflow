@@ -110,7 +110,7 @@ def debug_scan(self, commit_sha=""):
         print("[DEBUG] Scan completed successfully!")
         return result
 
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"[DEBUG] ERROR during scan: {e}")
         traceback.print_exc()
         raise
@@ -160,6 +160,6 @@ if __name__ == "__main__":
     try:
         generate_full_adg(artifacts_dir, ts, archive_old=False)
         print("✅ ADG generation completed!")
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"❌ ADG generation failed: {e}")
         traceback.print_exc()

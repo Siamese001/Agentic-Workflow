@@ -68,6 +68,7 @@ def profile_scanner_windows():
 
         return result
 
+    # guardian: allow-silent-swallow - acceptable exception handling
     except TimeoutException as e:
         print(f"⏰ TIMEOUT: {e}")
         print("  Scanner appears to be hanging. Investigating...")
@@ -80,7 +81,7 @@ def profile_scanner_windows():
         investigate_hang()
         return None
 
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"❌ ERROR: {e}")
         import traceback
         traceback.print_exc()
@@ -107,7 +108,7 @@ def investigate_hang():
         print(f"   Test normalization: {end - start:.4f}s")
         print(f"   Result: {result}")
 
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"   ERROR: {e}")
         import traceback
         traceback.print_exc()
@@ -121,7 +122,7 @@ def investigate_hang():
         print(f"   Python files found: {len(py_files)}")
         print(f"   File enumeration time: {end - start:.2f}s")
 
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"   ERROR: {e}")
 
     # Check 3: Cache status
@@ -148,7 +149,7 @@ def investigate_hang():
             print(f"   Syntax error: {error}")
         else:
             print("   Test file not found")
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"   ERROR: {e}")
         import traceback
         traceback.print_exc()

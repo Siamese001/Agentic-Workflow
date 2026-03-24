@@ -113,9 +113,9 @@ class LearningDataCollector:
                 # Process event
                 self._process_learning_event(event)
                 
-            except queue.Empty:
+        except (ValueError, TypeError, RuntimeError) as e:
                 continue
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:
                 logger.error(f"Error in collection loop: {e}")
     
     def _signal_loop(self):
@@ -128,9 +128,9 @@ class LearningDataCollector:
                 # Process signal
                 self._process_learning_signal(signal)
                 
-            except queue.Empty:
+            except (ValueError, TypeError, RuntimeError) as e:
                 continue
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:
                 logger.error(f"Error in signal loop: {e}")
     
     def _process_learning_event(self, event: LearningEvent):
@@ -144,7 +144,7 @@ class LearningDataCollector:
                 # Default handler
                 self._default_event_handler(event)
                 
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Error processing learning event {event.event_type}: {e}")
     
     def _process_learning_signal(self, signal: LearningSignal):
@@ -162,7 +162,7 @@ class LearningDataCollector:
                 # Default signal handler
                 self._default_signal_handler(signal)
                 
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Error processing learning signal {signal.signal_type}: {e}")
     
     def _default_event_handler(self, event: LearningEvent):
@@ -267,7 +267,7 @@ class FileSystemLearningMonitor(FileSystemEventHandler):
             
             self.data_collector.emit_learning_event(event)
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Error handling file change {file_path}: {e}")
 
 class ComponentLearningIntegrator:
@@ -346,7 +346,7 @@ class ComponentLearningIntegrator:
                 
                 return result
                 
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:
                 # Create error learning event
                 end_time = datetime.now()
                 duration = (end_time - start_time).total_seconds()
@@ -499,7 +499,7 @@ class AutomatedLearningPipeline:
                     # Sleep for configured interval
                     time.sleep(self.config["collection_interval_seconds"])
                     
-                except Exception as e:
+                except (ValueError, TypeError, RuntimeError) as e:
                     logger.error(f"Error in periodic collection: {e}")
                     self.stats["errors_count"] += 1
         
@@ -585,7 +585,7 @@ class AutomatedLearningPipeline:
         # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             # psutil not available
-            pass
+        except (ValueError, TypeError, RuntimeError) as e:
         except Exception as e:
             logger.error(f"Error collecting system metrics: {e}")
     
@@ -601,7 +601,7 @@ class AutomatedLearningPipeline:
                 data=stats,
                 priority="MEDIUM"
             )
-            
+        except (ValueError, TypeError, RuntimeError) as e:
         except Exception as e:
             logger.error(f"Error collecting learning progress: {e}")
     
@@ -611,7 +611,7 @@ class AutomatedLearningPipeline:
             # Clean up expired application state
             # This would be implemented in the memory manager
             pass
-            
+        except (ValueError, TypeError, RuntimeError) as e:
         except Exception as e:
             logger.error(f"Error during cleanup: {e}")
     
@@ -652,7 +652,7 @@ def learning_enabled(method_name: str = None, priority: str = "MEDIUM"):
                             "kwargs_keys": list(kwargs.keys())
                         },
                         priority=priority
-                    )
+            except (ValueError, TypeError, RuntimeError) as e:
             except:
                 pass  # Pipeline not available
             

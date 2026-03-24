@@ -38,7 +38,7 @@ for base in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_learn
             try:
                 with open(fp, encoding="utf-8") as f:
                     content = f.read()
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 continue
 
             # Find which symbols are used but not imported

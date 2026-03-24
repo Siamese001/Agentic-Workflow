@@ -114,14 +114,14 @@ if archive_files:
 
                         conn.close()
 
-                    except Exception as e:
+                    except (ValueError, TypeError, RuntimeError) as e:
                         print(f"  Error reading SQLite: {e}")
 
                     # Clean up
                     if temp_sqlite.exists():
                         temp_sqlite.unlink()
 
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"Error analyzing archive: {e}")
 
 # 3. Archive storage format explanation

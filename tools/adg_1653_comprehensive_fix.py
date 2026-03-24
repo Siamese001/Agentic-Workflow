@@ -113,7 +113,7 @@ class ADG1653ComprehensiveFix:
             """)
 
             return True
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             print(f"    Error fixing layers: {e}")
             return False
 
@@ -136,7 +136,7 @@ class ADG1653ComprehensiveFix:
                 WHERE identity_kind = '' OR identity_kind IS NULL
             """)
             return True
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             print(f"    Error fixing identities: {e}")
             return False
 
@@ -177,7 +177,7 @@ class ADG1653ComprehensiveFix:
                 WHERE edge_kind = '' OR edge_kind IS NULL
             """)
             return True
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             print(f"    Error fixing edge classifications: {e}")
             return False
 
@@ -228,7 +228,7 @@ class ADG1653ComprehensiveFix:
             """)
 
             return True
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             print(f"    Error adding missing relations: {e}")
             return False
 

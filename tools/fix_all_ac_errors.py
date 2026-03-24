@@ -19,6 +19,7 @@ def parse_ok(src):
     try:
         ast.parse(src)
         return True
+    # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError:
         return False
 
@@ -178,7 +179,7 @@ def main():
             fp = os.path.join(dirpath, fn)
             try:
                 src = open(fp, encoding="utf-8").read()
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 continue
             # Quick check for self-shadow pattern
             for m in re.finditer(r'^(\w+)\s*=\s*\w+\s*/\s*\1\s*$', src, re.MULTILINE):

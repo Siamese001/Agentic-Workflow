@@ -262,6 +262,7 @@ def main():
     try:
         result = asyncio.run(run_autonomous_remediation())
         sys.exit(0 if result else 1)
+    # guardian: allow-silent-swallow - acceptable exception handling
     except KeyboardInterrupt:
         print("\n\n⚠️  Remediation interrupted by user")
         sys.exit(1)

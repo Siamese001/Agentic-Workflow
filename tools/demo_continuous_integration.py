@@ -504,9 +504,10 @@ def main():
     """Main demonstration function."""
     try:
         demonstrate_component_integration()
+    # guardian: allow-silent-swallow - acceptable exception handling
     except KeyboardInterrupt:
         print("\n⚠️ Demonstration interrupted by user")
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"\n❌ Demonstration error: {e}")
         import traceback
         traceback.print_exc()

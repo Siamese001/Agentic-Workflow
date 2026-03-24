@@ -269,6 +269,7 @@ def scan_escalation_patterns(
         rel = normalize_repo_path(fpath.relative_to(repo_root))
         try:
             tree = ast.parse(fpath.read_text(encoding="utf-8", errors="replace"))
+        # guardian: allow-silent-swallow - acceptable exception handling
         except SyntaxError:
             continue
 

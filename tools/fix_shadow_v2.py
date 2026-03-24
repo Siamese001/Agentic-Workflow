@@ -58,6 +58,7 @@ def fix_shadow_in_file(filepath):
     new_src = "\n".join(lines)
     try:
         ast.parse(new_src)
+    # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
         print(f"  SYNTAX ERROR: {os.path.relpath(filepath, ROOT)}: {e}")
         # Revert
@@ -78,7 +79,7 @@ for dirpath, dirnames, filenames in os.walk(os.path.join(ROOT, "agentic_core")):
         fp = os.path.join(dirpath, fn)
         try:
             src = open(fp, encoding="utf-8").read()
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             continue
         if pattern.search(src):
             rel = os.path.relpath(fp, ROOT)

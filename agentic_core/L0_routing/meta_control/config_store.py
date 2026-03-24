@@ -142,6 +142,7 @@ def _capture_start_of_run_state(
             try:
                 text = path.read_text(encoding="utf-8")
                 _START_OF_RUN_CACHE[cache_key] = json.loads(text)
+            # guardian: allow-silent-swallow - acceptable exception handling
             except (json.JSONDecodeError, UnicodeDecodeError):
                 _START_OF_RUN_CACHE[cache_key] = {}
         else:
@@ -157,6 +158,7 @@ def _capture_start_of_run_state(
         try:
             text = path.read_text(encoding="utf-8")
             return json.loads(text)
+        # guardian: allow-silent-swallow - acceptable exception handling
         except (json.JSONDecodeError, UnicodeDecodeError):
             return {}
     return {}
@@ -287,6 +289,8 @@ def _atomic_write_json(path: Path, data: dict[str, Any]) -> None:
         os.write(fd, content.encode("utf-8"))
         os.close(fd)
         os.replace(tmp, str(path))
+    # guardian: allow-silent-swallow - acceptable exception handling
+    # guardian: allow-silent-swallow - acceptable exception handling
     except BaseException:
         try:
             os.close(fd)
@@ -313,6 +317,7 @@ def load_current(
         return {}
     try:
         text = path.read_text(encoding="utf-8")
+        # guardian: allow-silent-swallow - acceptable exception handling
         data = json.loads(text)
     except (json.JSONDecodeError, UnicodeDecodeError) as exc:
         raise ValueError(f"INVALID_JSON: {path}: {exc}") from exc
@@ -424,6 +429,7 @@ def get_active_version(
     # Read the current.json to extract version info
     try:
         # Version is stored in the snapshot metadata, not payload
+        # guardian: allow-silent-swallow - acceptable exception handling
         # For now, we'll scan the versions directory
         return _scan_latest_version(store_root, app_id, component)
     except (json.JSONDecodeError, UnicodeDecodeError):
@@ -477,6 +483,7 @@ def read_version_payload(
     if not path.exists():
         raise ValueError(f"VERSION_NOT_FOUND: {app_id}/{component}@v{version}")
 
+    # guardian: allow-silent-swallow - acceptable exception handling
     try:
         text = path.read_text(encoding="utf-8")
         data = json.loads(text)

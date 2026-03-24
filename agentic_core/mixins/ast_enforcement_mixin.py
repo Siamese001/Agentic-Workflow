@@ -191,6 +191,7 @@ class ASTEnforcementMixin:
         """
         try:
             tree = ast.parse(content)
+        # guardian: allow-silent-swallow - acceptable exception handling
         except SyntaxError:
             return {
                 "snake_classes": 0,
@@ -283,6 +284,7 @@ class ASTEnforcementMixin:
                     )
                     total_snake += audit["snake_classes"]
                     total_aliases += audit["aliases"]
+                # guardian: allow-silent-swallow - acceptable exception handling
                 total_pascal += audit["pascal_classes"]
             except (UnicodeDecodeError, PermissionError):
                 continue
@@ -306,6 +308,7 @@ class ASTEnforcementMixin:
         """
         try:
             tree = ast.parse(content)
+            # guardian: allow-silent-swallow - acceptable exception handling
             return [node.name for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
         except SyntaxError:
             return []

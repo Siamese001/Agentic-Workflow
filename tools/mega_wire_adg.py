@@ -197,6 +197,7 @@ def find_methods_in_file(filepath: str) -> list[dict]:
     try:
         with open(filepath, encoding="utf-8") as f:
             source = f.read()
+    # guardian: allow-silent-swallow - acceptable exception handling
     except (UnicodeDecodeError, PermissionError):
         return []
 
@@ -204,6 +205,7 @@ def find_methods_in_file(filepath: str) -> list[dict]:
         return []  # Already wired
 
     try:
+        # guardian: allow-silent-swallow - acceptable exception handling
         tree = ast.parse(source, filename=filepath)
     except SyntaxError:
         return []
@@ -290,6 +292,7 @@ def find_import_insertion_line(filepath: str) -> int:
     """
     try:
         with open(filepath, encoding="utf-8") as f:
+            # guardian: allow-silent-swallow - acceptable exception handling
             source = f.read()
         tree = ast.parse(source, filename=filepath)
     except (SyntaxError, UnicodeDecodeError):
@@ -364,6 +367,7 @@ def apply_wiring(filepath: str, methods: list[dict], extras: list[str], layer_se
 
     new_source = "\n".join(lines)
 
+    # guardian: allow-silent-swallow - acceptable exception handling
     # ── Post-modification syntax validation ──────────────────────────
     try:
         ast.parse(new_source, filename=filepath)

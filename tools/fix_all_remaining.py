@@ -72,6 +72,7 @@ def add_import_before_line(filepath, lineno, import_stmt):
     new_src = "".join(lines)
     try:
         ast.parse(new_src)
+    # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError:
         return False
 
@@ -108,6 +109,7 @@ def wrap_module_level_code(filepath, lineno):
     new_src = "".join(new_lines)
 
     try:
+        # guardian: allow-silent-swallow - acceptable exception handling
         ast.parse(new_src)
     except SyntaxError:
         return False

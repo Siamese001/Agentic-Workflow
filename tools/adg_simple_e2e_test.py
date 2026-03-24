@@ -142,7 +142,7 @@ class ADGSimpleE2ETest:
 
             conn.close()
 
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             result["success"] = False
             result["details"]["error"] = str(e)
             print(f"  Database access failed: {e}")
@@ -220,7 +220,7 @@ class ADGSimpleE2ETest:
             print(f"  Database: {db_path.name}")
             print(f"  Checks passed: {result['details']['checks_passed']}/{result['details']['total_checks']}")
 
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             result["success"] = False
             result["details"]["error"] = str(e)
             print(f"  Precision pass test failed: {e}")
@@ -261,7 +261,7 @@ class ADGSimpleE2ETest:
                     cur.execute(query)
                     results = cur.fetchall()
                     query_results[query_name] = results
-                except Exception as e:
+                except (ValueError, TypeError, RuntimeError) as e:
                     query_results[query_name] = f"Error: {e}"
 
             result["details"] = {
@@ -282,7 +282,7 @@ class ADGSimpleE2ETest:
 
             conn.close()
 
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             result["success"] = False
             result["details"]["error"] = str(e)
             print(f"  Basic queries test failed: {e}")

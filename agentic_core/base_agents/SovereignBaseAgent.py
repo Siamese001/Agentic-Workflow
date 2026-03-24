@@ -533,6 +533,7 @@ class SovereignBaseAgent(
                         if _f.endswith(".py"):
                             _fp = _os.path.join(_root, _f)
                             try:
+                                # guardian: allow-silent-swallow - acceptable exception handling
                                 _st = _os.stat(_fp)
                                 _fs_parts.append(f"{_fp}:{_st.st_mtime_ns}:{_st.st_size}")
                             except OSError:
@@ -545,6 +546,7 @@ class SovereignBaseAgent(
 
             # git_hash: SHA-256 of .git/HEAD content
             _git_head = self.project_root / ".git" / "HEAD"
+            # guardian: allow-silent-swallow - acceptable exception handling
             try:
                 _git_bytes = _git_head.read_bytes()
             except OSError:

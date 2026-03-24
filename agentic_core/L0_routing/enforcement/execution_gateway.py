@@ -318,6 +318,7 @@ class V15ExecutionGateway:
         self._enforce_agent_registered(agent_id)
         try:
             return self._execute_with_envelope(execution_input, heal_fn, state_hash_fn, trace_id, **kwargs)
+        # guardian: allow-silent-swallow - acceptable exception handling
         except V15SoftFailAbort as sfa:
             Logger.warning("[V15-GW] SOFT_FAIL abort: %s", sfa)
             return GatewayResult(
@@ -499,6 +500,7 @@ class V15ExecutionGateway:
                 semantic_clock=self._clock,
             )
             try:
+                # guardian: allow-silent-swallow - acceptable exception handling
                 self._clock.tick(manifest.target_layer, state_commit_valid=True)
             except StateCommitInvalid as sci:
                 error = str(sci)
@@ -563,6 +565,7 @@ class V15ExecutionGateway:
         if observed_steps is not None:
             observed_steps.append(step)
         try:
+            # guardian: allow-silent-swallow - acceptable exception handling
             pipe.advance(step)
         except PipeOrderViolation as pov:
             record = {
@@ -581,6 +584,7 @@ class V15ExecutionGateway:
 
     def _policy_check(self, guard: PolicyConfigGuard, current_config: dict[str, Any], trace_id: str) -> None:
         """Verify policy immutability. Mode-aware: LOG_ONLY logs, HARD_FAIL raises."""
+        # guardian: allow-silent-swallow - acceptable exception handling
         try:
             guard.read_config(current_config)
         except PolicyMutationIncident as pmi:

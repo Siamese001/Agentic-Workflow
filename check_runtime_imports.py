@@ -25,7 +25,7 @@ for src, file, line, symbol in violations:
             lines = f.readlines()
             if line <= len(lines):
                 print(f'  Code: {lines[line-1].strip()}')
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f'  Could not read file: {e}')
 
 # Check what layers these imports should go to
@@ -56,7 +56,7 @@ try:
     else:
         print('No obvious runtime imports found')
         
-except Exception as e:
+except (ValueError, TypeError, RuntimeError) as e:
     print(f'Error analyzing file: {e}')
 
 conn.close()

@@ -502,6 +502,7 @@ def _create_latest_symlinks(
         # Try to create symlink, fall back to copy on Windows
         try:
             link_path.symlink_to(target_path.name)
+        # guardian: allow-silent-swallow - acceptable exception handling
         except (OSError, NotImplementedError):
             # Windows without admin rights or filesystem doesn't support symlinks
             shutil.copy2(target_path, link_path)

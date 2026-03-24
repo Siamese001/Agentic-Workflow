@@ -34,7 +34,7 @@ for scan_dir in SCAN_DIRS:
             try:
                 with open(fpath, encoding="utf-8") as f:
                     content = f.read()
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 continue
 
             # Check which syms are used but not properly imported

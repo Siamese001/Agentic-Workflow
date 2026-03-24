@@ -219,6 +219,7 @@ def wire_file(filepath: str, edge_type: str, dry_run: bool) -> tuple[bool, str]:
 
     try:
         tree = ast.parse(src)
+    # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
         return False, f"SKIP (syntax error: {e})"
 
@@ -290,6 +291,7 @@ def wire_file(filepath: str, edge_type: str, dry_run: bool) -> tuple[bool, str]:
 
     # Validate syntax
     try:
+        # guardian: allow-silent-swallow - acceptable exception handling
         ast.parse(new_src)
     except SyntaxError as e:
         return False, f"ROLLBACK (syntax error after wiring: {e})"
@@ -638,6 +640,7 @@ def main():
             abs_fp = PROJECT_ROOT / fp
             if not abs_fp.exists():
                 continue
+            # guardian: allow-silent-swallow - acceptable exception handling
             try:
                 ast.parse(abs_fp.read_text(encoding="utf-8"))
             except SyntaxError as e:

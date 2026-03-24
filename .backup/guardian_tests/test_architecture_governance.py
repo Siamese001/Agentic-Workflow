@@ -70,7 +70,7 @@ def check_gravity_violations(file_path: Path) -> list[str]:
                                     f"Gravity violation: {current_layer} (L{current_level}) "
                                     f"importing from {imported_layer} (L{imported_level})"
                                 )
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         violations.append(f"Error parsing file: {e}")
 
     return violations
@@ -109,7 +109,7 @@ def check_naming_convention(file_path: Path) -> list[str]:
                 f"Naming violation: File contains agent classes {agent_classes} "
                 f"but doesn't end with 'Agent.py'"
             )
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         # Syntax errors are not naming violations
         pass
 

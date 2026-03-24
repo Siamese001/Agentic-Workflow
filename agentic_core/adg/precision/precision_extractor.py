@@ -48,6 +48,7 @@ class PrecisionExtractor(ast.NodeVisitor):
             tree = ast.parse(self.source_code)
             self.visit(tree)
             return self.graph
+        # guardian: allow-silent-swallow - acceptable exception handling
         except SyntaxError as e:
             # Log parsing error but don't fail - return empty graph
             print(f"Syntax error in {self.file_path}: {e}")

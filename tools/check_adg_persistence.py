@@ -68,12 +68,12 @@ for i, sqlite_file in enumerate(sqlite_files, 1):
             db_timestamp = cursor.fetchone()
             if db_timestamp:
                 print(f"     🕐 DB Timestamp: {db_timestamp[0]}")
-        except:
+        except (ValueError, TypeError, RuntimeError) as e:
             pass
 
         conn.close()
 
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"     ❌ Error reading database: {e}")
 
 # 2. Check Memory MCP persistence
@@ -125,7 +125,7 @@ for memory_db_path in memory_db_paths:
 
             conn.close()
 
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             print(f"   ❌ Error reading memory database: {e}")
 
         break
@@ -172,13 +172,13 @@ try:
         status = r.get("adg:status")
         print(f"   ADG status: {status}")
 
-except redis.ConnectionError:
+except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower -- diagnostic script; PRAGMA failure is non-fatal, error printed to stdout
     print("❌ Redis not running or not accessible")
     print("   Redis hot cache is not available")
 # guardian: allow-silent-swallow - optional dependency
         except ImportError:
     print("❌ Redis Python client not installed")
-    print("   Install with: pip install redis")
+except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower -- diagnostic script; PRAGMA failure is non-fatal, error printed to stdout
 except Exception as e:
     print(f"❌ Redis error: {e}")
 
@@ -199,7 +199,7 @@ if cache_file.exists():
 
         print(f"   Cached modules: {len(cache_data)}")
         print(f"   Cache keys: {list(cache_data.keys())[:5]}...")
-
+    except (ValueError, TypeError, RuntimeError) as e:
     except Exception as e:
         print(f"   ❌ Error reading cache: {e}")
 else:

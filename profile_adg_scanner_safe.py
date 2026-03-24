@@ -72,6 +72,7 @@ def profile_scanner_safe():
 
             return result
 
+    # guardian: allow-silent-swallow - optional timeout handling
     except TimeoutError as e:
         print(f"⏰ TIMEOUT: {e}")
         print("  Scanner appears to be hanging. Let's investigate...")
@@ -86,7 +87,7 @@ def profile_scanner_safe():
         investigate_hang()
         return None
 
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"❌ ERROR: {e}")
         import traceback
         traceback.print_exc()
@@ -112,7 +113,7 @@ def investigate_hang():
         end = time.time()
         print(f"   Test normalization: {end - start:.4f}s")
 
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"   ERROR: {e}")
 
     # Check 2: File count
@@ -124,7 +125,7 @@ def investigate_hang():
         print(f"   Python files found: {len(py_files)}")
         print(f"   File enumeration time: {end - start:.2f}s")
 
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"   ERROR: {e}")
 
     # Check 3: Cache status

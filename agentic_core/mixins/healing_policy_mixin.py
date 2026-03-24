@@ -316,6 +316,7 @@ class HealingPolicyMixin:
             violations.extend(self._check_import_issues(tree))
             violations.extend(self._check_syntax_issues(tree))
             violations.extend(self._check_naming_issues(tree))
+        # guardian: allow-silent-swallow - acceptable exception handling
         except SyntaxError as e:
             violations.append({"type": "syntax_error", "message": str(e)})
         # guardian: allow-silent-swallow

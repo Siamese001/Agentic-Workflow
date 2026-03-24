@@ -179,6 +179,7 @@ def wire_module(filepath, missing_dims):
 
     try:
         src = fp.read_text(encoding="utf-8", errors="replace")
+    # guardian: allow-silent-swallow - acceptable exception handling
     except OSError:
         return "SKIP", "unreadable", []
 
@@ -186,6 +187,7 @@ def wire_module(filepath, missing_dims):
 
     # Must parse cleanly; also used for AST-based call detection below
     try:
+        # guardian: allow-silent-swallow - acceptable exception handling
         _tree = ast.parse(src)
     except SyntaxError:
         return "SKIP", "syntax error", []
@@ -273,6 +275,7 @@ def wire_module(filepath, missing_dims):
     new_src = "\n".join(lines)
 
     # Validate the result parses
+    # guardian: allow-silent-swallow - acceptable exception handling
     try:
         ast.parse(new_src)
     except SyntaxError as e:

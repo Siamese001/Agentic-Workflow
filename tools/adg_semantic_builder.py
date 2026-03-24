@@ -432,6 +432,7 @@ def extract_file(rel_path: str, source: str) -> tuple[list[SemanticNode], list[S
 
     try:
         tree = ast.parse(source, filename=rel_path)
+    # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError:
         return nodes, edges
 

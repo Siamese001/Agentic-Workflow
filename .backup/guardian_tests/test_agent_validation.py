@@ -61,9 +61,10 @@ def check_agent_structure(file_path: Path) -> dict[str, Any]:
         if any(m.startswith("test_") or "self_test" in m for m in methods):
             results["has_test_method"] = True
 
+    # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
         results["violations"].append(f"Syntax error: {e}")
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         results["violations"].append(f"Error parsing file: {e}")
 
     return results

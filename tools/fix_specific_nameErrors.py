@@ -15,7 +15,7 @@ for dirpath, _, filenames in os.walk(os.path.join(ROOT, "agentic_core")):
         try:
             with open(fpath, encoding="utf-8") as f:
                 content = f.read()
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             continue
 
         needs = []

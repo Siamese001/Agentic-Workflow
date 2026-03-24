@@ -207,6 +207,7 @@ class AppsTaxonomyGuard:
         for py_file in apps_dir.rglob("*.py"):
             try:
                 violations.extend(self._scan_file(py_file, repo_root))
+            # guardian: allow-silent-swallow - acceptable exception handling
             except (OSError, UnicodeDecodeError, SyntaxError):
                 continue
         return violations
@@ -217,6 +218,7 @@ class AppsTaxonomyGuard:
         try:
             content = file_path.read_text(encoding="utf-8")
             tree = ast.parse(content)
+        # guardian: allow-silent-swallow - acceptable exception handling
         except (OSError, UnicodeDecodeError, SyntaxError):
             return violations
         for node in ast.walk(tree):

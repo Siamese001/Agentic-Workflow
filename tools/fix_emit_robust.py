@@ -37,7 +37,7 @@ for base_dir in ["agentic_core", "tests", "system_learning", "apps_shared"]:
             try:
                 with open(fpath, encoding="utf-8") as f:
                     content = f.read()
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 continue
 
             # Find which target emitters are called but not imported

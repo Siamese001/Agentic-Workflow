@@ -49,7 +49,7 @@ class ADGPerformanceTester:
 
             return metrics
 
-        except subprocess.TimeoutExpired:
+    except (ValueError, TypeError, RuntimeError) as e:
             print("✗ TIMEOUT after 300s")
             return {
                 'label': label,
@@ -58,7 +58,7 @@ class ADGPerformanceTester:
                 'success': False,
                 'error': 'TIMEOUT'
             }
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             print(f"✗ ERROR: {e}")
             return {
                 'label': label,
@@ -193,7 +193,7 @@ class ADGPerformanceTester:
                     'success': False,
                     'error': incremental_result.stderr
                 }
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             incremental_metrics = {
                 'label': 'Incremental Update',
                 'total_time_seconds': 0,

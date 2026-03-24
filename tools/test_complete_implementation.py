@@ -71,7 +71,7 @@ def test_continuous_learning_pipeline():
         
         return True
         
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"❌ Pipeline test failed: {e}")
         return False
 
@@ -149,7 +149,7 @@ def test_unified_memory():
         memory_manager.close()
         return True
         
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"❌ Memory database test failed: {e}")
         return False
 
@@ -198,7 +198,7 @@ def test_migration_status():
         
         return True
         
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"❌ Migration status test failed: {e}")
         return False
 
@@ -264,7 +264,7 @@ def main():
     for test_name, test_func in tests:
         try:
             results[test_name] = test_func()
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             print(f"❌ {test_name} test failed with exception: {e}")
             results[test_name] = False
     

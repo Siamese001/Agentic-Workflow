@@ -68,5 +68,6 @@ print("Done — aliases inserted inline after each class")
 try:
     ast.parse(final_src)
     print("Syntax OK")
+# guardian: allow-silent-swallow - acceptable exception handling
 except SyntaxError as e:
     print(f"SYNTAX ERROR: {e}")

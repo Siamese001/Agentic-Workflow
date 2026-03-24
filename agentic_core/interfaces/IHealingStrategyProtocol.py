@@ -274,7 +274,7 @@ class ChaosResilienceStrategy:
                 "scenarios_tested": len(result.get("scenarios_tested", [])),
                 "failures_detected": failures,
             }
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             Logger.error(f"[ChaosResilienceStrategy] Healing failed: {e}")
             return {"success": False, "resilience_score": 0.0, "error": str(e), "scenarios_tested": 0}
 
@@ -306,7 +306,7 @@ def register_chaos_healing() -> dict[str, Any]:
         try:
             orchestrator.register_strategy("chaos_resilience", get_chaos_strategy())
             registered.append("chaos_resilience")
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             raise
             errors.append(f"chaos_resilience: {e}")
         Logger.info(f"[Chaos Integration] Registered {len(registered)} strategies")

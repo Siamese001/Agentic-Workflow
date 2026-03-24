@@ -71,7 +71,7 @@ class FullMigrationExecutor:
                 self.migration_stats["categories"][category_name] = category_stats
                 print(f"✅ {category_name}: {category_stats['migrated']} migrated, {category_stats['failed']} failed")
                 
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:
                 logger.error(f"Error in {category_name} migration: {e}")
                 self.migration_stats["categories"][category_name] = {
                     "migrated": 0, "failed": 0, "skipped": 0
@@ -128,7 +128,7 @@ class FullMigrationExecutor:
                                 stats["migrated"] += 1
                             else:
                                 stats["skipped"] += 1
-                        except Exception as e:
+                        except (ValueError, TypeError, RuntimeError) as e:
                             logger.error(f"Error migrating config file: {e}")
                             stats["failed"] += 1
                 
@@ -164,7 +164,7 @@ class FullMigrationExecutor:
             
             return True
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Error migrating config file {file_path}: {e}")
             return False
     
@@ -186,7 +186,7 @@ class FullMigrationExecutor:
         for pattern in checkpoint_patterns:
             try:
                 checkpoint_files.extend(ROOT.rglob(pattern.split('/')[-1]))
-            except:
+            except (ValueError, TypeError, RuntimeError) as e:
                 continue
         
         # Remove duplicates
@@ -202,7 +202,7 @@ class FullMigrationExecutor:
                 else:
                     stats["skipped"] += 1
                     
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:
                 logger.error(f"Error migrating checkpoint {checkpoint_file}: {e}")
                 stats["failed"] += 1
             
@@ -259,7 +259,7 @@ class FullMigrationExecutor:
             self.memory_manager.store_model_checkpoint(checkpoint)
             return True
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Error migrating checkpoint file {file_path}: {e}")
             return False
     
@@ -280,7 +280,7 @@ class FullMigrationExecutor:
         for pattern in training_patterns:
             try:
                 training_files.extend(ROOT.rglob(pattern.split('/')[-1]))
-            except:
+            except (ValueError, TypeError, RuntimeError) as e:
                 continue
         
         # Filter relevant training files
@@ -299,7 +299,7 @@ class FullMigrationExecutor:
                 else:
                     stats["skipped"] += 1
                     
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:
                 logger.error(f"Error migrating training file {training_file}: {e}")
                 stats["failed"] += 1
         
@@ -329,7 +329,7 @@ class FullMigrationExecutor:
             self.memory_manager.store_learning_experience(experience)
             return True
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Error migrating training file {file_path}: {e}")
             return False
     
@@ -350,7 +350,7 @@ class FullMigrationExecutor:
         for pattern in state_patterns:
             try:
                 state_files.extend(ROOT.rglob(pattern.split('/')[-1]))
-            except:
+            except (ValueError, TypeError, RuntimeError) as e:
                 continue
         
         state_files = list(set(state_files))[:50]  # Limit for demo
@@ -365,7 +365,7 @@ class FullMigrationExecutor:
                 else:
                     stats["skipped"] += 1
                     
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:
                 logger.error(f"Error migrating state file {state_file}: {e}")
                 stats["failed"] += 1
         
@@ -390,7 +390,7 @@ class FullMigrationExecutor:
             
             return True
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Error migrating state file {file_path}: {e}")
             return False
     
@@ -411,7 +411,7 @@ class FullMigrationExecutor:
         for pattern in log_patterns:
             try:
                 log_files.extend(ROOT.rglob(pattern.split('/')[-1]))
-            except:
+            except (ValueError, TypeError, RuntimeError) as e:
                 continue
         
         # Filter performance logs
@@ -430,7 +430,7 @@ class FullMigrationExecutor:
                 else:
                     stats["skipped"] += 1
                     
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:
                 logger.error(f"Error migrating log file {log_file}: {e}")
                 stats["failed"] += 1
         
@@ -468,7 +468,7 @@ class FullMigrationExecutor:
             
             return True
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Error migrating log file {file_path}: {e}")
             return False
     
@@ -489,7 +489,7 @@ class FullMigrationExecutor:
         for pattern in interaction_patterns:
             try:
                 interaction_files.extend(ROOT.rglob(pattern.split('/')[-1]))
-            except:
+            except (ValueError, TypeError, RuntimeError) as e:
                 continue
         
         interaction_files = list(set(interaction_files))[:20]  # Limit for demo
@@ -504,7 +504,7 @@ class FullMigrationExecutor:
                 else:
                     stats["skipped"] += 1
                     
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:
                 logger.error(f"Error migrating interaction file {interaction_file}: {e}")
                 stats["failed"] += 1
         
@@ -534,7 +534,7 @@ class FullMigrationExecutor:
             self.memory_manager.store_learning_experience(experience)
             return True
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Error migrating interaction file {file_path}: {e}")
             return False
     
@@ -556,7 +556,7 @@ class FullMigrationExecutor:
                 files = ROOT.rglob(pattern.split('/')[-1])
                 # Exclude ADG files
                 graph_files.extend([f for f in files if "adg" not in str(f).lower()])
-            except:
+            except (ValueError, TypeError, RuntimeError) as e:
                 continue
         
         graph_files = list(set(graph_files))[:10]  # Limit for demo
@@ -571,7 +571,7 @@ class FullMigrationExecutor:
                 else:
                     stats["skipped"] += 1
                     
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:
                 logger.error(f"Error migrating graph file {graph_file}: {e}")
                 stats["failed"] += 1
         
@@ -611,7 +611,7 @@ class FullMigrationExecutor:
             conn.commit()
             return True
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Error migrating graph file {file_path}: {e}")
             return False
     
@@ -632,7 +632,7 @@ class FullMigrationExecutor:
         for pattern in embedding_patterns:
             try:
                 embedding_files.extend(ROOT.rglob(pattern.split('/')[-1]))
-            except:
+            except (ValueError, TypeError, RuntimeError) as e:
                 continue
         
         embedding_files = list(set(embedding_files))[:15]  # Limit for demo
@@ -647,7 +647,7 @@ class FullMigrationExecutor:
                 else:
                     stats["skipped"] += 1
                     
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:
                 logger.error(f"Error migrating embedding file {embedding_file}: {e}")
                 stats["failed"] += 1
         
@@ -694,7 +694,7 @@ class FullMigrationExecutor:
             
             return True
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             logger.error(f"Error migrating embedding file {file_path}: {e}")
             return False
     

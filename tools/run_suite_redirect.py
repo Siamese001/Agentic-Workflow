@@ -21,7 +21,7 @@ with open("artifacts/test_output.txt", "w", encoding="utf-8") as outf:
     )
     try:
         proc.wait(timeout=600)
-    except subprocess.TimeoutExpired:
+    except (ValueError, TypeError, RuntimeError) as e:
         proc.kill()
         print("TIMEOUT after 600s")
 

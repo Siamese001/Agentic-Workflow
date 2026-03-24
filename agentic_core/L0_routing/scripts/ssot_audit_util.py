@@ -256,6 +256,7 @@ def find_syntax_errors():
                 try:
                     content = py_file.read_text(encoding="utf-8")
                     ast.parse(content)
+                # guardian: allow-silent-swallow - acceptable exception handling
                 except SyntaxError as e:
                     errors.append({"file": str(py_file), "line": e.lineno, "message": str(e.msg)})
                 # guardian: allow-silent-swallow

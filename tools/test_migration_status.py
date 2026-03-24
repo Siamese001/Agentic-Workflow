@@ -79,12 +79,12 @@ class MigrationStatusChecker:
                         cursor.execute(f"SELECT COUNT(*) FROM {table}")
                         count = cursor.fetchone()[0]
                         print(f"  {table}: {count} records")
-                    except sqlite3.OperationalError:
+                except (ValueError, TypeError, RuntimeError) as e:
                         print(f"  {table}: Unable to count records")
                 
                 conn.close()
                 
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:
                 print(f"  ❌ Error reading database: {e}")
         else:
             self.results["unified_memory_exists"] = False
@@ -146,7 +146,7 @@ class MigrationStatusChecker:
                     files = list(ROOT.rglob(pattern.split('/')[-1]))
                     if files:
                         category_files.extend(files)
-                except:
+                except (ValueError, TypeError, RuntimeError) as e:
                     continue
             
             # Filter unique files
@@ -210,7 +210,7 @@ class MigrationStatusChecker:
             
             conn.close()
             
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             pass
         
         return False
@@ -220,7 +220,7 @@ class MigrationStatusChecker:
         try:
             with open(file_path, 'rb') as f:
                 return hashlib.md5(f.read()).hexdigest()
-        except:
+        except (ValueError, TypeError, RuntimeError) as e:
             return hashlib.md5(str(file_path).encode()).hexdigest()
     
     def _check_system_learning_components(self):
@@ -277,7 +277,7 @@ class MigrationStatusChecker:
             else:
                 return "Not integrated"
                 
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             return "Unable to read"
     
     def _verify_persistent_data(self):
@@ -327,12 +327,12 @@ class MigrationStatusChecker:
                     else:
                         print(f"  ❌ {table}: No data")
                         
-                except sqlite3.OperationalError as e:
+                except (ValueError, TypeError, RuntimeError) as e:
                     print(f"  ⚠️ {table}: Error - {e}")
             
             conn.close()
             
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             print(f"❌ Error verifying persistent data: {e}")
     
     def _generate_recommendations(self):

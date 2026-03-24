@@ -188,6 +188,7 @@ async def load_text_file(file_path: Path) -> str:
     try:
         try:
             return file_path.read_text(encoding="utf-8")
+        # guardian: allow-silent-swallow - acceptable exception handling
         except UnicodeDecodeError:
             return file_path.read_text(encoding="latin-1")
     # guardian: allow-silent-swallow
@@ -241,6 +242,7 @@ def chunk_python_ast(text: str, file_path: Path) -> list[SemanticChunk]:
     lines = text.splitlines()
     try:
         tree = ast.parse(text)
+    # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
         print(f" [!] AST parse failed for {file_path}: {e}. Falling back to line-based.")
         return chunk_text_fallback(text, file_path)

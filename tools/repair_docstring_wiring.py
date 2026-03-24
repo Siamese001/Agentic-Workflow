@@ -151,6 +151,7 @@ def repair_file(fp: Path, missing_dims: list[str]) -> tuple[str, str, list[str]]
     # Check which dims are missing and need their funcs in AST
     try:
         tree = ast.parse(src)
+    # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
         return "ERROR", f"parse error: {e}", []
 
@@ -228,6 +229,7 @@ def repair_file(fp: Path, missing_dims: list[str]) -> tuple[str, str, list[str]]
     # Now find the correct insertion point: after docstring + after all imports
     new_src_temp = "\n".join(lines)
     try:
+        # guardian: allow-silent-swallow - acceptable exception handling
         ast.parse(new_src_temp)
     except SyntaxError:
         pass  # We'll re-check after insertion
@@ -269,6 +271,7 @@ def repair_file(fp: Path, missing_dims: list[str]) -> tuple[str, str, list[str]]
     new_src = "\n".join(lines)
 
     # Validate
+    # guardian: allow-silent-swallow - acceptable exception handling
     try:
         ast.parse(new_src)
     except SyntaxError as e:

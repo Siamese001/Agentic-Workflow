@@ -640,7 +640,7 @@ def audit_semantic_classification(conn):
                     print(f"    OK {sf}:{ln} -- assignment confirmed")
                 else:
                     print(f"    ?? {sf}:{ln} -- no assignment at line (may be nested)")
-            except Exception as e:
+            except (ValueError, TypeError, RuntimeError) as e:
                 print(f"    FAIL {sf}:{ln} -- parse error: {e}")
         else:
             print(f"    SKIP {sf} -- file not found")

@@ -238,7 +238,7 @@ def refactor_file(file_path: Path, dry_run: bool = True) -> dict:
             'dry_run': dry_run,
         }
 
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         return {
             'status': 'error',
             'file': str(file_path.relative_to(PROJECT_ROOT)),

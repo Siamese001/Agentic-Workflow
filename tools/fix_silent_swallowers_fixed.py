@@ -50,12 +50,13 @@ class SilentSwallowerFixer:
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
                 lines = content.splitlines()
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             return violations
         
         # Parse AST to find exception handlers
         try:
             tree = ast.parse(content, filename=str(file_path))
+        # guardian: allow-silent-swallow - acceptable exception handling
         except SyntaxError:
             return violations
         

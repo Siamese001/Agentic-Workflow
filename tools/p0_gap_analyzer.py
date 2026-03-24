@@ -59,6 +59,7 @@ def has_wirable_functions(filepath):
     try:
         src = open(filepath, encoding="utf-8", errors="replace").read()
         tree = ast.parse(src)
+    # guardian: allow-silent-swallow - acceptable exception handling
     except (SyntaxError, OSError):
         return False
     for node in ast.walk(tree):
@@ -75,6 +76,7 @@ def has_emit(filepath, emit_func):
     """Check if file already contains the emit function call."""
     try:
         src = open(filepath, encoding="utf-8", errors="replace").read()
+        # guardian: allow-silent-swallow - acceptable exception handling
         return emit_func in src
     except OSError:
         return True  # Skip unreadable

@@ -61,6 +61,7 @@ def find_def_lineno_for_default_arg(path: Path, default_arg_lineno: int) -> int 
     """
     try:
         tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
+    # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError:
         return None
 

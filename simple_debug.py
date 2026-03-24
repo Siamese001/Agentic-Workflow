@@ -23,10 +23,10 @@ def run_with_timeout(cmd, timeout=30):
         print("STDOUT:", result.stdout[-500:] if result.stdout else "None")
         print("STDERR:", result.stderr[-500:] if result.stderr else "None")
         return result.returncode == 0
-    except subprocess.TimeoutExpired:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"❌ Command timed out after {timeout}s")
         return False
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"❌ Command failed: {e}")
         return False
 
@@ -39,7 +39,7 @@ def test_adg_components():
     try:
         import agentic_core.adg.extraction.static_scanner
         print("✅ Static scanner import OK")
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"❌ Static scanner import failed: {e}")
         return
 
@@ -52,7 +52,7 @@ def test_adg_components():
             cache_path=Path("artifacts/adg/scan_result_cache.json")
         )
         print("✅ Scanner creation OK")
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"❌ Scanner creation failed: {e}")
         return
 
@@ -71,7 +71,7 @@ def test_adg_components():
         edges, had_error = _scan_file(test_file, scanner.repo_root, True)
         print(f"✅ Single file scan: {len(edges)} edges, error={had_error}")
 
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"❌ File iteration failed: {e}")
         import traceback
         traceback.print_exc()
@@ -105,7 +105,7 @@ def test_adg_components():
         print(f"   Cache hits: {result.manifest.cache_hits}")
         print(f"   Cache misses: {result.manifest.cache_misses}")
 
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"❌ Limited scan failed: {e}")
         import traceback
         traceback.print_exc()

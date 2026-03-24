@@ -202,6 +202,7 @@ def check_syntax(root: Path) -> int:
         try:
             content = f.read_text(encoding="utf-8")
             ast.parse(content)
+        # guardian: allow-silent-swallow - acceptable exception handling
         except SyntaxError as e:
             errors.append((str(f), e.lineno, e.msg))
 

@@ -218,6 +218,7 @@ class AgentDiscoveryCache:
             try:
                 content_hash = self._compute_file_hash(discovery_path)
                 cache_key = f"agent_discovery:{content_hash}"
+            # guardian: allow-silent-swallow - optional file resource
             except FileNotFoundError:
                 raise
             except (OSError, ValueError) as e:
@@ -237,6 +238,7 @@ class AgentDiscoveryCache:
             try:
                 content_hash = self._compute_file_hash(discovery_path)
                 cache_key = f"agent_discovery:{content_hash}"
+                # guardian: allow-silent-swallow - optional file resource
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
             except FileNotFoundError:
                 pass

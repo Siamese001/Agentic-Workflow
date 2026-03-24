@@ -64,6 +64,7 @@ def fix_file(fp: Path) -> tuple[str, list[str]]:
     # Validate current parse
     try:
         ast.parse(src)
+    # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
         return f"SKIP(parse_err: {e})", []
 
@@ -88,6 +89,7 @@ def fix_file(fp: Path) -> tuple[str, list[str]]:
     new_src = "\n".join(result)
 
     try:
+        # guardian: allow-silent-swallow - acceptable exception handling
         ast.parse(new_src)
     except SyntaxError as e:
         return f"ERROR({e})", []

@@ -43,10 +43,10 @@ def run_test_class(test_class_name, timeout=30):
 
         return result.returncode == 0
 
-    except subprocess.TimeoutExpired:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"❌ TIMEOUT after {timeout}s")
         return False
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"❌ ERROR: {e}")
         return False
 

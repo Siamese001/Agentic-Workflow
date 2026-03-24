@@ -28,7 +28,7 @@ def test_mission_script_integrity():
         spec.loader.exec_module(mission_module)
         assert hasattr(mission_module, "run_mission")
         print("test_mission_script_integrity: 100% PASS - Script is valid and importable.")
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         raise AssertionError(f"Mission script failed integrity check: {e}")
 
 
@@ -81,7 +81,7 @@ def test_agent_initialization():
 
     except ImportError as e:
         raise AssertionError(f"Failed to import required modules: {e}")
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         raise AssertionError(f"Agent initialization failed: {e}")
 
 
@@ -100,9 +100,10 @@ def test_mission_script_syntax():
 
         print("test_mission_script_syntax: 100% PASS - Script syntax is valid.")
 
+    # guardian: allow-silent-swallow - acceptable exception handling
     except SyntaxError as e:
         raise AssertionError(f"Mission script has syntax errors: {e}")
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         raise AssertionError(f"Error reading mission script: {e}")
 
 

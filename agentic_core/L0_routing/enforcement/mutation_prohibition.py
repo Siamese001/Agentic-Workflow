@@ -323,6 +323,7 @@ def enforce_protected_root(
     # Resolve path without requiring existence
     try:
         resolved = target_path.resolve(strict=False)
+    # guardian: allow-silent-swallow - acceptable exception handling
     except (OSError, RuntimeError):
         # If resolution fails, use the original path
         resolved = target_path

@@ -32,7 +32,7 @@ for base_dir in ["agentic_core", "apps_shared", "apps_lic", "apps_rg", "system_l
             try:
                 with open(fpath, encoding="utf-8") as f:
                     content = f.read()
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 continue
 
             if LTC not in content:

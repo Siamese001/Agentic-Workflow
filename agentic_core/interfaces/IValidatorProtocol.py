@@ -366,13 +366,13 @@ def register_red_team_validators() -> dict[str, Any]:
         try:
             orchestrator.register_validator("adversarial_probe", get_adversarial_validator())
             registered.append("adversarial_probe")
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             raise
             errors.append(f"adversarial_probe: {e}")
         try:
             orchestrator.register_validator("boundary_testing", get_boundary_validator())
             registered.append("boundary_testing")
-        except Exception as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             raise
             errors.append(f"boundary_testing: {e}")
         Logger.info(f"[Red Team Integration] Registered {len(registered)} validators")

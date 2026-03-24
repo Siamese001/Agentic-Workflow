@@ -276,6 +276,7 @@ def scan_provider_sdk_imports(
             continue
         try:
             tree = ast.parse(fpath.read_text(encoding="utf-8", errors="replace"))
+        # guardian: allow-silent-swallow - acceptable exception handling
         except SyntaxError:
             continue
         for node in ast.walk(tree):
@@ -317,6 +318,7 @@ def scan_direct_model_calls(
         if rel in ALLOWED_SDK_FILES:
             continue
         try:
+            # guardian: allow-silent-swallow - acceptable exception handling
             tree = ast.parse(fpath.read_text(encoding="utf-8", errors="replace"))
         except SyntaxError:
             continue

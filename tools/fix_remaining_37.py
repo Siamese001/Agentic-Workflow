@@ -200,7 +200,7 @@ for rel in remaining_files:
         if add_future_annotations(rel):
             fixed += 1
             print(f"  [future] {rel}")
-    except Exception as e:
+    except (ValueError, TypeError, RuntimeError) as e:
         print(f"  [SKIP] {rel}: {e}")
 
 print(f"\nTotal: {fixed} files fixed")

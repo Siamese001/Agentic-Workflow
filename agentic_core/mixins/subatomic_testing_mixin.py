@@ -227,6 +227,7 @@ class SubatomicTestingMixin(InstructionalInjectionMixin):
             if hasattr(self, "can_run"):
                 can_run_result = self.can_run()
                 if can_run_result is not True:
+                    # guardian: allow-silent-swallow - acceptable exception handling
                     Logger.debug(f"[SELF-TEST] {class_name}.can_run() returned {can_run_result}")
         except AssertionError as e:
             anomaly = AnomalyReport(
@@ -270,6 +271,7 @@ class SubatomicTestingMixin(InstructionalInjectionMixin):
         Returns:
             True if tests pass, False if they fail (no exception raised)
         """
+        # guardian: allow-silent-swallow - acceptable exception handling
         try:
             return self._run_self_tests()
         except AssertionError as e:

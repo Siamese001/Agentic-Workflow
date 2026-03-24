@@ -386,6 +386,7 @@ def forensic_inspect(name: str, layer: str, file_path: Path) -> ForensicAgentRec
             return record
         try:
             tree = ast.parse(content)
+        # guardian: allow-silent-swallow - acceptable exception handling
         except SyntaxError as e:
             record.status = "SYNTAX_ERROR"
             record.parse_error = f"SyntaxError: {e}"

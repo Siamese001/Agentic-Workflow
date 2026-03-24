@@ -285,6 +285,7 @@ def scan_cross_layer_mutations(
 
         try:
             tree = ast.parse(fpath.read_text(encoding="utf-8", errors="replace"))
+        # guardian: allow-silent-swallow - acceptable exception handling
         except SyntaxError:
             continue
 

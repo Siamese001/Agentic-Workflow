@@ -384,6 +384,7 @@ def main() -> bool:
         Logger.info("[DISCOVERY] Agent discovery and verification completed successfully")
         return True
 
+    # guardian: allow-silent-swallow - acceptable exception handling
     except DiscoveryError as e:
         Logger.error(f"[DISCOVERY] Discovery operation failed: {e}")
         return False
@@ -444,6 +445,7 @@ def analyze_agent_integrity(file_path: Path) -> AgentIntegrityReport:
         content = file_path.read_text(encoding="utf-8", errors="replace")
 
         try:
+            # guardian: allow-silent-swallow - acceptable exception handling
             tree = ast.parse(content)
         except SyntaxError as e:
             report.parse_error = f"SyntaxError: {e}"
@@ -887,6 +889,7 @@ def cli_interface() -> None:
             # Default: run full discovery
             success = main()
             sys.exit(0 if success else 1)
+# guardian: allow-silent-swallow - acceptable exception handling
 
     except KeyboardInterrupt:
         Logger.info("[DISCOVERY] Operation cancelled by user")

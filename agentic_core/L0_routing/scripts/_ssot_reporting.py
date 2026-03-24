@@ -806,6 +806,7 @@ def _write_heal_run_complete(state_mgr: Any, decision_engine: Any) -> dict:
             ["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, timeout=DEFAULT_TIMEOUT
         )
         git_commit = _r.stdout.strip()
+    # guardian: allow-silent-swallow - acceptable exception handling
     except (OSError, subprocess.TimeoutExpired, subprocess.CalledProcessError) as e:
         logger.warning(f"Failed to get git commit hash: {e}")
     run_ts = _dt.datetime.now().isoformat()

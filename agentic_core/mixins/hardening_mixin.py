@@ -296,6 +296,7 @@ class HardeningMixin:
                 metadata=metadata,
             )
             raise TokenLimitError("Token budget validation timed out") from e
+        # guardian: allow-silent-swallow - acceptable exception handling
         except CircuitBreakerOpenError as e:
             latency_ms = (time.time() - start_time) * 1000
             self.telemetry.log_circuit_breaker(

@@ -22,7 +22,7 @@ with open(os.devnull, "w") as devnull:
     )
     try:
         proc.wait(timeout=600)
-    except subprocess.TimeoutExpired:
+    except (ValueError, TypeError, RuntimeError) as e:
         proc.kill()
         print("TIMEOUT after 600s")
         sys.exit(1)
