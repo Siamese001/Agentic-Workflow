@@ -14,7 +14,7 @@ try:
         hybrid,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     bm25 = None  # type: ignore[assignment,misc]
     dense = None  # type: ignore[assignment,misc]

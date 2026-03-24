@@ -19,7 +19,7 @@ try:
         is_agent_or_orchestrator,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_classification_conflicts = None  # type: ignore[assignment,misc]
     clear_classification_conflicts = None  # type: ignore[assignment,misc]

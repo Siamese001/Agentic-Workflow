@@ -17,7 +17,7 @@ try:
         validate_ethical_standards,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     validate_ethical_standards = None  # type: ignore[assignment,misc]
     get_validate_ethical_standards_config = None  # type: ignore[assignment,misc]

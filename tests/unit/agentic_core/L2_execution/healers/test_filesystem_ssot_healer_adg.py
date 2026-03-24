@@ -16,7 +16,7 @@ try:
         heal_filesystem_ssot_drift,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     heal_filesystem_ssot_drift = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]

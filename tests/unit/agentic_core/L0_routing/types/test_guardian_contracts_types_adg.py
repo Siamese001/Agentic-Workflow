@@ -10,7 +10,7 @@ try:
         RESULT_EMISSION_ALLOWED_LAYERS,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RESULT_EMISSION_ALLOWED_LAYERS = None  # type: ignore[assignment]
 

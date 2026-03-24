@@ -25,7 +25,7 @@ try:
         MutationReplayIntegrityViolation,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ExecutionTraceIntegrityError = None  # type: ignore[assignment,misc]
     MutationReplayIntegrityViolation = None  # type: ignore[assignment,misc]

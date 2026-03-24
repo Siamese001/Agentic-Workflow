@@ -13,7 +13,7 @@ try:
         max_retry_attempts,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     max_complexity = max_func_lines = max_phase_time = max_retry_attempts = None
 

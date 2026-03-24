@@ -25,7 +25,7 @@ try:
         InvocationRecord,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     HealingTier = None  # type: ignore[assignment,misc]
     HealingInput = None  # type: ignore[assignment,misc]

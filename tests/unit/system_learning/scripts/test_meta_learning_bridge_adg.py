@@ -12,7 +12,7 @@ try:
         propose_from_signal_aggregate,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     emit_app_signal_event = None  # type: ignore[assignment,misc]
     propose_from_signal_aggregate = None  # type: ignore[assignment,misc]

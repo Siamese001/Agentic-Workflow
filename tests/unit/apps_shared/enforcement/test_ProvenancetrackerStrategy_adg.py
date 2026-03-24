@@ -22,7 +22,7 @@ try:
         track_provenance,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SourceCitation = None  # type: ignore[assignment,misc]
     ArtifactLineage = None  # type: ignore[assignment,misc]

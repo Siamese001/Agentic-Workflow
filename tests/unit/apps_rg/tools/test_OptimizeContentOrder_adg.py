@@ -17,7 +17,7 @@ try:
         refine,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     OptimizeContentOrder = None  # type: ignore[assignment,misc]
     refine = None  # type: ignore[assignment,misc]

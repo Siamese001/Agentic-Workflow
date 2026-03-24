@@ -7,7 +7,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.execution_type_types import ExecutionType
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     ExecutionType = None  # type: ignore[assignment,misc]
 

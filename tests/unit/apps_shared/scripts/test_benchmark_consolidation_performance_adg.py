@@ -15,7 +15,7 @@ try:
         measure_registry_init,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     measure_import_time = None  # type: ignore[assignment,misc]
     measure_memory_footprint = None  # type: ignore[assignment,misc]

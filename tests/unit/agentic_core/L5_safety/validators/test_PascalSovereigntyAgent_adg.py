@@ -14,7 +14,7 @@ try:
         main,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PascalSovereigntyAgent = None  # type: ignore[assignment,misc]
     get_python_files_fast = None  # type: ignore[assignment,misc]

@@ -178,7 +178,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ReconciliationViolation = None  # type: ignore[assignment,misc]
     FilesystemSSOTReconcilerAgent = None  # type: ignore[assignment,misc]

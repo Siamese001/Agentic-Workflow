@@ -20,7 +20,7 @@ try:
         validate_void_compliance,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     validate_knowledge_base = None  # type: ignore[assignment,misc]
     validate_base_engine = None  # type: ignore[assignment,misc]

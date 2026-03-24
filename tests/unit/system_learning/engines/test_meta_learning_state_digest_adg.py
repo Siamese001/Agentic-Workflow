@@ -17,7 +17,7 @@ try:
         emit_meta_learning_state_digest,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     compute_meta_learning_state_digest = None  # type: ignore[assignment,misc]
     emit_meta_learning_state_digest = None  # type: ignore[assignment,misc]

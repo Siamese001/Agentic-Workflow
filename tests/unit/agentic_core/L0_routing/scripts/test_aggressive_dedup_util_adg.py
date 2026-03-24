@@ -15,7 +15,7 @@ try:
         main,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_all_classes_in_codebase = None  # type: ignore[assignment,misc]
     find_redundant_files = None  # type: ignore[assignment,misc]

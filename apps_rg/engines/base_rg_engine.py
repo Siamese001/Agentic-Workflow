@@ -233,6 +233,7 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, ABC):
             from apps_rg.config import load_rg_specs
 
             self.rg_specs = load_rg_specs()
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             self.rg_specs = None
             self.logger.warning("RG specs not available")

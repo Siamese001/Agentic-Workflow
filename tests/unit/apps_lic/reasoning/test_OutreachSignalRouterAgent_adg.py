@@ -24,7 +24,7 @@ try:
         run_outreach_healing_mission,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     MCPHardenedMixin = None  # type: ignore[assignment,misc]
     HealerMixin = None  # type: ignore[assignment,misc]

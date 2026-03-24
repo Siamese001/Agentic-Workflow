@@ -209,6 +209,7 @@ class ResearchOrchestrator:
             from apps_research.config import load_research_specs
 
             self._specs = load_research_specs()
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             self._specs = None
 

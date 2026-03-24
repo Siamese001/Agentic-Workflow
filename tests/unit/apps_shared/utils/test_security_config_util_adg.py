@@ -22,7 +22,7 @@ try:
         ValidationResult,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ValidationLevel = None  # type: ignore[assignment,misc]
     ValidationResult = None  # type: ignore[assignment,misc]

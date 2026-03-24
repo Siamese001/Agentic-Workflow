@@ -17,7 +17,7 @@ try:
         generate_report,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     count_files_by_domain = None  # type: ignore[assignment,misc]
     generate_report = None  # type: ignore[assignment,misc]

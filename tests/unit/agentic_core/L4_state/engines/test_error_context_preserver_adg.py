@@ -18,7 +18,7 @@ try:
         preserve_error_context,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PreservationResult = None  # type: ignore[assignment,misc]
     ErrorContext = None  # type: ignore[assignment,misc]

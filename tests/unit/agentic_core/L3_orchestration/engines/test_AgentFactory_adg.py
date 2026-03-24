@@ -17,7 +17,7 @@ try:
         create_all_agents,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AgentFactory = None  # type: ignore[assignment,misc]
     create_all_agents = None  # type: ignore[assignment,misc]

@@ -24,7 +24,7 @@ try:
         validate_node_attributes_hook,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     MutationPhase = None  # type: ignore[assignment,misc]
     StateSnapshot = None  # type: ignore[assignment,misc]

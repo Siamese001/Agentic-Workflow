@@ -282,7 +282,8 @@ def get_integration_status() -> dict[str, Any]:
         orchestrator = get_validator_orchestrator()
         status["validators_registered"] = list(orchestrator._validators.keys())
         status["module_status"]["validator_orchestrator"] = "available"
-    except ImportError:
+    # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
         status["module_status"]["validator_orchestrator"] = "unavailable"
     try:
         from agentic_core.L5_safety.types.healing_orchestration_types import get_healing_orchestrator

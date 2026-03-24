@@ -293,7 +293,7 @@ class TestDepthAlignedRegression:
             from agentic_core.L5_safety.config.structure_blueprint import (
                 get_all_territories,
             )
-        except ImportError:
+        pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
             pytest.fail("get_all_territories not importable")
 
         def _walk(obj: object, path: str = "") -> list[str]:

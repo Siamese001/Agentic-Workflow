@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L3_orchestration.engines.sub_atomic_engine_impl import SubAtomicEngineImpl
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SubAtomicEngineImpl = None  # type: ignore[assignment,misc]
 

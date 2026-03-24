@@ -167,7 +167,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_lic.types.ImmutableStagingBuffer import ImmutableStagingBuffer
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     ImmutableStagingBuffer = None  # type: ignore[assignment,misc]
 

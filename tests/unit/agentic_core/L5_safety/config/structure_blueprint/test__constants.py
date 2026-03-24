@@ -17,7 +17,7 @@ try:
         build_sovereign_territories,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SubfolderDefinition = None  # type: ignore[assignment,misc]
     TerritoryDefinition = None  # type: ignore[assignment,misc]

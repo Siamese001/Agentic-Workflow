@@ -180,7 +180,7 @@ try:
         ValidationSeverity,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     Route = Archetype = EventType = AgentStatus = ValidationSeverity = None  # type: ignore[assignment,misc]
     CircuitState = FailureClassification = FactualGapError = CircuitBreakerOpenError = None  # type: ignore[assignment,misc]

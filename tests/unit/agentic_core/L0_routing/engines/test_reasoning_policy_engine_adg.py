@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PROFILE_VERSION = None  # type: ignore[assignment,misc]
     RequestStructureFeatures = None  # type: ignore[assignment,misc]

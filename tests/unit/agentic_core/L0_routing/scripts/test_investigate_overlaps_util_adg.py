@@ -13,7 +13,7 @@ try:
         investigate,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_file_hash = None  # type: ignore[assignment,misc]
     investigate = None  # type: ignore[assignment,misc]

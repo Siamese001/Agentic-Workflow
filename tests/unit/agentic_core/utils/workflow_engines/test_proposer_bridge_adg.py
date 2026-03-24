@@ -18,7 +18,7 @@ try:
         ImprovementSignal,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ImprovementSignal = None  # type: ignore[assignment,misc]
     ImprovementProposal = None  # type: ignore[assignment,misc]

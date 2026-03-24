@@ -20,7 +20,7 @@ try:
             generate_markdown_report,
         )
         _AVAILABLE = True
-    except ImportError:
+    pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
         _AVAILABLE = False
         extract_capabilities_from_source = None  # type: ignore[assignment,misc]
         generate_markdown_report = None  # type: ignore[assignment,misc]

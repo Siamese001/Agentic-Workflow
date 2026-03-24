@@ -23,7 +23,7 @@ try:
         canonical_bytes,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     GovernedPayload = None  # type: ignore[assignment,misc]
     AirlockAssembler = None  # type: ignore[assignment,misc]

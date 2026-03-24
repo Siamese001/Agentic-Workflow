@@ -17,7 +17,7 @@ try:
         create_agent_gym,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AgentGym = None  # type: ignore[assignment,misc]
     create_agent_gym = None  # type: ignore[assignment,misc]

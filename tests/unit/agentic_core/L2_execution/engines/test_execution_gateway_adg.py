@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SignatureBoundaryError = None  # type: ignore[assignment,misc]
     ExecutionGateway = None  # type: ignore[assignment,misc]

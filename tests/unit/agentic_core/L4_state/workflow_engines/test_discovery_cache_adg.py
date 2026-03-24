@@ -17,7 +17,7 @@ try:
         get_agent_discovery_cache,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AgentDiscoveryCache = None  # type: ignore[assignment,misc]
     get_agent_discovery_cache = None  # type: ignore[assignment,misc]

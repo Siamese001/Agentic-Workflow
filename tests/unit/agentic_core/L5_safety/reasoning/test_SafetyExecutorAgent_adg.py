@@ -23,7 +23,7 @@ try:
         create_legacy_safety_executor,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ExecutionStatus = None  # type: ignore[assignment,misc]
     BlockReason = None  # type: ignore[assignment,misc]

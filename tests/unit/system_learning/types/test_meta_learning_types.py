@@ -26,7 +26,7 @@ try:
         build_meta_learning_proposal,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ObjectiveSignal = None  # type: ignore[assignment,misc]
     ProposedChange = None  # type: ignore[assignment,misc]

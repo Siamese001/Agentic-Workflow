@@ -18,7 +18,7 @@ try:
         main,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     load_mission_input = None  # type: ignore[assignment,misc]
     create_orchestrator = None  # type: ignore[assignment,misc]

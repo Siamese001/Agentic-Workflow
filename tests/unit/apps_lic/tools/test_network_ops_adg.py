@@ -20,7 +20,7 @@ try:
         watch_key,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     string_get = None  # type: ignore[assignment,misc]
     string_set = None  # type: ignore[assignment,misc]

@@ -17,7 +17,7 @@ try:
         ParseResult,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ParseResult = None  # type: ignore[assignment,misc]
     JsonParser = None  # type: ignore[assignment,misc]

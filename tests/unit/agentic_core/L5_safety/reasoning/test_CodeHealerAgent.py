@@ -21,7 +21,7 @@ try:
         create_legacy_import_healer,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CodeHealingStrategy = None  # type: ignore[assignment,misc]
     HealingType = None  # type: ignore[assignment,misc]

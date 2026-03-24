@@ -17,7 +17,7 @@ try:
         ensure_dir_structure,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     align_tests_structure = None  # type: ignore[assignment,misc]
     ensure_dir_structure = None  # type: ignore[assignment,misc]

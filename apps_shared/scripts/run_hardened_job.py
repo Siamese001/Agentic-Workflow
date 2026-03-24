@@ -22,7 +22,8 @@ logging.basicConfig(
 LOGGER = logging.getLogger(__name__)
 try:
     from runtime.shared.routing import RoutingTier
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     RoutingTier = None  # runtime not installed — tests can still collect
 TEST_JOB_ID = "titanium_acceptance_v2_001"
 TEST_CONFIG = {

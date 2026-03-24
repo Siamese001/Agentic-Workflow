@@ -17,7 +17,7 @@ try:
         BatchingMixin,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     BatchingConfig = None  # type: ignore[assignment,misc]
     BatchingMixin = None  # type: ignore[assignment,misc]

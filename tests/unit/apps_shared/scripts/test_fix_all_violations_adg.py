@@ -17,7 +17,7 @@ try:
         split_large_types_files,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     fix_micro_fragments = None  # type: ignore[assignment,misc]
     split_large_types_files = None  # type: ignore[assignment,misc]

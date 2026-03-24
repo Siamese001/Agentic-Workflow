@@ -172,7 +172,7 @@ try:
         CostTracker,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     CostAlertLevel = CostMetrics = CostAlert = CostTracker = None  # type: ignore[assignment,misc]
 

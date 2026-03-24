@@ -25,7 +25,7 @@ try:
         validate_against_json_schema,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     HealStatus = None  # type: ignore[assignment,misc]
     HealCheckResult = None  # type: ignore[assignment,misc]

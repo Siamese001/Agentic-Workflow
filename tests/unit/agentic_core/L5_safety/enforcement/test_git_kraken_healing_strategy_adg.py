@@ -18,7 +18,7 @@ try:
         get_git_client,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     GitKrakenHealingStrategy = None  # type: ignore[assignment,misc]
     get_git_client = None  # type: ignore[assignment,misc]

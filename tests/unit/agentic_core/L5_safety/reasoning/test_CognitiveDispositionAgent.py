@@ -22,7 +22,7 @@ try:
         DispositionDecision,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     DispositionDecision = None  # type: ignore[assignment,misc]
     CognitiveDispositionAgent = None  # type: ignore[assignment,misc]

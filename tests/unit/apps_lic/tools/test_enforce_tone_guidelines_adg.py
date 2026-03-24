@@ -17,7 +17,7 @@ try:
         get_enforce_tone_guidelines_config,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     enforce_tone_guidelines = None  # type: ignore[assignment,misc]
     get_enforce_tone_guidelines_config = None  # type: ignore[assignment,misc]

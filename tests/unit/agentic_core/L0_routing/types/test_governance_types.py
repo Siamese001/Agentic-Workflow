@@ -28,7 +28,7 @@ try:
         RouteDecisionRef,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RouteDecisionRef = None  # type: ignore[assignment,misc]
     PolicySnapshot = None  # type: ignore[assignment,misc]

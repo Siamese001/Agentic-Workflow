@@ -16,7 +16,7 @@ try:
         drain_and_apply,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     drain_and_apply = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]

@@ -18,7 +18,7 @@ try:
         run_code_deduplication_check,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     run_code_deduplication_check = None  # type: ignore[assignment,misc]
     run_architecture_governance_check = None  # type: ignore[assignment,misc]

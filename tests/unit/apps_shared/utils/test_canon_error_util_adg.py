@@ -16,7 +16,7 @@ try:
         SwarmInitializationError,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CanonError = None  # type: ignore[assignment,misc]
     CanonViolationError = None  # type: ignore[assignment,misc]

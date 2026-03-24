@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SlotS0 = None  # type: ignore[assignment,misc]
     SlotD0 = None  # type: ignore[assignment,misc]

@@ -176,7 +176,7 @@ try:
         SignatureFormat,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     MessageRoute = RecipientArchetype = SignatureFormat = CTAFormat = None  # type: ignore[assignment,misc]
     RouteConditions = RouteConstraints = RouteConfig = ROUTE_CONFIGS = None  # type: ignore[assignment,misc]

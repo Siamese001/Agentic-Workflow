@@ -17,7 +17,7 @@ try:
         SemanticMatch,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SecurityLevel = None  # type: ignore[assignment,misc]
     AnalysisType = None  # type: ignore[assignment,misc]

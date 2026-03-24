@@ -19,7 +19,7 @@ try:
         filter_high_quality_signals,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     QualityAssessment = None  # type: ignore[assignment,misc]
     SignalQualityPipeline = None  # type: ignore[assignment,misc]

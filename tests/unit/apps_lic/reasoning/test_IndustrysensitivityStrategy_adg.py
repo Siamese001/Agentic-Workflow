@@ -19,7 +19,7 @@ try:
         SafetyProtocol,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     IndustrySensitivity = None  # type: ignore[assignment,misc]
     RiskProfile = None  # type: ignore[assignment,misc]

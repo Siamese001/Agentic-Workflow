@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     TOOL_ID = None  # type: ignore[assignment,misc]
     OUTPUT_FILENAME = None  # type: ignore[assignment,misc]

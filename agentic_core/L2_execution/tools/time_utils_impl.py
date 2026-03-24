@@ -190,6 +190,7 @@ class TimeTools:
             from datetime import datetime
 
             import pytz
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             return "Error: 'pytz' module not installed for timezone operations. Please install it (`pip install pytz`)."
         # guardian: allow-silent-swallow

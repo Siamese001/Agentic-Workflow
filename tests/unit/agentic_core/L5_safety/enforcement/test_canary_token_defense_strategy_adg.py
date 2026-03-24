@@ -17,7 +17,7 @@ try:
         CanaryToken,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CanaryToken = None  # type: ignore[assignment,misc]
     CanaryDefense = None  # type: ignore[assignment,misc]

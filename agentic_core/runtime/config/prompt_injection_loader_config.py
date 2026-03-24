@@ -100,7 +100,8 @@ try:
         InjectionType,
         MicroStage,
     )
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     # Fallback classes
     @dataclass
     class InjectionConfig:

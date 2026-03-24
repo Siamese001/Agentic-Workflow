@@ -17,7 +17,7 @@ try:
         evaluate_tool_use_ground_truth,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ToolUseResult = None  # type: ignore[assignment,misc]
     evaluate_tool_use_ground_truth = None  # type: ignore[assignment,misc]

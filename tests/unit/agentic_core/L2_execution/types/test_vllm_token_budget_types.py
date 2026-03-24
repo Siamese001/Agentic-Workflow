@@ -30,7 +30,7 @@ try:
         select_local_tier,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     TaskClass = None  # type: ignore[assignment,misc]
     VLLMOutputCapExceeded = None  # type: ignore[assignment,misc]

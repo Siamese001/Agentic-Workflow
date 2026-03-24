@@ -18,7 +18,7 @@ try:
         StaticFreezeReader,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     FreezeStateReader = None  # type: ignore[assignment,misc]
     JsonFileBackedFreezeReader = None  # type: ignore[assignment,misc]

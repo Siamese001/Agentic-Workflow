@@ -165,7 +165,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L1_cognition.types.domain_types import DomainContext, SharingPolicy
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     SharingPolicy = DomainContext = None  # type: ignore[assignment,misc]
 

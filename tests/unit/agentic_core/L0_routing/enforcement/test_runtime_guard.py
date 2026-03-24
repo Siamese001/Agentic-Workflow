@@ -17,7 +17,7 @@ try:
         v15_runtime_boundary,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     runtime_guard = None  # type: ignore[assignment,misc]
     assert_v15_guarded = None  # type: ignore[assignment,misc]

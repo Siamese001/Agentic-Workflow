@@ -17,7 +17,7 @@ try:
         register_rule,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RGValidationExecutor = None  # type: ignore[assignment,misc]
     register_rule = None  # type: ignore[assignment,misc]

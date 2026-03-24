@@ -18,7 +18,7 @@ try:
         SecureCheckpointManager,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CheckpointIntegrityError = None  # type: ignore[assignment,misc]
     SecureCheckpointManager = None  # type: ignore[assignment,misc]

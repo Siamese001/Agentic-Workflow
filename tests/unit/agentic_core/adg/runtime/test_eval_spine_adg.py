@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     OptimizationStage = None  # type: ignore[assignment,misc]
     EvalMetricResult = None  # type: ignore[assignment,misc]

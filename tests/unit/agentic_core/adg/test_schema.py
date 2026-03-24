@@ -23,7 +23,7 @@ try:
         verify_layer_graph_consistency,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     canonical_name = None  # type: ignore[assignment,misc]
     verify_layer_graph_consistency = None  # type: ignore[assignment,misc]

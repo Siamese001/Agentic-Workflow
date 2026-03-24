@@ -24,7 +24,7 @@ try:
         secure_config,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PermissionLevel = None  # type: ignore[assignment,misc]
     SecurityAction = None  # type: ignore[assignment,misc]

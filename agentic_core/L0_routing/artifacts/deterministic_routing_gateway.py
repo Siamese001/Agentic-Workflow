@@ -211,8 +211,8 @@ class RoutingArtifact:
         try:
             rp = RoutePath(self.route_path)
         except ValueError as e:
-        # TODO: Add proper input validation
-        logger.warning(f"Invalid input: {e}")
+            # TODO: Add proper input validation
+            logger.warning(f"Invalid input: {e}")
             rp = RoutePath.STANDARD_VALIDATION
         return RouteDecisionArtifact(
             trace_id=self.trace_id,

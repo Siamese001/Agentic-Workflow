@@ -19,7 +19,7 @@ try:
         synchronize_registry_hashes,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     load_registry = None  # type: ignore[assignment,misc]
     save_registry = None  # type: ignore[assignment,misc]

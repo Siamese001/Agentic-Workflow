@@ -17,7 +17,7 @@ try:
         get_proactive_scanner,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ProactiveFissionScanner = None  # type: ignore[assignment,misc]
     get_proactive_scanner = None  # type: ignore[assignment,misc]

@@ -18,7 +18,7 @@ try:
         main,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RootHygieneAgent = None  # type: ignore[assignment,misc]
     get_project_root = None  # type: ignore[assignment,misc]

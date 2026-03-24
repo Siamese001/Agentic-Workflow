@@ -387,6 +387,7 @@ class CognitiveNode:
             from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
 
             self.meta_learner = MetaLearningAgent()
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             self.meta_learner = None
         try:

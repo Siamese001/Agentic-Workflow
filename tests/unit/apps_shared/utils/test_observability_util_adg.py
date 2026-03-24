@@ -11,7 +11,7 @@ try:
         get_all_events,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_all_events = None  # type: ignore[assignment,misc]
     clear_events = None  # type: ignore[assignment,misc]

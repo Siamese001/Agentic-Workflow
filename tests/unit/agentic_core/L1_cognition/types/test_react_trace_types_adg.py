@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     C0BoundaryViolation = None  # type: ignore[assignment,misc]
     assert_c0_informational = None  # type: ignore[assignment,misc]

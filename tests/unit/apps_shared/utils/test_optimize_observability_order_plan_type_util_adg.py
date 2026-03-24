@@ -24,7 +24,7 @@ try:
         optimize_observability_order,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     OptimizeObservabilityOrderPlanType = None  # type: ignore[assignment,misc]
     OptimizeObservabilityOrderPlanConstraints = None  # type: ignore[assignment,misc]

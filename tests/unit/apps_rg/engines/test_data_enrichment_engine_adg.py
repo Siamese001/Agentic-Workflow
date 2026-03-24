@@ -168,7 +168,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_rg.engines.data_enrichment_engine import DataEnrichmentEngine
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     DataEnrichmentEngine = None  # type: ignore[assignment,misc]
 

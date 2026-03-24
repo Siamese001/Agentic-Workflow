@@ -17,7 +17,7 @@ try:
         get_mcp_gateway,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SovereignMCPGateway = None  # type: ignore[assignment,misc]
     get_mcp_gateway = None  # type: ignore[assignment,misc]

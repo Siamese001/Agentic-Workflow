@@ -17,7 +17,7 @@ try:
         create_firecracker_manager,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     FirecrackerManager = None  # type: ignore[assignment,misc]
     create_firecracker_manager = None  # type: ignore[assignment,misc]

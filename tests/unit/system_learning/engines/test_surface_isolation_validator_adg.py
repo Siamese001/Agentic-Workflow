@@ -18,7 +18,7 @@ try:
         reset_surface_isolation_validator,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SurfaceIsolationValidator = None  # type: ignore[assignment,misc]
     get_surface_isolation_validator = None  # type: ignore[assignment,misc]

@@ -17,7 +17,7 @@ try:
         split_file_by_type,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     count_top_level_defs = None  # type: ignore[assignment,misc]
     split_file_by_type = None  # type: ignore[assignment,misc]

@@ -19,7 +19,7 @@ try:
         VersionNotFound,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ParentVersionNotFound = None  # type: ignore[assignment,misc]
     VersionNotFound = None  # type: ignore[assignment,misc]

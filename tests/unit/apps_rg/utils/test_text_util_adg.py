@@ -17,7 +17,7 @@ try:
         sanitize_campaign_text,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     sanitize_campaign_text = None  # type: ignore[assignment,misc]
     extract_keywords = None  # type: ignore[assignment,misc]

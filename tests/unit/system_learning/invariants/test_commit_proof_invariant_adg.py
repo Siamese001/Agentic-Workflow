@@ -18,7 +18,7 @@ try:
         verify_commit_proof,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CommitProofViolation = None  # type: ignore[assignment,misc]
     CommitProofInvariant = None  # type: ignore[assignment,misc]

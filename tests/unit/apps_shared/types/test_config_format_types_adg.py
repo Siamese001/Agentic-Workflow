@@ -175,7 +175,7 @@ try:
         ConversionResult,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     ConfigFormat = ConversionMode = ConfigField = ConfigModel = None  # type: ignore[assignment,misc]
     ConversionConfig = ConversionResult = ConfigModelConverter = None  # type: ignore[assignment,misc]

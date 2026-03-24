@@ -17,7 +17,7 @@ try:
         rank_message_variants,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     rank_message_variants = None  # type: ignore[assignment,misc]
     process = None  # type: ignore[assignment,misc]

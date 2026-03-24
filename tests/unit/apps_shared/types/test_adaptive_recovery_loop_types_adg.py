@@ -174,7 +174,7 @@ try:
         create_adaptive_recovery_loop,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     FailureType = RecoveryAction = FailureEvent = RecoveryResult = None  # type: ignore[assignment,misc]
     AdaptiveRecoveryLoop = create_adaptive_recovery_loop = None  # type: ignore[assignment,misc]

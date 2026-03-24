@@ -171,7 +171,7 @@ try:
         StateValidationResult,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     StateCheckpoint = StateValidationResult = LICStateManager = None  # type: ignore[assignment,misc]
 

@@ -17,7 +17,7 @@ try:
         diagnose,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     LogCampaignMetrics = None  # type: ignore[assignment,misc]
     diagnose = None  # type: ignore[assignment,misc]

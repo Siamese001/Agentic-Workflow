@@ -17,7 +17,7 @@ try:
         is_valid_root_folder,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_territory_metadata = None  # type: ignore[assignment,misc]
     get_all_territories = None  # type: ignore[assignment,misc]

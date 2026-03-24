@@ -168,7 +168,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_rg.engines.ats_compatibility_engine import ATSCompatibilityEngine
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ATSCompatibilityEngine = None  # type: ignore[assignment,misc]
 

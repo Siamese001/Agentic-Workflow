@@ -21,7 +21,7 @@ try:
         shutdown_all_managers,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ResourceType = None  # type: ignore[assignment,misc]
     ResourceInfo = None  # type: ignore[assignment,misc]

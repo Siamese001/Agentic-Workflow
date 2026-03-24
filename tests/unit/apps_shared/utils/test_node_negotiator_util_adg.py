@@ -24,7 +24,7 @@ try:
         send_clarification,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     NegotiationMessage = None  # type: ignore[assignment,misc]
     NegotiationRound = None  # type: ignore[assignment,misc]

@@ -14,7 +14,7 @@ try:
         get_telemetry,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SystemTelemetry = None  # type: ignore[assignment,misc]
     OperationStatus = None  # type: ignore[assignment,misc]

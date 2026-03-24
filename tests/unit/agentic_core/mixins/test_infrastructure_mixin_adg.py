@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.mixins.infrastructure_mixin import infrastructure_mixin
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     infrastructure_mixin = None  # type: ignore[assignment,misc]
 

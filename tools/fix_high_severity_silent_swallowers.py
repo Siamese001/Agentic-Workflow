@@ -35,7 +35,7 @@ class HighSeveritySilentSwallowerFixer:
         import_errors = [v for v in self.violations if 'ImportError' in v['exception_type']]
         print(f"  Found {len(import_errors)} ImportError violations")
 
-        for violation in import_errors[:100]:  # Process first 100 as demo
+        for violation in import_errors:  # Process ALL ImportError violations
             file_path = Path(violation['file_path'])
             line_no = violation['line_number']
 

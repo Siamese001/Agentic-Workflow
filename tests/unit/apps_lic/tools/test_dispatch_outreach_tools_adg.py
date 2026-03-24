@@ -17,7 +17,7 @@ try:
         execute,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     DispatchOutreachTools = None  # type: ignore[assignment,misc]
     execute = None  # type: ignore[assignment,misc]

@@ -17,7 +17,7 @@ try:
         envelope,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     envelope = None  # type: ignore[assignment,misc]
     EnvelopeFactory = None  # type: ignore[assignment,misc]

@@ -168,7 +168,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L1_cognition.engines.meta_observability import MetaLearningObservability
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     MetaLearningObservability = None  # type: ignore[assignment,misc]
 

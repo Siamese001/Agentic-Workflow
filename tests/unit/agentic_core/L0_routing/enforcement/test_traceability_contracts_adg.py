@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     TraceIDFormatError = None  # type: ignore[assignment,misc]
     generate_trace_id = None  # type: ignore[assignment,misc]

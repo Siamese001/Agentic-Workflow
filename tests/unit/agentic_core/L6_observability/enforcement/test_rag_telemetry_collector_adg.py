@@ -17,7 +17,7 @@ try:
         RagTelemetryCollector,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RagMetrics = None  # type: ignore[assignment,misc]
     RagTelemetryCollector = None  # type: ignore[assignment,misc]

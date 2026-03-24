@@ -198,7 +198,8 @@ class MissionPreflight:
                 from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
 
                 self._location_agent = LocationValidatorAgent(self.project_root)
-            except ImportError:
+            # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
                 pass
         return self._location_agent
 

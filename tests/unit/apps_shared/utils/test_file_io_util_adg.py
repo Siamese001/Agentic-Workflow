@@ -19,7 +19,7 @@ try:
         write_compliant_file,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     calculate_file_hash = None  # type: ignore[assignment,misc]
     is_excluded = None  # type: ignore[assignment,misc]

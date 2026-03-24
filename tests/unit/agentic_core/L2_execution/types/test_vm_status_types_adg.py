@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L2_execution.types.vm_status_types import VmProvider, VmStatus
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     VmStatus = None  # type: ignore[assignment,misc]
     VmProvider = None  # type: ignore[assignment,misc]

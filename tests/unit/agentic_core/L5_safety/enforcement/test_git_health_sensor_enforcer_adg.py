@@ -11,7 +11,7 @@ try:
         check_git_health,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     GitHealthSensor = None  # type: ignore[assignment,misc]
     check_git_health = None  # type: ignore[assignment,misc]

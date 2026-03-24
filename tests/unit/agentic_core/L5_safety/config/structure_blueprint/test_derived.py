@@ -15,7 +15,7 @@ try:
         verify_derived_registries,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     verify_derived_registries = None  # type: ignore[assignment,misc]
 

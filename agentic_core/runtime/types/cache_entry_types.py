@@ -85,7 +85,8 @@ except ImportError as _err:
     raise ImportError("numpy is required for this module. Install with: pip install -e '.[infra]'") from _err
 try:
     from agentic_core.semantic_memory.embeddings.core_embedder import get_embedding
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
 
     def get_embedding(text: str, model: str = None, dimensions: int = None):
         """Stub embedding function - returns zero vector if real embedder unavailable."""

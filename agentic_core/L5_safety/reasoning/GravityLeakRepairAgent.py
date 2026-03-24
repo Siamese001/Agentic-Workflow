@@ -573,7 +573,8 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                         return self._emit_plan_only(fix)
                 except GravityRepairProhibitedError:
                     return self._emit_plan_only(fix)
-                except ImportError:
+                # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
                     pass
             temp_fd, temp_path = tempfile.mkstemp(dir=fix.file_path.parent, text=True)
             try:

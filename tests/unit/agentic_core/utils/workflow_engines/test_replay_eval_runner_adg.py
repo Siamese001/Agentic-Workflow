@@ -11,7 +11,7 @@ try:
         SystemConfig,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SystemConfig = None  # type: ignore[assignment,misc]
     ReplayEvaluationRunner = None  # type: ignore[assignment,misc]

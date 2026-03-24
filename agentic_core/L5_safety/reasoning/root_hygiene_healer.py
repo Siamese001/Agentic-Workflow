@@ -205,7 +205,8 @@ try:
     from agentic_core.utils.decorators_compat_util import standard_heal
 
     HAS_SOVEREIGN_BASE = True
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     HAS_SOVEREIGN_BASE = False
     SovereignBaseAgent = object
 

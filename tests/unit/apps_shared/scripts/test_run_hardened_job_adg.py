@@ -18,7 +18,7 @@ try:
         run_sync,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     create_test_workflow_spec = None  # type: ignore[assignment,misc]
     main = None  # type: ignore[assignment,misc]

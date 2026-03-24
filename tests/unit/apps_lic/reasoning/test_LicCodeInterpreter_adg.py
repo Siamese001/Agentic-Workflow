@@ -21,7 +21,7 @@ try:
         create_code_interpreter,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ScoredCandidate = None  # type: ignore[assignment,misc]
     ScoringCriteria = None  # type: ignore[assignment,misc]

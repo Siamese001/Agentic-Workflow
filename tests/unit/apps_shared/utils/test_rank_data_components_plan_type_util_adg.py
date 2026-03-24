@@ -24,7 +24,7 @@ try:
         rank_data_components,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RankDataComponentsPlanType = None  # type: ignore[assignment,misc]
     RankDataComponentsPlanConstraints = None  # type: ignore[assignment,misc]

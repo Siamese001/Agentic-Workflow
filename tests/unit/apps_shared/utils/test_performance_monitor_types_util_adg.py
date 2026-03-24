@@ -23,7 +23,7 @@ try:
         timed,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     TimingMetric = None  # type: ignore[assignment,misc]
     MetricsSummary = None  # type: ignore[assignment,misc]

@@ -12,7 +12,7 @@ try:
         RgSpineAdapter,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RgSpineAdapter = None  # type: ignore[assignment,misc]
 

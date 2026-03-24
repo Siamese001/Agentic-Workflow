@@ -24,7 +24,7 @@ try:
         create_legacy_proactive_manager,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ResourceType = None  # type: ignore[assignment,misc]
     AllocationStatus = None  # type: ignore[assignment,misc]

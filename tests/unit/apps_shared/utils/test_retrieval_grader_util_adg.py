@@ -23,7 +23,7 @@ try:
         grade_retrieval,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     GradeStatus = None  # type: ignore[assignment,misc]
     RetrievalGrade = None  # type: ignore[assignment,misc]

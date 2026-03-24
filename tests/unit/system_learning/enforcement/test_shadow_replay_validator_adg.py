@@ -19,7 +19,7 @@ try:
         ShadowReplayValidator,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RegressionError = None  # type: ignore[assignment,misc]
     ReplayResult = None  # type: ignore[assignment,misc]

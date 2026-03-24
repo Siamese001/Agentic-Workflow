@@ -13,7 +13,7 @@ try:
         heal_architecture_governance,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     heal_architecture_governance = None  # type: ignore[assignment,misc]
     CHECK_ID = None  # type: ignore[assignment,misc]

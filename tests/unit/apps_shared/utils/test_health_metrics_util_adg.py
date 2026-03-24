@@ -11,7 +11,7 @@ try:
         count_failures_by_code,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     compute_error_rate = None  # type: ignore[assignment,misc]
     count_failures_by_code = None  # type: ignore[assignment,misc]

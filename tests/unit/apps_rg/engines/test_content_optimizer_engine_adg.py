@@ -168,7 +168,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_rg.engines.content_optimizer_engine import ContentOptimizerEngine
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ContentOptimizerEngine = None  # type: ignore[assignment,misc]
 

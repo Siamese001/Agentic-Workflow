@@ -18,7 +18,7 @@ try:
         should_invalidate_cache,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     generate_llm_cache_key = None  # type: ignore[assignment,misc]
     generate_llm_cache_key_with_fingerprint = None  # type: ignore[assignment,misc]

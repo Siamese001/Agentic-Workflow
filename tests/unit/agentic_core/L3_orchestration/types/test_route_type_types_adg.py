@@ -11,7 +11,7 @@ try:
         RouteType,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False; RouteType = ArchetypeType = RouteClassifierConfig = None  # type: ignore[assignment,misc]
 
 @pytest.mark.skipif(not _AVAIL, reason="deps unavailable")

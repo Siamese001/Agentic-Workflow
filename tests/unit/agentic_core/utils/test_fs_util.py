@@ -18,7 +18,7 @@ try:
         remove_duplicate_suffix_path,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_python_files_fast = None  # type: ignore[assignment,misc]
     calculate_file_hash = None  # type: ignore[assignment,misc]

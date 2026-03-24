@@ -18,7 +18,7 @@ try:
         ContentHash,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ContentHash = None  # type: ignore[assignment,misc]
     C0ContextArtifact = None  # type: ignore[assignment,misc]

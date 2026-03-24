@@ -17,7 +17,7 @@ try:
         create_autonomous_execution_engine,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     autonomous_execution_engine = None  # type: ignore[assignment,misc]
     create_autonomous_execution_engine = None  # type: ignore[assignment,misc]

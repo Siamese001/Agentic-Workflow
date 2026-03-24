@@ -14,7 +14,7 @@ try:
         build_seed_embedding_pack,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     Embedder = None  # type: ignore[assignment,misc]
     DeterministicHashEmbedder = None  # type: ignore[assignment,misc]

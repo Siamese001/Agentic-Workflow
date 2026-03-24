@@ -170,7 +170,7 @@ try:
         SpecificityProseConfig,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False; SpecificityProseConfig = CompanySpecificDetail = None  # type: ignore[assignment,misc]
 
 @pytest.mark.skipif(not _AVAIL, reason="deps unavailable")

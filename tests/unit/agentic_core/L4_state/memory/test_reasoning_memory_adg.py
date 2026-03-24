@@ -17,7 +17,7 @@ try:
         Thought,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     Thought = None  # type: ignore[assignment,misc]
     ReasoningMemory = None  # type: ignore[assignment,misc]

@@ -206,6 +206,7 @@ class LateInteractionReranker:
             from sentence_transformers import CrossEncoder  # noqa: F401
 
             return True
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             logger.warning("sentence_transformers not available, reranker will be in fallback mode")
             return False

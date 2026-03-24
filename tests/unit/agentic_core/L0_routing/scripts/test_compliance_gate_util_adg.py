@@ -17,7 +17,7 @@ try:
         check_legacy_compatibility,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     check_compliance = None  # type: ignore[assignment,misc]
     check_legacy_compatibility = None  # type: ignore[assignment,misc]

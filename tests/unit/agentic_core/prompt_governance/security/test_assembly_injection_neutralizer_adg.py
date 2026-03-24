@@ -18,7 +18,7 @@ try:
         neutralize_prompt,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     NeutralizationResult = None  # type: ignore[assignment,misc]
     InjectionPattern = None  # type: ignore[assignment,misc]

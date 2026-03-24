@@ -17,7 +17,7 @@ try:
         process,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SerializeGenerationContext = None  # type: ignore[assignment,misc]
     process = None  # type: ignore[assignment,misc]

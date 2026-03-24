@@ -25,7 +25,7 @@ try:
         build_template_render_key,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     build_routing_rule_surface_key = None  # type: ignore[assignment,misc]
     build_route_decision_key = None  # type: ignore[assignment,misc]

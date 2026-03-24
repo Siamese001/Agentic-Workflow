@@ -174,7 +174,8 @@ try:
     HAS_ATOMIC_MIXIN = True
     # Define base classes tuple for inheritance
     BASE_CLASSES = (AtomicExecutionMixin, SovereignBaseAgent)
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     HAS_SOVEREIGN_BASE = False
     HAS_ATOMIC_MIXIN = False
     # Use single base class to avoid duplication

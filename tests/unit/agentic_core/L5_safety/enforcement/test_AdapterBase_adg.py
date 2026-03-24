@@ -19,7 +19,7 @@ try:
         HealingAdapter,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AdapterContext = None  # type: ignore[assignment,misc]
     AdapterResult = None  # type: ignore[assignment,misc]

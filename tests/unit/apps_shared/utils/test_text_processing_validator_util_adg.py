@@ -17,7 +17,7 @@ try:
         TextProcessor,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     TextMatch = None  # type: ignore[assignment,misc]
     TextProcessor = None  # type: ignore[assignment,misc]

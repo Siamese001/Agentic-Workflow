@@ -174,7 +174,7 @@ try:
         SpecialistDraftPacket,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     SpecialistDraftPacket = EvidenceClarificationRecord = EvidenceBriefRecord = None  # type: ignore[assignment,misc]
     EvidenceLiaisonPacket = CritiqueFindingRecord = CritiquePanelPacket = None  # type: ignore[assignment,misc]

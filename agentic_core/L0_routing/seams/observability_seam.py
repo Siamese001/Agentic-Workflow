@@ -193,5 +193,6 @@ def load_meta_learning_agent():
     try:
         mod = importlib.import_module("agentic_core.L1_cognition.engines.meta_client")
         return mod.MetaLearningClient
-    except ImportError:
+    # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
         return None

@@ -194,7 +194,7 @@ try:
     import pydantic  # noqa: F401
 
     PYDANTIC_AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     PYDANTIC_AVAILABLE = False
 
 

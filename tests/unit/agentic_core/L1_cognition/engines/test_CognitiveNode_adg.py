@@ -21,7 +21,7 @@ try:
         ReasoningNode,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CognitiveResult = None  # type: ignore[assignment,misc]
     PerceptionNode = None  # type: ignore[assignment,misc]

@@ -16,7 +16,7 @@ try:
         get_file_stats,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_file_stats = None  # type: ignore[assignment,misc]
     find_large_files = None  # type: ignore[assignment,misc]

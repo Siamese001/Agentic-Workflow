@@ -106,7 +106,8 @@ _mod = importlib.import_module("agentic_core.L5_safety.enforcement.mcp_hardened_
 MCPHardenedMixin = _mod.MCPHardenedMixin
 try:
     from agentic_core.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
 
     class CanonBaseAgentInterface:
         pass

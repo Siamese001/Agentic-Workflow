@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     V15EnforcementError = None  # type: ignore[assignment,misc]
     is_v15_enforced = None  # type: ignore[assignment,misc]

@@ -174,7 +174,7 @@ try:
         ToolSpecification,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     ToolCategory = ToolProtocol = ToolSpecification = None  # type: ignore[assignment,misc]
     ToolInvocationResult = ToolInvocationConfig = ObservabilityToolInvoker = None  # type: ignore[assignment,misc]

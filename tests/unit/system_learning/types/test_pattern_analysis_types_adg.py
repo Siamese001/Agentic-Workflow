@@ -19,7 +19,7 @@ try:
         PatternSourceIds,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PatternSourceIds = None  # type: ignore[assignment,misc]
     PatternFindingKey = None  # type: ignore[assignment,misc]

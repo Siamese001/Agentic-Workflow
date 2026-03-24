@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AtomicTask = None  # type: ignore[assignment,misc]
     MissionPlan = None  # type: ignore[assignment,misc]

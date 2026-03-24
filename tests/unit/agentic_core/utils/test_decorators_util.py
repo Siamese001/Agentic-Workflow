@@ -17,7 +17,7 @@ try:
         standard_heal_async,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     standard_heal = None  # type: ignore[assignment,misc]
     standard_heal_async = None  # type: ignore[assignment,misc]

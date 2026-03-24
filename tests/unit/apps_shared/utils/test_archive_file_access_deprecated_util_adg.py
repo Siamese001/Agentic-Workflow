@@ -10,7 +10,7 @@ try:
         ARCHIVE_FILE_ACCESS_DEPRECATED,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ARCHIVE_FILE_ACCESS_DEPRECATED = None  # type: ignore[assignment,misc]
 

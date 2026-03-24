@@ -190,7 +190,7 @@ try:
         create_adaptive_learning_engine,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     AdaptiveLearningEngine = create_adaptive_learning_engine = None  # type: ignore[assignment,misc]
 

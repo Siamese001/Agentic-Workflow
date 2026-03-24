@@ -18,7 +18,7 @@ try:
         rerank_documents,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     LateInteractionReranker = None  # type: ignore[assignment,misc]
     PassThroughReranker = None  # type: ignore[assignment,misc]

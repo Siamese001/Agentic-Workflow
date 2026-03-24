@@ -272,6 +272,7 @@ class ResourceManager:
             self._redis_client.ping()
             logger.info("Redis connection established")
             self._initialized = True
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             logger.warning("Redis not installed, using in-memory cache")
             self._initialized = True

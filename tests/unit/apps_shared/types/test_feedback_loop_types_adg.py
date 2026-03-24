@@ -174,7 +174,7 @@ try:
         QualityTrend,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     FeedbackType = QualityFeedback = QualityTrend = FeedbackLoop = None  # type: ignore[assignment,misc]
 

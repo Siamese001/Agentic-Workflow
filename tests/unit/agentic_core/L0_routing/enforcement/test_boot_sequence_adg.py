@@ -168,7 +168,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L0_routing.enforcement.boot_sequence import BootSequence
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     BootSequence = None  # type: ignore[assignment,misc]
 

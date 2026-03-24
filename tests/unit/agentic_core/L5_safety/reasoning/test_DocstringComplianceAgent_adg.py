@@ -17,7 +17,7 @@ try:
         get_docstring_compliance_agent,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     DocstringComplianceAgent = None  # type: ignore[assignment,misc]
     get_docstring_compliance_agent = None  # type: ignore[assignment,misc]

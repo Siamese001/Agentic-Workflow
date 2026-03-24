@@ -15,7 +15,7 @@ try:
         scan_forbidden_root_folders,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     scan_forbidden_root_folders = None  # type: ignore[assignment,misc]
     scan_archived_files_at_root = None  # type: ignore[assignment,misc]

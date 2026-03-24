@@ -17,7 +17,7 @@ try:
         register_stage,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     register_stage = None  # type: ignore[assignment,misc]
     get_stage_handler = None  # type: ignore[assignment,misc]

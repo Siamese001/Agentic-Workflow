@@ -17,7 +17,7 @@ try:
         CostGovernorAgent,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     BudgetExceededError = None  # type: ignore[assignment,misc]
     CostGovernorAgent = None  # type: ignore[assignment,misc]

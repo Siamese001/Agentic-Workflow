@@ -25,7 +25,7 @@ try:
         emit_pipeline_digest,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SubphaseResult = None  # type: ignore[assignment,misc]
     AgentRunResult = None  # type: ignore[assignment,misc]

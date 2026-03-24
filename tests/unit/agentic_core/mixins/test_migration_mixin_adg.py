@@ -17,7 +17,7 @@ try:
         MigrationMixin,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     MigrationError = None  # type: ignore[assignment,misc]
     MigrationMixin = None  # type: ignore[assignment,misc]

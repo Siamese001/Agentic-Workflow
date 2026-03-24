@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     WriteGatewayVisitor = None  # type: ignore[assignment,misc]
     scan_file_for_writes = None  # type: ignore[assignment,misc]

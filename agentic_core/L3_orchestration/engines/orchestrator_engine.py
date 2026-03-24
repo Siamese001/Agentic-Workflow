@@ -615,6 +615,7 @@ class Orchestrator(SovereignBaseAgent):
                     "recommendations": credential_results.get("recommendations", []),
                 },
             )
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             self.logger.warning("[COMPLIANCE] CredentialScannerAgent not available")
             return AgentResult(

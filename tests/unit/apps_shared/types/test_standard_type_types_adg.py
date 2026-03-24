@@ -171,7 +171,7 @@ try:
         StandardType,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     StandardType = QualityDimension = QualityStandard = None  # type: ignore[assignment,misc]
 

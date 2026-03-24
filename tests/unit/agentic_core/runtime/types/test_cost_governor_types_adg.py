@@ -21,7 +21,7 @@ try:
         track_api_call,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     BudgetExceededError = None  # type: ignore[assignment,misc]
     CostGovernor = None  # type: ignore[assignment,misc]

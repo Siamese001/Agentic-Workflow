@@ -256,6 +256,7 @@ class ContrastiveSemanticCache:
             return False
         try:
             return True
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             logger.warning("sentence_transformers or numpy not available, cache will be in fallback mode")
             return False

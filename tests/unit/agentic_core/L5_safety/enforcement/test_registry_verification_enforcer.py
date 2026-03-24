@@ -24,7 +24,7 @@ try:
         run_verification,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AgentInfo = None  # type: ignore[assignment,misc]
     VerificationResult = None  # type: ignore[assignment,misc]

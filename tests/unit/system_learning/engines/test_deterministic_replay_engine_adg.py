@@ -17,7 +17,7 @@ try:
         ReplayResult,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ReplayResult = None  # type: ignore[assignment,misc]
     DeterministicReplayEngine = None  # type: ignore[assignment,misc]

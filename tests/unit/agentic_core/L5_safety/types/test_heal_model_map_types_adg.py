@@ -172,7 +172,7 @@ try:
     )
     from agentic_core.L5_safety.types.heal_policy_types import ReasoningTier
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     LOW_MODEL_ID = HIGH_MODEL_ID = map_tier_to_model_id = ReasoningTier = None  # type: ignore[assignment,misc]
 

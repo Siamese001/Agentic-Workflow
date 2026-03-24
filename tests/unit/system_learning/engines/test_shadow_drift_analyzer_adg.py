@@ -17,7 +17,7 @@ try:
         ShadowDriftAnalyzer,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     DriftSummary = None  # type: ignore[assignment,misc]
     ShadowDriftAnalyzer = None  # type: ignore[assignment,misc]

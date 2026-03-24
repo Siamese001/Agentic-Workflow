@@ -25,7 +25,7 @@ try:
         example_validation_gates,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AuthenticityPatterns = None  # type: ignore[assignment,misc]
     CompetitiveIntelligence = None  # type: ignore[assignment,misc]

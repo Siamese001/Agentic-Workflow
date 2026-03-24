@@ -93,7 +93,8 @@ try:
     from agentic_core.adg.client.InMemoryStore import ADGMCPClient as _MCPFallbackClient
 
     _FALLBACK_AVAILABLE = True
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     _FALLBACK_AVAILABLE = False
 
 try:

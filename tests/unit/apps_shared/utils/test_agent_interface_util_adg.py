@@ -22,7 +22,7 @@ try:
         get_agent_registry,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AgentStatus = None  # type: ignore[assignment,misc]
     AgentContext = None  # type: ignore[assignment,misc]

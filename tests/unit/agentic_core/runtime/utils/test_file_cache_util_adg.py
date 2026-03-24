@@ -19,7 +19,7 @@ try:
         invalidate_cache,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     FileCache = None  # type: ignore[assignment,misc]
     get_python_files = None  # type: ignore[assignment,misc]

@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SSOTBindingError = None  # type: ignore[assignment,misc]
     resolve_ssot_binding = None  # type: ignore[assignment,misc]

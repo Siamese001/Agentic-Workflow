@@ -15,7 +15,7 @@ try:
         main,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     NonConformingAgentFinder = None  # type: ignore[assignment,misc]
     main = None  # type: ignore[assignment,misc]

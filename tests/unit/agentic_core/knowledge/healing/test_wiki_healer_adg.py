@@ -17,7 +17,7 @@ try:
         create_deepwiki_healing_strategy,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     DeepWikiHealingStrategy = None  # type: ignore[assignment,misc]
     create_deepwiki_healing_strategy = None  # type: ignore[assignment,misc]

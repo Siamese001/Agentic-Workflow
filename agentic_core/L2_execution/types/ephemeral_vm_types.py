@@ -94,7 +94,8 @@ from agentic_core.L2_execution.providers import get_clock
 
 try:
     from agentic_core.L2_execution.enforcement.vm.firecracker_manager import FirecrackerManager
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     FirecrackerManager = None
 try:
     from agentic_core.L2_execution.types.firecracker_manager_types import VMConfig

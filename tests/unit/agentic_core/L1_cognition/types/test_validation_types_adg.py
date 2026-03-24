@@ -7,7 +7,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L1_cognition.types.validation_types import IValidationProtocol
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     IValidationProtocol = None  # type: ignore[assignment,misc]
 

@@ -167,7 +167,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.runtime.types.state_types import AgentMessage, AgentState
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False; AgentMessage = AgentState = None  # type: ignore[assignment,misc]
 
 @pytest.mark.skipif(not _AVAIL, reason="deps unavailable")

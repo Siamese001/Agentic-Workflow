@@ -21,7 +21,7 @@ try:
         normalize_identity,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     IdentityKind = None  # type: ignore[assignment,misc]
     IdentityConfidence = None  # type: ignore[assignment,misc]

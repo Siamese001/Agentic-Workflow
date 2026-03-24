@@ -20,7 +20,7 @@ try:
         validate_import_conventions,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     validate_file_naming = None  # type: ignore[assignment,misc]
     get_placement_guidance = None  # type: ignore[assignment,misc]

@@ -20,7 +20,7 @@ try:
         save_rg_specs,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SovereignConfigLoader = None  # type: ignore[assignment,misc]
     get_config_path = None  # type: ignore[assignment,misc]

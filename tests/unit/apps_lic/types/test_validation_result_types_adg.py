@@ -172,7 +172,7 @@ try:
         validate_schema_policy,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     ValidationResult = Draft = DraftPackage = None  # type: ignore[assignment,misc]
     score_quality = validate_schema_policy = check_content_compliance = None  # type: ignore[assignment,misc]

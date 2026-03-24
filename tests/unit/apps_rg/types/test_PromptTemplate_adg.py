@@ -167,7 +167,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_rg.types.PromptTemplate import PromptTemplate
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     PromptTemplate = None  # type: ignore[assignment,misc]
 
@@ -179,14 +179,14 @@ class TestPromptTemplate:
     def test_is_pydantic(self):
         try:
             from pydantic import BaseModel; assert issubclass(PromptTemplate, BaseModel)
-        except ImportError:
+        pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
             pytest.skip("pydantic unavailable")
     def test_broken_placeholder_raises(self):
         try:
             from pydantic import ValidationError
             with pytest.raises(ValidationError):
                 PromptTemplate(id="bad", template="hello { world", required_vars=[])
-        except ImportError:
+        pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
             pytest.skip("pydantic unavailable")
     def test_valid_template_no_vars(self):
         t = PromptTemplate(id="t2", template="Write a letter.", required_vars=[])

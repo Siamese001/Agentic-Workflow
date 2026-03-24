@@ -17,7 +17,7 @@ try:
         RoutingTier,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RoutingTier = None  # type: ignore[assignment,misc]
     RouteConfig = None  # type: ignore[assignment,misc]

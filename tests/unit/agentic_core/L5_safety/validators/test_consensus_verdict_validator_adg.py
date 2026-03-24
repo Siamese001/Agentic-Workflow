@@ -17,7 +17,7 @@ try:
         ModelOpinion,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ConsensusVerdict = None  # type: ignore[assignment,misc]
     ModelOpinion = None  # type: ignore[assignment,misc]

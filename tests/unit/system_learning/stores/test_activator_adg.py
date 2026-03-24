@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     InMemoryActivator = None  # type: ignore[assignment,misc]
     FileBackedActivator = None  # type: ignore[assignment,misc]

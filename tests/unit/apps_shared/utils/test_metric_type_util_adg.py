@@ -26,7 +26,7 @@ try:
         plan_observability,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     MetricType = None  # type: ignore[assignment,misc]
     LogLevel = None  # type: ignore[assignment,misc]

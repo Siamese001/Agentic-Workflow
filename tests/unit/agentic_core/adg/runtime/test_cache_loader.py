@@ -22,7 +22,7 @@ try:
         load_or_scan,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     load_or_scan = None  # type: ignore[assignment,misc]
     invalidate_cache = None  # type: ignore[assignment,misc]

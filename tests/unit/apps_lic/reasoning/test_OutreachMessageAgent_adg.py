@@ -17,7 +17,7 @@ try:
         OutreachTemplateError,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     OutreachTemplateError = None  # type: ignore[assignment,misc]
     OutreachMessageAgent = None  # type: ignore[assignment,misc]

@@ -106,7 +106,8 @@ from typing import Any
 
 try:
     from agentic_core.L1_cognition.reasoning.trace_models import ReasoningTraceModel
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     ReasoningTraceModel = None  # type: ignore[misc,assignment]
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,

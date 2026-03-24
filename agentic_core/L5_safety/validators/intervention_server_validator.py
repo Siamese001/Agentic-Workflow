@@ -185,7 +185,8 @@ try:
     from fastapi.responses import HTMLResponse, JSONResponse
 
     FASTAPI_AVAILABLE: Any = True
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     FASTAPI_AVAILABLE: Any = False
     Logger.warning("FastAPI not available - intervention server disabled")
 

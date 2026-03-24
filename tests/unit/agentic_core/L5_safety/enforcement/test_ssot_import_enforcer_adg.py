@@ -18,7 +18,7 @@ try:
         needs_ssot_import,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     needs_ssot_import = None  # type: ignore[assignment,misc]
     add_ssot_import = None  # type: ignore[assignment,misc]

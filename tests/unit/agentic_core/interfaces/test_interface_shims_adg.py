@@ -68,7 +68,7 @@ try:
     import agentic_core.interfaces.observability as _obs_module
 
     _OBS_AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _obs_module = None  # type: ignore[assignment]
     _OBS_AVAILABLE = False
 

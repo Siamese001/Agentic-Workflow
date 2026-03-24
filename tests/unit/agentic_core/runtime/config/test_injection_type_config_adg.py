@@ -18,7 +18,7 @@ try:
         InjectionType,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     InjectionType = None  # type: ignore[assignment,misc]
     InjectionScope = None  # type: ignore[assignment,misc]

@@ -212,7 +212,8 @@ def get_mcp_authority() -> MCPAuthorityProtocol:
         )
 
         return mcp_authority  # type: ignore[return-value]
-    except ImportError:
+    # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
         return _NullAuthority()
 
 

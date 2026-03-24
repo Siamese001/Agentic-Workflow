@@ -18,7 +18,7 @@ try:
         PatternAdvice,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PatternAdvice = None  # type: ignore[assignment,misc]
     HealingPatternAdvisor = None  # type: ignore[assignment,misc]

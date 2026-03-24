@@ -18,7 +18,7 @@ try:
         sanitize_content,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     GovernanceShieldAgent = None  # type: ignore[assignment,misc]
     create_governance_shield_agent = None  # type: ignore[assignment,misc]

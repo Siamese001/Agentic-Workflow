@@ -171,7 +171,7 @@ try:
         GravityLeakDetector,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CORE_TERRITORY_KEYWORDS = None  # type: ignore[assignment]
     GravityLeakDetector = None  # type: ignore[assignment,misc]

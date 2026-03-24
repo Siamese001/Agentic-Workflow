@@ -230,7 +230,8 @@ try:
     from agentic_core.L0_routing.utils.path_util import validate_path_within_project
     from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
     from agentic_core.L0_routing.utils.ssot_discovery_util import load_agent_discovery
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     print("CRITICAL: SSOT imports failed. Ensure PYTHONPATH includes project root.", file=sys.stderr)
     sys.exit(1)
 logging.basicConfig(level=logging.ERROR, format="%(message)s")

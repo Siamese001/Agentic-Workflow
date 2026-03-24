@@ -22,7 +22,7 @@ try:
         new_execution_cycle,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ExecutionProposal = None  # type: ignore[assignment,misc]
     new_execution_cycle = None  # type: ignore[assignment,misc]

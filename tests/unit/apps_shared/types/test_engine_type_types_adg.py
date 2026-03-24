@@ -7,7 +7,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.engine_type_types import EngineType
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     EngineType = None  # type: ignore[assignment,misc]
 

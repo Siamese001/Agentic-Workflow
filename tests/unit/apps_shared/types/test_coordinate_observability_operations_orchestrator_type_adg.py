@@ -10,7 +10,7 @@ try:
         CoordinateObservabilityOperationsOrchestratorType,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     CoordinateObservabilityOperationsOrchestratorType = None  # type: ignore[assignment,misc]
     CoordinateObservabilityOperationsOrchestratorProcessor = None  # type: ignore[assignment,misc]

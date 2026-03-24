@@ -18,7 +18,7 @@ try:
         SovereignPolicyRegistry,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PolicySeverity = None  # type: ignore[assignment,misc]
     SovereignPolicy = None  # type: ignore[assignment,misc]

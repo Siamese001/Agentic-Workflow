@@ -548,7 +548,8 @@ def _fire_meta_learning_intake(state_mgr: "object", now_utc: int, repo_root: Pat
         logging.info(
             "[MetaLearning] HealingOutcomeIntakeAdapter: %d records persisted to L4B store.", store.count()
         )
-    except ImportError:
+    # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
         logging.debug("[MetaLearning] Intake adapter not yet available (pre-Wave 0B). Skipping.")
     except (AttributeError, TypeError, OSError) as _ml_err:
         logging.warning("[MetaLearning] Intake adapter failed (non-fatal): %s", _ml_err)

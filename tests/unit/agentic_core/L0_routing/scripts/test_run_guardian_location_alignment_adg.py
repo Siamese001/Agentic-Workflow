@@ -14,7 +14,7 @@ try:
         scan_missing_directories,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     scan_missing_directories = None  # type: ignore[assignment,misc]
     scan_misplaced_files = None  # type: ignore[assignment,misc]

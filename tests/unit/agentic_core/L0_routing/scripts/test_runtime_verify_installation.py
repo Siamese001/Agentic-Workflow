@@ -31,7 +31,7 @@ def _test_import(package_name: Any, min_version: Any = None) -> Any:
         if min_version and hasattr(ConfigurationService().module, "__version__"):
             ConfigurationService().module.__version__
         return True
-    except ImportError:
+    pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
         ConfigurationService().Logger.warning("Swallowed exception", exc_info=True)
     return False
 

@@ -23,7 +23,7 @@ try:
         sha256_hex,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     VLLMInfrastructureFingerprint = None  # type: ignore[assignment,misc]
     canonical_json = None  # type: ignore[assignment,misc]

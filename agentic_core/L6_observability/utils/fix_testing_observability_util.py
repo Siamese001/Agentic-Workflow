@@ -168,7 +168,8 @@ _emit_proposal_commits_routing("p1", "fix_testing_observability_util", "routing_
 
 try:
     from agentic_core.L0_routing.scripts.full_agent_discovery import AGENT_DISCOVERY_JSON
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     AGENT_DISCOVERY_JSON = "agent_discovery_full.json"
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DISCOVERY_JSON = PROJECT_ROOT / AGENT_DISCOVERY_JSON

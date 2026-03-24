@@ -17,7 +17,7 @@ try:
         compute_replay_key,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     MetaLearningReplayBinding = None  # type: ignore[assignment,misc]
     compute_replay_key = None  # type: ignore[assignment,misc]

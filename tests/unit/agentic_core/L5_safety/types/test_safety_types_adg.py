@@ -9,7 +9,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L5_safety.types.safety_types import RuleType, ThreatLevel
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False; ThreatLevel = RuleType = None  # type: ignore[assignment,misc]
 
 @pytest.mark.skipif(not _AVAIL, reason="deps unavailable")

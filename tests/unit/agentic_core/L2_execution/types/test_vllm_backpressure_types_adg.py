@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     VLLMQueueState = None  # type: ignore[assignment,misc]
     CircuitBreakerState = None  # type: ignore[assignment,misc]

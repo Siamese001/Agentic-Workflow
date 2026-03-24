@@ -19,7 +19,7 @@ try:
         rank_evidence,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RankedEvidence = None  # type: ignore[assignment,misc]
     EvidenceRanker = None  # type: ignore[assignment,misc]

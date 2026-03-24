@@ -18,7 +18,7 @@ try:
         reset_router,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_resilient_router = None  # type: ignore[assignment,misc]
     reset_router = None  # type: ignore[assignment,misc]

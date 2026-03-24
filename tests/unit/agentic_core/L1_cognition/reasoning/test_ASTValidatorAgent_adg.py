@@ -21,7 +21,7 @@ try:
         validate_eval_exec,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ASTValidatorBase = None  # type: ignore[assignment,misc]
     ASTValidatorAgent = None  # type: ignore[assignment,misc]

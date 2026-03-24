@@ -12,7 +12,7 @@ try:
         sovereign_severity,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     sovereign_severity = sovereign_event_type = None  # type: ignore[assignment,misc]
     sovereign_severities = severity_log_levels = None  # type: ignore[assignment,misc]

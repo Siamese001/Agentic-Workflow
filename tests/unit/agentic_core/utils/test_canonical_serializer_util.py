@@ -22,7 +22,7 @@ try:
         canonical_hash,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     canonical_bytes = None  # type: ignore[assignment,misc]
     canonical_hash = None  # type: ignore[assignment,misc]

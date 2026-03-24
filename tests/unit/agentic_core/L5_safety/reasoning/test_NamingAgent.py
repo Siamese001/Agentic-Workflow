@@ -23,7 +23,7 @@ try:
         get_naming_agent,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PlacementResult = None  # type: ignore[assignment,misc]
     NamingAgent = None  # type: ignore[assignment,misc]

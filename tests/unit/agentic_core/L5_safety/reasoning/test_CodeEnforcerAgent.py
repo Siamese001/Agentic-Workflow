@@ -29,7 +29,7 @@ try:
         create_legacy_standards_enforcer,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     EnforcementType = None  # type: ignore[assignment,misc]
     ViolationSeverity = None  # type: ignore[assignment,misc]

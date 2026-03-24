@@ -12,7 +12,7 @@ try:
         main,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     build_codebase_index = None  # type: ignore[assignment,misc]
     analyze_archive_file = None  # type: ignore[assignment,misc]

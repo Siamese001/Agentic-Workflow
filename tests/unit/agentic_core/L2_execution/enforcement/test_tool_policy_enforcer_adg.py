@@ -169,7 +169,7 @@ try:
         _stable_args_hash,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ToolPolicyEnforcer = None  # type: ignore[assignment,misc]
     _stable_args_hash = None  # type: ignore[assignment]

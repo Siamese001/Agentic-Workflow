@@ -171,7 +171,7 @@ try:
         PromptTemplate,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     PromptTemplate = OptimizedPrompt = PromptOptimizer = None  # type: ignore[assignment,misc]
 

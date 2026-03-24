@@ -17,7 +17,7 @@ try:
         get_adg_registry,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ADGBackedAgentRegistry = None  # type: ignore[assignment,misc]
     get_adg_registry = None  # type: ignore[assignment,misc]

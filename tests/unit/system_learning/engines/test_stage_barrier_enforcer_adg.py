@@ -17,7 +17,7 @@ try:
         StageBarrierEnforcer,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     MetaLearningStage = None  # type: ignore[assignment,misc]
     StageBarrierEnforcer = None  # type: ignore[assignment,misc]

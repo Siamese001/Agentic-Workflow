@@ -683,7 +683,7 @@ class TestAdvisoryBoundaryEnforcement:
         """Non-advisory incident raises SovereigntyError — not silently swallowed."""
         try:
             from agentic_core.L1_cognition.memory.healing_memory_retriever import SovereigntyError
-        except ImportError:
+        pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
             pytest.fail("healing_memory_retriever not available")
 
         bad_incident = MagicMock()

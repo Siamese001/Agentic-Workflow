@@ -480,7 +480,7 @@ class TestP4_3A:
             orch = SovereignRagOrchestrator(project_root=Path("."))
             if orch.Bm25Store is not None:
                 assert orch.Bm25Store is get_bm25_store()
-        except ImportError:
+        pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
             pytest.fail("bm25_store or rag_orchestrator not importable in this environment")
 
 

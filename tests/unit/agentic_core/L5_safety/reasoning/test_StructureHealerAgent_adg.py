@@ -15,7 +15,7 @@ try:
         create_legacy_naming_healer,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     StructureHealingType = None  # type: ignore[assignment,misc]
     StructureHealingAction = None  # type: ignore[assignment,misc]

@@ -14,7 +14,7 @@ try:
         push_span,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     append_event = None  # type: ignore[assignment,misc]
     get_events = None  # type: ignore[assignment,misc]

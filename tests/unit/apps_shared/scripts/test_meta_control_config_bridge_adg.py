@@ -11,7 +11,7 @@ try:
         render_app_component_config,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     load_app_component_config = None  # type: ignore[assignment,misc]
     render_app_component_config = None  # type: ignore[assignment,misc]

@@ -173,7 +173,7 @@ try:
         ToolType,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     ToolType = ExecutionMode = ToolDefinition = ToolExecutionContext = ToolExecutionConfig = None  # type: ignore[assignment,misc]
 

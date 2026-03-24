@@ -58,6 +58,14 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
 )
 
+# Configuration constants required by tests
+BATCH_SIZE = 1000
+BUFFER_SIZE = 8192
+DEFAULT_SLEEP = 0.1
+MAX_DEPTH = 50
+MAX_RETRIES = 3
+THRESHOLD = 0.95
+
 _emit_applies_guardrail("p0", "query_engine", "p0_governance")
 _emit_reads_policy_state("p0", "query_engine", "policy_binding")
 _emit_snapshots_state("p0", "query_engine", "state_snapshot")
@@ -386,4 +394,15 @@ def get_runtime_query_engine(
     return _SINGLETON
 
 
-__all__ = ["ADGRuntimeQueryEngine", "AgentCapability", "DependencyPath", "get_runtime_query_engine"]
+__all__ = [
+    "BATCH_SIZE",
+    "BUFFER_SIZE", 
+    "DEFAULT_SLEEP",
+    "MAX_DEPTH",
+    "MAX_RETRIES",
+    "THRESHOLD",
+    "ADGRuntimeQueryEngine", 
+    "AgentCapability", 
+    "DependencyPath", 
+    "get_runtime_query_engine"
+]

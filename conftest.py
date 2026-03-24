@@ -21,10 +21,13 @@ and adds zero overhead.
 
 from __future__ import annotations
 
+import logging
 import os
 import pathlib
 import sys
 from typing import TYPE_CHECKING
+
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     pass
@@ -89,8 +92,8 @@ def pytest_collection_modifyitems(config, items):
         try:
             rel = str(pathlib.Path(item_path).relative_to(_ROOT)).replace("\\", "/")
         except ValueError as e:
-        # TODO: Add proper input validation
-        logger.warning(f"Invalid input: {e}")
+            # TODO: Add proper input validation
+            logger.warning(f"Invalid input: {e}")
             # Item path is outside repo root, use absolute path
             rel = item_path
 

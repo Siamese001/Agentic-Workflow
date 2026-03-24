@@ -18,7 +18,7 @@ try:
         validate_layer_direction,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     assert_no_apps_imports = None  # type: ignore[assignment,misc]
     validate_layer_direction = None  # type: ignore[assignment,misc]

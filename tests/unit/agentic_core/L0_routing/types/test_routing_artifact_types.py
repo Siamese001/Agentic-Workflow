@@ -20,7 +20,7 @@ try:
         TokenGateResult,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RoutingRationale = None  # type: ignore[assignment,misc]
     RoutePath = None  # type: ignore[assignment,misc]

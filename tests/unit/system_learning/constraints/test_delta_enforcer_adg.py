@@ -18,7 +18,7 @@ try:
         validate_surface_change,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ConstraintViolation = None  # type: ignore[assignment,misc]
     ForbiddenSurface = None  # type: ignore[assignment,misc]

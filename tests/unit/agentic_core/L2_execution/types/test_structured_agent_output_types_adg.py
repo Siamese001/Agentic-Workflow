@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     StructuredOutputViolation = None  # type: ignore[assignment,misc]
     ToolRequest = None  # type: ignore[assignment,misc]

@@ -282,7 +282,8 @@ class AdapterBase(ABC, Generic[T]):
                 from agentic_core.L5_safety.enforcement.verification_gate import VerificationGate
 
                 self._verification_gate = VerificationGate()
-            except ImportError:
+            # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
                 logger.warning("VerificationGate not available")
         return self._verification_gate
 

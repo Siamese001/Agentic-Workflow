@@ -25,7 +25,7 @@ try:
         ManifestIntegrityError,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     IndexNotBuiltError = None  # type: ignore[assignment,misc]
     IndexMetadataError = None  # type: ignore[assignment,misc]

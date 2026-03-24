@@ -22,7 +22,7 @@ try:
         reset_tracer,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SpanType = None  # type: ignore[assignment,misc]
     SpanMetadata = None  # type: ignore[assignment,misc]

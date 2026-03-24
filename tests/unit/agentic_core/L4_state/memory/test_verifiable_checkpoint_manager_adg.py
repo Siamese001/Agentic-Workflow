@@ -17,7 +17,7 @@ try:
         create_checkpoint_manager,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     VerifiableCheckpointManager = None  # type: ignore[assignment,misc]
     create_checkpoint_manager = None  # type: ignore[assignment,misc]

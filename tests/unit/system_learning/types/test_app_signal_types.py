@@ -19,7 +19,7 @@ try:
         build_app_signal_event,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AppSignalEventArtifact = None  # type: ignore[assignment,misc]
     AppSignalAggregateArtifact = None  # type: ignore[assignment,misc]

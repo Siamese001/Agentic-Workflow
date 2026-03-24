@@ -290,7 +290,8 @@ def build_pipeline_deps(
         from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
 
         pattern_engine = PatternAnalysisEngine()
-    except ImportError:
+    # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
         logger.warning("PatternAnalysisEngine not available; Stage 8.6 will be skipped.")
 
     optimizer = healing_config_optimizer

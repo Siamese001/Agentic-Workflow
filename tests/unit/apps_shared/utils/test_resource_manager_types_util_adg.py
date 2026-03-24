@@ -20,7 +20,7 @@ try:
         get_resource_manager,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ResourceNamespace = None  # type: ignore[assignment,misc]
     ResourceConfig = None  # type: ignore[assignment,misc]

@@ -18,7 +18,7 @@ try:
         validate_drilldown_infrastructure,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     extract_dashboard_data = None  # type: ignore[assignment,misc]
     validate_drilldown_infrastructure = None  # type: ignore[assignment,misc]

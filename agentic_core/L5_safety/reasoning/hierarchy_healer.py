@@ -373,7 +373,8 @@ class HierarchyHealerAgent(SovereignBaseAgent):
 
                         healer = LocationHealerAgent(project_root=self.project_root)
                         return healer.heal(violation)
-                    except ImportError:
+                    # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
                         # Fallback to local implementation if LocationHealerAgent unavailable
                         results = self.relocate_misplaced_files()
                         return {

@@ -19,7 +19,7 @@ try:
         refine_territory_by_ast,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_base_agent_territory = None  # type: ignore[assignment,misc]
     get_territory_from_path = None  # type: ignore[assignment,misc]

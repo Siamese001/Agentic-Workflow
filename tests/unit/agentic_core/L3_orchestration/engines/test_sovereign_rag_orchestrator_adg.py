@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_sovereign_rag_orchestrator = None  # type: ignore[assignment,misc]
     SovereignRagOrchestrator = None  # type: ignore[assignment,misc]

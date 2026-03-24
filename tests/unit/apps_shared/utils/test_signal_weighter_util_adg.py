@@ -20,7 +20,7 @@ try:
         weight_results,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SignalWeights = None  # type: ignore[assignment,misc]
     WeightingResult = None  # type: ignore[assignment,misc]

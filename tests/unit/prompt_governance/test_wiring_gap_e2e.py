@@ -246,7 +246,7 @@ class TestBuildHealingPrompt:
     def test_code_healer_build_prompt(self):
         try:
             from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
-        except ImportError:
+        pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
             pytest.skip("CodeHealerAgent has upstream import issue")
         try:
             agent = self._make_agent(CodeHealerAgent)

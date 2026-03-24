@@ -167,7 +167,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.app_config_types import CompetitiveAnalysisConfig
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     CompetitiveAnalysisConfig = None  # type: ignore[assignment,misc]
 

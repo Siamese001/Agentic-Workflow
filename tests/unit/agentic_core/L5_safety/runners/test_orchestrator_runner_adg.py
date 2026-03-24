@@ -18,7 +18,7 @@ try:
         run_orchestrator_mission,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_project_root = None  # type: ignore[assignment,misc]
     run_orchestrator_mission = None  # type: ignore[assignment,misc]

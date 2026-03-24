@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RetrievalMutationViolation = None  # type: ignore[assignment,misc]
     is_read_only_retrieval_active = None  # type: ignore[assignment,misc]

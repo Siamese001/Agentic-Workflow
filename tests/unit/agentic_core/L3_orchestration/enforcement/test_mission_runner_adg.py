@@ -18,7 +18,7 @@ try:
         run_surgical_mode,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     run_daemon_mode = None  # type: ignore[assignment,misc]
     run_surgical_mode = None  # type: ignore[assignment,misc]

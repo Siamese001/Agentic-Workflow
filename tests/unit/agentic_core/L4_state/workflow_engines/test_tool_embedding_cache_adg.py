@@ -17,7 +17,7 @@ try:
         get_tool_embedding_cache,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ToolEmbeddingCache = None  # type: ignore[assignment,misc]
     get_tool_embedding_cache = None  # type: ignore[assignment,misc]

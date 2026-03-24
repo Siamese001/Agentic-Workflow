@@ -8,7 +8,7 @@ pytestmark = pytest.mark.unit
 try:
     import agentic_core.L6_observability.engines.__init__ as _mod  # noqa: F401
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _mod = None
     _AVAILABLE = False
 

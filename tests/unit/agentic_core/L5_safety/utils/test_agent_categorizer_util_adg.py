@@ -17,7 +17,7 @@ try:
         categorize_agents_for_dashboard,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AgentCategorizer = None  # type: ignore[assignment,misc]
     categorize_agents_for_dashboard = None  # type: ignore[assignment,misc]

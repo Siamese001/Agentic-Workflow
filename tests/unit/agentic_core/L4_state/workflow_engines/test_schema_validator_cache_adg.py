@@ -17,7 +17,7 @@ try:
         get_schema_validator_cache,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SchemaValidatorCache = None  # type: ignore[assignment,misc]
     get_schema_validator_cache = None  # type: ignore[assignment,misc]

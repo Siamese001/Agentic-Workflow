@@ -17,7 +17,7 @@ try:
         trim_remaining,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     aggressive_trim = None  # type: ignore[assignment,misc]
     trim_remaining = None  # type: ignore[assignment,misc]

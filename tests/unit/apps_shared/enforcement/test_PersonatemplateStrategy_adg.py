@@ -13,7 +13,7 @@ try:
         sanitize_legacy_prompt,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PersonaTemplate = None  # type: ignore[assignment,misc]
     PromptSanitizer = None  # type: ignore[assignment,misc]

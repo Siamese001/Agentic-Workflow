@@ -17,7 +17,7 @@ try:
         get_RedTeamAgent,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RedTeamAgent = None  # type: ignore[assignment,misc]
     get_RedTeamAgent = None  # type: ignore[assignment,misc]

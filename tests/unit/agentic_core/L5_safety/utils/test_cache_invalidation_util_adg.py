@@ -18,7 +18,7 @@ try:
         invalidate_on_file_change,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     heal_invalidate_cache = None  # type: ignore[assignment,misc]
     invalidate_on_file_change = None  # type: ignore[assignment,misc]

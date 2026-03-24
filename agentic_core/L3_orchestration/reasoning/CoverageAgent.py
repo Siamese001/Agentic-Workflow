@@ -6,7 +6,8 @@ from typing import Any
 
 try:
     from agentic_core.L6_observability.reasoning.layer_decorator import layer_entry
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     def layer_entry(*args, **kwargs):  # type: ignore[misc]
         """Stub layer_entry decorator."""
         def wrapper(f): return f

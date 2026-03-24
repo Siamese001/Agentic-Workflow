@@ -19,7 +19,7 @@ try:
         assess,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AssessmentLevel = None  # type: ignore[assignment,misc]
     AssessmentResult = None  # type: ignore[assignment,misc]

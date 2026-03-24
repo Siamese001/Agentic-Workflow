@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     StopSignal = None  # type: ignore[assignment,misc]
     EnvironmentToolSet = None  # type: ignore[assignment,misc]

@@ -18,7 +18,7 @@ try:
         validate_url,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     validate_email = None  # type: ignore[assignment,misc]
     validate_url = None  # type: ignore[assignment,misc]

@@ -15,7 +15,7 @@ try:
         VectorIndex,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     EmbeddingProvider = None  # type: ignore[assignment,misc]
     VectorIndex = None  # type: ignore[assignment,misc]

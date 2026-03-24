@@ -10,7 +10,7 @@ try:
         retrieve_with_readonly_guarantee,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     retrieve_with_readonly_guarantee = None  # type: ignore[assignment,misc]
 

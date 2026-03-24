@@ -17,7 +17,7 @@ try:
         get_enforce_execution_policy_config,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     enforce_execution_policy = None  # type: ignore[assignment,misc]
     get_enforce_execution_policy_config = None  # type: ignore[assignment,misc]

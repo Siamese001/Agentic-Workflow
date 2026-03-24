@@ -13,7 +13,7 @@ try:
         get_rag_retrieval_cache,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RagRetrievalCache = None  # type: ignore[assignment,misc]
     get_rag_retrieval_cache = None  # type: ignore[assignment,misc]

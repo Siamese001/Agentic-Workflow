@@ -226,6 +226,7 @@ class SafetyAgentFactory:
                 from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
                 return HierarchyAgent(project_root=self.project_root)
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             return None
         return None

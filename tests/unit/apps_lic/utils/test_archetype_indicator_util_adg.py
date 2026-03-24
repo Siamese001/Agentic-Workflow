@@ -23,7 +23,7 @@ try:
         SenderGroundingConfig,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ArchetypeIndicator = None  # type: ignore[assignment,misc]
     ProfileAnalysisConfig = None  # type: ignore[assignment,misc]

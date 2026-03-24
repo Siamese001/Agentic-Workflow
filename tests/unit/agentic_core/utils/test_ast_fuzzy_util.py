@@ -25,7 +25,7 @@ try:
         tokenize_simple,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     parse_ast_safe = None  # type: ignore[assignment,misc]
     ast_dump_hash = None  # type: ignore[assignment,misc]

@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     MetaLearningWriteRejected = None  # type: ignore[assignment,misc]
     SSOTMetaLearningMixin = None  # type: ignore[assignment,misc]

@@ -17,7 +17,7 @@ try:
         evaluate_injection_regression,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     InjectionRegressionResult = None  # type: ignore[assignment,misc]
     evaluate_injection_regression = None  # type: ignore[assignment,misc]

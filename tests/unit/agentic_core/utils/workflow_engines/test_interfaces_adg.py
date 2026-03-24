@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     Document = None  # type: ignore[assignment,misc]
     IRetrieverLexical = None  # type: ignore[assignment,misc]

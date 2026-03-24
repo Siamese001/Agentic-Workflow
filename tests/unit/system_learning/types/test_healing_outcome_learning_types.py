@@ -23,7 +23,7 @@ try:
         HealingOutcomeAggregateSnapshot,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     HealingOutcomeAggregateKey = None  # type: ignore[assignment,misc]
     HealingOutcomeAggregate = None  # type: ignore[assignment,misc]

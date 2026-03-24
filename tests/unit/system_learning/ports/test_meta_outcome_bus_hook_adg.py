@@ -18,7 +18,7 @@ try:
         NullMetaOutcomeBusHook,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     MetaOutcomeBusHook = None  # type: ignore[assignment,misc]
     NullMetaOutcomeBusHook = None  # type: ignore[assignment,misc]

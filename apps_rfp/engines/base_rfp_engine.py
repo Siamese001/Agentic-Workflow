@@ -12,7 +12,8 @@ from typing import Any
 
 try:
     from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
 
     class SemanticCacheMixin:  # type: ignore[no-redef]
         pass

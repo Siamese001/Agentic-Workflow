@@ -20,7 +20,7 @@ try:
         issues_get_detail,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_current_time = None  # type: ignore[assignment,misc]
     convert_time = None  # type: ignore[assignment,misc]

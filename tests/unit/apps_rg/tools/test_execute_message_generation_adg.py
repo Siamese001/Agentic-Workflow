@@ -17,7 +17,7 @@ try:
         execute_message_generation,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     execute_message_generation = None  # type: ignore[assignment,misc]
     execute = None  # type: ignore[assignment,misc]

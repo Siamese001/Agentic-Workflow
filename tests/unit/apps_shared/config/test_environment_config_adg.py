@@ -17,7 +17,7 @@ try:
         EnvironmentValidationResult,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     EnvironmentConfig = None  # type: ignore[assignment,misc]
     EnvironmentValidationResult = None  # type: ignore[assignment,misc]

@@ -17,7 +17,7 @@ try:
         is_path_compliant,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     is_path_compliant = None  # type: ignore[assignment,misc]
     get_location_agent = None  # type: ignore[assignment,misc]

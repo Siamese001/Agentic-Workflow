@@ -26,7 +26,7 @@ try:
         process_resume_signal,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PipelineStageType = None  # type: ignore[assignment,misc]
     PipelineContext = None  # type: ignore[assignment,misc]

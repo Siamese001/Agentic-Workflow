@@ -17,7 +17,7 @@ try:
         HeadlineOutput,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     HeadlineOutput = None  # type: ignore[assignment,misc]
     Executive_Title_Composer = None  # type: ignore[assignment,misc]

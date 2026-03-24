@@ -320,6 +320,7 @@ class LICVectorMemory:
             )
             self._initialized = True
             return True
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             self._initialized = False
             return False

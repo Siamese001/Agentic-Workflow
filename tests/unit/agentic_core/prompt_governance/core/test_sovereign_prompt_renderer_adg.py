@@ -19,7 +19,7 @@ try:
         get_sovereign_prompt_renderer,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     TemplateSchema = None  # type: ignore[assignment,misc]
     TemplateValidationError = None  # type: ignore[assignment,misc]

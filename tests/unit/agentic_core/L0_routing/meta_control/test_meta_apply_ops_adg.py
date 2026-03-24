@@ -171,7 +171,7 @@ try:
         _check_no_schema_changes,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     InvariantCheckFn = None  # type: ignore[assignment]
     _check_no_schema_changes = None  # type: ignore[assignment]

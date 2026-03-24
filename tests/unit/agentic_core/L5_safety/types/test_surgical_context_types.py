@@ -24,7 +24,7 @@ try:
         ViolationConstraint,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ASTCoordinate = None  # type: ignore[assignment,misc]
     ViolationConstraint = None  # type: ignore[assignment,misc]

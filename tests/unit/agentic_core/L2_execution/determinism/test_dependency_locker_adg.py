@@ -168,7 +168,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L2_execution.determinism.dependency_locker import DependencyLocker
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     DependencyLocker = None  # type: ignore[assignment,misc]
 

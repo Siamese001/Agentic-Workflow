@@ -24,7 +24,7 @@ try:
         verify_policy_config_unchanged,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     TraceIDFormatError = None  # type: ignore[assignment,misc]
     ErrorSignatureError = None  # type: ignore[assignment,misc]

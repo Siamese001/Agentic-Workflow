@@ -28,7 +28,7 @@ try:
         get_ml_cache_config,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PolicyConfig = None  # type: ignore[assignment,misc]
     RoutingConfig = None  # type: ignore[assignment,misc]

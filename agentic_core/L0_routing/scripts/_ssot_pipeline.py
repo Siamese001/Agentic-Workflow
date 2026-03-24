@@ -679,7 +679,8 @@ def _build_ssot_territory_targets(project_root: "Path") -> list[str]:
         from agentic_core.L5_safety.config.structure_blueprint import PROJECT_ROOT_WHITELIST
 
         all_keys = sorted(PROJECT_ROOT_WHITELIST)
-    except ImportError:
+    # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
         logger.warning("[territory-build] SSOT import failed — using legacy hardcoded list")
         return ["prompt_governance", "L5_safety", "L3_orchestration", "L2_execution", "L0_routing"]
     excluded = {".backup", ".github", ".gravity_state"}

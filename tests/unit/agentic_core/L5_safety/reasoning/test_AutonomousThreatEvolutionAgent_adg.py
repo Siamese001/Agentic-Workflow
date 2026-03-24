@@ -17,7 +17,7 @@ try:
         create_threat_evolution_agent,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AutonomousThreatEvolutionAgent = None  # type: ignore[assignment,misc]
     create_threat_evolution_agent = None  # type: ignore[assignment,misc]

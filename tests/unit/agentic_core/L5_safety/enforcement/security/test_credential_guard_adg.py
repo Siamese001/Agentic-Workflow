@@ -19,7 +19,7 @@ try:
         scan_repository,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     is_text_file = None  # type: ignore[assignment,misc]
     scan_file = None  # type: ignore[assignment,misc]

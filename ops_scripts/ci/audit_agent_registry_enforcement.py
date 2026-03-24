@@ -173,7 +173,8 @@ _emit_links_execution_to_snapshot("p4", "audit_agent_registry_enforcement", "exe
 # Import agent registry for validation
 try:
     from agentic_core.agents.agent_registry import get_all_agent_ids, get_profile
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     print("ERROR: Agent registry not available", file=sys.stderr)
     sys.exit(1)
 

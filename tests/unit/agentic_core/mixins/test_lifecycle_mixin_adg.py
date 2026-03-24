@@ -18,7 +18,7 @@ try:
         LifecycleState,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     LifecycleState = None  # type: ignore[assignment,misc]
     LifecycleError = None  # type: ignore[assignment,misc]

@@ -17,7 +17,7 @@ try:
         create_l5_safety_layer,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     L5SafetyLayer = None  # type: ignore[assignment,misc]
     create_l5_safety_layer = None  # type: ignore[assignment,misc]

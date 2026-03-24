@@ -17,7 +17,7 @@ try:
         example_enhanced_workflow,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     EnhancedRGFlowRouter = None  # type: ignore[assignment,misc]
     EnhancedResumeSectionNode = None  # type: ignore[assignment,misc]

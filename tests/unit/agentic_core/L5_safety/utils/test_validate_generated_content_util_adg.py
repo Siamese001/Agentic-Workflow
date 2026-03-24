@@ -17,7 +17,7 @@ try:
         validate_generated_content,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     validate_generated_content = None  # type: ignore[assignment,misc]
     get_validate_generated_content_config = None  # type: ignore[assignment,misc]

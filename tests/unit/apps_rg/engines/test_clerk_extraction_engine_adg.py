@@ -168,7 +168,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_rg.engines.clerk_extraction_engine import ClerkExtractionEngine
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ClerkExtractionEngine = None  # type: ignore[assignment,misc]
 

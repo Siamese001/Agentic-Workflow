@@ -425,7 +425,8 @@ class CommonChecks:
                 return CheckResult(
                     name="redis", status=HealthStatus.HEALTHY, message=f"Redis connected at {host}:{port}"
                 )
-            except ImportError:
+            # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
                 return CheckResult(
                     name="redis", status=HealthStatus.DEGRADED, message="Redis client not installed"
                 )

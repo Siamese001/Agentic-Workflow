@@ -18,7 +18,7 @@ try:
         select_reasoning_strategy,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     TaskType = None  # type: ignore[assignment,misc]
     ReasoningRouter = None  # type: ignore[assignment,misc]

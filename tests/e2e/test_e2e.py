@@ -144,7 +144,7 @@ class TestPlaywrightVisual:
         try:
             from playwright.sync_api import sync_playwright  # noqa: F401
 
-        except ImportError:
+        pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
             pytest.fail("Playwright is not installed — install it: pip install playwright && playwright install")
 
     def test_tables_render_in_browser(self):

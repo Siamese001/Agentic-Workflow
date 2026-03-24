@@ -19,7 +19,7 @@ try:
         create_version_manager,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     VersionTag = None  # type: ignore[assignment,misc]
     PromptVersion = None  # type: ignore[assignment,misc]

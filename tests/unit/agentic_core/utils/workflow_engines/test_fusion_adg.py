@@ -17,7 +17,7 @@ try:
         ScoreFusion,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ReciprocalRankFusion = None  # type: ignore[assignment,misc]
     ScoreFusion = None  # type: ignore[assignment,misc]

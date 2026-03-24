@@ -173,7 +173,7 @@ try:
         RecipientArchetype,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     RecipientArchetype = CreativeBrief = ArchetypeTemplate = None  # type: ignore[assignment,misc]
     ARCHETYPE_TEMPLATES = ArchetypeTemplateManager = None  # type: ignore[assignment,misc]

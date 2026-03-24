@@ -20,7 +20,7 @@ try:
         remove_thinking_budget_over_limit,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     add_subatomic_imports = None  # type: ignore[assignment,misc]
     remove_thinking_budget_over_limit = None  # type: ignore[assignment,misc]

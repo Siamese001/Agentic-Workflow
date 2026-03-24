@@ -17,7 +17,7 @@ try:
         get_enforce_length_limits_config,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     enforce_length_limits = None  # type: ignore[assignment,misc]
     get_enforce_length_limits_config = None  # type: ignore[assignment,misc]

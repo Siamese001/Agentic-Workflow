@@ -23,7 +23,7 @@ try:
         reset_default_store,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     HealingSuccessRateStore = None  # type: ignore[assignment,misc]
     get_default_store = None  # type: ignore[assignment,misc]

@@ -16,7 +16,7 @@ try:
         should_exclude_path,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     count_rglob_in_file = None  # type: ignore[assignment,misc]
     should_exclude_path = None  # type: ignore[assignment,misc]

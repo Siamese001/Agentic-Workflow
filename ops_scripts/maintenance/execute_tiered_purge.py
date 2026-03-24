@@ -232,7 +232,8 @@ def run_tiered_purge(
         if env_file:
             load_dotenv(env_file)
             Logger.info(f"Loaded environment from: {env_file}")
-    except ImportError:
+    # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
         pass
 
     # Check API key

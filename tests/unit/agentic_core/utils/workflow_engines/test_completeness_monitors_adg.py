@@ -16,7 +16,7 @@ try:
         SupportValidationSnapshot,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RetrievalCompletenessSnapshot = None  # type: ignore[assignment,misc]
     SupportValidationSnapshot = None  # type: ignore[assignment,misc]

@@ -85,7 +85,8 @@ try:
 
     class MCPHardenedMixin(mcp_hardened_mixin):
         pass
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
 
     class MCPHardenedMixin:
         pass

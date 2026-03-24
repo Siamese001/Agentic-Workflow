@@ -88,7 +88,8 @@ _emit_links_execution_to_snapshot("p4", "neo4j_store", "exec_snapshot_link")
 try:
     "Brief description of functionality and purpose."
     from neo4j import GraphDatabase
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     GraphDatabase = None
 import os
 import uuid

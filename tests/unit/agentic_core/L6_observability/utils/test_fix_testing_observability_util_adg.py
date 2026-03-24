@@ -19,7 +19,7 @@ try:
         main,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     load_agents = None  # type: ignore[assignment,misc]
     add_logging_to_file = None  # type: ignore[assignment,misc]

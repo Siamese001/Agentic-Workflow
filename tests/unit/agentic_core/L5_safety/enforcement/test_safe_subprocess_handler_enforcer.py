@@ -23,7 +23,7 @@ try:
         safe_run,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     safe_run = None  # type: ignore[assignment,misc]
     safe_popen = None  # type: ignore[assignment,misc]

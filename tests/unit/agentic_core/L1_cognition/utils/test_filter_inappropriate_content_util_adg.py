@@ -17,7 +17,7 @@ try:
         get_filter_inappropriate_content_config,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     filter_inappropriate_content = None  # type: ignore[assignment,misc]
     get_filter_inappropriate_content_config = None  # type: ignore[assignment,misc]

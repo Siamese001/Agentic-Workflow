@@ -181,7 +181,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     read_text = None  # type: ignore[assignment]
     read_bytes = None  # type: ignore[assignment]

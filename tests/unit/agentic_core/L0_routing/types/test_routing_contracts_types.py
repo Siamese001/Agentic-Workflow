@@ -27,7 +27,7 @@ try:
         static_policy_alignment_check,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     LawSlotHandler = None  # type: ignore[assignment,misc]
     PolicyConfigGuard = None  # type: ignore[assignment,misc]

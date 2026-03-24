@@ -19,7 +19,7 @@ try:
         mine_workflows,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     mine_workflows = None  # type: ignore[assignment,misc]
     extract_k_nodes = None  # type: ignore[assignment,misc]

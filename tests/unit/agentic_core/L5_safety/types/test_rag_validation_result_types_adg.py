@@ -173,7 +173,7 @@ try:
         with_data,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     ValidationResult = ThematicAnalysis = RagState = ImmutableStagingBuffer = with_data = None  # type: ignore[assignment,misc]
 

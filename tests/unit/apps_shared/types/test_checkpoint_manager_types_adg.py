@@ -7,7 +7,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.checkpoint_manager_types import CheckpointStorage
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     CheckpointStorage = None  # type: ignore[assignment,misc]
 

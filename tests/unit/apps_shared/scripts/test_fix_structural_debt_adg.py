@@ -19,7 +19,7 @@ try:
         process_file,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     fix_globals = None  # type: ignore[assignment,misc]
     fix_large_functions = None  # type: ignore[assignment,misc]

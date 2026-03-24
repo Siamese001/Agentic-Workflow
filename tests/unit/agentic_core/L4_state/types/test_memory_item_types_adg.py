@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     MemoryItem = None  # type: ignore[assignment,misc]
     MemoryQuery = None  # type: ignore[assignment,misc]

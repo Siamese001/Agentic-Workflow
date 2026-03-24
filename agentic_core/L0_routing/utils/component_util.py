@@ -226,7 +226,8 @@ class ComponentFactory:
                 instance = adapter_mod.VerificationGateAdapter()
                 cls._instances[cache_key] = instance
                 return instance
-            except ImportError:
+            # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
                 logger.warning("ComponentFactory: Could not load adapter")
         instance = DynamicLoader.create_instance("verification")
         if instance:

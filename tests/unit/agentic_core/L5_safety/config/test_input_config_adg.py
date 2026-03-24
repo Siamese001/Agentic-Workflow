@@ -17,7 +17,7 @@ try:
         validate_input,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     InputValidator = None  # type: ignore[assignment,misc]
     validate_input = None  # type: ignore[assignment,misc]

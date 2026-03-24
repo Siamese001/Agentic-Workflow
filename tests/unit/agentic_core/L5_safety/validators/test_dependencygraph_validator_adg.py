@@ -18,7 +18,7 @@ try:
         ValidationContext,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     DependencyGraph = None  # type: ignore[assignment,misc]
     BudgetManager = None  # type: ignore[assignment,misc]

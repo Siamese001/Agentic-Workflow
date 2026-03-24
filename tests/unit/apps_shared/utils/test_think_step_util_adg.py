@@ -19,7 +19,7 @@ try:
         ThinkStep,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ThinkStep = None  # type: ignore[assignment,misc]
     ActionStep = None  # type: ignore[assignment,misc]

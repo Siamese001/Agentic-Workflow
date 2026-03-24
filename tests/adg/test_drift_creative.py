@@ -103,7 +103,7 @@ try:
     from hypothesis import strategies as st
 
     HYPOTHESIS_AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     HYPOTHESIS_AVAILABLE = False
 
 # ---------------------------------------------------------------------------

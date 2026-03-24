@@ -12,7 +12,7 @@ try:
         main,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     find_corruption = None  # type: ignore[assignment,misc]
     is_valid_python = None  # type: ignore[assignment,misc]

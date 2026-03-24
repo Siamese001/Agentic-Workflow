@@ -20,7 +20,7 @@ try:
         insert_triplet,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     insert_entity = None  # type: ignore[assignment,misc]
     insert_triplet = None  # type: ignore[assignment,misc]

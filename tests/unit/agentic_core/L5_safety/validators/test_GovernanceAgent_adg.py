@@ -15,7 +15,7 @@ try:
         heal,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     DependencyGraph = None  # type: ignore[assignment,misc]
     GovernanceAgent = None  # type: ignore[assignment,misc]

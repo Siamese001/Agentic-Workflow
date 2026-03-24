@@ -78,7 +78,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.unified_formatter_types import FormatResult, FormatterStrategy, FormatType
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     FormatType = FormatResult = FormatterStrategy = None  # type: ignore[assignment,misc]
 

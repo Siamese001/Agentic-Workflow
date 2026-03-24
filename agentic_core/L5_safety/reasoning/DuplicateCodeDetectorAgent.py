@@ -182,7 +182,8 @@ _emit_proposal_commits_routing("p1", "DuplicateCodeDetectorAgent", "routing_comm
 
 try:
     TREE_SITTER_AVAILABLE = True
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     TREE_SITTER_AVAILABLE = False
     Parser = None
     Language = None

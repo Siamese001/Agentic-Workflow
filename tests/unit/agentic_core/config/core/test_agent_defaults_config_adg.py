@@ -17,7 +17,7 @@ try:
         get_config,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AgentDefaults = None  # type: ignore[assignment,misc]
     get_config = None  # type: ignore[assignment,misc]

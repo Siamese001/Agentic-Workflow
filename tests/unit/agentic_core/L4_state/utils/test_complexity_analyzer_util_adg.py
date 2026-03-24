@@ -18,7 +18,7 @@ try:
         check_function_complexity,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     calculate_mccabe_complexity = None  # type: ignore[assignment,misc]
     check_function_complexity = None  # type: ignore[assignment,misc]

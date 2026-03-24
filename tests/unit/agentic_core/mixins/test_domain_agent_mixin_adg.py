@@ -18,7 +18,7 @@ try:
         RGDomainMixin,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     DomainAgentMixin = None  # type: ignore[assignment,misc]
     RGDomainMixin = None  # type: ignore[assignment,misc]

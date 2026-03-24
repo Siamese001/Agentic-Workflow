@@ -18,7 +18,7 @@ try:
         parse_mcp_client_specs,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     parse_mcp_client_specs = None  # type: ignore[assignment,misc]
     instantiate_mcp_client = None  # type: ignore[assignment,misc]

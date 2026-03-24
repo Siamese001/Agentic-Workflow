@@ -8,7 +8,7 @@ try:
     import agentic_core.mixins.autonomy_mixin as _autonomy_mixin_mod  # noqa: F401
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _autonomy_mixin_mod = None  # type: ignore[assignment]
     _AVAILABLE = False
 

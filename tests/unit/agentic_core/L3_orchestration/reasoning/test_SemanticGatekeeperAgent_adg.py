@@ -18,7 +18,7 @@ try:
         with_gatekeeping,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SemanticGatekeeperAgent = None  # type: ignore[assignment,misc]
     get_gatekeeper = None  # type: ignore[assignment,misc]

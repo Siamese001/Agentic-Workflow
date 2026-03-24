@@ -78,7 +78,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.otlp_exporter_types import BaseExporter, ExportResult, OtlpExporter
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     ExportResult = BaseExporter = OtlpExporter = None  # type: ignore[assignment,misc]
 

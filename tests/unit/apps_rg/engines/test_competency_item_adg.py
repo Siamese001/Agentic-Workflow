@@ -17,7 +17,7 @@ try:
         GapClosureEngine,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CompetencyItem = None  # type: ignore[assignment,misc]
     GapClosureEngine = None  # type: ignore[assignment,misc]

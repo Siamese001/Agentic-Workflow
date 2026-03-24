@@ -171,7 +171,7 @@ try:
         GravityValidatorAgent,
     )
     _GRAVITY_VALIDATOR_AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _GRAVITY_VALIDATOR_AVAILABLE = False
     CHECK_ID = "gravity_violations"
     GravityValidatorAgent = None  # type: ignore[assignment,misc]

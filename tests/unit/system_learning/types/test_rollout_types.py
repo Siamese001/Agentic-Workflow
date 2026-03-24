@@ -20,7 +20,7 @@ try:
         build_meta_learning_rollout_plan,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     MetaLearningRolloutPlanArtifact = None  # type: ignore[assignment,misc]
     MetaLearningRollbackArtifact = None  # type: ignore[assignment,misc]

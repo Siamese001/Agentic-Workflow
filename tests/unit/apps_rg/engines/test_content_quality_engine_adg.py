@@ -168,7 +168,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_rg.engines.content_quality_engine import ContentQualityEngine
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ContentQualityEngine = None  # type: ignore[assignment,misc]
 

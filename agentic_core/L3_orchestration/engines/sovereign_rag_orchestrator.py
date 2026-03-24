@@ -276,6 +276,7 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
                 enable_compression=True, enable_decomposition=True, enable_reranking=True, enable_caching=True
             )
             print("   [OK] Titanium RAG Pipeline integrated")
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             print("   [WARN] Titanium RAG Pipeline unavailable - Using legacy path")
 

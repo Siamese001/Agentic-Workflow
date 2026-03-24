@@ -18,7 +18,7 @@ try:
         check_for_forbidden_verbs,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     VerbCanonicalizer = None  # type: ignore[assignment,misc]
     canonicalize = None  # type: ignore[assignment,misc]

@@ -167,7 +167,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L5_safety.types.simulation_schemas_types import SimOutcome, SimScenario
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False; SimScenario = SimOutcome = None  # type: ignore[assignment,misc]
 
 @pytest.mark.skipif(not _AVAIL, reason="deps unavailable")

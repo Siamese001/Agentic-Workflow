@@ -15,7 +15,7 @@ try:
         run_e2e_tests,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     print_banner = None  # type: ignore[assignment,misc]
     run_e2e_tests = None  # type: ignore[assignment,misc]

@@ -171,7 +171,7 @@ try:
         export_data,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     ExportResult = JsonExporter = export_data = None  # type: ignore[assignment,misc]
 

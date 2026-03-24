@@ -17,7 +17,7 @@ try:
         ScoreResult,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ScoreResult = None  # type: ignore[assignment,misc]
     MathProcessor = None  # type: ignore[assignment,misc]

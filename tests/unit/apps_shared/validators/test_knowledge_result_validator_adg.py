@@ -19,7 +19,7 @@ try:
         search_profile_and_template,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     KnowledgeResult = None  # type: ignore[assignment,misc]
     L5ConsolidatedKnowledge = None  # type: ignore[assignment,misc]

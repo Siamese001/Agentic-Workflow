@@ -18,7 +18,7 @@ try:
         enforce_gravity,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     enforce_gravity = None  # type: ignore[assignment,misc]
     enforce_depth = None  # type: ignore[assignment,misc]

@@ -12,7 +12,7 @@ try:
         create_snapshot,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     create_snapshot = None  # type: ignore[assignment,misc]
 

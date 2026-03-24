@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CacheDB = None  # type: ignore[assignment,misc]
     canonical_json_bytes = None  # type: ignore[assignment,misc]

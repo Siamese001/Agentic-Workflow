@@ -167,7 +167,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.hybrid_scorer_types import HybridScorer, ScoringResult
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     ScoringResult = HybridScorer = None  # type: ignore[assignment,misc]
 

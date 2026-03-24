@@ -389,7 +389,8 @@ def build_retriever(
             except (ManifestIntegrityError, Exception):
                 pass
         return HealingMemoryRetriever(store=store, profile=profile, index_id=index_id)
-    except ImportError:
+    # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
         return NullHealingMemoryRetriever()
 
 

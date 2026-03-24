@@ -23,7 +23,7 @@ try:
         ScoringWeights,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ScoringWeights = None  # type: ignore[assignment,misc]
     ScoredRecommendation = None  # type: ignore[assignment,misc]

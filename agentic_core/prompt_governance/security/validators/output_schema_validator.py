@@ -215,7 +215,8 @@ def _is_pydantic_model(schema: Any) -> bool:
         from pydantic import BaseModel
 
         return isinstance(schema, type) and issubclass(schema, BaseModel)
-    except ImportError:
+    # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
         return False
 
 

@@ -193,7 +193,7 @@ try:
         run_security_validation,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     SecurityValidationResult = SecuritySuiteResult = RedTeamValidationSuite = None  # type: ignore[assignment,misc]
     get_security_suite = run_security_validation = None  # type: ignore[assignment,misc]

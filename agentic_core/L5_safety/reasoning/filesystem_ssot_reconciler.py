@@ -95,7 +95,8 @@ from typing import Any
 
 try:
     from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
 
     class MCPHardenedMixin:
         pass

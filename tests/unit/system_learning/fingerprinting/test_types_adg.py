@@ -17,7 +17,7 @@ try:
         FailureFingerprint,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     FailureEvent = None  # type: ignore[assignment,misc]
     FailureFingerprint = None  # type: ignore[assignment,misc]

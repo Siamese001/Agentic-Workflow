@@ -17,7 +17,7 @@ try:
         StagingBufferError,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     StagingBufferError = None  # type: ignore[assignment,misc]
     ImmutableStagingBuffer = None  # type: ignore[assignment,misc]

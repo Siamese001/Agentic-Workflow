@@ -14,7 +14,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CSVDocumentLoader = None  # type: ignore[assignment,misc]
 

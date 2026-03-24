@@ -21,7 +21,7 @@ try:
         create_judge_evaluator,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     JudgmentCriterion = None  # type: ignore[assignment,misc]
     JudgmentScore = None  # type: ignore[assignment,misc]

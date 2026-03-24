@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     IntelligenceQueryResult = None  # type: ignore[assignment,misc]
     IntelligenceQueryValidator = None  # type: ignore[assignment,misc]

@@ -167,7 +167,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.kx_execution_context_types import KXExecutionResult
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     KXExecutionResult = None  # type: ignore[assignment,misc]
 

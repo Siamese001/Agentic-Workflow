@@ -86,7 +86,8 @@ _emit_links_execution_to_snapshot("p4", "app_base_util", "exec_snapshot_link")
 
 try:
     from agentic_core.interfaces.mixins import MetaLearningMixin
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
 
     class MetaLearningMixin:
         """Fallback MetaLearningMixin when not available."""

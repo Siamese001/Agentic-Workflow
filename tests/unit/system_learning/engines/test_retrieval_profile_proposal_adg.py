@@ -17,7 +17,7 @@ try:
         create_proposal_digest,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RetrievalProfileProposal = None  # type: ignore[assignment,misc]
     create_proposal_digest = None  # type: ignore[assignment,misc]

@@ -18,7 +18,7 @@ try:
         extract_keywords,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     JobAnalyzer = None  # type: ignore[assignment,misc]
     analyze = None  # type: ignore[assignment,misc]

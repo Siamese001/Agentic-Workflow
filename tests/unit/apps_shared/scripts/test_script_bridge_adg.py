@@ -12,7 +12,7 @@ try:
         get_script_bridge,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ScriptResult = None  # type: ignore[assignment,misc]
     ScriptBridge = None  # type: ignore[assignment,misc]

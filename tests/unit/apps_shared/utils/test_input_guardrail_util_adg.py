@@ -20,7 +20,7 @@ try:
         scan_input,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     GuardAction = None  # type: ignore[assignment,misc]
     GuardResult = None  # type: ignore[assignment,misc]

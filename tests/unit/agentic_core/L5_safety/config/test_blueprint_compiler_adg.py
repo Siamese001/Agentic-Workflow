@@ -13,7 +13,7 @@ try:
         verify_blueprint_consistency,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CompiledBlueprint = None  # type: ignore[assignment,misc]
     make_lcd_layer = None  # type: ignore[assignment,misc]

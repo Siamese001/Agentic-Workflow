@@ -18,7 +18,7 @@ try:
         WorkflowStep,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     WorkflowStatus = None  # type: ignore[assignment,misc]
     WorkflowStep = None  # type: ignore[assignment,misc]

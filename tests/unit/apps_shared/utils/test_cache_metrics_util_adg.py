@@ -17,7 +17,7 @@ try:
         get_cache_metrics,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CacheMetrics = None  # type: ignore[assignment,misc]
     get_cache_metrics = None  # type: ignore[assignment,misc]

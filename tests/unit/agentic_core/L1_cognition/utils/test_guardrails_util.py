@@ -24,7 +24,7 @@ try:
         reset_guardrails,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CacheGuardrails = None  # type: ignore[assignment,misc]
     MetaLearningGuardrails = None  # type: ignore[assignment,misc]

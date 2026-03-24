@@ -172,7 +172,7 @@ try:
     from agentic_core.cache.redis_cache_client import check_redis_health_via_mcp
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     check_redis_health_via_mcp = None  # type: ignore[assignment]
 

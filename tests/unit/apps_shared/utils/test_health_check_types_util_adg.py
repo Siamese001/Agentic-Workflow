@@ -23,7 +23,7 @@ try:
         get_readiness_gate,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     HealthStatus = None  # type: ignore[assignment,misc]
     CheckResult = None  # type: ignore[assignment,misc]

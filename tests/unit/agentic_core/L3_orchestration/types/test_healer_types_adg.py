@@ -171,7 +171,7 @@ try:
         LegacyAgentAdapter,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     IHealerProtocol = LegacyAgentAdapter = HEAL_RESULT_SCHEMA = None  # type: ignore[assignment,misc]
 

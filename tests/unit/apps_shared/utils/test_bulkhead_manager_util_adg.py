@@ -24,7 +24,7 @@ try:
         with_engine_bulkhead,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     TaskPriority = None  # type: ignore[assignment,misc]
     BulkheadConfig = None  # type: ignore[assignment,misc]

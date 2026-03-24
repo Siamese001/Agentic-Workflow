@@ -24,7 +24,7 @@ try:
         update_observability_usage,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     UpdateObservabilityUsageSafetyType = None  # type: ignore[assignment,misc]
     UpdateObservabilityUsageSafetyConstraints = None  # type: ignore[assignment,misc]

@@ -13,7 +13,7 @@ pytestmark = pytest.mark.unit
 try:
     import agentic_core.utils.meta_learning_types_util as _mod  # noqa: F401
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
 
 

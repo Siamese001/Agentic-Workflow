@@ -21,7 +21,7 @@ try:
         get_litellm_completion,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     Provider = None  # type: ignore[assignment,misc]
     MultiProviderClient = None  # type: ignore[assignment,misc]

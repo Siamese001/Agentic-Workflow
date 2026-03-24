@@ -172,7 +172,7 @@ try:
         SectionAnalysisResult,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     RoleExtractionResult = IndustryExtractionResult = SectionAnalysisResult = ResumeSectionOutput = None  # type: ignore[assignment,misc]
 

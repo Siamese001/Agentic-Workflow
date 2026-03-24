@@ -19,7 +19,7 @@ try:
         resolve_canonical_class,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     resolve_canonical_class = None  # type: ignore[assignment,misc]
     load_agent_discovery = None  # type: ignore[assignment,misc]

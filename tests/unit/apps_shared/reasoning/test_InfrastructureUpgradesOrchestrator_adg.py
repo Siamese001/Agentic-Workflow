@@ -20,7 +20,7 @@ try:
         verify_claims,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     InfrastructureUpgradesOrchestrator = None  # type: ignore[assignment,misc]
     get_infrastructure_upgrades_orchestrator = None  # type: ignore[assignment,misc]

@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ModelProvider = None  # type: ignore[assignment,misc]
     ModelConfig = None  # type: ignore[assignment,misc]

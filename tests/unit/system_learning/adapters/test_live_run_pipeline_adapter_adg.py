@@ -17,7 +17,7 @@ try:
         LiveRunPipelineAdapter,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ActivationAuthorizationError = None  # type: ignore[assignment,misc]
     LiveRunPipelineAdapter = None  # type: ignore[assignment,misc]

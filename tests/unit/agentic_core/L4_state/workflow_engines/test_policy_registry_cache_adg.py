@@ -17,7 +17,7 @@ try:
         get_policy_registry_cache,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PolicyRegistryCache = None  # type: ignore[assignment,misc]
     get_policy_registry_cache = None  # type: ignore[assignment,misc]

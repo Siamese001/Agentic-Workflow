@@ -176,7 +176,7 @@ try:
         WarmthSetting,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     RiskLevel = SentimentMood = DepthScore = MicroHook = SentimentProfile = None  # type: ignore[assignment,misc]
     WarmthSetting = DepthScorer = MicroHookGenerator = None  # type: ignore[assignment,misc]

@@ -22,7 +22,7 @@ try:
         MetaLearningChangePackage,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     MetaLearningChangePackage = None  # type: ignore[assignment,misc]
     MetaLearningBus = None  # type: ignore[assignment,misc]

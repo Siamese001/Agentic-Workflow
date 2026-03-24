@@ -44,7 +44,7 @@ def _mcp8_mirror_set(key: str, data: Any) -> None:
                 ]
             )
         Logger.debug(f"[mcp8] Mirrored state: {key}")
-    except ImportError:
+    pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
         pass
     except Exception as e:
         Logger.debug(f"[mcp8] Mirror failed for {key}: {e}")

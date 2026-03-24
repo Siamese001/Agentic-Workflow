@@ -168,7 +168,7 @@ pytestmark = pytest.mark.unit
 try:
     from system_learning.constraints.config_surfaces import FloatConstraint, IntConstraint
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     FloatConstraint = None  # type: ignore[assignment,misc]
     IntConstraint = None  # type: ignore[assignment,misc]

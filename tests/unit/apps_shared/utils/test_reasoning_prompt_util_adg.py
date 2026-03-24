@@ -10,7 +10,7 @@ try:
         build_reasoning_prompt_addendum,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     build_reasoning_prompt_addendum = None  # type: ignore[assignment,misc]
 

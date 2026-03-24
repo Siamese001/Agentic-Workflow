@@ -209,7 +209,8 @@ def read_text(path: str | Path, encoding: str = "utf-8") -> str:
 
         result: Any = mcp6_read_text_file(path=str(p))
         return result
-    except ImportError:
+    # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
         Logger.debug("[ReadGateway] mcp6_read_text_file unavailable, using direct I/O")
         return p.read_text(encoding=encoding)
     # guardian: allow-silent-swallow

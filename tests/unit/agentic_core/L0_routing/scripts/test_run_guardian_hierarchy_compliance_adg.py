@@ -14,7 +14,7 @@ try:
         scan_subfolder_compliance,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     scan_missing_structure = None  # type: ignore[assignment,misc]
     scan_subfolder_compliance = None  # type: ignore[assignment,misc]

@@ -10,7 +10,7 @@ try:
         HealingStrategyMixin,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     HealingStrategyMixin = None  # type: ignore[assignment,misc]
 

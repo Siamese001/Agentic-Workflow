@@ -15,7 +15,7 @@ try:
         store_prompt,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     StoredPrompt = None  # type: ignore[assignment,misc]
     PromptStore = None  # type: ignore[assignment,misc]

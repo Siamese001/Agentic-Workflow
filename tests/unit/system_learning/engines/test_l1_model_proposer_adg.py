@@ -17,7 +17,7 @@ try:
         L1ModelProposer,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     L1ModelChangePackage = None  # type: ignore[assignment,misc]
     L1ModelProposer = None  # type: ignore[assignment,misc]

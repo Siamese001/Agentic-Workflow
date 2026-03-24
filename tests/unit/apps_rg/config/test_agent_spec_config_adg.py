@@ -23,7 +23,7 @@ try:
         ValidationConfig,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AgentSpec = None  # type: ignore[assignment,misc]
     OrchestrationTopology = None  # type: ignore[assignment,misc]

@@ -17,7 +17,7 @@ try:
         orchestrate_resume,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RgResumeOrchestrator = None  # type: ignore[assignment,misc]
     orchestrate_resume = None  # type: ignore[assignment,misc]

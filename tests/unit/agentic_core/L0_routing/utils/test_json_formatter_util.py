@@ -186,7 +186,7 @@ try:
         setup_logging,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     JSONFormatter = None  # type: ignore[assignment,misc]
     setup_logging = None  # type: ignore[assignment,misc]

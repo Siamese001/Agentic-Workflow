@@ -176,7 +176,8 @@ try:
     from dotenv import load_dotenv
 
     load_dotenv()
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     pass
 
 

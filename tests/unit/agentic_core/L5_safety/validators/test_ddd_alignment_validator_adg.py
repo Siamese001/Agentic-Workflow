@@ -17,7 +17,7 @@ try:
         validate_ddd_alignment,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     check_bounded_contexts = None  # type: ignore[assignment,misc]
     validate_ddd_alignment = None  # type: ignore[assignment,misc]

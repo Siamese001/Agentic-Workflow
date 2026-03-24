@@ -22,7 +22,7 @@ try:
         sha256_file,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AgentIntegrityReport = None  # type: ignore[assignment,misc]
     DiscoveryError = None  # type: ignore[assignment,misc]

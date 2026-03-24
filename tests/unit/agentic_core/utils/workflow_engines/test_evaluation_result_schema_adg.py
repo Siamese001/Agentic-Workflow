@@ -19,7 +19,7 @@ try:
         EvaluationSnapshot,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     EvaluationResult = None  # type: ignore[assignment,misc]
     EvaluationReport = None  # type: ignore[assignment,misc]

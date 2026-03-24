@@ -20,7 +20,7 @@ try:
         fix_multiline_strings,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     fix_multiline_strings = None  # type: ignore[assignment,misc]
     fix_indentation_errors = None  # type: ignore[assignment,misc]

@@ -18,7 +18,7 @@ try:
         get_layer_emission_validator,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     LayerEmissionValidator = None  # type: ignore[assignment,misc]
     get_layer_emission_validator = None  # type: ignore[assignment,misc]

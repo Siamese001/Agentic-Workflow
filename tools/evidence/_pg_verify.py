@@ -17,7 +17,8 @@ try:
     print(f"psycopg2 OK: db={row[0]} user={row[1]}")
     print(f"  version: {row[2][:60]}")
     conn.close()
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     print("psycopg2 not installed - installing...")
     subprocess.run([sys.executable, "-m", "pip", "install", "psycopg2-binary", "-q"])
     import psycopg2

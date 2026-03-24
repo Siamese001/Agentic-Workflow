@@ -17,7 +17,7 @@ try:
         retrieve,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RetrieveResumeHistory = None  # type: ignore[assignment,misc]
     retrieve = None  # type: ignore[assignment,misc]

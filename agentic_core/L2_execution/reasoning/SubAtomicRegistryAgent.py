@@ -136,7 +136,8 @@ from agentic_core.utils.decorators_compat_util import standard_heal
 
 try:
     from agentic_core.utils.decorators_compat_util import timeout
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     def timeout(seconds):  # type: ignore[misc]
         """Stub timeout decorator."""
         def wrapper(f): return f

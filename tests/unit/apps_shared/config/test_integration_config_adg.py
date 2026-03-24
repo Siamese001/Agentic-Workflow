@@ -17,7 +17,7 @@ try:
         get_domain_config,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     IntegrationConfig = None  # type: ignore[assignment,misc]
     get_domain_config = None  # type: ignore[assignment,misc]

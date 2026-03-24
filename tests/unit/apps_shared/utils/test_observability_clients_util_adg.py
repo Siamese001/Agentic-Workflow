@@ -18,7 +18,7 @@ try:
         set_span_attribute,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     create_span = None  # type: ignore[assignment,misc]
     record_exception = None  # type: ignore[assignment,misc]

@@ -18,7 +18,7 @@ try:
         get_retrieval_profile_manager,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RetrievalProfileManager = None  # type: ignore[assignment,misc]
     get_retrieval_profile_manager = None  # type: ignore[assignment,misc]

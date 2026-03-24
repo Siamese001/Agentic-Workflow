@@ -172,7 +172,7 @@ try:
     from agentic_core.L2_execution.utils.egress_util import NetworkingUtility
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     NetworkingUtility = None  # type: ignore[assignment,misc]
 

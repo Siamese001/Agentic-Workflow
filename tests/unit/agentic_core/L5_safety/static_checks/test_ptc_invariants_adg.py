@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PTCInvariantVisitor = None  # type: ignore[assignment,misc]
     scan_file_for_ptc_invariants = None  # type: ignore[assignment,misc]

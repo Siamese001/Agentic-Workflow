@@ -17,7 +17,7 @@ try:
         FeatureFlagManager,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     FeatureFlag = None  # type: ignore[assignment,misc]
     FeatureFlagManager = None  # type: ignore[assignment,misc]

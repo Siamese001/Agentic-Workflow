@@ -17,7 +17,7 @@ try:
         registry_digest,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_execution_profile = None  # type: ignore[assignment,misc]
     get_profile = None  # type: ignore[assignment,misc]

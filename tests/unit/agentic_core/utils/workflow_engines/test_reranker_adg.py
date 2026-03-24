@@ -17,7 +17,7 @@ try:
         PassthroughReranker,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     HeuristicReranker = None  # type: ignore[assignment,misc]
     PassthroughReranker = None  # type: ignore[assignment,misc]

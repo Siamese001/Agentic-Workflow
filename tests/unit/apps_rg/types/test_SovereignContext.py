@@ -23,7 +23,7 @@ try:
         SovereignContext,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SimpleBuffer = None  # type: ignore[assignment,misc]
     SimpleTrace = None  # type: ignore[assignment,misc]

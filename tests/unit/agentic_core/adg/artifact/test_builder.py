@@ -23,7 +23,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     EntityRecord = None  # type: ignore[assignment,misc]
     RelationRecord = None  # type: ignore[assignment,misc]

@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     HealSeamBypassError = None  # type: ignore[assignment,misc]
     set_heal_seam_capability = None  # type: ignore[assignment,misc]

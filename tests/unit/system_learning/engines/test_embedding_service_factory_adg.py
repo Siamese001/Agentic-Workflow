@@ -21,7 +21,7 @@ try:
         EmbeddingServiceFactory,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     EmbeddingDisabledError = None  # type: ignore[assignment,misc]
     EmbeddingForkViolationError = None  # type: ignore[assignment,misc]

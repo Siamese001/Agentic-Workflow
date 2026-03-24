@@ -18,7 +18,7 @@ try:
         VectorSearchResult,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     VectorMemoryConfig = None  # type: ignore[assignment,misc]
     VectorSearchResult = None  # type: ignore[assignment,misc]

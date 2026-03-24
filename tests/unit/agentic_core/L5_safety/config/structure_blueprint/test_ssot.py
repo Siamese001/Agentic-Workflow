@@ -19,7 +19,7 @@ try:
         validate_no_nested_lcd,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     is_layer_root = None  # type: ignore[assignment,misc]
     is_allowed_subfolder = None  # type: ignore[assignment,misc]

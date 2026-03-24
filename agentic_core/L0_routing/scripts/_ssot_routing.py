@@ -882,6 +882,7 @@ class SovereignDecisionEngine:
                     value=0.5, reasoning="No cognitive dispositions generated"
                 )
             return (dispositions, enhanced_confidence)
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             logger.warning("CognitiveDispositionAgent not available, using default confidence")
             bmg_conf = self.calculate_healing_confidence(

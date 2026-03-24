@@ -168,7 +168,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.config.core.env_loader import SovereignEnv
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SovereignEnv = None  # type: ignore[assignment,misc]
 

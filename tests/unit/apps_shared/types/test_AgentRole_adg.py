@@ -167,7 +167,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.AgentRole import AgentCapability, AgentRole
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     AgentRole = AgentCapability = None  # type: ignore[assignment,misc]
 

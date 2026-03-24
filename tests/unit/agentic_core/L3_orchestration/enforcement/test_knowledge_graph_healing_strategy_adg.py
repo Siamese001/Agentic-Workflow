@@ -17,7 +17,7 @@ try:
         create_kg_healing_strategy,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     KnowledgeGraphHealingStrategy = None  # type: ignore[assignment,misc]
     create_kg_healing_strategy = None  # type: ignore[assignment,misc]

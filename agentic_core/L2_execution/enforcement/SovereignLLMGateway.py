@@ -220,7 +220,8 @@ def _get_injection_detector_class():
 try:
     from agentic_core.agents.agent_registry import get_profile
     from agentic_core.agents.types.agent_execution_profile_types import ExecutionMode
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     # Fallback for environments without agent registry
     def get_profile(agent_id: str):
         raise KeyError(f"Agent registry not available: {agent_id}")

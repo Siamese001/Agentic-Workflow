@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ToolCallStore = None  # type: ignore[assignment,misc]
     get_tool_call_store = None  # type: ignore[assignment,misc]

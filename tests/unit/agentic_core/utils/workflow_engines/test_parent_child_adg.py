@@ -18,7 +18,7 @@ try:
         ParentChildRegistry,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ChunkEntry = None  # type: ignore[assignment,misc]
     ParentChildRegistry = None  # type: ignore[assignment,misc]

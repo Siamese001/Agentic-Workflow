@@ -149,7 +149,7 @@ def network_guard():
             side_effect=_NetworkBlockedError("NETWORK GUARD: requests.Session.send() called."),
         )
         patches.append(p3)
-    except ImportError:
+    pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
         pass
     try:
         import httpx  # noqa: F401
@@ -159,7 +159,7 @@ def network_guard():
             side_effect=_NetworkBlockedError("NETWORK GUARD: httpx.Client.send() called."),
         )
         patches.append(p4)
-    except ImportError:
+    pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
         pass
     for p in patches:
         p.start()

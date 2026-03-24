@@ -10,7 +10,7 @@ try:
         McpServerMode,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     McpServerMode = None  # type: ignore[assignment,misc]
 

@@ -167,7 +167,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L5_safety.types.sovereign_base_model_types import SovereignBaseModel, Territory
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False; SovereignBaseModel = Territory = None  # type: ignore[assignment,misc]
 
 @pytest.mark.skipif(not _AVAIL, reason="deps unavailable")

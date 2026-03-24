@@ -17,7 +17,7 @@ try:
         create_achv_bullet_synthesizer,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AchvBulletSynthesizer = None  # type: ignore[assignment,misc]
     create_achv_bullet_synthesizer = None  # type: ignore[assignment,misc]

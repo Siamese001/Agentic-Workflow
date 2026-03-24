@@ -22,7 +22,7 @@ try:
         get_few_shot_registry,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ContextType = None  # type: ignore[assignment,misc]
     FewShotExample = None  # type: ignore[assignment,misc]

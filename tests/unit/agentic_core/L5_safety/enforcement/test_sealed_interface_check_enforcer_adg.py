@@ -16,7 +16,7 @@ try:
         run_check,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     check_file = None  # type: ignore[assignment,misc]
     run_check = None  # type: ignore[assignment,misc]

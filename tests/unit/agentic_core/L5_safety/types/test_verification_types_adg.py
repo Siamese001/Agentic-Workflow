@@ -171,7 +171,7 @@ try:
         VerificationResult,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     VerificationRequest = VerificationResult = VerificationGateProtocol = None  # type: ignore[assignment,misc]
 

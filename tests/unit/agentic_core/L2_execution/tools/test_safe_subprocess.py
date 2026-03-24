@@ -25,7 +25,7 @@ try:
         safe_subprocess_run,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     safe_subprocess_run = None  # type: ignore[assignment,misc]
     safe_subprocess_call = None  # type: ignore[assignment,misc]

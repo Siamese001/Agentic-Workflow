@@ -18,7 +18,7 @@ try:
         SignalGroupingReport,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SignalGroup = None  # type: ignore[assignment,misc]
     SignalGroupingReport = None  # type: ignore[assignment,misc]

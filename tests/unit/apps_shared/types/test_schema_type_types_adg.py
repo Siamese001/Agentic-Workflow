@@ -171,7 +171,7 @@ try:
         SchemaType,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     SchemaType = ConversionStrategy = FieldMapping = None  # type: ignore[assignment,misc]
 

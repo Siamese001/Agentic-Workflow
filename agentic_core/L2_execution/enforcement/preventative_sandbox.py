@@ -287,7 +287,8 @@ class PreventativeSandbox:
                 self._originals[key] = (mod, original)
                 setattr(mod, target.attr_name, self._make_guard(target))
                 Logger.debug(f"[sandbox] patched {key}")
-            except ImportError:
+            # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
                 Logger.debug(f"[sandbox] skip {key}: module not available")
 
     def _restore_all(self) -> None:

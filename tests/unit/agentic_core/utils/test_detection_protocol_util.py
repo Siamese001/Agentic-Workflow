@@ -15,7 +15,7 @@ try:
         DetectionSignalProtocol,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     DetectionSignalProtocol = None  # type: ignore[assignment,misc]
 

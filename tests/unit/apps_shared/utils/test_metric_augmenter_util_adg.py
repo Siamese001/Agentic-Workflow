@@ -21,7 +21,7 @@ try:
         create_metric_augmenter,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ImpactCategory = None  # type: ignore[assignment,misc]
     BusinessImpact = None  # type: ignore[assignment,misc]

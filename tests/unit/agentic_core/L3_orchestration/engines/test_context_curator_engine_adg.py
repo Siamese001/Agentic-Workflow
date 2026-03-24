@@ -17,7 +17,7 @@ try:
         create_context_curator,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ContextCurator = None  # type: ignore[assignment,misc]
     create_context_curator = None  # type: ignore[assignment,misc]

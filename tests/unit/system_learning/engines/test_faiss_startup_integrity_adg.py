@@ -18,7 +18,7 @@ try:
         verify_all_indexes_in_dir,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     StartupIntegrityError = None  # type: ignore[assignment,misc]
     IndexVerificationResult = None  # type: ignore[assignment,misc]

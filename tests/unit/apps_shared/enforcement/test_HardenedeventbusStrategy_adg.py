@@ -20,7 +20,7 @@ try:
         subscribe_to_events,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     HardenedEventBus = None  # type: ignore[assignment,misc]
     get_hardened_event_bus = None  # type: ignore[assignment,misc]

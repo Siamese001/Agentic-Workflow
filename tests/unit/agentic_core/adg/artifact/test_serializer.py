@@ -20,7 +20,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     serialize_artifact = None  # type: ignore[assignment,misc]
     write_artifact = None  # type: ignore[assignment,misc]

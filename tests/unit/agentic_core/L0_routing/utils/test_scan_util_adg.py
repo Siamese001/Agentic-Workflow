@@ -15,7 +15,7 @@ try:
         guarded_rglob,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     guarded_rglob = None  # type: ignore[assignment,misc]
     guarded_glob = None  # type: ignore[assignment,misc]

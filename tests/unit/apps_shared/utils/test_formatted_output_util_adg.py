@@ -19,7 +19,7 @@ try:
         format,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     FormattedOutput = None  # type: ignore[assignment,misc]
     FormatScriptsContext = None  # type: ignore[assignment,misc]

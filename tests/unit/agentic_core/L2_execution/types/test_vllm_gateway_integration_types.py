@@ -28,7 +28,7 @@ try:
         shape_local_request,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     VLLMLocalRequest = None  # type: ignore[assignment,misc]
     VLLMQueueController = None  # type: ignore[assignment,misc]

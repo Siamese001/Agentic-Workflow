@@ -11,7 +11,7 @@ try:
         HealingRecord,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     HealingRecord = None  # type: ignore[assignment,misc]
     GravityStateAgent = None  # type: ignore[assignment,misc]

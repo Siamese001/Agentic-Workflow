@@ -17,7 +17,7 @@ try:
         MessageDiversityValidator,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     HealerMixin = None  # type: ignore[assignment,misc]
     MessageDiversityValidator = None  # type: ignore[assignment,misc]

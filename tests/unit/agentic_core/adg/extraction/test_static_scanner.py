@@ -21,7 +21,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     Edge = None  # type: ignore[assignment,misc]
     ScanManifest = None  # type: ignore[assignment,misc]

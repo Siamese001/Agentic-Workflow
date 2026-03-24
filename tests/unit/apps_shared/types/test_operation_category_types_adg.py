@@ -173,7 +173,7 @@ try:
         OperationScope,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     OperationCategory = OperationScope = OperationContext = None  # type: ignore[assignment,misc]
     OperationParameters = OperationOutcome = None  # type: ignore[assignment,misc]

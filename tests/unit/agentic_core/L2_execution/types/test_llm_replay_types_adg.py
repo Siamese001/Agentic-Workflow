@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ReplayMode = None  # type: ignore[assignment,misc]
     PRODUCTION_ALLOWED_MODES = None  # type: ignore[assignment,misc]

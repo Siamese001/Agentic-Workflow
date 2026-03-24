@@ -17,7 +17,7 @@ try:
         InstructionalPattern,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     InjectionLayer = None  # type: ignore[assignment,misc]
     InstructionalPattern = None  # type: ignore[assignment,misc]

@@ -24,7 +24,7 @@ try:
         V15ExecutionGateway,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ExecutionGatewayError = None  # type: ignore[assignment,misc]
     UnregisteredAgentError = None  # type: ignore[assignment,misc]

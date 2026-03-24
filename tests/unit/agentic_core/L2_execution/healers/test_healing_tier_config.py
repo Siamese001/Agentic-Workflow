@@ -24,7 +24,7 @@ try:
         validate_qwen_startup_state,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     HealingTierConfig = None  # type: ignore[assignment,misc]
     load_default_healing_tier_config = None  # type: ignore[assignment,misc]

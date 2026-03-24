@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     IBlackboardLeaseVerifier = None  # type: ignore[assignment,misc]
     SandboxViolationError = None  # type: ignore[assignment,misc]

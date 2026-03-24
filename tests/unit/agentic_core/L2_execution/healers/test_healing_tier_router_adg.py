@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     WEIGHT_FAILURE_PRIOR = None  # type: ignore[assignment,misc]
     WEIGHT_BLAST_RADIUS = None  # type: ignore[assignment,misc]

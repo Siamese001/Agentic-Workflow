@@ -17,7 +17,7 @@ try:
         RiskResult,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RiskResult = None  # type: ignore[assignment,misc]
     RiskGateAdapter = None  # type: ignore[assignment,misc]

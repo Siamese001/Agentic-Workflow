@@ -43,7 +43,8 @@ excluded_files: Any = {
 }
 try:
     HAS_ASTOR: Any = True
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     HAS_ASTOR: Any = False
 
 

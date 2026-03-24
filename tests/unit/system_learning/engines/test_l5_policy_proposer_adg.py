@@ -18,7 +18,7 @@ try:
         extract_l5_metrics_from_healing_actions,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     L5PolicyChangePackage = None  # type: ignore[assignment,misc]
     L5PolicyProposer = None  # type: ignore[assignment,misc]

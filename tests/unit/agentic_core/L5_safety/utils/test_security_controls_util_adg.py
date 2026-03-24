@@ -18,7 +18,7 @@ try:
         validate_config,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_module_info = None  # type: ignore[assignment,misc]
     validate_config = None  # type: ignore[assignment,misc]

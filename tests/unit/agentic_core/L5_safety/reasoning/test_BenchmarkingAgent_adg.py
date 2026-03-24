@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PERFORMANCE_DEGRADATION_THRESHOLD = None  # type: ignore[assignment,misc]
     BenchmarkResult = None  # type: ignore[assignment,misc]

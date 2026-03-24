@@ -18,7 +18,7 @@ try:
         get_qwen_health_status,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     MockVLLMProcessManager = None  # type: ignore[assignment,misc]
     get_qwen_health_status = None  # type: ignore[assignment,misc]

@@ -20,7 +20,7 @@ try:
         test_telemetry_fidelity_check,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     test_full_system_lifecycle_happy_path = None  # type: ignore[assignment,misc]
     test_resilience_to_garbage_input = None  # type: ignore[assignment,misc]

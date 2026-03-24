@@ -17,7 +17,7 @@ try:
         get_injection_loader,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PromptInjectionLoader = None  # type: ignore[assignment,misc]
     get_injection_loader = None  # type: ignore[assignment,misc]

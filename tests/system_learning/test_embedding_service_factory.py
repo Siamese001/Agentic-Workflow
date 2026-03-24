@@ -181,11 +181,11 @@ _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 
 try:
     import numpy  # noqa: F401
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     pytest.fail("numpy is a mandatory dependency — install it")
 try:
     import psutil  # noqa: F401
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     pytest.fail("psutil is a mandatory dependency — install it")
 
 

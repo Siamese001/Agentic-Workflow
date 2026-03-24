@@ -20,7 +20,7 @@ try:
         ValidationGateExecutor,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ValidationGateExecutor = None  # type: ignore[assignment,misc]
     RuleFailure = None  # type: ignore[assignment,misc]

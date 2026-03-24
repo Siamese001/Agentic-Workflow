@@ -24,7 +24,7 @@ try:
         use_observability_execution,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ExecutionStrategy = None  # type: ignore[assignment,misc]
     ExecutionPriority = None  # type: ignore[assignment,misc]

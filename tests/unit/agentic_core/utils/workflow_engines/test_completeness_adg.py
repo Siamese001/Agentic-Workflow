@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ContextCompletenessScore = None  # type: ignore[assignment,misc]
     GroundedDocument = None  # type: ignore[assignment,misc]

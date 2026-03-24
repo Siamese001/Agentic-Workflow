@@ -17,7 +17,7 @@ try:
         emit_pre_run_log,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PreRunADGReport = None  # type: ignore[assignment,misc]
     build_pre_run_report = None  # type: ignore[assignment,misc]

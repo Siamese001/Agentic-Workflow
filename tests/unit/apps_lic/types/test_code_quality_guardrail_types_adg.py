@@ -171,7 +171,7 @@ try:
         QualityResult,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     CodeIssue = QualityResult = CodeQualityGuardrail = None  # type: ignore[assignment,misc]
 

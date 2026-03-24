@@ -27,7 +27,7 @@ try:
         retry_with_policy,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RetryStrategy = None  # type: ignore[assignment,misc]
     RetryableError = None  # type: ignore[assignment,misc]

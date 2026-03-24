@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     MAX_WRITE_BYTES = None  # type: ignore[assignment,misc]
     MAX_GROWTH_RATIO = None  # type: ignore[assignment,misc]

@@ -173,7 +173,7 @@ try:
         RegenerationCheckpoint,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     ConstraintFailureType = RegenerationCheckpoint = None  # type: ignore[assignment,misc]
 

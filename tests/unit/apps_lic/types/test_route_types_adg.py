@@ -172,7 +172,7 @@ try:
         ValidationSeverity,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     Route = Archetype = ValidationSeverity = CharLimitConstraint = None  # type: ignore[assignment,misc]
 

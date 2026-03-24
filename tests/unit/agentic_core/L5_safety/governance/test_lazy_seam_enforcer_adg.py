@@ -17,7 +17,7 @@ try:
         main,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     LazyUpwardImport = None  # type: ignore[assignment,misc]
     LazySeamEnforcer = None  # type: ignore[assignment,misc]

@@ -17,7 +17,7 @@ try:
         load_secrets,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     load_secrets = None  # type: ignore[assignment,misc]
     inject_into_env = None  # type: ignore[assignment,misc]

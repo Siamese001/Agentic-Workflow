@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ResourcePredictor = None  # type: ignore[assignment,misc]
     DefaultDeterministicResourcePredictor = None  # type: ignore[assignment,misc]

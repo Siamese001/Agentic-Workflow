@@ -17,7 +17,7 @@ try:
         validate_observability_footprint,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     check_dark_reasoning = None  # type: ignore[assignment,misc]
     validate_observability_footprint = None  # type: ignore[assignment,misc]

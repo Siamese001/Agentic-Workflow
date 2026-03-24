@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AutonomyGuardianAgent = None  # type: ignore[assignment,misc]
     get_autonomy_guardian = None  # type: ignore[assignment,misc]

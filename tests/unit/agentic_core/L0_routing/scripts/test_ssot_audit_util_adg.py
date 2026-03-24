@@ -15,7 +15,7 @@ try:
         find_syntax_errors,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     find_duplicates = None  # type: ignore[assignment,misc]
     find_gravity_violations = None  # type: ignore[assignment,misc]

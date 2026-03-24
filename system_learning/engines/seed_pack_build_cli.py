@@ -95,7 +95,8 @@ try:
     from dotenv import load_dotenv
 
     load_dotenv()
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     pass
 from agentic_core.embeddings.embedding_factory import create_embedding_client
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (

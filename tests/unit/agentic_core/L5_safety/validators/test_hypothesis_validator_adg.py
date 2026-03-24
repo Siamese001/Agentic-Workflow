@@ -17,7 +17,7 @@ try:
         MetacognitionReport,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     Hypothesis = None  # type: ignore[assignment,misc]
     MetacognitionReport = None  # type: ignore[assignment,misc]

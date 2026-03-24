@@ -18,7 +18,7 @@ try:
         is_legacy_agent,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SubAtomicRegistryAgent = None  # type: ignore[assignment,misc]
     get_UnifiedAgent_class = None  # type: ignore[assignment,misc]

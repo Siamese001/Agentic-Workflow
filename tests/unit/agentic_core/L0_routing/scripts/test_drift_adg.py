@@ -13,7 +13,7 @@ try:
         scan_repository,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     DriftDetector = None  # type: ignore[assignment,misc]
     scan_repository = None  # type: ignore[assignment,misc]

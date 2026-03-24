@@ -22,7 +22,7 @@ try:
         shutdown_all_coordinators,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     TaskState = None  # type: ignore[assignment,misc]
     TaskInfo = None  # type: ignore[assignment,misc]

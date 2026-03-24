@@ -172,7 +172,7 @@ try:
     from agentic_core.L2_execution.tools.git_ops_impl import GitTools
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     GitTools = None  # type: ignore[assignment,misc]
 

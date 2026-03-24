@@ -16,7 +16,7 @@ try:
         get_sl_memory_bridge,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SystemLearningMemoryBridge = None  # type: ignore[assignment,misc]
     get_sl_memory_bridge = None  # type: ignore[assignment,misc]

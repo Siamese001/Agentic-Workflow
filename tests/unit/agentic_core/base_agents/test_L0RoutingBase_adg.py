@@ -14,7 +14,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     L0RoutingBase = None  # type: ignore[assignment,misc]
 

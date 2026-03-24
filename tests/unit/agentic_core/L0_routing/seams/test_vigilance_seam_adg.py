@@ -18,7 +18,7 @@ try:
         load_vigilance_types,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     load_vigilance_types = None  # type: ignore[assignment,misc]
     get_vigilance_event_artifact = None  # type: ignore[assignment,misc]

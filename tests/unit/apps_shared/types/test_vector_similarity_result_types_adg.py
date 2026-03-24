@@ -174,7 +174,7 @@ try:
         VectorSimilarityResult,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     VectorSimilarityResult = CacheEntry = EnhancedSemanticCache = None  # type: ignore[assignment,misc]
 

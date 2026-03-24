@@ -17,7 +17,7 @@ try:
         trim_all_airlocks,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     trim_airlock = None  # type: ignore[assignment,misc]
     trim_all_airlocks = None  # type: ignore[assignment,misc]

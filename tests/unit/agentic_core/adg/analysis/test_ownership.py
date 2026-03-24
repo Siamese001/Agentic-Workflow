@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ModuleOwnership = None  # type: ignore[assignment,misc]
     OwnershipRegistry = None  # type: ignore[assignment,misc]

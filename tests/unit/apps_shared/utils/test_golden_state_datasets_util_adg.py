@@ -20,7 +20,7 @@ try:
         load_golden_inputs,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     load_golden_inputs = None  # type: ignore[assignment,misc]
     load_baseline_scores = None  # type: ignore[assignment,misc]

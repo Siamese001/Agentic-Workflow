@@ -18,7 +18,7 @@ try:
         count_words_ms_word_style,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     count_words_ms_word_style = None  # type: ignore[assignment,misc]
     count_words_in_list_ms_word_style = None  # type: ignore[assignment,misc]

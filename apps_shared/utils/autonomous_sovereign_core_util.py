@@ -204,6 +204,7 @@ class AutonomousSovereignCore:
         self.running = True
         try:
             from ..L3_orchestration.engines.adaptive_learning import create_adaptive_learning_engine
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
 
             def create_adaptive_learning_engine():

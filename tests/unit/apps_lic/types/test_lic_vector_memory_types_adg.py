@@ -173,7 +173,7 @@ try:
         create_vector_memory,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     VectorDocument = QueryResult = MemoryStats = MockVectorMemory = create_vector_memory = None  # type: ignore[assignment,misc]
 

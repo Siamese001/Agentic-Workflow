@@ -17,7 +17,7 @@ try:
         wire_l4_prior_into_dispatcher,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     L4MetaPriorProvider = None  # type: ignore[assignment,misc]
     wire_l4_prior_into_dispatcher = None  # type: ignore[assignment,misc]

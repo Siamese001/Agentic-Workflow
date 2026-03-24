@@ -22,7 +22,7 @@ try:
         validate_with_pydantic,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ValidationType = None  # type: ignore[assignment,misc]
     ValidationRule = None  # type: ignore[assignment,misc]

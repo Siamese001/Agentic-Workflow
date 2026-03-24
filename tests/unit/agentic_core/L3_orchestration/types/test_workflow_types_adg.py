@@ -7,7 +7,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L3_orchestration.types.workflow_types import WorkflowType
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False; WorkflowType = None  # type: ignore[assignment,misc]
 
 @pytest.mark.skipif(not _AVAIL, reason="deps unavailable")

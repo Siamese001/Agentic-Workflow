@@ -285,6 +285,7 @@ class NetworkingUtility:
                 "content": result,
                 "host": egress_result.host,
             }
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             Logger.warning("FETCH_FALLBACK: mcp4_fetch not available, returning mock")
             return {

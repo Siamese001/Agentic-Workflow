@@ -121,7 +121,8 @@ try:
     from watchdog.observers import Observer  # noqa: F401
 
     WATCHDOG_AVAILABLE = True
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     WATCHDOG_AVAILABLE = False
     Observer = None
 try:

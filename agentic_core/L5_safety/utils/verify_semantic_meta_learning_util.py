@@ -104,7 +104,8 @@ try:
 
     load_dotenv()
     print("[INFO] Loaded environment variables from .env file")
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     print("[WARNING] python-dotenv not installed - environment variables must be set manually")
 from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
 

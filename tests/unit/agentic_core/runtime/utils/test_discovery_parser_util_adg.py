@@ -17,7 +17,7 @@ try:
         load_hardened_agent_metadata,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AgentListMapping = None  # type: ignore[assignment,misc]
     load_hardened_agent_metadata = None  # type: ignore[assignment,misc]

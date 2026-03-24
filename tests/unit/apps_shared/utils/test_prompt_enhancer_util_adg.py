@@ -20,7 +20,7 @@ try:
         get_prompt_enhancer,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     EnhancementConfig = None  # type: ignore[assignment,misc]
     PromptEnhancer = None  # type: ignore[assignment,misc]

@@ -18,7 +18,7 @@ try:
         OutcomeWriteBackHook,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     OutcomeWriteBackHook = None  # type: ignore[assignment,misc]
     NullOutcomeWriteBackHook = None  # type: ignore[assignment,misc]

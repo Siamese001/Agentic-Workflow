@@ -17,7 +17,7 @@ try:
         SystemEvaluationSummary,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SystemEvaluationSummary = None  # type: ignore[assignment,misc]
     ComparativeEvaluationSummary = None  # type: ignore[assignment,misc]

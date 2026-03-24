@@ -101,7 +101,8 @@ try:
     from websockets.server import WebSocketServerProtocol
 
     WEBSOCKETS_AVAILABLE: Any = True
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     WEBSOCKETS_AVAILABLE: Any = False
     LOGGER.warning("websockets not available - live browser updates disabled")
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (

@@ -173,7 +173,7 @@ try:
         TokenBucketRateLimiter,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     RateLimitStrategy = RateLimitConfig = ClientState = None  # type: ignore[assignment,misc]
     RateLimitExceeded = TokenBucketRateLimiter = None  # type: ignore[assignment,misc]

@@ -16,7 +16,7 @@ try:
         infer_domain,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CodeEntity = None  # type: ignore[assignment,misc]
     FileAnalysis = None  # type: ignore[assignment,misc]

@@ -18,7 +18,7 @@ try:
         get_shared_infrastructure,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     DomainConfig = None  # type: ignore[assignment,misc]
     SharedInfrastructure = None  # type: ignore[assignment,misc]

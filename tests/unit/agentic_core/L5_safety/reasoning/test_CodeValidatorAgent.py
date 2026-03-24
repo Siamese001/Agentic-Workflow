@@ -23,7 +23,7 @@ try:
         create_legacy_syntax_validator,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ViolationType = None  # type: ignore[assignment,misc]
     Violation = None  # type: ignore[assignment,misc]

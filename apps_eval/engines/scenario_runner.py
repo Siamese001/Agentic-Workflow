@@ -411,7 +411,8 @@ def _scenario_policy_hash_valid() -> tuple[ScenarioOutcome, float, str]:
 
         enforcer = PolicyHashEnforcer(expected_hash="", mode="LOG_ONLY")
         return ScenarioOutcome.PASS, 1.0, "PolicyHashEnforcer instantiated successfully"
-    except ImportError:
+    # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
         return ScenarioOutcome.SKIP, _SKIP_SCORE, "agentic_core not available in eval env"
     except _SCENARIO_EXCEPTIONS as exc:
         return ScenarioOutcome.FAIL, 0.0, str(exc)

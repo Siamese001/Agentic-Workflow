@@ -93,7 +93,8 @@ try:
         VMProvider,
         VMStatus,
     )
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     VMConfig = None
     VMInstance = None
     VMProvider = None

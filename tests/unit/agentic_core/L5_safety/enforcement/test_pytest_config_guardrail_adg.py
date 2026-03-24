@@ -18,7 +18,7 @@ try:
         main,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PytestEnforcementGuard = None  # type: ignore[assignment,misc]
     TestPytestConfigGuardBrittleMarkerDetection = None  # type: ignore[assignment,misc]

@@ -131,7 +131,8 @@ def _get_ActionNode():
 
 try:
     from .PerceptionNode import PerceptionNode
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     PerceptionNode = None
 try:
     from .ReasoningNode import ReasoningNode

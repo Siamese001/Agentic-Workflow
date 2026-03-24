@@ -21,7 +21,7 @@ try:
         track_metrics,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PII_SanitizerSpecialistAgent = None  # type: ignore[assignment,misc]
     BiasDetectorSpecialist = None  # type: ignore[assignment,misc]

@@ -17,7 +17,7 @@ try:
         get_config_file_cache,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ConfigFileCache = None  # type: ignore[assignment,misc]
     get_config_file_cache = None  # type: ignore[assignment,misc]

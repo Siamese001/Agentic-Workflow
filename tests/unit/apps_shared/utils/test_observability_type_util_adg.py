@@ -23,7 +23,7 @@ try:
         execute_observability_execution,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ObservabilityType = None  # type: ignore[assignment,misc]
     ExecutionLevel = None  # type: ignore[assignment,misc]

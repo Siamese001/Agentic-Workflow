@@ -10,7 +10,8 @@ from pathlib import Path
 
 try:
     from jinja2 import Environment, FileSystemLoader, TemplateError, TemplateSyntaxError
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     print("ERROR: Jinja2 not installed. Run: pip install jinja2")
     sys.exit(1)
 

@@ -18,7 +18,7 @@ try:
         ReviewStatus,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ReviewStatus = None  # type: ignore[assignment,misc]
     ReviewRequest = None  # type: ignore[assignment,misc]

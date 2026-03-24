@@ -171,7 +171,7 @@ try:
         has_dataclass_import,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     has_dataclass_decorator = None  # type: ignore[assignment]
     has_dataclass_import = None  # type: ignore[assignment]

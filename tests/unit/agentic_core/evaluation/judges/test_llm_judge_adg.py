@@ -17,7 +17,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     JudgeScore = None  # type: ignore[assignment,misc]
     LLMJudge = None  # type: ignore[assignment,misc]

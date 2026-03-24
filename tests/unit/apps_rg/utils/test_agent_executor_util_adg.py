@@ -20,7 +20,7 @@ try:
         create_agent_executor,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AgentConfig = None  # type: ignore[assignment,misc]
     AgentMessage = None  # type: ignore[assignment,misc]

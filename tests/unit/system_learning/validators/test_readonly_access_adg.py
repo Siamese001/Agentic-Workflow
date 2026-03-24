@@ -17,7 +17,7 @@ try:
         check_system_learning_readonly,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     check_file_readonly = None  # type: ignore[assignment,misc]
     check_system_learning_readonly = None  # type: ignore[assignment,misc]

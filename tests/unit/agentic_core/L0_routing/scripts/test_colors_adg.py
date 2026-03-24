@@ -17,7 +17,7 @@ try:
         report_consolidated_summary,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     main = None  # type: ignore[assignment,misc]
     report_consolidated_summary = None  # type: ignore[assignment,misc]

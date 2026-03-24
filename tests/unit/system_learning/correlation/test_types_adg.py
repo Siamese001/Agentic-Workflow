@@ -18,7 +18,7 @@ try:
         DriftEvent,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     DriftEvent = None  # type: ignore[assignment,misc]
     CorrelatedRow = None  # type: ignore[assignment,misc]

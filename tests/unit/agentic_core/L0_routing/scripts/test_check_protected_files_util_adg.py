@@ -18,7 +18,7 @@ try:
         main,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_staged_files = None  # type: ignore[assignment,misc]
     get_commit_message = None  # type: ignore[assignment,misc]

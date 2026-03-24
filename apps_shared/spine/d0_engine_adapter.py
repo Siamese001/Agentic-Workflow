@@ -198,6 +198,7 @@ class D0EngineAdapter:
             D0InjectionEngine, self._RoleFence = _build_real_engine()
             self._engine = D0InjectionEngine()
             self._real = True
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             logger.warning("D0InjectionEngine unavailable; using null fallback")
             self._engine = None

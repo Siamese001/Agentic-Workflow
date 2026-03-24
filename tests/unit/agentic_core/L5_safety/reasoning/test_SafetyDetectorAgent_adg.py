@@ -22,7 +22,7 @@ try:
         create_legacy_injection_detector,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SafetyThreatType = None  # type: ignore[assignment,misc]
     ThreatSeverity = None  # type: ignore[assignment,misc]

@@ -105,7 +105,8 @@ _emit_links_execution_to_snapshot("p4", "rg_agent_base_util", "exec_snapshot_lin
 Logger = logging.getLogger(__name__)
 try:
     from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
 
     class SemanticCacheMixin:
         pass

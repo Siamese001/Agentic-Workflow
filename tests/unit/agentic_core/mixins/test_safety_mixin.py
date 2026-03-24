@@ -23,7 +23,7 @@ try:
         StateAnalysisMixin,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SafetyAnalysisMixin = None  # type: ignore[assignment,misc]
     HealingMixin = None  # type: ignore[assignment,misc]

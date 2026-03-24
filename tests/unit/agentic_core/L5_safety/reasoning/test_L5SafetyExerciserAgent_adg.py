@@ -17,7 +17,7 @@ try:
         log_event,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     L5SafetyExerciserAgent = None  # type: ignore[assignment,misc]
     log_event = None  # type: ignore[assignment,misc]

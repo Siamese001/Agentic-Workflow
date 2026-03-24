@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     MIN_ENFORCEMENT_LAYERS = None  # type: ignore[assignment,misc]
     MIN_STRUCTURAL_LAYERS = None  # type: ignore[assignment,misc]

@@ -17,7 +17,7 @@ try:
         query_similarity,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SimilarityResult = None  # type: ignore[assignment,misc]
     query_similarity = None  # type: ignore[assignment,misc]

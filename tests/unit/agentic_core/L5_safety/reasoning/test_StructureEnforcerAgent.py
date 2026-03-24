@@ -28,7 +28,7 @@ try:
         create_legacy_naming_enforcer,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     StructureViolationType = None  # type: ignore[assignment,misc]
     StructureViolation = None  # type: ignore[assignment,misc]

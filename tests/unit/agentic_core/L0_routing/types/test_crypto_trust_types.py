@@ -28,7 +28,7 @@ try:
         TrustRoot,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     KeyStatus = None  # type: ignore[assignment,misc]
     SigningAlgorithm = None  # type: ignore[assignment,misc]

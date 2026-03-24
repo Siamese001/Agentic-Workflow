@@ -25,7 +25,7 @@ try:
     DEFAULT_TRACE_SAMPLING_RATE = SemanticCacheManager.DEFAULT_TRACE_SAMPLING_RATE
     DEFAULT_STRICT_MODE = SemanticCacheManager.DEFAULT_STRICT_MODE
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CriticalInfrastructureError = None  # type: ignore[assignment,misc]
     PII_Sanitizer = None  # type: ignore[assignment,misc]

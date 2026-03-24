@@ -167,7 +167,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_rg.types.SovereignContext import SimpleBuffer, SimpleTrace, SovereignContext
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     SovereignContext = SimpleBuffer = SimpleTrace = None  # type: ignore[assignment,misc]
 

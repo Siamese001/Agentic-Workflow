@@ -18,7 +18,7 @@ try:
         optimize_context_window,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ContextItem = None  # type: ignore[assignment,misc]
     OptimizationResult = None  # type: ignore[assignment,misc]

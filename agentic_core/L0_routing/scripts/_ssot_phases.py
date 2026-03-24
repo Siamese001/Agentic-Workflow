@@ -253,7 +253,8 @@ def assert_no_persistent_write(layer: str, operation: str) -> None:
 # tqdm stub — replaced by real tqdm if available
 try:
     from tqdm import tqdm
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
 
     class tqdm:  # type: ignore[no-redef]
         def __init__(self, *a, total=0, desc="", unit="", ncols=0, **kw):

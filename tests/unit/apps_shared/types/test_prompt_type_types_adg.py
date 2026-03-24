@@ -9,7 +9,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.prompt_type_types import PromptSchema, PromptType, ValidationResult
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     PromptType = PromptSchema = ValidationResult = None  # type: ignore[assignment,misc]
 

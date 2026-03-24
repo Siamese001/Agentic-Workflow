@@ -20,7 +20,7 @@ try:
         semantic_cache,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CacheEntry = None  # type: ignore[assignment,misc]
     SemanticCacheHit = None  # type: ignore[assignment,misc]

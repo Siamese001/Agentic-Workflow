@@ -15,7 +15,7 @@ try:
         remediate_file,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     has_kwargs_in_signature = None  # type: ignore[assignment,misc]
     find_heal_repository_methods = None  # type: ignore[assignment,misc]

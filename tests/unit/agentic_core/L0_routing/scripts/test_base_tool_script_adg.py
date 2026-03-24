@@ -17,7 +17,7 @@ try:
         tool_registry,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     BaseTool = None  # type: ignore[assignment,misc]
     tool_registry = None  # type: ignore[assignment,misc]

@@ -12,7 +12,7 @@ try:
         LicSpineAdapter,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     LicSpineAdapter = None  # type: ignore[assignment,misc]
 

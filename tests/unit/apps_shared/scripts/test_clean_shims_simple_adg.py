@@ -11,7 +11,7 @@ try:
         clean_prompt_governance,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     clean_prompt_governance = None  # type: ignore[assignment,misc]
     clean_other_directories = None  # type: ignore[assignment,misc]

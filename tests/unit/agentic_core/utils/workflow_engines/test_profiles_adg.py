@@ -15,7 +15,7 @@ try:
         make_profile,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RetrievalProfileConfig = None  # type: ignore[assignment,misc]
     RetrievalPipeline = None  # type: ignore[assignment,misc]

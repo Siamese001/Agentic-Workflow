@@ -18,7 +18,7 @@ try:
         PromptSchemaError,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PromptLoadError = None  # type: ignore[assignment,misc]
     PromptSchemaError = None  # type: ignore[assignment,misc]

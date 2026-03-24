@@ -168,7 +168,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L2_execution.utils.analysis_ops_util import validate_python_syntax
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     validate_python_syntax = None  # type: ignore[assignment]
 

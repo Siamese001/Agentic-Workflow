@@ -10,7 +10,7 @@ try:
         ROUTING_THRESHOLDS_ALLOWLIST,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ROUTING_THRESHOLDS_ALLOWLIST = None  # type: ignore[assignment]
 

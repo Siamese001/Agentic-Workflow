@@ -17,7 +17,7 @@ try:
         fix_whitespace_in_file,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     fix_whitespace_in_file = None  # type: ignore[assignment,misc]
     fix_all_files = None  # type: ignore[assignment,misc]

@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ShadowRoutingRationale = None  # type: ignore[assignment,misc]
     ShadowRoutingDecision = None  # type: ignore[assignment,misc]

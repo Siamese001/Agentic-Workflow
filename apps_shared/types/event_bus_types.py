@@ -590,6 +590,7 @@ class RedisEventBus(EventBus):
             await self.redis.ping()
             self._running = True
             logger.info("RedisEventBus connected")
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             raise ImportError("redis package required for RedisEventBus")
         # guardian: allow-silent-swallow

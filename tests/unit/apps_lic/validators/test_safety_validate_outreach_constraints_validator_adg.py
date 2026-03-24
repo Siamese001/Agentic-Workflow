@@ -17,7 +17,7 @@ try:
         validate_outreach_constraints,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     validate_outreach_constraints = None  # type: ignore[assignment,misc]
     get_validate_outreach_constraints_config = None  # type: ignore[assignment,misc]

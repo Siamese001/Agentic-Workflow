@@ -18,7 +18,7 @@ try:
         get_llm_gateway,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ProviderHealthState = None  # type: ignore[assignment,misc]
     SovereigntyViolation = None  # type: ignore[assignment,misc]

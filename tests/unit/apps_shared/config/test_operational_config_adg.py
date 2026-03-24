@@ -18,7 +18,7 @@ try:
         should_scan_directory,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     is_excluded_path = None  # type: ignore[assignment,misc]
     is_allowed_duplicate = None  # type: ignore[assignment,misc]

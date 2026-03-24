@@ -19,7 +19,7 @@ try:
         get_canonical_truth_provider,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CanonicalTruthProvider = None  # type: ignore[assignment,misc]
     get_canonical_truth_provider = None  # type: ignore[assignment,misc]

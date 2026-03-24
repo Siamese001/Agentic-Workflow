@@ -22,7 +22,7 @@ try:
         load_classification_kernel,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     load_classification_kernel = None  # type: ignore[assignment,misc]
     get_classification_cache_context = None  # type: ignore[assignment,misc]

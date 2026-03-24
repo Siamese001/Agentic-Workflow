@@ -17,7 +17,7 @@ try:
         check_file_import_boundaries,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     check_file_import_boundaries = None  # type: ignore[assignment,misc]
     check_agentic_core_boundaries = None  # type: ignore[assignment,misc]

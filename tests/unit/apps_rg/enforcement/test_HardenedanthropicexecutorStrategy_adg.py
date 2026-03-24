@@ -18,7 +18,7 @@ try:
         create_hardened_anthropic_executor,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     HardenedAnthropicConfig = None  # type: ignore[assignment,misc]
     HardenedAnthropicExecutor = None  # type: ignore[assignment,misc]

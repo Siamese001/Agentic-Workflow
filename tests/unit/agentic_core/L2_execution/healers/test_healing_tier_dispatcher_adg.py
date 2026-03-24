@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     InvocationRecord = None  # type: ignore[assignment,misc]
     handle_qwen_oom_via_router = None  # type: ignore[assignment,misc]

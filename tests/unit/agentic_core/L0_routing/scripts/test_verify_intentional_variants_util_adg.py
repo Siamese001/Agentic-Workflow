@@ -14,7 +14,7 @@ try:
         scan_for_duplicates,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     read_file_content = None  # type: ignore[assignment,misc]
     extract_key_identifiers = None  # type: ignore[assignment,misc]

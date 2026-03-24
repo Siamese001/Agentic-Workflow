@@ -104,7 +104,8 @@ try:
         AppsQwenRequest,
         apps_qwen_telemetry,
     )
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     AppsQwenGateway = None  # type: ignore[assignment]
     AppsQwenRequest = None  # type: ignore[assignment]
     apps_qwen_telemetry = None  # type: ignore[assignment]

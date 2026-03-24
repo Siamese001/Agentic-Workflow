@@ -10,7 +10,7 @@ try:
         OrchestrateObservabilityPlanningOrchestratorType,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     OrchestrateObservabilityPlanningOrchestratorType = None  # type: ignore[assignment,misc]
     OrchestrateObservabilityPlanningOrchestratorProcessor = None  # type: ignore[assignment,misc]

@@ -24,7 +24,7 @@ try:
         format_observability_context,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     FormatObservabilityContextPlanType = None  # type: ignore[assignment,misc]
     FormatObservabilityContextPlanConstraints = None  # type: ignore[assignment,misc]

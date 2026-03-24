@@ -18,7 +18,7 @@ try:
         main,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     load_registry = None  # type: ignore[assignment,misc]
     detect_template_drift = None  # type: ignore[assignment,misc]

@@ -22,7 +22,7 @@ try:
         ArchivalResult,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ArchivalOperation = None  # type: ignore[assignment,misc]
     ArchivalResult = None  # type: ignore[assignment,misc]

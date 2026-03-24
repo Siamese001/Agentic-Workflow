@@ -19,7 +19,7 @@ try:
         create_relevance_scorer,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RelevanceMethod = None  # type: ignore[assignment,misc]
     RelevanceScore = None  # type: ignore[assignment,misc]

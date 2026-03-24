@@ -17,7 +17,7 @@ try:
         RLHFChangePackage,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RLHFChangePackage = None  # type: ignore[assignment,misc]
     DefaultRLHFOptimizer = None  # type: ignore[assignment,misc]

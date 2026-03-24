@@ -17,7 +17,7 @@ try:
         CompletenessReviewRubric,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CompletenessReviewRubric = None  # type: ignore[assignment,misc]
     CompletenessFeedbackExample = None  # type: ignore[assignment,misc]

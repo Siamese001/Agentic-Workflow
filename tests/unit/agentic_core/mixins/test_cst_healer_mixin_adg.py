@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CSTModification = None  # type: ignore[assignment,misc]
     SurgicalCSTTransformer = None  # type: ignore[assignment,misc]

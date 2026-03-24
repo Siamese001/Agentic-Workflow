@@ -22,7 +22,7 @@ try:
         validate_sdk,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SDKCategory = None  # type: ignore[assignment,misc]
     SDKEntry = None  # type: ignore[assignment,misc]

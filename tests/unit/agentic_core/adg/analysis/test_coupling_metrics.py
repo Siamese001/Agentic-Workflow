@@ -11,20 +11,20 @@ import pytest
 pytestmark = pytest.mark.unit
 
 try:
-    from agentic_core.adg.analysis.coupling_metrics import (  # noqa: F401
+    from agentic_core.adg.analysis.coupling_metrics_config import (  # noqa: F401
         CouplingMetricsReport,
         ModuleMetrics,
         compute_coupling_metrics,
     )
     _AVAILABLE = True
 except ImportError:
+    pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ModuleMetrics = None  # type: ignore[assignment,misc]
     CouplingMetricsReport = None  # type: ignore[assignment,misc]
     compute_coupling_metrics = None  # type: ignore[assignment,misc]
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="coupling_metrics.py deps unavailable")
 class TestModuleMetricsContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -39,7 +39,6 @@ class TestModuleMetricsContract:
         import dataclasses
         assert len(dataclasses.fields(ModuleMetrics)) >= 1
 
-@pytest.mark.skipif(not _AVAILABLE, reason="coupling_metrics.py deps unavailable")
 class TestCouplingMetricsReportContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -50,7 +49,6 @@ class TestCouplingMetricsReportContract:
         fnames = {f.name for f in dataclasses.fields(CouplingMetricsReport)}
         assert fnames >= {'metrics_by_module'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="coupling_metrics.py deps unavailable")
 class TestComputeCouplingMetricsFunction:
     def test_is_callable(self):
         assert callable(compute_coupling_metrics)

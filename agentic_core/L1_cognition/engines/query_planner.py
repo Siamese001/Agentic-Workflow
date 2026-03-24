@@ -89,7 +89,8 @@ try:
     from agentic_core.L3_orchestration.engines.sub_atomic_engine_impl import (
         SubAtomicEngineImpl as SubAtomicEngine,
     )
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
 
     class SubAtomicEngine:
         """Stub: SubAtomicEngine not installed."""

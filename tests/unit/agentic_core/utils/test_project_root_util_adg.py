@@ -17,7 +17,7 @@ try:
         get_project_root_safe,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_project_root = None  # type: ignore[assignment,misc]
     get_project_root_safe = None  # type: ignore[assignment,misc]

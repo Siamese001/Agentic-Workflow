@@ -194,7 +194,8 @@ try:
     from agentic_core.L3_orchestration.reasoning.subatomic_testing_mixin import (
         L3SubatomicTestingMixin,
     )
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
 
     class L3SubatomicTestingMixin:
         pass

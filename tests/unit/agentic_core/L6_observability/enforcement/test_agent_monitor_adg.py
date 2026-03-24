@@ -12,7 +12,7 @@ try:
         get_monitor,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     UnifiedAgentMonitor = None  # type: ignore[assignment,misc]
     ExecutionTimer = None  # type: ignore[assignment,misc]

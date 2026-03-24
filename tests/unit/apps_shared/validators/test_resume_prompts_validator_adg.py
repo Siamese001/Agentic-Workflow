@@ -20,7 +20,7 @@ try:
         build_phase2_prompt,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     build_librarian_mission_extraction_prompt = None  # type: ignore[assignment,misc]
     build_librarian_strategic_analysis_prompt = None  # type: ignore[assignment,misc]

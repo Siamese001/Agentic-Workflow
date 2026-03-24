@@ -17,7 +17,7 @@ try:
         create_batch_embedding_service,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     BatchEmbeddingService = None  # type: ignore[assignment,misc]
     create_batch_embedding_service = None  # type: ignore[assignment,misc]

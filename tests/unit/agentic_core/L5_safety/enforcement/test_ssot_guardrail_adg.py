@@ -16,7 +16,7 @@ try:
         scan_shadow_functions,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     Violation = None  # type: ignore[assignment,misc]
     ScanResult = None  # type: ignore[assignment,misc]

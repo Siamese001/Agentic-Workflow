@@ -17,7 +17,7 @@ try:
         TracingMixin,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SpanContext = None  # type: ignore[assignment,misc]
     TracingMixin = None  # type: ignore[assignment,misc]

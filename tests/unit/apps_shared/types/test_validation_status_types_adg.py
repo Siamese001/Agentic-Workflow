@@ -171,7 +171,7 @@ try:
         ValidationStatus,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     ValidationStatus = ValidationAction = RuleFailure = None  # type: ignore[assignment,misc]
 

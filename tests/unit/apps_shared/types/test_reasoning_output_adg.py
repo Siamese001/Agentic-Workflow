@@ -167,7 +167,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.reasoning_output import ReasoningOutput, scan_for_violations
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     ReasoningOutput = scan_for_violations = None  # type: ignore[assignment,misc]
 

@@ -12,7 +12,7 @@ try:
         RouteDecisionArtifact,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     HealingPlan = None  # type: ignore[assignment,misc]
     ResultArtifact = None  # type: ignore[assignment,misc]

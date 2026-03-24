@@ -18,7 +18,7 @@ try:
         process,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     Result = None  # type: ignore[assignment,misc]
     Safety = None  # type: ignore[assignment,misc]

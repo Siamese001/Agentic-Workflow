@@ -17,7 +17,7 @@ try:
         get_check_output_quality_config,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     check_output_quality = None  # type: ignore[assignment,misc]
     get_check_output_quality_config = None  # type: ignore[assignment,misc]

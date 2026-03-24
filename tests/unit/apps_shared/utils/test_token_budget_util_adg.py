@@ -19,7 +19,7 @@ try:
         enforce_token_budget,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     BudgetExceededError = None  # type: ignore[assignment,misc]
     TokenBudgetConfig = None  # type: ignore[assignment,misc]

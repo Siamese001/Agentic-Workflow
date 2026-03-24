@@ -23,7 +23,7 @@ try:
         with_circuit_breaker,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CircuitState = None  # type: ignore[assignment,misc]
     CircuitOpenError = None  # type: ignore[assignment,misc]

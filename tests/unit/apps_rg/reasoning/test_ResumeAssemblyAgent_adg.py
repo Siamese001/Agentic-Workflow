@@ -19,7 +19,7 @@ try:
         get_resume_skills_section,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ResumeTemplateError = None  # type: ignore[assignment,misc]
     ResumeAssemblyAgent = None  # type: ignore[assignment,misc]

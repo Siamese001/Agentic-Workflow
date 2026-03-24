@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RedSentinelAgent = None  # type: ignore[assignment,misc]
     get_red_sentinel = None  # type: ignore[assignment,misc]

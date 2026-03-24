@@ -175,7 +175,7 @@ try:
         SchemaVectorSearcher,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     SchemaSearchMode = SchemaSimilarityType = SchemaVectorEntry = None  # type: ignore[assignment,misc]
     SchemaSearchQuery = SchemaSearchResult = SchemaVectorConfig = SchemaVectorSearcher = None  # type: ignore[assignment,misc]

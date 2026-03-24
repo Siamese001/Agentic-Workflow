@@ -14,7 +14,7 @@ try:
         PathPruningStrategy,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ConfidenceMetrics = None  # type: ignore[assignment,misc]
     EarlyStoppingStrategy = None  # type: ignore[assignment,misc]

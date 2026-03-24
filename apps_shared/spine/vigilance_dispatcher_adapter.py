@@ -208,6 +208,7 @@ class VigilanceDispatcherAdapter:
             VigilanceDispatcher, self._ArtifactCls = _build_real_dispatcher()
             self._dispatcher = VigilanceDispatcher()
             self._real = True
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             logger.warning("VigilanceDispatcher unavailable; using null fallback")
             self._dispatcher = None

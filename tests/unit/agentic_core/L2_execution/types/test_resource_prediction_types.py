@@ -23,7 +23,7 @@ try:
         ResourcePrediction,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     FailureSignature = None  # type: ignore[assignment,misc]
     ResourceEnvelope = None  # type: ignore[assignment,misc]

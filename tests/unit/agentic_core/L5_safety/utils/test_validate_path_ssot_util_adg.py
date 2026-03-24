@@ -17,7 +17,7 @@ try:
         validate_repository,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     should_exclude_path = None  # type: ignore[assignment,misc]
     validate_file = None  # type: ignore[assignment,misc]

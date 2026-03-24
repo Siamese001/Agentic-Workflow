@@ -19,7 +19,7 @@ try:
         scan_sensitive_content,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     is_forbidden_artifact_name = None  # type: ignore[assignment,misc]
     scan_sensitive_content = None  # type: ignore[assignment,misc]

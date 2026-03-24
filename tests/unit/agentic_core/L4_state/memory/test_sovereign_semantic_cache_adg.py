@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_redis_client = None  # type: ignore[assignment,misc]
     SovereignSemanticCache = None  # type: ignore[assignment,misc]

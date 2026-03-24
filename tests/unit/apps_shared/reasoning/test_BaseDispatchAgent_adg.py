@@ -17,7 +17,7 @@ try:
         ExecutionResult,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ExecutionResult = None  # type: ignore[assignment,misc]
     BaseDispatchAgent = None  # type: ignore[assignment,misc]

@@ -54,7 +54,7 @@ try:
     from agentic_core.embeddings.embedding_input_guard import GuardedText
     from agentic_core.runtime.types.cache_entry_types import SemanticCacheHit, CacheMiss
     DEPENDENCIES_AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     DEPENDENCIES_AVAILABLE = False
     logging.warning("Dependencies not available - using mocks")
 

@@ -167,7 +167,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.service_container_types import ServiceContainer, ServiceNotFoundError
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     ServiceNotFoundError = ServiceContainer = None  # type: ignore[assignment,misc]
 

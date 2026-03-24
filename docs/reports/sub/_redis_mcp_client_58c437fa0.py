@@ -25,7 +25,8 @@ try:
     from agentic_core.L3_orchestration.workflow_engines.mcp_router_sovereign import (
         SovereignMCPRouter,  # noqa: F401
     )
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     # Fallback or strict error depending on startup order
     pass
 

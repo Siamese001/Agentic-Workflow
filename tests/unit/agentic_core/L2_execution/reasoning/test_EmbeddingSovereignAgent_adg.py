@@ -15,7 +15,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     EmbeddingSovereignAgent = None  # type: ignore[assignment,misc]
     get_embedding_gateway = None  # type: ignore[assignment,misc]

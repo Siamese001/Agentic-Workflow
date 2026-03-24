@@ -14,7 +14,7 @@ try:
         validate_registry_coverage,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     GapAnalysisItem = None  # type: ignore[assignment,misc]
     IntegrityReportResult = None  # type: ignore[assignment,misc]

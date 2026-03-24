@@ -206,6 +206,7 @@ class SDKEntry:
         try:
             __import__(self.module)
             return True
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             return False
 

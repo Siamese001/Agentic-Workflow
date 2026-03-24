@@ -12,7 +12,7 @@ try:
         WriteFileArgs,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ReadFileArgs = None  # type: ignore[assignment,misc]
     WriteFileArgs = None  # type: ignore[assignment,misc]

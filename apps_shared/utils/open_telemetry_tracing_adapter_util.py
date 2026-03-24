@@ -98,7 +98,8 @@ try:
     from opentelemetry.trace import Status, StatusCode
 
     OTEL_AVAILABLE = True
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     OTEL_AVAILABLE = False
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,

@@ -92,7 +92,8 @@ _emit_links_execution_to_snapshot("p4", "redis_health_check", "exec_snapshot_lin
 
 try:
     import redis
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     print("[Redis Health] ERROR: redis-py not installed. Run: pip install redis")
     sys.exit(2)
 

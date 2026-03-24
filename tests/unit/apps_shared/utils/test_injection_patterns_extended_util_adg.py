@@ -14,7 +14,7 @@ try:
         load_all_extended_patterns,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_resume_injection_patterns = None  # type: ignore[assignment,misc]
     get_message_injection_patterns = None  # type: ignore[assignment,misc]

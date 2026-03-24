@@ -181,7 +181,8 @@ try:
     TrainingSession = GoldenOutput = GoldenStateEvaluator = JudgeEvaluator = PerformanceMetrics = type(
         "Stub", (), {}
     )
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     BenchmarkResult = GoldenOutput = GoldenStateEvaluator = JudgeEvaluator = PerformanceMetrics = (
         ScenarioType
     ) = TrainingScenario = TrainingSession = PerformanceLevel = type("Stub", (), {})

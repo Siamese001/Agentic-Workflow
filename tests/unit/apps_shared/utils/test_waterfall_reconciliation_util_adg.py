@@ -19,7 +19,7 @@ try:
         main,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_agents_at_commit = None  # type: ignore[assignment,misc]
     get_current_agents = None  # type: ignore[assignment,misc]

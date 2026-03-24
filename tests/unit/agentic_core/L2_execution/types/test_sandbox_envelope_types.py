@@ -17,7 +17,7 @@ try:
         ToolBudget,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ToolBudget = None  # type: ignore[assignment,misc]
     SandboxEnvelope = None  # type: ignore[assignment,misc]

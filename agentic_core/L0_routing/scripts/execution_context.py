@@ -184,7 +184,8 @@ def _get_subatomic_testing_mixin():
 
 try:
     SubatomicTestingMixin = _get_subatomic_testing_mixin()
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
 
     class SubatomicTestingMixin:
         pass

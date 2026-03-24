@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     hash_artifact_canonical = None  # type: ignore[assignment,misc]
     SigningError = None  # type: ignore[assignment,misc]

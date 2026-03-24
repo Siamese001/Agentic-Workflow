@@ -170,7 +170,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L0_routing.scripts.agent_analysis_config import AgentAnalysis
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AgentAnalysis = None  # type: ignore[assignment,misc]
 

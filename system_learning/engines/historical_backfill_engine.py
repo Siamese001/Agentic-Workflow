@@ -310,6 +310,7 @@ def backfill_compliance_success_rates(
             from system_learning.engines.healing_success_rate_store import get_default_store
 
             store = get_default_store()
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             logger.debug("[Backfill] HealingSuccessRateStore not available, skipping.")
             return {}

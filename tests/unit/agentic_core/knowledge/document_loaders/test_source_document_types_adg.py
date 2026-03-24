@@ -17,7 +17,7 @@ try:
         SourceDocument,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SourceDocument = None  # type: ignore[assignment,misc]
     KnowledgeChunk = None  # type: ignore[assignment,misc]

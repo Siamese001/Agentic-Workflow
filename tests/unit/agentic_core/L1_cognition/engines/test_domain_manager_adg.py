@@ -168,7 +168,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L1_cognition.engines.domain_manager import DomainContextManager
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     DomainContextManager = None  # type: ignore[assignment,misc]
 

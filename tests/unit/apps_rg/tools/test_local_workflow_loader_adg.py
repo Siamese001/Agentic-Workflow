@@ -19,7 +19,7 @@ try:
         execute_resume_generation,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     LocalWorkflowLoader = None  # type: ignore[assignment,misc]
     execute_resume_generation = None  # type: ignore[assignment,misc]

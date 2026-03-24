@@ -18,7 +18,7 @@ try:
         create_hardened_openai_executor,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     HardenedOpenAIConfig = None  # type: ignore[assignment,misc]
     HardenedOpenAIExecutor = None  # type: ignore[assignment,misc]

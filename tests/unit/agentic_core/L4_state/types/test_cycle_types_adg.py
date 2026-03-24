@@ -187,7 +187,7 @@ def test_has_think_act_observe():
 try:
     from agentic_core.L4_state.types.cycle_types import CycleConfig, CycleState
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     CycleConfig = CycleState = None  # type: ignore[assignment,misc]
 

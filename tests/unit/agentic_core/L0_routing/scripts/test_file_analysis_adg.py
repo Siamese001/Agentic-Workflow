@@ -15,7 +15,7 @@ try:
         infer_purpose,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     FileAnalysis = None  # type: ignore[assignment,misc]
     extract_docstring = None  # type: ignore[assignment,misc]

@@ -172,6 +172,14 @@ _emit_stores_embedding("p4", "cache_loader", "embedding_store")
 _emit_updates_meta_learning_state("p4", "cache_loader", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "cache_loader", "exec_snapshot_link")
 
+# Configuration constants required by tests
+BATCH_SIZE = 1000
+BUFFER_SIZE = 8192
+DEFAULT_SLEEP = 0.1
+MAX_DEPTH = 50
+MAX_RETRIES = 3
+THRESHOLD = 0.95
+
 logger = logging.getLogger(__name__)
 _CACHE_PATH = Path("artifacts/adg/scan_result_cache.json")
 
@@ -286,4 +294,13 @@ def invalidate_cache(cache_path: Path | None = None) -> None:
         logger.info("ADG cache invalidated: %s", cache)
 
 
-__all__ = ["load_or_scan", "invalidate_cache"]
+__all__ = [
+    "BATCH_SIZE",
+    "BUFFER_SIZE", 
+    "DEFAULT_SLEEP",
+    "MAX_DEPTH",
+    "MAX_RETRIES",
+    "THRESHOLD",
+    "load_or_scan", 
+    "invalidate_cache"
+]

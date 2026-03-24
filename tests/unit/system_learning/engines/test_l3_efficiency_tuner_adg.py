@@ -19,7 +19,7 @@ try:
         extract_timings_from_runtime_state,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     EfficiencyBottleneck = None  # type: ignore[assignment,misc]
     EfficiencyReport = None  # type: ignore[assignment,misc]

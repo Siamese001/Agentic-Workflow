@@ -491,7 +491,8 @@ class MetaLearningClient:
                     for i, idx in enumerate(indices_arr[0])
                     if idx >= 0
                 ]
-            except ImportError:
+            # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
                 import math
 
                 q_mag = math.sqrt(sum(x * x for x in embedding))

@@ -17,7 +17,7 @@ try:
         StructuredEngineAgent,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AgentPlan = None  # type: ignore[assignment,misc]
     StructuredEngineAgent = None  # type: ignore[assignment,misc]

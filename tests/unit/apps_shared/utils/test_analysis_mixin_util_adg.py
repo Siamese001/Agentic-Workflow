@@ -17,7 +17,7 @@ try:
         AnalysisResult,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AnalysisResult = None  # type: ignore[assignment,misc]
     AnalysisMixin = None  # type: ignore[assignment,misc]

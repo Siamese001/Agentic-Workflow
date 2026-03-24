@@ -19,7 +19,7 @@ try:
         create_prompt_registry,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PromptCategory = None  # type: ignore[assignment,misc]
     PromptTemplate = None  # type: ignore[assignment,misc]

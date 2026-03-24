@@ -173,7 +173,7 @@ try:
         TaskType,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     ModelTier = TaskType = ModelConfig = TaskProfile = ModelRouter = None  # type: ignore[assignment,misc]
 

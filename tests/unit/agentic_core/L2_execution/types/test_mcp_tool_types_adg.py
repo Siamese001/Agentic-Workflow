@@ -167,7 +167,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L2_execution.types.mcp_tool_types import MCPTool, MCPToolResult, MCPToolServer
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False; MCPTool = MCPToolResult = MCPToolServer = None  # type: ignore[assignment,misc]
 
 @pytest.mark.skipif(not _AVAIL, reason="deps unavailable")

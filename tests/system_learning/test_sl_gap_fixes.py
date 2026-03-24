@@ -197,7 +197,7 @@ class TestGap1RestoreFromMemory:
 
         try:
             store.restore_from_memory()
-        except ImportError:
+        pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
             pass  # the production code wraps in try/except, verify in integration
 
     def test_restore_from_memory_returns_int_count(self):

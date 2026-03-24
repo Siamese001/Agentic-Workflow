@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PatternCompatibilityError = None  # type: ignore[assignment,misc]
     MLPatternRecord = None  # type: ignore[assignment,misc]

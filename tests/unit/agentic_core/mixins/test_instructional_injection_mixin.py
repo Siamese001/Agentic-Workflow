@@ -16,7 +16,7 @@ try:
         get_instructional_injection_mixin,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     InstructionalInjectionMixin = None  # type: ignore[assignment,misc]
     get_instructional_injection_mixin = None  # type: ignore[assignment,misc]

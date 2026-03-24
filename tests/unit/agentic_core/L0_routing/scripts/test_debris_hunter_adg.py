@@ -10,7 +10,7 @@ try:
         DebrisHunter,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     DebrisHunter = None  # type: ignore[assignment,misc]
 

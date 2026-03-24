@@ -20,7 +20,7 @@ try:
         sync_search,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_titanium_search_tool = None  # type: ignore[assignment,misc]
     get_titanium_search_with_sources = None  # type: ignore[assignment,misc]

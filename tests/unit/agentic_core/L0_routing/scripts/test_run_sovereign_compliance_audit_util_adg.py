@@ -18,7 +18,7 @@ try:
         run_structure_enforcer,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     run_code_validator = None  # type: ignore[assignment,misc]
     run_structure_enforcer = None  # type: ignore[assignment,misc]

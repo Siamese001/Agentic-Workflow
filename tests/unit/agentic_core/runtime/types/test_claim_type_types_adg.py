@@ -21,7 +21,7 @@ try:
         create_claim_scorer,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ClaimType = None  # type: ignore[assignment,misc]
     ConfidenceLevel = None  # type: ignore[assignment,misc]

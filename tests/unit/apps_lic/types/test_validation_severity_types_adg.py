@@ -87,7 +87,7 @@ try:
         ValidationSeverity,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     ValidationSeverity = ErrorCode = ContentCleanlinessRule = None  # type: ignore[assignment,misc]
     SignalQualityConfig = ClaimConfidenceConfig = LIC_ERROR_CODES = None  # type: ignore[assignment,misc]

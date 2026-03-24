@@ -20,7 +20,7 @@ try:
         show_pending_reviews,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     load_review_log = None  # type: ignore[assignment,misc]
     load_false_positives = None  # type: ignore[assignment,misc]

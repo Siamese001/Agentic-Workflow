@@ -19,7 +19,7 @@ try:
         get_cached_response,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CacheEntry = None  # type: ignore[assignment,misc]
     ContrastiveSemanticCache = None  # type: ignore[assignment,misc]

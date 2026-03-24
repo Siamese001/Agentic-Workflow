@@ -18,7 +18,7 @@ try:
         get_forbidden_loaded_modules,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_forbidden_loaded_modules = None  # type: ignore[assignment,misc]
     assert_isolation = None  # type: ignore[assignment,misc]

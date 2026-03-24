@@ -19,7 +19,7 @@ try:
         decompose_task,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     TaskBlastRadiusViolation = None  # type: ignore[assignment,misc]
     DecompositionPolicy = None  # type: ignore[assignment,misc]

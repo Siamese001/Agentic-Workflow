@@ -19,7 +19,7 @@ try:
         ReviewRubric,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ReviewRubric = None  # type: ignore[assignment,misc]
     FeedbackExample = None  # type: ignore[assignment,misc]

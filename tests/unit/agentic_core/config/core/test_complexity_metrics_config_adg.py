@@ -19,7 +19,7 @@ try:
         get_flattening_pattern,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ComplexityMetrics = None  # type: ignore[assignment,misc]
     ExtractionCandidate = None  # type: ignore[assignment,misc]

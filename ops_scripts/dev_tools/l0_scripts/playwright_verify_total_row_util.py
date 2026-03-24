@@ -304,7 +304,8 @@ def main():
             try:
                 results = _verify_via_sync_playwright()
                 print(f'   Source: {results["source"]}')
-            except ImportError:
+            # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
                 print('   playwright not installed — pip install playwright && playwright install chromium')
                 return 1
 

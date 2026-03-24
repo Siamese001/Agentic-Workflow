@@ -17,7 +17,7 @@ try:
         GatewayFactory,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     GatewayBundle = None  # type: ignore[assignment,misc]
     GatewayFactory = None  # type: ignore[assignment,misc]

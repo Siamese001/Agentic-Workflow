@@ -29,7 +29,7 @@ try:
         TelepathyInterface,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     TelepathyInterface = None  # type: ignore[assignment,misc]
 

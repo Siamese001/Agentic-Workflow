@@ -21,7 +21,7 @@ try:
             validate_base_agents,
         )
         _AVAILABLE = True
-    except ImportError:
+    pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
         _AVAILABLE = False
         find_base_agents = None  # type: ignore[assignment,misc]
         validate_base_agents = None  # type: ignore[assignment,misc]

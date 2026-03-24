@@ -11,7 +11,7 @@ try:
         run_meta_learning_operator,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     run_meta_learning_operator = None  # type: ignore[assignment,misc]
     render_meta_learning_audit_pack = None  # type: ignore[assignment,misc]

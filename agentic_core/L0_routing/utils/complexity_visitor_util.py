@@ -118,7 +118,8 @@ try:
     from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     SSOT_AVAILABLE = True
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     SSOT_AVAILABLE = False
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent))

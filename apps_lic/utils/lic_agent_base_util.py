@@ -112,7 +112,8 @@ _emit_links_execution_to_snapshot("p4", "lic_agent_base_util", "exec_snapshot_li
 Logger = logging.getLogger(__name__)
 try:
     from agentic_core.interfaces.mixins import MetaLearningMixin
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
 
     class MetaLearningMixin:
         pass

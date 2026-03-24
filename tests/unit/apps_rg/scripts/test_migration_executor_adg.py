@@ -14,7 +14,7 @@ try:
         MigrationExecutor,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     MigrationExecutor = None  # type: ignore[assignment,misc]
     BASE_DIR = None  # type: ignore[assignment,misc]

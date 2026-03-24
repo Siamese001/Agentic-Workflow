@@ -18,7 +18,7 @@ try:
         make_result,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     Violation = None  # type: ignore[assignment,misc]
     EnforcementResult = None  # type: ignore[assignment,misc]

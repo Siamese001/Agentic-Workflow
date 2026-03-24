@@ -21,7 +21,7 @@ try:
         create_hardened_gemini_executor,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ContextOverflowError = None  # type: ignore[assignment,misc]
     CircuitBreakerOpenError = None  # type: ignore[assignment,misc]

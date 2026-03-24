@@ -11,7 +11,7 @@ try:
         KeywordCompletenessScorer,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CompletenessScorerConfig = None  # type: ignore[assignment,misc]
     KeywordCompletenessScorer = None  # type: ignore[assignment,misc]

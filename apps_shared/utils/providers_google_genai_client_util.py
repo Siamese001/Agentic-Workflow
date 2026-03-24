@@ -212,6 +212,7 @@ def run_llm_google(
                 if hasattr(candidate, "content") and candidate.content:
                     return candidate.content.parts[0].text if candidate.content.parts else ""
             return ""
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             pass
         # guardian: allow-silent-swallow

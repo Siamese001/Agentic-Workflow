@@ -10,7 +10,7 @@ try:
         PlaceholderDetectorAgent,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PlaceholderDetectorAgent = None  # type: ignore[assignment,misc]
 

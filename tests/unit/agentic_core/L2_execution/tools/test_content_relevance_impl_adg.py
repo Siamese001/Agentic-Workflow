@@ -18,7 +18,7 @@ try:
         score,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AssessContentRelevance = None  # type: ignore[assignment,misc]
     score = None  # type: ignore[assignment,misc]

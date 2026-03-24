@@ -18,7 +18,7 @@ try:
         MetricsConfig,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CacheConfig = None  # type: ignore[assignment,misc]
     MetricsConfig = None  # type: ignore[assignment,misc]

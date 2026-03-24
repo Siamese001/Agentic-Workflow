@@ -17,7 +17,7 @@ try:
         get_code_deduplication_agent,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CodeDeduplicationAgent = None  # type: ignore[assignment,misc]
     get_code_deduplication_agent = None  # type: ignore[assignment,misc]

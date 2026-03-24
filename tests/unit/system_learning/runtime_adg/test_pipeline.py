@@ -21,7 +21,7 @@ try:
     )
 
     _TRACER_AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _TRACER_AVAILABLE = False
 
 from system_learning.runtime_adg.materializer import RuntimeADGMaterializer

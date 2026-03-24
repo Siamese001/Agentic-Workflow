@@ -17,7 +17,7 @@ try:
         get_performance_analyst,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PerformanceAnalystAgentSimple = None  # type: ignore[assignment,misc]
     get_performance_analyst = None  # type: ignore[assignment,misc]

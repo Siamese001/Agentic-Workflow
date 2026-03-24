@@ -16,7 +16,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     REQUIRED_HASH_FIELDS = None  # type: ignore[assignment,misc]
     ManifestHashError = None  # type: ignore[assignment,misc]

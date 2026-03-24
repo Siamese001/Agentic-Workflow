@@ -20,7 +20,7 @@ try:
         organize_structure,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     aggressive_cleanup = None  # type: ignore[assignment,misc]
     organize_structure = None  # type: ignore[assignment,misc]

@@ -172,7 +172,7 @@ try:
         RoutingTier,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     RoutingTier = ProviderType = RouterConfig = RouteResult = None  # type: ignore[assignment,misc]
 

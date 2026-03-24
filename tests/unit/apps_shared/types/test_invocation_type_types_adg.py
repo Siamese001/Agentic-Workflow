@@ -174,7 +174,7 @@ try:
         ToolEndpoint,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     InvocationType = ResponseFormat = ToolEndpoint = None  # type: ignore[assignment,misc]
     InvocationRequest = InvocationResponse = InvocationConfig = None  # type: ignore[assignment,misc]

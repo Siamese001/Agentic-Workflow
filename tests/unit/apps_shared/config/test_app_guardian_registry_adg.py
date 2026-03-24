@@ -13,7 +13,7 @@ try:
         get_specs_for_app,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AppGuardianSpec = None  # type: ignore[assignment,misc]
     get_specs_for_app = None  # type: ignore[assignment,misc]

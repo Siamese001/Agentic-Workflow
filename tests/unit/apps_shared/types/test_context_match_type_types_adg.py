@@ -7,7 +7,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_shared.types.context_match_type_types import ContextMatchType
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     ContextMatchType = None  # type: ignore[assignment,misc]
 

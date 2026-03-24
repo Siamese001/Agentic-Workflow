@@ -17,7 +17,7 @@ try:
         start_span,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     start_span = None  # type: ignore[assignment,misc]
     end_span = None  # type: ignore[assignment,misc]

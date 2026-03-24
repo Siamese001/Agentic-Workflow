@@ -175,7 +175,7 @@ try:
         get_kx_registry,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     KNodeType = ReasoningStrategy = RAGConfig = DecodingParams = KNodeConfig = None  # type: ignore[assignment,misc]
     get_kx_registry = KXNodeRegistry = None  # type: ignore[assignment,misc]

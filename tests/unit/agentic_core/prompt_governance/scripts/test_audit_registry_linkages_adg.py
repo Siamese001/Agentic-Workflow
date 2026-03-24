@@ -19,7 +19,7 @@ try:
         main,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     load_registry = None  # type: ignore[assignment,misc]
     extract_schema_from_template = None  # type: ignore[assignment,misc]

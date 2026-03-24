@@ -22,7 +22,7 @@ try:
         ResumeOrchestratorEngine,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     HopCheckpoint = None  # type: ignore[assignment,misc]
     ResumeOrchestratorEngine = None  # type: ignore[assignment,misc]

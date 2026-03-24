@@ -167,7 +167,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_lic.types.TraceRegistry import TraceRegistry
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     TraceRegistry = None  # type: ignore[assignment,misc]
 

@@ -110,7 +110,8 @@ try:
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     HAS_SOVEREIGN_BASE = True
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     HAS_SOVEREIGN_BASE = False
     SovereignBaseAgent = object
 

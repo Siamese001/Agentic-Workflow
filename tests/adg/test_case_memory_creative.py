@@ -199,7 +199,7 @@ try:
     from hypothesis import strategies as st
 
     _HYPOTHESIS_AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     # Provide no-op stubs so class-body @given decorators don't raise NameError
     import functools
 

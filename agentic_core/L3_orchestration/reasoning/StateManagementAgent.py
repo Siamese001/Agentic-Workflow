@@ -499,6 +499,7 @@ class StateManagementAgent(WriteGovernorMixin, SovereignBaseAgent):
                     ]
                 )
             Logger.debug(f"[mcp8] Mirrored state: {key}")
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             pass
         # guardian: allow-silent-swallow

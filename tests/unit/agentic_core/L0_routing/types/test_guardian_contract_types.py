@@ -28,7 +28,7 @@ try:
         is_v15_soft_fail,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     V15EnforcementError = None  # type: ignore[assignment,misc]
     V15SoftFailAbort = None  # type: ignore[assignment,misc]

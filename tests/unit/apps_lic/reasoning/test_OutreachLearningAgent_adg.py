@@ -23,7 +23,7 @@ try:
         OutreachMemoryPersistence,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     OutreachEngineContext = None  # type: ignore[assignment,misc]
     HealerMixin = None  # type: ignore[assignment,misc]

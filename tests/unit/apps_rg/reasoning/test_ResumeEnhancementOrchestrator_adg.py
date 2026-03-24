@@ -18,7 +18,7 @@ try:
         get_resume_enhancement_orchestrator,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ResumeEnhancementOrchestrator = None  # type: ignore[assignment,misc]
     get_resume_enhancement_orchestrator = None  # type: ignore[assignment,misc]

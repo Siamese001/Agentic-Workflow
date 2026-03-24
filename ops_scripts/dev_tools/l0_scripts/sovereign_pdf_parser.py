@@ -34,7 +34,8 @@ _emit_validated_by_safety_plane("p1", "sovereign_pdf_parser", "safety_validation
 try:
     import pdfplumber
     PDF_PLUMBER_AVAILABLE: Any = True
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     PDF_PLUMBER_AVAILABLE: Any = False
     print('[!] pdfplumber not available')
 try:

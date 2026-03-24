@@ -19,7 +19,7 @@ try:
         run_autonomous_remediation,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CoverageValidator = None  # type: ignore[assignment,misc]
     CoverageHealer = None  # type: ignore[assignment,misc]

@@ -24,7 +24,7 @@ try:
         enforce_anchor_coverage,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     RetrievalAnchor = None  # type: ignore[assignment,misc]
     AnchoredResult = None  # type: ignore[assignment,misc]

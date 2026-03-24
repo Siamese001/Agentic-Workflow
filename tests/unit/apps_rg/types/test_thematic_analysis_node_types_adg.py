@@ -172,7 +172,7 @@ try:
         ThematicAnalysisOutput,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     AuthenticityPatterns = CompetitiveIntelligence = ThematicAnalysisOutput = ThematicAnalysisNode = None  # type: ignore[assignment,misc]
 

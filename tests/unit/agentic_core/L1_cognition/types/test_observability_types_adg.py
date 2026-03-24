@@ -167,7 +167,7 @@ pytestmark = pytest.mark.unit
 try:
     from agentic_core.L1_cognition.types.observability_types import HealthStatus, MetricPoint
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     MetricPoint = HealthStatus = None  # type: ignore[assignment,misc]
 

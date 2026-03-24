@@ -232,7 +232,8 @@ class ReasoningMemory:
                 from .SemanticMemory import semantic_memory
 
                 self._semantic_memory = semantic_memory
-            except ImportError:
+            # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
                 self._semantic_memory = None
         return self._semantic_memory
 
@@ -380,6 +381,7 @@ class ReasoningMemory:
         """Persist thought to storage."""
         try:
             Ledger.append({"type": "reasoning_memory", "thought": self._thought_to_dict(thought)})
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             pass
 

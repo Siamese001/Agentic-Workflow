@@ -19,7 +19,7 @@ try:
         load_prompt_for_agent,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     PromptLoader = None  # type: ignore[assignment,misc]
     load_prompt_for_agent = None  # type: ignore[assignment,misc]

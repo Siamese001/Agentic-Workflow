@@ -16,7 +16,7 @@ try:
         build_apply_attempt,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     MetaLearningApplyAttemptArtifact = None  # type: ignore[assignment,misc]
     build_apply_attempt = None  # type: ignore[assignment,misc]

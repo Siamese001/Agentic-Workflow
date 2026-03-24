@@ -19,7 +19,7 @@ try:
         update_source_file,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     extract_class_with_context = None  # type: ignore[assignment,misc]
     create_pattern_enforcer_file = None  # type: ignore[assignment,misc]

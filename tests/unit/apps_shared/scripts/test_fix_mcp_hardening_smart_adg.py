@@ -17,7 +17,7 @@ try:
         find_agent_class_in_file,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     find_agent_class_in_file = None  # type: ignore[assignment,misc]
     add_mcp_import = None  # type: ignore[assignment,misc]

@@ -173,7 +173,7 @@ try:
         ConfigType,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     ConfigType = ConfigFormat = ConfigScope = ConfigSource = ConfigLoadPlan = None  # type: ignore[assignment,misc]
 

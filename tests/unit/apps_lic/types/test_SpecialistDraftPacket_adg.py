@@ -167,7 +167,7 @@ pytestmark = pytest.mark.unit
 try:
     from apps_lic.types.SpecialistDraftPacket import EvidenceClarificationRecord, SpecialistDraftPacket
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     SpecialistDraftPacket = EvidenceClarificationRecord = None  # type: ignore[assignment,misc]
 
@@ -179,14 +179,14 @@ class TestSpecialistDraftPacket:
     def test_is_pydantic(self):
         try:
             from pydantic import BaseModel; assert issubclass(SpecialistDraftPacket, BaseModel)
-        except ImportError:
+        pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
             pytest.skip("pydantic unavailable")
     def test_specialist_required(self):
         try:
             from pydantic import ValidationError
             with pytest.raises(ValidationError):
                 SpecialistDraftPacket()  # type: ignore[call-arg]
-        except ImportError:
+        pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
             pytest.skip("pydantic unavailable")
 
 @pytest.mark.skipif(not _AVAIL, reason="deps unavailable")

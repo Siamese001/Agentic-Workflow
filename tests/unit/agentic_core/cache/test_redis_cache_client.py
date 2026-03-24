@@ -28,7 +28,7 @@ try:
         reset_cache_singletons,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CacheDB = None  # type: ignore[assignment,misc]
     CacheStats = None  # type: ignore[assignment,misc]

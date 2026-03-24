@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SecretAccessOutcome = None  # type: ignore[assignment,misc]
     SecretKind = None  # type: ignore[assignment,misc]

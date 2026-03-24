@@ -14,7 +14,7 @@ try:
         run_full_migration,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     KNodeScanner = None  # type: ignore[assignment,misc]
     KNodeMigrator = None  # type: ignore[assignment,misc]

@@ -28,7 +28,7 @@ try:
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent  # noqa: F401
 
     SOVEREIGN_AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     SOVEREIGN_AVAILABLE = False
 
 

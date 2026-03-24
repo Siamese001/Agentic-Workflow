@@ -23,7 +23,7 @@ try:
         reset_for_testing,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     log_hitl_decision = None  # type: ignore[assignment,misc]
     get_decision_count = None  # type: ignore[assignment,misc]

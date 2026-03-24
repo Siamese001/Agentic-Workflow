@@ -29,7 +29,7 @@ try:
         decide_reasoning_tier,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ReasoningTier = None  # type: ignore[assignment,misc]
     ScoreBand = None  # type: ignore[assignment,misc]

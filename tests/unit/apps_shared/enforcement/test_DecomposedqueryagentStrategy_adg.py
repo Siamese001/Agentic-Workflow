@@ -19,7 +19,7 @@ try:
         decompose_query,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     DecomposedQuery = None  # type: ignore[assignment,misc]
     SimpleAgentBase = None  # type: ignore[assignment,misc]

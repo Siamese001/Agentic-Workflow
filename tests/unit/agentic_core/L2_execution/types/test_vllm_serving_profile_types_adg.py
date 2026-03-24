@@ -18,7 +18,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     VLLMServingProfile = None  # type: ignore[assignment,misc]
     VLLMServingProfileInvalid = None  # type: ignore[assignment,misc]

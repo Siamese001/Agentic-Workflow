@@ -17,7 +17,7 @@ try:
         extract_components,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     extract_components = None  # type: ignore[assignment,misc]
     compare_components = None  # type: ignore[assignment,misc]

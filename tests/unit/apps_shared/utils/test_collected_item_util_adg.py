@@ -19,7 +19,7 @@ try:
         get_collected,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CollectedItem = None  # type: ignore[assignment,misc]
     BaseCollector = None  # type: ignore[assignment,misc]

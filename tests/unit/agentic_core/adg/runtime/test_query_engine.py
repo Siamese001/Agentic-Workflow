@@ -24,7 +24,7 @@ try:
         get_runtime_query_engine,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     AgentCapability = None  # type: ignore[assignment,misc]
     DependencyPath = None  # type: ignore[assignment,misc]

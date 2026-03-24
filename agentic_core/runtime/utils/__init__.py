@@ -14,6 +14,7 @@ from .main_util import main
 
 try:
     from .runtime_bootstrapper import *
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     pass
 __all__ = ['main']

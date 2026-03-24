@@ -19,7 +19,7 @@ try:
         get_exec_strategy_roadmap,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ExecutiveStrategyAgent = None  # type: ignore[assignment,misc]
     get_exec_shadow_audit = None  # type: ignore[assignment,misc]

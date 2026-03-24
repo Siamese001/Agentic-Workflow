@@ -19,7 +19,7 @@ try:
     )
 
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     emit_react_performance_signal = None  # type: ignore[assignment,misc]
     emit_retrieval_completeness_signal = None  # type: ignore[assignment,misc]

@@ -17,7 +17,7 @@ try:
         SeedEmbeddingPackManifest,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     SeedEmbeddingPackManifest = None  # type: ignore[assignment,misc]
     SeedEmbeddingPackConfig = None  # type: ignore[assignment,misc]

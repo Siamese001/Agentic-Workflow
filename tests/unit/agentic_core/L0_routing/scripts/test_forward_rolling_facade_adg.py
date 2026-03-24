@@ -12,7 +12,7 @@ try:
         OptimizationMetrics,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ForwardRollingResult = None  # type: ignore[assignment,misc]
     OptimizationMetrics = None  # type: ignore[assignment,misc]

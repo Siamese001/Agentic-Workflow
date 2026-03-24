@@ -24,7 +24,7 @@ try:
         get_global_cache,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     CacheEntry = None  # type: ignore[assignment,misc]
     L1MemoryCache = None  # type: ignore[assignment,misc]

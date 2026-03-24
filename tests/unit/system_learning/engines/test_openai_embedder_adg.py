@@ -17,7 +17,7 @@ try:
         OpenAIEmbedder,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     OpenAIEmbedder = None  # type: ignore[assignment,misc]
     BGEEmbedder = None  # type: ignore[assignment,misc]

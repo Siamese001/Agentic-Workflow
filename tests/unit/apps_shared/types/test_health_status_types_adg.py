@@ -173,7 +173,7 @@ try:
         HealthStatus,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     HealthStatus = ComponentType = HealthCheckResult = None  # type: ignore[assignment,misc]
 

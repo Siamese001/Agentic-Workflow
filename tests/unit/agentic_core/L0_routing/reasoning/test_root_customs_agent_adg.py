@@ -173,7 +173,7 @@ try:
         RoutingDecision,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ASTAnalyzer = None  # type: ignore[assignment,misc]
     RoutingDecision = None  # type: ignore[assignment,misc]

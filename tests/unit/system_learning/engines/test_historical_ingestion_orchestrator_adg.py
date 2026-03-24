@@ -13,7 +13,7 @@ try:
         ingest_and_build_indexes_with_embedder,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ingest_and_build_indexes = None  # type: ignore[assignment,misc]
     ingest_and_build_indexes_with_embedder = None  # type: ignore[assignment,misc]

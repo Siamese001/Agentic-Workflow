@@ -171,7 +171,7 @@ try:
         ViolationSignature,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     ViolationSignature = EMBEDDING_DIMENSION = MAX_TEXT_LENGTH = None  # type: ignore[assignment,misc]
 

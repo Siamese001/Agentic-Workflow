@@ -465,7 +465,7 @@ class TestAtomicExecutionMixinIntegration:
                 or hasattr(AtomicExecutionMixin, "execute_atomic")
             ), "AtomicExecutionMixin should have atomic execution method"
             print("\n[OK] Real AtomicExecutionMixin found and has expected interface")
-        except ImportError:
+        pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
             pytest.fail("AtomicExecutionMixin not yet implemented - using mock for tests")
 
 

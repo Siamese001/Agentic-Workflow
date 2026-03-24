@@ -19,7 +19,7 @@ try:
         purge_repository_cache,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ViolationReport = None  # type: ignore[assignment,misc]
     PreCommitSovereignAgent = None  # type: ignore[assignment,misc]

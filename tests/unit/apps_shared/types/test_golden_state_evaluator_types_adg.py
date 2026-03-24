@@ -171,7 +171,7 @@ try:
         GoldenOutput,
     )
     _AVAIL = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAIL = False
     GoldenCase = GoldenOutput = EvaluationReport = None  # type: ignore[assignment,misc]
 

@@ -17,7 +17,7 @@ try:
         load_agent_specs,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     get_config_path = None  # type: ignore[assignment,misc]
     load_agent_specs = None  # type: ignore[assignment,misc]

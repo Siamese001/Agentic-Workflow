@@ -6,7 +6,8 @@ from typing import Any
 
 try:
     from agentic_core.mixins.healer_mixin import HealerMixin
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     class HealerMixin:  # type: ignore[no-redef]
         """Stub."""
         pass

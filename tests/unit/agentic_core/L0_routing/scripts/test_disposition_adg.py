@@ -13,7 +13,7 @@ try:
         main,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     Disposition = None  # type: ignore[assignment,misc]
     CoreAnalysisResult = None  # type: ignore[assignment,misc]

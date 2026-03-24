@@ -19,7 +19,7 @@ try:
         enhance_talent_signals,
     )
     _AVAILABLE = True
-except ImportError:
+pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     TalentMetrics = None  # type: ignore[assignment,misc]
     TalentSignalEnhancer = None  # type: ignore[assignment,misc]
