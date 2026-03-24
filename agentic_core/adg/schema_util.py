@@ -21,7 +21,15 @@ from __future__ import annotations
 
 from typing import Literal
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_reads_through
+from agentic_core.runtime.lifecycle_trace_contract import _emit_reads_through
+
+# Configuration constants required by tests
+BATCH_SIZE = 1000
+BUFFER_SIZE = 8192
+DEFAULT_SLEEP = 0.1
+MAX_DEPTH = 50
+MAX_RETRIES = 3
+THRESHOLD = 0.95
 
 ADG_NS = "ADG"
 EntityType = Literal[
