@@ -341,6 +341,7 @@ _RUNTIME_ONLY_SCAN_SUBDIRS: frozenset[str] = frozenset(
         "artifacts",
         "logs",
         "runtime",
+        "runtime_adg",
         "scripts",
         "telemetry",
     }
