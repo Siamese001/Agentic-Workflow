@@ -241,9 +241,9 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
 
     # Capture provenance information
     import subprocess as _subprocess
+
     try:
-        commit_sha = _subprocess.check_output(["git", "rev-parse", "HEAD"],
-                                           cwd=ROOT, text=True).strip()
+        commit_sha = _subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
         print(f"[ADG] Captured commit SHA: {commit_sha}")
     except Exception as e:
         print(f"[ADG] Warning: Failed to capture commit SHA: {e}")
@@ -251,8 +251,9 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
 
     # Capture repo state hash (tree hash)
     try:
-        repo_state_hash = _subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"],
-                                                 cwd=ROOT, text=True).strip()
+        repo_state_hash = _subprocess.check_output(
+            ["git", "rev-parse", "HEAD^{tree}"], cwd=ROOT, text=True
+        ).strip()
         print(f"[ADG] Captured repo state hash: {repo_state_hash}")
     except Exception as e:
         print(f"[ADG] Warning: Failed to capture repo state hash: {e}")
@@ -716,7 +717,14 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
 
     runs = defaultdict(list)
 
-    for pattern in ["adg_*.json", "adg_*.sqlite", "adg_run_*.zip", "scan_result_cache.json", "*_report_*.json", "test_surface_coverage_*.json"]:
+    for pattern in [
+        "adg_*.json",
+        "adg_*.sqlite",
+        "adg_run_*.zip",
+        "scan_result_cache.json",
+        "*_report_*.json",
+        "test_surface_coverage_*.json",
+    ]:
         for path in adg_dir.glob(pattern):
             # Skip LATEST files
             if "LATEST" in path.name or "latest" in path.name:
@@ -771,7 +779,9 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
         if zip_files:
             # Archive only the zip file (most efficient)
             print(f"[ADG] Archive: Processing run {ts} with {len(zip_files)} zip file(s)")
-            zip_archived, zip_bytes_original, zip_bytes_archived = _archive_zip_files(zip_files, archive_month_dir)
+            zip_archived, zip_bytes_original, zip_bytes_archived = _archive_zip_files(
+                zip_files, archive_month_dir
+            )
             archived_count += zip_archived
             bytes_original += zip_bytes_original
             bytes_archived += zip_bytes_archived
@@ -779,13 +789,23 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
             # Remove all individual files for this run (they're in the zip)
             for file_path in files:
                 if file_path not in zip_files and file_path.exists():
-                    file_path.unlink()
+                    try:
+                        file_size = file_path.stat().st_size
+                    except OSError:
+                        file_size = 0
+                    try:
+                        file_path.unlink()
+                    except OSError as e:
+                        print(f"[ADG] Archive: failed to remove {file_path.name}: {e}")
+                        continue
                     archived_count += 1
-                    bytes_original += file_path.stat().st_size
+                    bytes_original += file_size
         else:
             # No zip file - archive individual files (legacy behavior for orphaned runs)
             print(f"[ADG] Archive: Found orphaned run {ts} with {len(files)} individual files")
-            individual_archived, individual_bytes_original, individual_bytes_archived = _archive_individual_files(files, archive_month_dir)
+            individual_archived, individual_bytes_original, individual_bytes_archived = (
+                _archive_individual_files(files, archive_month_dir)
+            )
             archived_count += individual_archived
             bytes_original += individual_bytes_original
             bytes_archived += individual_bytes_archived
@@ -879,10 +899,10 @@ def _infer_layer(path: str) -> str:
     overrides_file = Path(__file__).parent / "adg_layer_overrides.yaml"
     if overrides_file.exists():
         try:
-            with open(overrides_file, encoding='utf-8') as f:
+            with open(overrides_file, encoding="utf-8") as f:
                 config = yaml.safe_load(f)
-                overrides = config.get('overrides', {})
-                default_layer = config.get('default_layer', 'L_UNKNOWN')
+                overrides = config.get("overrides", {})
+                default_layer = config.get("default_layer", "L_UNKNOWN")
 
                 # Check each pattern override
                 for pattern, layer in overrides.items():
@@ -1072,9 +1092,11 @@ def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> P
         raise RuntimeError(f"Zip file not created after successful completion for {ts}")
 
     zip_size_mb = zip_path.stat().st_size / (1024 * 1024)
-    report_count = len([p for p in artifact_paths if p.name.endswith('_report.json')])
+    report_count = len([p for p in artifact_paths if p.name.endswith("_report.json")])
     runtime_count = len(_RUNTIME_ENFORCEMENT_FILES) - len(missing_runtime)
-    print(f"[ADG] Zip archive created: {zip_path.name} ({zip_size_mb:.1f} MB, 6 ADG + {report_count} reports + {runtime_count} runtime files)")
+    print(
+        f"[ADG] Zip archive created: {zip_path.name} ({zip_size_mb:.1f} MB, 6 ADG + {report_count} reports + {runtime_count} runtime files)"
+    )
 
     return zip_path
 
@@ -1102,7 +1124,7 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
         "total_modules": len(artifact.entities),
         "layer_distribution": {},
         "unknown_modules": [],
-        "coverage_metrics": {}
+        "coverage_metrics": {},
     }
 
     # Count modules by layer
@@ -1113,18 +1135,24 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
         if entity.entity_type == "module":
             layer_counts[entity.layer] += 1
             if entity.layer == "L_UNKNOWN":
-                unknown_modules.append({
-                    "adg_name": entity.adg_name,
-                    "resolved_path": entity.resolved_path,
-                    "identity_kind": entity.identity_kind
-                })
+                unknown_modules.append(
+                    {
+                        "adg_name": entity.adg_name,
+                        "resolved_path": entity.resolved_path,
+                        "identity_kind": entity.identity_kind,
+                    }
+                )
 
     layer_report["layer_distribution"] = dict(layer_counts)
     layer_report["unknown_modules"] = unknown_modules[:50]  # Limit to first 50
     layer_report["coverage_metrics"] = {
         "known_modules": layer_report["total_modules"] - len(unknown_modules),
         "unknown_modules": len(unknown_modules),
-        "coverage_percentage": (layer_report["total_modules"] - len(unknown_modules)) / layer_report["total_modules"] * 100 if layer_report["total_modules"] > 0 else 0
+        "coverage_percentage": (layer_report["total_modules"] - len(unknown_modules))
+        / layer_report["total_modules"]
+        * 100
+        if layer_report["total_modules"] > 0
+        else 0,
     }
 
     # 2. Edge Density Report
@@ -1140,24 +1168,26 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
         "total_edges": total_edges,
         "edge_distribution": {},
         "critical_edge_coverage": {},
-        "density_metrics": {}
+        "density_metrics": {},
     }
 
     # Use SQLite as authoritative source for edge counts
     cur.execute("SELECT relation_type, COUNT(*) FROM edges GROUP BY relation_type")
     sqlite_edge_counts = dict(cur.fetchall())
 
-    edge_report["edge_distribution"] = dict(sorted(sqlite_edge_counts.items(), key=lambda x: x[1], reverse=True))
+    edge_report["edge_distribution"] = dict(
+        sorted(sqlite_edge_counts.items(), key=lambda x: x[1], reverse=True)
+    )
 
     # Critical edge types from Wave 4
     critical_edges = [
-        'determinism_seed',
-        'emits_determinism_digest',
-        'policy_verification',
-        'authorize_and_execute',
-        'dispatches_execution_plan',
-        'enters_sandbox',
-        'guardian_gate'
+        "determinism_seed",
+        "emits_determinism_digest",
+        "policy_verification",
+        "authorize_and_execute",
+        "dispatches_execution_plan",
+        "enters_sandbox",
+        "guardian_gate",
     ]
 
     critical_coverage = {}
@@ -1167,8 +1197,12 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
     edge_report["critical_edge_coverage"] = critical_coverage
     edge_report["density_metrics"] = {
         "critical_edges_found": sum(1 for count in critical_coverage.values() if count > 0),
-        "critical_edge_percentage": sum(1 for count in critical_coverage.values() if count > 0) / len(critical_edges) * 100,
-        "top_edge_type": max(sqlite_edge_counts.items(), key=lambda x: x[1])[0] if sqlite_edge_counts else None
+        "critical_edge_percentage": sum(1 for count in critical_coverage.values() if count > 0)
+        / len(critical_edges)
+        * 100,
+        "top_edge_type": max(sqlite_edge_counts.items(), key=lambda x: x[1])[0]
+        if sqlite_edge_counts
+        else None,
     }
 
     # Store edge counts for later use
@@ -1202,16 +1236,16 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
     conn.close()
 
     provenance_report = {
-        "schema_version": meta_data.get('schema_version', '4.0.0'),  # Use SQLite version
-        "commit_sha": meta_data.get('commit_sha', artifact.commit_sha),
-        "repo_state_hash": meta_data.get('repo_state_hash', getattr(artifact, 'repo_state_hash', '')),
-        "scanner_digest": meta_data.get('scanner_digest', artifact.scanner_digest),
-        "artifact_digest": meta_data.get('artifact_digest', artifact.artifact_digest),
+        "schema_version": meta_data.get("schema_version", "4.0.0"),  # Use SQLite version
+        "commit_sha": meta_data.get("commit_sha", artifact.commit_sha),
+        "repo_state_hash": meta_data.get("repo_state_hash", getattr(artifact, "repo_state_hash", "")),
+        "scanner_digest": meta_data.get("scanner_digest", artifact.scanner_digest),
+        "artifact_digest": meta_data.get("artifact_digest", artifact.artifact_digest),
         "validation": {
-            "has_commit_sha": bool(meta_data.get('commit_sha')),
-            "has_repo_state_hash": bool(meta_data.get('repo_state_hash')),
-            "has_scanner_digest": bool(meta_data.get('scanner_digest')),
-            "has_artifact_digest": bool(meta_data.get('artifact_digest'))
+            "has_commit_sha": bool(meta_data.get("commit_sha")),
+            "has_repo_state_hash": bool(meta_data.get("repo_state_hash")),
+            "has_scanner_digest": bool(meta_data.get("scanner_digest")),
+            "has_artifact_digest": bool(meta_data.get("artifact_digest")),
         },
         "reconciliation": {
             "report_nodes": len(artifact.entities),
@@ -1219,14 +1253,14 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
             "report_edges": len(artifact.relations),
             "db_edges": total_edges,
             "nodes_match": len(artifact.entities) == total_nodes,
-            "edges_match": len(artifact.relations) == total_edges
+            "edges_match": len(artifact.relations) == total_edges,
         },
         "generation_metrics": {
             "scan_duration_seconds": None,
             "modules_scanned": total_modules,
             "symbols_scanned": total_nodes - total_modules,
-            "total_entities": total_nodes
-        }
+            "total_entities": total_nodes,
+        },
     }
 
     # 4. Replay Determinism Report
@@ -1234,21 +1268,23 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
         "timestamp": ts,
         "schema_version": "1.0",
         "determinism_metrics": {
-            "determinism_digest_edges": stored_edge_counts.get('emits_determinism_digest', 0),
-            "determinism_seed_edges": stored_edge_counts.get('determinism_seed', 0),
-            "replay_key_edges": stored_edge_counts.get('emits_replay_key', 0),
-            "snapshot_state_edges": stored_edge_counts.get('snapshots_state', 0)
+            "determinism_digest_edges": stored_edge_counts.get("emits_determinism_digest", 0),
+            "determinism_seed_edges": stored_edge_counts.get("determinism_seed", 0),
+            "replay_key_edges": stored_edge_counts.get("emits_replay_key", 0),
+            "snapshot_state_edges": stored_edge_counts.get("snapshots_state", 0),
         },
         "determinism_coverage": {
             "modules_with_determinism_digest": 0,  # Would need SQLite query
-            "modules_with_replay_keys": 0,       # Would need SQLite query
-            "determinism_score": 0.0  # Calculated metric
+            "modules_with_replay_keys": 0,  # Would need SQLite query
+            "determinism_score": 0.0,  # Calculated metric
         },
         "validation": {
-            "has_determinism_edges": stored_edge_counts.get('emits_determinism_digest', 0) > 0,
-            "has_seed_edges": stored_edge_counts.get('determinism_seed', 0) > 0,
-            "determinism_status": "partial" if stored_edge_counts.get('emits_determinism_digest', 0) > 0 else "missing"
-        }
+            "has_determinism_edges": stored_edge_counts.get("emits_determinism_digest", 0) > 0,
+            "has_seed_edges": stored_edge_counts.get("determinism_seed", 0) > 0,
+            "determinism_status": "partial"
+            if stored_edge_counts.get("emits_determinism_digest", 0) > 0
+            else "missing",
+        },
     }
 
     # 5. Boundary Report
@@ -1258,15 +1294,15 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
         "boundary_edge_counts": {},
         "unresolved_imports": {},
         "core_path_analysis": {},
-        "boundary_metrics": {}
+        "boundary_metrics": {},
     }
 
     # Query boundary edge counts from SQLite
     boundary_edge_types = [
-        'internal_to_internal',
-        'internal_to_external',
-        'external_to_internal',
-        'unresolved_boundary'
+        "internal_to_internal",
+        "internal_to_external",
+        "external_to_internal",
+        "unresolved_boundary",
     ]
 
     boundary_counts = {}
@@ -1277,7 +1313,7 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
 
     # Query unresolved imports by core path
     unresolved_by_path = {}
-    core_paths = ['agentic_core/L0_', 'agentic_core/L2_', 'agentic_core/L5_']
+    core_paths = ["agentic_core/L0_", "agentic_core/L2_", "agentic_core/L5_"]
 
     for path_prefix in core_paths:
         # This would require a more complex SQL query to get by path
@@ -1287,7 +1323,7 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
     boundary_report["boundary_metrics"] = {
         "total_unresolved": sum(unresolved_by_path.values()),
         "critical_path_unresolved": sum(unresolved_by_path[p] for p in core_paths),
-        "boundary_completeness": "incomplete"
+        "boundary_completeness": "incomplete",
     }
 
     # 6. Mutation Integrity Report
@@ -1297,27 +1333,33 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
         "mutation_integrity_metrics": {},
         "replay_guarantees": {},
         "signature_coverage": {},
-        "snapshot_lineage": {}
+        "snapshot_lineage": {},
     }
 
     # Query mutation-related edges
     mutation_edges = {
-        'mutation_signature': stored_edge_counts.get('mutation_signature', 0),
-        'parent_snapshot_hash': stored_edge_counts.get('parent_snapshot_hash', 0),
-        'replay_key': stored_edge_counts.get('emits_replay_key', 0),
-        'policy_hash': stored_edge_counts.get('references_policy_hash', 0)
+        "mutation_signature": stored_edge_counts.get("mutation_signature", 0),
+        "parent_snapshot_hash": stored_edge_counts.get("parent_snapshot_hash", 0),
+        "replay_key": stored_edge_counts.get("emits_replay_key", 0),
+        "policy_hash": stored_edge_counts.get("references_policy_hash", 0),
     }
 
     mutation_report["mutation_integrity_metrics"] = mutation_edges
     mutation_report["replay_guarantees"] = {
-        "determinism_status": "partial" if stored_edge_counts.get('determinism_seed', 0) > 0 else "missing",
+        "determinism_status": "partial" if stored_edge_counts.get("determinism_seed", 0) > 0 else "missing",
         "replay_completeness": "partial",
-        "signature_coverage": "incomplete"
+        "signature_coverage": "incomplete",
     }
     mutation_report["signature_coverage"] = {
-        "modules_with_signatures": stored_edge_counts.get('mutation_signature', 0),
+        "modules_with_signatures": stored_edge_counts.get("mutation_signature", 0),
         "total_modules": len([e for e in artifact.entities if e.entity_type == "module"]),
-        "coverage_percentage": (stored_edge_counts.get('mutation_signature', 0) / len([e for e in artifact.entities if e.entity_type == "module"]) * 100) if len([e for e in artifact.entities if e.entity_type == "module"]) > 0 else 0
+        "coverage_percentage": (
+            stored_edge_counts.get("mutation_signature", 0)
+            / len([e for e in artifact.entities if e.entity_type == "module"])
+            * 100
+        )
+        if len([e for e in artifact.entities if e.entity_type == "module"]) > 0
+        else 0,
     }
 
     # 7. Test Surface Coverage Report
@@ -1327,7 +1369,7 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
         "test_surface_nodes": {},
         "test_surface_edges": {},
         "test_coverage_metrics": {},
-        "critical_path_linkage": {}
+        "critical_path_linkage": {},
     }
 
     # Query test-related nodes and edges from SQLite
@@ -1335,7 +1377,7 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
     cur = conn.cursor()
 
     # Test node types
-    test_node_types = ['test_suite', 'test_case', 'invariant_family']
+    test_node_types = ["test_suite", "test_case", "invariant_family"]
     test_node_counts = {}
     for node_type in test_node_types:
         cur.execute("SELECT COUNT(*) FROM nodes WHERE entity_type = ?", (node_type,))
@@ -1343,9 +1385,14 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
 
     # Test edge types
     test_edge_types = [
-        'defines_test_case', 'defines_test_suite', 'defines_invariant',
-        'emits_test_result', 'records_validation_outcome', 'links_to_execution_trace',
-        'gates_promotion', 'detects_regression'
+        "defines_test_case",
+        "defines_test_suite",
+        "defines_invariant",
+        "emits_test_result",
+        "records_validation_outcome",
+        "links_to_execution_trace",
+        "gates_promotion",
+        "detects_regression",
     ]
     test_edge_counts = {}
     for edge_type in test_edge_types:
@@ -1367,15 +1414,21 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
         "total_test_edges": sum(test_edge_counts.values()),
         "test_edge_types_found": sum(1 for count in test_edge_counts.values() if count > 0),
         "test_edge_types_total": len(test_edge_types),
-        "test_edge_coverage_percentage": (sum(1 for count in test_edge_counts.values() if count > 0) / len(test_edge_types) * 100) if test_edge_types else 0
+        "test_edge_coverage_percentage": (
+            sum(1 for count in test_edge_counts.values() if count > 0) / len(test_edge_types) * 100
+        )
+        if test_edge_types
+        else 0,
     }
     test_surface_report["test_coverage_by_layer"] = test_coverage_by_layer
     test_surface_report["critical_path_linkage"] = {
-        "test_cases_with_execution_trace": test_edge_counts.get('links_to_execution_trace', 0),
-        "test_cases_with_validation": test_edge_counts.get('records_validation_outcome', 0),
-        "test_cases_with_regression_detection": test_edge_counts.get('detects_regression', 0),
-        "test_cases_with_promotion_gates": test_edge_counts.get('gates_promotion', 0),
-        "critical_path_completeness": "partial" if test_edge_counts.get('links_to_execution_trace', 0) > 0 else "missing"
+        "test_cases_with_execution_trace": test_edge_counts.get("links_to_execution_trace", 0),
+        "test_cases_with_validation": test_edge_counts.get("records_validation_outcome", 0),
+        "test_cases_with_regression_detection": test_edge_counts.get("detects_regression", 0),
+        "test_cases_with_promotion_gates": test_edge_counts.get("gates_promotion", 0),
+        "critical_path_completeness": "partial"
+        if test_edge_counts.get("links_to_execution_trace", 0) > 0
+        else "missing",
     }
 
     conn.close()
@@ -1388,12 +1441,12 @@ def _generate_standardized_reports(adg_dir: Path, ts: str, artifact: ADGArtifact
         (f"replay_determinism_report_{ts}.json", determinism_report),
         (f"boundary_report_{ts}.json", boundary_report),
         (f"mutation_integrity_report_{ts}.json", mutation_report),
-        (f"test_surface_coverage_{ts}.json", test_surface_report)
+        (f"test_surface_coverage_{ts}.json", test_surface_report),
     ]
 
     for filename, report_data in reports:
         report_path = reports_dir / filename
-        with open(report_path, 'w', encoding='utf-8') as f:
+        with open(report_path, "w", encoding="utf-8") as f:
             json.dump(report_data, f, indent=2, sort_keys=True)
         print(f"[ADG] Report generated: {filename}")
 

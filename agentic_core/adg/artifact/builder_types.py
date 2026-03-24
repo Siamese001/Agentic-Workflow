@@ -243,6 +243,17 @@ class RelationRecord:
     source_file: str
     line_no: int
     symbol: str = ""
+    semantic_type: str = ""
+    confidence: float = 1.0
+    source_span_start: int = 0
+    source_span_end: int = 0
+    source_span_line: int = 0
+    source_span_column: int = 0
+    target_span_start: int = 0
+    target_span_end: int = 0
+    target_span_line: int = 0
+    target_span_column: int = 0
+    dynamic_resolution: str = ""
 
     def to_dict(self) -> dict:
         return {
@@ -253,6 +264,17 @@ class RelationRecord:
             "source_file": self.source_file,
             "line_no": self.line_no,
             "symbol": self.symbol,
+            "semantic_type": self.semantic_type,
+            "confidence": self.confidence,
+            "source_span_start": self.source_span_start,
+            "source_span_end": self.source_span_end,
+            "source_span_line": self.source_span_line,
+            "source_span_column": self.source_span_column,
+            "target_span_start": self.target_span_start,
+            "target_span_end": self.target_span_end,
+            "target_span_line": self.target_span_line,
+            "target_span_column": self.target_span_column,
+            "dynamic_resolution": self.dynamic_resolution,
         }
 
 
@@ -341,7 +363,14 @@ class ADGArtifact:
             "entities": sorted([e.to_dict() for e in self.entities], key=lambda x: x["adg_name"]),
             "relations": sorted(
                 [r.to_dict() for r in self.relations],
-                key=lambda x: (x["from_name"], x["relation_type"], x["to_name"]),
+                key=lambda x: (
+                    x["from_name"],
+                    x["relation_type"],
+                    x["to_name"],
+                    x.get("semantic_type", ""),
+                    x["source_file"],
+                    x["line_no"],
+                ),
             ),
             "unresolved_imports": sorted(self.unresolved_imports, key=lambda x: x.get("raw_name", "")),
             "identity_health": self.identity_health,
@@ -365,7 +394,14 @@ class ADGArtifact:
             "entities": sorted([e.to_dict() for e in self.entities], key=lambda x: x["adg_name"]),
             "relations": sorted(
                 [r.to_dict() for r in self.relations],
-                key=lambda x: (x["from_name"], x["relation_type"], x["to_name"]),
+                key=lambda x: (
+                    x["from_name"],
+                    x["relation_type"],
+                    x["to_name"],
+                    x.get("semantic_type", ""),
+                    x["source_file"],
+                    x["line_no"],
+                ),
             ),
         }
         raw = json.dumps(payload, sort_keys=True, separators=(",", ":"))
@@ -442,6 +478,8 @@ class ADGArtifactBuilder:
                 edge.edge_kind,
                 edge.source_file,
                 edge.line_no,
+                edge.semantic_type,
+                edge.symbol,
             )
             if key in seen:
                 continue
@@ -455,6 +493,17 @@ class ADGArtifactBuilder:
                     source_file=edge.source_file,
                     line_no=edge.line_no,
                     symbol=edge.symbol or "",
+                    semantic_type=edge.semantic_type or "",
+                    confidence=edge.confidence,
+                    source_span_start=edge.source_span_start,
+                    source_span_end=edge.source_span_end,
+                    source_span_line=edge.source_span_line,
+                    source_span_column=edge.source_span_column,
+                    target_span_start=edge.target_span_start,
+                    target_span_end=edge.target_span_end,
+                    target_span_line=edge.target_span_line,
+                    target_span_column=edge.target_span_column,
+                    dynamic_resolution=edge.dynamic_resolution or "",
                 )
             )
 

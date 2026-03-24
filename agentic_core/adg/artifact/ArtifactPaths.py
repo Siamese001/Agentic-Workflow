@@ -261,11 +261,27 @@ CREATE TABLE IF NOT EXISTS nodes (
     layer         TEXT NOT NULL,
     identity_kind TEXT NOT NULL,
     confidence    TEXT NOT NULL,
-    resolved_path TEXT NOT NULL
+    resolved_path TEXT NOT NULL,
+    precision_type        TEXT DEFAULT 'symbol',
+    span_start            INTEGER DEFAULT 0,
+    span_end              INTEGER DEFAULT 0,
+    span_line             INTEGER DEFAULT 0,
+    span_column           INTEGER DEFAULT 0,
+    span_end_line         INTEGER DEFAULT 0,
+    span_end_column       INTEGER DEFAULT 0,
+    logical_sequence_id   INTEGER DEFAULT 0,
+    control_path_id       TEXT DEFAULT '',
+    temporal_order        INTEGER DEFAULT 0,
+    type_surface          TEXT DEFAULT '',
+    enclosing_symbol      TEXT DEFAULT ''
 );
 CREATE INDEX IF NOT EXISTS idx_nodes_type  ON nodes(entity_type);
 CREATE INDEX IF NOT EXISTS idx_nodes_layer ON nodes(layer);
 CREATE INDEX IF NOT EXISTS idx_nodes_name  ON nodes(adg_name);
+CREATE INDEX IF NOT EXISTS idx_nodes_precision_type ON nodes(precision_type)
+    WHERE precision_type != 'symbol';
+CREATE INDEX IF NOT EXISTS idx_nodes_sequence ON nodes(logical_sequence_id)
+    WHERE logical_sequence_id != 0;
 
 CREATE TABLE IF NOT EXISTS edges (
     id            INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -275,11 +291,24 @@ CREATE TABLE IF NOT EXISTS edges (
     edge_kind     TEXT NOT NULL,
     source_file   TEXT NOT NULL,
     line_no       INTEGER NOT NULL,
-    symbol        TEXT NOT NULL DEFAULT ''
+    symbol        TEXT NOT NULL DEFAULT '',
+    semantic_type      TEXT DEFAULT '',
+    confidence_score   REAL DEFAULT 1.0,
+    source_span_start  INTEGER DEFAULT 0,
+    source_span_end    INTEGER DEFAULT 0,
+    source_span_line   INTEGER DEFAULT 0,
+    source_span_column INTEGER DEFAULT 0,
+    target_span_start  INTEGER DEFAULT 0,
+    target_span_end    INTEGER DEFAULT 0,
+    target_span_line   INTEGER DEFAULT 0,
+    target_span_column INTEGER DEFAULT 0,
+    dynamic_resolution TEXT DEFAULT ''
 );
 CREATE INDEX IF NOT EXISTS idx_edges_src  ON edges(src_id);
 CREATE INDEX IF NOT EXISTS idx_edges_dst  ON edges(dst_id);
 CREATE INDEX IF NOT EXISTS idx_edges_rel  ON edges(relation_type);
+CREATE INDEX IF NOT EXISTS idx_edges_semantic_type ON edges(semantic_type)
+    WHERE semantic_type != '';
 
 CREATE TABLE IF NOT EXISTS meta (
     key   TEXT PRIMARY KEY,
@@ -310,10 +339,28 @@ CREATE VIEW IF NOT EXISTS edge_view AS
         dst.layer       AS to_layer,
         e.source_file   AS source_file,
         e.line_no       AS line_no,
-        e.symbol        AS symbol
+        e.symbol        AS symbol,
+        e.semantic_type AS semantic_type,
+        e.confidence_score AS edge_confidence,
+        src.precision_type AS from_precision_type,
+        dst.precision_type AS to_precision_type,
+        src.logical_sequence_id AS from_sequence_id,
+        dst.logical_sequence_id AS to_sequence_id
     FROM edges e
     JOIN nodes src ON src.id = e.src_id
     JOIN nodes dst ON dst.id = e.dst_id;
+
+CREATE VIEW IF NOT EXISTS precision_metrics_view AS
+SELECT
+    COUNT(*) AS total_edges,
+    SUM(CASE WHEN e.semantic_type != '' THEN 1 ELSE 0 END) AS semantic_edges,
+    COUNT(DISTINCT n.id) AS total_nodes,
+    SUM(CASE WHEN n.precision_type != 'symbol' THEN 1 ELSE 0 END) AS precision_nodes,
+    SUM(CASE WHEN n.precision_type = 'code_block' THEN 1 ELSE 0 END) AS code_blocks,
+    SUM(CASE WHEN n.precision_type = 'expression_unit' THEN 1 ELSE 0 END) AS expression_units,
+    SUM(CASE WHEN n.precision_type = 'control_branch' THEN 1 ELSE 0 END) AS control_branches
+FROM edges e
+JOIN nodes n ON n.id = e.src_id;
 """
 
 
@@ -339,11 +386,25 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                     node.get("k", ""),
                     node.get("c", ""),
                     node.get("p", ""),
+                    node.get("pt", "symbol"),
+                    node.get("ss", 0),
+                    node.get("se", 0),
+                    node.get("sl", 0),
+                    node.get("sc", 0),
+                    node.get("sel", 0),
+                    node.get("sec", 0),
+                    node.get("lsid", 0),
+                    node.get("cpid", ""),
+                    node.get("to", 0),
+                    node.get("ts", ""),
+                    node.get("es", ""),
                 )
             )
         conn.executemany(
-            "INSERT OR REPLACE INTO nodes(id,adg_name,entity_type,layer,identity_kind,confidence,resolved_path) "
-            "VALUES (?,?,?,?,?,?,?)",
+            "INSERT OR REPLACE INTO nodes(id,adg_name,entity_type,layer,identity_kind,confidence,resolved_path,"
+            "precision_type,span_start,span_end,span_line,span_column,span_end_line,span_end_column,"
+            "logical_sequence_id,control_path_id,temporal_order,type_surface,enclosing_symbol) "
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             node_rows,
         )
 
@@ -359,11 +420,24 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                     e["f"],
                     e["ln"],
                     e.get("sym", ""),
+                    e.get("st", ""),
+                    e.get("conf", 1.0),
+                    e.get("sss", 0),
+                    e.get("sse", 0),
+                    e.get("ssl", 0),
+                    e.get("ssc", 0),
+                    e.get("tss", 0),
+                    e.get("tse", 0),
+                    e.get("tsl", 0),
+                    e.get("tsc", 0),
+                    e.get("dr", ""),
                 )
             )
         conn.executemany(
-            "INSERT INTO edges(src_id,dst_id,relation_type,edge_kind,source_file,line_no,symbol) "
-            "VALUES (?,?,?,?,?,?,?)",
+            "INSERT INTO edges(src_id,dst_id,relation_type,edge_kind,source_file,line_no,symbol,"
+            "semantic_type,confidence_score,source_span_start,source_span_end,source_span_line,source_span_column,"
+            "target_span_start,target_span_end,target_span_line,target_span_column,dynamic_resolution) "
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             edge_rows,
         )
 

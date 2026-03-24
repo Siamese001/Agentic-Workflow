@@ -260,11 +260,29 @@ CREATE TABLE IF NOT EXISTS nodes (
     layer         TEXT NOT NULL,
     identity_kind TEXT NOT NULL,
     confidence    TEXT NOT NULL,
-    resolved_path TEXT NOT NULL
+    resolved_path TEXT NOT NULL,
+
+    -- Precision hardening extensions (Section 1: Node Granularity)
+    precision_type        TEXT DEFAULT 'symbol',  -- 'symbol', 'code_block', 'expression_unit', 'control_branch'
+    span_start            INTEGER DEFAULT 0,
+    span_end              INTEGER DEFAULT 0,
+    span_line             INTEGER DEFAULT 0,
+    span_column           INTEGER DEFAULT 0,
+    span_end_line         INTEGER DEFAULT 0,
+    span_end_column       INTEGER DEFAULT 0,
+    logical_sequence_id    INTEGER DEFAULT 0,
+    control_path_id       TEXT DEFAULT NULL,
+    temporal_order        INTEGER DEFAULT NULL,
+    type_surface          TEXT DEFAULT NULL,
+    enclosing_symbol      TEXT DEFAULT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_nodes_type  ON nodes(entity_type);
 CREATE INDEX IF NOT EXISTS idx_nodes_layer ON nodes(layer);
 CREATE INDEX IF NOT EXISTS idx_nodes_name  ON nodes(adg_name);
+CREATE INDEX IF NOT EXISTS idx_nodes_precision_type ON nodes(precision_type)
+    WHERE precision_type != 'symbol';
+CREATE INDEX IF NOT EXISTS idx_nodes_sequence ON nodes(logical_sequence_id)
+    WHERE logical_sequence_id != 0;
 
 CREATE TABLE IF NOT EXISTS edges (
     id            INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -274,11 +292,85 @@ CREATE TABLE IF NOT EXISTS edges (
     edge_kind     TEXT NOT NULL,
     source_file   TEXT NOT NULL,
     line_no       INTEGER NOT NULL,
-    symbol        TEXT NOT NULL DEFAULT ''
+    symbol        TEXT NOT NULL DEFAULT '',
+
+    -- Precision hardening extensions (Section 2: Semantic Edge Taxonomy)
+    semantic_type        TEXT DEFAULT NULL,  -- 'invokes_function', 'reads_variable', 'writes_variable', etc.
+    confidence           REAL DEFAULT 1.0,
+    source_span_start    INTEGER DEFAULT 0,
+    source_span_end      INTEGER DEFAULT 0,
+    source_span_line     INTEGER DEFAULT 0,
+    source_span_column   INTEGER DEFAULT 0,
+    target_span_start    INTEGER DEFAULT 0,
+    target_span_end      INTEGER DEFAULT 0,
+    target_span_line     INTEGER DEFAULT 0,
+    target_span_column   INTEGER DEFAULT 0,
+    dynamic_resolution   TEXT DEFAULT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_edges_src  ON edges(src_id);
 CREATE INDEX IF NOT EXISTS idx_edges_dst  ON edges(dst_id);
 CREATE INDEX IF NOT EXISTS idx_edges_rel  ON edges(relation_type);
+CREATE INDEX IF NOT EXISTS idx_edges_semantic_type ON edges(semantic_type)
+    WHERE semantic_type IS NOT NULL AND semantic_type != '';
+
+-- Precision hardening metadata tables (Sections 3-12)
+CREATE TABLE IF NOT EXISTS precision_type_surfaces (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    node_id       INTEGER NOT NULL REFERENCES nodes(id),
+    inferred_type TEXT DEFAULT NULL,
+    possible_types TEXT DEFAULT '[]',  -- JSON array
+    nullability   BOOLEAN DEFAULT FALSE,
+    shape_signature TEXT DEFAULT NULL   -- JSON object
+);
+CREATE INDEX IF NOT EXISTS idx_type_surfaces_node ON precision_type_surfaces(node_id);
+
+CREATE TABLE IF NOT EXISTS precision_variable_attributes (
+    id               INTEGER PRIMARY KEY AUTOINCREMENT,
+    node_id          INTEGER NOT NULL REFERENCES nodes(id),
+    source_origin    TEXT NOT NULL,
+    mutation_count   INTEGER DEFAULT 0,
+    lineage_chain    TEXT DEFAULT '[]',  -- JSON array
+    type_surface_id  INTEGER REFERENCES precision_type_surfaces(id)
+);
+CREATE INDEX IF NOT EXISTS idx_var_attrs_node ON precision_variable_attributes(node_id);
+
+CREATE TABLE IF NOT EXISTS precision_side_effects (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    node_id       INTEGER NOT NULL REFERENCES nodes(id),
+    effect_type   TEXT NOT NULL,  -- 'filesystem_operation', 'network_call', etc.
+    target        TEXT NOT NULL,
+    confidence    REAL DEFAULT 1.0
+);
+CREATE INDEX IF NOT EXISTS idx_side_effects_node ON precision_side_effects(node_id);
+
+CREATE TABLE IF NOT EXISTS precision_control_branches (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    node_id       INTEGER NOT NULL REFERENCES nodes(id),
+    branch_type   TEXT NOT NULL,  -- 'if', 'elif', 'else', 'for', 'while', 'try', 'except', 'with'
+    condition     TEXT DEFAULT NULL,
+    target_id     INTEGER REFERENCES nodes(id)
+);
+CREATE INDEX IF NOT EXISTS idx_control_branches_node ON precision_control_branches(node_id);
+
+CREATE TABLE IF NOT EXISTS precision_call_resolution (
+    id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+    edge_id             INTEGER NOT NULL REFERENCES edges(id),
+    resolved_target     TEXT DEFAULT NULL,
+    candidate_targets   TEXT DEFAULT '[]',  -- JSON array
+    dispatch_type       TEXT DEFAULT NULL,  -- 'direct', 'attribute', 'complex'
+    resolution_confidence REAL DEFAULT 0.0
+);
+CREATE INDEX IF NOT EXISTS idx_call_resolution_edge ON precision_call_resolution(edge_id);
+
+CREATE TABLE IF NOT EXISTS precision_test_linkage (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    test_node_id  INTEGER NOT NULL REFERENCES nodes(id),
+    target_node_id INTEGER NOT NULL REFERENCES nodes(id),
+    link_type     TEXT NOT NULL,  -- 'validates_expression', 'covers_branch', 'observes_side_effect'
+    confidence    REAL DEFAULT 1.0
+);
+CREATE INDEX IF NOT EXISTS idx_test_linkage_test ON precision_test_linkage(test_node_id);
+CREATE INDEX IF NOT EXISTS idx_test_linkage_target ON precision_test_linkage(target_node_id);
 
 CREATE TABLE IF NOT EXISTS meta (
     key   TEXT PRIMARY KEY,
@@ -309,10 +401,36 @@ CREATE VIEW IF NOT EXISTS edge_view AS
         dst.layer       AS to_layer,
         e.source_file   AS source_file,
         e.line_no       AS line_no,
-        e.symbol        AS symbol
+        e.symbol        AS symbol,
+        -- Precision extensions
+        e.semantic_type AS semantic_type,
+        e.confidence    AS edge_confidence,
+        src.precision_type AS from_precision_type,
+        dst.precision_type AS to_precision_type,
+        src.logical_sequence_id AS from_sequence_id,
+        dst.logical_sequence_id AS to_sequence_id
     FROM edges e
     JOIN nodes src ON src.id = e.src_id
     JOIN nodes dst ON dst.id = e.dst_id;
+
+-- Precision metrics view (Section 11: Graph Completeness Invariants)
+CREATE VIEW IF NOT EXISTS precision_metrics_view AS
+SELECT
+    COUNT(DISTINCT n.id) as total_nodes,
+    COUNT(DISTINCT CASE WHEN n.precision_type != 'symbol' THEN n.id END) as precision_nodes,
+    COUNT(DISTINCT e.id) as total_edges,
+    COUNT(DISTINCT CASE WHEN e.semantic_type IS NOT NULL THEN e.id END) as semantic_edges,
+    COUNT(DISTINCT CASE WHEN n.precision_type = 'code_block' THEN n.id END) as code_blocks,
+    COUNT(DISTINCT CASE WHEN n.precision_type = 'expression_unit' THEN n.id END) as expression_units,
+    COUNT(DISTINCT CASE WHEN n.precision_type = 'control_branch' THEN n.id END) as control_branches,
+    COUNT(DISTINCT v.id) as variables_with_lineage,
+    COUNT(DISTINCT s.id) as side_effects_modeled,
+    COUNT(DISTINCT cr.id) as calls_resolved
+FROM nodes n
+LEFT JOIN edges e ON (e.src_id = n.id OR e.dst_id = n.id)
+LEFT JOIN precision_variable_attributes v ON v.node_id = n.id
+LEFT JOIN precision_side_effects s ON s.node_id = n.id
+LEFT JOIN precision_call_resolution cr ON cr.edge_id = e.id;
 """
 
 
@@ -338,11 +456,26 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                     node.get("k", ""),
                     node.get("c", ""),
                     node.get("p", ""),
+                    # Precision extensions (default values for now)
+                    node.get("pt", "symbol"),  # precision_type
+                    node.get("ss", 0),  # span_start
+                    node.get("se", 0),  # span_end
+                    node.get("sl", 0),  # span_line
+                    node.get("sc", 0),  # span_column
+                    node.get("sel", 0),  # span_end_line
+                    node.get("sec", 0),  # span_end_column
+                    node.get("lsid", 0),  # logical_sequence_id
+                    node.get("cpid", None),  # control_path_id
+                    node.get("to", None),  # temporal_order
+                    node.get("ts", None),  # type_surface
+                    node.get("es", None),  # enclosing_symbol
                 )
             )
         conn.executemany(
-            "INSERT OR REPLACE INTO nodes(id,adg_name,entity_type,layer,identity_kind,confidence,resolved_path) "
-            "VALUES (?,?,?,?,?,?,?)",
+            "INSERT OR REPLACE INTO nodes(id,adg_name,entity_type,layer,identity_kind,confidence,resolved_path,"
+            "precision_type,span_start,span_end,span_line,span_column,span_end_line,span_end_column,"
+            "logical_sequence_id,control_path_id,temporal_order,type_surface,enclosing_symbol) "
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             node_rows,
         )
 
@@ -358,11 +491,25 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
                     e["f"],
                     e["ln"],
                     e.get("sym", ""),
+                    # Precision extensions (default values for now)
+                    e.get("st", None),  # semantic_type
+                    e.get("conf", 1.0),  # confidence
+                    e.get("sss", 0),  # source_span_start
+                    e.get("sse", 0),  # source_span_end
+                    e.get("ssl", 0),  # source_span_line
+                    e.get("ssc", 0),  # source_span_column
+                    e.get("tss", 0),  # target_span_start
+                    e.get("tse", 0),  # target_span_end
+                    e.get("tsl", 0),  # target_span_line
+                    e.get("tsc", 0),  # target_span_column
+                    e.get("dr", None),  # dynamic_resolution
                 )
             )
         conn.executemany(
-            "INSERT INTO edges(src_id,dst_id,relation_type,edge_kind,source_file,line_no,symbol) "
-            "VALUES (?,?,?,?,?,?,?)",
+            "INSERT INTO edges(src_id,dst_id,relation_type,edge_kind,source_file,line_no,symbol,"
+            "semantic_type,confidence,source_span_start,source_span_end,source_span_line,source_span_column,"
+            "target_span_start,target_span_end,target_span_line,target_span_column,dynamic_resolution) "
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             edge_rows,
         )
 
@@ -456,6 +603,7 @@ class ArtifactPaths:
 
     def size_report(self) -> dict[str, str]:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "ArtifactPaths.size_report")
 

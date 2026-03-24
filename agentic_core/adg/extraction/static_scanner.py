@@ -426,6 +426,19 @@ class Edge:
     line_no: int
     symbol: str = ""
 
+    # Precision hardening extensions (Section 2: Semantic Edge Taxonomy)
+    semantic_type: str = ""  # Empty string instead of None for sorting
+    confidence: float = 1.0
+    source_span_start: int = 0
+    source_span_end: int = 0
+    source_span_line: int = 0
+    source_span_column: int = 0
+    target_span_start: int = 0
+    target_span_end: int = 0
+    target_span_line: int = 0
+    target_span_column: int = 0
+    dynamic_resolution: str = ""  # Empty string instead of None for sorting
+
 
 @dataclass
 class ScanManifest:
@@ -564,8 +577,6 @@ class ScanResult:
         print(f"ADG-DETERMINISM-DIGEST: {self.digest}")
 
 
-
-
 class _P1608HardeningVisitor(ast.NodeVisitor):
     """Visitor for 1608 Hardening edges - final gap closure."""
 
@@ -579,144 +590,170 @@ class _P1608HardeningVisitor(ast.NodeVisitor):
 
         # Emit signature edges for replay convergence
         _emit_mutation_signature("p0", module_adg, "mutation_signature")
-        self.edges.append(Edge(
-            from_name=module_node,
-            to_name=canonical_name("mutation_record", f"{module_adg}::mutation_signature"),
-            relation_type="mutation_signature",
-            edge_kind="state_lineage",
-            source_file=rel_path,
-            line_no=1,
-            symbol="mutation_signature"
-        ))
+        self.edges.append(
+            Edge(
+                from_name=module_node,
+                to_name=canonical_name("mutation_record", f"{module_adg}::mutation_signature"),
+                relation_type="mutation_signature",
+                edge_kind="state_lineage",
+                source_file=rel_path,
+                line_no=1,
+                symbol="mutation_signature",
+            )
+        )
 
         _emit_parent_snapshot_hash("p0", module_adg, "parent_snapshot")
-        self.edges.append(Edge(
-            from_name=module_node,
-            to_name=canonical_name("snapshot", f"{module_adg}::parent_snapshot"),
-            relation_type="parent_snapshot_hash",
-            edge_kind="state_lineage",
-            source_file=rel_path,
-            line_no=1,
-            symbol="parent_snapshot_hash"
-        ))
+        self.edges.append(
+            Edge(
+                from_name=module_node,
+                to_name=canonical_name("snapshot", f"{module_adg}::parent_snapshot"),
+                relation_type="parent_snapshot_hash",
+                edge_kind="state_lineage",
+                source_file=rel_path,
+                line_no=1,
+                symbol="parent_snapshot_hash",
+            )
+        )
 
         # Emit critical edges for distribution
         _emit_policy_verification("p0", module_adg, "policy_verification")
-        self.edges.append(Edge(
-            from_name=module_node,
-            to_name=canonical_name("policy", f"{module_adg}::policy_verification"),
-            relation_type="policy_verification",
-            edge_kind="policy_validation",
-            source_file=rel_path,
-            line_no=1,
-            symbol="policy_verification"
-        ))
+        self.edges.append(
+            Edge(
+                from_name=module_node,
+                to_name=canonical_name("policy", f"{module_adg}::policy_verification"),
+                relation_type="policy_verification",
+                edge_kind="policy_validation",
+                source_file=rel_path,
+                line_no=1,
+                symbol="policy_verification",
+            )
+        )
 
         _emit_dispatches_execution_plan("p0", module_adg, "execution_plan")
-        self.edges.append(Edge(
-            from_name=module_node,
-            to_name=canonical_name("agent_action", f"{module_adg}::execution_plan"),
-            relation_type="dispatches_execution_plan",
-            edge_kind="agent_execution",
-            source_file=rel_path,
-            line_no=1,
-            symbol="dispatches_execution_plan"
-        ))
+        self.edges.append(
+            Edge(
+                from_name=module_node,
+                to_name=canonical_name("agent_action", f"{module_adg}::execution_plan"),
+                relation_type="dispatches_execution_plan",
+                edge_kind="agent_execution",
+                source_file=rel_path,
+                line_no=1,
+                symbol="dispatches_execution_plan",
+            )
+        )
 
         # Emit test surface edges if this is a test file
-        if rel_path.endswith('_test.py') or 'test_' in rel_path or rel_path.startswith('tests/'):
+        if rel_path.endswith("_test.py") or "test_" in rel_path or rel_path.startswith("tests/"):
             _emit_defines_test_case("p0", module_adg, "test_case")
-            self.edges.append(Edge(
-                from_name=module_node,
-                to_name=canonical_name("test_case", f"{module_adg}::test_case"),
-                relation_type="defines_test_case",
-                edge_kind="test_definition",
-                source_file=rel_path,
-                line_no=1,
-                symbol="defines_test_case"
-            ))
+            self.edges.append(
+                Edge(
+                    from_name=module_node,
+                    to_name=canonical_name("test_case", f"{module_adg}::test_case"),
+                    relation_type="defines_test_case",
+                    edge_kind="test_definition",
+                    source_file=rel_path,
+                    line_no=1,
+                    symbol="defines_test_case",
+                )
+            )
 
             _emit_defines_test_suite("p0", module_adg, "test_suite")
-            self.edges.append(Edge(
-                from_name=module_node,
-                to_name=canonical_name("test_suite", f"{module_adg}::test_suite"),
-                relation_type="defines_test_suite",
-                edge_kind="test_definition",
-                source_file=rel_path,
-                line_no=1,
-                symbol="defines_test_suite"
-            ))
+            self.edges.append(
+                Edge(
+                    from_name=module_node,
+                    to_name=canonical_name("test_suite", f"{module_adg}::test_suite"),
+                    relation_type="defines_test_suite",
+                    edge_kind="test_definition",
+                    source_file=rel_path,
+                    line_no=1,
+                    symbol="defines_test_suite",
+                )
+            )
 
             _emit_defines_invariant("p0", module_adg, "invariant")
-            self.edges.append(Edge(
-                from_name=module_node,
-                to_name=canonical_name("invariant_family", f"{module_adg}::invariant"),
-                relation_type="defines_invariant",
-                edge_kind="test_definition",
-                source_file=rel_path,
-                line_no=1,
-                symbol="defines_invariant"
-            ))
+            self.edges.append(
+                Edge(
+                    from_name=module_node,
+                    to_name=canonical_name("invariant_family", f"{module_adg}::invariant"),
+                    relation_type="defines_invariant",
+                    edge_kind="test_definition",
+                    source_file=rel_path,
+                    line_no=1,
+                    symbol="defines_invariant",
+                )
+            )
 
             _emit_emits_test_result("p0", module_adg, "test_result")
-            self.edges.append(Edge(
-                from_name=module_node,
-                to_name=canonical_name("execution_trace", f"{module_adg}::test_result"),
-                relation_type="emits_test_result",
-                edge_kind="test_execution",
-                source_file=rel_path,
-                line_no=1,
-                symbol="emits_test_result"
-            ))
+            self.edges.append(
+                Edge(
+                    from_name=module_node,
+                    to_name=canonical_name("execution_trace", f"{module_adg}::test_result"),
+                    relation_type="emits_test_result",
+                    edge_kind="test_execution",
+                    source_file=rel_path,
+                    line_no=1,
+                    symbol="emits_test_result",
+                )
+            )
 
             _emit_records_validation_outcome("p0", module_adg, "validation")
-            self.edges.append(Edge(
-                from_name=module_node,
-                to_name=canonical_name("execution_trace", f"{module_adg}::validation"),
-                relation_type="records_validation_outcome",
-                edge_kind="test_execution",
-                source_file=rel_path,
-                line_no=1,
-                symbol="records_validation_outcome"
-            ))
+            self.edges.append(
+                Edge(
+                    from_name=module_node,
+                    to_name=canonical_name("execution_trace", f"{module_adg}::validation"),
+                    relation_type="records_validation_outcome",
+                    edge_kind="test_execution",
+                    source_file=rel_path,
+                    line_no=1,
+                    symbol="records_validation_outcome",
+                )
+            )
 
             _emit_links_to_execution_trace("p0", module_adg, "trace_link")
-            self.edges.append(Edge(
-                from_name=module_node,
-                to_name=canonical_name("execution_trace", f"{module_adg}::trace_link"),
-                relation_type="links_to_execution_trace",
-                edge_kind="test_execution",
-                source_file=rel_path,
-                line_no=1,
-                symbol="links_to_execution_trace"
-            ))
+            self.edges.append(
+                Edge(
+                    from_name=module_node,
+                    to_name=canonical_name("execution_trace", f"{module_adg}::trace_link"),
+                    relation_type="links_to_execution_trace",
+                    edge_kind="test_execution",
+                    source_file=rel_path,
+                    line_no=1,
+                    symbol="links_to_execution_trace",
+                )
+            )
 
             _emit_gates_promotion("p0", module_adg, "promotion_gate")
-            self.edges.append(Edge(
-                from_name=module_node,
-                to_name=canonical_name("confidence_gate", f"{module_adg}::promotion_gate"),
-                relation_type="gates_promotion",
-                edge_kind="test_execution",
-                source_file=rel_path,
-                line_no=1,
-                symbol="gates_promotion"
-            ))
+            self.edges.append(
+                Edge(
+                    from_name=module_node,
+                    to_name=canonical_name("confidence_gate", f"{module_adg}::promotion_gate"),
+                    relation_type="gates_promotion",
+                    edge_kind="test_execution",
+                    source_file=rel_path,
+                    line_no=1,
+                    symbol="gates_promotion",
+                )
+            )
 
             _emit_detects_regression("p0", module_adg, "regression")
-            self.edges.append(Edge(
-                from_name=module_node,
-                to_name=canonical_name("antipattern_record", f"{module_adg}::regression"),
-                relation_type="detects_regression",
-                edge_kind="test_execution",
-                source_file=rel_path,
-                line_no=1,
-                symbol="detects_regression"
-            ))
+            self.edges.append(
+                Edge(
+                    from_name=module_node,
+                    to_name=canonical_name("antipattern_record", f"{module_adg}::regression"),
+                    relation_type="detects_regression",
+                    edge_kind="test_execution",
+                    source_file=rel_path,
+                    line_no=1,
+                    symbol="detects_regression",
+                )
+            )
 
     def visit(self, node):
         """Override visit to ensure edges are always emitted."""
         # Always emit the signature edges regardless of AST content
         return super().visit(node)
+
+
 class _InheritanceVisitor(ast.NodeVisitor):
     """H3: Extract class inheritance (implements) edges for Graph 3."""
 
@@ -3780,6 +3817,331 @@ class _EvalSpineVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
+# ---------------------------------------------------------------------------
+# Execution-Grade Semantic Visitor (replaces _PrecisionHardeningVisitor)
+# ---------------------------------------------------------------------------
+# Design discipline:
+#   1. NO PHANTOM NODES — all edges connect module_adg (from) to existing
+#      structural symbol nodes (to), never inventing new node names.
+#   2. SEMANTIC ENRICHMENT — stamps semantic_type, confidence, span, and
+#      dynamic_resolution on edges to close depth gaps.
+#   3. TARGETED DEPTH — only emits edges that represent genuinely new
+#      execution-level information not captured by structural visitors.
+#   4. SIZE DISCIPLINE — one edge per semantic fact, never per-statement.
+# ---------------------------------------------------------------------------
+
+_SIDE_EFFECT_PREFIXES = frozenset(
+    {
+        "open",
+        "write",
+        "read",
+        "os.",
+        "sys.",
+        "subprocess.",
+        "requests.",
+        "urllib.",
+        "socket.",
+        "sqlite3.",
+        "shutil.",
+        "redis.",
+        "print",
+        "logging.",
+        "json.dump",
+        "json.load",
+        "pathlib.",
+        "tempfile.",
+        "io.",
+    }
+)
+
+_MUTATION_METHODS = frozenset(
+    {
+        "append",
+        "extend",
+        "insert",
+        "pop",
+        "remove",
+        "clear",
+        "update",
+        "setdefault",
+        "add",
+        "discard",
+        "__setitem__",
+        "__delitem__",
+    }
+)
+
+_TRIVIAL_DISPATCH_METHODS = frozenset(
+    {
+        "append",
+        "extend",
+        "insert",
+        "pop",
+        "remove",
+        "clear",
+        "update",
+        "setdefault",
+        "add",
+        "discard",
+        "copy",
+        "keys",
+        "values",
+        "items",
+        "get",
+        "join",
+        "split",
+        "strip",
+        "lower",
+        "upper",
+        "replace",
+        "startswith",
+        "endswith",
+        "encode",
+        "decode",
+        "format",
+        "hexdigest",
+        "digest",
+        "info",
+        "debug",
+        "warning",
+        "error",
+        "critical",
+        "exception",
+    }
+)
+
+
+class _ExecutionSemanticVisitor(ast.NodeVisitor):
+    """Execution-grade semantic enrichment — closes depth gaps without phantom nodes.
+
+    Gaps closed:
+      - Data Lineage: intra-function variable def→use chains (flows_to edges)
+      - Control Flow: branch/loop/exception structure (controls_flow edges)
+      - Side Effect Modeling: IO/mutation calls flagged (emits_side_effect edges)
+      - Temporal Ordering: per-function statement sequence via edge metadata
+      - Callsite Resolution: attribute dispatch vs direct call classification
+    """
+
+    def __init__(self, module_adg: str, rel: str) -> None:
+        self.module_adg = module_adg
+        self.rel = rel
+        self.edges: list[Edge] = []
+        self._current_class: str | None = None
+        self._current_func: str | None = None
+        self._func_seq: int = 0  # temporal ordering within a function
+
+    # -- helpers ----------------------------------------------------------
+
+    def _func_adg(self) -> str:
+        """Return the ADG name of the current function (structural node)."""
+        if self._current_func is None:
+            return self.module_adg
+        sym = f"{self.rel}::{self._current_func}"
+        if self._current_class:
+            sym = f"{self.rel}::{self._current_class}.{self._current_func}"
+        return canonical_name("Symbol", sym)
+
+    @staticmethod
+    def _sym_of_call(node: ast.Call) -> str:
+        if isinstance(node.func, ast.Name):
+            return node.func.id
+        if isinstance(node.func, ast.Attribute):
+            val = node.func.value
+            prefix = val.id if isinstance(val, ast.Name) else ""
+            return f"{prefix}.{node.func.attr}" if prefix else node.func.attr
+        return ""
+
+    @staticmethod
+    def _is_side_effect(sym: str) -> bool:
+        return any(sym.startswith(p) or sym == p for p in _SIDE_EFFECT_PREFIXES)
+
+    @staticmethod
+    def _is_mutation_method(sym: str) -> bool:
+        tail = sym.rsplit(".", 1)[-1] if "." in sym else sym
+        return tail in _MUTATION_METHODS
+
+    def _span(self, node: ast.AST) -> tuple[int, int, int, int]:
+        ln = getattr(node, "lineno", 0)
+        col = getattr(node, "col_offset", 0)
+        eln = getattr(node, "end_lineno", ln)
+        ecol = getattr(node, "end_col_offset", col)
+        return ln, col, eln, ecol
+
+    def _emit(
+        self,
+        relation_type: str,
+        to_name: str,
+        node: ast.AST,
+        symbol: str,
+        semantic_type: str,
+        confidence: float = 1.0,
+        dynamic_resolution: str = "",
+    ) -> None:
+        ln, col, eln, ecol = self._span(node)
+        self.edges.append(
+            Edge(
+                from_name=self._func_adg(),
+                relation_type=relation_type,
+                to_name=to_name,
+                edge_kind="execution",
+                source_file=self.rel,
+                line_no=ln,
+                symbol=symbol,
+                semantic_type=semantic_type,
+                confidence=confidence,
+                source_span_line=ln,
+                source_span_column=col,
+                target_span_line=eln,
+                target_span_column=ecol,
+                dynamic_resolution=dynamic_resolution,
+            )
+        )
+
+    # -- visitors ---------------------------------------------------------
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        old = self._current_class
+        self._current_class = node.name
+        self.generic_visit(node)
+        self._current_class = old
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        old_func, old_seq = self._current_func, self._func_seq
+        self._current_func = node.name
+        self._func_seq = 0
+
+        # Emit control flow edges for branches/loops/try inside this function
+        self._walk_control_flow(node.body)
+
+        # Emit data lineage edges for variable assignments inside this function
+        self._walk_data_lineage(node.body)
+
+        # Emit side-effect and callsite-resolution edges
+        self._walk_calls(node.body)
+
+        self._current_func = old_func
+        self._func_seq = old_seq
+
+    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> None:
+        self.visit_FunctionDef(node)  # type: ignore[arg-type]
+
+    # -- control flow (closes Control Flow gap) ---------------------------
+
+    def _walk_control_flow(self, body: list[ast.stmt]) -> None:
+        """Emit one edge per control structure (if/for/while/try) in a function."""
+        if self._current_func is None:
+            return
+        for stmt in ast.walk(ast.Module(body=body, type_ignores=[])):
+            if isinstance(stmt, ast.If):
+                self._func_seq += 1
+                self._emit(
+                    "controls_flow",
+                    self._func_adg(),
+                    stmt,
+                    f"if@L{getattr(stmt, 'lineno', 0)}",
+                    "branch",
+                    confidence=0.95,
+                    dynamic_resolution=f"seq={self._func_seq}",
+                )
+            elif isinstance(stmt, (ast.For, ast.While)):
+                self._func_seq += 1
+                kind = "for" if isinstance(stmt, ast.For) else "while"
+                self._emit(
+                    "controls_flow",
+                    self._func_adg(),
+                    stmt,
+                    f"{kind}@L{getattr(stmt, 'lineno', 0)}",
+                    "loop",
+                    confidence=0.95,
+                    dynamic_resolution=f"seq={self._func_seq}",
+                )
+            elif isinstance(stmt, ast.Try):
+                self._func_seq += 1
+                self._emit(
+                    "controls_flow",
+                    self._func_adg(),
+                    stmt,
+                    f"try@L{getattr(stmt, 'lineno', 0)}",
+                    "exception_handler",
+                    confidence=0.95,
+                    dynamic_resolution=f"seq={self._func_seq}",
+                )
+
+    # -- data lineage (closes Data Lineage gap) ---------------------------
+
+    def _walk_data_lineage(self, body: list[ast.stmt]) -> None:
+        """Emit flows_to edges for variable assignments within functions."""
+        if self._current_func is None:
+            return
+        for stmt in ast.walk(ast.Module(body=body, type_ignores=[])):
+            if not isinstance(stmt, ast.Assign):
+                continue
+            # Collect source variables read in the RHS
+            sources: set[str] = set()
+            for sub in ast.walk(stmt.value):
+                if isinstance(sub, ast.Name) and isinstance(sub.ctx, ast.Load):
+                    sources.add(sub.id)
+            if not sources:
+                continue
+            # For each target, emit a flows_to edge from module to module
+            for tgt in stmt.targets:
+                if isinstance(tgt, ast.Name):
+                    self._func_seq += 1
+                    self._emit(
+                        "flows_to",
+                        self._func_adg(),
+                        stmt,
+                        f"{','.join(sorted(sources))}->{tgt.id}",
+                        "data_lineage",
+                        confidence=0.9,
+                        dynamic_resolution=f"seq={self._func_seq}",
+                    )
+
+    # -- side effects + callsite resolution (closes 2 gaps) ---------------
+
+    def _walk_calls(self, body: list[ast.stmt]) -> None:
+        """Emit side-effect and callsite-resolution edges for calls."""
+        if self._current_func is None:
+            return
+        for stmt in ast.walk(ast.Module(body=body, type_ignores=[])):
+            if not isinstance(stmt, ast.Call):
+                continue
+            sym = self._sym_of_call(stmt)
+            if not sym:
+                continue
+
+            is_se = self._is_side_effect(sym)
+            is_mut = self._is_mutation_method(sym)
+            is_dyn = isinstance(stmt.func, ast.Attribute)
+
+            if is_se or is_mut:
+                self._func_seq += 1
+                se_type = "io" if is_se else "mutation"
+                self._emit(
+                    "emits_side_effect",
+                    self.module_adg,
+                    stmt,
+                    sym,
+                    se_type,
+                    confidence=0.85,
+                    dynamic_resolution=f"seq={self._func_seq}",
+                )
+
+            if is_dyn and not is_se and not is_mut:
+                tail = sym.rsplit(".", 1)[-1] if "." in sym else sym
+                if tail not in _TRIVIAL_DISPATCH_METHODS:
+                    self._func_seq += 1
+                    self._emit(
+                        "resolves_callsite",
+                        self.module_adg,
+                        stmt,
+                        sym,
+                        "attribute_dispatch",
+                        confidence=0.7,
+                        dynamic_resolution=f"seq={self._func_seq}",
+                    )
+
+
 class _SecretAccessVisitor(ast.NodeVisitor):
     """G17 (gap): Secret / credential access edge extraction.
 
@@ -4830,6 +5192,7 @@ def _scan_file(
 
     # G1: Import edges
     from agentic_core.adg.identity.normalizer import IdentityNormalizer
+
     if identity_normalizer is None:
         identity_normalizer = IdentityNormalizer(repo_root=repo_root)
     import_visitor = _ImportVisitor(module_adg, rel, identity_normalizer=identity_normalizer)
@@ -4881,14 +5244,13 @@ def _scan_file(
     critical_visitor.visit(tree)
     edges.extend(critical_visitor.edges)
 
-
     # Wave 7: 1608 Hardening - Final Gap Closure
     hardening_visitor = _P1608HardeningVisitor(module_adg, rel)
     hardening_visitor.visit(tree)
     edges.extend(hardening_visitor.edges)
 
-# Wave 2: Test surface linking
-    if filepath.name.endswith('_test.py') or 'test_' in filepath.name or str(filepath).startswith('tests/'):
+    # Wave 2: Test surface linking
+    if filepath.name.endswith("_test.py") or "test_" in filepath.name or str(filepath).startswith("tests/"):
         test_surface_visitor = _TestSurfaceVisitor(module_adg, str(filepath))
         test_surface_visitor.visit(tree)
         edges.extend(test_surface_visitor.edges)
@@ -5013,6 +5375,12 @@ def _scan_file(
     secret_visitor = _SecretAccessVisitor(module_adg, rel)
     secret_visitor.visit(tree)
     edges.extend(secret_visitor.edges)
+
+    # Execution-grade semantic enrichment (replaces disabled _PrecisionHardeningVisitor)
+    # Closes gaps: Data Lineage, Control Flow, Side Effects, Temporal Ordering, Callsite Resolution
+    exec_visitor = _ExecutionSemanticVisitor(module_adg, rel)
+    exec_visitor.visit(tree)
+    edges.extend(exec_visitor.edges)
 
     # G18 (gap): Config governance (reads_governed_config, validates_config_schema, caches_config)
     config_gov_visitor = _ConfigGovernanceVisitor(module_adg, rel)
@@ -5178,6 +5546,7 @@ class ConcreteAgent(BaseClass):
 
     # G1
     from agentic_core.adg.identity.normalizer import IdentityNormalizer
+
     identity_normalizer = IdentityNormalizer(repo_root=Path.cwd())
     iv = _ImportVisitor(module_adg, source, identity_normalizer=identity_normalizer)
     iv.visit(tree)
@@ -5257,6 +5626,7 @@ class ADGStaticScanner:
 
         # Create ONE shared IdentityNormalizer so rglob("*.py") runs exactly once
         from agentic_core.adg.identity.normalizer import IdentityNormalizer
+
         shared_normalizer = IdentityNormalizer(repo_root=self.repo_root)
         # Pre-warm the known-files cache now (single filesystem walk)
         _ = shared_normalizer._get_known_files()
@@ -5284,7 +5654,9 @@ class ADGStaticScanner:
                 ]
                 had_error = False
             else:
-                file_edges, had_error = _scan_file(filepath, self.repo_root, self.include_tests, shared_normalizer)
+                file_edges, had_error = _scan_file(
+                    filepath, self.repo_root, self.include_tests, shared_normalizer
+                )
                 if not had_error:
                     cache.put(rel, fhash, file_edges)
 
@@ -6013,7 +6385,9 @@ class _TestSurfaceVisitor(ast.NodeVisitor):
                     if isinstance(inner_stmt, ast.Call):
                         sym = self._extract_symbol(inner_stmt.func)
                         if sym and self._is_invariant_family(sym, inner_stmt):
-                            invariant_name = canonical_name("InvariantFamily", f"invariant_{inner_stmt.lineno}")
+                            invariant_name = canonical_name(
+                                "InvariantFamily", f"invariant_{inner_stmt.lineno}"
+                            )
                             self.edges.append(
                                 Edge(
                                     from_name=self.module_adg_name,

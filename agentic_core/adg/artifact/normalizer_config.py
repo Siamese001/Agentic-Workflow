@@ -319,6 +319,15 @@ class ArtifactNormalizer:
             _trace_id, LayerSegment.L3_ORCHESTRATION, "ArtifactNormalizer.normalize"
         )
 
+        def _infer_precision_type(adg_name: str) -> str:
+            if "::expr_" in adg_name:
+                return "expression_unit"
+            if "::if_" in adg_name or "::for_" in adg_name or "::try_" in adg_name:
+                return "control_branch"
+            if "::block" in adg_name:
+                return "code_block"
+            return "symbol"
+
         # Step 1: build name → id mapping
         name_to_id: dict[str, int] = {}
         nodes: dict[str, dict] = {}
@@ -335,6 +344,8 @@ class ArtifactNormalizer:
                     "k": ent.identity_kind,
                     "c": ent.confidence,
                     "p": ent.resolved_path,
+                    "pt": _infer_precision_type(ent.adg_name),
+                    "lsid": 0,
                 }
 
         # Register any node referenced in edges that isn't already in entities
@@ -343,7 +354,16 @@ class ArtifactNormalizer:
                 if name not in name_to_id:
                     nid = len(name_to_id)
                     name_to_id[name] = nid
-                    nodes[str(nid)] = {"n": name, "t": "symbol", "l": "", "k": "", "c": "", "p": ""}
+                    nodes[str(nid)] = {
+                        "n": name,
+                        "t": "symbol",
+                        "l": "",
+                        "k": "",
+                        "c": "",
+                        "p": "",
+                        "pt": _infer_precision_type(name),
+                        "lsid": 0,
+                    }
 
         # Step 2: compact edges
         edges: list[dict] = []
@@ -358,6 +378,28 @@ class ArtifactNormalizer:
             }
             if rel.symbol:
                 e["sym"] = rel.symbol
+            if getattr(rel, "semantic_type", ""):
+                e["st"] = rel.semantic_type
+            if getattr(rel, "confidence", 1.0) != 1.0:
+                e["conf"] = rel.confidence
+            if getattr(rel, "source_span_start", 0):
+                e["sss"] = rel.source_span_start
+            if getattr(rel, "source_span_end", 0):
+                e["sse"] = rel.source_span_end
+            if getattr(rel, "source_span_line", 0):
+                e["ssl"] = rel.source_span_line
+            if getattr(rel, "source_span_column", 0):
+                e["ssc"] = rel.source_span_column
+            if getattr(rel, "target_span_start", 0):
+                e["tss"] = rel.target_span_start
+            if getattr(rel, "target_span_end", 0):
+                e["tse"] = rel.target_span_end
+            if getattr(rel, "target_span_line", 0):
+                e["tsl"] = rel.target_span_line
+            if getattr(rel, "target_span_column", 0):
+                e["tsc"] = rel.target_span_column
+            if getattr(rel, "dynamic_resolution", ""):
+                e["dr"] = rel.dynamic_resolution
             edges.append(e)
 
         # Step 3: build metrics
@@ -427,6 +469,17 @@ class ArtifactNormalizer:
                 "source_file": e["f"],
                 "line_no": e["ln"],
                 "symbol": e.get("sym", ""),
+                "semantic_type": e.get("st", ""),
+                "confidence": e.get("conf", 1.0),
+                "source_span_start": e.get("sss", 0),
+                "source_span_end": e.get("sse", 0),
+                "source_span_line": e.get("ssl", 0),
+                "source_span_column": e.get("ssc", 0),
+                "target_span_start": e.get("tss", 0),
+                "target_span_end": e.get("tse", 0),
+                "target_span_line": e.get("tsl", 0),
+                "target_span_column": e.get("tsc", 0),
+                "dynamic_resolution": e.get("dr", ""),
             }
             relations.append(rel)
 
