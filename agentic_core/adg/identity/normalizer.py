@@ -25,7 +25,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -73,7 +73,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
 _emit_applies_guardrail("p0", "normalizer", "p0_governance")
 _emit_reads_policy_state("p0", "normalizer", "policy_binding")
 _emit_snapshots_state("p0", "normalizer", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -297,10 +297,11 @@ class IdentityNormalizer:
                 try:
                     rel = p.relative_to(self._repo_root).as_posix()
                     paths.add(rel)
-                except ValueError:
-                    pass
-            self._known_files = frozenset(paths)
-        return self._known_files
+                except ValueError as e:
+                    # TODO: Add proper input validation
+                    logger.warning(f"Invalid input: {e}")
+                self._known_files = frozenset(paths)
+            return self._known_files
 
     @staticmethod
     def _dot_to_path(dot_name: str) -> str:

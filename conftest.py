@@ -88,7 +88,10 @@ def pytest_collection_modifyitems(config, items):
         # make relative to repo root
         try:
             rel = str(pathlib.Path(item_path).relative_to(_ROOT)).replace("\\", "/")
-        except ValueError:
+        except ValueError as e:
+        # TODO: Add proper input validation
+        logger.warning(f"Invalid input: {e}")
+            # Item path is outside repo root, use absolute path
             rel = item_path
 
         if any(rel == t or rel.startswith(t.rstrip(".py")) for t in norm_impacted):
@@ -118,6 +121,8 @@ def pytest_sessionstart(session):
     try:
         n = int(groups_env)
     except ValueError:
+        # Invalid ADG_GROUPS value - default to single worker
+        print(f"[WARNING] Invalid ADG_GROUPS value: {groups_env}, using single worker", file=sys.stderr)
         return
 
     print(f"\n[ADG_GROUPS] Building layer-balanced partition for {n} workers…", file=sys.stderr)
