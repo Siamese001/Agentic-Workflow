@@ -227,6 +227,17 @@ class EvalGateConfig(BaseModel):
     max_timeout_violations: int = Field(default=0, ge=0)
 
 
+class EvalQwenPilotConfig(BaseModel):
+    """Qwen pilot settings for apps_eval."""
+
+    enabled: bool = True
+    model_id: str = "Qwen/Qwen2.5-7B-Instruct"
+    confidence_threshold: float = Field(default=0.7, ge=0.0, le=1.0)
+    prompt_templates_file: str = "apps_eval/data/evaluation_prompts.json"
+    max_tokens: int = Field(default=1536, ge=1)
+    temperature: float = Field(default=0.05, ge=0.0, le=2.0)
+
+
 class EvalAgentSpecs(BaseModel):
     """Root configuration for all apps_eval agent specifications."""
 
@@ -315,6 +326,7 @@ class EvalAgentSpecs(BaseModel):
     regression: RegressionConfig = Field(default_factory=RegressionConfig)
     output: EvalOutputConfig = Field(default_factory=EvalOutputConfig)
     gate: EvalGateConfig = Field(default_factory=EvalGateConfig)
+    qwen: EvalQwenPilotConfig = Field(default_factory=EvalQwenPilotConfig)
     global_step_limit: int = Field(default=20)
     checkpoint_enabled: bool = True
     trace_persistence: bool = True

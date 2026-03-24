@@ -1119,7 +1119,7 @@ def _artifact_determinism_probe(
     if not enable_probe or result is None:
         return proof
 
-    cache_path = adg_dir / "scan_result_cache.json"
+    cache_path = adg_dir / "cache" / "scan_result_cache.json"
     probe_scanner = ADGStaticScanner(repo_root=repo_root, cache_path=cache_path)
     probe_result = probe_scanner.scan(commit_sha=result.commit_sha or "determinism-probe")
     probe_result.repo_state_hash = result.repo_state_hash

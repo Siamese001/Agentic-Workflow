@@ -1226,6 +1226,7 @@ AGENT_DISPATCH_METHODS: frozenset[str] = frozenset(
         # P0/L3 canonical dispatch method
         "dispatch",
         "emit_handoff",
+        "_emit_agent_executes_agent",
     }
 )
 AGENT_REGISTRY_CLASSES: frozenset[str] = frozenset(
@@ -1245,18 +1246,21 @@ ORCHESTRATION_ROUTE_SYMBOLS: frozenset[str] = frozenset(
     {
         "route_to_agent",
         "route_agent",
+        "_emit_routes_to_agent",
     }
 )
 WORKFLOW_ORCHESTRATION_SYMBOLS: frozenset[str] = frozenset(
     {
         "orchestrate_workflow",
         "orchestrate",
+        "_emit_orchestrates_workflow",
     }
 )
 EXECUTION_PLAN_DISPATCH_SYMBOLS: frozenset[str] = frozenset(
     {
         "dispatch_execution_plan",
         "dispatch_plan",
+        "_emit_dispatches_execution_plan",
     }
 )
 CAPABILITY_VALIDATION_SYMBOLS: frozenset[str] = frozenset(
@@ -1264,6 +1268,7 @@ CAPABILITY_VALIDATION_SYMBOLS: frozenset[str] = frozenset(
         "validate_agent_capability",
         "validate_capability",
         "resolve_agent_for_capability",
+        "_emit_validates_agent_capability",
     }
 )
 REGISTRY_CHECK_SYMBOLS: frozenset[str] = frozenset(
@@ -1271,6 +1276,7 @@ REGISTRY_CHECK_SYMBOLS: frozenset[str] = frozenset(
         "check_agent_registry",
         "check_registry",
         "registry_lookup",
+        "_emit_checks_agent_registry",
     }
 )
 # ── P2 Execution Capability frozensets ────────────────────────────────────────
@@ -1280,6 +1286,7 @@ AUTHORIZE_EXECUTE_SYMBOLS: frozenset[str] = frozenset(
         "authorize_execution",
         "CapabilityRouter",
         "ExecutionAuthorizationGate",
+        "_emit_authorize_and_execute",
     }
 )
 VALIDATES_CAPABILITY_SYMBOLS: frozenset[str] = frozenset(
@@ -1287,6 +1294,7 @@ VALIDATES_CAPABILITY_SYMBOLS: frozenset[str] = frozenset(
         "validates_capability",
         "validate_capability",
         "capability_check",
+        "_emit_validates_capability",
     }
 )
 ROUTES_TO_CAPABILITY_SYMBOLS: frozenset[str] = frozenset(
@@ -1294,6 +1302,7 @@ ROUTES_TO_CAPABILITY_SYMBOLS: frozenset[str] = frozenset(
         "routes_to_capability",
         "route_capability",
         "resolve_capability",
+        "_emit_routes_to_capability",
     }
 )
 WRITES_VIA_UWG_SYMBOLS: frozenset[str] = frozenset(
@@ -1302,6 +1311,7 @@ WRITES_VIA_UWG_SYMBOLS: frozenset[str] = frozenset(
         "uwg_write",
         "commit_via_uwg",
         "UWGWriteEnforcer",
+        "_emit_writes_via_uwg",
     }
 )
 BLOCKS_DIRECT_WRITE_SYMBOLS: frozenset[str] = frozenset(
@@ -1309,6 +1319,7 @@ BLOCKS_DIRECT_WRITE_SYMBOLS: frozenset[str] = frozenset(
         "blocks_direct_write",
         "block_direct_write",
         "SandboxMutationValidator",
+        "_emit_blocks_direct_write",
     }
 )
 RECORDS_TOOL_INVOCATION_SYMBOLS: frozenset[str] = frozenset(
@@ -1316,6 +1327,7 @@ RECORDS_TOOL_INVOCATION_SYMBOLS: frozenset[str] = frozenset(
         "records_tool_invocation",
         "record_tool_invocation",
         "ToolInvocationRecorder",
+        "_emit_records_tool_invocation",
     }
 )
 CAPTURES_EXECUTION_OUTPUT_SYMBOLS: frozenset[str] = frozenset(
@@ -1323,6 +1335,7 @@ CAPTURES_EXECUTION_OUTPUT_SYMBOLS: frozenset[str] = frozenset(
         "captures_execution_output",
         "capture_execution_output",
         "ExecutionOutputCapture",
+        "_emit_captures_execution_output",
     }
 )
 
@@ -1332,12 +1345,14 @@ DISPATCHES_AGENT_SYMBOLS: frozenset[str] = frozenset(
         "dispatches_agent",
         "dispatch_agent",
         "AgentDispatchRecorder",
+        "_emit_dispatches_agent",
     }
 )
 COORDINATES_AGENTS_SYMBOLS: frozenset[str] = frozenset(
     {
         "coordinates_agents",
         "coordinate_agents",
+        "_emit_coordinates_agents",
     }
 )
 RECORDS_WORKFLOW_LINEAGE_SYMBOLS: frozenset[str] = frozenset(
@@ -1345,6 +1360,7 @@ RECORDS_WORKFLOW_LINEAGE_SYMBOLS: frozenset[str] = frozenset(
         "records_workflow_lineage",
         "record_workflow_lineage",
         "WorkflowLineageEmitter",
+        "_emit_records_workflow_lineage",
     }
 )
 RECORDS_HEALING_OUTCOME_SYMBOLS: frozenset[str] = frozenset(
@@ -1352,6 +1368,7 @@ RECORDS_HEALING_OUTCOME_SYMBOLS: frozenset[str] = frozenset(
         "records_healing_outcome",
         "record_healing_outcome",
         "HealingOutcomeRecorder",
+        "_emit_records_healing_outcome",
     }
 )
 ESCALATES_FAILURE_SYMBOLS: frozenset[str] = frozenset(
@@ -1359,6 +1376,7 @@ ESCALATES_FAILURE_SYMBOLS: frozenset[str] = frozenset(
         "escalates_failure",
         "escalate_failure",
         "FailureEscalationRouter",
+        "_emit_escalates_failure",
     }
 )
 INVOKES_EVALUATION_SYMBOLS: frozenset[str] = frozenset(
@@ -1366,6 +1384,7 @@ INVOKES_EVALUATION_SYMBOLS: frozenset[str] = frozenset(
         "invokes_evaluation",
         "invoke_evaluation",
         "EvaluationSignalEmitter",
+        "_emit_invokes_evaluation",
     }
 )
 
@@ -1375,6 +1394,7 @@ RECORDS_TELEMETRY_EVENT_SYMBOLS: frozenset[str] = frozenset(
         "records_telemetry_event",
         "record_telemetry_event",
         "TelemetryEventRecorder",
+        "_emit_records_telemetry_event",
     }
 )
 CAPTURES_EVALUATION_METRIC_SYMBOLS: frozenset[str] = frozenset(
@@ -1382,6 +1402,7 @@ CAPTURES_EVALUATION_METRIC_SYMBOLS: frozenset[str] = frozenset(
         "captures_evaluation_metric",
         "capture_evaluation_metric",
         "EvaluationMetricCapture",
+        "_emit_captures_evaluation_metric",
     }
 )
 STORES_EMBEDDING_SYMBOLS: frozenset[str] = frozenset(
@@ -1389,6 +1410,7 @@ STORES_EMBEDDING_SYMBOLS: frozenset[str] = frozenset(
         "stores_embedding",
         "store_embedding",
         "EmbeddingPersistenceWriter",
+        "_emit_stores_embedding",
     }
 )
 UPDATES_META_LEARNING_STATE_SYMBOLS: frozenset[str] = frozenset(
@@ -1396,6 +1418,7 @@ UPDATES_META_LEARNING_STATE_SYMBOLS: frozenset[str] = frozenset(
         "updates_meta_learning_state",
         "update_meta_learning_state",
         "MetaLearningStateUpdater",
+        "_emit_updates_meta_learning_state",
     }
 )
 LINKS_EXECUTION_TO_SNAPSHOT_SYMBOLS: frozenset[str] = frozenset(
@@ -1403,6 +1426,7 @@ LINKS_EXECUTION_TO_SNAPSHOT_SYMBOLS: frozenset[str] = frozenset(
         "links_execution_to_snapshot",
         "link_execution_to_snapshot",
         "ExecutionSnapshotLinker",
+        "_emit_links_execution_to_snapshot",
     }
 )
 
@@ -1411,6 +1435,7 @@ CAPTURES_PATTERN_SYMBOLS: frozenset[str] = frozenset(
         "captures_pattern",
         "capture_pattern",
         "PatternCapture",
+        "_emit_captures_pattern",
     }
 )
 RECORDS_LEARNING_EVENT_SYMBOLS: frozenset[str] = frozenset(
@@ -1418,6 +1443,7 @@ RECORDS_LEARNING_EVENT_SYMBOLS: frozenset[str] = frozenset(
         "records_learning_event",
         "record_learning_event",
         "LearningEventRecorder",
+        "_emit_records_learning_event",
     }
 )
 WRITES_LEARNING_SNAPSHOT_SYMBOLS: frozenset[str] = frozenset(
@@ -1425,6 +1451,7 @@ WRITES_LEARNING_SNAPSHOT_SYMBOLS: frozenset[str] = frozenset(
         "writes_learning_snapshot",
         "write_learning_snapshot",
         "LearningSnapshotWriter",
+        "_emit_writes_learning_snapshot",
     }
 )
 FEEDS_META_LEARNING_SYMBOLS: frozenset[str] = frozenset(
@@ -1432,6 +1459,7 @@ FEEDS_META_LEARNING_SYMBOLS: frozenset[str] = frozenset(
         "feeds_meta_learning",
         "feed_meta_learning",
         "MetaLearningFeeder",
+        "_emit_feeds_meta_learning",
     }
 )
 UPDATES_ROUTING_STRATEGY_SYMBOLS: frozenset[str] = frozenset(
@@ -1439,6 +1467,7 @@ UPDATES_ROUTING_STRATEGY_SYMBOLS: frozenset[str] = frozenset(
         "updates_routing_strategy",
         "update_routing_strategy",
         "RoutingStrategyUpdater",
+        "_emit_updates_routing_strategy",
     }
 )
 IMPROVES_AGENT_POLICY_SYMBOLS: frozenset[str] = frozenset(
@@ -1446,6 +1475,7 @@ IMPROVES_AGENT_POLICY_SYMBOLS: frozenset[str] = frozenset(
         "improves_agent_policy",
         "improve_agent_policy",
         "AgentPolicyImprover",
+        "_emit_improves_agent_policy",
     }
 )
 STORES_LEARNING_STATE_SYMBOLS: frozenset[str] = frozenset(
@@ -1453,6 +1483,7 @@ STORES_LEARNING_STATE_SYMBOLS: frozenset[str] = frozenset(
         "stores_learning_state",
         "store_learning_state",
         "LearningStateStore",
+        "_emit_stores_learning_state",
     }
 )
 EMITS_METRIC_EVENT_SYMBOLS: frozenset[str] = frozenset(

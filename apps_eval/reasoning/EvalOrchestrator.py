@@ -98,6 +98,17 @@ from apps_eval.types.eval_types import (
 )
 from apps_eval.validators.eval_gate_validator import EvalGateValidator
 
+try:
+    from agentic_core.L2_execution.apps_qwen import (
+        AppsQwenGateway,
+        AppsQwenRequest,
+        apps_qwen_telemetry,
+    )
+except ImportError:
+    AppsQwenGateway = None  # type: ignore[assignment]
+    AppsQwenRequest = None  # type: ignore[assignment]
+    apps_qwen_telemetry = None  # type: ignore[assignment]
+
 _emit_applies_guardrail("p0", "EvalOrchestrator", "p0_governance")
 _emit_reads_policy_state("p0", "EvalOrchestrator", "policy_binding")
 _emit_snapshots_state("p0", "EvalOrchestrator", "state_snapshot")
@@ -206,6 +217,7 @@ class EvalOrchestrator:
     baseline_dir: str = "eval_baselines"
     gate_mode: str = "HARD_FAIL"
     hop_checkpoints: list[dict[str, Any]] = field(default_factory=list)
+    qwen_enabled: bool = True
 
     def __post_init__(self) -> None:
         self._runner = ScenarioRunner()
@@ -229,6 +241,23 @@ class EvalOrchestrator:
             )
         except ImportError:
             self._specs = None
+
+        self._qwen_gateway = None
+        self._qwen_session_id = None
+        self._qwen_prompt_templates: dict[str, Any] = {}
+        qwen_model_id = "Qwen/Qwen2.5-7B-Instruct"
+        qwen_prompts_path = Path(__file__).resolve().parents[1] / "data" / "evaluation_prompts.json"
+
+        if self._specs is not None and hasattr(self._specs, "qwen"):
+            self.qwen_enabled = self._specs.qwen.enabled
+            qwen_model_id = self._specs.qwen.model_id
+            qwen_prompts_path = Path(self._specs.qwen.prompt_templates_file)
+
+        if self.qwen_enabled and AppsQwenGateway is not None:
+            self._qwen_gateway = AppsQwenGateway(model_id=qwen_model_id)
+            if apps_qwen_telemetry is not None:
+                self._qwen_session_id = apps_qwen_telemetry.start_session("apps_eval")
+            self._qwen_prompt_templates = self._load_qwen_prompt_templates(qwen_prompts_path)
 
         try:
             from agentic_core.adg.runtime.behavioral_index import ADGBehavioralIndex
@@ -487,6 +516,96 @@ class EvalOrchestrator:
         p = out / f"run_summary_{trace_id[:8]}.json"
         p.write_text(json.dumps(summary.to_dict(), indent=2, sort_keys=True), encoding="utf-8")
         return str(p)
+
+    def _load_qwen_prompt_templates(self, prompts_path: Path) -> dict[str, Any]:
+        """Load Qwen prompt templates for apps_eval pilot."""
+        try:
+            resolved = prompts_path
+            if not resolved.is_absolute():
+                resolved = Path(__file__).resolve().parents[2] / prompts_path
+            if resolved.exists():
+                return json.loads(resolved.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return {}
+        return {}
+
+    async def evaluate_with_qwen(self, prompt: str, template: str = "code_review") -> dict[str, Any]:
+        """Run apps_eval prompt through Qwen gateway when enabled."""
+        if not self.qwen_enabled:
+            return {"success": False, "error": "qwen_disabled", "response": None}
+        if self._qwen_gateway is None or AppsQwenRequest is None:
+            return {"success": False, "error": "qwen_gateway_unavailable", "response": None}
+        if apps_qwen_telemetry is None or self._qwen_session_id is None:
+            return {"success": False, "error": "qwen_telemetry_unavailable", "response": None}
+
+        model_id = "Qwen/Qwen2.5-7B-Instruct"
+        if self._specs is not None and hasattr(self._specs, "qwen"):
+            model_id = self._specs.qwen.model_id
+
+        apps_qwen_telemetry.record_request_start(
+            session_id=self._qwen_session_id,
+            app_name="apps_eval",
+            model_id=model_id,
+        )
+
+        rendered_prompt = prompt
+        if template in self._qwen_prompt_templates:
+            template_entry = self._qwen_prompt_templates.get(template)
+            template_text = (
+                template_entry.get("template", "")
+                if isinstance(template_entry, dict)
+                else str(template_entry)
+            )
+            if template_text:
+                rendered_prompt = template_text
+                for slot in (
+                    "prompt",
+                    "code",
+                    "function",
+                    "design",
+                    "documentation",
+                    "findings",
+                    "data",
+                    "literature",
+                ):
+                    rendered_prompt = rendered_prompt.replace(f"{{{slot}}}", prompt)
+
+        request = AppsQwenRequest(
+            app_name="apps_eval",
+            prompt=rendered_prompt,
+            confidence_threshold=0.7,
+            max_tokens=1536,
+            temperature=0.05,
+        )
+        response = await self._qwen_gateway.infer(request)
+
+        token_estimate = len(prompt.split()) + (len(response.response.split()) if response.response else 0)
+        if response.success:
+            apps_qwen_telemetry.record_request_success(
+                session_id=self._qwen_session_id,
+                app_name="apps_eval",
+                model_id=response.model_used,
+                latency_ms=response.latency_ms,
+                confidence=response.confidence,
+                tokens_used=token_estimate,
+            )
+        else:
+            apps_qwen_telemetry.record_request_error(
+                session_id=self._qwen_session_id,
+                app_name="apps_eval",
+                model_id=response.model_used,
+                error_message=response.error_message or "unknown_error",
+            )
+
+        return {
+            "success": response.success,
+            "response": response.response,
+            "confidence": response.confidence,
+            "model_used": response.model_used,
+            "latency_ms": response.latency_ms,
+            "error_message": response.error_message,
+            "template": template,
+        }
 
     def _record_hop(self, hop_id: str, success: bool) -> None:
         self.hop_checkpoints.append({"hop_id": hop_id, "status": "COMPLETED" if success else "FAILED"})
