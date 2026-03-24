@@ -10,7 +10,7 @@ import pytest
 try:
     import agentic_core.adg.__init__ as _mod  # noqa: F401
     _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
+except ImportError:
     _AVAILABLE = False
     _mod = None
 

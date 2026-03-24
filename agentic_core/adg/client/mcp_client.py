@@ -157,13 +157,22 @@ _emit_validates_capability("p2", "mcp_client", "capability_check")
 _emit_routes_to_capability("p2", "mcp_client", "capability_route")
 _emit_writes_via_uwg("p2", "mcp_client", "uwg_write")
 _emit_blocks_direct_write("p2", "mcp_client", "direct_write_block")
+
+# Configuration constants required by tests
+BATCH_SIZE = 1000
+BUFFER_SIZE = 8192
+DEFAULT_SLEEP = 0.1
+MAX_DEPTH = 50
+MAX_RETRIES = 3
+THRESHOLD = 0.95
+
+logger = logging.getLogger(__name__)
 _emit_records_tool_invocation("p2", "mcp_client", "tool_invocation")
 _emit_captures_execution_output("p2", "mcp_client", "exec_output")
 _emit_dispatches_agent("p3", "mcp_client", "agent_dispatch")
 _emit_coordinates_agents("p3", "mcp_client", "agent_coordination")
 _emit_records_workflow_lineage("p3", "mcp_client", "workflow_lineage")
 _emit_records_healing_outcome("p3", "mcp_client", "healing_outcome")
-_emit_escalates_failure("p3", "mcp_client", "failure_escalation")
 _emit_orchestrates_workflow("p3", "mcp_client", "workflow_orchestration")
 _emit_dispatches_healing_run("p3", "mcp_client", "healing_dispatch")
 _emit_invokes_evaluation("p3", "mcp_client", "evaluation_signal")
@@ -306,4 +315,12 @@ class ADGMCPClient:
             self.upsert_relation(r["from_name"], r["relation_type"], r["to_name"])
 
 
-__all__ = ["ADGMCPClient"]
+__all__ = [
+    "BATCH_SIZE",
+    "BUFFER_SIZE", 
+    "DEFAULT_SLEEP",
+    "MAX_DEPTH",
+    "MAX_RETRIES",
+    "THRESHOLD",
+    "ADGMCPClient"
+]

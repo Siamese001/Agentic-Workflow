@@ -23,7 +23,7 @@ try:
         verify_layer_graph_consistency,
     )
     _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
+except ImportError:
     _AVAILABLE = False
     canonical_name = None  # type: ignore[assignment,misc]
     verify_layer_graph_consistency = None  # type: ignore[assignment,misc]
@@ -36,7 +36,6 @@ pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     MAX_DEPTH = None  # type: ignore[assignment,misc]
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="schema.py deps unavailable")
 class TestCanonicalNameFunction:
     def test_is_callable(self):
         assert callable(canonical_name)
@@ -46,7 +45,6 @@ class TestCanonicalNameFunction:
         sig = inspect.signature(canonical_name)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="schema.py deps unavailable")
 class TestVerifyLayerGraphConsistencyFunction:
     def test_is_callable(self):
         assert callable(verify_layer_graph_consistency)
@@ -56,7 +54,6 @@ class TestVerifyLayerGraphConsistencyFunction:
         sig = inspect.signature(verify_layer_graph_consistency)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="schema.py deps unavailable")
 class TestModulePathToLayerFunction:
     def test_is_callable(self):
         assert callable(module_path_to_layer)
@@ -66,7 +63,6 @@ class TestModulePathToLayerFunction:
         sig = inspect.signature(module_path_to_layer)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="schema.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
@@ -74,7 +70,6 @@ class TestMaxRetriesConstant:
     def test_value_is_truthy_or_defined(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="schema.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
@@ -82,7 +77,6 @@ class TestDefaultSleepConstant:
     def test_value_is_truthy_or_defined(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="schema.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
@@ -90,7 +84,6 @@ class TestThresholdConstant:
     def test_value_is_truthy_or_defined(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="schema.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
@@ -98,7 +91,6 @@ class TestBufferSizeConstant:
     def test_value_is_truthy_or_defined(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="schema.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -106,7 +98,6 @@ class TestBatchSizeConstant:
     def test_value_is_truthy_or_defined(self):
         assert BATCH_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="schema.py deps unavailable")
 class TestMaxDepthConstant:
     def test_is_not_none(self):
         assert MAX_DEPTH is not None

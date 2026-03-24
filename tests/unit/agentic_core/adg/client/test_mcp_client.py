@@ -12,7 +12,7 @@ import pytest
 pytestmark = pytest.mark.unit
 
 try:
-    from agentic_core.adg.client.InMemoryStore import (  # noqa: F401
+    from agentic_core.adg.client.mcp_client import (  # noqa: F401
         BATCH_SIZE,
         BUFFER_SIZE,
         DEFAULT_SLEEP,
@@ -23,7 +23,8 @@ try:
     )
 
     _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
+except ImportError:
+    pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     _AVAILABLE = False
     ADGMCPClient = None  # type: ignore[assignment,misc]
     MAX_RETRIES = None  # type: ignore[assignment,misc]
@@ -34,7 +35,6 @@ pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
     MAX_DEPTH = None  # type: ignore[assignment,misc]
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="mcp_client.py deps unavailable")
 class TestADGMCPClientContract:
     def test_is_class(self):
         assert isinstance(ADGMCPClient, type)
@@ -56,7 +56,6 @@ class TestADGMCPClientContract:
         assert len(pub) >= 1
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="mcp_client.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
@@ -65,7 +64,6 @@ class TestMaxRetriesConstant:
         assert MAX_RETRIES is not None
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="mcp_client.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
@@ -74,7 +72,6 @@ class TestDefaultSleepConstant:
         assert DEFAULT_SLEEP is not None
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="mcp_client.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
@@ -83,7 +80,6 @@ class TestThresholdConstant:
         assert THRESHOLD is not None
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="mcp_client.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
@@ -92,7 +88,6 @@ class TestBufferSizeConstant:
         assert BUFFER_SIZE is not None
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="mcp_client.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -101,7 +96,6 @@ class TestBatchSizeConstant:
         assert BATCH_SIZE is not None
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="mcp_client.py deps unavailable")
 class TestMaxDepthConstant:
     def test_is_not_none(self):
         assert MAX_DEPTH is not None
