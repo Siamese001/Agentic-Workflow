@@ -328,6 +328,17 @@ class ArtifactNormalizer:
                 return "code_block"
             return "symbol"
 
+        # Phase 3b: type surface map from scanner
+        ts_map: dict[str, str] = getattr(artifact, "type_surface_map", {})
+
+        def _infer_enclosing_symbol(adg_name: str) -> str:
+            """For block nodes, extract the enclosing function/class symbol."""
+            for tag in ("::if_L", "::for_L", "::try_L", "::block_L", "::expr_L"):
+                idx = adg_name.find(tag)
+                if idx != -1:
+                    return adg_name[:idx]
+            return ""
+
         # Step 1: build name → id mapping
         name_to_id: dict[str, int] = {}
         nodes: dict[str, dict] = {}
@@ -346,6 +357,8 @@ class ArtifactNormalizer:
                     "p": ent.resolved_path,
                     "pt": _infer_precision_type(ent.adg_name),
                     "lsid": 0,
+                    "ts": ts_map.get(ent.adg_name, ""),
+                    "es": _infer_enclosing_symbol(ent.adg_name),
                 }
 
         # Register any node referenced in edges that isn't already in entities
@@ -363,6 +376,8 @@ class ArtifactNormalizer:
                         "p": "",
                         "pt": _infer_precision_type(name),
                         "lsid": 0,
+                        "ts": ts_map.get(name, ""),
+                        "es": _infer_enclosing_symbol(name),
                     }
 
         # Step 2: compact edges

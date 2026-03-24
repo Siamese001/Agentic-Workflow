@@ -502,6 +502,7 @@ class ScanResult:
     repo_state_hash: str = ""
     manifest: ScanManifest = field(default_factory=ScanManifest)
     syntax_errors: list[str] = field(default_factory=list)
+    type_surface_map: dict[str, str] = field(default_factory=dict)
 
     def canonical_edge_text(self) -> str:
         """S7: Stable, sorted serialization of edges for digest computation."""
@@ -4150,6 +4151,252 @@ class _ExecutionSemanticVisitor(ast.NodeVisitor):
                     )
 
 
+# ---------------------------------------------------------------------------
+# Phase 3a: Block Decomposition Visitor — closes Node Granularity gap
+# Creates block-level nodes (code_block, control_branch) with decomposes_into
+# edges. Block nodes are auto-created by the builder when they appear as edge
+# endpoints. The normalizer's _infer_precision_type recognizes naming patterns.
+# ---------------------------------------------------------------------------
+
+_BLOCK_COMPLEXITY_THRESHOLD = 2  # min control-flow stmts to decompose a function
+_MAX_BLOCKS_PER_FUNC = 10  # cap block nodes per function
+
+
+class _BlockDecompositionVisitor(ast.NodeVisitor):
+    """Phase 3a: Decompose functions into block-level nodes.
+
+    Creates decomposes_into edges from function symbols to block/branch nodes.
+    Only decomposes functions with sufficient control-flow complexity.
+    """
+
+    def __init__(self, module_adg: str, source_file: str) -> None:
+        self.module_adg = module_adg
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+        self._class_stack: list[str] = []
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        self._class_stack.append(node.name)
+        self.generic_visit(node)
+        self._class_stack.pop()
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        self._decompose_func(node)
+        self.generic_visit(node)
+
+    visit_AsyncFunctionDef = visit_FunctionDef
+
+    def _decompose_func(self, node: ast.FunctionDef) -> None:
+        # Build qualified function name
+        parts = [self.source_file.replace("/", ".").replace("\\", ".").removesuffix(".py")]
+        parts.extend(self._class_stack)
+        parts.append(node.name)
+        func_symbol = canonical_name("Symbol", "::".join(parts))
+
+        # Count control-flow statements
+        cf_stmts: list[tuple[str, ast.stmt]] = []
+        for child in ast.walk(ast.Module(body=node.body, type_ignores=[])):
+            if isinstance(child, ast.If):
+                cf_stmts.append(("if", child))
+            elif isinstance(child, (ast.For, ast.While)):
+                cf_stmts.append(("for", child))
+            elif isinstance(child, ast.Try):
+                cf_stmts.append(("try", child))
+
+        if len(cf_stmts) < _BLOCK_COMPLEXITY_THRESHOLD:
+            return
+
+        # Emit block nodes (capped)
+        for i, (kind, stmt) in enumerate(cf_stmts[:_MAX_BLOCKS_PER_FUNC]):
+            block_name = canonical_name("Symbol", f"{'::'.join(parts)}::{kind}_L{stmt.lineno}")
+            self.edges.append(
+                Edge(
+                    from_name=func_symbol,
+                    relation_type="decomposes_into",
+                    to_name=block_name,
+                    edge_kind="decomposition",
+                    source_file=self.source_file,
+                    line_no=stmt.lineno,
+                    symbol=f"{kind}@L{stmt.lineno}",
+                    semantic_type="block_decomposition",
+                    confidence=1.0,
+                    source_span_line=stmt.lineno,
+                    source_span_end=getattr(stmt, "end_lineno", stmt.lineno) or stmt.lineno,
+                )
+            )
+
+
+# ---------------------------------------------------------------------------
+# Phase 3b: Type Surface Collector — closes Type Enrichment gap
+# Walks AST and collects type annotations for symbols. Returns a dict
+# mapping canonical symbol name → inferred type string.
+# ---------------------------------------------------------------------------
+
+
+class _TypeSurfaceCollector(ast.NodeVisitor):
+    """Phase 3b: Collect type annotations from AST.
+
+    Populates type_surface_map on ScanResult for downstream enrichment.
+    Sources: function annotations, variable annotations, class bases, literals.
+    """
+
+    def __init__(self, source_file: str) -> None:
+        self.source_file = source_file
+        self.type_map: dict[str, str] = {}
+        self._class_stack: list[str] = []
+        self._func_stack: list[str] = []
+        self._base = source_file.replace("/", ".").replace("\\", ".").removesuffix(".py")
+
+    def _symbol(self, name: str) -> str:
+        parts = [self._base] + self._class_stack + self._func_stack + [name]
+        return canonical_name("Symbol", "::".join(parts))
+
+    def _current_scope_symbol(self) -> str:
+        parts = [self._base] + self._class_stack + self._func_stack
+        return canonical_name("Symbol", "::".join(parts))
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        sym = self._symbol(node.name)
+        bases = [_annotation_str(b) for b in node.bases]
+        self.type_map[sym] = f"class({', '.join(bases)})" if bases else "class"
+        self._class_stack.append(node.name)
+        self.generic_visit(node)
+        self._class_stack.pop()
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        sym = self._symbol(node.name)
+        # Return annotation
+        ret = _annotation_str(node.returns) if node.returns else "None"
+        # Parameter annotations
+        params: list[str] = []
+        for arg in node.args.args:
+            if arg.annotation:
+                params.append(f"{arg.arg}: {_annotation_str(arg.annotation)}")
+            else:
+                params.append(arg.arg)
+        self.type_map[sym] = f"({', '.join(params)}) -> {ret}"
+        # Visit body
+        self._func_stack.append(node.name)
+        self.generic_visit(node)
+        self._func_stack.pop()
+
+    visit_AsyncFunctionDef = visit_FunctionDef
+
+    def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
+        if isinstance(node.target, ast.Name) and node.annotation:
+            sym = self._symbol(node.target.id)
+            self.type_map[sym] = _annotation_str(node.annotation)
+        self.generic_visit(node)
+
+    def visit_Assign(self, node: ast.Assign) -> None:
+        # Infer type from simple literal assignments
+        for tgt in node.targets:
+            if isinstance(tgt, ast.Name):
+                inferred = _infer_literal_type(node.value)
+                if inferred:
+                    sym = self._symbol(tgt.id)
+                    self.type_map[sym] = inferred
+        self.generic_visit(node)
+
+
+def _annotation_str(node: ast.expr | None) -> str:
+    """Extract a human-readable type string from an AST annotation node."""
+    if node is None:
+        return ""
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Constant):
+        return repr(node.value)
+    if isinstance(node, ast.Attribute):
+        return f"{_annotation_str(node.value)}.{node.attr}"
+    if isinstance(node, ast.Subscript):
+        return f"{_annotation_str(node.value)}[{_annotation_str(node.slice)}]"
+    if isinstance(node, ast.Tuple):
+        return ", ".join(_annotation_str(e) for e in node.elts)
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.BitOr):
+        return f"{_annotation_str(node.left)} | {_annotation_str(node.right)}"
+    return ast.dump(node)
+
+
+def _infer_literal_type(node: ast.expr) -> str:
+    """Infer type from simple literal/constructor expressions."""
+    if isinstance(node, ast.Constant):
+        return type(node.value).__name__
+    if isinstance(node, ast.List):
+        return "list"
+    if isinstance(node, ast.Dict):
+        return "dict"
+    if isinstance(node, ast.Set):
+        return "set"
+    if isinstance(node, ast.Tuple):
+        return "tuple"
+    if isinstance(node, ast.Call):
+        sym = _sym_of(node.func)
+        if sym:
+            return sym.split(".")[-1]
+    return ""
+
+
+# ---------------------------------------------------------------------------
+# Phase 3c: Test → Execution Linkage — closes Test→Exec Linkage gap
+# For test files, emits tests_execution_of edges from test functions to
+# the symbols they call, providing execution-unit-level test mapping.
+# ---------------------------------------------------------------------------
+
+
+class _TestExecutionLinkageVisitor(ast.NodeVisitor):
+    """Phase 3c: Link test functions to the execution units they exercise.
+
+    Only active for test files (test_*.py or *_test.py). Creates
+    tests_execution_of edges from test function → called symbol.
+    """
+
+    def __init__(self, module_adg: str, source_file: str) -> None:
+        self.module_adg = module_adg
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+        self._is_test_file = self._detect_test_file(source_file)
+        self._current_test: str | None = None
+        self._base = source_file.replace("/", ".").replace("\\", ".").removesuffix(".py")
+
+    @staticmethod
+    def _detect_test_file(path: str) -> bool:
+        name = path.replace("\\", "/").rsplit("/", 1)[-1]
+        return name.startswith("test_") or name.endswith("_test.py")
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        if not self._is_test_file:
+            return
+        if node.name.startswith("test_"):
+            self._current_test = node.name
+            test_sym = canonical_name("Symbol", f"{self._base}::{node.name}")
+            # Walk the test body for calls
+            seen: set[str] = set()
+            for child in ast.walk(ast.Module(body=node.body, type_ignores=[])):
+                if isinstance(child, ast.Call):
+                    sym = _sym_of(child.func)
+                    if sym and sym not in seen and not sym.startswith("assert"):
+                        seen.add(sym)
+                        target = canonical_name("Symbol", f"{self._base}::{sym}")
+                        self.edges.append(
+                            Edge(
+                                from_name=test_sym,
+                                relation_type="tests_execution_of",
+                                to_name=target,
+                                edge_kind="test_linkage",
+                                source_file=self.source_file,
+                                line_no=child.lineno,
+                                symbol=sym,
+                                semantic_type="test_execution_linkage",
+                                confidence=0.85,
+                                source_span_line=child.lineno,
+                            )
+                        )
+            self._current_test = None
+
+    visit_AsyncFunctionDef = visit_FunctionDef
+
+
 class _SecretAccessVisitor(ast.NodeVisitor):
     """G17 (gap): Secret / credential access edge extraction.
 
@@ -5183,8 +5430,8 @@ def _scan_file(
     repo_root: Path,
     include_tests: bool = True,
     identity_normalizer: object | None = None,
-) -> tuple[list[Edge], bool]:
-    """Scan a single Python file and return (edges, had_syntax_error)."""
+) -> tuple[list[Edge], bool, dict[str, str]]:
+    """Scan a single Python file and return (edges, had_syntax_error, type_surface_map)."""
     rel = _repo_relative(filepath, repo_root)
     module_adg = canonical_name("Module", rel)
     edges: list[Edge] = []
@@ -5193,10 +5440,10 @@ def _scan_file(
         tree = ast.parse(source, filename=str(filepath))
     except SyntaxError as exc:
         logger.debug("SyntaxError in %s: %s", filepath, exc)
-        return [], True  # A4: parse failures tracked
+        return [], True, {}  # A4: parse failures tracked
     except OSError as exc:
         logger.debug("OSError reading %s: %s", filepath, exc)
-        return [], True
+        return [], True, {}
 
     # G1: Import edges
     from agentic_core.adg.identity.normalizer import IdentityNormalizer
@@ -5482,13 +5729,28 @@ def _scan_file(
     learning_prov_visitor.visit(tree)
     edges.extend(learning_prov_visitor.edges)
 
+    # Phase 3a: Block decomposition — node granularity
+    block_visitor = _BlockDecompositionVisitor(module_adg, rel)
+    block_visitor.visit(tree)
+    edges.extend(block_visitor.edges)
+
+    # Phase 3b: Type surface collection — type enrichment
+    type_collector = _TypeSurfaceCollector(rel)
+    type_collector.visit(tree)
+    type_surface_map = type_collector.type_map  # returned to caller
+
+    # Phase 3c: Test → Execution linkage
+    test_link_visitor = _TestExecutionLinkageVisitor(module_adg, rel)
+    test_link_visitor.visit(tree)
+    edges.extend(test_link_visitor.edges)
+
     # -----------------------------------------------------------------------
     # SEMANTIC ENRICHMENT: stamp semantic_type on ALL edges (zero new edges)
     # Ensures semantic_edge_ratio → 1.0 by classifying every structural edge.
     # -----------------------------------------------------------------------
     edges = _stamp_semantic_types(edges)
 
-    return edges, False
+    return edges, False, type_surface_map
 
 
 # ---------------------------------------------------------------------------
@@ -5633,6 +5895,10 @@ _SEMANTIC_TYPE_MAP: dict[tuple[str, str], str] = {
     # last 2 unmapped combos
     ("layer_membership", "belongs_to_layer"): "layer_membership",
     ("import", "violates"): "layer_violation",
+    # Phase 3 edge types
+    ("decomposition", "decomposes_into"): "block_decomposition",
+    ("test_linkage", "tests_execution_of"): "test_execution_linkage",
+    ("violation_propagation", "violation_propagates_through"): "violation_trace",
 }
 
 # Fallback: classify by relation_type alone when (edge_kind, relation_type) not in map
@@ -5650,6 +5916,9 @@ _SEMANTIC_FALLBACK: dict[str, str] = {
     "violates": "layer_violation",
     "antipattern": "antipattern_detected",
     "dead_imports": "dead_import",
+    "decomposes_into": "block_decomposition",
+    "tests_execution_of": "test_execution_linkage",
+    "violation_propagates_through": "violation_trace",
 }
 
 
@@ -5736,6 +6005,127 @@ _SEMANTIC_DEPTH_THRESHOLDS: dict[str, float] = {
     "call_resolution_rate": 0.95,
     "temporal_ordering_ratio": 0.95,
 }
+
+
+# ---------------------------------------------------------------------------
+# Phase 3d: Violation Trace Depth — propagate violations through lineage
+# For each violation edge, traces forward through flows_to and controls_flow
+# to find downstream modules affected by the violation.
+# ---------------------------------------------------------------------------
+_MAX_PROPAGATION_DEPTH = 3  # max hops for violation propagation
+_MAX_PROPAGATION_EDGES = 5000  # cap total propagation edges
+
+
+def _propagate_violations(result: ScanResult) -> list[Edge]:
+    """Phase 3d: Trace violations through import graph.
+
+    For each violation edge (module A violates layer rule), find downstream
+    modules that import A (directly or transitively) and emit
+    violation_propagates_through edges showing blast radius.
+    """
+
+    def _symbol_to_module_key(sym_name: str) -> str:
+        """Convert ADG::Symbol::agentic_core.L0_routing.foo::bar to module key."""
+        raw = sym_name.replace("ADG::Symbol::", "").replace("ADG::Module::", "")
+        # Strip symbol suffix after ::
+        mod_part = raw.split("::")[0]
+        # Convert dots to slashes for module key
+        return mod_part.replace(".", "/")
+
+    def _module_to_key(mod_name: str) -> str:
+        """Normalize ADG::Module::path/to/file.py to key format."""
+        raw = mod_name.replace("ADG::Module::", "")
+        # Remove .py and /__init__ to get package key
+        raw = raw.replace("/__init__.py", "").replace(".py", "")
+        return raw
+
+    # Build reverse import adjacency: package_key → {importing module names}
+    importers_of: dict[str, set[str]] = {}
+    for e in result.edges:
+        if e.relation_type == "imports" and e.from_name.startswith("ADG::Module::"):
+            target_key = _symbol_to_module_key(e.to_name)
+            importers_of.setdefault(target_key, set()).add(e.from_name)
+
+    # Collect violating modules (from_name of violates edges)
+    violating_modules: set[str] = set()
+    for e in result.edges:
+        if e.relation_type == "violates":
+            violating_modules.add(e.from_name)
+
+    if not violating_modules or not importers_of:
+        return []
+
+    # Also build module→key map for BFS traversal
+    module_key_map: dict[str, str] = {}
+    for vm in violating_modules:
+        module_key_map[vm] = _module_to_key(vm)
+
+    propagation_edges: list[Edge] = []
+    for v_module in violating_modules:
+        v_key = module_key_map[v_module]
+        # Collect all import keys that start with this violating package
+        # (catches imports of any submodule within the violating package)
+        matching_keys: set[str] = set()
+        for k in importers_of:
+            if k == v_key or k.startswith(v_key + "/"):
+                matching_keys.add(k)
+
+        # BFS depth 1: direct importers of the violating module/package
+        visited: set[str] = {v_module}
+        depth1_importers: set[str] = set()
+        for mk in matching_keys:
+            for importer in importers_of.get(mk, ()):
+                if importer not in visited and importer not in violating_modules:
+                    depth1_importers.add(importer)
+                    visited.add(importer)
+                    propagation_edges.append(
+                        Edge(
+                            from_name=v_module,
+                            relation_type="violation_propagates_through",
+                            to_name=importer,
+                            edge_kind="violation_propagation",
+                            source_file="",
+                            line_no=0,
+                            symbol="depth=1",
+                            semantic_type="violation_trace",
+                            confidence=0.8,
+                        )
+                    )
+                    if len(propagation_edges) >= _MAX_PROPAGATION_EDGES:
+                        return propagation_edges
+
+        # BFS depths 2+: transitive importers
+        frontier = list(depth1_importers)
+        for depth in range(2, _MAX_PROPAGATION_DEPTH + 1):
+            next_frontier: list[str] = []
+            for node in frontier:
+                node_key = _module_to_key(node)
+                for k in importers_of:
+                    if k == node_key or k.startswith(node_key + "/"):
+                        for importer in importers_of.get(k, ()):
+                            if importer not in visited:
+                                visited.add(importer)
+                                next_frontier.append(importer)
+                                propagation_edges.append(
+                                    Edge(
+                                        from_name=v_module,
+                                        relation_type="violation_propagates_through",
+                                        to_name=importer,
+                                        edge_kind="violation_propagation",
+                                        source_file="",
+                                        line_no=0,
+                                        symbol=f"depth={depth}",
+                                        semantic_type="violation_trace",
+                                        confidence=max(0.3, 1.0 - depth * 0.2),
+                                    )
+                                )
+                                if len(propagation_edges) >= _MAX_PROPAGATION_EDGES:
+                                    return propagation_edges
+            frontier = next_frontier
+            if not frontier:
+                break
+
+    return propagation_edges
 
 
 def _check_evidence_floors(result: ScanResult) -> bool:
@@ -5881,6 +6271,7 @@ class ADGStaticScanner:
 
         result = ScanResult(commit_sha=commit_sha, manifest=manifest)
         all_edges: list[Edge] = []
+        all_type_surface: dict[str, str] = {}
         modules_seen: list[str] = []
         syntax_error_count = 0
         syntax_errors: list[str] = []
@@ -5915,11 +6306,12 @@ class ADGStaticScanner:
                 ]
                 had_error = False
             else:
-                file_edges, had_error = _scan_file(
+                file_edges, had_error, file_type_map = _scan_file(
                     filepath, self.repo_root, self.include_tests, shared_normalizer
                 )
                 if not had_error:
                     cache.put(rel, fhash, file_edges)
+                    all_type_surface.update(file_type_map)
 
             if had_error:
                 syntax_error_count += 1
@@ -5942,6 +6334,7 @@ class ADGStaticScanner:
         result.edges = sorted(set(all_edges))  # S7: sorted for determinism
         result.modules = sorted(modules_seen)
         result.syntax_errors = syntax_errors
+        result.type_surface_map = all_type_surface
         result.compute_digest()
 
         # A2: evidence floors
@@ -5957,8 +6350,7 @@ class ADGStaticScanner:
         manifest.call_resolution_rate = depth_metrics["call_resolution_rate"]
         manifest.temporal_ordering_ratio = depth_metrics["temporal_ordering_ratio"]
         depth_pass = all(
-            depth_metrics[k] >= _SEMANTIC_DEPTH_THRESHOLDS[k]
-            for k in _SEMANTIC_DEPTH_THRESHOLDS
+            depth_metrics[k] >= _SEMANTIC_DEPTH_THRESHOLDS[k] for k in _SEMANTIC_DEPTH_THRESHOLDS
         )
         manifest.semantic_depth_passed = depth_pass
         if not depth_pass:
@@ -5966,7 +6358,9 @@ class ADGStaticScanner:
                 if depth_metrics[k] < threshold:
                     logger.warning(
                         "Semantic depth BELOW threshold: %s=%.4f (min %.4f)",
-                        k, depth_metrics[k], threshold,
+                        k,
+                        depth_metrics[k],
+                        threshold,
                     )
         # A1: edge counts by graph
         manifest.edge_counts_by_graph = result.edge_counts_by_relation()
@@ -5983,6 +6377,13 @@ class ADGStaticScanner:
         if violation_edges:
             violation_edges = _stamp_semantic_types(violation_edges)
             result.edges = sorted(set(result.edges) | set(violation_edges))
+            result.compute_digest()
+
+        # Phase 3d: Violation trace depth — propagate violations through lineage
+        propagation_edges = _propagate_violations(result)
+        if propagation_edges:
+            propagation_edges = _stamp_semantic_types(propagation_edges)
+            result.edges = sorted(set(result.edges) | set(propagation_edges))
             result.compute_digest()
 
         # E5: Cyclic dependency detection post-scan pass
@@ -6040,6 +6441,7 @@ class ADGStaticScanner:
         """
         result = ScanResult(commit_sha=commit_sha)
         all_edges: list[Edge] = []
+        all_type_surface: dict[str, str] = {}
         modules_seen: list[str] = []
 
         for rel in sorted(files):
@@ -6047,11 +6449,13 @@ class ADGStaticScanner:
             if not filepath.exists() or not rel.endswith(".py"):
                 continue
             modules_seen.append(rel)
-            file_edges, _ = _scan_file(filepath, self.repo_root)
+            file_edges, _, file_type_map = _scan_file(filepath, self.repo_root)
             all_edges.extend(file_edges)
+            all_type_surface.update(file_type_map)
 
         result.edges = sorted(set(all_edges))  # S7
         result.modules = sorted(modules_seen)
+        result.type_surface_map = all_type_surface
         result.compute_digest()
         return result
 

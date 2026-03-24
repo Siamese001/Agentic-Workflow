@@ -353,6 +353,7 @@ class ADGArtifact:
     structural_metrics: StructuralMetrics = field(default_factory=StructuralMetrics)
     blind_spots: BlindSpotReport = field(default_factory=BlindSpotReport)
     artifact_digest: str = ""
+    type_surface_map: dict[str, str] = field(default_factory=dict)
 
     def to_dict(self) -> dict:
         return {
@@ -437,6 +438,7 @@ class ADGArtifactBuilder:
             commit_sha=result.commit_sha or "",
             repo_state_hash=result.repo_state_hash or "",
             scanner_digest=result.digest or "",
+            type_surface_map=getattr(result, "type_surface_map", {}),
         )
 
         # 1. Populate relations from edges
