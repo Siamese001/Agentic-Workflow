@@ -4,7 +4,7 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -87,7 +87,7 @@ import json
 from datetime import datetime
 from enum import Enum
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

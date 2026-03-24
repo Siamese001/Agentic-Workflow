@@ -11,7 +11,7 @@ import tempfile
 
 import pytest
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -108,7 +108,7 @@ from agentic_core.L2_execution.types.rollback_refinement_types import (
     RollbackRefinementRequest,
     RollbackStrategyId,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -471,7 +471,7 @@ sys.path.insert(0, r"{os.getcwd()}")
 from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
 from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
 from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementRequest, RollbackStrategyId
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_execution_terminates_at_uwg,
     _emit_writes_through,

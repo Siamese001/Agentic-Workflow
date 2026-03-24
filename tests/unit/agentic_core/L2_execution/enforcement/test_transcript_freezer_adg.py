@@ -5,7 +5,7 @@ import pytest
 
 _AVAILABLE = False
 try:
-    from agentic_core.runtime.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         _emit_agent_executes_agent,
         _emit_applies_guardrail,  # noqa: E402
         _emit_authorize_and_execute,
@@ -80,7 +80,7 @@ try:
         TranscriptMutationViolation,
         freeze_transcript,
     )
-    from agentic_core.runtime.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         _emit_agent_executes_agent,
         _emit_captures_pattern,
         _emit_captures_runtime_anomaly,
@@ -168,7 +168,7 @@ try:
     _emit_transcripts_response("p1", "test_transcript_freezer_adg", "transcript")
     _emit_hard_fails_untranscripted("p1", "test_transcript_freezer_adg")
     _emit_gated_by_confidence("p1", "test_transcript_freezer_adg", "confidence_gate")
-    from agentic_core.runtime.lifecycle_trace_contract import _emit_writes_through
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_writes_through
     _AVAILABLE = True
 except Exception:  # guardian: allow-silent-swallow
     pass

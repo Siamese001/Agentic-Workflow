@@ -22,7 +22,7 @@ from typing import get_args
 
 import pytest
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -73,7 +73,7 @@ _emit_checks_agent_registry("p1", "test_adg_g17_g22_completeness_accuracy", "tes
 _emit_records_execution_trace("p0", "evidence", "test_adg_g17_g22_completeness_accuracy")
 _emit_applies_guardrail("p0", "test_adg_g17_g22_completeness_accuracy", "p0_governance")
 _emit_snapshots_state("p0", "test_adg_g17_g22_completeness_accuracy", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

@@ -155,7 +155,7 @@ from agentic_core.L0_routing.config.path_constants import (
     TOOLS_DIR,
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -199,7 +199,7 @@ _emit_blocks_direct_write("p2", "static_scanner", "direct_write_block")
 _emit_records_tool_invocation("p2", "static_scanner", "tool_invocation")
 _emit_captures_execution_output("p2", "static_scanner", "exec_output")
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_evaluation_metric,
     _emit_captures_pattern,
@@ -5376,7 +5376,9 @@ def _repo_relative(path: Path, repo_root: Path) -> str:
     """Return forward-slash repo-relative path."""
     try:
         rel = path.relative_to(repo_root)
-    except ValueError:
+    except ValueError as e:
+        # TODO: Add proper input validation
+        logger.warning(f"Invalid input: {e}")
         return str(path).replace("\\", "/")
     return str(rel).replace("\\", "/")
 
@@ -6262,9 +6264,9 @@ import os
 from pathlib import Path
 from some.external.sdk import SomeProvider
 import uuid
-from agentic_core.runtime.lifecycle_trace_contract import emit_replay_key  # noqa: E402
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest  # noqa: E402
-from agentic_core.runtime.lifecycle_trace_contract import _emit_records_execution_trace  # noqa: E402
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_replay_key  # noqa: E402
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest  # noqa: E402
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_records_execution_trace  # noqa: E402
 
 class BaseClass:
     pass

@@ -13,7 +13,7 @@ from agentic_core.L3_orchestration.engines.deterministic_orchestrator import (
 )
 from agentic_core.L3_orchestration.engines.handshake_state_machine import HandshakeState
 from agentic_core.L3_orchestration.types.human_decision_artifact_types import HumanAction
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,

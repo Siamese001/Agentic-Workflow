@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.runtime.exceptions.SovereignError import StructuralError
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -294,5 +294,7 @@ def _is_safe_relocation(source: Path, target: Path, project_root: Path) -> bool:
         source.resolve().relative_to(project_root.resolve())
         target.resolve().relative_to(project_root.resolve())
         return True
-    except ValueError:
+    except ValueError as e:
+        # TODO: Add proper input validation
+        logger.warning(f"Invalid input: {e}")
         return False

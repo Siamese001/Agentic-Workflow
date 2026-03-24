@@ -16,7 +16,7 @@ from agentic_core.runtime.config.instructional_injections import (
     get_instructional_injections,
     get_required_injections,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,

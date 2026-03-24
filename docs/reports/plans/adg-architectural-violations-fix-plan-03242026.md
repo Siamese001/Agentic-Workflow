@@ -1,7 +1,7 @@
 # ADG Architectural Violations Fix Plan
 
-**Date:** 2026-03-24  
-**Status:** 📋 PLAN CREATED | 🔄 IMPLEMENTATION STARTING  
+**Date:** 2026-03-24
+**Status:** 📋 PLAN CREATED | 🔄 IMPLEMENTATION STARTING
 **Objective:** Fix all architectural violations in ADG with prioritized approach
 
 ---
@@ -15,7 +15,7 @@ Based on previous analysis, we have identified several categories of violations:
    - L0-L6 modules importing from L_RUNTIME layer
    - Violates rule: LN can only import from L0..LN
 
-2. **Static/Runtime ADG Contamination** 
+2. **Static/Runtime ADG Contamination**
    - Runtime relations in static ADG (502,628 edges)
    - Static relations in runtime ADG
    - Violates mental model separation

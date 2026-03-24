@@ -158,7 +158,7 @@ def add_visitor_to_scanner():
         content = f.read()
 
     # Add imports
-    import_section = content.find('from agentic_core.runtime.lifecycle_trace_contract import')
+    import_section = content.find('from agentic_core.L_CONTRACTS.lifecycle_trace_contract import')
     if import_section == -1:
         print("ERROR: Could not find import section in static_scanner.py")
         return False

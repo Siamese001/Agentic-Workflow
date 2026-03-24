@@ -47,7 +47,7 @@ import threading
 
 import pytest
 
-from agentic_core.runtime.lifecycle_trace_contract import (  # noqa: E402
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (  # noqa: E402
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -105,7 +105,7 @@ _emit_captures_evaluation_metric("p4", "test_adg_gap_remediation_novel", "eval_m
 _emit_stores_embedding("p4", "test_adg_gap_remediation_novel", "embedding_store")
 _emit_updates_meta_learning_state("p4", "test_adg_gap_remediation_novel", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "test_adg_gap_remediation_novel", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

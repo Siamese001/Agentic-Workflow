@@ -34,7 +34,7 @@ from agentic_core.L5_safety.core_kernel.classification_kernel import (
     classify_file_standalone,
     clear_classification_cache,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -488,7 +488,7 @@ class TestEnforcementFolderIntegration:
                 "TYPES",
                 textwrap.dedent("""\
                     from typing import TypedDict, Literal
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_execution_terminates_at_uwg,
     _emit_writes_through,

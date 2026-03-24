@@ -26,7 +26,7 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.runtime.execution_trace import get_active_execution_trace
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -108,7 +108,7 @@ _emit_captures_evaluation_metric("p4", "work_coordination_bundle", "eval_metric"
 _emit_stores_embedding("p4", "work_coordination_bundle", "embedding_store")
 _emit_updates_meta_learning_state("p4", "work_coordination_bundle", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "work_coordination_bundle", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

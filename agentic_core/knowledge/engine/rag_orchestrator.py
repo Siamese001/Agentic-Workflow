@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -84,7 +84,8 @@ try:
     from agentic_core.knowledge.research_cache.cache_store_util import ResearchCache
     from agentic_core.knowledge.static_index.action_verbs_types import ACTION_VERBS, STRONG_VERBS
     from agentic_core.knowledge.static_index.skill_taxonomy_types import ALL_SKILLS, SKILL_TAXONOMY
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     ACTION_VERBS, STRONG_VERBS = ({}, [])
     SKILL_TAXONOMY, ALL_SKILLS = ({}, [])
     TextDocumentLoader = None
@@ -111,7 +112,7 @@ except ImportError as _exc:
 
     def clear_embedding_cache() -> None:
         pass
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,

@@ -20,7 +20,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -66,7 +66,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
 _emit_records_execution_trace("p0", "evidence", "replay_guard_mixin")
 _emit_applies_guardrail("p0", "replay_guard_mixin", "p0_governance")
 _emit_snapshots_state("p0", "replay_guard_mixin", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -260,6 +260,7 @@ class ReplayGuardMixin:
             from agentic_core.L4_state.config.versioned_configs import get_active_configs
 
             return get_active_configs().policy.config_hash
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             _logger.warning("[ReplayGuard] L4 versioned_configs unavailable; using fallback policy hash.")
             return "fallback-no-l4"

@@ -41,7 +41,7 @@ from agentic_core.L0_routing.config.path_constants import (
     TOOLS_DIR,
 )
 from agentic_core.L5_safety.enforcement.import_guard import get_import_guard
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -88,7 +88,7 @@ _emit_records_execution_trace("p0", "evidence", "test_wave1_phase1_parse_failure
 _emit_applies_guardrail("p0", "test_wave1_phase1_parse_failures_and_ssot_paths", "p0_governance")
 _emit_reads_policy_state("p0", "test_wave1_phase1_parse_failures_and_ssot_paths", "policy_binding")
 _emit_snapshots_state("p0", "test_wave1_phase1_parse_failures_and_ssot_paths", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

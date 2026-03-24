@@ -8,7 +8,7 @@ using CST-based transformers while preserving comments and formatting.
 import ast
 import tempfile
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -98,7 +98,7 @@ from agentic_core.L5_safety.types.surgical_context_types import (
 from agentic_core.mixins.cst_healer_mixin import (
     SurgicalCSTHealerMixin,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -609,7 +609,7 @@ import os
         source = '''"""Module docstring."""
 
 import os
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_execution_terminates_at_uwg,
     _emit_writes_through,

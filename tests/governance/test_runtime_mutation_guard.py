@@ -15,7 +15,7 @@ from agentic_core.L5_safety.enforcement.runtime_mutation_guardrail import (
     _GuardedSysModules,
     install_guards,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -62,7 +62,7 @@ _emit_records_execution_trace("p0", "evidence", "test_runtime_mutation_guard")
 _emit_applies_guardrail("p0", "test_runtime_mutation_guard", "p0_governance")
 _emit_reads_policy_state("p0", "test_runtime_mutation_guard", "policy_binding")
 _emit_snapshots_state("p0", "test_runtime_mutation_guard", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

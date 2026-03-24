@@ -42,7 +42,7 @@ from agentic_core.L5_safety.escalation.escalation_orchestrator import (
     TraceContext as EscalationTraceContext,
 )
 from agentic_core.runtime.execution_trace import get_active_execution_trace
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,

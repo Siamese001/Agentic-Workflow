@@ -11,7 +11,7 @@ from __future__ import annotations
 import pytest
 
 from agentic_core.L0_routing.meta_control.meta_learning_bus import MetaLearningBus
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -89,7 +89,7 @@ _emit_dispatches_execution_plan("p1", "test_spine_adapter_wiring", "test")
 _emit_validates_agent_capability("p1", "test_spine_adapter_wiring", "test")
 _emit_checks_agent_registry("p1", "test_spine_adapter_wiring", "test")
 _emit_snapshots_state("p0", "test_spine_adapter_wiring", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

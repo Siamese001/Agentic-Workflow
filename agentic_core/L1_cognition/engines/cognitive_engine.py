@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -137,7 +137,7 @@ try:
     from .ReasoningNode import ReasoningNode
 except ImportError:
     ReasoningNode = None
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,
@@ -212,7 +212,7 @@ _emit_writes_through("p1", "cognitive_engine", "write_through_2")
 _emit_validated_by_safety_plane("p1", "cognitive_engine", "safety_validation")
 _emit_invokes_eval("p1", "cognitive_engine", "eval_call")
 _emit_proposal_commits_routing("p1", "cognitive_engine", "routing_commit")
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_cognitive_engine", "cognitive_engine_dispatch_entry")
 emit_determinism_digest("trace_cognitive_engine", "cognitive_engine_dispatch_exit")

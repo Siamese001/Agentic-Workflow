@@ -6,7 +6,7 @@ from agentic_core.config.core.hygiene_registry_config import (
     get_all_hygiene_agents,
     get_tier_agents,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,

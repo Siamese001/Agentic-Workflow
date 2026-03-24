@@ -20,7 +20,7 @@ from agentic_core.L0_routing.types.routing_artifact_types import (
     RoutePath,
     RoutingRationale,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -103,7 +103,7 @@ _emit_captures_evaluation_metric("p4", "deterministic_routing_gateway", "eval_me
 _emit_stores_embedding("p4", "deterministic_routing_gateway", "embedding_store")
 _emit_updates_meta_learning_state("p4", "deterministic_routing_gateway", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "deterministic_routing_gateway", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -210,7 +210,9 @@ class RoutingArtifact:
 
         try:
             rp = RoutePath(self.route_path)
-        except ValueError:
+        except ValueError as e:
+        # TODO: Add proper input validation
+        logger.warning(f"Invalid input: {e}")
             rp = RoutePath.STANDARD_VALIDATION
         return RouteDecisionArtifact(
             trace_id=self.trace_id,

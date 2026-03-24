@@ -19,7 +19,7 @@ Environment Requirements:
 import sys
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -108,7 +108,7 @@ except ImportError:
     print("[WARNING] python-dotenv not installed - environment variables must be set manually")
 from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,

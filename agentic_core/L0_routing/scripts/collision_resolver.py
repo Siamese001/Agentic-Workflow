@@ -18,7 +18,7 @@ from agentic_core.L0_routing.config.path_constants import (
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import safe_os_remove
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -100,13 +100,14 @@ _emit_links_execution_to_snapshot("p4", "collision_resolver", "exec_snapshot_lin
 
 try:
     from agentic_core.utils.ssot_discovery_validator import get_python_files
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
 
     def get_python_files(root: Path):
         return list(root.rglob("*.py"))
 
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,

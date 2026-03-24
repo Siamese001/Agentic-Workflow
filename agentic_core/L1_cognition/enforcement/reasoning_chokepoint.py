@@ -63,7 +63,7 @@ from agentic_core.L6_observability.performance.performance_emitter import (
     StageStatus,
     record_reasoning_performance,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -204,7 +204,7 @@ _emit_captures_evaluation_metric("p4", "reasoning_chokepoint", "eval_metric")
 _emit_stores_embedding("p4", "reasoning_chokepoint", "embedding_store")
 _emit_updates_meta_learning_state("p4", "reasoning_chokepoint", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "reasoning_chokepoint", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_reasoning_chokepoint", "reasoning_chokepoint_dispatch_entry")
 emit_determinism_digest("trace_reasoning_chokepoint", "reasoning_chokepoint_dispatch_exit")

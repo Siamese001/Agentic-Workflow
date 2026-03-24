@@ -31,61 +31,61 @@ class TestViolation:
 
 class ViolationDetector:
     """Detect test violations based on classification and patterns."""
-    
+
     def __init__(self):
         self.violations = []
-        
+
         # First-party modules that should never be skipped
         self.first_party_modules = {
             'agentic_core', 'apps_', 'tools', 'ops_scripts', 'tests',
             'system_learning', 'infrastructure', 'artifacts', 'data'
         }
-    
+
     def detect_violations(self, inventory_file: str, classification_file: str) -> List[TestViolation]:
         """Detect all violations in the test suite."""
         print("🔍 Detecting test violations...")
-        
+
         # Load data
         with open(inventory_file, 'r') as f:
             inventory = json.load(f)
-        
+
         with open(classification_file, 'r') as f:
             classification = json.load(f)
-        
+
         # Create lookup maps
         test_map = {}
         for test in inventory['tests']:
             key = f"{test['file_path']}::{test['test_name']}"
             test_map[key] = test
-        
+
         class_map = {}
         for cls in classification['classifications']:
             key = f"{cls['file_path']}::{cls['test_name']}"
             class_map[key] = cls
-        
+
         # Detect violations
         for key, test_data in test_map.items():
             cls_data = class_map.get(key, {})
-            
+
             # Skip type violations
             self._check_skip_violations(test_data, cls_data)
-            
+
             # Core test violations
             self._check_core_violations(test_data, cls_data)
-            
+
             # First-party import violations
             self._check_first_party_violations(test_data, cls_data)
-            
+
             # Marker violations
             self._check_marker_violations(test_data, cls_data)
-        
+
         return self.violations
-    
+
     def _check_skip_violations(self, test_data: Dict, cls_data: Dict):
         """Check for improper skip patterns."""
         skip_type = test_data['skip_type']
         dependency = test_data['dependency']
-        
+
         # VIOLATION: try/except ImportError patterns (detected as runtime_condition)
         if skip_type == 'runtime_condition' and 'ImportError' in test_data.get('skip_reason', ''):
             self.violations.append(TestViolation(
@@ -97,7 +97,7 @@ class ViolationDetector:
                 suggested_fix='Use direct import for core tests or pytest.importorskip with @pytest.mark.optional',
                 line_number=test_data['line_number']
             ))
-        
+
         # VIOLATION: pytest.importorskip without optional marker
         elif skip_type == 'marker' and dependency and cls_data.get('category') != 'OPTIONAL':
             self.violations.append(TestViolation(
@@ -109,12 +109,12 @@ class ViolationDetector:
                 suggested_fix='Add @pytest.mark.optional or @pytest.mark.external marker',
                 line_number=test_data['line_number']
             ))
-    
+
     def _check_core_violations(self, test_data: Dict, cls_data: Dict):
         """Check for core test violations."""
         category = cls_data.get('category', 'CORE')
         skip_type = test_data['skip_type']
-        
+
         # VIOLATION: Core tests should not skip
         if category == 'CORE' and skip_type != 'none':
             self.violations.append(TestViolation(
@@ -126,7 +126,7 @@ class ViolationDetector:
                 suggested_fix='Remove skip logic or reclassify as OPTIONAL/EXTERNAL',
                 line_number=test_data['line_number']
             ))
-        
+
         # VIOLATION: Core tests with low confidence classification
         elif category == 'CORE' and cls_data.get('confidence', 0) < 0.7:
             self.violations.append(TestViolation(
@@ -138,12 +138,12 @@ class ViolationDetector:
                 suggested_fix='Add explicit @pytest.mark.core marker',
                 line_number=test_data['line_number']
             ))
-    
+
     def _check_first_party_violations(self, test_data: Dict, cls_data: Dict):
         """Check for first-party import violations."""
         dependency = test_data['dependency']
         skip_type = test_data['skip_type']
-        
+
         if skip_type in ['import_error', 'marker'] and dependency:
             # Check if dependency is first-party
             for fp_module in self.first_party_modules:
@@ -158,14 +158,14 @@ class ViolationDetector:
                         line_number=test_data['line_number']
                     ))
                     break
-    
+
     def _check_marker_violations(self, test_data: Dict, cls_data: Dict):
         """Check for marker violations."""
         # This would need actual file analysis to detect missing markers
         # For now, flag tests with low confidence that should have explicit markers
         confidence = cls_data.get('confidence', 0)
         category = cls_data.get('category', 'CORE')
-        
+
         if confidence < 0.6 and category != 'CORE':
             self.violations.append(TestViolation(
                 file_path=test_data['file_path'],
@@ -181,21 +181,21 @@ class ViolationDetector:
 def generate_violation_report(violations: List[TestViolation]) -> Dict[str, Any]:
     """Generate comprehensive violation report."""
     print(f"📋 Generating violation report for {len(violations)} violations...")
-    
+
     # Group violations by type and severity
     by_type = {}
     by_severity = {'HIGH': [], 'MEDIUM': [], 'LOW': []}
-    
+
     for violation in violations:
         # Group by type
         vtype = violation.violation_type
         if vtype not in by_type:
             by_type[vtype] = []
         by_type[vtype].append(violation)
-        
+
         # Group by severity
         by_severity[violation.severity].append(violation)
-    
+
     # Build report
     report = {
         "metadata": {
@@ -213,7 +213,7 @@ def generate_violation_report(violations: List[TestViolation]) -> Dict[str, Any]
         },
         "violations": []
     }
-    
+
     # Add violation details
     for violation in violations:
         report["violations"].append({
@@ -225,7 +225,7 @@ def generate_violation_report(violations: List[TestViolation]) -> Dict[str, Any]
             "suggested_fix": violation.suggested_fix,
             "line_number": violation.line_number
         })
-    
+
     return report
 
 
@@ -234,37 +234,37 @@ def main():
     print("=" * 80)
     print("TEST VIOLATION DETECTOR")
     print("=" * 80)
-    
+
     detector = ViolationDetector()
-    
+
     inventory_file = 'tools/test_enforcement/test_inventory.json'
     classification_file = 'tools/test_enforcement/test_classification.json'
-    
+
     violations = detector.detect_violations(inventory_file, classification_file)
     report = generate_violation_report(violations)
-    
+
     # Write violations report
     output_dir = PROJECT_ROOT / "tools" / "test_enforcement"
     violations_file = output_dir / "test_violations.json"
-    
+
     with open(violations_file, 'w', encoding='utf-8') as f:
         json.dump(report, f, indent=2, sort_keys=True)
-    
+
     print(f"✅ Violations report written to: {violations_file}")
-    
+
     # Print summary
     summary = report["summary"]
     print(f"\n📊 VIOLATIONS SUMMARY:")
     print(f"  Total violations: {report['metadata']['total_violations']}")
-    
+
     print(f"\nBy severity:")
     for severity, count in summary["by_severity"].items():
         print(f"  {severity}: {count}")
-    
+
     print(f"\nBy type:")
     for vtype, count in summary["by_type"].items():
         print(f"  {vtype}: {count}")
-    
+
     # Show high-priority violations
     high_priority_violations = [v for v in violations if v.severity == 'HIGH']
     if high_priority_violations:
@@ -273,10 +273,10 @@ def main():
             print(f"  {violation.file_path}:{violation.test_name}")
             print(f"    {violation.description}")
             print(f"    Fix: {violation.suggested_fix}")
-        
+
         if len(high_priority_violations) > 5:
             print(f"  ... and {len(high_priority_violations) - 5} more")
-    
+
     print("\n" + "=" * 80)
     print("NEXT STEP: Refactor tests to fix violations")
     print("=" * 80)

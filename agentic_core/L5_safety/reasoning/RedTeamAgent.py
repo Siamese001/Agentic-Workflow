@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -92,7 +92,7 @@ from agentic_core.prompt_governance.rendering.sovereign_prompt_renderer_validato
 )
 from agentic_core.prompt_governance.version_registry.prompt_registry_config import registers_prompt
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,

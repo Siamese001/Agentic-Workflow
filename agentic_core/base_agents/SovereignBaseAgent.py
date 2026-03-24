@@ -65,7 +65,7 @@ from agentic_core.mixins.llm_provider_mixin import LLMProviderMixin
 from agentic_core.mixins.meta_learning_client_mixin import MetaLearningClientMixin
 from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
 from agentic_core.mixins.validator_mixin import ValidatorMixin
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -110,7 +110,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
 
 _emit_applies_guardrail("p0", "SovereignBaseAgent", "p0_governance")
 _emit_snapshots_state("p0", "SovereignBaseAgent", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -347,7 +347,9 @@ class SovereignBaseAgent(
         try:
             path.resolve().relative_to(Path.cwd().resolve())
             return True
-        except ValueError:
+        except ValueError as e:
+        # TODO: Add proper input validation
+        logger.warning(f"Invalid input: {e}")
             return False
 
     def _is_safe_directory(self, dir_path: Path) -> bool:

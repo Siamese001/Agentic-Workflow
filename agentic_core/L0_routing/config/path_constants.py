@@ -15,7 +15,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Final
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -75,7 +75,7 @@ _emit_transcripts_response("p1", "path_constants", "transcript")
 _emit_hard_fails_untranscripted("p1", "path_constants")
 _emit_gated_by_confidence("p1", "path_constants", "confidence_gate")
 _emit_dispatches_healing_run("p1", "path_constants", "L0")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -89,7 +89,7 @@ from agentic_core.L5_safety.validators.cost_governor_validator import CostGovern
 from agentic_core.runtime.P1_core.SubatomicHop import SubatomicHop
 
 from agentic_core.L5_safety.enforcement.pii_vault_enforcer import PIIVault
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,

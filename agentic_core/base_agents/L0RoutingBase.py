@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -77,7 +77,8 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 try:
     from agentic_core.base_agents.l0_delegation_testing_mixin import L0DelegationTestingMixin
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
 
     class L0DelegationTestingMixin:
         """Stub mixin for L0 delegation testing - original archived."""
@@ -86,7 +87,7 @@ except ImportError:
 
 
 from agentic_core.L5_safety.config.structure_blueprint import TESTS_DIR
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,

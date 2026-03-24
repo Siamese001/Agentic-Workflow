@@ -19,7 +19,7 @@ from agentic_core.L0_routing.scripts.runtime_state_digest import (
     detect_unexcluded_volatile_fields,
     runtime_state_digest_view,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -82,7 +82,7 @@ _emit_captures_evaluation_metric("p4", "test_runtime_state_digest_advanced", "ev
 _emit_stores_embedding("p4", "test_runtime_state_digest_advanced", "embedding_store")
 _emit_updates_meta_learning_state("p4", "test_runtime_state_digest_advanced", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "test_runtime_state_digest_advanced", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

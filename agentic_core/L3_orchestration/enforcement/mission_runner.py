@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -99,7 +99,7 @@ from agentic_core.L5_safety.enforcement.policy_action_contract import (
     PolicyEnforcementError,
     enforce_policy_before_action,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_records_execution_trace,
     _emit_transcripts_response,
@@ -138,7 +138,7 @@ try:
 except ImportError:
     GITPYTHON_AVAILABLE = False
     Repo = None
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_captures_pattern,
@@ -210,7 +210,7 @@ _emit_writes_through("p1", "mission_runner", "write_through_2")
 _emit_validated_by_safety_plane("p1", "mission_runner", "safety_validation")
 _emit_invokes_eval("p1", "mission_runner", "eval_call")
 _emit_proposal_commits_routing("p1", "mission_runner", "routing_commit")
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_mission_runner", "mission_runner_dispatch_entry")
 emit_determinism_digest("trace_mission_runner", "mission_runner_dispatch_exit")

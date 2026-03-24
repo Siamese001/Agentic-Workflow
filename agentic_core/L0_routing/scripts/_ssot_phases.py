@@ -38,7 +38,7 @@ from agentic_core.L0_routing.scripts._ssot_types import (
     HealContext,
 )
 from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -120,7 +120,7 @@ _emit_captures_evaluation_metric("p4", "_ssot_phases", "eval_metric")
 _emit_stores_embedding("p4", "_ssot_phases", "embedding_store")
 _emit_updates_meta_learning_state("p4", "_ssot_phases", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "_ssot_phases", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -194,7 +194,7 @@ _emit_writes_through("p1", "_ssot_phases", "write_through_2")
 _emit_validated_by_safety_plane("p1", "_ssot_phases", "safety_validation")
 _emit_invokes_eval("p1", "_ssot_phases", "eval_call")
 _emit_proposal_commits_routing("p1", "_ssot_phases", "routing_commit")
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace__ssot_phases", "_ssot_phases_dispatch_entry")
 emit_determinism_digest("trace__ssot_phases", "_ssot_phases_dispatch_exit")

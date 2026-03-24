@@ -10,7 +10,7 @@ from agentic_core.adg.extraction.static_scanner import (
 )
 from agentic_core.adg.runtime.query_engine import ADGRuntimeQueryEngine
 from agentic_core.cache.graph_aware_cache import GraphAwareCache
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,

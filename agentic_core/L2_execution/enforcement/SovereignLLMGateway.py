@@ -35,7 +35,7 @@ from agentic_core.L5_safety.enforcement.policy_action_contract import (
     PolicyEnforcementError,
     enforce_policy_before_action,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -122,7 +122,7 @@ _emit_reads_policy_state("p1", "SovereignLLMGateway", "L2")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
 _emit_applies_guardrail("p0", "SovereignLLMGateway", "p0_governance")
 _emit_snapshots_state("p0", "SovereignLLMGateway", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -196,7 +196,7 @@ _emit_writes_through("p1", "SovereignLLMGateway", "write_through_2")
 _emit_validated_by_safety_plane("p1", "SovereignLLMGateway", "safety_validation")
 _emit_invokes_eval("p1", "SovereignLLMGateway", "eval_call")
 _emit_proposal_commits_routing("p1", "SovereignLLMGateway", "routing_commit")
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_SovereignLLMGateway", "SovereignLLMGateway_dispatch_entry")
 emit_determinism_digest("trace_SovereignLLMGateway", "SovereignLLMGateway_dispatch_exit")

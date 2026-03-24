@@ -10,7 +10,7 @@ import pytest
 from agentic_core.L0_routing.config.path_constants import (
     L0_ROUTING_DIR,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -57,7 +57,7 @@ _emit_records_execution_trace("p0", "evidence", "test_proposal_capture")
 _emit_applies_guardrail("p0", "test_proposal_capture", "p0_governance")
 _emit_reads_policy_state("p0", "test_proposal_capture", "policy_binding")
 _emit_snapshots_state("p0", "test_proposal_capture", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

@@ -21,7 +21,7 @@ from agentic_core.L3_orchestration.types.cognitive_diff_types import (
     compute_cognitive_diff,
     emit_cognitive_diff_bundle,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,

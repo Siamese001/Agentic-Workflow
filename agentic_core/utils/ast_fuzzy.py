@@ -26,6 +26,8 @@ def get_threshold() -> float:
     if raw is not None:
         try:
             return float(raw)
-        except ValueError:
+        except ValueError as e:
+        # TODO: Add proper input validation
+        logger.warning(f"Invalid input: {e}")
             pass
     return _DEFAULT_THRESHOLD

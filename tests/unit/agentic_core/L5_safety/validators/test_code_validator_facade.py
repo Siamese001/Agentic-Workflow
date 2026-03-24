@@ -18,7 +18,7 @@ from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     CodeValidatorStrategy,
     ValidationResult,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -63,7 +63,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
 _emit_records_execution_trace("p0", "evidence", "test_code_validator_facade")
 _emit_applies_guardrail("p0", "test_code_validator_facade", "p0_governance")
 _emit_snapshots_state("p0", "test_code_validator_facade", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

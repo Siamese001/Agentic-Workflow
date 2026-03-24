@@ -14,7 +14,7 @@ from agentic_core.adg.extraction.static_scanner import (
     _DecoratorVisitor,
     _ImportVisitor,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -61,7 +61,7 @@ _emit_records_execution_trace("p0", "evidence", "test_adg_p2_enhancements")
 _emit_applies_guardrail("p0", "test_adg_p2_enhancements", "p0_governance")
 _emit_reads_policy_state("p0", "test_adg_p2_enhancements", "policy_binding")
 _emit_snapshots_state("p0", "test_adg_p2_enhancements", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

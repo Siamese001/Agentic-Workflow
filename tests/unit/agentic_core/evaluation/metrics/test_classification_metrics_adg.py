@@ -19,7 +19,7 @@ from agentic_core.evaluation.metrics.classification import (
     MultiClassF1Metric,
 )
 from agentic_core.evaluation.metrics.f1_score import F1Score
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -66,7 +66,7 @@ _emit_records_execution_trace("p0", "evidence", "test_classification_metrics_adg
 _emit_applies_guardrail("p0", "test_classification_metrics_adg", "p0_governance")
 _emit_reads_policy_state("p0", "test_classification_metrics_adg", "policy_binding")
 _emit_snapshots_state("p0", "test_classification_metrics_adg", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

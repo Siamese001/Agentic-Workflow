@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -118,7 +118,7 @@ from agentic_core.L2_execution.healers.tiering_allowlist import (
     is_tiering_allowed,
     is_tiering_allowed_by_path,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

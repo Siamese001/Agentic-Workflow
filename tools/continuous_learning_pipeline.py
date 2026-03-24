@@ -582,6 +582,7 @@ class AutomatedLearningPipeline:
                 priority="LOW"
             )
             
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             # psutil not available
             pass

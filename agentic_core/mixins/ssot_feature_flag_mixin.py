@@ -15,7 +15,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -60,7 +60,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
 
 _emit_applies_guardrail("p0", "ssot_feature_flag_mixin", "p0_governance")
 _emit_snapshots_state("p0", "ssot_feature_flag_mixin", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -264,6 +264,7 @@ class SSOTFeatureFlagMixin:
                 "enable_hallucination_detection": True,
                 "l4_config_version": configs.policy.version == "1.0.0",
             }
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             _logger.warning("[SSOTFlags] L4 config unavailable; using defaults")
             return {

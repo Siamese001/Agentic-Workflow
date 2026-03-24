@@ -31,7 +31,7 @@ import sys
 import time
 from collections import defaultdict
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -111,7 +111,7 @@ if str(_ROOT) not in sys.path:
 from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
 from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 from agentic_core.adg.extraction.static_scanner import ADGStaticScanner, ScanResult
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

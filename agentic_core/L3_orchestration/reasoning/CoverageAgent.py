@@ -20,7 +20,7 @@ from agentic_core.L0_routing.config.path_constants import (
     LAYER_ROOTS,
 )
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -148,7 +148,7 @@ except ImportError:
         print(f"[CoverageAgent] Task enqueued (stub): {task_payload['task_id']}")
 
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,

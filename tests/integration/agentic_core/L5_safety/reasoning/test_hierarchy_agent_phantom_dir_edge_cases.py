@@ -57,7 +57,7 @@ from agentic_core.L0_routing.config.path_constants import (
     OPS_SCRIPTS_DIR,
     TESTS_DIR,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -104,7 +104,7 @@ _emit_records_execution_trace("p0", "evidence", "test_hierarchy_agent_phantom_di
 _emit_applies_guardrail("p0", "test_hierarchy_agent_phantom_dir_edge_cases", "p0_governance")
 _emit_reads_policy_state("p0", "test_hierarchy_agent_phantom_dir_edge_cases", "policy_binding")
 _emit_snapshots_state("p0", "test_hierarchy_agent_phantom_dir_edge_cases", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

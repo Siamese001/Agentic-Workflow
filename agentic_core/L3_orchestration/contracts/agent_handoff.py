@@ -48,7 +48,7 @@ from agentic_core.L3_orchestration.visualization.visualization_updater import (
     record_workflow_completion,
 )
 from agentic_core.runtime.execution_trace import get_active_execution_trace
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -134,7 +134,7 @@ _emit_captures_evaluation_metric("p4", "agent_handoff", "eval_metric")
 _emit_stores_embedding("p4", "agent_handoff", "embedding_store")
 _emit_updates_meta_learning_state("p4", "agent_handoff", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "agent_handoff", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -203,7 +203,7 @@ _emit_writes_through("p1", "agent_handoff", "write_through_2")
 _emit_validated_by_safety_plane("p1", "agent_handoff", "safety_validation")
 _emit_invokes_eval("p1", "agent_handoff", "eval_call")
 _emit_proposal_commits_routing("p1", "agent_handoff", "routing_commit")
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_agent_handoff", "agent_handoff_dispatch_entry")
 emit_determinism_digest("trace_agent_handoff", "agent_handoff_dispatch_exit")

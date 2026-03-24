@@ -11,7 +11,7 @@ from agentic_core.L3_orchestration.replay.deterministic_replay import (
 )
 from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
 from agentic_core.L4_state.storage.persistent_store import create_artifact
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,

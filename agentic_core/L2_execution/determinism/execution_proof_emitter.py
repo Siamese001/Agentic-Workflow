@@ -22,7 +22,7 @@ import uuid
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -107,7 +107,7 @@ _emit_links_execution_to_snapshot("p4", "execution_proof_emitter", "exec_snapsho
 
 if TYPE_CHECKING:
     from agentic_core.runtime.execution_trace import ExecutionTrace
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,

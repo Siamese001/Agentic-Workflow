@@ -46,17 +46,17 @@ class RuntimeEdge:
 
 class RuntimeTraceCollector:
     """Collect runtime traces from execution evidence."""
-    
+
     def __init__(self):
         self.runtime_edges: List[RuntimeEdge] = []
-    
+
     def collect_from_lifecycle_traces(self) -> None:
         """Collect runtime edges from lifecycle trace contract calls."""
         print("[RUNTIME] Collecting from lifecycle trace contracts...")
-        
+
         # These would be collected from actual execution logs/telemetry
         # For now, we create a schema for runtime ADG
-        
+
         # Example runtime edges (would come from OpenTelemetry/traces)
         example_runtime_edges = [
             # Execution traces
@@ -82,7 +82,7 @@ class RuntimeTraceCollector:
                 timestamp="2026-03-24T18:00:01Z",
                 execution_context="agent_execution"
             ),
-            
+
             # Policy actions
             RuntimeEdge(
                 from_name="policy::GuardrailPolicy",
@@ -95,7 +95,7 @@ class RuntimeTraceCollector:
                 timestamp="2026-03-24T18:00:02Z",
                 execution_context="policy_check"
             ),
-            
+
             # Healing operations
             RuntimeEdge(
                 from_name="healer::AutoHealer",
@@ -108,7 +108,7 @@ class RuntimeTraceCollector:
                 timestamp="2026-03-24T18:00:03Z",
                 execution_context="healing_loop"
             ),
-            
+
             # Learning signals
             RuntimeEdge(
                 from_name="learner::PolicyLearner",
@@ -122,7 +122,7 @@ class RuntimeTraceCollector:
                 execution_context="learning"
             ),
         ]
-        
+
         self.runtime_edges.extend(example_runtime_edges)
         print(f"[RUNTIME] Collected {len(example_runtime_edges)} runtime edges")
 
@@ -138,10 +138,10 @@ def create_runtime_adg() -> None:
     print("RULE: IF it requires execution to observe → RUNTIME ADG")
     print("RULE: IF it exists without execution → STATIC ADG")
     print("=" * 80)
-    
+
     collector = RuntimeTraceCollector()
     collector.collect_from_lifecycle_traces()
-    
+
     # Verify only runtime relations
     static_relations = {
         "imports", "calls", "implements", "instantiates", "exports",
@@ -149,34 +149,34 @@ def create_runtime_adg() -> None:
         "antipattern", "dead_imports", "violates", "duplicate_method",
         "unreachable_after_raise",
     }
-    
+
     found_static = []
     for edge in collector.runtime_edges:
         if edge.relation_type in static_relations:
             found_static.append(edge.relation_type)
-    
+
     if found_static:
         print(f"[ERROR] Static contamination detected: {set(found_static)}")
         sys.exit(1)
-    
+
     print("[RUNTIME] ✅ Verified: Pure runtime ADG")
-    
+
     # Create SQLite
     output_dir = PROJECT_ROOT / "artifacts" / "adg_runtime"
     output_dir.mkdir(exist_ok=True)
-    
+
     est = timezone(timedelta(hours=-4))
     now_est = datetime.now(est)
     ts = now_est.strftime("%m%d%Y_%H%M")
-    
+
     sqlite_path = output_dir / f"adg_runtime_{ts}.sqlite"
-    
+
     print(f"[RUNTIME] Writing to: {sqlite_path}")
-    
+
     # Create tables with runtime-specific schema
     conn = sqlite3.connect(sqlite_path)
     cursor = conn.cursor()
-    
+
     cursor.execute("""
         CREATE TABLE nodes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -188,7 +188,7 @@ def create_runtime_adg() -> None:
             resolved_path TEXT
         )
     """)
-    
+
     cursor.execute("""
         CREATE TABLE edges (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -205,10 +205,10 @@ def create_runtime_adg() -> None:
             FOREIGN KEY (dst_id) REFERENCES nodes(id)
         )
     """)
-    
+
     # Insert nodes
     node_id_map = {}
-    
+
     # Extract unique nodes from edges
     for edge in collector.runtime_edges:
         for node_name in [edge.from_name, edge.to_name]:
@@ -230,14 +230,14 @@ def create_runtime_adg() -> None:
                     entity_type = "pattern"
                 else:
                     entity_type = "runtime_entity"
-                
+
                 cursor.execute(
                     "INSERT OR IGNORE INTO nodes (adg_name, entity_type, identity_kind, confidence) VALUES (?, ?, ?, ?)",
                     (node_name, entity_type, entity_type, 1.0)
                 )
                 cursor.execute("SELECT id FROM nodes WHERE adg_name = ?", (node_name,))
                 node_id_map[node_name] = cursor.fetchone()[0]
-    
+
     # Insert runtime edges
     for edge in collector.runtime_edges:
         src_id = node_id_map[edge.from_name]
@@ -249,25 +249,25 @@ def create_runtime_adg() -> None:
             """,
             (src_id, dst_id, edge.relation_type, edge.edge_kind, edge.source_file, edge.line_no, edge.symbol, edge.timestamp, edge.execution_context)
         )
-    
+
     conn.commit()
     conn.close()
-    
+
     # Verify result
     conn = sqlite3.connect(sqlite_path)
     cursor = conn.cursor()
-    
+
     cursor.execute("SELECT COUNT(*) FROM nodes")
     node_count = cursor.fetchone()[0]
-    
+
     cursor.execute("SELECT COUNT(*) FROM edges")
     edge_count = cursor.fetchone()[0]
-    
+
     cursor.execute("SELECT DISTINCT relation_type FROM edges ORDER BY relation_type")
     relations = [row[0] for row in cursor.fetchall()]
-    
+
     conn.close()
-    
+
     print("\n" + "=" * 80)
     print("RUNTIME ADG VERIFICATION")
     print("=" * 80)
@@ -277,13 +277,13 @@ def create_runtime_adg() -> None:
     print("\nRelation types (ALL RUNTIME):")
     for rel in sorted(relations):
         print(f"  - {rel}")
-    
+
     # Final verification
     static_leak = [rel for rel in relations if rel in static_relations]
     if static_leak:
         print(f"\n❌ FAILED: Static relations found: {static_leak}")
         sys.exit(1)
-    
+
     print("\n✅ PASSED: 100% pure runtime ADG")
     print("✅ Mental model enforced perfectly")
     print("✅ Zero static contamination")

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -99,7 +99,7 @@ from agentic_core.L0_routing.types.routing_artifact_types import (
 from agentic_core.L0_routing.types.routing_contracts_types import TelemetryEmitter
 from agentic_core.L3_orchestration.types.route_decision_artifact_types import build_l3_route_decision_artifact
 from agentic_core.runtime.config.contextual_router_config import RoutingRequest, get_router
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,

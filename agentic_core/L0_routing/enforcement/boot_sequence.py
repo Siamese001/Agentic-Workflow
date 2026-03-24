@@ -19,7 +19,7 @@ import uuid
 from pathlib import Path
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -103,7 +103,7 @@ from agentic_core.discovery import AgentRegistry
 from agentic_core.L0_routing.enforcement.manifest_guardian_util import ManifestGuardian
 from agentic_core.L0_routing.scripts.compliance_gate_validator import check_compliance
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,

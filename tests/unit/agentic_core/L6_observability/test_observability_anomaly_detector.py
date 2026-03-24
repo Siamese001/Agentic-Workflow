@@ -27,7 +27,7 @@ from agentic_core.L6_observability.engines.replay_key_computer import (
     compute_replay_key,
 )
 from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,

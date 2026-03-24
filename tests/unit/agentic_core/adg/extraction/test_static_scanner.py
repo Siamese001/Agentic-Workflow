@@ -202,7 +202,7 @@ class TestStaticRuntimeBoundary:
         structural = tmp_path / "agentic_core" / "L0_routing" / "router.py"
         structural.parent.mkdir(parents=True, exist_ok=True)
         structural.write_text(
-            "from agentic_core.runtime.lifecycle_trace_contract import record_execution_trace\n\n"
+            "from agentic_core.L_CONTRACTS.lifecycle_trace_contract import record_execution_trace\n\n"
             "def route() -> None:\n"
             "    record_execution_trace('router', 'trace')\n",
             encoding="utf-8",

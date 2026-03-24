@@ -21,7 +21,7 @@ from typing import Any
 from agentic_core.L5_safety.validators.CanonBaseAgent import CanonBaseAgent
 from agentic_core.utils.core_extensions.timeout_decorator import timeout
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -116,7 +116,7 @@ class JanitorViolation:
 from agentic_core.L2_execution.mcp.mcp_hardened_mixin_1 import MCPHardenedMixin
 from agentic_core.utils.core_extensions.subatomic_testing_mixin import SubatomicTestingMixin
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,

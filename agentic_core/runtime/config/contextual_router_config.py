@@ -35,7 +35,7 @@ from agentic_core.L5_safety.enforcement.context_session import (
 
 from agentic_core.L0_routing.types.routing_artifact_types import RoutePath
 from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,

@@ -56,7 +56,7 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -651,7 +651,9 @@ def get_behavioral_profile(
     try:
         rel = file_path.resolve().relative_to(repo_root.resolve())
         resolved = rel.as_posix()
-    except ValueError:
+    except ValueError as e:
+        # TODO: Add proper input validation
+        logger.warning(f"Invalid input: {e}")
         resolved = file_path.as_posix()
 
     return index.profile_for(resolved)

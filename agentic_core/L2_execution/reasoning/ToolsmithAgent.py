@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -86,7 +86,7 @@ from datetime import datetime
 from typing import Any
 
 from agentic_core.L2_execution.tools.write_gateway import write_json, write_text
-from agentic_core.runtime.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.utils.timeout_decorator_util import timeout
 
 Logger = logging.getLogger(__name__)
@@ -158,7 +158,7 @@ class tool_template:
 
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_captures_pattern,

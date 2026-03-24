@@ -31,7 +31,7 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_through,
     _emit_validated_by_safety_plane,
@@ -279,7 +279,9 @@ def cleanup_old_archives(archive_months: int, dry_run: bool) -> dict:
         # Parse directory name: YYYY-MM
         try:
             dir_date = datetime.strptime(month_dir.name, "%Y-%m")
-        except ValueError:
+        except ValueError as e:
+        # TODO: Add proper input validation
+        logger.warning(f"Invalid input: {e}")
             continue
 
         if dir_date < cutoff_date:

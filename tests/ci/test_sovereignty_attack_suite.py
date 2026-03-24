@@ -34,7 +34,7 @@ from agentic_core.L6_observability.engines.replay_key_computer import (
     ReplayKeyComponents,
     compute_replay_key,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -103,7 +103,7 @@ from system_learning.engines.surface_isolation_validator import (
 _emit_records_execution_trace("p0", "evidence", "test_sovereignty_attack_suite")
 _emit_reads_policy_state("p0", "test_sovereignty_attack_suite", "policy_binding")
 _emit_snapshots_state("p0", "test_sovereignty_attack_suite", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

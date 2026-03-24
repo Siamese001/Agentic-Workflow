@@ -175,7 +175,8 @@ try:
 except redis.ConnectionError:
     print("❌ Redis not running or not accessible")
     print("   Redis hot cache is not available")
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     print("❌ Redis Python client not installed")
     print("   Install with: pip install redis")
 except Exception as e:

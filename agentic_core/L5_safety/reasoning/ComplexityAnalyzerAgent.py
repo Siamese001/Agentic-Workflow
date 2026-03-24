@@ -29,7 +29,7 @@ from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     ValidationResult,
     ValidatorStrategy,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -116,7 +116,7 @@ _emit_escalates_to_human("p1", "ComplexityAnalyzerAgent", "L5")
 _emit_reads_policy_state("p1", "ComplexityAnalyzerAgent", "L5")
 
 _emit_applies_guardrail("p0", "ComplexityAnalyzerAgent", "p0_governance")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

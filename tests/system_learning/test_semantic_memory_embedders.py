@@ -21,7 +21,7 @@ import threading
 
 import pytest
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -83,7 +83,7 @@ _emit_captures_evaluation_metric("p4", "test_semantic_memory_embedders", "eval_m
 _emit_stores_embedding("p4", "test_semantic_memory_embedders", "embedding_store")
 _emit_updates_meta_learning_state("p4", "test_semantic_memory_embedders", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "test_semantic_memory_embedders", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

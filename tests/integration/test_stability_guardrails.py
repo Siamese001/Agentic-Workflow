@@ -16,7 +16,7 @@ import pytest
 from agentic_core.L0_routing.config.path_constants import (
     L3_ORCHESTRATION_DIR,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -283,7 +283,7 @@ class TestClassificationOrderIndependence:
         orchestrator_code = """\
         from agentic_core.L3_orchestration.reasoning import AgentA
         from agentic_core.L5_safety.enforcement import GuardB
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_execution_terminates_at_uwg,
     _emit_writes_through,

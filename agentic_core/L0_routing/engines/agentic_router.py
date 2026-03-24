@@ -33,7 +33,7 @@ from agentic_core.L6_observability.performance.performance_emitter import (
     StageStatus,
     record_routing_performance,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -114,7 +114,7 @@ _emit_captures_evaluation_metric("p4", "agentic_router", "eval_metric")
 _emit_stores_embedding("p4", "agentic_router", "embedding_store")
 _emit_updates_meta_learning_state("p4", "agentic_router", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "agentic_router", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -188,7 +188,7 @@ _emit_writes_through("p1", "agentic_router", "write_through_2")
 _emit_validated_by_safety_plane("p1", "agentic_router", "safety_validation")
 _emit_invokes_eval("p1", "agentic_router", "eval_call")
 _emit_proposal_commits_routing("p1", "agentic_router", "routing_commit")
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_agentic_router", "agentic_router_dispatch_entry")
 emit_determinism_digest("trace_agentic_router", "agentic_router_dispatch_exit")

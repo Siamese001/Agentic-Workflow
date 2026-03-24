@@ -31,7 +31,7 @@ from agentic_core.L0_routing.enforcement.routing_contract import (
 from agentic_core.L0_routing.enforcement.routing_contract import (
     create_and_commit_routing_contract,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -113,7 +113,7 @@ _emit_captures_evaluation_metric("p4", "route_policy_governor", "eval_metric")
 _emit_stores_embedding("p4", "route_policy_governor", "embedding_store")
 _emit_updates_meta_learning_state("p4", "route_policy_governor", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "route_policy_governor", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

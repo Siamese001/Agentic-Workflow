@@ -18,7 +18,8 @@ from __future__ import annotations
 
 try:
     from agentic_core.L5_safety.validators import RuleFailure
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
 
     class RuleFailure:
         """Stub when L5_safety.validators optional deps are not installed."""

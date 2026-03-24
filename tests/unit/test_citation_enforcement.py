@@ -12,7 +12,7 @@ from agentic_core.L4_state.enforcement.citation_enforcement import (
     enforce_citations_for_retrieval,
 )
 from agentic_core.L4_state.types.retrieval_anchor_types import AnchoredResult, RetrievalAnchor
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,

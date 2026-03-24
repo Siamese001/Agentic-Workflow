@@ -13,7 +13,7 @@ ADG fix: A-06 (violates L0→L2 in _ssot_reporting.py and _ssot_routing.py)
 
 from __future__ import annotations
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_authorize_and_execute,

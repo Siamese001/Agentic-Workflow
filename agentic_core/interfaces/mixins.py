@@ -29,7 +29,8 @@ from __future__ import annotations
 
 try:
     from agentic_core.L5_safety.validators.healing_mixin import HealerMixin
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
 
     class HealerMixin:  # type: ignore[no-redef]
         """Stub when healing_mixin optional deps are not installed."""

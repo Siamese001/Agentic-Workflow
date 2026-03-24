@@ -26,7 +26,7 @@ from agentic_core.adg.schema_util import (
     UWG_MODULE_PATH,
     UWG_WRITE_SYMBOLS,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -71,7 +71,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
 _emit_records_execution_trace("p0", "evidence", "test_adg_p3_enhancements")
 _emit_applies_guardrail("p0", "test_adg_p3_enhancements", "p0_governance")
 _emit_snapshots_state("p0", "test_adg_p3_enhancements", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

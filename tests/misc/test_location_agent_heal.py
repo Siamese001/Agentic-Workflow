@@ -6,7 +6,7 @@ Test script to reproduce the heal_violation issue with LocationAgent.
 import sys
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -92,7 +92,7 @@ project_root = Path(__file__).parent
 sys.path.insert(0, str(project_root))
 
 from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent as LocationAgent
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

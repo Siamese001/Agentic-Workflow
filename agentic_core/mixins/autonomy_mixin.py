@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -77,13 +77,14 @@ from typing import Any
 
 try:
     from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
 
     class MCPHardenedMixin:
         """Fallback stub for MCPHardenedMixin."""
 
         pass
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_captures_pattern,

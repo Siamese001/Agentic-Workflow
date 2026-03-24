@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import importlib
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -88,7 +88,7 @@ except (ImportError, AttributeError):
 
 
 from agentic_core.runtime.config.anomaly_report_config import AnomalyReport, AnomalySeverity
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -180,7 +180,8 @@ _emit_gated_by_confidence("p1", "subatomic_testing_mixin", "confidence_gate")
 
 try:
     from agentic_core.mixins.instructional_injection_mixin import InstructionalInjectionMixin
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
 
     class InstructionalInjectionMixin:
         """Stub for healing resilience."""

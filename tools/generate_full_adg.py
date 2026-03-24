@@ -36,7 +36,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))  # guardian: allow-global-mutation
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -130,7 +130,7 @@ from agentic_core.adg.extraction.static_scanner import (
     _TypeSurfaceCollector,
 )
 from agentic_core.adg.schema_util import canonical_name
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -277,7 +277,7 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
 
     cache_path = adg_artifacts_dir / "cache" / "scan_result_cache.json"
     cache_path.parent.mkdir(exist_ok=True)
-    scanner = ADGStaticScanner(repo_root=ROOT, include_tests=False, cache_path=cache_path)
+    scanner = ADGStaticScanner(repo_root=ROOT, include_tests=True, cache_path=cache_path)
     result = scanner.scan(commit_sha=commit_sha)
 
     # Set repo_state_hash in the result
@@ -446,27 +446,15 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
         artifact_files.extend(existing_reports)
         print(f"[ADG] Adding {len(existing_reports)} reports to zip archive")
 
-    # --- Pre-flight validation for runtime files ---
-    missing_runtime = []
-    for rel_path in _RUNTIME_ENFORCEMENT_FILES:
-        if not (ROOT / rel_path).exists():
-            missing_runtime.append(rel_path)
-
-    if missing_runtime:
-        print(f"[ADG] ERROR: Cannot create zip - missing runtime files: {missing_runtime}")
-        print("[ADG] Continuing with individual files only (zip will be created later)")
-        # Skip zip creation and proceed to archiving
+    # --- Create zip archive ---
+    try:
+        _create_zip_archive(adg_artifacts_dir, ts, artifact_files)
+        zip_created = True
+        print(f"[ADG] Zip creation successful for {ts}")
+    except RuntimeError as e:
+        print(f"[ADG] WARNING: Zip creation failed: {e}")
+        print("[ADG] Individual files will be archived using legacy path")
         zip_created = False
-    else:
-        # --- Create zip archive ---
-        try:
-            _create_zip_archive(adg_artifacts_dir, ts, artifact_files)
-            zip_created = True
-            print(f"[ADG] Zip creation successful for {ts}")
-        except RuntimeError as e:
-            print(f"[ADG] WARNING: Zip creation failed: {e}")
-            print("[ADG] Individual files will be archived using legacy path")
-            zip_created = False
 
     # --- Archive old artifacts ---
     if archive_old:
@@ -1120,7 +1108,7 @@ def _artifact_determinism_probe(
         return proof
 
     cache_path = adg_dir / "cache" / "scan_result_cache.json"
-    probe_scanner = ADGStaticScanner(repo_root=repo_root, cache_path=cache_path)
+    probe_scanner = ADGStaticScanner(repo_root=repo_root, include_tests=True, cache_path=cache_path)
     probe_result = probe_scanner.scan(commit_sha=result.commit_sha or "determinism-probe")
     probe_result.repo_state_hash = result.repo_state_hash
     probe_artifact = build_artifact(probe_result)
@@ -1369,22 +1357,22 @@ def _archive_individual_files(files: list[Path], archive_month_dir: Path) -> tup
 
 
 def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> Path:
-    """Create a zip archive of all ADG artifacts + runtime enforcement files for the current run.
+    """Create a zip archive of all static ADG artifacts for the current run.
 
     Structure:
-        adg/<artifact>.json/.sqlite  - ADG graph artifacts
-        runtime/<path>               - Gap 1-5 runtime enforcement files for external LLM validation
+        adg/<artifact>.json/.sqlite  - ADG graph artifacts (static only)
+        NOTE: Runtime files are NOT included - they belong in separate runtime ADG
 
     Args:
         adg_dir: ADG artifacts directory
-        ts: Timestamp string (MMDDYYYY_HHMM format)
-        artifact_paths: List of artifact file paths to include in zip
+        ts: Timestamp string for naming
+        artifact_paths: List of artifact file paths to include
 
     Returns:
         Path to the created zip file
 
     Raises:
-        RuntimeError: If critical runtime files are missing or zip creation fails
+        RuntimeError: If zip creation fails
     """
     zip_path = adg_dir / f"adg_run_{ts}.zip"
     repo_root = adg_dir.parents[1]
@@ -1400,20 +1388,9 @@ def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> P
                     missing_artifacts.append(artifact_path.name)
                     print(f"[ADG] WARNING: Missing artifact {artifact_path.name}")
 
-            # Add runtime files with explicit error handling
-            missing_runtime = []
-            for rel_path in _RUNTIME_ENFORCEMENT_FILES:
-                full_path = repo_root / rel_path
-                if full_path.exists():
-                    zf.write(full_path, f"runtime/{rel_path}")
-                else:
-                    missing_runtime.append(rel_path)
-                    print(f"[ADG] ERROR: Missing runtime file {rel_path}")
-
-            # Fail fast if critical runtime files missing
-            if missing_runtime:
-                zip_path.unlink()  # Remove incomplete zip
-                raise RuntimeError(f"Missing critical runtime files: {missing_runtime}")
+            # Runtime files are NOT included in static ADG zip per separation of concerns
+            # Static ADG = what the system IS (design-time structure)
+            # Runtime ADG = what the system DID (execution-time evidence)
 
             # Warn about missing artifacts but don't fail
             if missing_artifacts:
@@ -1431,9 +1408,8 @@ def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> P
 
     zip_size_mb = zip_path.stat().st_size / (1024 * 1024)
     report_count = len([p for p in artifact_paths if p.name.endswith("_report.json")])
-    runtime_count = len(_RUNTIME_ENFORCEMENT_FILES) - len(missing_runtime)
     print(
-        f"[ADG] Zip archive created: {zip_path.name} ({zip_size_mb:.1f} MB, 6 ADG + {report_count} reports + {runtime_count} runtime files)"
+        f"[ADG] Zip archive created: {zip_path.name} ({zip_size_mb:.1f} MB, 6 ADG + {report_count} reports)"
     )
 
     return zip_path

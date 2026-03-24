@@ -32,7 +32,7 @@ from dataclasses import dataclass, field
 from typing import Any
 from unittest.mock import MagicMock
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -84,7 +84,7 @@ _emit_dispatches_execution_plan("p1", "test_llm_workflow_creative", "test")
 _emit_validates_agent_capability("p1", "test_llm_workflow_creative", "test")
 _emit_checks_agent_registry("p1", "test_llm_workflow_creative", "test")
 _emit_snapshots_state("p0", "test_llm_workflow_creative", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

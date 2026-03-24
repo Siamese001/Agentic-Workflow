@@ -15,7 +15,7 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_LIC_DIR,
     APPS_RG_DIR,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -92,7 +92,7 @@ from agentic_core.L0_routing.scripts.run_all_guardians import (
     render_meta_learning_change_package,
 )
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

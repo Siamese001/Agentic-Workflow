@@ -5,7 +5,7 @@ from pathlib import Path
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.tools import write_gateway as _wg
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
@@ -126,7 +126,7 @@ except ImportError:
 from agentic_core.L0_routing.config import AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 from agentic_core.L5_safety.config.structure_blueprint import AGENTIC_CORE_DIR
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_captures_pattern,
@@ -204,7 +204,7 @@ _emit_writes_through("p1", "CodeDeduplicationAgent", "write_through_2")
 _emit_validated_by_safety_plane("p1", "CodeDeduplicationAgent", "safety_validation")
 _emit_invokes_eval("p1", "CodeDeduplicationAgent", "eval_call")
 _emit_proposal_commits_routing("p1", "CodeDeduplicationAgent", "routing_commit")
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_CodeDeduplicationAgent", "CodeDeduplicationAgent_dispatch_entry")
 emit_determinism_digest("trace_CodeDeduplicationAgent", "CodeDeduplicationAgent_dispatch_exit")

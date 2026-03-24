@@ -16,7 +16,7 @@ import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -102,7 +102,7 @@ _emit_captures_evaluation_metric("p4", "capacity_snapshot", "eval_metric")
 _emit_stores_embedding("p4", "capacity_snapshot", "embedding_store")
 _emit_updates_meta_learning_state("p4", "capacity_snapshot", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "capacity_snapshot", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

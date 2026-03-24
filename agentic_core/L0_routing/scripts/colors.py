@@ -7,7 +7,7 @@ from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import MAX_DEPTH
 from agentic_core.L3_orchestration.registry.agent_dispatch_registry import get_agent_dispatch_registry
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -131,7 +131,8 @@ try:
     )
 
     COLORS_AVAILABLE = True
-except ImportError:
+# guardian: allow-silent-swallow - optional dependency
+        except ImportError:
     COLORS_AVAILABLE = False
 
     def phase_header(*args, **kwargs):
@@ -177,7 +178,7 @@ if sys.platform.startswith("win"):
 _mission_executed = False
 import json as _json
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,

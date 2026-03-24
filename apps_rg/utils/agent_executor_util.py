@@ -14,7 +14,7 @@ from apps_shared.utils.observability_clients import create_span, record_exceptio
 from apps_shared.utils.Provider import Provider, get_client, get_instructor_client, get_litellm_completion
 
 from agentic_core.L2_execution.providers import get_clock
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
@@ -79,7 +79,7 @@ _emit_captures_evaluation_metric("p4", "agent_executor_util", "eval_metric")
 _emit_stores_embedding("p4", "agent_executor_util", "embedding_store")
 _emit_updates_meta_learning_state("p4", "agent_executor_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "agent_executor_util", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

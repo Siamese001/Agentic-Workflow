@@ -14,7 +14,7 @@ from agentic_core.L2_execution.tools.unsafe_io_detector import (
     scan_directory_for_unsafe_patterns,
     scan_for_unsafe_patterns,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -153,7 +153,7 @@ class TestPhase2UnsafeIOEnforcement:
         # Test on a simple file with unsafe patterns
         code_with_unsafe = """
 import subprocess
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_execution_terminates_at_uwg,
     _emit_writes_through,

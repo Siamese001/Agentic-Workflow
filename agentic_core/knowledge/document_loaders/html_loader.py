@@ -8,7 +8,7 @@ import re
 from html.parser import HTMLParser
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -55,7 +55,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
 _emit_applies_guardrail("p0", "html_loader", "p0_governance")
 _emit_reads_policy_state("p0", "html_loader", "policy_binding")
 _emit_snapshots_state("p0", "html_loader", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -222,7 +222,8 @@ def _try_load_text(file_path: Path) -> str | None:
             tag.decompose()
         text: str = soup.get_text(separator=" ", strip=True)
         return _RE_WHITESPACE.sub(" ", text).strip()
-    except ImportError:
+    # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
         pass
     # guardian: allow-silent-swallow
     except Exception as exc:

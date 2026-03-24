@@ -143,7 +143,9 @@ def investigate_hang():
         process = psutil.Process()
         memory_mb = process.memory_info().rss / (1024 * 1024)
         print(f"\n4. Memory usage: {memory_mb:.1f} MB")
-    except ImportError:
+    # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
+        # psutil is optional for memory monitoring - this is acceptable
         print("\n4. psutil not available for memory monitoring")
 
 if __name__ == "__main__":

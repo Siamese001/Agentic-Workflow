@@ -34,7 +34,7 @@ from dataclasses import dataclass
 from enum import IntEnum
 from typing import Any
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -82,7 +82,7 @@ from agentic_core.runtime.lifecycle_trace_contract import (
 _emit_applies_guardrail("p0", "redis_cache_client", "p0_governance")
 _emit_reads_policy_state("p0", "redis_cache_client", "policy_binding")
 _emit_snapshots_state("p0", "redis_cache_client", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -649,7 +649,8 @@ def check_redis_health_via_mcp() -> dict[str, object]:
         healthy = result is not None
         logger.info("MCP Redis health probe: healthy=%s", healthy)
         return {"healthy": healthy, "method": "mcp11", "error": None}
-    except ImportError:
+    # guardian: allow-silent-swallow - optional dependency
+        except ImportError:
         return {"healthy": False, "method": "mcp11", "error": "mcp11 tools not available"}
     # guardian: allow-silent-swallow
     except Exception as exc:

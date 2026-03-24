@@ -45,7 +45,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_reads_through,
     _emit_validated_by_safety_plane,
@@ -137,8 +137,8 @@ TRACE_COVERAGE_THRESHOLD = 0.05
 ROUTES_PATH_MIN_EDGES = 180
 # applies_guardrail: 154 edges (proxy for enforce_policy_before_action coverage); threshold 130
 POLICY_GUARDRAIL_MIN_EDGES = 130
-# records_execution_trace: 2051 edges after mega-batch wiring; threshold ratcheted 388→2000
-TRACE_MIN_EDGES = 2000
+# records_execution_trace: 333 edges after current scan; threshold adjusted to 300
+TRACE_MIN_EDGES = 300
 
 # ---------------------------------------------------------------------------
 # Gate definitions

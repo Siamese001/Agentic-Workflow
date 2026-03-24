@@ -3,7 +3,7 @@
 
 This scanner ONLY captures design-time structure:
 - Imports (what modules depend on)
-- Class hierarchy (what inherits from what) 
+- Class hierarchy (what inherits from what)
 - Function calls (what calls what at design-time)
 - Module organization (what belongs to which layer)
 
@@ -50,17 +50,17 @@ class Edge:
 
 class CleanImportVisitor(ast.NodeVisitor):
     """Extract ONLY import edges (design-time dependencies)."""
-    
+
     def __init__(self, module_adg_name: str, source_file: str):
         self.module_adg_name = module_adg_name
         self.source_file = source_file
         self.edges: List[Edge] = []
-    
+
     def visit_Import(self, node: ast.Import):
         for alias in node.names:
             imported = alias.name
             to_name = canonical_name("Symbol", imported)
-            
+
             # Classify import type
             if any(imported.startswith(p) for p in _INTERNAL_MODULE_PREFIXES):
                 edge_kind = "internal"
@@ -68,7 +68,7 @@ class CleanImportVisitor(ast.NodeVisitor):
                 edge_kind = "external"
             else:
                 edge_kind = "stdlib"
-            
+
             self.edges.append(Edge(
                 from_name=self.module_adg_name,
                 relation_type="imports",
@@ -78,12 +78,12 @@ class CleanImportVisitor(ast.NodeVisitor):
                 line_no=node.lineno,
                 symbol=imported,
             ))
-    
+
     def visit_ImportFrom(self, node: ast.ImportFrom):
         module = node.module or ""
         if module:
             to_name = canonical_name("Symbol", module)
-            
+
             # Classify import type
             if any(module.startswith(p) for p in _INTERNAL_MODULE_PREFIXES):
                 edge_kind = "internal"
@@ -91,7 +91,7 @@ class CleanImportVisitor(ast.NodeVisitor):
                 edge_kind = "external"
             else:
                 edge_kind = "stdlib"
-            
+
             self.edges.append(Edge(
                 from_name=self.module_adg_name,
                 relation_type="imports",
@@ -105,20 +105,20 @@ class CleanImportVisitor(ast.NodeVisitor):
 
 class CleanInheritanceVisitor(ast.NodeVisitor):
     """Extract ONLY inheritance edges (design-time structure)."""
-    
+
     def __init__(self, module_adg_name: str, source_file: str):
         self.module_adg_name = module_adg_name
         self.source_file = source_file
         self.edges: List[Edge] = []
-    
+
     def visit_ClassDef(self, node: ast.ClassDef):
         class_adg = canonical_name("Symbol", f"{self.module_adg_name}::{node.name}")
-        
+
         for base in node.bases:
             if isinstance(base, ast.Name):
                 base_name = base.id
                 to_name = canonical_name("Symbol", base_name)
-                
+
                 # Classify inheritance
                 if any(base_name.startswith(p) for p in _INTERNAL_MODULE_PREFIXES):
                     edge_kind = "internal"
@@ -126,7 +126,7 @@ class CleanInheritanceVisitor(ast.NodeVisitor):
                     edge_kind = "external"
                 else:
                     edge_kind = "stdlib"
-                
+
                 self.edges.append(Edge(
                     from_name=class_adg,
                     relation_type="implements",
@@ -140,24 +140,24 @@ class CleanInheritanceVisitor(ast.NodeVisitor):
 
 class CleanCallVisitor(ast.NodeVisitor):
     """Extract ONLY design-time call edges (no runtime traces)."""
-    
+
     def __init__(self, module_adg_name: str, source_file: str):
         self.module_adg_name = module_adg_name
         self.source_file = source_file
         self.edges: List[Edge] = []
         self._internal_imports: Set[str] = set()
-    
+
     def visit_Import(self, node: ast.Import):
         """Track internal imports for call resolution."""
         for alias in node.names:
             if any(alias.name.startswith(p) for p in _INTERNAL_MODULE_PREFIXES):
                 self._internal_imports.add(alias.name)
-    
+
     def visit_ImportFrom(self, node: ast.ImportFrom):
         """Track internal imports for call resolution."""
         if node.module and any(node.module.startswith(p) for p in _INTERNAL_MODULE_PREFIXES):
             self._internal_imports.add(node.module)
-    
+
     def visit_Call(self, node: ast.Call):
         """Extract calls to internal symbols only."""
         sym = self._extract_symbol(node.func)
@@ -166,7 +166,7 @@ class CleanCallVisitor(ast.NodeVisitor):
             base = sym.split(".")[0]
             if base in self._internal_imports:
                 to_name = canonical_name("Symbol", sym)
-                
+
                 self.edges.append(Edge(
                     from_name=self.module_adg_name,
                     relation_type="calls",
@@ -176,7 +176,7 @@ class CleanCallVisitor(ast.NodeVisitor):
                     line_no=node.lineno,
                     symbol=sym,
                 ))
-    
+
     def _extract_symbol(self, node: ast.expr) -> str | None:
         """Extract symbol name from call node."""
         if isinstance(node, ast.Name):
@@ -195,12 +195,12 @@ class CleanCallVisitor(ast.NodeVisitor):
 
 class CleanLayerVisitor(ast.NodeVisitor):
     """Extract ONLY layer membership (design-time organization)."""
-    
+
     def __init__(self, module_adg_name: str, source_file: str):
         self.module_adg_name = module_adg_name
         self.source_file = source_file
         self.edges: List[Edge] = []
-        
+
         # Determine layer from file path
         layer = self._infer_layer()
         if layer:
@@ -214,11 +214,11 @@ class CleanLayerVisitor(ast.NodeVisitor):
                 line_no=0,
                 symbol=layer,
             ))
-    
+
     def _infer_layer(self) -> str | None:
         """Infer layer from file path."""
         rel_path = self.source_file.replace("\\", "/")
-        
+
         if "L0_routing" in rel_path:
             return "L0"
         elif "L1_cognition" in rel_path:
@@ -250,21 +250,21 @@ class CleanLayerVisitor(ast.NodeVisitor):
 def scan_file_clean(filepath: Path, repo_root: Path) -> List[Edge]:
     """Scan a single file with ONLY static visitors."""
     rel = _repo_relative(filepath, repo_root)
-    
+
     # Skip if not scannable
     if not _is_scannable_static_path(rel, include_tests=True):
         return []
-    
+
     try:
         content = filepath.read_text(encoding="utf-8")
         tree = ast.parse(content, filename=str(filepath))
     except SyntaxError:
         return []
-    
+
     module_adg = canonical_name("Module", rel)
-    
+
     all_edges = []
-    
+
     # Run ONLY clean static visitors
     visitors = [
         CleanImportVisitor(module_adg, rel),
@@ -272,11 +272,11 @@ def scan_file_clean(filepath: Path, repo_root: Path) -> List[Edge]:
         CleanCallVisitor(module_adg, rel),
         CleanLayerVisitor(module_adg, rel),
     ]
-    
+
     for visitor in visitors:
         visitor.visit(tree)
         all_edges.extend(visitor.edges)
-    
+
     return all_edges
 
 
@@ -291,24 +291,24 @@ def create_truly_clean_static_adg() -> None:
     print("RULE: IF it requires execution to observe → RUNTIME ADG")
     print("RULE: IF it exists without execution → STATIC ADG")
     print("=" * 80)
-    
+
     # Scan all files
     all_edges = []
     modules_seen = []
-    
+
     print("[CLEAN] Scanning codebase with truly clean static scanner...")
     for filepath in _iter_python_files(PROJECT_ROOT, include_tests=True):
         rel = _repo_relative(filepath, PROJECT_ROOT)
         modules_seen.append(rel)
-        
+
         edges = scan_file_clean(filepath, PROJECT_ROOT)
         all_edges.extend(edges)
-        
+
         if len(modules_seen) % 1000 == 0:
             print(f"[CLEAN] Scanned {len(modules_seen)} modules...")
-    
+
     print(f"[CLEAN] Scan complete: {len(modules_seen)} modules, {len(all_edges)} edges")
-    
+
     # Verify no runtime contamination
     runtime_relations = {
         "records_execution_trace", "emits_determinism_digest", "emits_replay_key",
@@ -327,35 +327,35 @@ def create_truly_clean_static_adg() -> None:
         "writes_via_uwg", "blocks_direct_write", "transcripts_response",
         "proposal_commits_routing", "references_policy_hash", "stores_embedding",
     }
-    
+
     found_runtime = []
     for edge in all_edges:
         if edge.relation_type in runtime_relations:
             found_runtime.append(edge.relation_type)
-    
+
     if found_runtime:
         print(f"[ERROR] Runtime contamination detected: {set(found_runtime)}")
         sys.exit(1)
-    
+
     print("[CLEAN] ✅ Verified: Zero runtime contamination")
-    
+
     # Create SQLite
     output_dir = PROJECT_ROOT / "artifacts" / "adg_truly_clean"
     output_dir.mkdir(exist_ok=True)
-    
+
     from datetime import datetime, timezone, timedelta
     est = timezone(timedelta(hours=-4))
     now_est = datetime.now(est)
     ts = now_est.strftime("%m%d%Y_%H%M")
-    
+
     sqlite_path = output_dir / f"adg_truly_clean_{ts}.sqlite"
-    
+
     print(f"[CLEAN] Writing to: {sqlite_path}")
-    
+
     # Create nodes and edges tables
     conn = sqlite3.connect(sqlite_path)
     cursor = conn.cursor()
-    
+
     cursor.execute("""
         CREATE TABLE nodes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -367,7 +367,7 @@ def create_truly_clean_static_adg() -> None:
             resolved_path TEXT
         )
     """)
-    
+
     cursor.execute("""
         CREATE TABLE edges (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -382,10 +382,10 @@ def create_truly_clean_static_adg() -> None:
             FOREIGN KEY (dst_id) REFERENCES nodes(id)
         )
     """)
-    
+
     # Insert nodes
     node_id_map = {}
-    
+
     # Module nodes
     for module in modules_seen:
         module_adg = canonical_name("Module", module)
@@ -395,7 +395,7 @@ def create_truly_clean_static_adg() -> None:
         )
         cursor.execute("SELECT id FROM nodes WHERE adg_name = ?", (module_adg,))
         node_id_map[module_adg] = cursor.fetchone()[0]
-    
+
     # Symbol nodes from edges
     for edge in all_edges:
         for node_name in [edge.from_name, edge.to_name]:
@@ -407,7 +407,7 @@ def create_truly_clean_static_adg() -> None:
                 )
                 cursor.execute("SELECT id FROM nodes WHERE adg_name = ?", (node_name,))
                 node_id_map[node_name] = cursor.fetchone()[0]
-    
+
     # Insert edges
     for edge in all_edges:
         src_id = node_id_map[edge.from_name]
@@ -419,25 +419,25 @@ def create_truly_clean_static_adg() -> None:
             """,
             (src_id, dst_id, edge.relation_type, edge.edge_kind, edge.source_file, edge.line_no, edge.symbol)
         )
-    
+
     conn.commit()
     conn.close()
-    
+
     # Verify result
     conn = sqlite3.connect(sqlite_path)
     cursor = conn.cursor()
-    
+
     cursor.execute("SELECT COUNT(*) FROM nodes")
     node_count = cursor.fetchone()[0]
-    
+
     cursor.execute("SELECT COUNT(*) FROM edges")
     edge_count = cursor.fetchone()[0]
-    
+
     cursor.execute("SELECT DISTINCT relation_type FROM edges ORDER BY relation_type")
     relations = [row[0] for row in cursor.fetchall()]
-    
+
     conn.close()
-    
+
     print("\n" + "=" * 80)
     print("TRULY CLEAN STATIC ADG VERIFICATION")
     print("=" * 80)
@@ -447,13 +447,13 @@ def create_truly_clean_static_adg() -> None:
     print("\nRelation types (ALL STATIC):")
     for rel in sorted(relations):
         print(f"  - {rel}")
-    
+
     # Final verification
     runtime_leak = [rel for rel in relations if rel in runtime_relations]
     if runtime_leak:
         print(f"\n❌ FAILED: Runtime relations found: {runtime_leak}")
         sys.exit(1)
-    
+
     print("\n✅ PASSED: 100% pure static ADG")
     print("✅ Mental model enforced perfectly")
     print("✅ Zero runtime contamination")

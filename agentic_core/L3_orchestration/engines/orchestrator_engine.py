@@ -65,7 +65,7 @@ from agentic_core.L5_safety.enforcement.policy_action_contract import (
     PolicyEnforcementError,
     enforce_policy_before_action,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -152,7 +152,7 @@ _emit_orchestrates_workflow("p1", "orchestrator_engine", "L3")
 _emit_dispatches_execution_plan("p1", "orchestrator_engine", "L3")
 _emit_validates_agent_capability("p1", "orchestrator_engine", "L3")
 _emit_checks_agent_registry("p1", "orchestrator_engine", "L3")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -221,7 +221,7 @@ _emit_writes_through("p1", "orchestrator_engine", "write_through_2")
 _emit_validated_by_safety_plane("p1", "orchestrator_engine", "safety_validation")
 _emit_invokes_eval("p1", "orchestrator_engine", "eval_call")
 _emit_proposal_commits_routing("p1", "orchestrator_engine", "routing_commit")
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_orchestrator_engine", "orchestrator_engine_dispatch_entry")
 emit_determinism_digest("trace_orchestrator_engine", "orchestrator_engine_dispatch_exit")

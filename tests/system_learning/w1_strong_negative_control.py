@@ -11,7 +11,7 @@ from pathlib import Path
 
 import numpy as np
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -94,7 +94,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 # Import the factory to patch it
 import system_learning.engines.embedding_service_factory as factory_module
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

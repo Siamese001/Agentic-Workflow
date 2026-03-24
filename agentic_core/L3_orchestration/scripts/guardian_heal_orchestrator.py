@@ -31,7 +31,7 @@ from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_p
 from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L5_safety.config.structure_blueprint_config import REPORTS_DIR
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
@@ -113,7 +113,7 @@ _emit_captures_evaluation_metric("p4", "guardian_heal_orchestrator", "eval_metri
 _emit_stores_embedding("p4", "guardian_heal_orchestrator", "embedding_store")
 _emit_updates_meta_learning_state("p4", "guardian_heal_orchestrator", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "guardian_heal_orchestrator", "exec_snapshot_link")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

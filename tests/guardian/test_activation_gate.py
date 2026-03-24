@@ -23,7 +23,7 @@ from agentic_core.L5_safety.enforcement.activation_gate import (
     ACTIVATION_GATE_VERSION,
     assert_activation_allowed,
 )
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,

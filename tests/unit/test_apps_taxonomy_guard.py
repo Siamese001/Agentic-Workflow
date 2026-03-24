@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from agentic_core.L0_routing.enforcement.apps_taxonomy_guard import AppsTaxonomyGuard
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -210,7 +210,7 @@ import agentic_core.interfaces.submodule
 from agentic_core.L0_routing import PathRouter
 import agentic_core.L4_state
 from agentic_core.L2_execution import CIDRegistry
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_execution_terminates_at_uwg,
     _emit_writes_through,

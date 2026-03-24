@@ -14,7 +14,7 @@ from typing import Any, TypeVar
 from agentic_core.utils.dependency_resolver import DynamicLoader
 from agentic_core.utils.feature_flags import FeatureFlagManager
 
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -101,7 +101,7 @@ from agentic_core.utils.verification_types_util import (
 
 _emit_applies_guardrail("p0", "feature_flagged_agent_mixin", "p0_governance")
 _emit_snapshots_state("p0", "feature_flagged_agent_mixin", "state_snapshot")
-from agentic_core.runtime.lifecycle_trace_contract import (
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -193,7 +193,7 @@ _emit_gated_by_confidence("p1", "feature_flagged_agent_mixin", "confidence_gate"
 emit_replay_key("p0", "feature_flagged_agent_mixin")
 emit_determinism_digest("p0", "feature_flagged_agent_mixin")
 _emit_signs_execution_trace("p0", "p0hash", "p0_trace", 0)
-from agentic_core.runtime.lifecycle_trace_contract import emit_determinism_digest
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
 
 emit_determinism_digest("trace_feature_flagged_agent_mixin", "feature_flagged_agent_mixin_dispatch_entry")
 emit_determinism_digest("trace_feature_flagged_agent_mixin", "feature_flagged_agent_mixin_dispatch_exit")
@@ -350,7 +350,9 @@ class FeatureFlaggedAgentMixin:
         try:
             # Try protocol-based call first
             return gate.verify_action(request)
-        except TypeError:
+        except TypeError as e:
+        # TODO: Fix programming error - TypeError should not occur
+        raise e  # Re-raise to surface the issue
             # Fall back to legacy signature if protocol call fails
             try:
                 result = gate.verify_action(file_path, action_type, target_node)
