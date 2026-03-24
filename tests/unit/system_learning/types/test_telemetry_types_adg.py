@@ -1,4 +1,5 @@
 """ADG-driven tests for system_learning/types/telemetry_types.py — fan_in=1."""
+
 from __future__ import annotations
 
 import pytest
@@ -114,7 +115,12 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.types.telemetry_types import TelemetryEvent, TelemetrySlice
+from system_learning.types.telemetry_types import (
+    TelemetryEvent,
+    TelemetrySlice,
+    create_runtime_telemetry_event,
+    create_telemetry_slice_from_runtime_records,
+)
 
 _emit_emits_metric_event("test_telemetry_types_adg", "p4obs", "metric_1")
 _emit_emits_metric_event("test_telemetry_types_adg", "p4obs", "metric_2")
@@ -179,6 +185,29 @@ class TestTelemetryEvent:
         with pytest.raises(Exception):
             event.ts_utc = 9999
 
+    def test_create_runtime_telemetry_event_preserves_span_identity(self):
+        event = create_runtime_telemetry_event(
+            {
+                "ts_utc": 1700000000000,
+                "kind": "tool",
+                "trace_id": "trace-1",
+                "span_id": "span-2",
+                "parent_span_id": "span-1",
+                "layer": "L2_Execution",
+                "component": "Tool.search",
+                "name": "tool.search",
+                "attributes": {"tool.name": "search"},
+            }
+        )
+
+        assert event.trace_id == "trace-1"
+        assert event.span_id == "span-2"
+        assert event.parent_span_id == "span-1"
+        assert event.layer == "L2_Execution"
+        assert event.component == "Tool.search"
+        assert event.name == "tool.search"
+        assert len(event.payload_hash) == 64
+
 
 class TestTelemetrySlice:
     def test_importable(self):
@@ -186,6 +215,43 @@ class TestTelemetrySlice:
 
     def test_has_fields(self):
         import dataclasses
+
         fields = {f.name for f in dataclasses.fields(TelemetrySlice)}
         assert "slice_id" in fields
         assert "window_start_utc" in fields
+
+    def test_runtime_slice_materialization_is_order_independent(self):
+        records = (
+            {
+                "ts_utc": 1700000001000,
+                "kind": "tool",
+                "trace_id": "trace-1",
+                "span_id": "span-2",
+                "parent_span_id": "span-1",
+                "layer": "L2_Execution",
+                "component": "Tool.search",
+                "name": "tool.search",
+                "attributes": {"tool.name": "search"},
+            },
+            {
+                "ts_utc": 1700000000000,
+                "kind": "orchestrator",
+                "trace_id": "trace-1",
+                "span_id": "span-1",
+                "parent_span_id": "",
+                "layer": "L3_Orchestration",
+                "component": "NervousSystem",
+                "name": "orchestrator.execute",
+                "attributes": {"mission": "demo"},
+            },
+        )
+
+        slice_a = create_telemetry_slice_from_runtime_records(records)
+        slice_b = create_telemetry_slice_from_runtime_records(tuple(reversed(records)))
+
+        assert slice_a.slice_hash == slice_b.slice_hash
+        assert slice_a.slice_id == slice_a.slice_hash
+        assert slice_a.window_start_utc == 1700000000000
+        assert slice_a.window_end_utc == 1700000001000
+        assert slice_a.canonical_bytes() == slice_b.canonical_bytes()
+        assert [event.span_id for event in slice_a.events] == ["span-1", "span-2"]

@@ -54,6 +54,14 @@ from agentic_core.runtime.lifecycle_trace_contract import (
     emit_replay_key,  # noqa: E402
     record_execution_trace,
 )
+from apps_shared.config import pipeline_constants_config as _pipeline_constants
+
+MAX_RETRIES = _pipeline_constants.MAX_RETRIES
+DEFAULT_SLEEP = _pipeline_constants.DEFAULT_SLEEP
+THRESHOLD = _pipeline_constants.THRESHOLD
+BUFFER_SIZE = _pipeline_constants.BUFFER_SIZE
+BATCH_SIZE = _pipeline_constants.BATCH_SIZE
+MAX_DEPTH = _pipeline_constants.MAX_DEPTH
 
 _emit_applies_guardrail("p0", "open_telemetry_tracing_adapter_util", "p0_governance")
 _emit_reads_policy_state("p0", "open_telemetry_tracing_adapter_util", "policy_binding")
@@ -294,6 +302,8 @@ class OpenTelemetryTracingAdapter:
         """
         self.service_name = service_name
         self.enable_logging = enable_logging
+        self._completed_spans: list[dict[str, Any]] = []
+        self._span_stack: list[tuple[str, str]] = []
         if OTEL_AVAILABLE:
             resource = Resource.create({"service.name": service_name})
             provider = TracerProvider(resource=resource)
@@ -326,8 +336,11 @@ class OpenTelemetryTracingAdapter:
             Span context
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OpenTelemetryTracingAdapter.trace_orchestrator")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "OpenTelemetryTracingAdapter.trace_orchestrator"
+        )
 
         span_metadata = SpanMetadata(
             span_type=SpanType.ORCHESTRATOR,
@@ -496,8 +509,26 @@ class OpenTelemetryTracingAdapter:
             return
         start_time = time.time()
         with self.tracer.start_as_current_span(name) as span:
+            span_context = getattr(span, "get_span_context", lambda: None)()
+            parent_trace_id = self._span_stack[-1][0] if self._span_stack else ""
+            parent_span_id = self._span_stack[-1][1] if self._span_stack else ""
+            trace_id = parent_trace_id
+            span_id = ""
+            if span_context is not None:
+                raw_trace_id = getattr(span_context, "trace_id", 0)
+                raw_span_id = getattr(span_context, "span_id", 0)
+                if raw_trace_id:
+                    trace_id = f"{int(raw_trace_id):032x}"
+                if raw_span_id:
+                    span_id = f"{int(raw_span_id):016x}"
+            if not trace_id:
+                trace_id = f"{time.time_ns():032x}"[-32:]
+            if not span_id:
+                span_id = f"{time.time_ns():016x}"[-16:]
+            self._span_stack.append((trace_id, span_id))
             for key, value in metadata.to_dict().items():
                 span.set_attribute(key, value)
+            outcome = "ok"
             try:
                 yield span
                 span.set_status(Status(StatusCode.OK))
@@ -511,12 +542,50 @@ class OpenTelemetryTracingAdapter:
                         },
                     )
             except Exception as e:
-                raise
+                outcome = "error"
                 span.set_status(Status(StatusCode.ERROR, str(e)))
                 span.record_exception(e)
                 if self.enable_logging:
                     logger.error("span_failed", extra={"span_name": name, "error": str(e)}, exc_info=True)
                 raise
+            finally:
+                duration_ms = (time.time() - start_time) * 1000
+                self._completed_spans.append(
+                    {
+                        "ts_utc": int(start_time * 1000),
+                        "duration_ms": round(duration_ms, 3),
+                        "kind": metadata.span_type.value,
+                        "trace_id": trace_id,
+                        "span_id": span_id,
+                        "parent_span_id": parent_span_id,
+                        "layer": metadata.layer,
+                        "component": metadata.component,
+                        "name": name,
+                        "status": outcome,
+                        "attributes": metadata.to_dict(),
+                    }
+                )
+                if self._span_stack:
+                    self._span_stack.pop()
+
+    def drain_completed_spans(self) -> list[dict[str, Any]]:
+        drained = [
+            {
+                **record,
+                "attributes": dict(record.get("attributes", {})),
+            }
+            for record in sorted(
+                self._completed_spans,
+                key=lambda record: (
+                    int(record.get("ts_utc", 0)),
+                    str(record.get("trace_id", "")),
+                    str(record.get("span_id", "")),
+                    str(record.get("name", "")),
+                ),
+            )
+        ]
+        self._completed_spans.clear()
+        return drained
 
     def add_event(self, span: Any, name: str, attributes: dict[str, Any] | None = None):
         """Add an event to a span.

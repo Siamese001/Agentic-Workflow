@@ -277,7 +277,7 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
 
     cache_path = adg_artifacts_dir / "cache" / "scan_result_cache.json"
     cache_path.parent.mkdir(exist_ok=True)
-    scanner = ADGStaticScanner(repo_root=ROOT, cache_path=cache_path)
+    scanner = ADGStaticScanner(repo_root=ROOT, include_tests=False, cache_path=cache_path)
     result = scanner.scan(commit_sha=commit_sha)
 
     # Set repo_state_hash in the result

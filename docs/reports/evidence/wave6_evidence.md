@@ -3971,3 +3971,166 @@ HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agen
   wrong_target=w
   correct_target=c
   confidence=0.1
+
+HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=resume_writer | Decision=corrected_to=code_reviewer
+  decision_type=routing_correction
+  wrong_target=resume_writer
+  correct_target=code_reviewer
+  confidence=0.0
+
+HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=resume_writer | Decision=corrected_to=code_reviewer
+  decision_type=routing_correction
+  wrong_target=resume_writer
+  correct_target=code_reviewer
+  confidence=0.0
+
+HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=a | Decision=corrected_to=b
+  decision_type=routing_correction
+  wrong_target=a
+  correct_target=b
+  confidence=0.0
+
+HITL_DECISION_2: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=b | Decision=corrected_to=c
+  decision_type=routing_correction
+  wrong_target=b
+  correct_target=c
+  confidence=0.0
+
+HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=wrong | Decision=corrected_to=correct
+  decision_type=routing_correction
+  wrong_target=wrong
+  correct_target=correct
+  confidence=0.0
+
+HITL_DECISION_2: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=wrong | Decision=corrected_to=correct
+  decision_type=routing_correction
+  wrong_target=wrong
+  correct_target=correct
+  confidence=0.0
+
+HITL_DECISION_3: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=wrong | Decision=corrected_to=correct
+  decision_type=routing_correction
+  wrong_target=wrong
+  correct_target=correct
+  confidence=0.0
+
+HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=a | Decision=corrected_to=b
+  decision_type=routing_correction
+  wrong_target=a
+  correct_target=b
+  confidence=0.0
+
+HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=c | Decision=corrected_to=d
+  decision_type=routing_correction
+  wrong_target=c
+  correct_target=d
+  confidence=0.0
+
+HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=a | Decision=corrected_to=b
+  decision_type=routing_correction
+  wrong_target=a
+  correct_target=b
+  confidence=0.0
+
+HITL_DECISION_2: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=c | Decision=corrected_to=d
+  decision_type=routing_correction
+  wrong_target=c
+  correct_target=d
+  confidence=0.0
+
+HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=wrong | Decision=corrected_to=correct
+  decision_type=routing_correction
+  wrong_target=wrong
+  correct_target=correct
+  confidence=0.0
+
+HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=wrong | Decision=corrected_to=correct
+  decision_type=routing_correction
+  wrong_target=wrong
+  correct_target=correct
+  confidence=0.35
+
+HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=wrong | Decision=corrected_to=correct
+  decision_type=routing_correction
+  wrong_target=wrong
+  correct_target=correct
+  confidence=0.5
+  trace_id=t-123
+  run_id=r-456
+
+HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=wrong | Decision=corrected_to=correct
+  decision_type=routing_correction
+  wrong_target=wrong
+  correct_target=correct
+  confidence=0.1
+
+HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=wrong | Decision=corrected_to=correct
+  decision_type=routing_correction
+  wrong_target=wrong
+  correct_target=correct
+  confidence=0.0
+
+HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=wrong | Decision=corrected_to=correct
+  decision_type=routing_correction
+  wrong_target=wrong
+  correct_target=correct
+  confidence=0.3
+
+HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to= | Decision=corrected_to=
+  decision_type=routing_correction
+  wrong_target=
+  correct_target=
+  confidence=0.0
+
+HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=a | Decision=corrected_to=b
+  decision_type=routing_correction
+  wrong_target=a
+  correct_target=b
+  confidence=0.99
+
+HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=a | Decision=corrected_to=b
+  decision_type=routing_correction
+  wrong_target=a
+  correct_target=b
+  confidence=0.0
+
+HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=x | Decision=corrected_to=y
+  decision_type=routing_correction
+  wrong_target=x
+  correct_target=y
+  confidence=0.5
+
+HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=w | Decision=corrected_to=c
+  decision_type=routing_correction
+  wrong_target=w
+  correct_target=c
+  confidence=0.3
+
+HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agentic_router.py
+  Violation=ROUTING_MISCLASSIFICATION | Proposed=route_to=w | Decision=corrected_to=c
+  decision_type=routing_correction
+  wrong_target=w
+  correct_target=c
+  confidence=0.1

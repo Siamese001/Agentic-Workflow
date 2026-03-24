@@ -57,6 +57,49 @@ class TestFileBackedVersionStore:
         assert bridge.calls[0][1] == version_id
         assert bridge.calls[0][2] != ""  # ts should be a UUID string
 
+    def test_commit_runtime_telemetry_slice_is_idempotent(self, tmp_path):
+        from system_learning.types.telemetry_types import create_telemetry_slice_from_runtime_records
+
+        store = FileBackedVersionStore(tmp_path)
+        telemetry_slice = create_telemetry_slice_from_runtime_records(
+            (
+                {
+                    "ts_utc": 1700000000000,
+                    "kind": "orchestrator",
+                    "trace_id": "trace-1",
+                    "span_id": "span-1",
+                    "parent_span_id": "",
+                    "layer": "L3_Orchestration",
+                    "component": "NervousSystem",
+                    "name": "orchestrator.execute",
+                    "attributes": {"mission": "demo"},
+                },
+                {
+                    "ts_utc": 1700000001000,
+                    "kind": "tool",
+                    "trace_id": "trace-1",
+                    "span_id": "span-2",
+                    "parent_span_id": "span-1",
+                    "layer": "L2_Execution",
+                    "component": "Tool.search",
+                    "name": "tool.search",
+                    "attributes": {"tool.name": "search"},
+                },
+            )
+        )
+
+        class _Bridge:
+            def persist_active_version(self, component, version_id, *, ts=""):
+                return True
+
+        with patch("system_learning.stores.version_store.get_sl_memory_bridge", return_value=_Bridge()):
+            version_id_1 = store.commit_change_package(telemetry_slice)
+            version_id_2 = store.commit_change_package(telemetry_slice)
+
+        assert version_id_1 == version_id_2
+        assert store.list_versions() == [version_id_1]
+        assert store.get(version_id_1) == telemetry_slice.canonical_bytes()
+
 
 def test_module_importable():
     """Module version_store.py is importable (or deps unavailable)."""

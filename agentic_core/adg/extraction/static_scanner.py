@@ -316,7 +316,7 @@ _emit_validated_by_safety_plane("p1", "static_scanner", "safety_validation")
 
 logger = logging.getLogger(__name__)
 
-_SCAN_ROOTS: tuple[str, ...] = (
+_STRUCTURAL_SCAN_ROOTS: tuple[str, ...] = (
     AGENTIC_CORE_DIR,
     APPS_EVAL_DIR,
     APPS_EXEC_DIR,
@@ -325,11 +325,90 @@ _SCAN_ROOTS: tuple[str, ...] = (
     APPS_RFP_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
+)
+
+_NON_STRUCTURAL_SCAN_ROOTS: tuple[str, ...] = (
     SYSTEM_LEARNING_DIR,
     TOOLS_DIR,
     TESTS_DIR,  # H1
     OPS_SCRIPTS_DIR,  # H1
 )
+
+_SCAN_ROOTS: tuple[str, ...] = _STRUCTURAL_SCAN_ROOTS + _NON_STRUCTURAL_SCAN_ROOTS
+
+_RUNTIME_ONLY_SCAN_SUBDIRS: frozenset[str] = frozenset(
+    {
+        "artifacts",
+        "logs",
+        "runtime",
+        "scripts",
+        "telemetry",
+    }
+)
+
+_RUNTIME_ONLY_RELATION_TYPES: frozenset[str] = frozenset(
+    {
+        "captures_evaluation_metric",
+        "captures_execution_output",
+        "emits_replay_key",
+        "links_execution_to_snapshot",
+        "observes_runtime_state",
+        "reads_runtime_state",
+        "records_execution_trace",
+        "records_healing_outcome",
+        "records_incident_event",
+        "records_learning_event",
+        "records_telemetry_event",
+        "records_tool_invocation",
+        "records_workflow_lineage",
+        "signs_execution_trace",
+        "snapshots_state",
+        "stores_embedding",
+        "stores_learning_state",
+        "updates_meta_learning_state",
+        "updates_monitoring_state",
+        "writes_learning_snapshot",
+        "writes_observability_log",
+    }
+)
+
+_RUNTIME_ONLY_RELATION_PREFIXES: tuple[str, ...] = (
+    "captures_",
+    "records_",
+)
+
+
+def _selected_scan_roots(include_tests: bool) -> tuple[str, ...]:
+    if include_tests:
+        return _SCAN_ROOTS
+    return _STRUCTURAL_SCAN_ROOTS
+
+
+def _is_scannable_static_path(rel_path: str, include_tests: bool) -> bool:
+    normalized = rel_path.replace("\\", "/")
+    root_matched = any(
+        normalized == root or normalized.startswith(f"{root}/")
+        for root in _selected_scan_roots(include_tests)
+    )
+    if not root_matched:
+        return False
+    if include_tests:
+        return True
+    parts = tuple(part for part in normalized.split("/") if part)
+    return not any(part in _RUNTIME_ONLY_SCAN_SUBDIRS for part in parts)
+
+
+def _is_runtime_only_relation(relation_type: str) -> bool:
+    if relation_type in _RUNTIME_ONLY_RELATION_TYPES:
+        return True
+    return relation_type.startswith(_RUNTIME_ONLY_RELATION_PREFIXES)
+
+
+def _filter_runtime_only_edges(edges: list[Edge], include_tests: bool) -> list[Edge]:
+    if include_tests:
+        return edges
+    return [edge for edge in edges if not _is_runtime_only_relation(edge.relation_type)]
+
 
 _SCANNER_VERSION = "2.0.0"
 _SCHEMA_VERSION = "2.0"
@@ -5268,18 +5347,26 @@ class _UnreachableCodeAfterRaiseVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
-def _iter_python_files(repo_root: Path) -> Iterator[Path]:
+def _iter_python_files(repo_root: Path, include_tests: bool = True) -> Iterator[Path]:
     """Yield all .py files under SCAN_ROOTS, deterministic (sorted) order."""
     all_files: list[Path] = []
-    for scan_root in _SCAN_ROOTS:
+    for scan_root in _selected_scan_roots(include_tests):
         root_path = repo_root / scan_root
         if not root_path.exists():
             continue
         for dirpath, dirnames, filenames in os.walk(root_path):
-            dirnames[:] = sorted(d for d in dirnames if d not in SOVEREIGN_EXCLUDED_FOLDERS)
+            dirnames[:] = sorted(
+                d
+                for d in dirnames
+                if d not in SOVEREIGN_EXCLUDED_FOLDERS
+                and (include_tests or d not in _RUNTIME_ONLY_SCAN_SUBDIRS)
+            )
             for fname in sorted(filenames):
                 if fname.endswith(".py") and not fname.endswith(".pyc"):
-                    all_files.append(Path(dirpath) / fname)
+                    candidate = Path(dirpath) / fname
+                    rel = _repo_relative(candidate, repo_root)
+                    if _is_scannable_static_path(rel, include_tests):
+                        all_files.append(candidate)
     all_files.sort()
     yield from all_files
 
@@ -5370,7 +5457,9 @@ def _scan_file(
     # Wave 7: _P1608HardeningVisitor REMOVED (scanner integrity audit 2026-03-24)
 
     # Wave 2: Test surface linking
-    if filepath.name.endswith("_test.py") or "test_" in filepath.name or str(filepath).startswith("tests/"):
+    if include_tests and (
+        filepath.name.endswith("_test.py") or "test_" in filepath.name or rel.startswith("tests/")
+    ):
         test_surface_visitor = _TestSurfaceVisitor(module_adg, str(filepath))
         test_surface_visitor.visit(tree)
         edges.extend(test_surface_visitor.edges)
@@ -5632,6 +5721,7 @@ def _scan_file(
     # SEMANTIC ENRICHMENT: stamp semantic_type on ALL edges (zero new edges)
     # Ensures semantic_edge_ratio → 1.0 by classifying every structural edge.
     # -----------------------------------------------------------------------
+    edges = _filter_runtime_only_edges(edges, include_tests)
     edges, semantic_stamp_stats = _stamp_semantic_types_with_stats(edges)
     surface_evidence.update(semantic_stamp_stats)
 
@@ -6245,7 +6335,7 @@ class ADGStaticScanner:
     def __init__(
         self,
         repo_root: Path | None = None,
-        include_tests: bool = True,
+        include_tests: bool = False,
         cache_path: Path | None = None,
     ) -> None:
         self.repo_root = Path(repo_root) if repo_root is not None else Path.cwd()
@@ -6286,7 +6376,7 @@ class ADGStaticScanner:
         # Pre-warm the known-files cache now (single filesystem walk)
         _ = shared_normalizer._get_known_files()
 
-        for filepath in _iter_python_files(self.repo_root):
+        for filepath in _iter_python_files(self.repo_root, include_tests=self.include_tests):
             rel = _repo_relative(filepath, self.repo_root)
             modules_seen.append(rel)
             manifest.discovered_module_count += 1
@@ -6479,8 +6569,10 @@ class ADGStaticScanner:
             filepath = self.repo_root / rel.replace("/", os.sep)
             if not filepath.exists() or not rel.endswith(".py"):
                 continue
+            if not _is_scannable_static_path(rel, self.include_tests):
+                continue
             modules_seen.append(rel)
-            file_edges, _, file_type_map, _ = _scan_file(filepath, self.repo_root)
+            file_edges, _, file_type_map, _ = _scan_file(filepath, self.repo_root, self.include_tests)
             all_edges.extend(file_edges)
             all_type_surface.update(file_type_map)
 
