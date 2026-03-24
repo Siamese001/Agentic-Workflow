@@ -22,6 +22,7 @@ artifacts/adg/*.sqlite
 artifacts/adg/*.json
 artifacts/adg/*.zip
 artifacts/adg/*.tar.gz
+artifacts/adg/cache/
 # Allow README.md to be tracked
 !artifacts/adg/README.md
 # ADG LATEST symlinks/copies (auto-generated, point to timestamped artifacts)
@@ -32,7 +33,7 @@ artifacts/adg/adg_LATEST*.json
 *.sqlite-wal
 # ADG archive directory (compressed backups - local only)
 artifacts/adg/_archive/
-artifacts/adg/archived/
+
 # Memory knowledge graph (SQLite DB — local only, rebuilt via mem_import_adg_context)
 artifacts/memory/
 # Generated one-off patch scripts
