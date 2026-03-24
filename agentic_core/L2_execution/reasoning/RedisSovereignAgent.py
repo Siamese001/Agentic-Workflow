@@ -295,7 +295,7 @@ class RedisSovereignAgent(SovereignBaseAgent):
             keys: list = self.client.keys(pattern)
             if keys:
                 self.client.delete(*keys)
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             raise
             pass
 

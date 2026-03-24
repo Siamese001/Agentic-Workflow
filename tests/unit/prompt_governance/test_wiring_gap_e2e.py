@@ -250,7 +250,7 @@ class TestBuildHealingPrompt:
             pytest.skip("CodeHealerAgent has upstream import issue")
         try:
             agent = self._make_agent(CodeHealerAgent)
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             pytest.skip("CodeHealerAgent requires SovereignLock environment")
         prompt = agent.build_healing_prompt(
             context={
@@ -304,7 +304,7 @@ class TestBuildHealingPrompt:
 
         try:
             agent = self._make_agent(CognitiveDispositionAgent)
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             pytest.skip("CognitiveDispositionAgent requires SovereignLock environment")
         prompt = agent.build_healing_prompt(
             context={"task": "Analyze file placement"},

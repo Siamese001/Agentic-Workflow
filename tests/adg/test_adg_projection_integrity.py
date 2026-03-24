@@ -46,7 +46,7 @@ try:
     _redis_available = redis.Redis(host="localhost", port=6379, db=15, decode_responses=True)
     _redis_available.ping()
     _REDIS_OK = True
-except Exception:
+except (ValueError, TypeError, RuntimeError) as e:
     _REDIS_OK = False
 
 _emit_applies_guardrail("projection_integrity_test", "test_harness", "L5")

@@ -556,7 +556,7 @@ def _resolve_trace_id() -> str:
 
         active = get_active_execution_trace()
         return active.trace_id if active else ""
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         return ""
 
 
@@ -566,7 +566,7 @@ def _resolve_run_id() -> str:
 
         active = get_active_execution_trace()
         return getattr(active, "run_id", "") if active else ""
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         return ""
 
 

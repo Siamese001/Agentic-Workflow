@@ -63,7 +63,7 @@ except SystemExit as e:
     exit_code = e.code if e.code is not None else 0
     if exit_code != 0:
         exit_status = f"EXIT_{exit_code}"
-except Exception:
+except (ValueError, TypeError, RuntimeError) as e:
     # TODO: Handle specific exception properly
     raise  # Re-raise after logging/handling
     exit_status = "EXCEPTION"

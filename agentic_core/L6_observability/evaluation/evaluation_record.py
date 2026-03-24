@@ -534,7 +534,7 @@ def reset_evaluation_index() -> None:
 def _sha256_any(value: Any) -> str:
     try:
         raw = json.dumps(value, sort_keys=True, default=str).encode()
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         raw = str(value).encode()
     return hashlib.sha256(raw).hexdigest()[:16]
 
@@ -545,7 +545,7 @@ def _resolve_trace_id() -> str:
 
         active = get_active_execution_trace()
         return active.trace_id if active else ""
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         return ""
 
 
@@ -555,7 +555,7 @@ def _resolve_run_id() -> str:
 
         active = get_active_execution_trace()
         return getattr(active, "run_id", "") if active else ""
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         return ""
 
 

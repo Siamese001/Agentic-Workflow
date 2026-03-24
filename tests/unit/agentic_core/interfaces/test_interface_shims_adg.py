@@ -97,7 +97,7 @@ class TestObservabilityInterface:
             from agentic_core.L6_observability.utils.system_telemetry_util import SystemTelemetry as canon
 
             assert _obs_module.SystemTelemetry is canon
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             pytest.skip("system_telemetry_util unavailable")
 
     def test_circuit_breaker_state_identity(self):
@@ -105,5 +105,5 @@ class TestObservabilityInterface:
             from agentic_core.runtime.types.circuit_breaker_types import CircuitBreakerState as canon
 
             assert _obs_module.CircuitBreakerState is canon
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             pytest.skip("circuit_breaker_types unavailable")

@@ -213,7 +213,7 @@ class LiveRunPipelineAdapter:
         """Return the number of healing records available for pipeline consumption."""
         try:
             return self._intake_adapter.store.count()
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             return 0
 
     def build_pipeline_deps(self, repo_root: Any, healing_config_optimizer: Any | None = None) -> Any:

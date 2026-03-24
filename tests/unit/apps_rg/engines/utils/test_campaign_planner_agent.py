@@ -40,6 +40,6 @@ class TestCampaignPlannerAgentSource:
             try:
                 import importlib
                 importlib.import_module("apps_rg.reasoning.CampaignPlannerAgent")
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 pass
         assert len(network_calls) == 0

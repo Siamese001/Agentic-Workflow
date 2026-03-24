@@ -194,7 +194,7 @@ class HealingCycle:
             from agentic_core.L2_execution.healers.healing_event_emitter import get_healing_emitter
 
             emitter = get_healing_emitter()
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             raise
             emitter = None
         passed_agents: list[str] = []
@@ -210,7 +210,7 @@ class HealingCycle:
                     try:
                         self.ctx.signals.discard(sig)
                         passed_agents.append(f"signal:{sig}")
-                    except Exception:
+                    except (ValueError, TypeError, RuntimeError) as e:
                         raise
                         failed_agents.append(f"signal:{sig}")
                 converged = len(failed_agents) == 0

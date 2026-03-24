@@ -210,7 +210,7 @@ def scan_source_files(project_root: Path) -> list[SourceFile]:
                     if isinstance(node, ast.ClassDef):
                         class_name = node.name
                         break
-            except:
+            except (ValueError, TypeError, RuntimeError) as e:
                 pass
 
             expected_test = get_expected_test_territory(py_file, project_root)

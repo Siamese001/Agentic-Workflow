@@ -316,7 +316,7 @@ class TestAtomicConcurrency:
         try:
             atomic_mixin.execute_atomic(failing_operation, target_file=test_file)
             pytest.fail("Operation should have raised an exception")
-        except Exception:  # guardian: allow-silent-swallower
+        except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower
             pass
 
         # File should be in a valid state (rolled back to original)

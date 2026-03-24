@@ -530,7 +530,7 @@ class MetaLearningObservability:
         try:
             start = datetime.fromisoformat(self.stats["start_time"])
             return (datetime.now() - start).total_seconds()
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             return 0.0
 
     # ==================== DASHBOARD DATA ====================

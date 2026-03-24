@@ -226,7 +226,7 @@ class ValidationContextManager(CachedStateLedger):
         full_key: Any = f"{self.prefix_context}:{key}"
         try:
             self.redis.delete(full_key)
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             raise
             pass
 

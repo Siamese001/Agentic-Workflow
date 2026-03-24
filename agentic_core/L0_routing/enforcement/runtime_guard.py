@@ -274,7 +274,7 @@ def _guarded_call(
             correlation_id,
         )
         return result
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
         Logger.debug(
@@ -316,7 +316,7 @@ async def _async_guarded_call(
             correlation_id,
         )
         return result
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         # TODO: Handle specific exception properly
         raise  # Re-raise after logging/handling
         Logger.debug(

@@ -174,7 +174,7 @@ def find_long_lines() -> None:
                                 )
                                 ConfigurationService().Logger.info(f"  {line[:150]}...")
                                 ConfigurationService().Logger.info("")
-                except Exception:
+                except (ValueError, TypeError, RuntimeError) as e:
                     raise
                     ConfigurationService().Logger.warning("Swallowed exception", exc_info=True)
     ConfigurationService().Logger.info(f"\nTotal violations: {len(ConfigurationService().violations)}")

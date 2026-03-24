@@ -95,7 +95,7 @@ for f in ROOT.rglob("*.py"):
         continue
     try:
         src = f.read_text(encoding="utf-8", errors="ignore")
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         continue
     lines = []
     for i, line in enumerate(src.splitlines()):
@@ -172,7 +172,7 @@ for f in ROOT.rglob("*.py"):
     try:
         src = f.read_text(encoding="utf-8", errors="ignore")
         tree = ast.parse(src)
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         continue
     bad = []
     for node in ast.walk(tree):

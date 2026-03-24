@@ -477,7 +477,7 @@ class PascalSovereigntyFixer:
             if file_type == "AGENT" and not target_name.endswith("Agent"):
                 target_name += "Agent"
             return f"{target_name}.py"
-        except:
+        except (ValueError, TypeError, RuntimeError) as e:
             return None
 
 

@@ -17,7 +17,7 @@ try:
         is_agent_file,
     )
     _AVAILABLE = True
-except Exception:  # guardian: allow-silent-swallow
+except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
     _AVAILABLE = False
     is_agent_file = None  # type: ignore[assignment,misc]
     infer_rationale = None  # type: ignore[assignment,misc]

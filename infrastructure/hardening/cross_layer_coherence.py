@@ -207,7 +207,7 @@ class VersionManager:
                     return False
 
             return len(v1_parts) > len(v2_parts)
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             return version1 > version2
 
 

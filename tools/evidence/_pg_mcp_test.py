@@ -55,7 +55,7 @@ finally:
     proc.terminate()
     try:
         proc.wait(timeout=3)
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         proc.kill()
     stderr_out = proc.stderr.read()
     if stderr_out:

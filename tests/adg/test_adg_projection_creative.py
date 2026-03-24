@@ -80,7 +80,7 @@ try:
     _r_probe = _redis_lib.Redis(host="localhost", port=6379, db=14, decode_responses=True)
     _r_probe.ping()
     _REDIS_OK = True
-except Exception:
+except (ValueError, TypeError, RuntimeError) as e:
     _REDIS_OK = False
 
 _emit_applies_guardrail("projection_creative_test", "test_harness", "L5")

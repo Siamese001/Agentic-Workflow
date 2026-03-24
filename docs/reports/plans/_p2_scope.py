@@ -23,7 +23,7 @@ for f in root.rglob('*.py'):
             matches.append((i+1, s[:110]))
         if matches:
             results.append((rel, matches))
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         pass
 
 print(f'Files with live SOVEREIGN_TERRITORIES usage: {len(results)}')

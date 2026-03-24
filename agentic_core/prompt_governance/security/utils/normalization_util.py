@@ -77,7 +77,7 @@ def _base64_high_confidence_decode(text: str) -> str | None:
         return None
     try:
         raw = base64.b64decode(stripped, validate=True)
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         return None
     try:
         decoded = raw.decode("utf-8")

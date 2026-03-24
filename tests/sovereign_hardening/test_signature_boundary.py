@@ -241,7 +241,7 @@ class TestSignatureBoundary:
                 )
             except SignatureBoundaryError:
                 pytest.fail("Valid signature must NOT raise SignatureBoundaryError")
-            except Exception:  # guardian: allow-silent-swallower
+            except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower
                 pass  # Other exceptions (e.g. tool logic) are acceptable
 
     @pytest.mark.asyncio

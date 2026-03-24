@@ -231,7 +231,7 @@ class ConfigWithLogicDetector(AntiPatternDetector):
 
         try:
             source_lines = file_path.read_text(encoding="utf-8").splitlines()
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             raise
             source_lines = []
 

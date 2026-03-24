@@ -239,5 +239,5 @@ class TestUtilsSecurityUtil:
         # Should not raise for a benign command like 'git'
         try:
             validate_command_whitelist(["git", "status"])
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             pass  # Some implementations always validate against a strict whitelist

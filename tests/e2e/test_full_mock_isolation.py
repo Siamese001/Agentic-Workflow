@@ -204,7 +204,7 @@ print(f"ENV_VAR_STATUS: {test_var}")
         try:
             requests.get("https://api.example.com/intent")
             # This will be mocked
-        except:
+        except (ValueError, TypeError, RuntimeError) as e:
             pass
 
     def _simulate_complete_e2e_workflow(self):

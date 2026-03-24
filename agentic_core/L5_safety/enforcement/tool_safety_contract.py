@@ -512,7 +512,7 @@ def invoke_tool_safely(
 
             _at = get_active_execution_trace()
             trace_id = _at.trace_id if _at else ""
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             trace_id = ""
 
     # --- ADG edges: applies_guardrail, validated_by_safety_plane ---

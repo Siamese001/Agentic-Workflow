@@ -12,7 +12,7 @@ import pytest
 pytestmark = pytest.mark.unit
 try:
     import agentic_core.L5_safety.types.validation_result_types as _mod  # noqa: F401  # ADG covers
-except Exception:
+except (ValueError, TypeError, RuntimeError) as e:
     _mod = None
 
 

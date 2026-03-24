@@ -315,7 +315,7 @@ class ReportLocationAgent(AtomicExecutionMixin):
                 cwd=str(self.project_root),
             )
             return result.returncode == 0
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             return False
 
     def git_move(self, source: Path, destination: Path) -> bool:
@@ -331,7 +331,7 @@ class ReportLocationAgent(AtomicExecutionMixin):
                 cwd=str(self.project_root),
             )
             return result.returncode == 0
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             return False
 
     def backup_file(self, file_path: Path) -> Path | None:

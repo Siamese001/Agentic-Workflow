@@ -245,7 +245,7 @@ async def test_resilience_to_garbage_input():
     # Should not raise exception, but return failure/warning status
     try:
         result = await orch.run("Job")
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         raise AssertionError("Orchestrator crashed on empty input instead of handling gracefully")
 
     # Verify graceful handling - SUCCESS is acceptable if no crash occurred

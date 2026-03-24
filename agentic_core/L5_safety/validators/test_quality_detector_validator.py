@@ -480,7 +480,7 @@ class TestQualityDetector(AntiPatternDetector):
 
         try:
             source_lines = file_path.read_text(encoding="utf-8").splitlines()
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             return violations
 
         is_adg_stub = file_path.name.endswith("_adg.py")

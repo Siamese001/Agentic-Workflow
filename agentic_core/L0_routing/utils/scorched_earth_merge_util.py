@@ -211,7 +211,7 @@ try:
         "DEFAULT_ADMIN": CORE / "L0_routing/automation",
     }
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
-except Exception:  # guardian: allow-silent-swallow
+except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
     pass
 
 

@@ -222,14 +222,14 @@ class TestInvokePromptExists:
         for _ in range(threshold + 1):
             try:
                 executor._circuit_breaker.record_failure()
-            except Exception:  # guardian: allow-silent-swallower
+            except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower
                 pass
 
         # Check that raise_if_open raises when circuit is open
         raised = False
         try:
             executor._circuit_breaker.raise_if_open()
-        except Exception:  # guardian: allow-silent-swallower
+        except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower
             raised = True
 
         assert raised, "Circuit breaker should raise when open"

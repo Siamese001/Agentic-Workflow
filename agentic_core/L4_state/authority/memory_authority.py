@@ -496,7 +496,7 @@ class MemoryAuthority:
 
                 _at = get_active_execution_trace()
                 trace_id = _at.trace_id if _at else ""
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 trace_id = ""
 
         write_record = MemoryWriteRecord.create(

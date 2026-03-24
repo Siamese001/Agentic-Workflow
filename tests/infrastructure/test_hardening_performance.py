@@ -476,7 +476,7 @@ class TestInfrastructureStress(unittest.TestCase):
                 asyncio.run(
                     circuit_breaker.call(lambda: (_ for _ in ()).throw(Exception(f"Stress failure {i}")))
                 )
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 failure_count += 1
 
         stress_time = time.time() - start_time
@@ -491,7 +491,7 @@ class TestInfrastructureStress(unittest.TestCase):
         for i in range(20):
             try:
                 asyncio.run(circuit_breaker.call(lambda: "test"))
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 fail_fast_count += 1
 
         fail_fast_time = time.time() - start_time

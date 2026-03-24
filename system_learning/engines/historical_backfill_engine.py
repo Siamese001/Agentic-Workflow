@@ -248,7 +248,7 @@ def backfill_protected_root_blocks(
 
             dt = datetime.fromisoformat(ts_utc.replace("Z", "+00:00"))
             created_utc = int(dt.replace(tzinfo=timezone.utc).timestamp())
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             pass
 
         entry = {

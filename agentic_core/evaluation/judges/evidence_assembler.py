@@ -71,7 +71,7 @@ class EvidenceAssembler:
         try:
             db_name = Path(conn.execute("PRAGMA database_list").fetchone()[2]).stem
             return db_name
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             return ""
 
     def _get_module_node_id(self, conn: sqlite3.Connection, module_path: str) -> int | None:

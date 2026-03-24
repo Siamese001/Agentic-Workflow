@@ -267,7 +267,7 @@ class GravityValidatorAgent:
                 tree = _ast.parse(_Path(fp_str).read_text(encoding="utf-8", errors="replace"))
                 _ast_cache[fp_str] = tree
                 return tree
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 _ast_cache[fp_str] = None
                 return None
 

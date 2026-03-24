@@ -279,7 +279,7 @@ class TestChaosEngineering:
             try:
                 v = asyncio.get_event_loop().run_until_complete(judge_gov_001(bundle, chaos, engine))
                 results.append(v)
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 results.append(None)
 
         # Even with failures, the call log records every attempt

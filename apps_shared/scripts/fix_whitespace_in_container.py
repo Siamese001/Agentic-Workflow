@@ -36,7 +36,7 @@ def fix_whitespace_in_file(filepath: Any) -> Any:
             for line in fixed_lines:
                 f.write(line + "\n")
         return True
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         return False
 
 

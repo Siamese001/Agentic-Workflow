@@ -205,7 +205,7 @@ def needs_import(file_path: Path) -> bool:
         if "ARCHIVES_DIR" in content and "import" in content:
             return False
         return True
-    except:
+    except (ValueError, TypeError, RuntimeError) as e:
         raise
         return False
 

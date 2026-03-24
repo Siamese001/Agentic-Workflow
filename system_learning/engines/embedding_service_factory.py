@@ -360,7 +360,7 @@ class EmbeddingServiceFactory:
             import faiss
 
             return hasattr(faiss, "StandardGpuResources")
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             return False
 
     @staticmethod

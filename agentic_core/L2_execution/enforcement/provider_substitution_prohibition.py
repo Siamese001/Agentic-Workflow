@@ -355,5 +355,5 @@ def test_provider_substitution_prohibition() -> bool:
         except ProviderSubstitutionViolation:
             return False
         return True
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         return False

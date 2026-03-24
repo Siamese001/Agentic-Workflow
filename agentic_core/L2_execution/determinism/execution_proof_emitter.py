@@ -409,7 +409,7 @@ class ExecutionProofEmitter:
                     result = fn(*args, **kwargs)
                     self.emit(operation, (time.monotonic() - start) * 1000.0, success=True)
                     return result
-                except Exception:
+                except (ValueError, TypeError, RuntimeError) as e:
                     self.emit(operation, (time.monotonic() - start) * 1000.0, success=False)
                     raise
 

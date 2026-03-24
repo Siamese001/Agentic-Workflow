@@ -384,7 +384,7 @@ def test_no_direct_sdk_imports_in_agents():
                 if "from vertexai import" in content and "client_wrappers" not in str(py_file):
                     violations.append(f"{py_file}: Direct VertexAI import")
 
-            except Exception:  # guardian: allow-silent-swallower
+            except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower
                 pass  # Skip files that can't be read
 
     # Log violations but don't fail - this is an audit, not enforcement yet

@@ -177,7 +177,7 @@ def count_methods(file_path: Path) -> int:
     try:
         content = file_path.read_text(encoding="utf-8")
         return sum(1 for line in content.split("\n") if line.strip().startswith("def "))
-    except:
+    except (ValueError, TypeError, RuntimeError) as e:
         return 0
 
 
@@ -186,7 +186,7 @@ def has_pattern(file_path: Path, pattern: str) -> bool:
     try:
         content = file_path.read_text(encoding="utf-8")
         return pattern in content
-    except:
+    except (ValueError, TypeError, RuntimeError) as e:
         return False
 
 
@@ -194,7 +194,7 @@ def count_lines(file_path: Path) -> int:
     """Count lines in file."""
     try:
         return len(file_path.read_text(encoding="utf-8").split("\n"))
-    except:
+    except (ValueError, TypeError, RuntimeError) as e:
         return 0
 
 

@@ -202,7 +202,7 @@ class DependencyGraph:
                             self.graph[file_path]["imports"].append(node.module)
                     elif isinstance(node, ast.ClassDef):
                         self.graph[file_path]["classes"].append(node.name)
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 raise
                 pass
         for file, data in self.graph.items():

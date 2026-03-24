@@ -416,7 +416,7 @@ class TestIntegration:
         # In real implementation, rollback would restore state
         try:
             durable_write(mock_operation, raise_exception=True)
-        except Exception:  # guardian: allow-silent-swallower
+        except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower
             pass  # Expected failure
 
         # Rollback logic would restore to initial state

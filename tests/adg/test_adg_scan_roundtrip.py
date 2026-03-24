@@ -557,7 +557,7 @@ class TestRegressionLockBannedRelations:
                 edges = _scan(src, tmp_path, filename=f"fixture_{excl.replace('.', '_')}.py")
                 bad = [e for e in edges if e.relation_type == "writes_to" and excl in (e.symbol or "")]
                 assert not bad, f"Excluded symbol '{excl}' must not produce writes_to edge"
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 pass  # Some source strings may not parse cleanly
 
     def test_future_import_never_tagged_dead(self, tmp_path):

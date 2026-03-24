@@ -402,7 +402,7 @@ class TestRollbackRefiner:
             decision = refiner.refine(request=request)
             # If it succeeds, the decision should be valid
             assert decision is not None
-        except Exception:  # guardian: allow-silent-swallower
+        except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower
             # If it fails, that's also acceptable for empty candidates
             pass
 

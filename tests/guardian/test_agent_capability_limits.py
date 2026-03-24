@@ -467,7 +467,7 @@ class TestAgentCapabilityLimits:
                             else:
                                 legacy_violations.append(violation)
 
-                except Exception:  # guardian: allow-silent-swallower
+                except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower
                     continue
 
         # Sort deterministically
@@ -535,7 +535,7 @@ class TestAgentCapabilityLimits:
                             }
                         )
 
-                except Exception:  # guardian: allow-silent-swallower
+                except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower
                     continue
 
         mutations.sort(key=lambda x: (x["file"], x["line"]))

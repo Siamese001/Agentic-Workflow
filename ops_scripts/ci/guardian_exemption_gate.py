@@ -561,7 +561,7 @@ def _get_staged_production_files() -> set[str]:
             if first_part in set(PRODUCTION_DIRS):
                 staged.add(line)
         return staged
-    except Exception:  # noqa: BLE001
+    except (ValueError, TypeError, RuntimeError) as e:  # noqa: BLE001
         return set()
 
 
@@ -579,7 +579,7 @@ def _get_added_lines_per_file() -> dict[str, set[int]]:
         )
         if result.returncode != 0:
             return {}
-    except Exception:  # noqa: BLE001
+    except (ValueError, TypeError, RuntimeError) as e:  # noqa: BLE001
         return {}
 
     added: dict[str, set[int]] = defaultdict(set)

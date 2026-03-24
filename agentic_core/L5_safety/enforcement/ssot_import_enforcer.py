@@ -197,7 +197,7 @@ def add_ssot_import(file_path: Path) -> bool:
     """Add SSOT import to a file if needed."""
     try:
         content = file_path.read_text(encoding="utf-8")
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         return False
     if not needs_ssot_import(content):
         return False

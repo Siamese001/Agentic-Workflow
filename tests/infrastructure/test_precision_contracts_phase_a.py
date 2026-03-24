@@ -232,7 +232,7 @@ class TestPrecisionCircuitBreaker(unittest.TestCase):
         for i in range(3):
             try:
                 breaker.call(lambda: 1/0)  # Division by zero
-            except:
+            except (ValueError, TypeError, RuntimeError) as e:
                 pass  # Expected failure
 
         self.assertEqual(breaker.state, PrecisionCircuitBreaker.State.OPEN)
@@ -265,7 +265,7 @@ class TestPrecisionCircuitBreaker(unittest.TestCase):
                     breaker.call(lambda: "success")
                 else:
                     breaker.call(lambda: 1/0)  # Will fail
-            except:
+            except (ValueError, TypeError, RuntimeError) as e:
                 pass  # Expected failures
 
         metrics = breaker.get_metrics()

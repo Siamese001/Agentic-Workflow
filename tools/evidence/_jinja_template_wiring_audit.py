@@ -35,7 +35,7 @@ def check_deprecated(template_path):
     try:
         content = template_path.read_text(encoding="utf-8")[:500]
         return "DEPRECATED" in content
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         return False
 
 
@@ -49,7 +49,7 @@ def check_registry(template_name):
     try:
         reg = json.loads(reg_path.read_text(encoding="utf-8"))
         return template_name in reg.get("prompts", {})
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         return False
 
 

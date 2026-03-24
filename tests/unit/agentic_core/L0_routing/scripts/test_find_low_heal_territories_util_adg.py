@@ -25,7 +25,7 @@ try:
         BUFFER_SIZE = None  # type: ignore[assignment,misc]
         BATCH_SIZE = None  # type: ignore[assignment,misc]
         MAX_DEPTH = None  # type: ignore[assignment,misc]
-except Exception:  # guardian: allow-silent-swallow
+except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
     pass
 
 

@@ -212,7 +212,7 @@ try:
             from collections import Counter
     except (FileNotFoundError, OSError):  # guardian: allow-silent-swallow
         pass
-except Exception:  # guardian: allow-silent-swallow
+except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
     pass
 
     print(Counter(all_invocations))

@@ -293,7 +293,7 @@ def _guarded_connect(self, address: tuple[str, int] | str) -> None:
         import inspect
 
         caller_module = inspect.stack()[1].frame.f_globals.get("__name__")
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         raise
         pass
     check_network_egress_allowed(hostname, port, caller_module)
@@ -346,5 +346,5 @@ def test_egress_guard() -> bool:
         return False
     except NetworkEgressViolation:
         return True
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         return False

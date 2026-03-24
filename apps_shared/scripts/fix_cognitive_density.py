@@ -32,7 +32,7 @@ def count_top_level_defs(filepath: Path) -> int:
         return sum(
             1 for n in tree.body if isinstance(n, ast.FunctionDef | ast.ClassDef | ast.AsyncFunctionDef)
         )
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         return 0
 
 

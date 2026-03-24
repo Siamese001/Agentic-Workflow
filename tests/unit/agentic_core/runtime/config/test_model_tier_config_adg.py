@@ -20,7 +20,7 @@ try:
         TaskComplexity,
     )
     _AVAILABLE = True
-except Exception:  # guardian: allow-silent-swallow
+except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
     ModelTier = None  # type: ignore[assignment,misc]
     TaskComplexity = None  # type: ignore[assignment,misc]
     ModelConfig = None  # type: ignore[assignment,misc]

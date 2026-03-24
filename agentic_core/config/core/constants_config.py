@@ -60,7 +60,7 @@ CACHE_METRICS_ENABLED: bool = os.getenv("CACHE_METRICS_ENABLED", "false").lower(
 try:
     _DET, _GED, _SEF = _get_ssot_exclusions()
     DEFAULT_EXCLUDE_DIRS: frozenset[str] = _GED | _SEF | _DET
-except Exception:  # guardian: allow-silent-swallow
+except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
     DEFAULT_EXCLUDE_DIRS: frozenset[str] = frozenset({"__pycache__", ".git", "node_modules", "venv", ".venv", "archives"})
 
 

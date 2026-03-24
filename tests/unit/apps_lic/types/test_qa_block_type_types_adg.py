@@ -12,7 +12,7 @@ import pytest
 pytestmark = pytest.mark.unit
 try:
     import apps_lic.types.qa_block_type_types as _mod  # noqa: F401  # ADG covers
-except Exception:
+except (ValueError, TypeError, RuntimeError) as e:
     _mod = None
 
 

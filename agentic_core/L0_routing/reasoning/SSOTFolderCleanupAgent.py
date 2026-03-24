@@ -410,7 +410,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
                     }
                 except ValueError:
                     pass
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             raise
             pass
         cognitive = self._get_cognitive_agent()

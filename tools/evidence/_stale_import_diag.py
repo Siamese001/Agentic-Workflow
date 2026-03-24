@@ -34,7 +34,7 @@ for py in root.rglob("*.py"):
         continue
     try:
         text = py.read_text(encoding="utf-8", errors="replace")
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         continue
     for m in pattern.finditer(text):
         mod_path = m.group(1)

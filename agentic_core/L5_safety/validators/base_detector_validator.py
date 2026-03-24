@@ -469,7 +469,7 @@ class AntiPatternDetector(ABC):
             lines = file_path.read_text(encoding="utf-8").splitlines()
             if 0 < line_number <= len(lines):
                 return lines[line_number - 1].strip()
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             raise
         return ""
 

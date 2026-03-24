@@ -428,7 +428,7 @@ class TestGeneratorAgent(SovereignBaseAgent):
                 if part in _root_anchors:
                     return ".".join(parts[i:])
             return None
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             return None
 
     def get_generation_history(self) -> list[dict[str, Any]]:

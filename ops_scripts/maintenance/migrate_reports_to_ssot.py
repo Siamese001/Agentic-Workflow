@@ -285,7 +285,7 @@ class ReportMigrator:
         try:
             result = subprocess.run(['git', 'ls-files', '--error-unmatch', str(file_path)], cwd=self.project_root, capture_output=True, text=True)
             return result.returncode == 0
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             raise
             return False
 
@@ -295,7 +295,7 @@ class ReportMigrator:
             destination.parent.mkdir(parents=True, exist_ok=True)
             result = subprocess.run(['git', 'mv', str(source), str(destination)], cwd=self.project_root, capture_output=True, text=True)
             return result.returncode == 0
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             raise
             return False
 
@@ -305,7 +305,7 @@ class ReportMigrator:
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.move(str(source), str(destination))
             return True
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             raise
             return False
 
@@ -319,7 +319,7 @@ class ReportMigrator:
             backup_path.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(file_path, backup_path)
             return backup_path
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             raise
             return None
 

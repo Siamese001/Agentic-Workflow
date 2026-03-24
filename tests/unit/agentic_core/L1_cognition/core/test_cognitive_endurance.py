@@ -21,7 +21,7 @@ try:
         GoldenContextMixin,
     )
     _AVAILABLE = True
-except Exception:  # guardian: allow-silent-swallow
+except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
     sanitize_tool_output = None  # type: ignore[assignment,misc]
     GOLDEN_CONTEXT_SUMMARY = ""  # type: ignore[assignment,misc]
     THRESHOLD = 0.95  # type: ignore[assignment,misc]

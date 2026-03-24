@@ -292,5 +292,5 @@ def validate_module_config(config: dict[str, Any]) -> bool:
     try:
         create_processor(config)
         return True
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         return False

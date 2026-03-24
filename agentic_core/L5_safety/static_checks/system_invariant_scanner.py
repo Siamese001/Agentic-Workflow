@@ -256,7 +256,7 @@ class SystemInvariantScanner(ast.NodeVisitor):
                     lines = f.readlines()
                     if 0 <= node.lineno - 1 < len(lines):
                         self.current_line_content = lines[node.lineno - 1].strip()
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 raise
                 self.current_line_content = ""
         super().visit(node)

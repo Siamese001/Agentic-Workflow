@@ -12,7 +12,7 @@ import pytest
 pytestmark = pytest.mark.unit
 try:
     import agentic_core.runtime.config.contextual_router_config as _mod  # noqa: F401  # ADG covers
-except Exception:
+except (ValueError, TypeError, RuntimeError) as e:
     _mod = None
 
 

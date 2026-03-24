@@ -212,7 +212,7 @@ for p in all_py:
         if v:
             v["file"] = str(Path(v["file"]).relative_to(ROOT)).replace("\\", "/")
             layer_violations.append(v)
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         raise
 
 # Tag parse

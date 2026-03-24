@@ -9,7 +9,7 @@ _AVAILABLE = False
 try:
     import agentic_core.L0_routing.scripts.verify_base_agent_names_util as _mod  # noqa: F401
     _AVAILABLE = True
-except Exception:  # guardian: allow-silent-swallow
+except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
     _mod = None
 
 

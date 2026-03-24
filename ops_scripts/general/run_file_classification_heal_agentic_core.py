@@ -208,7 +208,7 @@ def run_healing_with_detailed_report():
             rel_path = str(path.relative_to(project_root))
             file_type = agent.classify_file(path)
             detailed_report['file_classifications'][rel_path] = file_type
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             raise
             pass
     detailed_report['idempotence_verification'] = {'description': 'Second run should show zero actions if idempotent', 'recommendation': 'Re-run this script to verify zero violations_fixed'}

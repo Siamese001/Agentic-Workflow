@@ -225,7 +225,7 @@ class TestPipelineStep8RealRecords:
                 cfg=cfg,
                 deps=deps,
             )
-        except Exception:  # guardian: allow-silent-swallower
+        except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower
             pass  # pipeline may raise on missing deps; that is acceptable here
             # What we verify is the source AST invariant above
 

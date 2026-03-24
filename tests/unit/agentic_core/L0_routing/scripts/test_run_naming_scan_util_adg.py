@@ -16,7 +16,7 @@ try:
         THRESHOLD,
     )
     _AVAILABLE = True
-except Exception:  # guardian: allow-silent-swallow
+except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
     MAX_RETRIES = None  # type: ignore[assignment,misc]
     DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
     THRESHOLD = None  # type: ignore[assignment,misc]

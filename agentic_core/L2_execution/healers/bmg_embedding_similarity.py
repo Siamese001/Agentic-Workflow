@@ -220,7 +220,7 @@ def _is_cuda_available() -> bool:
 
         torch_mod = importlib.import_module("torch")
         return bool(torch_mod.cuda.is_available())
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         return False
 
 

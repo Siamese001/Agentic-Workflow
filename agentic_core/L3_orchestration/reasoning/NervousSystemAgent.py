@@ -354,7 +354,7 @@ class NervousSystemAgent(SovereignBaseAgent):
                         info["weight"] = max(1.0, info["weight"] * 0.8)
                         if info["weight"] <= 1.1:
                             del self.coverage_bias_state[layer]
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 raise
                 pass
 

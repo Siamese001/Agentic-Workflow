@@ -40,6 +40,6 @@ class TestBrandComplianceAgentSource:
             try:
                 import importlib
                 importlib.import_module("apps_rg.reasoning.BrandComplianceAgent")
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 pass
         assert len(network_calls) == 0

@@ -500,7 +500,7 @@ class MemoryManager:
                 process = psutil.Process()
                 stats["process_memory_mb"] = process.memory_info().rss / 1024 / 1024
                 stats["process_memory_percent"] = process.memory_percent()
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 raise
                 stats["process_memory_mb"] = 0
                 stats["process_memory_percent"] = 0

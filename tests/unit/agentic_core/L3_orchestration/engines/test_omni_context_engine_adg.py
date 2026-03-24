@@ -12,7 +12,7 @@ import pytest
 pytestmark = pytest.mark.unit
 try:
     import agentic_core.L3_orchestration.engines.omni_context_engine as _mod  # noqa: F401  # ADG covers
-except Exception:
+except (ValueError, TypeError, RuntimeError) as e:
     _mod = None
 
 

@@ -56,7 +56,7 @@ def main():
                     original_path.parent.mkdir(parents=True, exist_ok=True)
                     shutil.move(str(target_path), str(original_path))
                     reverted += 1
-                except Exception:
+                except (ValueError, TypeError, RuntimeError) as e:
                     raise
                     errors += 1
             else:

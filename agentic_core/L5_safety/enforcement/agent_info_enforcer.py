@@ -415,7 +415,7 @@ def generate_fingerprint(file_path: str, class_name: str) -> tuple[str, str]:
         ast.fix_missing_locations(normalized)
         try:
             normalized_code = ast.unparse(normalized)
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             raise
             normalized_code = ast.dump(normalized)
         fingerprint = hashlib.sha256(normalized_code.encode()).hexdigest()[:16]

@@ -260,7 +260,7 @@ class OrchestrationHandoffContract:
 
                 tc = get_trace_context()
                 trace_id = getattr(tc, "trace_id", "") or ""
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 trace_id = ""
 
         now = get_clock().now_epoch()

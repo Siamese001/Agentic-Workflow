@@ -324,7 +324,7 @@ def analyze_file(file_path: Path) -> SleepingGiant | None:
     """Analyze a single file for Sleeping Giant patterns."""
     try:
         content = file_path.read_text(encoding="utf-8")
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         return None
 
     # Quick filter - must be an Agent file

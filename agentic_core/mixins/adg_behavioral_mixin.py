@@ -219,7 +219,7 @@ class ADGBehavioralMixin:
                 return None
             rel = Path(src).resolve().relative_to(Path(project_root).resolve())
             return rel.as_posix()
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             return None
 
     def _adg_load_profile(self) -> Any:

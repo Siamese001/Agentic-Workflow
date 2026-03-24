@@ -276,7 +276,7 @@ def analyze_file(file_path: Path) -> AgentAnalysis | None:
     """Analyze a single agent file for cache-first patterns."""
     try:
         content = file_path.read_text(encoding="utf-8")
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         return None
 
     # Extract class name

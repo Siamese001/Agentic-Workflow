@@ -236,7 +236,7 @@ class OrchestrationContext:
 
                 tc = get_trace_context()
                 parent_trace_id = getattr(tc, "trace_id", "") or ""
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 parent_trace_id = ""
         if not routing_decision_id:
             key = f"{run_id}:{parent_agent_id}:{workflow_stage}:{get_clock().now_epoch()}"

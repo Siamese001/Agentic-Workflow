@@ -521,7 +521,7 @@ def enforce_policy_before_action(
         guardrail_outcome = _apply_guardrail_check(
             action_class, action_name, resolved_hash, actor_id, trace_id
         )
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         guardrail_outcome = PolicyOutcome.ERROR
 
     # Step 4 — Safety plane for high-risk classes (validated_by_safety_plane edge)
@@ -531,7 +531,7 @@ def enforce_policy_before_action(
             safety_outcome = _run_safety_plane(
                 action_class, action_name, resolved_hash, actor_id, trace_id, meta
             )
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             safety_outcome = PolicyOutcome.ERROR
 
     # Step 5 — Produce decision (fail-closed merge)

@@ -322,7 +322,7 @@ class TestFreezeGateNegativeControls:
             run_pipeline(cfg=cfg, deps=deps, window_start_utc=0, window_end_utc=100, now_utc=50)
         except PipelineError as e:  # guardian: allow-silent-swallower
             assert "freeze" not in str(e).lower(), f"Should not be a freeze error, got: {e}"
-        except Exception:  # guardian: allow-silent-swallower
+        except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower
             pass  # Other errors from minimal deps are acceptable
 
 
@@ -566,7 +566,7 @@ class TestDualInjectionGuardViaRealPipeline:
         except PipelineError as e:  # guardian: allow-silent-swallower
             assert "partial injection" not in str(e), f"Guard must not fire for proposal_only=True: {e}"
             assert "version_store required when proposal_only=False" not in str(e)
-        except Exception:  # guardian: allow-silent-swallower
+        except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower
             pass  # Other errors from minimal deps are acceptable
 
     def test_window_boundary_start_equals_end_raises_pipeline_error(self):
@@ -590,7 +590,7 @@ class TestDualInjectionGuardViaRealPipeline:
             run_pipeline(cfg=cfg, deps=deps, window_start_utc=99, window_end_utc=100, now_utc=200)
         except PipelineError as e:  # guardian: allow-silent-swallower
             assert "Invalid window" not in str(e), f"Window guard must not fire: {e}"
-        except Exception:  # guardian: allow-silent-swallower
+        except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower
             pass
 
 
@@ -1082,7 +1082,7 @@ class TestShadowTelemetryBatchStateful:
 
         try:
             run_pipeline(cfg=cfg, deps=deps, window_start_utc=0, window_end_utc=100, now_utc=50)
-        except Exception:  # guardian: allow-silent-swallower
+        except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower
             pass
 
         assert m._shadow_telemetry_batch == []
@@ -1099,6 +1099,6 @@ class TestShadowTelemetryBatchStateful:
             m._shadow_telemetry_batch = [{"run": _call}]
             try:
                 run_pipeline(cfg=cfg, deps=deps, window_start_utc=0, window_end_utc=100, now_utc=50)
-            except Exception:  # guardian: allow-silent-swallower
+            except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower
                 pass
             assert m._shadow_telemetry_batch == [], f"Batch must be cleared on call {_call}"

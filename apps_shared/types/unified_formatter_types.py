@@ -703,7 +703,7 @@ class JSONFormatter(FormatterStrategy):
             if isinstance(data, str):
                 try:
                     parsed = json.loads(data)
-                except Exception:
+                except (ValueError, TypeError, RuntimeError) as e:
                     raise
                     parsed = {"text": data}
             else:

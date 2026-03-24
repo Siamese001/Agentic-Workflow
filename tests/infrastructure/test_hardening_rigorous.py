@@ -238,7 +238,7 @@ class TestFailureScenarios(unittest.TestCase):
                 asyncio.run(
                     circuit_breaker.call(lambda: (_ for _ in ()).throw(Exception(f"Gradual failure {i}")))
                 )
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 pass
 
         # Should still be closed (below threshold)
@@ -250,7 +250,7 @@ class TestFailureScenarios(unittest.TestCase):
                 asyncio.run(
                     circuit_breaker.call(lambda: (_ for _ in ()).throw(Exception(f"Trigger failure {i}")))
                 )
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 pass
 
         # Should be open now
@@ -263,7 +263,7 @@ class TestFailureScenarios(unittest.TestCase):
         # Should allow one call (half-open state)
         try:
             asyncio.run(circuit_breaker.call(lambda: "recovery_test"))
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             pass  # Expected to fail in half-open state
 
     def test_cache_corruption_scenarios(self):
@@ -605,7 +605,7 @@ class TestMemoryAndResourceLeaks(unittest.TestCase):
                     LayerType.REDIS_EXACT_MATCH, "circular_ref_test", invalid_data, "v1.0.0", 3600
                 )
             )
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             pass  # Expected to fail
 
         # Cache should still be functional
@@ -978,7 +978,7 @@ class TestChaosEngineering(unittest.TestCase):
                                     lambda: (_ for _ in ()).throw(Exception("Chaos failure"))
                                 )
                             )
-                        except Exception:
+                        except (ValueError, TypeError, RuntimeError) as e:
                             pass
 
             # Try query
@@ -995,7 +995,7 @@ class TestChaosEngineering(unittest.TestCase):
                 if responses[0].status == QueryStatus.COMPLETED:
                     successful_queries += 1
 
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 pass
 
         # System should maintain reasonable success rate under chaos
@@ -1039,7 +1039,7 @@ class TestChaosEngineering(unittest.TestCase):
                     )
                     if data is not None:
                         recovered_count += 1
-                except Exception:
+                except (ValueError, TypeError, RuntimeError) as e:
                     pass
 
             # System should recover most data

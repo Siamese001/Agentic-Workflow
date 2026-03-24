@@ -241,7 +241,7 @@ class TypeErasureDetector(AntiPatternDetector):
         # Read source for whitelist comment checking
         try:
             source_lines = file_path.read_text(encoding="utf-8").splitlines()
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             raise
             source_lines = []
 
@@ -386,7 +386,7 @@ class TypeErasureDetector(AntiPatternDetector):
             elif isinstance(node, ast.Attribute):
                 return node.attr
             return ast.unparse(node)
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             raise
             return None
 

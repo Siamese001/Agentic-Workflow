@@ -355,5 +355,5 @@ class InjectionDetector:
                 )
             evaluate_against_baseline(current_metrics, baseline_metrics, gate_thresholds)
             return True
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             return False

@@ -52,7 +52,7 @@ def _get_staged_diff() -> str:
             cwd=str(_REPO_ROOT),
         )
         return result.stdout if result.returncode == 0 else ""
-    except Exception:
+    except (ValueError, TypeError, RuntimeError) as e:
         return ""
 
 

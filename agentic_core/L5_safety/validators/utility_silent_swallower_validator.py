@@ -286,7 +286,7 @@ class RetryPatternDetector:
                         return True
 
             return False
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             raise
             return False
 

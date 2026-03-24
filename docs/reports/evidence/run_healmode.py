@@ -39,7 +39,7 @@ except SystemExit as e:
     code = e.code if e.code is not None else 0
     if code != 0:
         ec = f"EXIT_{code}"
-except Exception:
+except (ValueError, TypeError, RuntimeError) as e:
     ec = "FAIL"
     exec_err = traceback.format_exc()
 

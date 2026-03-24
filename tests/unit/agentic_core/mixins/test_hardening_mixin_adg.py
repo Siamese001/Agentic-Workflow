@@ -173,7 +173,7 @@ try:
     from agentic_core.mixins.hardening_mixin import HardeningMixin, TokenLimitError
 
     _IMPORT_OK = True
-except Exception:
+except (ValueError, TypeError, RuntimeError) as e:
     _IMPORT_OK = False
     HardeningMixin = None  # type: ignore[assignment,misc]
     TokenLimitError = None  # type: ignore[assignment,misc]

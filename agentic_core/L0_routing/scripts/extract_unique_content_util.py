@@ -204,7 +204,7 @@ def analyze_archive_file(file_path: Path, existing_classes: set[str], existing_f
     try:
         content = file_path.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(content)
-    except:
+    except (ValueError, TypeError, RuntimeError) as e:
         return {"error": True}
 
     unique_classes = []

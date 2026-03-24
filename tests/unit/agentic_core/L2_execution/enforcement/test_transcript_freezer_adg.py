@@ -170,7 +170,7 @@ try:
     _emit_gated_by_confidence("p1", "test_transcript_freezer_adg", "confidence_gate")
     from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_writes_through
     _AVAILABLE = True
-except Exception:  # guardian: allow-silent-swallow
+except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
     pass
 
 pytestmark = pytest.mark.skipif(not _AVAILABLE, reason="transcript_freezer.py deps unavailable")

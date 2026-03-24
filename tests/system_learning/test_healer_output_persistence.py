@@ -756,7 +756,7 @@ class TestWave4PriorRecordMerge:
                 continue
             try:
                 rec = json.loads(raw.decode("utf-8"))
-            except Exception:  # guardian: allow-silent-swallower
+            except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower
                 continue
             # No exception should propagate
         assert aggregator.event_count == 0  # Nothing was merged from corrupted record
@@ -799,7 +799,7 @@ class TestWave4PriorRecordMerge:
                 continue
             try:
                 rec = json.loads(raw.decode("utf-8"))
-            except Exception:  # guardian: allow-silent-swallower
+            except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower
                 continue
             for s in rec.get("snapshot", []):
                 for _ in range(int(s.get("success_count", 0))):
@@ -970,7 +970,7 @@ class TestFireMetaLearningIntakeFaultIsolation:
                                 success=True,
                             )
                         )
-            except Exception:  # guardian: allow-silent-swallower
+            except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower
                 continue
         assert aggregator.event_count >= 1
 

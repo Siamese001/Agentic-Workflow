@@ -275,7 +275,7 @@ class MetaLearningStorage:
             return None
         try:
             return cls._memory.get_statistics()
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             return None
 
     @classmethod
@@ -326,7 +326,7 @@ class MetaLearningStorage:
             return None
         try:
             return cls._graph_bridge.get_statistics()
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             return None
 
     @classmethod

@@ -268,7 +268,7 @@ class AgentRegistry:
                 class_ref = self._get_class_reference(file_path, primary.name)
                 if class_ref:
                     instance = class_ref()
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 raise
                 instance = Mock()
             agent = DiscoveredAgentRecord(

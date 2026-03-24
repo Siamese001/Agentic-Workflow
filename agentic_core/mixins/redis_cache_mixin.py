@@ -353,7 +353,7 @@ class RedisCacheMixin:
         if self.redis:
             try:
                 await self.redis.delete(full_key)
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 raise
                 pass
 
@@ -371,7 +371,7 @@ class RedisCacheMixin:
                 if keys:
                     await self.redis.delete(*keys)
                     deleted += len(keys)
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 raise
                 pass
         prefix = f"{self._cache_prefix}:"

@@ -359,7 +359,7 @@ class MetaLearningAgent(SovereignBaseAgent):
                 _fh.flush()
                 os.fsync(_fh.fileno())
             tmp.replace(dest)
-        except Exception:
+        except (ValueError, TypeError, RuntimeError) as e:
             if tmp.exists():
                 tmp.unlink(missing_ok=True)
             raise

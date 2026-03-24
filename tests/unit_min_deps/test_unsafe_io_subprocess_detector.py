@@ -302,7 +302,7 @@ def read_something():
                                 content = f.read()
                             findings = scan_for_unsafe_patterns(content, str(py_file.relative_to(repo_root)))
                             all_findings.extend(findings)
-                        except Exception:  # guardian: allow-silent-swallower
+                        except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower
                             # Skip files that can't be read
                             pass
 

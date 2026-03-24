@@ -339,7 +339,7 @@ def _gate_determinism(proposal: OptimizationProposal) -> tuple[bool, str | None]
     try:
         spec_json = deterministic_json(dict(proposal.change_spec))
         _ = spec_json  # consume
-    except Exception:  # guardian: allow-silent-swallow
+    except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
         return False, "CHANGE_SPEC_NOT_SERIALIZABLE"
 
     # Verify proposal_id is a valid SHA-256 hexdigest

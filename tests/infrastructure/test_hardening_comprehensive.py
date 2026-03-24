@@ -107,7 +107,7 @@ class TestUnifiedQueryRouter(unittest.TestCase):
                         lambda: asyncio.sleep(0.01) or (_ for _ in ()).throw(Exception("Test failure"))
                     )
                 )
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 pass
 
         # Should be OPEN now
@@ -787,7 +787,7 @@ class TestInfrastructureIntegration(unittest.TestCase):
         for _ in range(6):
             try:
                 await circuit_breaker.call(lambda: (_ for _ in ()).throw(Exception("Simulated failure")))
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 pass
 
         self.assertEqual(circuit_breaker.state.value, "open")
@@ -911,7 +911,7 @@ class TestInfrastructureStress(unittest.TestCase):
         for i in range(20):
             try:
                 asyncio.run(circuit_breaker.call(lambda: (_ for _ in ()).throw(Exception(f"Failure {i}"))))
-            except Exception:
+            except (ValueError, TypeError, RuntimeError) as e:
                 failure_count += 1
 
         # Circuit should be open after threshold

@@ -186,13 +186,13 @@ class TemporalEvent:
 
 try:
     from agentic_core.L4_state.enforcement.neo4j_store import Neo4jGraphStore
-except Exception:
+except (ValueError, TypeError, RuntimeError) as e:
     Neo4jGraphStore = None  # type: ignore[assignment]
 
 try:
     _neo4j_graph: Neo4jGraphStore | None = Neo4jGraphStore() if Neo4jGraphStore else None
     _NEO4J_AVAILABLE = True
-except Exception:
+except (ValueError, TypeError, RuntimeError) as e:
     _neo4j_graph = None
     _NEO4J_AVAILABLE = False
 
