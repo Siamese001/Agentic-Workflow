@@ -483,6 +483,7 @@ class ADGArtifactBuilder:
                     source_file=rel_path,
                     line_no=0,
                     symbol=layer,
+                    semantic_type="layer_membership",
                 )
             )
 
