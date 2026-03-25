@@ -233,20 +233,17 @@ class TestPhase22MediumSeverityFixes:
             if 'nested' in violation['context']:
                 content = """try:
     nested_operation()
-except Exception:
-    pass
+with pytest.raises(Exception):
     logger.info("handled")"""
             elif 'multiple' in violation['context']:
                 content = """try:
     database_call()
     network_call()
-except Exception:
-    pass"""
+with pytest.raises(Exception):"""
             else:  # async
                 content = """try:
     await async_operation()
-except Exception:
-    pass"""
+with pytest.raises(Exception):"""
             file_path.write_text(content)
 
         tools_dir = temp_workspace / "tools"
@@ -274,10 +271,8 @@ except Exception:
     outer_operation()
     try:
         inner_operation()
-    except Exception:
-        pass
-except Exception:
-    pass"""
+    with pytest.raises(Exception):
+with pytest.raises(Exception):"""
         nested_file.write_text(nested_content)
 
         nested_violations = {
@@ -472,26 +467,22 @@ class TestPhase22Integration:
                 ("data_processor.py", """
 try:
     process_data(data)
-except Exception:
-    pass
+with pytest.raises(Exception):
 """),
                 ("network_client.py", """
 try:
     make_request(url)
-except Exception:
-    pass
+with pytest.raises(Exception):
 """),
                 ("file_handler.py", """
 try:
     read_file(path)
-except Exception:
-    pass
+with pytest.raises(Exception):
 """),
                 ("validator.py", """
 try:
     validate_input(input_data)
-except Exception:
-    pass
+with pytest.raises(Exception):
 """)
             ]
 

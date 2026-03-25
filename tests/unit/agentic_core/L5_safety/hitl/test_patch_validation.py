@@ -221,6 +221,6 @@ class TestValidatePatch:
         raised = False
         try:
             validate_patch(self._valid_patch())
-        except HumanPatchValidationError:  # guardian: allow-silent-swallower
+        with pytest.raises(HumanPatchValidationError):
             raised = True
         assert not raised

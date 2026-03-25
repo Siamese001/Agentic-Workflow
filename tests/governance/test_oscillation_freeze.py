@@ -212,7 +212,7 @@ class TestOscillationDetectorBasic:
         self.detector.record_change("p", 2, cycle=2)
         try:
             self.detector.record_change("p", 1, cycle=3)
-        except ParameterFrozenError:  # guardian: allow-silent-swallower
+        with pytest.raises(ParameterFrozenError):
             pass
         with pytest.raises(ParameterFrozenError):
             self.detector.record_change("p", 3, cycle=4)
@@ -223,7 +223,7 @@ class TestOscillationDetectorBasic:
         detector.record_change("p", 2, cycle=2)
         try:
             detector.record_change("p", 1, cycle=3)  # triggers freeze until cycle 6
-        except ParameterFrozenError:  # guardian: allow-silent-swallower
+        with pytest.raises(ParameterFrozenError):
             pass
         # cycle 4,5,6 still frozen; cycle 7 past freeze_until=6 and uses brand-new value
         assert detector.is_frozen("p", cycle=6) is True
@@ -234,7 +234,7 @@ class TestOscillationDetectorBasic:
         self.detector.record_change("param_a", 2, cycle=2)
         try:
             self.detector.record_change("param_a", 1, cycle=3)
-        except ParameterFrozenError:  # guardian: allow-silent-swallower
+        with pytest.raises(ParameterFrozenError):
             pass
         # param_b unaffected
         self.detector.record_change("param_b", 0.9, cycle=3)
@@ -251,7 +251,7 @@ class TestOscillationDetectorIsFrozen:
         d.record_change("p", 2, cycle=2)
         try:
             d.record_change("p", 1, cycle=3)
-        except ParameterFrozenError:  # guardian: allow-silent-swallower
+        with pytest.raises(ParameterFrozenError):
             pass
         assert d.is_frozen("p", cycle=4) is True
 
@@ -261,7 +261,7 @@ class TestOscillationDetectorIsFrozen:
         d.record_change("p1", 2, cycle=2)
         try:
             d.record_change("p1", 1, cycle=3)
-        except ParameterFrozenError:  # guardian: allow-silent-swallower
+        with pytest.raises(ParameterFrozenError):
             pass
         assert d.frozen_count() >= 1
 
@@ -281,7 +281,7 @@ class TestOscillationDetectorConstructor:
         d.record_change("p", 2, cycle=2)
         try:
             d.record_change("p", 1, cycle=3)
-        except ParameterFrozenError:  # guardian: allow-silent-swallower
+        with pytest.raises(ParameterFrozenError):
             pass
         d.reset_for_testing()
         # after reset, should allow changes again

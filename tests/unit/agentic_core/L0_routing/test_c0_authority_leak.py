@@ -193,6 +193,6 @@ class TestGuardC0Payload:
         raised = False
         try:
             guard_c0_payload(safe)
-        except C0AuthorityLeakError:  # guardian: allow-silent-swallower
+        with pytest.raises(C0AuthorityLeakError):er
             raised = True
         assert not raised

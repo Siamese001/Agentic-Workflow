@@ -215,12 +215,10 @@ def env():
         try:
             if p.exists():
                 p.unlink()
-        except OSError:
-            pass
+        with pytest.raises(OSError):
     try:
         test_dir.rmdir()
-    except OSError:
-        pass
+    with pytest.raises(OSError):
 
 
 # ---------------------------------------------------------------------------

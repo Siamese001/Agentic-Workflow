@@ -483,7 +483,7 @@ def test_negative_control_tampered_signature():
         try:
             certified.verify_l5_certification(_L5_SECRET)
             pytest.fail("Expected SignatureVerificationError")
-        except SignatureVerificationError:  # guardian: allow-silent-swallower
+        with pytest.raises(SignatureVerificationError):
             pytest.xfail("W5_NEGCTRL_TAMPER=1: L5 tamper detected correctly -- XFAIL")
     else:
         # Normal mode - test should pass

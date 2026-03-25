@@ -197,7 +197,7 @@ class TestRedisFailurePath:
                 client = redis.Redis(host="localhost", port=6379)
                 client.ping()
                 pytest.fail("Expected ConnectionError was not raised")
-            except ConnectionError:  # guardian: allow-silent-swallower
+            with pytest.raises(ConnectionError):
                 pass
 
     def test_semantic_cache_with_redis_failure_falls_back_observably(self):

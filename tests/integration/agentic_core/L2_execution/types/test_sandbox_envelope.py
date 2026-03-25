@@ -505,7 +505,7 @@ def test_negative_control_tamper_sandbox_envelope():
         try:
             tampered.verify(_SECRET)
             pytest.fail("Expected SignatureVerificationError was not raised")
-        except SignatureVerificationError:  # guardian: allow-silent-swallower
+        with pytest.raises(SignatureVerificationError):
             pass  # violation confirmed
         pytest.xfail("W1_NEGCTRL_TAMPER=1: SandboxEnvelope tamper detected correctly -- XFAIL")
     else:

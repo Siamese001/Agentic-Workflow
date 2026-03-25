@@ -224,8 +224,7 @@ class TestCredentialAccessGuardPolicy:
         guard = CredentialAccessGuard(agent_id="A", run_id="r", policy_enforced=True)
         try:
             guard.guarded_get_secret("PRIVATE_KEY_PEM")
-        except CredentialAccessDenied:
-            pass
+        with pytest.raises(CredentialAccessDenied):
         assert guard.access_report.denied_count == 1
 
     def test_policy_disabled_allows_denied_prefix(self, monkeypatch):

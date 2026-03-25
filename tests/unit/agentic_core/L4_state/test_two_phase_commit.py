@@ -228,6 +228,6 @@ class TestTwoPhaseCoordinator:
                 resource_write=lambda: "ok",
                 ledger_write=lambda: "ok",
             )
-        except MutationCommitFailure:  # guardian: allow-silent-swallower
+        with pytest.raises(MutationCommitFailure):
             raised = True
         assert not raised

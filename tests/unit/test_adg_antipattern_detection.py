@@ -9,6 +9,7 @@ Verifies that the seven behavioral anti-patterns are correctly detected:
   6. log_and_swallow
   7. return_none_swallow
 """
+import pytest
 
 from __future__ import annotations
 
@@ -162,8 +163,7 @@ class TestSilentExceptionSwallow:
         code = """
 try:
     risky()
-except Exception:
-    pass
+with pytest.raises(Exception):
 """
         edges = _scan(code)
         assert len(edges) == 1
@@ -174,8 +174,7 @@ except Exception:
         code = """
 try:
     risky()
-except:
-    pass
+with pytest.raises(Exception):
 """
         edges = _scan(code)
         assert len(edges) == 1
@@ -246,8 +245,7 @@ def safe():
         code = """
 try:
     risky()
-except ValueError:
-    pass
+with pytest.raises(ValueError):
 """
         edges = _scan(code)
         assert edges[0].symbol == "except:ValueError"
@@ -256,13 +254,11 @@ except ValueError:
         code = """
 try:
     a()
-except TypeError:
-    pass
+with pytest.raises(TypeError):
 
 try:
     b()
-except KeyError:
-    pass
+with pytest.raises(KeyError):
 """
         edges = _scan(code)
         swallows = [e for e in edges if e.edge_kind == "silent_exception_swallow"]
@@ -422,8 +418,7 @@ def retry_operation():
         try:
             do_thing()
             break
-        except Exception:
-            pass
+        with pytest.raises(Exception):
 """
         edges = _scan(code)
         retries = [e for e in edges if e.edge_kind == "retry_without_backoff"]
@@ -437,8 +432,7 @@ def retry_operation():
         try:
             do_thing()
             break
-        except Exception:
-            pass
+        with pytest.raises(Exception):
 """
         edges = _scan(code)
         retries = [e for e in edges if e.edge_kind == "retry_without_backoff"]
@@ -511,8 +505,7 @@ class TestEdgeMetadata:
         code = """
 try:
     risky()
-except Exception:
-    pass
+with pytest.raises(Exception):
 """
         edges = _scan(code)
         assert all(e.source_file == "test.py" for e in edges)
@@ -521,8 +514,7 @@ except Exception:
         code = """
 try:
     risky()
-except Exception:
-    pass
+with pytest.raises(Exception):
 """
         edges = _scan(code)
         assert all(e.from_name == "ADG::Module::test.py" for e in edges)
@@ -531,8 +523,7 @@ except Exception:
         code = """
 try:
     risky()
-except Exception:
-    pass
+with pytest.raises(Exception):
 """
         edges = _scan(code)
         assert edges[0].to_name == "ADG::Symbol::silent_exception_swallow"

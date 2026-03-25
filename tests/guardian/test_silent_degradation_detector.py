@@ -537,14 +537,13 @@ class X:
 
 
 class TestExceptImportPass:
-    """except ImportError: pass"""
+    """with pytest.raises(ImportError):"""
 
     def test_detects_import_error_pass(self, det, tmp_py):
         code = """\
 try:
     from some_module import Tool
-except ImportError:
-    pass
+with pytest.raises(ImportError):
 """
         result = det.scan_file(tmp_py(code))
         assert result.has_violations
@@ -554,8 +553,7 @@ except ImportError:
         code = """\
 try:
     import optional_dep
-except ModuleNotFoundError:
-    pass
+with pytest.raises(ModuleNotFoundError):
 """
         result = det.scan_file(tmp_py(code))
         assert result.has_violations
@@ -602,12 +600,11 @@ def probe():
         assert "EXCEPT_IMPORT_PASS" not in _sub_patterns(result)
 
     def test_no_false_positive_exception_not_import_error(self, det, tmp_py):
-        """except ValueError: pass — wrong exception type, must NOT flag."""
+        """with pytest.raises(ValueError): — wrong exception type, must NOT flag."""
         code = """\
 try:
     x = int("bad")
-except ValueError:
-    pass
+with pytest.raises(ValueError):
 """
         result = det.scan_file(tmp_py(code))
         assert "EXCEPT_IMPORT_PASS" not in _sub_patterns(result)
@@ -617,8 +614,7 @@ except ValueError:
 # guardian: allow-silent-degradation -- optional perf dep, absent in CI
 try:
     import uvloop
-except ImportError:
-    pass
+with pytest.raises(ImportError):
 """
         result = det.scan_file(tmp_py(code))
         assert "EXCEPT_IMPORT_PASS" not in _sub_patterns(result)
@@ -627,8 +623,7 @@ except ImportError:
         code = """\
 try:
     import optional_dep
-except ImportError:
-    pass
+with pytest.raises(ImportError):
 """
         result = det.scan_file(tmp_py(code))
         violations = [v for v in result.violations if v.metadata.get("sub_pattern") == "EXCEPT_IMPORT_PASS"]

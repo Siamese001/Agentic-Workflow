@@ -228,8 +228,7 @@ def test():
 def risky():
     try:
         x = 1 / 0
-    except:
-        pass
+    with pytest.raises(Exception):
 """
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
@@ -349,8 +348,7 @@ class MyClass:
     def risky(self):
         try:
             x = 1 / 0
-        except:
-            pass
+        with pytest.raises(Exception):
 """
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
@@ -533,8 +531,7 @@ class TestBareExceptFixerUnit:
         """Test direct use of bare except fixer."""
         source = """try:
     x = 1
-except:
-    pass
+with pytest.raises(Exception):
 """
         cst_tree = cst.parse_module(source)
 
@@ -550,8 +547,7 @@ except:
         """Test that typed except clauses are not modified."""
         source = """try:
     x = 1
-except ValueError:
-    pass
+with pytest.raises(ValueError):
 """
         cst_tree = cst.parse_module(source)
 

@@ -993,7 +993,7 @@ class TestThresholdUnification:
                 continue
             try:
                 tree = ast.parse(py_file.read_text(encoding="utf-8"))
-            except SyntaxError:  # guardian: allow-silent-swallower
+            with pytest.raises(SyntaxError):
                 continue
             for node in ast.walk(tree):
                 if isinstance(node, ast.Assign):

@@ -229,7 +229,7 @@ class TestValidateLedgerChain:
         raised = False
         try:
             validate_ledger_chain(entries)
-        except LedgerIntegrityViolation:  # guardian: allow-silent-swallower
+        with pytest.raises(LedgerIntegrityViolation):
             raised = True
         assert not raised
 

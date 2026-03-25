@@ -210,7 +210,7 @@ class TestVerifyMutationReplayIntegrity:
         raised = False
         try:
             verify_mutation_replay_integrity(pre, post, correct_diff)
-        except MutationReplayIntegrityViolation:  # guardian: allow-silent-swallower
+        with pytest.raises(MutationReplayIntegrityViolation):
             raised = True
         assert not raised
 

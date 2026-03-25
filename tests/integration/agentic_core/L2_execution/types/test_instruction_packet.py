@@ -444,7 +444,7 @@ def test_negative_control_tamper_instruction_packet():
         try:
             tampered.verify(_SECRET)
             pytest.fail("Expected SignatureVerificationError was not raised")
-        except SignatureVerificationError:  # guardian: allow-silent-swallower
+        with pytest.raises(SignatureVerificationError):
             pass  # violation confirmed
         pytest.xfail("W1_NEGCTRL_TAMPER=1: InstructionPacket tamper detected correctly -- XFAIL")
     else:

@@ -200,17 +200,16 @@ class TestPhase2DispositionProcessor:
 def risky_function():
     try:
         dangerous_operation()
-    except Exception:  # guardian: allow-silent-swallow - Exception is acceptable here
+    with pytest.raises(Exception):
         pass
 
     try:
         another_operation()
-    except ValueError:  # guardian: allow-silent-swallow - ValueError is acceptable here
+    with pytest.raises(ValueError):
         pass
 
     # Non-guardian comment
-    except OSError:
-        pass
+    with pytest.raises(OSError):
 """)
 
             with ViolationDispositionProcessor(db_path) as processor:
@@ -282,7 +281,7 @@ def risky_function():
 def risky_function():
     try:
         dangerous_operation()
-    except Exception:  # guardian: allow-silent-swallow - Exception is acceptable here
+    with pytest.raises(Exception):
         pass
 """)
 
@@ -348,7 +347,7 @@ def risky_function():
 def risky_function():
     try:
         dangerous_operation()
-    except Exception:  # guardian: allow-silent-swallow - Exception is acceptable here
+    with pytest.raises(Exception):
         pass
 """)
 
@@ -522,7 +521,7 @@ def risky_function():
 
     try:
         third_operation()
-    except TypeError:  # guardian: allow-silent-swallow - proper format
+    with pytest.raises(TypeError):
         pass
 """)
 

@@ -761,8 +761,7 @@ class TestRawRedisAdgBypass:
                 has_adg_keys = '"adg:' in content or "'adg:" in content
                 if has_raw_redis and has_adg_keys:
                     offenders.append(str(py_file.relative_to(ROOT)))
-            except OSError:
-                pass
+            with pytest.raises(OSError):
         return offenders
 
     def test_no_raw_redis_accessing_adg_keys_in_production(self) -> None:

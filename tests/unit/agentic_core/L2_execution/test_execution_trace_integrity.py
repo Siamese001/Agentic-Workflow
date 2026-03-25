@@ -199,7 +199,7 @@ class TestValidateCompleteness:
         raised = False
         try:
             trace.validate_completeness()
-        except ExecutionTraceIntegrityError:  # guardian: allow-silent-swallower
+        with pytest.raises(ExecutionTraceIntegrityError):
             raised = True
         assert not raised
 

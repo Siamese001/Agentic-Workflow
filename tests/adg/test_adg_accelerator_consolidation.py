@@ -675,8 +675,7 @@ class TestProductionSkipFileProtection:
                     if "adg-grep-ban" in line.lower() and "skip-file" in line.lower():
                         offenders.append(py_file)
                         break
-            except OSError:
-                pass
+            with pytest.raises(OSError):
         return offenders
 
     def test_agentic_core_has_no_skip_file_directive(self) -> None:
@@ -734,8 +733,7 @@ class TestProductionSkipFileProtection:
                     if line.lstrip().startswith("#") and _FILE_SKIP_RE.search(line):
                         offenders.append(py_file)
                         break
-            except OSError:
-                pass
+            with pytest.raises(OSError):
         assert not offenders, (
             "CI gate files in ops_scripts/ci/ must NOT have the skip-file directive:\n"
             + "\n".join(f"  {p}" for p in offenders)

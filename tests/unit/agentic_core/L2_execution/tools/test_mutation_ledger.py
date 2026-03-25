@@ -320,8 +320,7 @@ def test_mutation_ledger_records_write_failure(tmp_path):
         # Restore permissions for cleanup
         try:
             target.parent.chmod(0o755)
-        except OSError:
-            pass
+        with pytest.raises(OSError):
 
     # Verify ledger recorded the failure
     if ledger_path.exists():

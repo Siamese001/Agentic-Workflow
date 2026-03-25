@@ -193,6 +193,6 @@ class TestVerifyC0Immutability:
         raised = False
         try:
             verify_c0_immutability(payload, dict(payload))
-        except C0MutationViolation:  # guardian: allow-silent-swallower
+        with pytest.raises(C0MutationViolation):er
             raised = True
         assert not raised

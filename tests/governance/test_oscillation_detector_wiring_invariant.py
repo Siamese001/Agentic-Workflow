@@ -384,7 +384,7 @@ class TestDeterminism:
             det.record_change("p", 0.7, cycle=2)
             try:
                 det.record_change("p", 0.5, cycle=3)
-            except ParameterFrozenError:  # guardian: allow-silent-swallower
+            with pytest.raises(ParameterFrozenError):
                 pass
             return det.is_frozen("p", cycle=8), det.is_frozen("p", cycle=9)
 
@@ -415,7 +415,7 @@ class TestConcurrentSafety:
             try:
                 for i in range(1, 6):
                     det.record_change(param, i * 0.1, cycle=i)
-            except ParameterFrozenError:  # guardian: allow-silent-swallower
+            with pytest.raises(ParameterFrozenError):
                 pass
             except Exception as exc:  # guardian: allow-silent-swallower
                 errors.append(exc)
@@ -437,7 +437,7 @@ class TestConcurrentSafety:
                 det.record_change(param, 0.5, cycle=1)
                 det.record_change(param, 0.7, cycle=2)
                 det.record_change(param, 0.5, cycle=3)
-            except ParameterFrozenError:  # guardian: allow-silent-swallower
+            with pytest.raises(ParameterFrozenError):
                 freeze_errors.append(param)
 
         threads = [threading.Thread(target=oscillate, args=(f"osc_{n}",)) for n in range(4)]

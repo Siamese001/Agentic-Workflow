@@ -740,8 +740,7 @@ class TestEnhancedClientDedup:
                 content = py_file.read_text(encoding="utf-8", errors="replace")
                 if "enhanced_redis_mcp_client" in content:
                     offenders.append(str(py_file.relative_to(ROOT)))
-            except OSError:
-                pass
+            with pytest.raises(OSError):
         return offenders
 
     def test_enhanced_client_not_imported_in_production_dirs(self) -> None:
@@ -766,8 +765,7 @@ class TestEnhancedClientDedup:
                     content = py_file.read_text(encoding="utf-8", errors="replace")
                     if "enhanced_redis_mcp_client" in content:
                         offenders.append(py_file.name)
-                except OSError:
-                    pass
+                with pytest.raises(OSError):
         assert not offenders, (
             "tools/adg/ modules must NOT import enhanced_redis_mcp_client.\n"
             "Offending files: " + ", ".join(offenders)

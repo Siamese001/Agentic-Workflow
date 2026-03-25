@@ -303,8 +303,7 @@ except (OSError, UnicodeDecodeError, SyntaxError):
             else:  # scenario exceptions
                 content = """try:
     scenario_test()
-except _SCENARIO_EXCEPTIONS:
-    pass"""
+with pytest.raises(_SCENARIO_EXCEPTIONS):"""
             file_path.write_text(content)
 
         tools_dir = temp_workspace / "tools"
@@ -499,26 +498,22 @@ class TestPhase23Integration:
                 ("syntax_handler.py", """
 try:
     parse_code()
-except SyntaxError:
-    pass
+with pytest.raises(SyntaxError):
 """),
                 ("file_handler.py", """
 try:
     open_file()
-except OSError:
-    pass
+with pytest.raises(OSError):
 """),
                 ("encoding_handler.py", """
 try:
     read_with_encoding()
-except UnicodeDecodeError:
-    pass
+with pytest.raises(UnicodeDecodeError):
 """),
                 ("permission_handler.py", """
 try:
     restricted_operation()
-except PermissionError:
-    pass
+with pytest.raises(PermissionError):
 """)
             ]
 

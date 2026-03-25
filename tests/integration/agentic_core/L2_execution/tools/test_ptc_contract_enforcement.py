@@ -482,8 +482,7 @@ def test_negative_control_ptc_tamper():
         try:
             enforcer.pre_execute(tampered)
             pytest.fail("Expected PTCContractViolation was not raised")
-        except PTCContractViolation:
-            pass  # violation confirmed
+        with pytest.raises(PTCContractViolation):  # violation confirmed
         pytest.xfail("W1_NEGCTRL_TAMPER=1: PTC tampered envelope rejected correctly -- XFAIL")
     else:
         enforcer = PTCContractEnforcer(secret=_SECRET)

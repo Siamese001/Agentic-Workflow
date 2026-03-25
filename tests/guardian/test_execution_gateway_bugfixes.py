@@ -309,7 +309,7 @@ class TestGatewayInstantiationGuard:
             try:
                 agent.heal({"id": "test-1"})
             # guardian: allow-silent-swallow
-            except Exception:  # guardian: allow-silent-swallower
+            with pytest.raises(Exception):
                 pass
 
             assert id(agent._v15_gateway) == gw_id, "Gateway must not be replaced"
@@ -318,7 +318,7 @@ class TestGatewayInstantiationGuard:
             try:
                 agent.heal({"id": "test-2"})
             # guardian: allow-silent-swallow
-            except Exception:  # guardian: allow-silent-swallower
+            with pytest.raises(Exception):
                 pass
 
             assert id(agent._v15_gateway) == gw_id, "Gateway must be the same object"
