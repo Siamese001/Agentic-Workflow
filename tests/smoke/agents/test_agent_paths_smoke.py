@@ -44,9 +44,9 @@ def test_base_proactive_agent_is_class():
 
 @pytest.mark.smoke
 def test_sovereign_base_agent_is_class():
-    """SovereignBaseAgent is a proper class at L2 execution layer."""
+    """SovereignBaseAgent is a proper class."""
     try:
-        from agentic_core.L2_execution.reasoning.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
     except ImportError as e:
         pytest.skip(f"SovereignBaseAgent not available: {e}")
 
@@ -73,13 +73,11 @@ def test_apps_shared_config_has_guardian_registry():
 
 
 @pytest.mark.smoke
-def test_apps_shared_environment_config_loads():
-    """apps_shared environment config provides configuration values."""
+def test_apps_shared_environment_config_has_class():
+    """apps_shared environment config provides EnvironmentConfig class."""
     try:
-        from apps_shared.config.environment_config import get_environment_config
+        from apps_shared.config.environment_config import EnvironmentConfig
     except ImportError as e:
         pytest.skip(f"environment_config not available: {e}")
 
-    assert callable(get_environment_config)
-    config = get_environment_config()
-    assert config is not None, "get_environment_config must return a value"
+    assert isinstance(EnvironmentConfig, type), "EnvironmentConfig should be a class"

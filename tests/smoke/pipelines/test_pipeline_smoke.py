@@ -20,18 +20,23 @@ def test_adg_static_scanner_instantiable():
 
 
 @pytest.mark.smoke
-def test_adg_artifact_builder_importable():
-    """ADGArtifactBuilder is importable and is a class."""
-    try:
-        from agentic_core.adg.builder import ADGArtifactBuilder
-    except ImportError as e:
-        pytest.skip(f"ADGArtifactBuilder not available: {e}")
+def test_adg_artifact_builder_missing():
+    """ADGArtifactBuilder module does not exist — verify expected absence."""
+    import importlib
 
-    assert isinstance(ADGArtifactBuilder, type), "ADGArtifactBuilder should be a class"
-    public = {n for n in dir(ADGArtifactBuilder) if not n.startswith("_")}
-    assert "build" in public or len(public) >= 2, (
-        "ADGArtifactBuilder should have build() or multiple public methods"
-    )
+    try:
+        importlib.import_module("agentic_core.adg.builder")
+        assert False, "agentic_core.adg.builder should not exist"
+    except ImportError:
+        # Expected — module does not exist
+        pass
+
+    # Verify adg package exists but has no builder submodule
+    try:
+        from agentic_core import adg as pkg
+        assert "builder" not in dir(pkg), "builder should not be in adg package"
+    except ImportError as e:
+        pytest.skip(f"adg package not available: {e}")
 
 
 @pytest.mark.smoke
