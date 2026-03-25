@@ -93,10 +93,9 @@ try:
     from agentic_core.adg.client.InMemoryStore import ADGMCPClient as _MCPFallbackClient
 
     _FALLBACK_AVAILABLE = True
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
     _FALLBACK_AVAILABLE = False
-
+# guardian: allow-silent-swallow - optional dependency
 try:
     from tools.memory.sqlite_memory_store import SqliteMemoryStore as _SqliteMemoryStore
 

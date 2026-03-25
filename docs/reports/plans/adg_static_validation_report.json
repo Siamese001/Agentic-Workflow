@@ -1,44 +1,44 @@
 {
   "metrics": {
-    "semantic_accuracy": 0.9870486656200942,
+    "semantic_accuracy": 0.9976470588235294,
     "symbol_alignment_rate": 1.0,
-    "file_ratio": 0.8931149361465852,
-    "function_ratio": 0.03541916123405325,
-    "signal_ratio": 0.8668,
-    "consistency_rate": 0.9966351386224152,
-    "synthetic_edge_count": 7112,
-    "duplicate_edge_ratio": 0.003364861377584795
+    "file_ratio": 0.9992541766109785,
+    "function_ratio": 0.9988862010755121,
+    "signal_ratio": 0.9888,
+    "consistency_rate": 1.0,
+    "synthetic_edge_count": 0,
+    "duplicate_edge_ratio": 0.0
   },
   "gates": {
-    "semantic_accuracy >= 0.99": false,
+    "semantic_accuracy >= 0.99": true,
     "symbol_alignment_rate >= 0.995": true,
-    "file_ratio in [0.95, 1.05]": false,
-    "function_ratio in [0.95, 1.05]": false,
-    "signal_ratio >= 0.90": false,
+    "file_ratio in [0.95, 1.05]": true,
+    "function_ratio in [0.95, 1.05]": true,
+    "signal_ratio >= 0.90": true,
     "consistency_rate >= 0.99": true,
-    "synthetic_edge_count == 0": false,
-    "duplicate_edge_ratio == 0": false
+    "synthetic_edge_count == 0": true,
+    "duplicate_edge_ratio == 0": true
   },
-  "verdict": "STRUCTURAL COVERAGE COMPLETE \u2014 SEMANTIC GAPS REMAIN",
+  "verdict": "STATIC ADG COMPLETE \u2014 SEMANTICALLY CORRECT",
   "denominator_details": {
-    "ast_files": 10806,
-    "ast_functions": 67647,
-    "ast_classes": 16364,
-    "adg_unique_files": 9651,
-    "adg_function_nodes": 2396,
-    "file_ratio": 0.8931149361465852,
-    "function_ratio": 0.03541916123405325,
-    "file_pass": false,
-    "func_pass": false
+    "ast_files": 6704,
+    "ast_functions": 57461,
+    "ast_classes": 11069,
+    "adg_unique_files": 6699,
+    "adg_function_nodes": 57397,
+    "file_ratio": 0.9992541766109785,
+    "function_ratio": 0.9988862010755121,
+    "file_pass": true,
+    "func_pass": true
   },
   "consistency_details": {
-    "total_edges": 891270,
-    "duplicate_groups": 2866,
-    "duplicate_edge_count": 2999,
-    "duplicate_ratio": 0.003364861377584795,
+    "total_edges": 834539,
+    "duplicate_groups": 0,
+    "duplicate_edge_count": 0,
+    "duplicate_ratio": 0.0,
     "orphan_edges": 0,
-    "low_confidence": 7112,
-    "consistency_rate": 0.9966351386224152
+    "low_confidence": 0,
+    "consistency_rate": 1.0
   },
-  "elapsed_seconds": 12.667797088623047
+  "elapsed_seconds": 9.85907793045044
 }

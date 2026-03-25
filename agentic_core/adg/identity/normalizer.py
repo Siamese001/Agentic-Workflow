@@ -292,7 +292,7 @@ class IdentityNormalizer:
     def _get_known_files(self) -> frozenset[str]:
         """Build a forward-slash repo-relative path set for all .py files."""
         if self._known_files is None:
-            paths = set()
+            paths: set[str] = set()
             for p in self._repo_root.rglob("*.py"):
                 try:
                     rel = p.relative_to(self._repo_root).as_posix()
@@ -300,8 +300,8 @@ class IdentityNormalizer:
                 except ValueError as e:
                     # TODO: Add proper input validation
                     logger.warning(f"Invalid input: {e}")
-                self._known_files = frozenset(paths)
-            return self._known_files
+            self._known_files = frozenset(paths)
+        return self._known_files
 
     @staticmethod
     def _dot_to_path(dot_name: str) -> str:
@@ -321,8 +321,11 @@ class IdentityNormalizer:
           7. Unresolved import
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "IdentityNormalizer.normalize")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "IdentityNormalizer.normalize"
+        )
 
         if raw_name in self._cache:
             return self._cache[raw_name]

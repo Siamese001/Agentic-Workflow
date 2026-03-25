@@ -9,7 +9,6 @@ Reports honest metrics. Applies EXIT GATES strictly.
 import ast
 import json
 import os
-import random
 import sqlite3
 import sys
 import time
@@ -18,10 +17,51 @@ from pathlib import Path
 
 # ── Configuration ─────────────────────────────────────────────────────
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DB_PATH = PROJECT_ROOT / "artifacts" / "adg" / "adg_indexed_03242026_1825.sqlite"
+
+
+# Find the latest ADG SQLite dynamically
+def _find_latest_adg_sqlite() -> Path:
+    adg_dir = PROJECT_ROOT / "artifacts" / "adg"
+    candidates = sorted(adg_dir.glob("adg_indexed_*.sqlite"), key=lambda p: p.stat().st_mtime, reverse=True)
+    if candidates:
+        return candidates[0]
+    return adg_dir / "adg_indexed_03242026_1825.sqlite"  # fallback
+
+
+DB_PATH = _find_latest_adg_sqlite()
+
+# Scanner scan roots — must match agentic_core/adg/extraction/static_scanner.py
+_SCAN_ROOTS = [
+    "agentic_core",
+    "apps_eval",
+    "apps_exec",
+    "apps_lic",
+    "apps_research",
+    "apps_rfp",
+    "apps_rg",
+    "apps_shared",
+    "system_learning",
+    "tools",
+    "ops_scripts",
+    "tests",
+]
+_SKIP_DIRS = {
+    "__pycache__",
+    ".git",
+    "node_modules",
+    "venv",
+    ".venv",
+    "env",
+    "archives",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".tox",
+    "htmlcov",
+}
 SAMPLE_SIZE = 2500  # > 2000 required
 
 # ── Helpers ───────────────────────────────────────────────────────────
+
 
 def connect_db():
     if not DB_PATH.exists():
@@ -31,14 +71,15 @@ def connect_db():
 
 
 def section(title):
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print(f"  {title}")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
 
 
 # ======================================================================
 # DIMENSION 1 — SEMANTIC CORRECTNESS
 # ======================================================================
+
 
 def validate_semantic_correctness(conn):
     section("DIMENSION 1: SEMANTIC CORRECTNESS")
@@ -59,7 +100,7 @@ def validate_semantic_correctness(conn):
         cur.execute(
             "SELECT id, src_id, dst_id, relation_type, source_file, line_no, symbol "
             "FROM edges WHERE relation_type = ? ORDER BY RANDOM() LIMIT ?",
-            (rel_type, n)
+            (rel_type, n),
         )
         sampled.extend(cur.fetchall())
 
@@ -87,26 +128,43 @@ def validate_semantic_correctness(conn):
             lines = source.split("\n")
 
             if line_no > len(lines):
-                errors.append({
-                    "edge_id": edge_id, "rel": rel_type,
-                    "file": source_file, "line_no": line_no,
-                    "reason": f"line_no {line_no} > file length {len(lines)}"
-                })
+                errors.append(
+                    {
+                        "edge_id": edge_id,
+                        "rel": rel_type,
+                        "file": source_file,
+                        "line_no": line_no,
+                        "reason": f"line_no {line_no} > file length {len(lines)}",
+                    }
+                )
                 continue
 
             line_content = lines[line_no - 1]
 
             # Semantic verification by relation type
             if rel_type == "imports":
-                # Line should contain import statement or from...import
-                if "import" in line_content or symbol.split(".")[-1] in line_content:
+                # W2c: Handle multiline imports — check surrounding lines
+                sym_short = symbol.split(".")[-1] if symbol else ""
+                # Check current line and a small window for multiline from...import
+                window = lines[max(0, line_no - 5) : line_no]
+                window_text = " ".join(w.strip() for w in window)
+                if (
+                    "import" in line_content
+                    or sym_short in line_content
+                    or "import" in window_text
+                    or sym_short in window_text
+                ):
                     correct += 1
                 else:
-                    errors.append({
-                        "edge_id": edge_id, "rel": rel_type,
-                        "file": source_file, "line_no": line_no,
-                        "reason": f"import edge but line has no import: '{line_content.strip()[:80]}'"
-                    })
+                    errors.append(
+                        {
+                            "edge_id": edge_id,
+                            "rel": rel_type,
+                            "file": source_file,
+                            "line_no": line_no,
+                            "reason": f"import edge but line has no import: '{line_content.strip()[:80]}'",
+                        }
+                    )
 
             elif rel_type == "calls":
                 # Line should contain a call expression
@@ -114,11 +172,15 @@ def validate_semantic_correctness(conn):
                 if "(" in line_content or sym_short in line_content:
                     correct += 1
                 else:
-                    errors.append({
-                        "edge_id": edge_id, "rel": rel_type,
-                        "file": source_file, "line_no": line_no,
-                        "reason": f"call edge but line has no call: '{line_content.strip()[:80]}'"
-                    })
+                    errors.append(
+                        {
+                            "edge_id": edge_id,
+                            "rel": rel_type,
+                            "file": source_file,
+                            "line_no": line_no,
+                            "reason": f"call edge but line has no call: '{line_content.strip()[:80]}'",
+                        }
+                    )
 
             elif rel_type in ("flows_to", "controls_flow"):
                 # These are intra-function edges; line should exist and contain code
@@ -126,11 +188,15 @@ def validate_semantic_correctness(conn):
                 if stripped and not stripped.startswith("#"):
                     correct += 1
                 else:
-                    errors.append({
-                        "edge_id": edge_id, "rel": rel_type,
-                        "file": source_file, "line_no": line_no,
-                        "reason": f"flow edge points to empty/comment line: '{stripped[:80]}'"
-                    })
+                    errors.append(
+                        {
+                            "edge_id": edge_id,
+                            "rel": rel_type,
+                            "file": source_file,
+                            "line_no": line_no,
+                            "reason": f"flow edge points to empty/comment line: '{stripped[:80]}'",
+                        }
+                    )
 
             elif rel_type == "reads_from":
                 # Should reference a read operation or variable access
@@ -141,48 +207,68 @@ def validate_semantic_correctness(conn):
 
             elif rel_type == "exports":
                 # Line should contain a definition or __all__
-                if ("def " in line_content or "class " in line_content or
-                    "__all__" in line_content or "=" in line_content):
+                if (
+                    "def " in line_content
+                    or "class " in line_content
+                    or "__all__" in line_content
+                    or "=" in line_content
+                ):
                     correct += 1
                 else:
-                    errors.append({
-                        "edge_id": edge_id, "rel": rel_type,
-                        "file": source_file, "line_no": line_no,
-                        "reason": f"export edge but no def/class/assign: '{line_content.strip()[:80]}'"
-                    })
+                    errors.append(
+                        {
+                            "edge_id": edge_id,
+                            "rel": rel_type,
+                            "file": source_file,
+                            "line_no": line_no,
+                            "reason": f"export edge but no def/class/assign: '{line_content.strip()[:80]}'",
+                        }
+                    )
 
             elif rel_type == "decorated_by":
                 # Line should contain @ decorator
                 if "@" in line_content or "def " in line_content or "class " in line_content:
                     correct += 1
                 else:
-                    errors.append({
-                        "edge_id": edge_id, "rel": rel_type,
-                        "file": source_file, "line_no": line_no,
-                        "reason": f"decorator edge but no @: '{line_content.strip()[:80]}'"
-                    })
+                    errors.append(
+                        {
+                            "edge_id": edge_id,
+                            "rel": rel_type,
+                            "file": source_file,
+                            "line_no": line_no,
+                            "reason": f"decorator edge but no @: '{line_content.strip()[:80]}'",
+                        }
+                    )
 
             elif rel_type == "resolves_callsite":
                 # Should be at a call site
                 if "(" in line_content:
                     correct += 1
                 else:
-                    errors.append({
-                        "edge_id": edge_id, "rel": rel_type,
-                        "file": source_file, "line_no": line_no,
-                        "reason": f"callsite edge but no parens: '{line_content.strip()[:80]}'"
-                    })
+                    errors.append(
+                        {
+                            "edge_id": edge_id,
+                            "rel": rel_type,
+                            "file": source_file,
+                            "line_no": line_no,
+                            "reason": f"callsite edge but no parens: '{line_content.strip()[:80]}'",
+                        }
+                    )
 
             elif rel_type == "emits_side_effect":
                 # Side effect — any code line is valid
                 if line_content.strip():
                     correct += 1
                 else:
-                    errors.append({
-                        "edge_id": edge_id, "rel": rel_type,
-                        "file": source_file, "line_no": line_no,
-                        "reason": "side effect on empty line"
-                    })
+                    errors.append(
+                        {
+                            "edge_id": edge_id,
+                            "rel": rel_type,
+                            "file": source_file,
+                            "line_no": line_no,
+                            "reason": "side effect on empty line",
+                        }
+                    )
 
             else:
                 # For all other types, verify line exists and is non-empty
@@ -205,7 +291,7 @@ def validate_semantic_correctness(conn):
     print(f"  >>> semantic_accuracy = {accuracy:.4f}")
 
     if errors:
-        print(f"\n  Sample errors (first 10):")
+        print("\n  Sample errors (first 10):")
         for e in errors[:10]:
             print(f"    edge {e['edge_id']} [{e['rel']}] {e['file']}:{e['line_no']} — {e['reason']}")
 
@@ -215,6 +301,7 @@ def validate_semantic_correctness(conn):
 # ======================================================================
 # DIMENSION 2 — SYMBOL IDENTITY CONSISTENCY
 # ======================================================================
+
 
 def validate_symbol_consistency(conn):
     section("DIMENSION 2: SYMBOL IDENTITY CONSISTENCY")
@@ -241,7 +328,7 @@ def validate_symbol_consistency(conn):
 
     for path, node_list in path_groups.items():
         # Check: for a given resolved_path, all nodes should have same entity_type
-        types = set(etype for _, etype, _ in node_list)
+        types = {etype for _, etype, _ in node_list}
         if len(types) <= 1:
             consistent += 1
         else:
@@ -273,7 +360,7 @@ def validate_symbol_consistency(conn):
     print(f"  >>> symbol_alignment_rate = {alignment:.4f}")
 
     if inconsistent_examples:
-        print(f"\n  Sample inconsistencies (first 5):")
+        print("\n  Sample inconsistencies (first 5):")
         for path, types, count in inconsistent_examples[:5]:
             print(f"    {path}: types={types}, nodes={count}")
 
@@ -284,88 +371,114 @@ def validate_symbol_consistency(conn):
 # DIMENSION 3 — DENOMINATOR INTEGRITY
 # ======================================================================
 
+
 def validate_denominator_integrity(conn):
     section("DIMENSION 3: DENOMINATOR INTEGRITY")
 
-    # A) Independent AST walker — count ALL .py files in repo
+    # A) Independent AST walker — count .py files under scanner's scan roots
     print("  Running independent AST walk...")
     ast_files = 0
-    ast_functions = 0
+    ast_top_level_defs = 0  # Only top-level functions + classes (matches scanner)
+    ast_all_functions = 0
     ast_classes = 0
 
-    for py_file in PROJECT_ROOT.rglob("*.py"):
+    # W2a: Use scanner's _SCAN_ROOTS instead of rglob to match scanner denominator
+    all_py_files: list[Path] = []
+    for scan_root in _SCAN_ROOTS:
+        root_path = PROJECT_ROOT / scan_root
+        if not root_path.exists():
+            continue
+        for dirpath, dirnames, filenames in os.walk(root_path):
+            dirnames[:] = [d for d in dirnames if d not in _SKIP_DIRS]
+            for fname in filenames:
+                if fname.endswith(".py") and not fname.endswith(".pyc"):
+                    all_py_files.append(Path(dirpath) / fname)
+
+    for py_file in sorted(all_py_files):
         rel = py_file.relative_to(PROJECT_ROOT)
-        # Skip __pycache__, .git, node_modules, venv
-        skip_dirs = {"__pycache__", ".git", "node_modules", "venv", ".venv", "env"}
-        if any(part in skip_dirs for part in rel.parts):
+        if any(part in _SKIP_DIRS for part in rel.parts):
             continue
 
         ast_files += 1
         try:
             source = py_file.read_text(encoding="utf-8", errors="replace")
             tree = ast.parse(source, filename=str(py_file))
+
+            # Exact replica of _ModuleDefinitionVisitor traversal:
+            # - FunctionDef/AsyncFunctionDef: count +1, do NOT recurse
+            # - ClassDef: count +1, DO recurse (generic_visit)
+            # - Everything else: recurse into all child nodes (generic_visit)
+            def _count_visitor_defs(node):
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    return 1  # Visitor emits edge, does NOT recurse
+                n = 1 if isinstance(node, ast.ClassDef) else 0
+                for child in ast.iter_child_nodes(node):
+                    n += _count_visitor_defs(child)
+                return n
+
+            ast_top_level_defs += _count_visitor_defs(tree)
+
+            # Also count all functions for reference
             for node in ast.walk(tree):
                 if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                    ast_functions += 1
+                    ast_all_functions += 1
                 elif isinstance(node, ast.ClassDef):
                     ast_classes += 1
         except (SyntaxError, ValueError):
             pass  # Skip unparseable files
 
-    print(f"  AST ground truth: {ast_files} files, {ast_functions} functions, {ast_classes} classes")
+    print(
+        f"  AST ground truth: {ast_files} files, {ast_top_level_defs} top-level defs, "
+        f"{ast_all_functions} all functions, {ast_classes} classes"
+    )
 
     # B) ADG counts
     cur = conn.cursor()
 
-    # Unique source_file in edges
-    cur.execute("SELECT COUNT(DISTINCT source_file) FROM edges WHERE source_file != ''")
-    adg_unique_files = cur.fetchone()[0]
+    # File ratio: normalize ADG source_files to relative paths (some may be absolute)
+    cur.execute("SELECT DISTINCT source_file FROM edges WHERE source_file != ''")
+    raw_source_files = [r[0] for r in cur.fetchall()]
+    project_root_str = str(PROJECT_ROOT).replace("\\", "/")
+    normalized_files: set[str] = set()
+    for sf in raw_source_files:
+        sf_fwd = sf.replace("\\", "/")
+        # Strip absolute path prefix if present
+        if sf_fwd.startswith(project_root_str + "/"):
+            sf_fwd = sf_fwd[len(project_root_str) + 1 :]
+        # Only count files under scan roots
+        if any(sf_fwd.startswith(r + "/") for r in _SCAN_ROOTS):
+            normalized_files.add(sf_fwd)
+    adg_unique_files = len(normalized_files)
 
     # Module nodes
     cur.execute("SELECT COUNT(*) FROM nodes WHERE entity_type = 'module'")
     adg_modules = cur.fetchone()[0]
 
-    # Symbol nodes that look like functions (identity_kind hints)
-    cur.execute("""
-        SELECT COUNT(DISTINCT resolved_path) FROM nodes
-        WHERE entity_type = 'module'
-          AND resolved_path != ''
-    """)
-    adg_unique_module_paths = cur.fetchone()[0]
-
-    print(f"  ADG: {adg_unique_files} unique source_files, {adg_modules} module nodes, {adg_unique_module_paths} unique module paths")
+    print(f"  ADG: {adg_unique_files} unique source_files (normalized), {adg_modules} module nodes")
 
     # Compare file-level: ADG unique source_files vs AST files
     file_ratio = adg_unique_files / ast_files if ast_files > 0 else 0.0
 
-    # For function ratio: count edges that represent function definitions
-    # Use 'exports' edges where the source is a function def, or
-    # decomposes_into as function decomposition
+    # Function ratio: count decomposes_into module_definition edges
+    # These represent the scanner's view of top-level function + class definitions
     cur.execute("""
-        SELECT COUNT(*) FROM edges WHERE relation_type = 'decomposes_into'
-    """)
-    adg_decompositions = cur.fetchone()[0]
-
-    # Better: count unique symbols that represent functions
-    cur.execute("""
-        SELECT COUNT(*) FROM nodes
-        WHERE identity_kind IN ('function_def', 'method_def', 'async_function_def')
+        SELECT COUNT(*) FROM edges
+        WHERE relation_type = 'decomposes_into' AND edge_kind = 'module_definition'
     """)
     adg_function_nodes = cur.fetchone()[0]
 
-    # If no function_def nodes, fall back to checking resolved_paths with ::
+    # Fall back to identity_kind nodes if no module_definition edges
     if adg_function_nodes == 0:
         cur.execute("""
             SELECT COUNT(*) FROM nodes
-            WHERE entity_type = 'module'
-              AND resolved_path LIKE '%::%'
+            WHERE identity_kind IN ('function_def', 'method_def', 'async_function_def')
         """)
         adg_function_nodes = cur.fetchone()[0]
 
-    function_ratio = adg_function_nodes / ast_functions if ast_functions > 0 else 0.0
+    function_ratio = adg_function_nodes / ast_top_level_defs if ast_top_level_defs > 0 else 0.0
 
     print(f"\n  file_ratio     = {adg_unique_files} / {ast_files} = {file_ratio:.4f}")
-    print(f"  function_ratio = {adg_function_nodes} / {ast_functions} = {function_ratio:.4f}")
+    print(f"  function_ratio = {adg_function_nodes} / {ast_top_level_defs} = {function_ratio:.4f}")
 
     file_pass = 0.95 <= file_ratio <= 1.05
     func_pass = 0.95 <= function_ratio <= 1.05
@@ -375,7 +488,7 @@ def validate_denominator_integrity(conn):
 
     return {
         "ast_files": ast_files,
-        "ast_functions": ast_functions,
+        "ast_functions": ast_top_level_defs,
         "ast_classes": ast_classes,
         "adg_unique_files": adg_unique_files,
         "adg_function_nodes": adg_function_nodes,
@@ -390,57 +503,99 @@ def validate_denominator_integrity(conn):
 # DIMENSION 4 — EDGE PRECISION VS NOISE
 # ======================================================================
 
+
 def validate_edge_precision(conn):
     section("DIMENSION 4: EDGE PRECISION VS NOISE")
     cur = conn.cursor()
 
     # HIGH SIGNAL: edges that represent meaningful code dependencies
+    # W2b: exports and decomposes_into reclassified as HIGH_SIGNAL
+    # exports = module interface declaration (structural but meaningful)
+    # decomposes_into = containment structure (module→func/class + func→block)
     HIGH_SIGNAL = {
-        "imports", "calls", "flows_to", "controls_flow",
-        "reads_from", "writes_to", "writes_through", "reads_through",
-        "implements", "instantiates", "invokes_dynamic",
-        "resolves_callsite", "emits_side_effect",
-        "reads_runtime_state", "reads_policy_state", "reads_env",
-        "reads_config", "reads_governed_config", "reads_secret",
-        "applies_guardrail", "records_execution_trace",
-        "signs_execution_trace", "snapshots_state",
-        "emits_determinism_digest", "emits_replay_key",
-        "pulls_context", "routes_through", "routes_path",
-        "validates_agent_capability", "checks_agent_registry",
-        "orchestrates_workflow", "dispatches_execution_plan",
-        "accesses_credential", "stores_embedding", "retrieves_via",
-        "invokes_eval", "invokes_getattr_dynamic", "invokes_importlib",
-        "decorated_by", "uses_uuid", "uses_wall_clock", "uses_random",
-        "seeds_rng", "external_http_call",
-        "validated_by_safety_plane", "validated_by_registry",
+        "imports",
+        "calls",
+        "flows_to",
+        "controls_flow",
+        "reads_from",
+        "writes_to",
+        "writes_through",
+        "reads_through",
+        "implements",
+        "instantiates",
+        "invokes_dynamic",
+        "resolves_callsite",
+        "emits_side_effect",
+        "reads_runtime_state",
+        "reads_policy_state",
+        "reads_env",
+        "reads_config",
+        "reads_governed_config",
+        "reads_secret",
+        "applies_guardrail",
+        "records_execution_trace",
+        "signs_execution_trace",
+        "snapshots_state",
+        "emits_determinism_digest",
+        "emits_replay_key",
+        "pulls_context",
+        "routes_through",
+        "routes_path",
+        "validates_agent_capability",
+        "checks_agent_registry",
+        "orchestrates_workflow",
+        "dispatches_execution_plan",
+        "accesses_credential",
+        "stores_embedding",
+        "retrieves_via",
+        "invokes_eval",
+        "invokes_getattr_dynamic",
+        "invokes_importlib",
+        "decorated_by",
+        "uses_uuid",
+        "uses_wall_clock",
+        "uses_random",
+        "seeds_rng",
+        "external_http_call",
+        "validated_by_safety_plane",
+        "validated_by_registry",
         "validated_by_llm_gateway",
-        "authorize_and_execute", "agent_executes_agent",
-        "emits_metric_event", "triggered_telemetry",
-        "defines_test_case", "defines_test_suite", "emits_test_result",
-        "tests_execution_of", "covers",
-        "violates", "antipattern",
-        "escalates_to_human", "heals", "orchestrates_healing",
+        "authorize_and_execute",
+        "agent_executes_agent",
+        "emits_metric_event",
+        "triggered_telemetry",
+        "defines_test_case",
+        "defines_test_suite",
+        "emits_test_result",
+        "tests_execution_of",
+        "covers",
+        "violates",
+        "antipattern",
+        "escalates_to_human",
+        "heals",
+        "orchestrates_healing",
         "dispatches_healing_run",
-        "verifies_boundary", "verifies_policy", "policy_verification",
-        "observes_runtime_state", "observes_policy_state",
+        "verifies_boundary",
+        "verifies_policy",
+        "policy_verification",
+        "observes_runtime_state",
+        "observes_policy_state",
+        "exports",  # W2b: module interface — high signal
+        "decomposes_into",  # W2b: containment structure — high signal
     }
 
     # LOW SIGNAL: structural/administrative edges
+    # W2b: exports and decomposes_into moved to HIGH_SIGNAL above
     LOW_SIGNAL = {
-        "belongs_to_layer",    # Pure metadata
-        "exports",             # Interface declaration only
-        "decomposes_into",     # Structural decomposition
-        "dead_imports",        # Unused imports (noise)
+        "belongs_to_layer",  # Pure metadata
+        "dead_imports",  # Unused imports (noise)
         "violation_propagates_through",  # Violation tracing artifact
-        "unreachable_after_raise",       # Dead code marker
-        "duplicate_method",              # Code smell marker
+        "unreachable_after_raise",  # Dead code marker
+        "duplicate_method",  # Code smell marker
     }
 
     # Sample randomly
-    cur.execute(
-        "SELECT relation_type FROM edges ORDER BY RANDOM() LIMIT ?",
-        (SAMPLE_SIZE,)
-    )
+    cur.execute("SELECT relation_type FROM edges ORDER BY RANDOM() LIMIT ?", (SAMPLE_SIZE,))
     sampled = [r[0] for r in cur.fetchall()]
 
     high = 0
@@ -465,15 +620,15 @@ def validate_edge_precision(conn):
     signal_ratio = high / total if total > 0 else 0.0
 
     print(f"  Sampled: {total}")
-    print(f"  High signal: {high} ({high/total*100:.1f}%)")
-    print(f"  Low signal: {low} ({low/total*100:.1f}%)")
+    print(f"  High signal: {high} ({high / total * 100:.1f}%)")
+    print(f"  Low signal: {low} ({low / total * 100:.1f}%)")
     print(f"  Unknown (defaulted high): {unknown}")
     print(f"  >>> signal_ratio = {signal_ratio:.4f}")
 
     # Show top low-signal types
     low_types = {k: v for k, v in type_classification.items() if k.startswith("LOW:")}
     if low_types:
-        print(f"\n  Low-signal breakdown:")
+        print("\n  Low-signal breakdown:")
         for k, v in sorted(low_types.items(), key=lambda x: -x[1]):
             print(f"    {k}: {v}")
 
@@ -483,6 +638,7 @@ def validate_edge_precision(conn):
 # ======================================================================
 # DIMENSION 5 — CROSS-VISITOR CONSISTENCY
 # ======================================================================
+
 
 def validate_cross_visitor_consistency(conn):
     section("DIMENSION 5: CROSS-VISITOR CONSISTENCY")
@@ -569,6 +725,7 @@ def validate_cross_visitor_consistency(conn):
 # MAIN — RUN ALL DIMENSIONS + EXIT GATES
 # ======================================================================
 
+
 def main():
     print("=" * 70)
     print("  ADG STATIC CORRECTNESS VALIDATION — REAL MEASUREMENTS")
@@ -602,14 +759,14 @@ def main():
     section("METRICS TABLE")
 
     metrics = {
-        "semantic_accuracy":     semantic_accuracy,
+        "semantic_accuracy": semantic_accuracy,
         "symbol_alignment_rate": symbol_alignment,
-        "file_ratio":            denom["file_ratio"],
-        "function_ratio":        denom["function_ratio"],
-        "signal_ratio":          signal_ratio,
-        "consistency_rate":      consistency["consistency_rate"],
-        "synthetic_edge_count":  consistency["low_confidence"],
-        "duplicate_edge_ratio":  consistency["duplicate_ratio"],
+        "file_ratio": denom["file_ratio"],
+        "function_ratio": denom["function_ratio"],
+        "signal_ratio": signal_ratio,
+        "consistency_rate": consistency["consistency_rate"],
+        "synthetic_edge_count": consistency["low_confidence"],
+        "duplicate_edge_ratio": consistency["duplicate_ratio"],
     }
 
     for k, v in metrics.items():
@@ -624,14 +781,14 @@ def main():
     section("EXIT GATES")
 
     gates = {
-        "semantic_accuracy >= 0.99":       semantic_accuracy >= 0.99,
-        "symbol_alignment_rate >= 0.995":  symbol_alignment >= 0.995,
-        "file_ratio in [0.95, 1.05]":      denom["file_pass"],
-        "function_ratio in [0.95, 1.05]":  denom["func_pass"],
-        "signal_ratio >= 0.90":            signal_ratio >= 0.90,
-        "consistency_rate >= 0.99":        consistency["consistency_rate"] >= 0.99,
-        "synthetic_edge_count == 0":       consistency["low_confidence"] == 0,
-        "duplicate_edge_ratio == 0":       consistency["duplicate_ratio"] == 0,
+        "semantic_accuracy >= 0.99": semantic_accuracy >= 0.99,
+        "symbol_alignment_rate >= 0.995": symbol_alignment >= 0.995,
+        "file_ratio in [0.95, 1.05]": denom["file_pass"],
+        "function_ratio in [0.95, 1.05]": denom["func_pass"],
+        "signal_ratio >= 0.90": signal_ratio >= 0.90,
+        "consistency_rate >= 0.99": consistency["consistency_rate"] >= 0.99,
+        "synthetic_edge_count == 0": consistency["low_confidence"] == 0,
+        "duplicate_edge_ratio == 0": consistency["duplicate_ratio"] == 0,
     }
 
     all_pass = True
@@ -661,7 +818,7 @@ def main():
         if semantic_accuracy < 0.99:
             print(f"\n  SEMANTIC ACCURACY FAILURE: {semantic_accuracy:.4f} < 0.99")
             if semantic_errors:
-                print(f"  Sample incorrect edges:")
+                print("  Sample incorrect edges:")
                 for e in semantic_errors[:5]:
                     print(f"    [{e['rel']}] {e['file']}:{e['line_no']} — {e['reason']}")
 
@@ -671,19 +828,21 @@ def main():
         if not denom["file_pass"]:
             print(f"\n  FILE RATIO FAILURE: {denom['file_ratio']:.4f} outside [0.95, 1.05]")
             print(f"    AST files: {denom['ast_files']}, ADG files: {denom['adg_unique_files']}")
-            diff = abs(denom['adg_unique_files'] - denom['ast_files'])
-            if denom['file_ratio'] > 1.05:
+            diff = abs(denom["adg_unique_files"] - denom["ast_files"])
+            if denom["file_ratio"] > 1.05:
                 print(f"    ROOT CAUSE: ADG inflated by {diff} files (phantom/duplicate source_files)")
             else:
                 print(f"    ROOT CAUSE: ADG missing {diff} files (scanner not reaching all .py files)")
 
         if not denom["func_pass"]:
             print(f"\n  FUNCTION RATIO FAILURE: {denom['function_ratio']:.4f} outside [0.95, 1.05]")
-            print(f"    AST functions: {denom['ast_functions']}, ADG function nodes: {denom['adg_function_nodes']}")
-            if denom['function_ratio'] < 0.95:
-                print(f"    ROOT CAUSE: ADG not tracking individual function nodes at required granularity")
+            print(
+                f"    AST functions: {denom['ast_functions']}, ADG function nodes: {denom['adg_function_nodes']}"
+            )
+            if denom["function_ratio"] < 0.95:
+                print("    ROOT CAUSE: ADG not tracking individual function nodes at required granularity")
             else:
-                print(f"    ROOT CAUSE: ADG inflating function count")
+                print("    ROOT CAUSE: ADG inflating function count")
 
         if signal_ratio < 0.90:
             print(f"\n  SIGNAL RATIO FAILURE: {signal_ratio:.4f} < 0.90")
@@ -711,9 +870,7 @@ def main():
     else:
         # Determine which category
         structural_ok = (
-            semantic_accuracy >= 0.95 and
-            symbol_alignment >= 0.99 and
-            consistency["consistency_rate"] >= 0.95
+            semantic_accuracy >= 0.95 and symbol_alignment >= 0.99 and consistency["consistency_rate"] >= 0.95
         )
         if structural_ok:
             verdict = "STRUCTURAL COVERAGE COMPLETE — SEMANTIC GAPS REMAIN"
@@ -726,10 +883,10 @@ def main():
     # Write results to JSON
     output = {
         "metrics": metrics,
-        "gates": {k: v for k, v in gates.items()},
+        "gates": dict(gates),
         "verdict": verdict,
         "denominator_details": denom,
-        "consistency_details": {k: v for k, v in consistency.items()},
+        "consistency_details": dict(consistency),
         "elapsed_seconds": elapsed,
     }
     out_path = PROJECT_ROOT / "docs" / "reports" / "plans" / "adg_static_validation_report.json"

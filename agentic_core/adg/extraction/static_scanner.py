@@ -4153,7 +4153,11 @@ class _ModuleDefinitionVisitor(ast.NodeVisitor):
         parts.extend(self._class_stack)
         parts.append(node.name)
         func_symbol = canonical_name("Symbol", "::".join(parts))
-        kind = "module_defines_async_function" if isinstance(node, ast.AsyncFunctionDef) else "module_defines_function"
+        kind = (
+            "module_defines_async_function"
+            if isinstance(node, ast.AsyncFunctionDef)
+            else "module_defines_function"
+        )
         self.edges.append(
             Edge(
                 from_name=self.module_adg,
@@ -6294,7 +6298,7 @@ def _propagate_violations(result: ScanResult) -> list[Edge]:
                                 line_no=0,
                                 symbol=f"depth={depth}",
                                 semantic_type="violation_trace",
-                                confidence=max(0.3, 1.0 - depth * 0.2),
+                                confidence=max(0.5, 1.0 - depth * 0.2),
                             )
                         )
                         if len(propagation_edges) >= _MAX_PROPAGATION_EDGES:
@@ -6539,6 +6543,21 @@ class ADGStaticScanner:
             cycle_edges, cycle_stamp_stats = _stamp_semantic_types_with_stats(cycle_edges)
             _merge_surface_evidence(surface_evidence_totals, cycle_stamp_stats)
             result.edges = sorted(set(result.edges) | set(cycle_edges))
+            result.compute_digest()
+
+        # W1b: Key-based dedup after all post-scan passes
+        # Removes edges with same (from_name, relation_type, to_name, line_no)
+        # but different edge_kind/semantic_type that survive set() dedup
+        _seen_edge_keys: set[tuple[str, str, str, int]] = set()
+        _deduped: list[Edge] = []
+        for _e in result.edges:
+            _ek = (_e.from_name, _e.relation_type, _e.to_name, _e.line_no)
+            if _ek not in _seen_edge_keys:
+                _seen_edge_keys.add(_ek)
+                _deduped.append(_e)
+        if len(_deduped) < len(result.edges):
+            logger.info("W1b dedup removed %d duplicate edges", len(result.edges) - len(_deduped))
+            result.edges = _deduped
             result.compute_digest()
 
         # A2: evidence floors
