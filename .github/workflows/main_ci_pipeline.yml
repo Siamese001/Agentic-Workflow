@@ -1,0 +1,49 @@
+name: Main CI Pipeline
+'on':
+  push: {}
+  pull_request: {}
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+    - name: Run validation enforcement
+      run: python tools/validation_runner.py
+    - name: Upload validation report
+      uses: actions/upload-artifact@v4
+      with:
+        name: validation-report
+        path: artifacts/validation_enforcement_report.json
+      if: always()
+  test:
+    runs-on: ubuntu-latest
+    needs: validate
+    strategy:
+      matrix:
+        python-version:
+        - '3.11'
+        - '3.12'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+    - name: Run test suite
+      run: pytest tests/ -v --tb=short --junitxml=test-results.xml
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results-${{ matrix.python-version }}
+        path: test-results.xml
+      if: always()
