@@ -334,6 +334,9 @@ _NON_STRUCTURAL_SCAN_ROOTS: tuple[str, ...] = (
     OPS_SCRIPTS_DIR,  # H1
 )
 
+# Phase 1.1: Coverage-only scan roots for test files with structural_only mode
+_COVERAGE_ONLY_SCAN_ROOTS: tuple[str, ...] = (TESTS_DIR,)
+
 _SCAN_ROOTS: tuple[str, ...] = _STRUCTURAL_SCAN_ROOTS + _NON_STRUCTURAL_SCAN_ROOTS
 
 _RUNTIME_ONLY_SCAN_SUBDIRS: frozenset[str] = frozenset(
@@ -379,17 +382,218 @@ _RUNTIME_ONLY_RELATION_PREFIXES: tuple[str, ...] = (
 )
 
 
-def _selected_scan_roots(include_tests: bool) -> tuple[str, ...]:
-    if include_tests:
+def _selected_scan_roots(include_tests: bool, scan_mode: str = "full") -> tuple[str, ...]:
+    """Return scan roots based on include_tests flag and scan_mode.
+
+    Args:
+        include_tests: Whether to include test files in scan
+        scan_mode: "full" (default) or "structural_only" for Phase 1 optimization
+
+    Returns:
+        Tuple of scan root directories
+    """
+    if scan_mode == "structural_only" and include_tests:
+        # Phase 1.1: Tests get coverage-only treatment (structural only)
+        return _STRUCTURAL_SCAN_ROOTS + _COVERAGE_ONLY_SCAN_ROOTS
+    elif include_tests:
         return _SCAN_ROOTS
     return _STRUCTURAL_SCAN_ROOTS
 
 
-def _is_scannable_static_path(rel_path: str, include_tests: bool) -> bool:
+def _get_visitors_for_mode(scan_mode: str, file_path: str) -> list[str]:
+    """Return list of visitor types to run based on scan_mode and file path.
+
+    Args:
+        scan_mode: "full", "structural_only", or "selective" for Phase 1 optimization
+        file_path: Relative file path to determine file type and importance
+
+    Returns:
+        List of visitor identifiers to run on the file
+    """
+    if scan_mode == "structural_only" and file_path.startswith("tests/"):
+        # Phase 1.1: Only run G1 (imports) + G3 (inheritance) on test files
+        return ["import", "inheritance"]
+    elif scan_mode == "selective":
+        # Phase 1.2: Selective visitor registration based on file type
+        return _get_selective_visitors(file_path)
+    return "full"  # Use all visitors for full mode
+
+
+def _get_cache_aware_scan_mode(
+    cache_path: Path | None,
+    repo_root: Path,
+    include_tests: bool = True,
+    force_mode: str | None = None
+) -> str:
+    """Determine optimal scan mode based on cache state and file changes.
+
+    Phase 1.3: Cache-aware optimization that selects scan mode based on:
+    - Cache hit rate and freshness
+    - File change patterns
+    - Repository size and complexity
+
+    Args:
+        cache_path: Path to scan cache file
+        repo_root: Repository root directory
+        include_tests: Whether tests are included in scanning
+        force_mode: Override mode (for testing)
+
+    Returns:
+        Optimal scan mode: "full", "structural_only", or "selective"
+    """
+    if force_mode:
+        return force_mode
+
+    # No cache available - use full mode for completeness
+    if not cache_path or not cache_path.exists():
+        return "full"
+
+    # Analyze cache state
+    try:
+        import json
+        with open(cache_path, 'r') as f:
+            cache_data = json.load(f)
+
+        cache_stats = cache_data.get("stats", {})
+        hit_rate = cache_stats.get("hit_rate", 0.0)
+        total_entries = cache_stats.get("hits", 0) + cache_stats.get("misses", 0)
+
+        # High cache hit rate (>90%) - can use optimized modes
+        if hit_rate > 0.9 and total_entries > 1000:
+            if include_tests:
+                # Many test files with good cache - use structural_only for tests
+                return "structural_only"
+            else:
+                # Production only with good cache - use selective mode
+                return "selective"
+
+        # Medium cache hit rate (70-90%) - use selective mode
+        elif hit_rate > 0.7 and total_entries > 500:
+            return "selective"
+
+        # Low cache hit rate or small cache - use full mode
+        else:
+            return "full"
+
+    except (OSError, json.JSONDecodeError, KeyError):
+        # Cache analysis failed - fall back to full mode
+        return "full"
+
+
+def _should_use_incremental_scan(
+    cache_path: Path | None,
+    repo_root: Path,
+    changed_files: list[str] | None = None
+) -> bool:
+    """Determine if incremental scanning should be used.
+
+    Phase 1.3: Advanced cache optimization for incremental updates.
+
+    Args:
+        cache_path: Path to scan cache file
+        repo_root: Repository root directory
+        changed_files: List of changed files (if known)
+
+    Returns:
+        True if incremental scanning is recommended
+    """
+    if not cache_path or not cache_path.exists():
+        return False
+
+    try:
+        import json
+        with open(cache_path, 'r') as f:
+            cache_data = json.load(f)
+
+        cache_stats = cache_data.get("stats", {})
+        hit_rate = cache_stats.get("hit_rate", 0.0)
+        total_entries = cache_stats.get("hits", 0) + cache_stats.get("misses", 0)
+
+        # Use incremental if:
+        # 1. High cache hit rate (>85%)
+        # 2. Substantial cache (>2000 entries)
+        # 3. Small number of changes (<100 files)
+        if (hit_rate > 0.85 and
+            total_entries > 2000 and
+            (changed_files is None or len(changed_files) < 100)):
+            return True
+
+        return False
+
+    except (OSError, json.JSONDecodeError, KeyError):
+        return False
+
+
+def _get_selective_visitors(file_path: str) -> list[str]:
+    """Return selective visitor list based on file type and importance.
+
+    Phase 1.2: Optimizes production code scanning by selecting only essential visitors
+    based on file characteristics while maintaining critical coverage.
+
+    Args:
+        file_path: Relative file path to analyze
+
+    Returns:
+        List of visitor identifiers for selective scanning
+    """
+    # Core visitors that always run (structural foundation)
+    core_visitors = ["import", "inheritance"]
+
+    # File type analysis
+    if file_path.startswith("tests/"):
+        # Test files: minimal scanning (already handled by structural_only)
+        return core_visitors
+
+    # Production code selective enhancement
+    selective_visitors = core_visitors.copy()
+
+    # Add call/write visitors for core business logic
+    if any(indicator in file_path for indicator in [
+        "agentic_core/", "apps_", "tools/", "ops_", "system_learning/"
+    ]):
+        selective_visitors.extend(["call", "attribute", "composition"])
+
+    # Add governance visitors for security/safety critical files
+    if any(indicator in file_path for indicator in [
+        "safety_", "security_", "audit_", "policy_", "governance_"
+    ]):
+        selective_visitors.extend([
+            "governance", "safety_enforcement", "boundary_verification"
+        ])
+
+    # Add execution visitors for orchestration files
+    if any(indicator in file_path for indicator in [
+        "orchestration", "workflow", "execution_", "runtime_"
+    ]):
+        selective_visitors.extend([
+            "dynamic_execution", "internal_call_graph", "execution_semantic"
+        ])
+
+    # Add learning visitors for AI/ML components
+    if any(indicator in file_path for indicator in [
+        "learning_", "ai_", "ml_", "model_", "embedding_"
+    ]):
+        selective_visitors.extend([
+            "embedding_pipeline", "learning_provenance", "p3_learning_maturity"
+        ])
+
+    # Add observability visitors for monitoring components
+    if any(indicator in file_path for indicator in [
+        "observability", "telemetry", "metrics_", "monitoring_"
+    ]):
+        selective_visitors.extend([
+            "p4_observability_governance", "execution_trace_proof"
+        ])
+
+    return selective_visitors
+
+
+def _is_scannable_static_path(rel_path: str, include_tests: bool, scan_mode: str = "full") -> bool:
+    """Check if path is scannable based on scan roots and mode."""
     normalized = rel_path.replace("\\", "/")
     root_matched = any(
         normalized == root or normalized.startswith(f"{root}/")
-        for root in _selected_scan_roots(include_tests)
+        for root in _selected_scan_roots(include_tests, scan_mode)
     )
     if not root_matched:
         return False
@@ -405,10 +609,104 @@ def _is_runtime_only_relation(relation_type: str) -> bool:
     return relation_type.startswith(_RUNTIME_ONLY_RELATION_PREFIXES)
 
 
-def _filter_runtime_only_edges(edges: list[Edge], include_tests: bool) -> list[Edge]:
-    if include_tests:
+def _filter_runtime_only_edges(edges: list[Edge], include_tests: bool, scan_mode: str = "full") -> list[Edge]:
+    """Filter out runtime-only edges based on include_tests and scan_mode.
+
+    Phase 1.4: Enhanced runtime-only edge filtering with intelligent optimization.
+
+    Args:
+        edges: List of edges to filter
+        include_tests: Whether test files are included in scanning
+        scan_mode: "full", "structural_only", or "selective" for Phase 1 optimization
+
+    Returns:
+        Filtered list of edges
+    """
+    if include_tests and scan_mode == "full":
+        # Full mode with tests - keep all edges
         return edges
-    return [edge for edge in edges if not _is_runtime_only_relation(edge.relation_type)]
+    elif include_tests and scan_mode == "structural_only":
+        # Structural-only mode with tests - filter runtime-only edges from test files only
+        return [
+            edge for edge in edges
+            if not edge.source_file.startswith("tests/") or not _is_runtime_only_relation(edge.relation_type)
+        ]
+    elif include_tests and scan_mode == "selective":
+        # Selective mode with tests - enhanced filtering
+        return _enhanced_runtime_filter(edges, include_tests=True)
+    else:
+        # No tests included - filter all runtime-only edges
+        return _enhanced_runtime_filter(edges, include_tests=False)
+
+
+def _enhanced_runtime_filter(edges: list[Edge], include_tests: bool) -> list[Edge]:
+    """Enhanced runtime-only edge filtering with intelligent optimization.
+
+    Phase 1.4: Advanced filtering that preserves critical structural edges
+    while removing unnecessary runtime artifacts.
+
+    Args:
+        edges: List of edges to filter
+        include_tests: Whether test files are included
+
+    Returns:
+        Filtered list of edges
+    """
+    filtered_edges = []
+
+    for edge in edges:
+        # Skip test files if not included
+        if not include_tests and edge.source_file.startswith("tests/"):
+            continue
+
+        # Enhanced runtime filtering logic
+        if _is_runtime_only_relation(edge.relation_type):
+            # Phase 1.4: Keep some runtime edges for critical analysis
+            if _should_keep_runtime_edge(edge):
+                filtered_edges.append(edge)
+            # Otherwise, skip this runtime edge
+        else:
+            # Keep all non-runtime edges
+            filtered_edges.append(edge)
+
+    return filtered_edges
+
+
+def _should_keep_runtime_edge(edge: Edge) -> bool:
+    """Determine if a runtime edge should be kept during enhanced filtering.
+
+    Phase 1.4: Intelligent runtime edge preservation based on importance
+    and context rather than blanket removal.
+
+    Args:
+        edge: The edge to evaluate
+
+    Returns:
+        True if the edge should be kept
+    """
+    # Keep runtime edges from core infrastructure files
+    if any(indicator in edge.source_file for indicator in [
+        "agentic_core/", "apps_", "tools/", "ops_"
+    ]):
+        return True
+
+    # Keep critical governance runtime edges
+    if edge.relation_type in [
+        "applies_guardrail", "verifies_policy", "validated_by_safety_plane",
+        "execution_terminates_at_uwg", "records_execution_trace"
+    ]:
+        return True
+
+    # Keep learning and observability runtime edges from non-test files
+    if (not edge.source_file.startswith("tests/") and
+        edge.relation_type in [
+            "captures_pattern", "records_learning_event", "emits_metric_event",
+            "stores_embedding", "retrieves_via"
+        ]):
+        return True
+
+    # Skip other runtime edges (especially from test files)
+    return False
 
 
 _SCANNER_VERSION = "2.0.0"
@@ -526,6 +824,7 @@ class ScanManifest:
     tests_included: bool = False
     minimum_evidence_passed: bool = False
     scanner_self_test_passed: bool = False
+    scan_mode: str = "full"  # Phase 1.3: record selected scan mode
     cardinality_violations: list[str] = field(default_factory=list)
     inter_module_call_count: int = 0
     test_covers_count: int = 0
@@ -5427,10 +5726,18 @@ class _UnreachableCodeAfterRaiseVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
-def _iter_python_files(repo_root: Path, include_tests: bool = True) -> Iterator[Path]:
-    """Yield all .py files under SCAN_ROOTS, deterministic (sorted) order."""
+def _iter_python_files(
+    repo_root: Path, include_tests: bool = True, scan_mode: str = "full"
+) -> Iterator[Path]:
+    """Yield all .py files under SCAN_ROOTS, deterministic (sorted) order.
+
+    Args:
+        repo_root: Root directory to scan
+        include_tests: Whether to include test files
+        scan_mode: "full" (default) or "structural_only" for Phase 1 optimization
+    """
     all_files: list[Path] = []
-    for scan_root in _selected_scan_roots(include_tests):
+    for scan_root in _selected_scan_roots(include_tests, scan_mode):
         root_path = repo_root / scan_root
         if not root_path.exists():
             continue
@@ -5445,7 +5752,7 @@ def _iter_python_files(repo_root: Path, include_tests: bool = True) -> Iterator[
                 if fname.endswith(".py") and not fname.endswith(".pyc"):
                     candidate = Path(dirpath) / fname
                     rel = _repo_relative(candidate, repo_root)
-                    if _is_scannable_static_path(rel, include_tests):
+                    if _is_scannable_static_path(rel, include_tests, scan_mode):
                         all_files.append(candidate)
     all_files.sort()
     yield from all_files
@@ -5467,11 +5774,24 @@ def _scan_file(
     repo_root: Path,
     include_tests: bool = True,
     identity_normalizer: object | None = None,
+    scan_mode: str = "full",
 ) -> tuple[list[Edge], bool, dict[str, str], dict[str, int]]:
-    """Scan a single Python file and return edges, syntax flag, type surface, and evidence."""
+    """Scan a single Python file and return edges, syntax flag, type surface, and evidence.
+
+    Args:
+        filepath: Path to the Python file to scan
+        repo_root: Root directory of the repository
+        include_tests: Whether to include test files in scanning
+        identity_normalizer: IdentityNormalizer instance for canonical names
+        scan_mode: "full" (default) or "structural_only" for Phase 1 optimization
+    """
     rel = _repo_relative(filepath, repo_root)
     module_adg = canonical_name("Module", rel)
     edges: list[Edge] = []
+
+    # Phase 1.1: Determine which visitors to run based on scan_mode
+    visitors_to_run = _get_visitors_for_mode(scan_mode, rel)
+
     try:
         # guardian: allow-silent-swallow - acceptable exception handling
         source = filepath.read_text(encoding="utf-8", errors="replace")
@@ -5484,333 +5804,450 @@ def _scan_file(
         logger.debug("OSError reading %s: %s", filepath, exc)
         return [], True, {}, {}
 
-    # G1: Import edges
-    from agentic_core.adg.identity.normalizer import IdentityNormalizer
+    # Helper function to check if a visitor should run
+    def _should_run_visitor(visitor_name: str) -> bool:
+        """Check if a specific visitor should run based on scan_mode."""
+        if visitors_to_run == "full":
+            return True
+        elif isinstance(visitors_to_run, list):
+            return visitor_name in visitors_to_run
+        return False
 
-    if identity_normalizer is None:
-        identity_normalizer = IdentityNormalizer(repo_root=repo_root)
-    import_visitor = _ImportVisitor(module_adg, rel, identity_normalizer=identity_normalizer)
-    import_visitor.visit(tree)
-    edges.extend(import_visitor.edges)
+    # G1: Import edges (always run for structural mode)
+    if _should_run_visitor("import"):
+        from agentic_core.adg.identity.normalizer import IdentityNormalizer
 
-    # G2: Call/write/network edges
-    call_visitor = _CallVisitor(module_adg, rel)
-    call_visitor.visit(tree)
-    edges.extend(call_visitor.edges)
+        if identity_normalizer is None:
+            identity_normalizer = IdentityNormalizer(repo_root=repo_root)
+        import_visitor = _ImportVisitor(module_adg, rel, identity_normalizer=identity_normalizer)
+        import_visitor.visit(tree)
+        edges.extend(import_visitor.edges)
 
-    # G3: Inheritance edges (H3)
-    inh_visitor = _InheritanceVisitor(module_adg, rel)
-    inh_visitor.visit(tree)
-    edges.extend(inh_visitor.edges)
+    # Run other visitors based on scan mode
+    if visitors_to_run == "full":
+        # G2: Call/write/network edges
+        call_visitor = _CallVisitor(module_adg, rel)
+        call_visitor.visit(tree)
+        edges.extend(call_visitor.edges)
 
-    # G5: Config/env read edges (H4)
-    attr_visitor = _AttributeVisitor(module_adg, rel)
-    attr_visitor.visit(tree)
-    edges.extend(attr_visitor.edges)
+        # G3: Inheritance edges (H3)
+        inh_visitor = _InheritanceVisitor(module_adg, rel)
+        inh_visitor.visit(tree)
+        edges.extend(inh_visitor.edges)
 
-    # G6: Composition edges (H5)
-    comp_visitor = _CompositionVisitor(module_adg, rel)
-    comp_visitor.visit(tree)
-    edges.extend(comp_visitor.edges)
+        # G5: Config/env read edges (H4)
+        attr_visitor = _AttributeVisitor(module_adg, rel)
+        attr_visitor.visit(tree)
+        edges.extend(attr_visitor.edges)
 
-    # GF: Dynamic execution edges (S3/RULE_F)
-    dyn_visitor = _DynamicExecutionVisitor(module_adg, rel)
-    dyn_visitor.visit(tree)
-    edges.extend(dyn_visitor.edges)
+        # G6: Composition edges (H5)
+        comp_visitor = _CompositionVisitor(module_adg, rel)
+        comp_visitor.visit(tree)
+        edges.extend(comp_visitor.edges)
 
-    # G4: Inter-module call graph
-    icg_visitor = _InternalCallGraphVisitor(module_adg, rel)
-    icg_visitor.visit(tree)
-    edges.extend(icg_visitor.edges)
+        # GF: Dynamic execution edges (S3/RULE_F)
+        dyn_visitor = _DynamicExecutionVisitor(module_adg, rel)
+        dyn_visitor.visit(tree)
+        edges.extend(dyn_visitor.edges)
 
-    # GT: Test traceability graph
-    tt_visitor = _TestTraceabilityVisitor(module_adg, rel)
-    tt_visitor.visit(tree)
-    edges.extend(tt_visitor.edges)
+        # G4: Inter-module call graph
+        icg_visitor = _InternalCallGraphVisitor(module_adg, rel)
+        icg_visitor.visit(tree)
+        edges.extend(icg_visitor.edges)
 
-    # GG: Governance plane graph
-    gov_visitor = _GovernancePlaneVisitor(module_adg, rel)
-    gov_visitor.visit(tree)
-    edges.extend(gov_visitor.edges)
+        # GT: Test traceability graph
+        tt_visitor = _TestTraceabilityVisitor(module_adg, rel)
+        tt_visitor.visit(tree)
+        edges.extend(tt_visitor.edges)
 
-    # Wave 4: Critical edge densification
-    critical_visitor = _CriticalEdgeVisitor(module_adg, rel)
-    critical_visitor.visit(tree)
-    edges.extend(critical_visitor.edges)
+        # GG: Governance plane graph
+        gov_visitor = _GovernancePlaneVisitor(module_adg, rel)
+        gov_visitor.visit(tree)
+        edges.extend(gov_visitor.edges)
 
-    # Wave 7: _P1608HardeningVisitor REMOVED (scanner integrity audit 2026-03-24)
+        # Wave 4: Critical edge densification
+        critical_visitor = _CriticalEdgeVisitor(module_adg, rel)
+        critical_visitor.visit(tree)
+        edges.extend(critical_visitor.edges)
 
-    # Wave 2: Test surface linking
-    if include_tests and (
-        filepath.name.endswith("_test.py") or "test_" in filepath.name or rel.startswith("tests/")
-    ):
-        test_surface_visitor = _TestSurfaceVisitor(module_adg, str(filepath))
-        test_surface_visitor.visit(tree)
-        edges.extend(test_surface_visitor.edges)
+        # Wave 2: Test surface linking
+        if include_tests and (
+            filepath.name.endswith("_test.py") or "test_" in filepath.name or rel.startswith("tests/")
+        ):
+            test_surface_visitor = _TestSurfaceVisitor(module_adg, str(filepath))
+            test_surface_visitor.visit(tree)
+            edges.extend(test_surface_visitor.edges)
 
-    # E1: Symbol inventory / exports graph
-    sym_visitor = _SymbolInventoryVisitor(module_adg, rel)
-    sym_visitor.visit(tree)
-    edges.extend(sym_visitor.edges)
+        # E1: Symbol inventory / exports graph
+        sym_visitor = _SymbolInventoryVisitor(module_adg, rel)
+        sym_visitor.visit(tree)
+        edges.extend(sym_visitor.edges)
 
-    # E3: Decorator graph (G7)
-    dec_visitor = _DecoratorVisitor(module_adg, rel)
-    dec_visitor.visit(tree)
-    edges.extend(dec_visitor.edges)
+        # E3: Decorator graph (G7)
+        dec_visitor = _DecoratorVisitor(module_adg, rel)
+        dec_visitor.visit(tree)
+        edges.extend(dec_visitor.edges)
 
-    # E4: Type annotation graph (G8)
-    ann_visitor = _TypeAnnotationVisitor(module_adg, rel)
-    ann_visitor.visit(tree)
-    edges.extend(ann_visitor.edges)
+        # E4: Type annotation graph (G8)
+        ann_visitor = _TypeAnnotationVisitor(module_adg, rel)
+        ann_visitor.visit(tree)
+        edges.extend(ann_visitor.edges)
+    elif isinstance(visitors_to_run, list):
+        # Selective mode: run only specified visitors
+        if "inheritance" in visitors_to_run:
+            inh_visitor = _InheritanceVisitor(module_adg, rel)
+            inh_visitor.visit(tree)
+            edges.extend(inh_visitor.edges)
 
-    # E6: Unused import detection — re-tag dead import edges
-    unused_visitor = _UnusedImportVisitor()
-    unused_visitor.visit(tree)
-    if unused_visitor.dead_names:
-        edges = _tag_dead_imports(edges, unused_visitor.dead_names)
+        if "call" in visitors_to_run:
+            call_visitor = _CallVisitor(module_adg, rel)
+            call_visitor.visit(tree)
+            edges.extend(call_visitor.edges)
 
-    # GA: Behavioral anti-pattern detection
-    ap_visitor = _AntipatternVisitor(module_adg, rel)
-    ap_visitor.visit(tree)
-    edges.extend(ap_visitor.edges)
+        if "attribute" in visitors_to_run:
+            attr_visitor = _AttributeVisitor(module_adg, rel)
+            attr_visitor.visit(tree)
+            edges.extend(attr_visitor.edges)
 
-    # E20: Prompt lifecycle graph (generates_prompt / consumes_prompt)
-    ps_visitor = _PromptSlotVisitor(module_adg, rel)
-    ps_visitor.visit(tree)
-    edges.extend(ps_visitor.edges)
+        if "composition" in visitors_to_run:
+            comp_visitor = _CompositionVisitor(module_adg, rel)
+            comp_visitor.visit(tree)
+            edges.extend(comp_visitor.edges)
 
-    # E23: Execution trace → telemetry linkage (triggered_telemetry)
-    et_visitor = _ExecutionTraceVisitor(module_adg, rel)
-    et_visitor.visit(tree)
-    edges.extend(et_visitor.edges)
+        if "dynamic_execution" in visitors_to_run:
+            dyn_visitor = _DynamicExecutionVisitor(module_adg, rel)
+            dyn_visitor.visit(tree)
+            edges.extend(dyn_visitor.edges)
 
-    # G1 (gap): Healer/validator loop graph (heals, validates, orchestrates_healing)
-    hv_visitor = _HealerValidatorVisitor(module_adg, rel)
-    hv_visitor.visit(tree)
-    edges.extend(hv_visitor.edges)
+        if "internal_call_graph" in visitors_to_run:
+            icg_visitor = _InternalCallGraphVisitor(module_adg, rel)
+            icg_visitor.visit(tree)
+            edges.extend(icg_visitor.edges)
 
-    # G3 (gap): Embedding pipeline graph (chunks_into, embeds_into, stores_embedding, retrieves_via)
-    emb_visitor = _EmbeddingPipelineVisitor(module_adg, rel)
-    emb_visitor.visit(tree)
-    edges.extend(emb_visitor.edges)
+        if "governance" in visitors_to_run:
+            gov_visitor = _GovernancePlaneVisitor(module_adg, rel)
+            gov_visitor.visit(tree)
+            edges.extend(gov_visitor.edges)
 
-    # G4 (gap): HITL / confidence-threshold gating (gated_by_confidence, escalates_to_human)
-    hitl_visitor = _HITLVisitor(module_adg, rel)
-    hitl_visitor.visit(tree)
-    edges.extend(hitl_visitor.edges)
+        if "safety_enforcement" in visitors_to_run:
+            safety_visitor = _SafetyEnforcementVisitor(module_adg, rel)
+            safety_visitor.visit(tree)
+            edges.extend(safety_visitor.edges)
 
-    # G5 (gap): Safety enforcement plane (applies_guardrail, verifies_policy)
-    safety_visitor = _SafetyEnforcementVisitor(module_adg, rel)
-    safety_visitor.visit(tree)
-    edges.extend(safety_visitor.edges)
+        if "boundary_verification" in visitors_to_run:
+            boundary_visitor = _BoundaryVerifierVisitor(module_adg, rel)
+            boundary_visitor.visit(tree)
+            edges.extend(boundary_visitor.edges)
 
-    # G7 (gap): Sandbox airlock / work-contract (enters_sandbox, issues_capability_token, stamps_work_contract)
-    sandbox_visitor = _SandboxAirlockVisitor(module_adg, rel)
-    sandbox_visitor.visit(tree)
-    edges.extend(sandbox_visitor.edges)
+        if "embedding_pipeline" in visitors_to_run:
+            emb_visitor = _EmbeddingPipelineVisitor(module_adg, rel)
+            emb_visitor.visit(tree)
+            edges.extend(emb_visitor.edges)
 
-    # G8 (gap): Capability-token / tool-budget (grants_resource, exceeds_budget)
-    budget_visitor = _CapabilityBudgetVisitor(module_adg, rel)
-    budget_visitor.visit(tree)
-    edges.extend(budget_visitor.edges)
+        if "learning_provenance" in visitors_to_run:
+            learning_prov_visitor = _LearningProvenanceVisitor(module_adg, rel)
+            learning_prov_visitor.visit(tree)
+            edges.extend(learning_prov_visitor.edges)
 
-    # G9 (gap): JIT context sync / freeze (pulls_context, freezes_context, unfreezes_context)
-    jit_visitor = _JITContextVisitor(module_adg, rel)
-    jit_visitor.visit(tree)
-    edges.extend(jit_visitor.edges)
+        if "p3_learning_maturity" in visitors_to_run:
+            p3_learn_visitor = _P3LearningMaturityVisitor(module_adg, rel)
+            p3_learn_visitor.visit(tree)
+            edges.extend(p3_learn_visitor.edges)
 
-    # G10 (gap): Execution boundary verification (verifies_boundary, certifies_envelope)
-    boundary_visitor = _BoundaryVerifierVisitor(module_adg, rel)
-    boundary_visitor.visit(tree)
-    edges.extend(boundary_visitor.edges)
+        if "p4_observability_governance" in visitors_to_run:
+            p4_obs_visitor = _P4ObservabilityGovernanceVisitor(module_adg, rel)
+            p4_obs_visitor.visit(tree)
+            edges.extend(p4_obs_visitor.edges)
 
-    # G11 (gap): Determinism control (seeds_rng, patches_time, guards_replay, emits_determinism_digest)
-    determinism_visitor = _DeterminismControlVisitor(module_adg, rel)
-    determinism_visitor.visit(tree)
-    edges.extend(determinism_visitor.edges)
+        if "execution_trace_proof" in visitors_to_run:
+            proof_visitor = _ExecutionProofVisitor(module_adg, rel)
+            proof_visitor.visit(tree)
+            edges.extend(proof_visitor.edges)
 
-    # G12 (gap): Network / I/O interception (intercepts_io, transcripts_response, hard_fails_untranscripted)
-    io_visitor = _IOInterceptionVisitor(module_adg, rel)
-    io_visitor.visit(tree)
-    edges.extend(io_visitor.edges)
+        if "execution_semantic" in visitors_to_run:
+            exec_visitor = _ExecutionSemanticVisitor(module_adg, rel)
+            exec_visitor.visit(tree)
+            edges.extend(exec_visitor.edges)
 
-    # G13 (gap): Mutation transport / commit (packages_diff, validates_blast_radius, commits_mutation)
-    mutation_transport_visitor = _MutationTransportVisitor(module_adg, rel)
-    mutation_transport_visitor.visit(tree)
-    edges.extend(mutation_transport_visitor.edges)
+    # E6: Unused import detection — re-tag dead import edges (only in full mode)
+    if _should_run_visitor("unused_import"):
+        unused_visitor = _UnusedImportVisitor()
+        unused_visitor.visit(tree)
+        if unused_visitor.dead_names:
+            edges = _tag_dead_imports(edges, unused_visitor.dead_names)
 
-    # G14 (gap): Execution trace / proof (records_execution_trace, emits_replay_key, compares_proof)
-    proof_visitor = _ExecutionProofVisitor(module_adg, rel)
-    proof_visitor.visit(tree)
-    edges.extend(proof_visitor.edges)
+    # GA: Behavioral anti-pattern detection (only in full mode)
+    if _should_run_visitor("antipattern"):
+        ap_visitor = _AntipatternVisitor(module_adg, rel)
+        ap_visitor.visit(tree)
+        edges.extend(ap_visitor.edges)
 
-    # G15 (gap): Path control (routes_path, forces_stall, reenters_safety, vigilance_reroute)
-    path_visitor = _PathControlVisitor(module_adg, rel)
-    path_visitor.visit(tree)
-    edges.extend(path_visitor.edges)
+    # All remaining visitors (only in full mode)
+    if visitors_to_run == "full":
+        # E20: Prompt lifecycle graph (generates_prompt / consumes_prompt)
+        ps_visitor = _PromptSlotVisitor(module_adg, rel)
+        ps_visitor.visit(tree)
+        edges.extend(ps_visitor.edges)
 
-    # G16 (gap): Evaluation / optimization spine (scores_groundedness, emits_drift_alert, builds_dpo_batch)
-    eval_visitor = _EvalSpineVisitor(module_adg, rel)
-    eval_visitor.visit(tree)
-    edges.extend(eval_visitor.edges)
+        # E23: Execution trace → telemetry linkage (triggered_telemetry)
+        et_visitor = _ExecutionTraceVisitor(module_adg, rel)
+        et_visitor.visit(tree)
+        edges.extend(et_visitor.edges)
 
-    # GH (RCA Rule D): Duplicate method definition detection
-    dup_visitor = _DuplicateMethodVisitor(module_adg, rel)
-    dup_visitor.visit(tree)
-    edges.extend(dup_visitor.edges)
+        # G1 (gap): Healer/validator loop graph (heals, validates, orchestrates_healing)
+        hv_visitor = _HealerValidatorVisitor(module_adg, rel)
+        hv_visitor.visit(tree)
+        edges.extend(hv_visitor.edges)
 
-    # GU (RCA Rule G): Unreachable code after raise detection
-    unreach_visitor = _UnreachableCodeAfterRaiseVisitor(module_adg, rel)
-    unreach_visitor.visit(tree)
-    edges.extend(unreach_visitor.edges)
+        # G3 (gap): Embedding pipeline graph (chunks_into, embeds_into, stores_embedding, retrieves_via)
+        emb_visitor = _EmbeddingPipelineVisitor(module_adg, rel)
+        emb_visitor.visit(tree)
+        edges.extend(emb_visitor.edges)
 
-    # G17 (gap): Secret / credential access (reads_secret_vault, accesses_credential, rotates_secret)
-    secret_visitor = _SecretAccessVisitor(module_adg, rel)
-    secret_visitor.visit(tree)
-    edges.extend(secret_visitor.edges)
+        # G4 (gap): HITL / confidence-threshold gating (gated_by_confidence, escalates_to_human)
+        hitl_visitor = _HITLVisitor(module_adg, rel)
+        hitl_visitor.visit(tree)
+        edges.extend(hitl_visitor.edges)
 
-    # Execution-grade semantic enrichment (replaces disabled _PrecisionHardeningVisitor)
-    # Closes gaps: Data Lineage, Control Flow, Side Effects, Temporal Ordering, Callsite Resolution
-    exec_visitor = _ExecutionSemanticVisitor(module_adg, rel)
-    exec_visitor.visit(tree)
-    edges.extend(exec_visitor.edges)
+        # G5 (gap): Safety enforcement plane (applies_guardrail, verifies_policy)
+        safety_visitor = _SafetyEnforcementVisitor(module_adg, rel)
+        safety_visitor.visit(tree)
+        edges.extend(safety_visitor.edges)
 
-    # G18 (gap): Config governance (reads_governed_config, validates_config_schema, caches_config)
-    config_gov_visitor = _ConfigGovernanceVisitor(module_adg, rel)
-    config_gov_visitor.visit(tree)
-    edges.extend(config_gov_visitor.edges)
+        # G7 (gap): Sandbox airlock / work-contract (enters_sandbox, issues_capability_token, stamps_work_contract)
+        sandbox_visitor = _SandboxAirlockVisitor(module_adg, rel)
+        sandbox_visitor.visit(tree)
+        edges.extend(sandbox_visitor.edges)
 
-    # G19 (gap): Dynamic invocation (invokes_eval, invokes_exec, invokes_importlib, invokes_getattr_dynamic)
-    dyn_inv_visitor = _DynamicInvocationVisitor(module_adg, rel)
-    dyn_inv_visitor.visit(tree)
-    edges.extend(dyn_inv_visitor.edges)
+        # G8 (gap): Capability-token / tool-budget (grants_resource, exceeds_budget)
+        budget_visitor = _CapabilityBudgetVisitor(module_adg, rel)
+        budget_visitor.visit(tree)
+        edges.extend(budget_visitor.edges)
 
-    # G20 (gap): Policy state observation (observes_policy_state, observes_runtime_state, snapshots_state)
-    pso_visitor = _PolicyStateObserverVisitor(module_adg, rel)
-    pso_visitor.visit(tree)
-    edges.extend(pso_visitor.edges)
+        # G9 (gap): JIT context sync / freeze (pulls_context, freezes_context, unfreezes_context)
+        jit_visitor = _JITContextVisitor(module_adg, rel)
+        jit_visitor.visit(tree)
+        edges.extend(jit_visitor.edges)
 
-    # G21 (gap): Anti-pattern registry (registers_antipattern, classifies_antipattern)
-    ap_reg_visitor = _AntipatternRegistryVisitor(module_adg, rel)
-    ap_reg_visitor.visit(tree)
-    edges.extend(ap_reg_visitor.edges)
+        # G10 (gap): Execution boundary verification (verifies_boundary, certifies_envelope)
+        boundary_visitor = _BoundaryVerifierVisitor(module_adg, rel)
+        boundary_visitor.visit(tree)
+        edges.extend(boundary_visitor.edges)
 
-    # G22 (gap): Healing orchestrator (dispatches_healing_run, confirms_heal, aborts_heal)
-    healing_orch_visitor = _HealingOrchestratorVisitor(module_adg, rel)
-    healing_orch_visitor.visit(tree)
-    edges.extend(healing_orch_visitor.edges)
+    # All remaining gap visitors (only in full mode)
+    if visitors_to_run == "full":
+        # G11 (gap): Determinism control (seeds_rng, patches_time, guards_replay, emits_determinism_digest)
+        determinism_visitor = _DeterminismControlVisitor(module_adg, rel)
+        determinism_visitor.visit(tree)
+        edges.extend(determinism_visitor.edges)
 
-    # G23 (gap): Non-determinism primitive detection (uses_wall_clock, uses_random, uses_uuid)
-    nondet_visitor = _NondeterminismVisitor(module_adg, rel)
-    nondet_visitor.visit(tree)
-    edges.extend(nondet_visitor.edges)
+        # G12 (gap): Network / I/O interception (intercepts_io, transcripts_response, hard_fails_untranscripted)
+        io_visitor = _IOInterceptionVisitor(module_adg, rel)
+        io_visitor.visit(tree)
+        edges.extend(io_visitor.edges)
 
-    # G24 (gap): External HTTP / network egress (external_http_call)
-    http_visitor = _ExternalHttpVisitor(module_adg, rel)
-    http_visitor.visit(tree)
-    edges.extend(http_visitor.edges)
+        # G13 (gap): Mutation transport / commit (packages_diff, validates_blast_radius, commits_mutation)
+        mutation_transport_visitor = _MutationTransportVisitor(module_adg, rel)
+        mutation_transport_visitor.visit(tree)
+        edges.extend(mutation_transport_visitor.edges)
 
-    # G25 (gap): Agent-to-agent dispatch (agent_executes_agent)
-    agent_dispatch_visitor = _AgentDispatchVisitor(module_adg, rel)
-    agent_dispatch_visitor.visit(tree)
-    edges.extend(agent_dispatch_visitor.edges)
+        # G14 (gap): Execution trace / proof (records_execution_trace, emits_replay_key, compares_proof)
+        proof_visitor = _ExecutionProofVisitor(module_adg, rel)
+        proof_visitor.visit(tree)
+        edges.extend(proof_visitor.edges)
 
-    # G28 (gap): P1 orchestration governance (routes_to_agent, orchestrates_workflow,
-    #            dispatches_execution_plan, validates_agent_capability, checks_agent_registry)
-    p1_orch_visitor = _P1OrchestrationGovernanceVisitor(module_adg, rel)
-    p1_orch_visitor.visit(tree)
-    edges.extend(p1_orch_visitor.edges)
+        # G15 (gap): Path control (routes_path, forces_stall, reenters_safety, vigilance_reroute)
+        path_visitor = _PathControlVisitor(module_adg, rel)
+        path_visitor.visit(tree)
+        edges.extend(path_visitor.edges)
 
-    # G26 (gap): L5 validation proof edges (validated_by_registry, validated_by_safety_plane,
-    #            validated_by_llm_gateway, execution_terminates_at_uwg, references_policy_hash)
-    l5_proof_visitor = _L5ValidationProofVisitor(module_adg, rel)
-    l5_proof_visitor.visit(tree)
-    edges.extend(l5_proof_visitor.edges)
+        # G16 (gap): Evaluation / optimization spine (scores_groundedness, emits_drift_alert, builds_dpo_batch)
+        eval_visitor = _EvalSpineVisitor(module_adg, rel)
+        eval_visitor.visit(tree)
+        edges.extend(eval_visitor.edges)
 
-    # G29 (gap): P2 execution capability (authorize_and_execute, validates_capability,
-    #            routes_to_capability, writes_via_uwg, blocks_direct_write,
-    #            records_tool_invocation, captures_execution_output)
-    p2_exec_visitor = _P2ExecutionCapabilityVisitor(module_adg, rel)
-    p2_exec_visitor.visit(tree)
-    edges.extend(p2_exec_visitor.edges)
+        # GH (RCA Rule D): Duplicate method definition detection
+        dup_visitor = _DuplicateMethodVisitor(module_adg, rel)
+        dup_visitor.visit(tree)
+        edges.extend(dup_visitor.edges)
 
-    # G30 (gap): P3 orchestration & healing (dispatches_agent, coordinates_agents,
-    #            records_workflow_lineage, records_healing_outcome, escalates_failure)
-    p3_orch_visitor = _P3OrchestrationHealingVisitor(module_adg, rel)
-    p3_orch_visitor.visit(tree)
-    edges.extend(p3_orch_visitor.edges)
+        # GU (RCA Rule G): Unreachable code after raise detection
+        unreach_visitor = _UnreachableCodeAfterRaiseVisitor(module_adg, rel)
+        unreach_visitor.visit(tree)
+        edges.extend(unreach_visitor.edges)
 
-    # G32 (gap): P3 learning maturity (captures_pattern, records_learning_event,
-    #            writes_learning_snapshot, feeds_meta_learning, updates_routing_strategy,
-    #            improves_agent_policy, stores_learning_state)
-    p3_learn_visitor = _P3LearningMaturityVisitor(module_adg, rel)
-    p3_learn_visitor.visit(tree)
-    edges.extend(p3_learn_visitor.edges)
+        # G17 (gap): Secret / credential access (reads_secret_vault, accesses_credential, rotates_secret)
+        secret_visitor = _SecretAccessVisitor(module_adg, rel)
+        secret_visitor.visit(tree)
+        edges.extend(secret_visitor.edges)
 
-    # G33 (gap): P4 observability & governance (emits_metric_event, records_incident_event,
-    #            captures_runtime_anomaly, writes_observability_log, updates_monitoring_state,
-    #            triggers_alert, links_incident_trace)
-    p4_obs_visitor = _P4ObservabilityGovernanceVisitor(module_adg, rel)
-    p4_obs_visitor.visit(tree)
-    edges.extend(p4_obs_visitor.edges)
+        # Execution-grade semantic enrichment (replaces disabled _PrecisionHardeningVisitor)
+        # Closes gaps: Data Lineage, Control Flow, Side Effects, Temporal Ordering, Callsite Resolution
+        exec_visitor = _ExecutionSemanticVisitor(module_adg, rel)
+        exec_visitor.visit(tree)
+        edges.extend(exec_visitor.edges)
 
-    # G31 (gap): P4 state, telemetry & learning (records_telemetry_event,
-    #            captures_evaluation_metric, stores_embedding,
-    #            updates_meta_learning_state, links_execution_to_snapshot)
-    p4_state_visitor = _P4StateTelemetryVisitor(module_adg, rel)
-    p4_state_visitor.visit(tree)
-    edges.extend(p4_state_visitor.edges)
+    # All final gap visitors (only in full mode)
+    if visitors_to_run == "full":
+        # G18 (gap): Config governance (reads_governed_config, validates_config_schema, caches_config)
+        config_gov_visitor = _ConfigGovernanceVisitor(module_adg, rel)
+        config_gov_visitor.visit(tree)
+        edges.extend(config_gov_visitor.edges)
 
-    # G27 (gap): Learning / prompt provenance (proposal_commits_routing, prompt_template_used_by,
-    #            instruction_injection_source, produces_preference_pair, requires_human_review)
-    learning_prov_visitor = _LearningProvenanceVisitor(module_adg, rel)
-    learning_prov_visitor.visit(tree)
-    edges.extend(learning_prov_visitor.edges)
+        # G19 (gap): Dynamic invocation (invokes_eval, invokes_exec, invokes_importlib, invokes_getattr_dynamic)
+        dyn_inv_visitor = _DynamicInvocationVisitor(module_adg, rel)
+        dyn_inv_visitor.visit(tree)
+        edges.extend(dyn_inv_visitor.edges)
 
-    # W1c: Module definition visitor — emit module→func/class decomposes_into
-    mod_def_visitor = _ModuleDefinitionVisitor(module_adg, rel)
-    mod_def_visitor.visit(tree)
-    edges.extend(mod_def_visitor.edges)
+        # G20 (gap): Policy state observation (observes_policy_state, observes_runtime_state, snapshots_state)
+        pso_visitor = _PolicyStateObserverVisitor(module_adg, rel)
+        pso_visitor.visit(tree)
+        edges.extend(pso_visitor.edges)
 
-    # Phase 3a: Block decomposition — node granularity
-    block_visitor = _BlockDecompositionVisitor(module_adg, rel)
-    block_visitor.visit(tree)
-    edges.extend(block_visitor.edges)
+        # G21 (gap): Anti-pattern registry (registers_antipattern, classifies_antipattern)
+        ap_reg_visitor = _AntipatternRegistryVisitor(module_adg, rel)
+        ap_reg_visitor.visit(tree)
+        edges.extend(ap_reg_visitor.edges)
 
-    # Phase 3b: Type surface collection — type enrichment
-    type_collector = _TypeSurfaceCollector(rel)
-    type_collector.visit(tree)
-    type_surface_map = type_collector.type_map  # returned to caller
+        # G22 (gap): Healing orchestrator (dispatches_healing_run, confirms_heal, aborts_heal)
+        healing_orch_visitor = _HealingOrchestratorVisitor(module_adg, rel)
+        healing_orch_visitor.visit(tree)
+        edges.extend(healing_orch_visitor.edges)
 
-    # Phase 3c: Test → Execution linkage
-    test_link_visitor = _TestExecutionLinkageVisitor(module_adg, rel)
-    test_link_visitor.visit(tree)
-    edges.extend(test_link_visitor.edges)
+        # G23 (gap): Non-determinism primitive detection (uses_wall_clock, uses_random, uses_uuid)
+        nondet_visitor = _NondeterminismVisitor(module_adg, rel)
+        nondet_visitor.visit(tree)
+        edges.extend(nondet_visitor.edges)
 
-    unique_execution_edges = set(exec_visitor.edges)
-    surface_evidence = {
-        "decomposes_into_expected_count": len(set(block_visitor.edges)),
-        "controls_flow_expected_count": sum(
-            1 for edge in unique_execution_edges if edge.relation_type == "controls_flow"
-        ),
-        "flows_to_expected_count": sum(
-            1 for edge in unique_execution_edges if edge.relation_type == "flows_to"
-        ),
-        "emits_side_effect_expected_count": sum(
-            1 for edge in unique_execution_edges if edge.relation_type == "emits_side_effect"
-        ),
-        "resolves_callsite_expected_count": sum(
-            1 for edge in unique_execution_edges if edge.relation_type == "resolves_callsite"
-        ),
-        "tests_execution_of_expected_count": len(set(test_link_visitor.edges)),
-        "type_surface_candidate_count": len(type_surface_map),
-    }
+        # G24 (gap): External HTTP / network egress (external_http_call)
+        http_visitor = _ExternalHttpVisitor(module_adg, rel)
+        http_visitor.visit(tree)
+        edges.extend(http_visitor.edges)
+
+        # G25 (gap): Agent-to-agent dispatch (agent_executes_agent)
+        agent_dispatch_visitor = _AgentDispatchVisitor(module_adg, rel)
+        agent_dispatch_visitor.visit(tree)
+        edges.extend(agent_dispatch_visitor.edges)
+
+        # G28 (gap): P1 orchestration governance (routes_to_agent, orchestrates_workflow,
+        #            dispatches_execution_plan, validates_agent_capability, checks_agent_registry)
+        p1_orch_visitor = _P1OrchestrationGovernanceVisitor(module_adg, rel)
+        p1_orch_visitor.visit(tree)
+        edges.extend(p1_orch_visitor.edges)
+
+        # G26 (gap): L5 validation proof edges (validated_by_registry, validated_by_safety_plane,
+        #            validated_by_llm_gateway, execution_terminates_at_uwg, references_policy_hash)
+        l5_proof_visitor = _L5ValidationProofVisitor(module_adg, rel)
+        l5_proof_visitor.visit(tree)
+        edges.extend(l5_proof_visitor.edges)
+
+    # All P-series visitors (only in full mode)
+    if visitors_to_run == "full":
+        # G29 (gap): P2 execution capability (authorize_and_execute, validates_capability,
+        #            routes_to_capability, writes_via_uwg, blocks_direct_write,
+        #            records_tool_invocation, captures_execution_output)
+        p2_exec_visitor = _P2ExecutionCapabilityVisitor(module_adg, rel)
+        p2_exec_visitor.visit(tree)
+        edges.extend(p2_exec_visitor.edges)
+
+        # G30 (gap): P3 orchestration & healing (dispatches_agent, coordinates_agents,
+        #            records_workflow_lineage, records_healing_outcome, escalates_failure)
+        p3_orch_visitor = _P3OrchestrationHealingVisitor(module_adg, rel)
+        p3_orch_visitor.visit(tree)
+        edges.extend(p3_orch_visitor.edges)
+
+        # G32 (gap): P3 learning maturity (captures_pattern, records_learning_event,
+        #            writes_learning_snapshot, feeds_meta_learning, updates_routing_strategy,
+        #            improves_agent_policy, stores_learning_state)
+        p3_learn_visitor = _P3LearningMaturityVisitor(module_adg, rel)
+        p3_learn_visitor.visit(tree)
+        edges.extend(p3_learn_visitor.edges)
+
+        # G33 (gap): P4 observability & governance (emits_metric_event, records_incident_event,
+        #            captures_runtime_anomaly, writes_observability_log, updates_monitoring_state,
+        #            triggers_alert, links_incident_trace)
+        p4_obs_visitor = _P4ObservabilityGovernanceVisitor(module_adg, rel)
+        p4_obs_visitor.visit(tree)
+        edges.extend(p4_obs_visitor.edges)
+
+    # All final visitors (only in full mode)
+    if visitors_to_run == "full":
+        # G31 (gap): P4 state, telemetry & learning (records_telemetry_event,
+        #            captures_evaluation_metric, stores_embedding,
+        #            updates_meta_learning_state, links_execution_to_snapshot)
+        p4_state_visitor = _P4StateTelemetryVisitor(module_adg, rel)
+        p4_state_visitor.visit(tree)
+        edges.extend(p4_state_visitor.edges)
+
+        # G27 (gap): Learning / prompt provenance (proposal_commits_routing, prompt_template_used_by,
+        #            instruction_injection_source, produces_preference_pair, requires_human_review)
+        learning_prov_visitor = _LearningProvenanceVisitor(module_adg, rel)
+        learning_prov_visitor.visit(tree)
+        edges.extend(learning_prov_visitor.edges)
+
+        # W1c: Module definition visitor — emit module→func/class decomposes_into
+        mod_def_visitor = _ModuleDefinitionVisitor(module_adg, rel)
+        mod_def_visitor.visit(tree)
+        edges.extend(mod_def_visitor.edges)
+
+        # Phase 3a: Block decomposition — node granularity
+        block_visitor = _BlockDecompositionVisitor(module_adg, rel)
+        block_visitor.visit(tree)
+        edges.extend(block_visitor.edges)
+
+        # Phase 3b: Type surface collection — type enrichment
+        type_collector = _TypeSurfaceCollector(rel)
+        type_collector.visit(tree)
+        type_surface_map = type_collector.type_map  # returned to caller
+
+        # Phase 3c: Test → Execution linkage
+        test_link_visitor = _TestExecutionLinkageVisitor(module_adg, rel)
+        test_link_visitor.visit(tree)
+        edges.extend(test_link_visitor.edges)
+
+    # Phase 3b: Type surface collection (always needed for return)
+    if visitors_to_run != "full":
+        type_collector = _TypeSurfaceCollector(rel)
+        type_collector.visit(tree)
+        type_surface_map = type_collector.type_map
+
+    # Surface evidence calculation (handle both modes)
+    if visitors_to_run == "full":
+        unique_execution_edges = set(exec_visitor.edges)
+        surface_evidence = {
+            "decomposes_into_expected_count": len(set(block_visitor.edges)),
+            "controls_flow_expected_count": sum(
+                1 for edge in unique_execution_edges if edge.relation_type == "controls_flow"
+            ),
+            "flows_to_expected_count": sum(
+                1 for edge in unique_execution_edges if edge.relation_type == "flows_to"
+            ),
+            "emits_side_effect_expected_count": sum(
+                1 for edge in unique_execution_edges if edge.relation_type == "emits_side_effect"
+            ),
+            "resolves_callsite_expected_count": sum(
+                1 for edge in unique_execution_edges if edge.relation_type == "resolves_callsite"
+            ),
+            "tests_execution_of_expected_count": len(set(test_link_visitor.edges)),
+            "type_surface_candidate_count": len(type_surface_map),
+        }
+    else:
+        # Structural-only mode - minimal evidence
+        surface_evidence = {
+            "decomposes_into_expected_count": 0,
+            "controls_flow_expected_count": 0,
+            "flows_to_expected_count": 0,
+            "emits_side_effect_expected_count": 0,
+            "resolves_callsite_expected_count": 0,
+            "tests_execution_of_expected_count": 0,
+            "type_surface_candidate_count": len(type_surface_map),
+        }
 
     # -----------------------------------------------------------------------
     # SEMANTIC ENRICHMENT: stamp semantic_type on ALL edges (zero new edges)
     # Ensures semantic_edge_ratio → 1.0 by classifying every structural edge.
     # -----------------------------------------------------------------------
-    edges = _filter_runtime_only_edges(edges, include_tests)
+    edges = _filter_runtime_only_edges(edges, include_tests, scan_mode)
     edges, semantic_stamp_stats = _stamp_semantic_types_with_stats(edges)
     surface_evidence.update(semantic_stamp_stats)
 
@@ -6428,10 +6865,21 @@ class ADGStaticScanner:
         repo_root: Path | None = None,
         include_tests: bool = False,
         cache_path: Path | None = None,
+        scan_mode: str = "full",
     ) -> None:
+        """Initialize ADG Static Scanner.
+
+        Args:
+            repo_root: Root directory of the repository to scan
+            include_tests: Whether to include test files in scanning
+            cache_path: Optional path to scan cache file
+            scan_mode: "full", "structural_only", "selective", or "auto" for Phase 1 optimization
+                         "auto" enables cache-aware mode selection (Phase 1.3)
+        """
         self.repo_root = Path(repo_root) if repo_root is not None else Path.cwd()
         self.include_tests = include_tests  # H1
         self.cache_path = cache_path  # E9: optional incremental cache
+        self.scan_mode = scan_mode  # Phase 1.1-1.3: scan mode support
 
     def scan(self, commit_sha: str = "") -> ScanResult:
         """Run full static scan. Returns ScanResult with digest computed."""
@@ -6444,12 +6892,21 @@ class ADGStaticScanner:
 
         from agentic_core.adg.extraction.scan_cache import ScanCache, file_hash
 
+        # Phase 1.3: Cache-aware mode selection
+        if self.scan_mode == "auto":
+            self.scan_mode = _get_cache_aware_scan_mode(
+                self.cache_path,
+                self.repo_root,
+                self.include_tests
+            )
+
         cache = ScanCache.load(self.cache_path) if self.cache_path else ScanCache()
 
         manifest = ScanManifest(
             python_ast_version=f"{sys.version_info.major}.{sys.version_info.minor}",
             tests_included=self.include_tests,
             scanner_self_test_passed=run_scanner_self_test(),  # S1
+            scan_mode=self.scan_mode,  # Phase 1.3: record selected mode
         )
 
         result = ScanResult(commit_sha=commit_sha, manifest=manifest)
@@ -6467,7 +6924,9 @@ class ADGStaticScanner:
         # Pre-warm the known-files cache now (single filesystem walk)
         _ = shared_normalizer._get_known_files()
 
-        for filepath in _iter_python_files(self.repo_root, include_tests=self.include_tests):
+        for filepath in _iter_python_files(
+            self.repo_root, include_tests=self.include_tests, scan_mode=self.scan_mode
+        ):
             rel = _repo_relative(filepath, self.repo_root)
             modules_seen.append(rel)
             manifest.discovered_module_count += 1
@@ -6482,7 +6941,7 @@ class ADGStaticScanner:
                 had_error = False
             else:
                 file_edges, had_error, file_type_map, file_surface_evidence = _scan_file(
-                    filepath, self.repo_root, self.include_tests, shared_normalizer
+                    filepath, self.repo_root, self.include_tests, shared_normalizer, self.scan_mode
                 )
                 if not had_error:
                     cache.put(rel, fhash, file_edges, file_type_map, file_surface_evidence)

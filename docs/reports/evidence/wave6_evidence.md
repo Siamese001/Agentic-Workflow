@@ -4134,3 +4134,723 @@ HITL_DECISION_1: Agent=AgenticRouter | File=agentic_core/L0_routing/engines/agen
   wrong_target=w
   correct_target=c
   confidence=0.1
+
+HITL_DECISION_1: Agent=Agent-7 | File=module_7_0.py
+  Violation=violation-7-0 | Proposed=fix-7-0 | Decision=APPROVE
+
+HITL_DECISION_2: Agent=Agent-0 | File=module_0_0.py
+  Violation=violation-0-0 | Proposed=fix-0-0 | Decision=APPROVE
+
+HITL_DECISION_3: Agent=Agent-1 | File=module_1_0.py
+  Violation=violation-1-0 | Proposed=fix-1-0 | Decision=APPROVE
+
+HITL_DECISION_4: Agent=Agent-2 | File=module_2_0.py
+  Violation=violation-2-0 | Proposed=fix-2-0 | Decision=APPROVE
+
+HITL_DECISION_5: Agent=Agent-3 | File=module_3_0.py
+  Violation=violation-3-0 | Proposed=fix-3-0 | Decision=APPROVE
+
+HITL_DECISION_6: Agent=Agent-4 | File=module_4_0.py
+  Violation=violation-4-0 | Proposed=fix-4-0 | Decision=APPROVE
+
+HITL_DECISION_7: Agent=Agent-5 | File=module_5_0.py
+  Violation=violation-5-0 | Proposed=fix-5-0 | Decision=APPROVE
+
+HITL_DECISION_8: Agent=Agent-6 | File=module_6_0.py
+  Violation=violation-6-0 | Proposed=fix-6-0 | Decision=APPROVE
+
+HITL_DECISION_9: Agent=Agent-7 | File=module_7_1.py
+  Violation=violation-7-1 | Proposed=fix-7-1 | Decision=REJECT
+
+HITL_DECISION_10: Agent=Agent-0 | File=module_0_1.py
+  Violation=violation-0-1 | Proposed=fix-0-1 | Decision=REJECT
+
+HITL_DECISION_11: Agent=Agent-1 | File=module_1_1.py
+  Violation=violation-1-1 | Proposed=fix-1-1 | Decision=REJECT
+
+HITL_DECISION_12: Agent=Agent-2 | File=module_2_1.py
+  Violation=violation-2-1 | Proposed=fix-2-1 | Decision=REJECT
+
+HITL_DECISION_13: Agent=Agent-3 | File=module_3_1.py
+  Violation=violation-3-1 | Proposed=fix-3-1 | Decision=REJECT
+
+HITL_DECISION_14: Agent=Agent-4 | File=module_4_1.py
+  Violation=violation-4-1 | Proposed=fix-4-1 | Decision=REJECT
+
+HITL_DECISION_15: Agent=Agent-5 | File=module_5_1.py
+  Violation=violation-5-1 | Proposed=fix-5-1 | Decision=REJECT
+
+HITL_DECISION_16: Agent=Agent-6 | File=module_6_1.py
+  Violation=violation-6-1 | Proposed=fix-6-1 | Decision=REJECT
+
+HITL_DECISION_17: Agent=Agent-7 | File=module_7_2.py
+  Violation=violation-7-2 | Proposed=fix-7-2 | Decision=APPROVE
+
+HITL_DECISION_18: Agent=Agent-0 | File=module_0_2.py
+  Violation=violation-0-2 | Proposed=fix-0-2 | Decision=APPROVE
+
+HITL_DECISION_19: Agent=Agent-1 | File=module_1_2.py
+  Violation=violation-1-2 | Proposed=fix-1-2 | Decision=APPROVE
+
+HITL_DECISION_20: Agent=Agent-2 | File=module_2_2.py
+  Violation=violation-2-2 | Proposed=fix-2-2 | Decision=APPROVE
+
+HITL_DECISION_21: Agent=Agent-3 | File=module_3_2.py
+  Violation=violation-3-2 | Proposed=fix-3-2 | Decision=APPROVE
+
+HITL_DECISION_22: Agent=Agent-4 | File=module_4_2.py
+  Violation=violation-4-2 | Proposed=fix-4-2 | Decision=APPROVE
+
+HITL_DECISION_23: Agent=Agent-5 | File=module_5_2.py
+  Violation=violation-5-2 | Proposed=fix-5-2 | Decision=APPROVE
+
+HITL_DECISION_24: Agent=Agent-6 | File=module_6_2.py
+  Violation=violation-6-2 | Proposed=fix-6-2 | Decision=APPROVE
+
+HITL_DECISION_25: Agent=Agent-7 | File=module_7_3.py
+  Violation=violation-7-3 | Proposed=fix-7-3 | Decision=REJECT
+
+HITL_DECISION_26: Agent=Agent-0 | File=module_0_3.py
+  Violation=violation-0-3 | Proposed=fix-0-3 | Decision=REJECT
+
+HITL_DECISION_27: Agent=Agent-1 | File=module_1_3.py
+  Violation=violation-1-3 | Proposed=fix-1-3 | Decision=REJECT
+
+HITL_DECISION_28: Agent=Agent-2 | File=module_2_3.py
+  Violation=violation-2-3 | Proposed=fix-2-3 | Decision=REJECT
+
+HITL_DECISION_29: Agent=Agent-3 | File=module_3_3.py
+  Violation=violation-3-3 | Proposed=fix-3-3 | Decision=REJECT
+
+HITL_DECISION_30: Agent=Agent-4 | File=module_4_3.py
+  Violation=violation-4-3 | Proposed=fix-4-3 | Decision=REJECT
+
+HITL_DECISION_31: Agent=Agent-5 | File=module_5_3.py
+  Violation=violation-5-3 | Proposed=fix-5-3 | Decision=REJECT
+
+HITL_DECISION_32: Agent=Agent-6 | File=module_6_3.py
+  Violation=violation-6-3 | Proposed=fix-6-3 | Decision=REJECT
+
+HITL_DECISION_33: Agent=Agent-7 | File=module_7_4.py
+  Violation=violation-7-4 | Proposed=fix-7-4 | Decision=APPROVE
+
+HITL_DECISION_34: Agent=Agent-0 | File=module_0_4.py
+  Violation=violation-0-4 | Proposed=fix-0-4 | Decision=APPROVE
+
+HITL_DECISION_35: Agent=Agent-1 | File=module_1_4.py
+  Violation=violation-1-4 | Proposed=fix-1-4 | Decision=APPROVE
+
+HITL_DECISION_36: Agent=Agent-2 | File=module_2_4.py
+  Violation=violation-2-4 | Proposed=fix-2-4 | Decision=APPROVE
+
+HITL_DECISION_37: Agent=Agent-3 | File=module_3_4.py
+  Violation=violation-3-4 | Proposed=fix-3-4 | Decision=APPROVE
+
+HITL_DECISION_38: Agent=Agent-4 | File=module_4_4.py
+  Violation=violation-4-4 | Proposed=fix-4-4 | Decision=APPROVE
+
+HITL_DECISION_39: Agent=Agent-5 | File=module_5_4.py
+  Violation=violation-5-4 | Proposed=fix-5-4 | Decision=APPROVE
+
+HITL_DECISION_40: Agent=Agent-6 | File=module_6_4.py
+  Violation=violation-6-4 | Proposed=fix-6-4 | Decision=APPROVE
+
+HITL_DECISION_41: Agent=Agent-7 | File=module_7_5.py
+  Violation=violation-7-5 | Proposed=fix-7-5 | Decision=REJECT
+
+HITL_DECISION_42: Agent=Agent-0 | File=module_0_5.py
+  Violation=violation-0-5 | Proposed=fix-0-5 | Decision=REJECT
+
+HITL_DECISION_43: Agent=Agent-1 | File=module_1_5.py
+  Violation=violation-1-5 | Proposed=fix-1-5 | Decision=REJECT
+
+HITL_DECISION_44: Agent=Agent-2 | File=module_2_5.py
+  Violation=violation-2-5 | Proposed=fix-2-5 | Decision=REJECT
+
+HITL_DECISION_45: Agent=Agent-3 | File=module_3_5.py
+  Violation=violation-3-5 | Proposed=fix-3-5 | Decision=REJECT
+
+HITL_DECISION_46: Agent=Agent-4 | File=module_4_5.py
+  Violation=violation-4-5 | Proposed=fix-4-5 | Decision=REJECT
+
+HITL_DECISION_47: Agent=Agent-5 | File=module_5_5.py
+  Violation=violation-5-5 | Proposed=fix-5-5 | Decision=REJECT
+
+HITL_DECISION_48: Agent=Agent-5 | File=module_5_6.py
+  Violation=violation-5-6 | Proposed=fix-5-6 | Decision=APPROVE
+
+HITL_DECISION_49: Agent=Agent-7 | File=module_7_6.py
+  Violation=violation-7-6 | Proposed=fix-7-6 | Decision=APPROVE
+
+HITL_DECISION_50: Agent=Agent-0 | File=module_0_6.py
+  Violation=violation-0-6 | Proposed=fix-0-6 | Decision=APPROVE
+
+HITL_DECISION_51: Agent=Agent-1 | File=module_1_6.py
+  Violation=violation-1-6 | Proposed=fix-1-6 | Decision=APPROVE
+
+HITL_DECISION_52: Agent=Agent-2 | File=module_2_6.py
+  Violation=violation-2-6 | Proposed=fix-2-6 | Decision=APPROVE
+
+HITL_DECISION_53: Agent=Agent-3 | File=module_3_6.py
+  Violation=violation-3-6 | Proposed=fix-3-6 | Decision=APPROVE
+
+HITL_DECISION_54: Agent=Agent-4 | File=module_4_6.py
+  Violation=violation-4-6 | Proposed=fix-4-6 | Decision=APPROVE
+
+HITL_DECISION_55: Agent=Agent-6 | File=module_6_5.py
+  Violation=violation-6-5 | Proposed=fix-6-5 | Decision=REJECT
+
+HITL_DECISION_56: Agent=Agent-5 | File=module_5_7.py
+  Violation=violation-5-7 | Proposed=fix-5-7 | Decision=REJECT
+
+HITL_DECISION_57: Agent=Agent-7 | File=module_7_7.py
+  Violation=violation-7-7 | Proposed=fix-7-7 | Decision=REJECT
+
+HITL_DECISION_58: Agent=Agent-0 | File=module_0_7.py
+  Violation=violation-0-7 | Proposed=fix-0-7 | Decision=REJECT
+
+HITL_DECISION_59: Agent=Agent-1 | File=module_1_7.py
+  Violation=violation-1-7 | Proposed=fix-1-7 | Decision=REJECT
+
+HITL_DECISION_60: Agent=Agent-2 | File=module_2_7.py
+  Violation=violation-2-7 | Proposed=fix-2-7 | Decision=REJECT
+
+HITL_DECISION_61: Agent=Agent-3 | File=module_3_7.py
+  Violation=violation-3-7 | Proposed=fix-3-7 | Decision=REJECT
+
+HITL_DECISION_62: Agent=Agent-4 | File=module_4_7.py
+  Violation=violation-4-7 | Proposed=fix-4-7 | Decision=REJECT
+
+HITL_DECISION_63: Agent=Agent-6 | File=module_6_6.py
+  Violation=violation-6-6 | Proposed=fix-6-6 | Decision=APPROVE
+
+HITL_DECISION_64: Agent=Agent-5 | File=module_5_8.py
+  Violation=violation-5-8 | Proposed=fix-5-8 | Decision=APPROVE
+
+HITL_DECISION_65: Agent=Agent-7 | File=module_7_8.py
+  Violation=violation-7-8 | Proposed=fix-7-8 | Decision=APPROVE
+
+HITL_DECISION_66: Agent=Agent-0 | File=module_0_8.py
+  Violation=violation-0-8 | Proposed=fix-0-8 | Decision=APPROVE
+
+HITL_DECISION_67: Agent=Agent-1 | File=module_1_8.py
+  Violation=violation-1-8 | Proposed=fix-1-8 | Decision=APPROVE
+
+HITL_DECISION_68: Agent=Agent-2 | File=module_2_8.py
+  Violation=violation-2-8 | Proposed=fix-2-8 | Decision=APPROVE
+
+HITL_DECISION_69: Agent=Agent-3 | File=module_3_8.py
+  Violation=violation-3-8 | Proposed=fix-3-8 | Decision=APPROVE
+
+HITL_DECISION_70: Agent=Agent-4 | File=module_4_8.py
+  Violation=violation-4-8 | Proposed=fix-4-8 | Decision=APPROVE
+
+HITL_DECISION_71: Agent=Agent-6 | File=module_6_7.py
+  Violation=violation-6-7 | Proposed=fix-6-7 | Decision=REJECT
+
+HITL_DECISION_72: Agent=Agent-5 | File=module_5_9.py
+  Violation=violation-5-9 | Proposed=fix-5-9 | Decision=REJECT
+
+HITL_DECISION_73: Agent=Agent-7 | File=module_7_9.py
+  Violation=violation-7-9 | Proposed=fix-7-9 | Decision=REJECT
+
+HITL_DECISION_74: Agent=Agent-0 | File=module_0_9.py
+  Violation=violation-0-9 | Proposed=fix-0-9 | Decision=REJECT
+
+HITL_DECISION_75: Agent=Agent-1 | File=module_1_9.py
+  Violation=violation-1-9 | Proposed=fix-1-9 | Decision=REJECT
+
+HITL_DECISION_76: Agent=Agent-2 | File=module_2_9.py
+  Violation=violation-2-9 | Proposed=fix-2-9 | Decision=REJECT
+
+HITL_DECISION_77: Agent=Agent-3 | File=module_3_9.py
+  Violation=violation-3-9 | Proposed=fix-3-9 | Decision=REJECT
+
+HITL_DECISION_78: Agent=Agent-4 | File=module_4_9.py
+  Violation=violation-4-9 | Proposed=fix-4-9 | Decision=REJECT
+
+HITL_DECISION_79: Agent=Agent-6 | File=module_6_8.py
+  Violation=violation-6-8 | Proposed=fix-6-8 | Decision=APPROVE
+
+HITL_DECISION_80: Agent=Agent-6 | File=module_6_9.py
+  Violation=violation-6-9 | Proposed=fix-6-9 | Decision=REJECT
+
+HITL_DECISION_1: Agent=Agent-7 | File=module_7_0.py
+  Violation=violation-7-0 | Proposed=fix-7-0 | Decision=APPROVE
+
+HITL_DECISION_2: Agent=Agent-0 | File=module_0_0.py
+  Violation=violation-0-0 | Proposed=fix-0-0 | Decision=APPROVE
+
+HITL_DECISION_3: Agent=Agent-1 | File=module_1_0.py
+  Violation=violation-1-0 | Proposed=fix-1-0 | Decision=APPROVE
+
+HITL_DECISION_4: Agent=Agent-2 | File=module_2_0.py
+  Violation=violation-2-0 | Proposed=fix-2-0 | Decision=APPROVE
+
+HITL_DECISION_5: Agent=Agent-5 | File=module_5_0.py
+  Violation=violation-5-0 | Proposed=fix-5-0 | Decision=APPROVE
+
+HITL_DECISION_6: Agent=Agent-6 | File=module_6_0.py
+  Violation=violation-6-0 | Proposed=fix-6-0 | Decision=APPROVE
+
+HITL_DECISION_7: Agent=Agent-4 | File=module_4_0.py
+  Violation=violation-4-0 | Proposed=fix-4-0 | Decision=APPROVE
+
+HITL_DECISION_8: Agent=Agent-3 | File=module_3_0.py
+  Violation=violation-3-0 | Proposed=fix-3-0 | Decision=APPROVE
+
+HITL_DECISION_9: Agent=Agent-7 | File=module_7_1.py
+  Violation=violation-7-1 | Proposed=fix-7-1 | Decision=REJECT
+
+HITL_DECISION_10: Agent=Agent-0 | File=module_0_1.py
+  Violation=violation-0-1 | Proposed=fix-0-1 | Decision=REJECT
+
+HITL_DECISION_11: Agent=Agent-1 | File=module_1_1.py
+  Violation=violation-1-1 | Proposed=fix-1-1 | Decision=REJECT
+
+HITL_DECISION_12: Agent=Agent-2 | File=module_2_1.py
+  Violation=violation-2-1 | Proposed=fix-2-1 | Decision=REJECT
+
+HITL_DECISION_13: Agent=Agent-5 | File=module_5_1.py
+  Violation=violation-5-1 | Proposed=fix-5-1 | Decision=REJECT
+
+HITL_DECISION_14: Agent=Agent-6 | File=module_6_1.py
+  Violation=violation-6-1 | Proposed=fix-6-1 | Decision=REJECT
+
+HITL_DECISION_15: Agent=Agent-4 | File=module_4_1.py
+  Violation=violation-4-1 | Proposed=fix-4-1 | Decision=REJECT
+
+HITL_DECISION_16: Agent=Agent-3 | File=module_3_1.py
+  Violation=violation-3-1 | Proposed=fix-3-1 | Decision=REJECT
+
+HITL_DECISION_17: Agent=Agent-7 | File=module_7_2.py
+  Violation=violation-7-2 | Proposed=fix-7-2 | Decision=APPROVE
+
+HITL_DECISION_18: Agent=Agent-0 | File=module_0_2.py
+  Violation=violation-0-2 | Proposed=fix-0-2 | Decision=APPROVE
+
+HITL_DECISION_19: Agent=Agent-1 | File=module_1_2.py
+  Violation=violation-1-2 | Proposed=fix-1-2 | Decision=APPROVE
+
+HITL_DECISION_20: Agent=Agent-2 | File=module_2_2.py
+  Violation=violation-2-2 | Proposed=fix-2-2 | Decision=APPROVE
+
+HITL_DECISION_21: Agent=Agent-5 | File=module_5_2.py
+  Violation=violation-5-2 | Proposed=fix-5-2 | Decision=APPROVE
+
+HITL_DECISION_22: Agent=Agent-6 | File=module_6_2.py
+  Violation=violation-6-2 | Proposed=fix-6-2 | Decision=APPROVE
+
+HITL_DECISION_23: Agent=Agent-4 | File=module_4_2.py
+  Violation=violation-4-2 | Proposed=fix-4-2 | Decision=APPROVE
+
+HITL_DECISION_24: Agent=Agent-3 | File=module_3_2.py
+  Violation=violation-3-2 | Proposed=fix-3-2 | Decision=APPROVE
+
+HITL_DECISION_25: Agent=Agent-7 | File=module_7_3.py
+  Violation=violation-7-3 | Proposed=fix-7-3 | Decision=REJECT
+
+HITL_DECISION_26: Agent=Agent-0 | File=module_0_3.py
+  Violation=violation-0-3 | Proposed=fix-0-3 | Decision=REJECT
+
+HITL_DECISION_27: Agent=Agent-1 | File=module_1_3.py
+  Violation=violation-1-3 | Proposed=fix-1-3 | Decision=REJECT
+
+HITL_DECISION_28: Agent=Agent-2 | File=module_2_3.py
+  Violation=violation-2-3 | Proposed=fix-2-3 | Decision=REJECT
+
+HITL_DECISION_29: Agent=Agent-5 | File=module_5_3.py
+  Violation=violation-5-3 | Proposed=fix-5-3 | Decision=REJECT
+
+HITL_DECISION_30: Agent=Agent-6 | File=module_6_3.py
+  Violation=violation-6-3 | Proposed=fix-6-3 | Decision=REJECT
+
+HITL_DECISION_31: Agent=Agent-4 | File=module_4_3.py
+  Violation=violation-4-3 | Proposed=fix-4-3 | Decision=REJECT
+
+HITL_DECISION_32: Agent=Agent-3 | File=module_3_3.py
+  Violation=violation-3-3 | Proposed=fix-3-3 | Decision=REJECT
+
+HITL_DECISION_33: Agent=Agent-7 | File=module_7_4.py
+  Violation=violation-7-4 | Proposed=fix-7-4 | Decision=APPROVE
+
+HITL_DECISION_34: Agent=Agent-0 | File=module_0_4.py
+  Violation=violation-0-4 | Proposed=fix-0-4 | Decision=APPROVE
+
+HITL_DECISION_35: Agent=Agent-1 | File=module_1_4.py
+  Violation=violation-1-4 | Proposed=fix-1-4 | Decision=APPROVE
+
+HITL_DECISION_36: Agent=Agent-2 | File=module_2_4.py
+  Violation=violation-2-4 | Proposed=fix-2-4 | Decision=APPROVE
+
+HITL_DECISION_37: Agent=Agent-5 | File=module_5_4.py
+  Violation=violation-5-4 | Proposed=fix-5-4 | Decision=APPROVE
+
+HITL_DECISION_38: Agent=Agent-6 | File=module_6_4.py
+  Violation=violation-6-4 | Proposed=fix-6-4 | Decision=APPROVE
+
+HITL_DECISION_39: Agent=Agent-4 | File=module_4_4.py
+  Violation=violation-4-4 | Proposed=fix-4-4 | Decision=APPROVE
+
+HITL_DECISION_40: Agent=Agent-3 | File=module_3_4.py
+  Violation=violation-3-4 | Proposed=fix-3-4 | Decision=APPROVE
+
+HITL_DECISION_41: Agent=Agent-7 | File=module_7_5.py
+  Violation=violation-7-5 | Proposed=fix-7-5 | Decision=REJECT
+
+HITL_DECISION_42: Agent=Agent-0 | File=module_0_5.py
+  Violation=violation-0-5 | Proposed=fix-0-5 | Decision=REJECT
+
+HITL_DECISION_43: Agent=Agent-1 | File=module_1_5.py
+  Violation=violation-1-5 | Proposed=fix-1-5 | Decision=REJECT
+
+HITL_DECISION_44: Agent=Agent-2 | File=module_2_5.py
+  Violation=violation-2-5 | Proposed=fix-2-5 | Decision=REJECT
+
+HITL_DECISION_45: Agent=Agent-5 | File=module_5_5.py
+  Violation=violation-5-5 | Proposed=fix-5-5 | Decision=REJECT
+
+HITL_DECISION_46: Agent=Agent-6 | File=module_6_5.py
+  Violation=violation-6-5 | Proposed=fix-6-5 | Decision=REJECT
+
+HITL_DECISION_47: Agent=Agent-4 | File=module_4_5.py
+  Violation=violation-4-5 | Proposed=fix-4-5 | Decision=REJECT
+
+HITL_DECISION_48: Agent=Agent-3 | File=module_3_5.py
+  Violation=violation-3-5 | Proposed=fix-3-5 | Decision=REJECT
+
+HITL_DECISION_49: Agent=Agent-7 | File=module_7_6.py
+  Violation=violation-7-6 | Proposed=fix-7-6 | Decision=APPROVE
+
+HITL_DECISION_50: Agent=Agent-0 | File=module_0_6.py
+  Violation=violation-0-6 | Proposed=fix-0-6 | Decision=APPROVE
+
+HITL_DECISION_51: Agent=Agent-1 | File=module_1_6.py
+  Violation=violation-1-6 | Proposed=fix-1-6 | Decision=APPROVE
+
+HITL_DECISION_52: Agent=Agent-2 | File=module_2_6.py
+  Violation=violation-2-6 | Proposed=fix-2-6 | Decision=APPROVE
+
+HITL_DECISION_53: Agent=Agent-5 | File=module_5_6.py
+  Violation=violation-5-6 | Proposed=fix-5-6 | Decision=APPROVE
+
+HITL_DECISION_54: Agent=Agent-6 | File=module_6_6.py
+  Violation=violation-6-6 | Proposed=fix-6-6 | Decision=APPROVE
+
+HITL_DECISION_55: Agent=Agent-4 | File=module_4_6.py
+  Violation=violation-4-6 | Proposed=fix-4-6 | Decision=APPROVE
+
+HITL_DECISION_56: Agent=Agent-3 | File=module_3_6.py
+  Violation=violation-3-6 | Proposed=fix-3-6 | Decision=APPROVE
+
+HITL_DECISION_57: Agent=Agent-7 | File=module_7_7.py
+  Violation=violation-7-7 | Proposed=fix-7-7 | Decision=REJECT
+
+HITL_DECISION_58: Agent=Agent-0 | File=module_0_7.py
+  Violation=violation-0-7 | Proposed=fix-0-7 | Decision=REJECT
+
+HITL_DECISION_59: Agent=Agent-1 | File=module_1_7.py
+  Violation=violation-1-7 | Proposed=fix-1-7 | Decision=REJECT
+
+HITL_DECISION_60: Agent=Agent-2 | File=module_2_7.py
+  Violation=violation-2-7 | Proposed=fix-2-7 | Decision=REJECT
+
+HITL_DECISION_61: Agent=Agent-5 | File=module_5_7.py
+  Violation=violation-5-7 | Proposed=fix-5-7 | Decision=REJECT
+
+HITL_DECISION_62: Agent=Agent-6 | File=module_6_7.py
+  Violation=violation-6-7 | Proposed=fix-6-7 | Decision=REJECT
+
+HITL_DECISION_63: Agent=Agent-4 | File=module_4_7.py
+  Violation=violation-4-7 | Proposed=fix-4-7 | Decision=REJECT
+
+HITL_DECISION_64: Agent=Agent-3 | File=module_3_7.py
+  Violation=violation-3-7 | Proposed=fix-3-7 | Decision=REJECT
+
+HITL_DECISION_65: Agent=Agent-7 | File=module_7_8.py
+  Violation=violation-7-8 | Proposed=fix-7-8 | Decision=APPROVE
+
+HITL_DECISION_66: Agent=Agent-0 | File=module_0_8.py
+  Violation=violation-0-8 | Proposed=fix-0-8 | Decision=APPROVE
+
+HITL_DECISION_67: Agent=Agent-1 | File=module_1_8.py
+  Violation=violation-1-8 | Proposed=fix-1-8 | Decision=APPROVE
+
+HITL_DECISION_68: Agent=Agent-2 | File=module_2_8.py
+  Violation=violation-2-8 | Proposed=fix-2-8 | Decision=APPROVE
+
+HITL_DECISION_69: Agent=Agent-5 | File=module_5_8.py
+  Violation=violation-5-8 | Proposed=fix-5-8 | Decision=APPROVE
+
+HITL_DECISION_70: Agent=Agent-6 | File=module_6_8.py
+  Violation=violation-6-8 | Proposed=fix-6-8 | Decision=APPROVE
+
+HITL_DECISION_71: Agent=Agent-4 | File=module_4_8.py
+  Violation=violation-4-8 | Proposed=fix-4-8 | Decision=APPROVE
+
+HITL_DECISION_72: Agent=Agent-3 | File=module_3_8.py
+  Violation=violation-3-8 | Proposed=fix-3-8 | Decision=APPROVE
+
+HITL_DECISION_73: Agent=Agent-7 | File=module_7_9.py
+  Violation=violation-7-9 | Proposed=fix-7-9 | Decision=REJECT
+
+HITL_DECISION_74: Agent=Agent-0 | File=module_0_9.py
+  Violation=violation-0-9 | Proposed=fix-0-9 | Decision=REJECT
+
+HITL_DECISION_75: Agent=Agent-1 | File=module_1_9.py
+  Violation=violation-1-9 | Proposed=fix-1-9 | Decision=REJECT
+
+HITL_DECISION_76: Agent=Agent-2 | File=module_2_9.py
+  Violation=violation-2-9 | Proposed=fix-2-9 | Decision=REJECT
+
+HITL_DECISION_77: Agent=Agent-5 | File=module_5_9.py
+  Violation=violation-5-9 | Proposed=fix-5-9 | Decision=REJECT
+
+HITL_DECISION_78: Agent=Agent-6 | File=module_6_9.py
+  Violation=violation-6-9 | Proposed=fix-6-9 | Decision=REJECT
+
+HITL_DECISION_79: Agent=Agent-4 | File=module_4_9.py
+  Violation=violation-4-9 | Proposed=fix-4-9 | Decision=REJECT
+
+HITL_DECISION_80: Agent=Agent-3 | File=module_3_9.py
+  Violation=violation-3-9 | Proposed=fix-3-9 | Decision=REJECT
+
+HITL_DECISION_1: Agent=Agent-7 | File=module_7_0.py
+  Violation=violation-7-0 | Proposed=fix-7-0 | Decision=APPROVE
+
+HITL_DECISION_2: Agent=Agent-0 | File=module_0_0.py
+  Violation=violation-0-0 | Proposed=fix-0-0 | Decision=APPROVE
+
+HITL_DECISION_3: Agent=Agent-1 | File=module_1_0.py
+  Violation=violation-1-0 | Proposed=fix-1-0 | Decision=APPROVE
+
+HITL_DECISION_4: Agent=Agent-5 | File=module_5_0.py
+  Violation=violation-5-0 | Proposed=fix-5-0 | Decision=APPROVE
+
+HITL_DECISION_5: Agent=Agent-6 | File=module_6_0.py
+  Violation=violation-6-0 | Proposed=fix-6-0 | Decision=APPROVE
+
+HITL_DECISION_6: Agent=Agent-4 | File=module_4_0.py
+  Violation=violation-4-0 | Proposed=fix-4-0 | Decision=APPROVE
+
+HITL_DECISION_7: Agent=Agent-3 | File=module_3_0.py
+  Violation=violation-3-0 | Proposed=fix-3-0 | Decision=APPROVE
+
+HITL_DECISION_8: Agent=Agent-2 | File=module_2_0.py
+  Violation=violation-2-0 | Proposed=fix-2-0 | Decision=APPROVE
+
+HITL_DECISION_9: Agent=Agent-7 | File=module_7_1.py
+  Violation=violation-7-1 | Proposed=fix-7-1 | Decision=REJECT
+
+HITL_DECISION_10: Agent=Agent-0 | File=module_0_1.py
+  Violation=violation-0-1 | Proposed=fix-0-1 | Decision=REJECT
+
+HITL_DECISION_11: Agent=Agent-1 | File=module_1_1.py
+  Violation=violation-1-1 | Proposed=fix-1-1 | Decision=REJECT
+
+HITL_DECISION_12: Agent=Agent-5 | File=module_5_1.py
+  Violation=violation-5-1 | Proposed=fix-5-1 | Decision=REJECT
+
+HITL_DECISION_13: Agent=Agent-6 | File=module_6_1.py
+  Violation=violation-6-1 | Proposed=fix-6-1 | Decision=REJECT
+
+HITL_DECISION_14: Agent=Agent-4 | File=module_4_1.py
+  Violation=violation-4-1 | Proposed=fix-4-1 | Decision=REJECT
+
+HITL_DECISION_15: Agent=Agent-3 | File=module_3_1.py
+  Violation=violation-3-1 | Proposed=fix-3-1 | Decision=REJECT
+
+HITL_DECISION_16: Agent=Agent-2 | File=module_2_1.py
+  Violation=violation-2-1 | Proposed=fix-2-1 | Decision=REJECT
+
+HITL_DECISION_17: Agent=Agent-7 | File=module_7_2.py
+  Violation=violation-7-2 | Proposed=fix-7-2 | Decision=APPROVE
+
+HITL_DECISION_18: Agent=Agent-0 | File=module_0_2.py
+  Violation=violation-0-2 | Proposed=fix-0-2 | Decision=APPROVE
+
+HITL_DECISION_19: Agent=Agent-1 | File=module_1_2.py
+  Violation=violation-1-2 | Proposed=fix-1-2 | Decision=APPROVE
+
+HITL_DECISION_20: Agent=Agent-5 | File=module_5_2.py
+  Violation=violation-5-2 | Proposed=fix-5-2 | Decision=APPROVE
+
+HITL_DECISION_21: Agent=Agent-6 | File=module_6_2.py
+  Violation=violation-6-2 | Proposed=fix-6-2 | Decision=APPROVE
+
+HITL_DECISION_22: Agent=Agent-4 | File=module_4_2.py
+  Violation=violation-4-2 | Proposed=fix-4-2 | Decision=APPROVE
+
+HITL_DECISION_23: Agent=Agent-3 | File=module_3_2.py
+  Violation=violation-3-2 | Proposed=fix-3-2 | Decision=APPROVE
+
+HITL_DECISION_24: Agent=Agent-2 | File=module_2_2.py
+  Violation=violation-2-2 | Proposed=fix-2-2 | Decision=APPROVE
+
+HITL_DECISION_25: Agent=Agent-7 | File=module_7_3.py
+  Violation=violation-7-3 | Proposed=fix-7-3 | Decision=REJECT
+
+HITL_DECISION_26: Agent=Agent-0 | File=module_0_3.py
+  Violation=violation-0-3 | Proposed=fix-0-3 | Decision=REJECT
+
+HITL_DECISION_27: Agent=Agent-1 | File=module_1_3.py
+  Violation=violation-1-3 | Proposed=fix-1-3 | Decision=REJECT
+
+HITL_DECISION_28: Agent=Agent-5 | File=module_5_3.py
+  Violation=violation-5-3 | Proposed=fix-5-3 | Decision=REJECT
+
+HITL_DECISION_29: Agent=Agent-6 | File=module_6_3.py
+  Violation=violation-6-3 | Proposed=fix-6-3 | Decision=REJECT
+
+HITL_DECISION_30: Agent=Agent-4 | File=module_4_3.py
+  Violation=violation-4-3 | Proposed=fix-4-3 | Decision=REJECT
+
+HITL_DECISION_31: Agent=Agent-3 | File=module_3_3.py
+  Violation=violation-3-3 | Proposed=fix-3-3 | Decision=REJECT
+
+HITL_DECISION_32: Agent=Agent-2 | File=module_2_3.py
+  Violation=violation-2-3 | Proposed=fix-2-3 | Decision=REJECT
+
+HITL_DECISION_33: Agent=Agent-7 | File=module_7_4.py
+  Violation=violation-7-4 | Proposed=fix-7-4 | Decision=APPROVE
+
+HITL_DECISION_34: Agent=Agent-0 | File=module_0_4.py
+  Violation=violation-0-4 | Proposed=fix-0-4 | Decision=APPROVE
+
+HITL_DECISION_35: Agent=Agent-1 | File=module_1_4.py
+  Violation=violation-1-4 | Proposed=fix-1-4 | Decision=APPROVE
+
+HITL_DECISION_36: Agent=Agent-5 | File=module_5_4.py
+  Violation=violation-5-4 | Proposed=fix-5-4 | Decision=APPROVE
+
+HITL_DECISION_37: Agent=Agent-6 | File=module_6_4.py
+  Violation=violation-6-4 | Proposed=fix-6-4 | Decision=APPROVE
+
+HITL_DECISION_38: Agent=Agent-4 | File=module_4_4.py
+  Violation=violation-4-4 | Proposed=fix-4-4 | Decision=APPROVE
+
+HITL_DECISION_39: Agent=Agent-3 | File=module_3_4.py
+  Violation=violation-3-4 | Proposed=fix-3-4 | Decision=APPROVE
+
+HITL_DECISION_40: Agent=Agent-2 | File=module_2_4.py
+  Violation=violation-2-4 | Proposed=fix-2-4 | Decision=APPROVE
+
+HITL_DECISION_41: Agent=Agent-7 | File=module_7_5.py
+  Violation=violation-7-5 | Proposed=fix-7-5 | Decision=REJECT
+
+HITL_DECISION_42: Agent=Agent-0 | File=module_0_5.py
+  Violation=violation-0-5 | Proposed=fix-0-5 | Decision=REJECT
+
+HITL_DECISION_43: Agent=Agent-1 | File=module_1_5.py
+  Violation=violation-1-5 | Proposed=fix-1-5 | Decision=REJECT
+
+HITL_DECISION_44: Agent=Agent-5 | File=module_5_5.py
+  Violation=violation-5-5 | Proposed=fix-5-5 | Decision=REJECT
+
+HITL_DECISION_45: Agent=Agent-6 | File=module_6_5.py
+  Violation=violation-6-5 | Proposed=fix-6-5 | Decision=REJECT
+
+HITL_DECISION_46: Agent=Agent-4 | File=module_4_5.py
+  Violation=violation-4-5 | Proposed=fix-4-5 | Decision=REJECT
+
+HITL_DECISION_47: Agent=Agent-3 | File=module_3_5.py
+  Violation=violation-3-5 | Proposed=fix-3-5 | Decision=REJECT
+
+HITL_DECISION_48: Agent=Agent-2 | File=module_2_5.py
+  Violation=violation-2-5 | Proposed=fix-2-5 | Decision=REJECT
+
+HITL_DECISION_49: Agent=Agent-7 | File=module_7_6.py
+  Violation=violation-7-6 | Proposed=fix-7-6 | Decision=APPROVE
+
+HITL_DECISION_50: Agent=Agent-0 | File=module_0_6.py
+  Violation=violation-0-6 | Proposed=fix-0-6 | Decision=APPROVE
+
+HITL_DECISION_51: Agent=Agent-1 | File=module_1_6.py
+  Violation=violation-1-6 | Proposed=fix-1-6 | Decision=APPROVE
+
+HITL_DECISION_52: Agent=Agent-5 | File=module_5_6.py
+  Violation=violation-5-6 | Proposed=fix-5-6 | Decision=APPROVE
+
+HITL_DECISION_53: Agent=Agent-6 | File=module_6_6.py
+  Violation=violation-6-6 | Proposed=fix-6-6 | Decision=APPROVE
+
+HITL_DECISION_54: Agent=Agent-4 | File=module_4_6.py
+  Violation=violation-4-6 | Proposed=fix-4-6 | Decision=APPROVE
+
+HITL_DECISION_55: Agent=Agent-3 | File=module_3_6.py
+  Violation=violation-3-6 | Proposed=fix-3-6 | Decision=APPROVE
+
+HITL_DECISION_56: Agent=Agent-2 | File=module_2_6.py
+  Violation=violation-2-6 | Proposed=fix-2-6 | Decision=APPROVE
+
+HITL_DECISION_57: Agent=Agent-7 | File=module_7_7.py
+  Violation=violation-7-7 | Proposed=fix-7-7 | Decision=REJECT
+
+HITL_DECISION_58: Agent=Agent-0 | File=module_0_7.py
+  Violation=violation-0-7 | Proposed=fix-0-7 | Decision=REJECT
+
+HITL_DECISION_59: Agent=Agent-1 | File=module_1_7.py
+  Violation=violation-1-7 | Proposed=fix-1-7 | Decision=REJECT
+
+HITL_DECISION_60: Agent=Agent-5 | File=module_5_7.py
+  Violation=violation-5-7 | Proposed=fix-5-7 | Decision=REJECT
+
+HITL_DECISION_61: Agent=Agent-6 | File=module_6_7.py
+  Violation=violation-6-7 | Proposed=fix-6-7 | Decision=REJECT
+
+HITL_DECISION_62: Agent=Agent-4 | File=module_4_7.py
+  Violation=violation-4-7 | Proposed=fix-4-7 | Decision=REJECT
+
+HITL_DECISION_63: Agent=Agent-3 | File=module_3_7.py
+  Violation=violation-3-7 | Proposed=fix-3-7 | Decision=REJECT
+
+HITL_DECISION_64: Agent=Agent-2 | File=module_2_7.py
+  Violation=violation-2-7 | Proposed=fix-2-7 | Decision=REJECT
+
+HITL_DECISION_65: Agent=Agent-7 | File=module_7_8.py
+  Violation=violation-7-8 | Proposed=fix-7-8 | Decision=APPROVE
+
+HITL_DECISION_66: Agent=Agent-0 | File=module_0_8.py
+  Violation=violation-0-8 | Proposed=fix-0-8 | Decision=APPROVE
+
+HITL_DECISION_67: Agent=Agent-1 | File=module_1_8.py
+  Violation=violation-1-8 | Proposed=fix-1-8 | Decision=APPROVE
+
+HITL_DECISION_68: Agent=Agent-5 | File=module_5_8.py
+  Violation=violation-5-8 | Proposed=fix-5-8 | Decision=APPROVE
+
+HITL_DECISION_69: Agent=Agent-6 | File=module_6_8.py
+  Violation=violation-6-8 | Proposed=fix-6-8 | Decision=APPROVE
+
+HITL_DECISION_70: Agent=Agent-4 | File=module_4_8.py
+  Violation=violation-4-8 | Proposed=fix-4-8 | Decision=APPROVE
+
+HITL_DECISION_71: Agent=Agent-3 | File=module_3_8.py
+  Violation=violation-3-8 | Proposed=fix-3-8 | Decision=APPROVE
+
+HITL_DECISION_72: Agent=Agent-2 | File=module_2_8.py
+  Violation=violation-2-8 | Proposed=fix-2-8 | Decision=APPROVE
+
+HITL_DECISION_73: Agent=Agent-7 | File=module_7_9.py
+  Violation=violation-7-9 | Proposed=fix-7-9 | Decision=REJECT
+
+HITL_DECISION_74: Agent=Agent-0 | File=module_0_9.py
+  Violation=violation-0-9 | Proposed=fix-0-9 | Decision=REJECT
+
+HITL_DECISION_75: Agent=Agent-1 | File=module_1_9.py
+  Violation=violation-1-9 | Proposed=fix-1-9 | Decision=REJECT
+
+HITL_DECISION_76: Agent=Agent-5 | File=module_5_9.py
+  Violation=violation-5-9 | Proposed=fix-5-9 | Decision=REJECT
+
+HITL_DECISION_77: Agent=Agent-6 | File=module_6_9.py
+  Violation=violation-6-9 | Proposed=fix-6-9 | Decision=REJECT
+
+HITL_DECISION_78: Agent=Agent-4 | File=module_4_9.py
+  Violation=violation-4-9 | Proposed=fix-4-9 | Decision=REJECT
+
+HITL_DECISION_79: Agent=Agent-3 | File=module_3_9.py
+  Violation=violation-3-9 | Proposed=fix-3-9 | Decision=REJECT
+
+HITL_DECISION_80: Agent=Agent-2 | File=module_2_9.py
+  Violation=violation-2-9 | Proposed=fix-2-9 | Decision=REJECT
