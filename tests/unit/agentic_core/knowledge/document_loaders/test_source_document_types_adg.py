@@ -1,4 +1,4 @@
-"""Enhanced behavioral tests for agentic_core.knowledge.document_loaders.source_document_types."""
+"""Behavioral contract tests for agentic_core.knowledge.document_loaders.source_document_types."""
 from __future__ import annotations
 
 import importlib
@@ -7,93 +7,53 @@ import pytest
 MODULE_PATH = "agentic_core.knowledge.document_loaders.source_document_types"
 
 
-def test_module_importable():
-    """Module imports without side effects."""
+@pytest.fixture(scope="module")
+def mod():
+    """Import the module under test. Fails hard if first-party import broken."""
     try:
-        mod = importlib.import_module(MODULE_PATH)
-    except ImportError as e:
-        pytest.skip(f"Module not available: {e}")
-    
+        return importlib.import_module(MODULE_PATH)
+    except Exception as exc:
+        pytest.fail(
+            f"FIRST-PARTY IMPORT FAILED for {MODULE_PATH}: {exc}",
+            pytrace=False,
+        )
+
+
+def test_module_importable(mod):
+    """Module imports without errors."""
     assert mod.__name__ == MODULE_PATH
 
 
-def test_module_exposes_public_api():
-    """Module exposes at least one public symbol."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-    except ImportError as e:
-        pytest.skip(f"Module not available: {e}")
-    
-    public_symbols = [n for n in dir(mod) if not n.startswith("_")]
-    assert len(public_symbols) >= 1, f"{MODULE_PATH} must expose at least one public symbol"
+def test_module_exposes_public_api(mod):
+    """Module exposes expected public symbols."""
+    public = [n for n in dir(mod) if not n.startswith("_")]
+    assert len(public) >= 1, f"{MODULE_PATH} must expose at least one public symbol"
 
 
-def test_baseentity_is_instantiable():
-    """BaseEntity can be instantiated (if it's a class)."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        cls = getattr(mod, class_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{class_name} not available: {e}")
-    
-    if isinstance(cls, type):
-        try:
-            instance = cls()
-            assert isinstance(instance, cls)
-        except Exception:
-            # Some classes require arguments - that's OK
-            pass
-    else:
-        pytest.skip(f"{class_name} is not a class")
+def test_baseentity_is_instantiable(mod):
+    """BaseEntity is accessible and is a type."""
+    cls = getattr(mod, "BaseEntity", None)
+    assert cls is not None, "BaseEntity must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "BaseEntity must be a class"
 
 
-def test_knowledgechunk_is_instantiable():
-    """KnowledgeChunk can be instantiated (if it's a class)."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        cls = getattr(mod, class_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{class_name} not available: {e}")
-    
-    if isinstance(cls, type):
-        try:
-            instance = cls()
-            assert isinstance(instance, cls)
-        except Exception:
-            # Some classes require arguments - that's OK
-            pass
-    else:
-        pytest.skip(f"{class_name} is not a class")
+def test_knowledgechunk_is_instantiable(mod):
+    """KnowledgeChunk is accessible and is a type."""
+    cls = getattr(mod, "KnowledgeChunk", None)
+    assert cls is not None, "KnowledgeChunk must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "KnowledgeChunk must be a class"
 
 
-def test_sourcedocument_is_instantiable():
-    """SourceDocument can be instantiated (if it's a class)."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        cls = getattr(mod, class_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{class_name} not available: {e}")
-    
-    if isinstance(cls, type):
-        try:
-            instance = cls()
-            assert isinstance(instance, cls)
-        except Exception:
-            # Some classes require arguments - that's OK
-            pass
-    else:
-        pytest.skip(f"{class_name} is not a class")
+def test_sourcedocument_is_instantiable(mod):
+    """SourceDocument is accessible and is a type."""
+    cls = getattr(mod, "SourceDocument", None)
+    assert cls is not None, "SourceDocument must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "SourceDocument must be a class"
 
 
-def test_field_is_callable():
-    """Field is callable."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        func = getattr(mod, func_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{func_name} not available: {e}")
-    
-    assert callable(func), f"{func_name} must be callable"
+def test_field_is_callable(mod):
+    """Field is accessible and callable."""
+    func = getattr(mod, "Field", None)
+    assert func is not None, "Field must be defined in {MODULE_PATH}"
+    assert callable(func), "Field must be callable"
 
-if __name__ == "__main__":
-    pytest.main([__file__])

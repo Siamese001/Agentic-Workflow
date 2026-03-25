@@ -1,4 +1,4 @@
-"""Enhanced behavioral tests for agentic_core.interfaces.meta_control."""
+"""Behavioral contract tests for agentic_core.interfaces.meta_control."""
 from __future__ import annotations
 
 import importlib
@@ -7,115 +7,88 @@ import pytest
 MODULE_PATH = "agentic_core.interfaces.meta_control"
 
 
-def test_module_importable():
-    """Module imports without side effects."""
+@pytest.fixture(scope="module")
+def mod():
+    """Import the module under test. Fails hard if first-party import broken."""
     try:
-        mod = importlib.import_module(MODULE_PATH)
-    except ImportError as e:
-        pytest.skip(f"Module not available: {e}")
-    
+        return importlib.import_module(MODULE_PATH)
+    except Exception as exc:
+        pytest.fail(
+            f"FIRST-PARTY IMPORT FAILED for {MODULE_PATH}: {exc}",
+            pytrace=False,
+        )
+
+
+def test_module_importable(mod):
+    """Module imports without errors."""
     assert mod.__name__ == MODULE_PATH
 
 
-def test_module_exposes_public_api():
-    """Module exposes at least one public symbol."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-    except ImportError as e:
-        pytest.skip(f"Module not available: {e}")
-    
-    public_symbols = [n for n in dir(mod) if not n.startswith("_")]
-    assert len(public_symbols) >= 1, f"{MODULE_PATH} must expose at least one public symbol"
+def test_module_exposes_public_api(mod):
+    """Module exposes expected public symbols."""
+    public = [n for n in dir(mod) if not n.startswith("_")]
+    assert len(public) >= 1, f"{MODULE_PATH} must expose at least one public symbol"
 
 
-def test_capabilitytokenartifact_is_instantiable():
-    """CapabilityTokenArtifact can be instantiated (if it's a class)."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        cls = getattr(mod, class_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{class_name} not available: {e}")
-    
-    if isinstance(cls, type):
-        try:
-            instance = cls()
-            assert isinstance(instance, cls)
-        except Exception:
-            # Some classes require arguments - that's OK
-            pass
-    else:
-        pytest.skip(f"{class_name} is not a class")
+def test_capabilitytokenartifact_is_instantiable(mod):
+    """CapabilityTokenArtifact is accessible and is a type."""
+    cls = getattr(mod, "CapabilityTokenArtifact", None)
+    assert cls is not None, "CapabilityTokenArtifact must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "CapabilityTokenArtifact must be a class"
 
 
-def test_configdeltaartifact_is_instantiable():
-    """ConfigDeltaArtifact can be instantiated (if it's a class)."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        cls = getattr(mod, class_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{class_name} not available: {e}")
-    
-    if isinstance(cls, type):
-        try:
-            instance = cls()
-            assert isinstance(instance, cls)
-        except Exception:
-            # Some classes require arguments - that's OK
-            pass
-    else:
-        pytest.skip(f"{class_name} is not a class")
+def test_configdeltaartifact_is_instantiable(mod):
+    """ConfigDeltaArtifact is accessible and is a type."""
+    cls = getattr(mod, "ConfigDeltaArtifact", None)
+    assert cls is not None, "ConfigDeltaArtifact must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "ConfigDeltaArtifact must be a class"
 
 
-def test_semanticclocksnapshot_is_instantiable():
-    """SemanticClockSnapshot can be instantiated (if it's a class)."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        cls = getattr(mod, class_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{class_name} not available: {e}")
-    
-    if isinstance(cls, type):
-        try:
-            instance = cls()
-            assert isinstance(instance, cls)
-        except Exception:
-            # Some classes require arguments - that's OK
-            pass
-    else:
-        pytest.skip(f"{class_name} is not a class")
+def test_semanticclocksnapshot_is_instantiable(mod):
+    """SemanticClockSnapshot is accessible and is a type."""
+    cls = getattr(mod, "SemanticClockSnapshot", None)
+    assert cls is not None, "SemanticClockSnapshot must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "SemanticClockSnapshot must be a class"
 
 
-def test_apply_change_package_readonly_is_callable():
-    """apply_change_package_readonly is callable."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        func = getattr(mod, func_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{func_name} not available: {e}")
-    
-    assert callable(func), f"{func_name} must be callable"
+def test_apply_change_package_readonly_is_callable(mod):
+    """apply_change_package_readonly is accessible and callable."""
+    func = getattr(mod, "apply_change_package_readonly", None)
+    assert func is not None, "apply_change_package_readonly must be defined in {MODULE_PATH}"
+    assert callable(func), "apply_change_package_readonly must be callable"
 
 
-def test_apply_meta_learning_rollout_is_callable():
-    """apply_meta_learning_rollout is callable."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        func = getattr(mod, func_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{func_name} not available: {e}")
-    
-    assert callable(func), f"{func_name} must be callable"
+def test_apply_meta_learning_rollout_is_callable(mod):
+    """apply_meta_learning_rollout is accessible and callable."""
+    func = getattr(mod, "apply_meta_learning_rollout", None)
+    assert func is not None, "apply_meta_learning_rollout must be defined in {MODULE_PATH}"
+    assert callable(func), "apply_meta_learning_rollout must be callable"
 
 
-def test_apply_with_invariants_is_callable():
-    """apply_with_invariants is callable."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        func = getattr(mod, func_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{func_name} not available: {e}")
-    
-    assert callable(func), f"{func_name} must be callable"
+def test_apply_with_invariants_is_callable(mod):
+    """apply_with_invariants is accessible and callable."""
+    func = getattr(mod, "apply_with_invariants", None)
+    assert func is not None, "apply_with_invariants must be defined in {MODULE_PATH}"
+    assert callable(func), "apply_with_invariants must be callable"
 
-if __name__ == "__main__":
-    pytest.main([__file__])
+
+def test_canonical_json_is_callable(mod):
+    """canonical_json is accessible and callable."""
+    func = getattr(mod, "canonical_json", None)
+    assert func is not None, "canonical_json must be defined in {MODULE_PATH}"
+    assert callable(func), "canonical_json must be callable"
+
+
+def test_load_current_is_callable(mod):
+    """load_current is accessible and callable."""
+    func = getattr(mod, "load_current", None)
+    assert func is not None, "load_current must be defined in {MODULE_PATH}"
+    assert callable(func), "load_current must be callable"
+
+
+def test_validate_component_allowed_is_callable(mod):
+    """validate_component_allowed is accessible and callable."""
+    func = getattr(mod, "validate_component_allowed", None)
+    assert func is not None, "validate_component_allowed must be defined in {MODULE_PATH}"
+    assert callable(func), "validate_component_allowed must be callable"
+

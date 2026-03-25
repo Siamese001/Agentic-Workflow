@@ -1,4 +1,4 @@
-"""Enhanced behavioral tests for agentic_core.knowledge.document_loaders.csv_loader."""
+"""Behavioral contract tests for agentic_core.knowledge.document_loaders.csv_loader."""
 from __future__ import annotations
 
 import importlib
@@ -7,44 +7,32 @@ import pytest
 MODULE_PATH = "agentic_core.knowledge.document_loaders.csv_loader"
 
 
-def test_module_importable():
-    """Module imports without side effects."""
+@pytest.fixture(scope="module")
+def mod():
+    """Import the module under test. Fails hard if first-party import broken."""
     try:
-        mod = importlib.import_module(MODULE_PATH)
-    except ImportError as e:
-        pytest.skip(f"Module not available: {e}")
-    
+        return importlib.import_module(MODULE_PATH)
+    except Exception as exc:
+        pytest.fail(
+            f"FIRST-PARTY IMPORT FAILED for {MODULE_PATH}: {exc}",
+            pytrace=False,
+        )
+
+
+def test_module_importable(mod):
+    """Module imports without errors."""
     assert mod.__name__ == MODULE_PATH
 
 
-def test_module_exposes_public_api():
-    """Module exposes at least one public symbol."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-    except ImportError as e:
-        pytest.skip(f"Module not available: {e}")
-    
-    public_symbols = [n for n in dir(mod) if not n.startswith("_")]
-    assert len(public_symbols) >= 1, f"{MODULE_PATH} must expose at least one public symbol"
+def test_module_exposes_public_api(mod):
+    """Module exposes expected public symbols."""
+    public = [n for n in dir(mod) if not n.startswith("_")]
+    assert len(public) >= 1, f"{MODULE_PATH} must expose at least one public symbol"
 
 
-def test_csvdocumentloader_is_instantiable():
-    """CSVDocumentLoader can be instantiated (if it's a class)."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        cls = getattr(mod, class_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{class_name} not available: {e}")
-    
-    if isinstance(cls, type):
-        try:
-            instance = cls()
-            assert isinstance(instance, cls)
-        except Exception:
-            # Some classes require arguments - that's OK
-            pass
-    else:
-        pytest.skip(f"{class_name} is not a class")
+def test_csvdocumentloader_is_instantiable(mod):
+    """CSVDocumentLoader is accessible and is a type."""
+    cls = getattr(mod, "CSVDocumentLoader", None)
+    assert cls is not None, "CSVDocumentLoader must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "CSVDocumentLoader must be a class"
 
-if __name__ == "__main__":
-    pytest.main([__file__])

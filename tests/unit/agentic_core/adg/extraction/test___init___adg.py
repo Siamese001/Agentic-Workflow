@@ -1,4 +1,4 @@
-"""Enhanced behavioral tests for agentic_core.adg.extraction.__init__."""
+"""Behavioral contract tests for agentic_core.adg.extraction.__init__."""
 from __future__ import annotations
 
 import importlib
@@ -7,93 +7,67 @@ import pytest
 MODULE_PATH = "agentic_core.adg.extraction.__init__"
 
 
-def test_module_importable():
-    """Module imports without side effects."""
+@pytest.fixture(scope="module")
+def mod():
+    """Import the module under test. Fails hard if first-party import broken."""
     try:
-        mod = importlib.import_module(MODULE_PATH)
-    except ImportError as e:
-        pytest.skip(f"Module not available: {e}")
-    
+        return importlib.import_module(MODULE_PATH)
+    except Exception as exc:
+        pytest.fail(
+            f"FIRST-PARTY IMPORT FAILED for {MODULE_PATH}: {exc}",
+            pytrace=False,
+        )
+
+
+def test_module_importable(mod):
+    """Module imports without errors."""
     assert mod.__name__ == MODULE_PATH
 
 
-def test_module_exposes_public_api():
-    """Module exposes at least one public symbol."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-    except ImportError as e:
-        pytest.skip(f"Module not available: {e}")
-    
-    public_symbols = [n for n in dir(mod) if not n.startswith("_")]
-    assert len(public_symbols) >= 1, f"{MODULE_PATH} must expose at least one public symbol"
+def test_module_exposes_public_api(mod):
+    """Module exposes expected public symbols."""
+    public = [n for n in dir(mod) if not n.startswith("_")]
+    assert len(public) >= 1, f"{MODULE_PATH} must expose at least one public symbol"
 
 
-def test_adgstaticscanner_is_instantiable():
-    """ADGStaticScanner can be instantiated (if it's a class)."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        cls = getattr(mod, class_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{class_name} not available: {e}")
-    
-    if isinstance(cls, type):
-        try:
-            instance = cls()
-            assert isinstance(instance, cls)
-        except Exception:
-            # Some classes require arguments - that's OK
-            pass
-    else:
-        pytest.skip(f"{class_name} is not a class")
+def test_adgstaticscanner_is_instantiable(mod):
+    """ADGStaticScanner is accessible and is a type."""
+    cls = getattr(mod, "ADGStaticScanner", None)
+    assert cls is not None, "ADGStaticScanner must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "ADGStaticScanner must be a class"
 
 
-def test_agentregistryedge_is_instantiable():
-    """AgentRegistryEdge can be instantiated (if it's a class)."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        cls = getattr(mod, class_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{class_name} not available: {e}")
-    
-    if isinstance(cls, type):
-        try:
-            instance = cls()
-            assert isinstance(instance, cls)
-        except Exception:
-            # Some classes require arguments - that's OK
-            pass
-    else:
-        pytest.skip(f"{class_name} is not a class")
+def test_agentregistryedge_is_instantiable(mod):
+    """AgentRegistryEdge is accessible and is a type."""
+    cls = getattr(mod, "AgentRegistryEdge", None)
+    assert cls is not None, "AgentRegistryEdge must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "AgentRegistryEdge must be a class"
 
 
-def test_agentregistryresult_is_instantiable():
-    """AgentRegistryResult can be instantiated (if it's a class)."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        cls = getattr(mod, class_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{class_name} not available: {e}")
-    
-    if isinstance(cls, type):
-        try:
-            instance = cls()
-            assert isinstance(instance, cls)
-        except Exception:
-            # Some classes require arguments - that's OK
-            pass
-    else:
-        pytest.skip(f"{class_name} is not a class")
+def test_agentregistryresult_is_instantiable(mod):
+    """AgentRegistryResult is accessible and is a type."""
+    cls = getattr(mod, "AgentRegistryResult", None)
+    assert cls is not None, "AgentRegistryResult must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "AgentRegistryResult must be a class"
 
 
-def test_scan_agent_registry_is_callable():
-    """scan_agent_registry is callable."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        func = getattr(mod, func_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{func_name} not available: {e}")
-    
-    assert callable(func), f"{func_name} must be callable"
+def test_edge_is_instantiable(mod):
+    """Edge is accessible and is a type."""
+    cls = getattr(mod, "Edge", None)
+    assert cls is not None, "Edge must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "Edge must be a class"
 
-if __name__ == "__main__":
-    pytest.main([__file__])
+
+def test_scanresult_is_instantiable(mod):
+    """ScanResult is accessible and is a type."""
+    cls = getattr(mod, "ScanResult", None)
+    assert cls is not None, "ScanResult must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "ScanResult must be a class"
+
+
+def test_scan_agent_registry_is_callable(mod):
+    """scan_agent_registry is accessible and callable."""
+    func = getattr(mod, "scan_agent_registry", None)
+    assert func is not None, "scan_agent_registry must be defined in {MODULE_PATH}"
+    assert callable(func), "scan_agent_registry must be callable"
+

@@ -1,4 +1,4 @@
-"""Enhanced behavioral tests for agentic_core.L0_routing.types.reasoning_intensity_types."""
+"""Behavioral contract tests for agentic_core.L0_routing.types.reasoning_intensity_types."""
 from __future__ import annotations
 
 import importlib
@@ -7,115 +7,116 @@ import pytest
 MODULE_PATH = "agentic_core.L0_routing.types.reasoning_intensity_types"
 
 
-def test_module_importable():
-    """Module imports without side effects."""
+@pytest.fixture(scope="module")
+def mod():
+    """Import the module under test. Fails hard if first-party import broken."""
     try:
-        mod = importlib.import_module(MODULE_PATH)
-    except ImportError as e:
-        pytest.skip(f"Module not available: {e}")
-    
+        return importlib.import_module(MODULE_PATH)
+    except Exception as exc:
+        pytest.fail(
+            f"FIRST-PARTY IMPORT FAILED for {MODULE_PATH}: {exc}",
+            pytrace=False,
+        )
+
+
+def test_module_importable(mod):
+    """Module imports without errors."""
     assert mod.__name__ == MODULE_PATH
 
 
-def test_module_exposes_public_api():
-    """Module exposes at least one public symbol."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-    except ImportError as e:
-        pytest.skip(f"Module not available: {e}")
-    
-    public_symbols = [n for n in dir(mod) if not n.startswith("_")]
-    assert len(public_symbols) >= 1, f"{MODULE_PATH} must expose at least one public symbol"
+def test_module_exposes_public_api(mod):
+    """Module exposes expected public symbols."""
+    public = [n for n in dir(mod) if not n.startswith("_")]
+    assert len(public) >= 1, f"{MODULE_PATH} must expose at least one public symbol"
 
 
-def test_any_is_instantiable():
-    """Any can be instantiated (if it's a class)."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        cls = getattr(mod, class_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{class_name} not available: {e}")
-    
-    if isinstance(cls, type):
-        try:
-            instance = cls()
-            assert isinstance(instance, cls)
-        except Exception:
-            # Some classes require arguments - that's OK
-            pass
-    else:
-        pytest.skip(f"{class_name} is not a class")
+def test_any_is_instantiable(mod):
+    """Any is accessible and is a type."""
+    cls = getattr(mod, "Any", None)
+    assert cls is not None, "Any must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "Any must be a class"
 
 
-def test_enum_is_instantiable():
-    """Enum can be instantiated (if it's a class)."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        cls = getattr(mod, class_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{class_name} not available: {e}")
-    
-    if isinstance(cls, type):
-        try:
-            instance = cls()
-            assert isinstance(instance, cls)
-        except Exception:
-            # Some classes require arguments - that's OK
-            pass
-    else:
-        pytest.skip(f"{class_name} is not a class")
+def test_enum_is_instantiable(mod):
+    """Enum is accessible and is a type."""
+    cls = getattr(mod, "Enum", None)
+    assert cls is not None, "Enum must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "Enum must be a class"
 
 
-def test_layersegment_is_instantiable():
-    """LayerSegment can be instantiated (if it's a class)."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        cls = getattr(mod, class_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{class_name} not available: {e}")
-    
-    if isinstance(cls, type):
-        try:
-            instance = cls()
-            assert isinstance(instance, cls)
-        except Exception:
-            # Some classes require arguments - that's OK
-            pass
-    else:
-        pytest.skip(f"{class_name} is not a class")
+def test_layersegment_is_instantiable(mod):
+    """LayerSegment is accessible and is a type."""
+    cls = getattr(mod, "LayerSegment", None)
+    assert cls is not None, "LayerSegment must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "LayerSegment must be a class"
 
 
-def test_build_envelope_hash_is_callable():
-    """build_envelope_hash is callable."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        func = getattr(mod, func_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{func_name} not available: {e}")
-    
-    assert callable(func), f"{func_name} must be callable"
+def test_reasoningconstraintviolation_is_instantiable(mod):
+    """ReasoningConstraintViolation is accessible and is a type."""
+    cls = getattr(mod, "ReasoningConstraintViolation", None)
+    assert cls is not None, "ReasoningConstraintViolation must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "ReasoningConstraintViolation must be a class"
 
 
-def test_build_profile_hash_is_callable():
-    """build_profile_hash is callable."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        func = getattr(mod, func_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{func_name} not available: {e}")
-    
-    assert callable(func), f"{func_name} must be callable"
+def test_reasoningenforcementtelemetry_is_instantiable(mod):
+    """ReasoningEnforcementTelemetry is accessible and is a type."""
+    cls = getattr(mod, "ReasoningEnforcementTelemetry", None)
+    assert cls is not None, "ReasoningEnforcementTelemetry must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "ReasoningEnforcementTelemetry must be a class"
 
 
-def test_dataclass_is_callable():
-    """dataclass is callable."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        func = getattr(mod, func_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{func_name} not available: {e}")
-    
-    assert callable(func), f"{func_name} must be callable"
+def test_reasoningintensityprofile_is_instantiable(mod):
+    """ReasoningIntensityProfile is accessible and is a type."""
+    cls = getattr(mod, "ReasoningIntensityProfile", None)
+    assert cls is not None, "ReasoningIntensityProfile must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "ReasoningIntensityProfile must be a class"
 
-if __name__ == "__main__":
-    pytest.main([__file__])
+
+def test_reasoningtier_is_instantiable(mod):
+    """ReasoningTier is accessible and is a type."""
+    cls = getattr(mod, "ReasoningTier", None)
+    assert cls is not None, "ReasoningTier must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "ReasoningTier must be a class"
+
+
+def test_routedecisionartifact_is_instantiable(mod):
+    """RouteDecisionArtifact is accessible and is a type."""
+    cls = getattr(mod, "RouteDecisionArtifact", None)
+    assert cls is not None, "RouteDecisionArtifact must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "RouteDecisionArtifact must be a class"
+
+
+def test_build_envelope_hash_is_callable(mod):
+    """build_envelope_hash is accessible and callable."""
+    func = getattr(mod, "build_envelope_hash", None)
+    assert func is not None, "build_envelope_hash must be defined in {MODULE_PATH}"
+    assert callable(func), "build_envelope_hash must be callable"
+
+
+def test_build_profile_hash_is_callable(mod):
+    """build_profile_hash is accessible and callable."""
+    func = getattr(mod, "build_profile_hash", None)
+    assert func is not None, "build_profile_hash must be defined in {MODULE_PATH}"
+    assert callable(func), "build_profile_hash must be callable"
+
+
+def test_dataclass_is_callable(mod):
+    """dataclass is accessible and callable."""
+    func = getattr(mod, "dataclass", None)
+    assert func is not None, "dataclass must be defined in {MODULE_PATH}"
+    assert callable(func), "dataclass must be callable"
+
+
+def test_emit_determinism_digest_is_callable(mod):
+    """emit_determinism_digest is accessible and callable."""
+    func = getattr(mod, "emit_determinism_digest", None)
+    assert func is not None, "emit_determinism_digest must be defined in {MODULE_PATH}"
+    assert callable(func), "emit_determinism_digest must be callable"
+
+
+def test_emit_replay_key_is_callable(mod):
+    """emit_replay_key is accessible and callable."""
+    func = getattr(mod, "emit_replay_key", None)
+    assert func is not None, "emit_replay_key must be defined in {MODULE_PATH}"
+    assert callable(func), "emit_replay_key must be callable"
+

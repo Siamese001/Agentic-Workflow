@@ -1,4 +1,4 @@
-"""Enhanced behavioral tests for agentic_core.base_agents.L0RoutingBase."""
+"""Behavioral contract tests for agentic_core.base_agents.L0RoutingBase."""
 from __future__ import annotations
 
 import importlib
@@ -7,115 +7,88 @@ import pytest
 MODULE_PATH = "agentic_core.base_agents.L0RoutingBase"
 
 
-def test_module_importable():
-    """Module imports without side effects."""
+@pytest.fixture(scope="module")
+def mod():
+    """Import the module under test. Fails hard if first-party import broken."""
     try:
-        mod = importlib.import_module(MODULE_PATH)
-    except ImportError as e:
-        pytest.skip(f"Module not available: {e}")
-    
+        return importlib.import_module(MODULE_PATH)
+    except Exception as exc:
+        pytest.fail(
+            f"FIRST-PARTY IMPORT FAILED for {MODULE_PATH}: {exc}",
+            pytrace=False,
+        )
+
+
+def test_module_importable(mod):
+    """Module imports without errors."""
     assert mod.__name__ == MODULE_PATH
 
 
-def test_module_exposes_public_api():
-    """Module exposes at least one public symbol."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-    except ImportError as e:
-        pytest.skip(f"Module not available: {e}")
-    
-    public_symbols = [n for n in dir(mod) if not n.startswith("_")]
-    assert len(public_symbols) >= 1, f"{MODULE_PATH} must expose at least one public symbol"
+def test_module_exposes_public_api(mod):
+    """Module exposes expected public symbols."""
+    public = [n for n in dir(mod) if not n.startswith("_")]
+    assert len(public) >= 1, f"{MODULE_PATH} must expose at least one public symbol"
 
 
-def test_any_is_instantiable():
-    """Any can be instantiated (if it's a class)."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        cls = getattr(mod, class_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{class_name} not available: {e}")
-    
-    if isinstance(cls, type):
-        try:
-            instance = cls()
-            assert isinstance(instance, cls)
-        except Exception:
-            # Some classes require arguments - that's OK
-            pass
-    else:
-        pytest.skip(f"{class_name} is not a class")
+def test_any_is_instantiable(mod):
+    """Any is accessible and is a type."""
+    cls = getattr(mod, "Any", None)
+    assert cls is not None, "Any must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "Any must be a class"
 
 
-def test_l0delegationtestingmixin_is_instantiable():
-    """L0DelegationTestingMixin can be instantiated (if it's a class)."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        cls = getattr(mod, class_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{class_name} not available: {e}")
-    
-    if isinstance(cls, type):
-        try:
-            instance = cls()
-            assert isinstance(instance, cls)
-        except Exception:
-            # Some classes require arguments - that's OK
-            pass
-    else:
-        pytest.skip(f"{class_name} is not a class")
+def test_l0delegationtestingmixin_is_instantiable(mod):
+    """L0DelegationTestingMixin is accessible and is a type."""
+    cls = getattr(mod, "L0DelegationTestingMixin", None)
+    assert cls is not None, "L0DelegationTestingMixin must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "L0DelegationTestingMixin must be a class"
 
 
-def test_l0routingbase_is_instantiable():
-    """L0RoutingBase can be instantiated (if it's a class)."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        cls = getattr(mod, class_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{class_name} not available: {e}")
-    
-    if isinstance(cls, type):
-        try:
-            instance = cls()
-            assert isinstance(instance, cls)
-        except Exception:
-            # Some classes require arguments - that's OK
-            pass
-    else:
-        pytest.skip(f"{class_name} is not a class")
+def test_l0routingbase_is_instantiable(mod):
+    """L0RoutingBase is accessible and is a type."""
+    cls = getattr(mod, "L0RoutingBase", None)
+    assert cls is not None, "L0RoutingBase must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "L0RoutingBase must be a class"
 
 
-def test_dataclass_is_callable():
-    """dataclass is callable."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        func = getattr(mod, func_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{func_name} not available: {e}")
-    
-    assert callable(func), f"{func_name} must be callable"
+def test_layersegment_is_instantiable(mod):
+    """LayerSegment is accessible and is a type."""
+    cls = getattr(mod, "LayerSegment", None)
+    assert cls is not None, "LayerSegment must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "LayerSegment must be a class"
 
 
-def test_emit_determinism_digest_is_callable():
-    """emit_determinism_digest is callable."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        func = getattr(mod, func_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{func_name} not available: {e}")
-    
-    assert callable(func), f"{func_name} must be callable"
+def test_sovereignbaseagent_is_instantiable(mod):
+    """SovereignBaseAgent is accessible and is a type."""
+    cls = getattr(mod, "SovereignBaseAgent", None)
+    assert cls is not None, "SovereignBaseAgent must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "SovereignBaseAgent must be a class"
 
 
-def test_emit_replay_key_is_callable():
-    """emit_replay_key is callable."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        func = getattr(mod, func_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{func_name} not available: {e}")
-    
-    assert callable(func), f"{func_name} must be callable"
+def test_dataclass_is_callable(mod):
+    """dataclass is accessible and callable."""
+    func = getattr(mod, "dataclass", None)
+    assert func is not None, "dataclass must be defined in {MODULE_PATH}"
+    assert callable(func), "dataclass must be callable"
 
-if __name__ == "__main__":
-    pytest.main([__file__])
+
+def test_emit_determinism_digest_is_callable(mod):
+    """emit_determinism_digest is accessible and callable."""
+    func = getattr(mod, "emit_determinism_digest", None)
+    assert func is not None, "emit_determinism_digest must be defined in {MODULE_PATH}"
+    assert callable(func), "emit_determinism_digest must be callable"
+
+
+def test_emit_replay_key_is_callable(mod):
+    """emit_replay_key is accessible and callable."""
+    func = getattr(mod, "emit_replay_key", None)
+    assert func is not None, "emit_replay_key must be defined in {MODULE_PATH}"
+    assert callable(func), "emit_replay_key must be callable"
+
+
+def test_standard_heal_is_callable(mod):
+    """standard_heal is accessible and callable."""
+    func = getattr(mod, "standard_heal", None)
+    assert func is not None, "standard_heal must be defined in {MODULE_PATH}"
+    assert callable(func), "standard_heal must be callable"
+

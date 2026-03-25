@@ -1,4 +1,4 @@
-"""Enhanced behavioral tests for agentic_core.interfaces.write_gateway."""
+"""Behavioral contract tests for agentic_core.interfaces.write_gateway."""
 from __future__ import annotations
 
 import importlib
@@ -7,96 +7,60 @@ import pytest
 MODULE_PATH = "agentic_core.interfaces.write_gateway"
 
 
-def test_module_importable():
-    """Module imports without side effects."""
+@pytest.fixture(scope="module")
+def mod():
+    """Import the module under test. Fails hard if first-party import broken."""
     try:
-        mod = importlib.import_module(MODULE_PATH)
-    except ImportError as e:
-        pytest.skip(f"Module not available: {e}")
-    
+        return importlib.import_module(MODULE_PATH)
+    except Exception as exc:
+        pytest.fail(
+            f"FIRST-PARTY IMPORT FAILED for {MODULE_PATH}: {exc}",
+            pytrace=False,
+        )
+
+
+def test_module_importable(mod):
+    """Module imports without errors."""
     assert mod.__name__ == MODULE_PATH
 
 
-def test_module_exposes_public_api():
-    """Module exposes at least one public symbol."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-    except ImportError as e:
-        pytest.skip(f"Module not available: {e}")
-    
-    public_symbols = [n for n in dir(mod) if not n.startswith("_")]
-    assert len(public_symbols) >= 1, f"{MODULE_PATH} must expose at least one public symbol"
+def test_module_exposes_public_api(mod):
+    """Module exposes expected public symbols."""
+    public = [n for n in dir(mod) if not n.startswith("_")]
+    assert len(public) >= 1, f"{MODULE_PATH} must expose at least one public symbol"
 
 
-def test_instructionpacket_is_instantiable():
-    """InstructionPacket can be instantiated (if it's a class)."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        cls = getattr(mod, class_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{class_name} not available: {e}")
-    
-    if isinstance(cls, type):
-        try:
-            instance = cls()
-            assert isinstance(instance, cls)
-        except Exception:
-            # Some classes require arguments - that's OK
-            pass
-    else:
-        pytest.skip(f"{class_name} is not a class")
+def test_instructionpacket_is_instantiable(mod):
+    """InstructionPacket is accessible and is a type."""
+    cls = getattr(mod, "InstructionPacket", None)
+    assert cls is not None, "InstructionPacket must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "InstructionPacket must be a class"
 
 
-def test_universalwritegateway_is_instantiable():
-    """UniversalWriteGateway can be instantiated (if it's a class)."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        cls = getattr(mod, class_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{class_name} not available: {e}")
-    
-    if isinstance(cls, type):
-        try:
-            instance = cls()
-            assert isinstance(instance, cls)
-        except Exception:
-            # Some classes require arguments - that's OK
-            pass
-    else:
-        pytest.skip(f"{class_name} is not a class")
+def test_universalwritegateway_is_instantiable(mod):
+    """UniversalWriteGateway is accessible and is a type."""
+    cls = getattr(mod, "UniversalWriteGateway", None)
+    assert cls is not None, "UniversalWriteGateway must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "UniversalWriteGateway must be a class"
 
 
-def test_sequence_is_callable():
-    """Sequence is callable."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        func = getattr(mod, func_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{func_name} not available: {e}")
-    
-    assert callable(func), f"{func_name} must be callable"
+def test_sequence_is_callable(mod):
+    """Sequence is accessible and callable."""
+    func = getattr(mod, "Sequence", None)
+    assert func is not None, "Sequence must be defined in {MODULE_PATH}"
+    assert callable(func), "Sequence must be callable"
 
 
-def test_compute_replay_key_is_callable():
-    """compute_replay_key is callable."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        func = getattr(mod, func_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{func_name} not available: {e}")
-    
-    assert callable(func), f"{func_name} must be callable"
+def test_compute_replay_key_is_callable(mod):
+    """compute_replay_key is accessible and callable."""
+    func = getattr(mod, "compute_replay_key", None)
+    assert func is not None, "compute_replay_key must be defined in {MODULE_PATH}"
+    assert callable(func), "compute_replay_key must be callable"
 
 
-def test_get_write_gateway_is_callable():
-    """get_write_gateway is callable."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        func = getattr(mod, func_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{func_name} not available: {e}")
-    
-    assert callable(func), f"{func_name} must be callable"
+def test_get_write_gateway_is_callable(mod):
+    """get_write_gateway is accessible and callable."""
+    func = getattr(mod, "get_write_gateway", None)
+    assert func is not None, "get_write_gateway must be defined in {MODULE_PATH}"
+    assert callable(func), "get_write_gateway must be callable"
 
-if __name__ == "__main__":
-    pytest.main([__file__])

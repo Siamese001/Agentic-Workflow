@@ -1,4 +1,4 @@
-"""Enhanced behavioral tests for agentic_core.adg.__init__."""
+"""Behavioral contract tests for agentic_core.adg.__init__."""
 from __future__ import annotations
 
 import importlib
@@ -7,58 +7,53 @@ import pytest
 MODULE_PATH = "agentic_core.adg.__init__"
 
 
-def test_module_importable():
-    """Module imports without side effects."""
+@pytest.fixture(scope="module")
+def mod():
+    """Import the module under test. Fails hard if first-party import broken."""
     try:
-        mod = importlib.import_module(MODULE_PATH)
-    except ImportError as e:
-        pytest.skip(f"Module not available: {e}")
-    
+        return importlib.import_module(MODULE_PATH)
+    except Exception as exc:
+        pytest.fail(
+            f"FIRST-PARTY IMPORT FAILED for {MODULE_PATH}: {exc}",
+            pytrace=False,
+        )
+
+
+def test_module_importable(mod):
+    """Module imports without errors."""
     assert mod.__name__ == MODULE_PATH
 
 
-def test_module_exposes_public_api():
-    """Module exposes at least one public symbol."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-    except ImportError as e:
-        pytest.skip(f"Module not available: {e}")
-    
-    public_symbols = [n for n in dir(mod) if not n.startswith("_")]
-    assert len(public_symbols) >= 1, f"{MODULE_PATH} must expose at least one public symbol"
+def test_module_exposes_public_api(mod):
+    """Module exposes expected public symbols."""
+    public = [n for n in dir(mod) if not n.startswith("_")]
+    assert len(public) >= 1, f"{MODULE_PATH} must expose at least one public symbol"
 
 
-def test_edgekind_is_callable():
-    """EdgeKind is callable."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        func = getattr(mod, func_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{func_name} not available: {e}")
-    
-    assert callable(func), f"{func_name} must be callable"
+def test_edgekind_is_callable(mod):
+    """EdgeKind is accessible and callable."""
+    func = getattr(mod, "EdgeKind", None)
+    assert func is not None, "EdgeKind must be defined in {MODULE_PATH}"
+    assert callable(func), "EdgeKind must be callable"
 
 
-def test_entitytype_is_callable():
-    """EntityType is callable."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        func = getattr(mod, func_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{func_name} not available: {e}")
-    
-    assert callable(func), f"{func_name} must be callable"
+def test_entitytype_is_callable(mod):
+    """EntityType is accessible and callable."""
+    func = getattr(mod, "EntityType", None)
+    assert func is not None, "EntityType must be defined in {MODULE_PATH}"
+    assert callable(func), "EntityType must be callable"
 
 
-def test_relationtype_is_callable():
-    """RelationType is callable."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        func = getattr(mod, func_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{func_name} not available: {e}")
-    
-    assert callable(func), f"{func_name} must be callable"
+def test_relationtype_is_callable(mod):
+    """RelationType is accessible and callable."""
+    func = getattr(mod, "RelationType", None)
+    assert func is not None, "RelationType must be defined in {MODULE_PATH}"
+    assert callable(func), "RelationType must be callable"
 
-if __name__ == "__main__":
-    pytest.main([__file__])
+
+def test_canonical_name_is_callable(mod):
+    """canonical_name is accessible and callable."""
+    func = getattr(mod, "canonical_name", None)
+    assert func is not None, "canonical_name must be defined in {MODULE_PATH}"
+    assert callable(func), "canonical_name must be callable"
+

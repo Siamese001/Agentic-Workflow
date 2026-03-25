@@ -1,4 +1,4 @@
-"""Enhanced behavioral tests for agentic_core.evaluation.metrics.__init__."""
+"""Behavioral contract tests for agentic_core.evaluation.metrics.__init__."""
 from __future__ import annotations
 
 import importlib
@@ -7,82 +7,81 @@ import pytest
 MODULE_PATH = "agentic_core.evaluation.metrics.__init__"
 
 
-def test_module_importable():
-    """Module imports without side effects."""
+@pytest.fixture(scope="module")
+def mod():
+    """Import the module under test. Fails hard if first-party import broken."""
     try:
-        mod = importlib.import_module(MODULE_PATH)
-    except ImportError as e:
-        pytest.skip(f"Module not available: {e}")
-    
+        return importlib.import_module(MODULE_PATH)
+    except Exception as exc:
+        pytest.fail(
+            f"FIRST-PARTY IMPORT FAILED for {MODULE_PATH}: {exc}",
+            pytrace=False,
+        )
+
+
+def test_module_importable(mod):
+    """Module imports without errors."""
     assert mod.__name__ == MODULE_PATH
 
 
-def test_module_exposes_public_api():
-    """Module exposes at least one public symbol."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-    except ImportError as e:
-        pytest.skip(f"Module not available: {e}")
-    
-    public_symbols = [n for n in dir(mod) if not n.startswith("_")]
-    assert len(public_symbols) >= 1, f"{MODULE_PATH} must expose at least one public symbol"
+def test_module_exposes_public_api(mod):
+    """Module exposes expected public symbols."""
+    public = [n for n in dir(mod) if not n.startswith("_")]
+    assert len(public) >= 1, f"{MODULE_PATH} must expose at least one public symbol"
 
 
-def test_answercorrectness_is_instantiable():
-    """AnswerCorrectness can be instantiated (if it's a class)."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        cls = getattr(mod, class_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{class_name} not available: {e}")
-    
-    if isinstance(cls, type):
-        try:
-            instance = cls()
-            assert isinstance(instance, cls)
-        except Exception:
-            # Some classes require arguments - that's OK
-            pass
-    else:
-        pytest.skip(f"{class_name} is not a class")
+def test_answercorrectness_is_instantiable(mod):
+    """AnswerCorrectness is accessible and is a type."""
+    cls = getattr(mod, "AnswerCorrectness", None)
+    assert cls is not None, "AnswerCorrectness must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "AnswerCorrectness must be a class"
 
 
-def test_binaryclassificationmetric_is_instantiable():
-    """BinaryClassificationMetric can be instantiated (if it's a class)."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        cls = getattr(mod, class_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{class_name} not available: {e}")
-    
-    if isinstance(cls, type):
-        try:
-            instance = cls()
-            assert isinstance(instance, cls)
-        except Exception:
-            # Some classes require arguments - that's OK
-            pass
-    else:
-        pytest.skip(f"{class_name} is not a class")
+def test_binaryclassificationmetric_is_instantiable(mod):
+    """BinaryClassificationMetric is accessible and is a type."""
+    cls = getattr(mod, "BinaryClassificationMetric", None)
+    assert cls is not None, "BinaryClassificationMetric must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "BinaryClassificationMetric must be a class"
 
 
-def test_classificationmetric_is_instantiable():
-    """ClassificationMetric can be instantiated (if it's a class)."""
-    try:
-        mod = importlib.import_module(MODULE_PATH)
-        cls = getattr(mod, class_name)
-    except (ImportError, AttributeError) as e:
-        pytest.skip(f"{class_name} not available: {e}")
-    
-    if isinstance(cls, type):
-        try:
-            instance = cls()
-            assert isinstance(instance, cls)
-        except Exception:
-            # Some classes require arguments - that's OK
-            pass
-    else:
-        pytest.skip(f"{class_name} is not a class")
+def test_classificationmetric_is_instantiable(mod):
+    """ClassificationMetric is accessible and is a type."""
+    cls = getattr(mod, "ClassificationMetric", None)
+    assert cls is not None, "ClassificationMetric must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "ClassificationMetric must be a class"
 
-if __name__ == "__main__":
-    pytest.main([__file__])
+
+def test_confusionmatrix_is_instantiable(mod):
+    """ConfusionMatrix is accessible and is a type."""
+    cls = getattr(mod, "ConfusionMatrix", None)
+    assert cls is not None, "ConfusionMatrix must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "ConfusionMatrix must be a class"
+
+
+def test_evaluationmetric_is_instantiable(mod):
+    """EvaluationMetric is accessible and is a type."""
+    cls = getattr(mod, "EvaluationMetric", None)
+    assert cls is not None, "EvaluationMetric must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "EvaluationMetric must be a class"
+
+
+def test_f1score_is_instantiable(mod):
+    """F1Score is accessible and is a type."""
+    cls = getattr(mod, "F1Score", None)
+    assert cls is not None, "F1Score must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "F1Score must be a class"
+
+
+def test_generationmetric_is_instantiable(mod):
+    """GenerationMetric is accessible and is a type."""
+    cls = getattr(mod, "GenerationMetric", None)
+    assert cls is not None, "GenerationMetric must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "GenerationMetric must be a class"
+
+
+def test_groundedness_is_instantiable(mod):
+    """Groundedness is accessible and is a type."""
+    cls = getattr(mod, "Groundedness", None)
+    assert cls is not None, "Groundedness must be defined in {MODULE_PATH}"
+    assert isinstance(cls, type), "Groundedness must be a class"
+
