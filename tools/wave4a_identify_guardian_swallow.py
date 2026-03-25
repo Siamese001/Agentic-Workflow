@@ -31,10 +31,10 @@ class GuardianSwallowAnalyzer(ast.NodeVisitor):
     def visit_FunctionDef(self, node):
         old_function = self.current_function
         self.current_function = node.name
-        
+
         # Check for guardian swallow patterns in this function
         self._check_swallow_patterns(node)
-        
+
         self.generic_visit(node)
         self.current_function = old_function
 
@@ -118,7 +118,7 @@ def find_guardian_swallow_patterns(file_path: Path) -> Dict:
     """Find guardian swallow patterns in a test file."""
     try:
         content = file_path.read_text(encoding='utf-8')
-        
+
         # First check with regex for common patterns
         swallow_regex = re.compile(
             r'# guardian: allow-[a-zA-Z_-]+(?:.*--.*)?|'
@@ -127,15 +127,15 @@ def find_guardian_swallow_patterns(file_path: Path) -> Dict:
             r'#\s*guardian:\s*allow-silent-swallow',
             re.MULTILINE
         )
-        
+
         regex_matches = swallow_regex.findall(content)
-        
+
         # Then parse with AST for more detailed analysis
         try:
             tree = ast.parse(content)
             analyzer = GuardianSwallowAnalyzer()
             analyzer.visit(tree)
-            
+
             return {
                 'file': str(file_path),
                 'regex_matches': len(regex_matches),
@@ -157,7 +157,7 @@ def find_guardian_swallow_patterns(file_path: Path) -> Dict:
                 'needs_conversion': len(regex_matches) > 0,
                 'syntax_error': True
             }
-            
+
     except Exception as e:
         return {
             'file': str(file_path),
@@ -183,63 +183,63 @@ def group_files_by_layer(results: List[Dict]) -> Dict[str, List[Dict]]:
         'L6_observability': [],
         'other': []
     }
-    
+
     for result in results:
         if 'error' in result:
             continue
-            
+
         file_path = result['file']
         assigned = False
-        
+
         for layer in ['L0_routing', 'L1_cognition', 'L2_execution', 'L3_orchestration', 'L4_state', 'L5_safety', 'L6_observability']:
             if layer in file_path:
                 layers[layer].append(result)
                 assigned = True
                 break
-        
+
         if not assigned:
             layers['other'].append(result)
-    
+
     return layers
 
 
 def main():
     """Find all guardian swallow patterns in test files."""
     print("=== Wave 4a: Identifying Guardian Swallow Patterns ===")
-    
+
     test_dir = Path('tests')
     results = []
-    
+
     print("Scanning test files for guardian swallow patterns...")
-    
+
     for test_file in test_dir.rglob('test_*.py'):
         if test_file.is_file():
             result = find_guardian_swallow_patterns(test_file)
             results.append(result)
-            
+
             if result.get('needs_conversion', False):
                 swallows = result.get('total_swallows', 0)
                 regex_matches = result.get('regex_matches', 0)
                 fixtures = result.get('total_fixtures', 0)
                 print(f"  {result['file']}: {swallows} swallows, {regex_matches} regex, {fixtures} fixtures")
-    
+
     # Group by layer
     layers = group_files_by_layer(results)
-    
+
     # Summary statistics
     total_files = len(results)
     files_needing_conversion = len([r for r in results if r.get('needs_conversion', False)])
     total_swallow_patterns = sum(r.get('total_swallows', 0) for r in results)
     total_regex_matches = sum(r.get('regex_matches', 0) for r in results)
     total_fixture_patterns = sum(r.get('total_fixtures', 0) for r in results)
-    
+
     print(f"\n=== Guardian Swallow Analysis ===")
     print(f"Total test files: {total_files}")
     print(f"Files needing conversion: {files_needing_conversion}")
     print(f"Total swallow patterns: {total_swallow_patterns}")
     print(f"Total regex matches: {total_regex_matches}")
     print(f"Total fixture patterns: {total_fixture_patterns}")
-    
+
     print(f"\n=== By Layer ===")
     for layer, files in layers.items():
         if files:
@@ -247,7 +247,7 @@ def main():
             swallows = sum(f.get('total_swallows', 0) for f in files)
             regex_matches = sum(f.get('regex_matches', 0) for f in files)
             print(f"{layer}: {needs_conversion}/{len(files)} files, {swallows} swallows, {regex_matches} regex")
-    
+
     # Save detailed results
     output = {
         'summary': {
@@ -260,18 +260,18 @@ def main():
         'layers': layers,
         'all_results': results
     }
-    
+
     with open('artifacts/guardian_swallow_analysis.json', 'w') as f:
         json.dump(output, f, indent=2)
-    
+
     print(f"\nDetailed results saved to: artifacts/guardian_swallow_analysis.json")
-    
+
     # Show files needing most conversion
     files_needing = [r for r in results if r.get('needs_conversion', False)]
     if files_needing:
         print(f"\n=== Top Files Needing Conversion ===")
-        sorted_files = sorted(files_needing, 
-                             key=lambda x: x.get('total_swallows', 0) + x.get('regex_matches', 0), 
+        sorted_files = sorted(files_needing,
+                             key=lambda x: x.get('total_swallows', 0) + x.get('regex_matches', 0),
                              reverse=True)
         for file_info in sorted_files[:10]:
             swallows = file_info.get('total_swallows', 0)

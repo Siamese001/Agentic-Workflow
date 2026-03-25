@@ -4,6 +4,8 @@ from pathlib import Path
 
 import pytest  # noqa: E402
 
+from .conftest_factories import *
+
 # Suppress lifecycle trace loggers that emit ~100K lines during import/execution.
 # These overwhelm pytest's capture system causing OSError: Bad file descriptor.
 for _name in ["adg", "lifecycle"]:

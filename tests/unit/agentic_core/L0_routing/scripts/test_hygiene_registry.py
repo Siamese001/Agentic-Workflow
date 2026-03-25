@@ -1,6 +1,7 @@
 """Test script to validate core hygiene agents registry."""
 
 from agentic_core.config.core.hygiene_registry_config import (
+import logging
     CORE_HYGIENE_AGENTS,
     MANDATORY_PREFLIGHT,
     get_all_hygiene_agents,
@@ -150,28 +151,28 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_hygiene_registry", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_hygiene_registry", "exec_snapshot_link")
 
-print("=" * 70)
-print("CORE HYGIENE AGENTS REGISTRY VALIDATION")
-print("=" * 70)
+logging.debug(f"Test output: "=" * 70")
+logging.debug(f"Test output: "CORE HYGIENE AGENTS REGISTRY VALIDATION"")
+logging.debug(f"Test output: "=" * 70")
 
-print("\nCore Hygiene Agents by Tier:\n")
+logging.debug(f"Test output: "\nCore Hygiene Agents by Tier:\n"")
 for tier, agents in CORE_HYGIENE_AGENTS.items():
-    print(f"{tier}: {len(agents)} agents")
+    logging.debug(f"Test output: f"{tier}: {len(agents")} agents")
     for agent in agents:
-        print(f"  - {agent}")
+        logging.debug(f"Test output: f"  - {agent}"")
     print()
 
-print(f"Total hygiene agents: {len(get_all_hygiene_agents())}")
-print(f"\nMandatory preflight agents: {MANDATORY_PREFLIGHT}")
+logging.debug(f"Test output: f"Total hygiene agents: {len(get_all_hygiene_agents("))}")
+logging.debug(f"Test output: f"\nMandatory preflight agents: {MANDATORY_PREFLIGHT}"")
 
-print("\n" + "=" * 70)
-print("TIER VALIDATION")
-print("=" * 70)
+logging.debug(f"Test output: "\n" + "=" * 70")
+logging.debug(f"Test output: "TIER VALIDATION"")
+logging.debug(f"Test output: "=" * 70")
 
 for tier_num in range(4):
     agents = get_tier_agents(tier_num)
-    print(f"Tier {tier_num}: {len(agents)} agents - {agents}")
+    logging.debug(f"Test output: f"Tier {tier_num}: {len(agents")} agents - {agents}")
 
-print("\n" + "=" * 70)
-print("✅ REGISTRY VALIDATION COMPLETE")
-print("=" * 70)
+logging.debug(f"Test output: "\n" + "=" * 70")
+logging.debug(f"Test output: "✅ REGISTRY VALIDATION COMPLETE"")
+logging.debug(f"Test output: "=" * 70")

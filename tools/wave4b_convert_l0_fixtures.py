@@ -33,7 +33,7 @@ class GuardianSwallowConverter(ast.NodeTransformer):
         # Check if the body only contains pass or guardian comments
         if len(handler.body) == 0:
             return False
-        
+
         first_stmt = handler.body[0]
         if isinstance(first_stmt, ast.Pass):
             return True
@@ -46,7 +46,7 @@ class GuardianSwallowConverter(ast.NodeTransformer):
         """Convert a try-except block to pytest.raises context manager."""
         # Get the exception type
         exception_type = self._get_exception_type(except_handler)
-        
+
         # Create pytest.raises context manager
         pytest_raises = ast.withitem(
             context_expr=ast.Call(
@@ -60,16 +60,16 @@ class GuardianSwallowConverter(ast.NodeTransformer):
             ),
             optional_vars=ast.Name(id='exc_info', ctx=ast.Store())
         )
-        
+
         # Create new with statement
         with_node = ast.With(
             items=[pytest_raises],
             body=try_node.body
         )
-        
+
         # Add pytest import if needed
         self.imports_added.add('pytest')
-        
+
         return with_node
 
     def _get_exception_type(self, handler):
@@ -106,30 +106,30 @@ class GuardianSwallowConverter(ast.NodeTransformer):
                     if node.module == 'pytest':
                         has_pytest = True
                         break
-            
+
             if not has_pytest:
                 # Add pytest import at the top
                 pytest_import = ast.Import(
                     names=[ast.alias(name='pytest', asname=None)]
                 )
-                
+
                 # Insert after docstring and existing imports
                 if isinstance(tree, ast.Module):
                     insert_pos = 0
-                    
+
                     # Skip docstring
-                    if (tree.body and isinstance(tree.body[0], ast.Expr) and 
-                        isinstance(tree.body[0].value, ast.Constant) and 
+                    if (tree.body and isinstance(tree.body[0], ast.Expr) and
+                        isinstance(tree.body[0].value, ast.Constant) and
                         isinstance(tree.body[0].value.value, str)):
                         insert_pos = 1
-                    
+
                     # Skip existing imports
-                    while (insert_pos < len(tree.body) and 
+                    while (insert_pos < len(tree.body) and
                            isinstance(tree.body[insert_pos], (ast.Import, ast.ImportFrom))):
                         insert_pos += 1
-                    
+
                     tree.body.insert(insert_pos, pytest_import)
-        
+
         return tree
 
 
@@ -137,36 +137,36 @@ def convert_guardian_swallow_to_fixtures(file_path: Path) -> Dict:
     """Convert guardian swallow patterns to fixtures in a test file."""
     try:
         content = file_path.read_text(encoding='utf-8')
-        
+
         # First, handle regex-based patterns
         new_content = content
-        
+
         # Replace common guardian swallow patterns
         patterns = [
             # Replace "except Exception: pass" with pytest.raises
             (r'except\s+(\w+):\s*pass', r'with pytest.raises(\1):'),
             (r'except\s+(\w+)\s+as\s+(\w+):\s*pass', r'with pytest.raises(\1):'),
-            
+
             # Replace guardian comment swallows
             (r'except\s+(\w+):\s*#\s*guardian:\s*allow-silent-swallow', r'with pytest.raises(\1):'),
-            
+
             # Replace "except Exception: # guardian: allow-silent-swallow"
             (r'except\s+(\w+):\s*#\s*guardian:.*allow-silent-swallow.*', r'with pytest.raises(\1):'),
         ]
-        
+
         for pattern, replacement in patterns:
             new_content = re.sub(pattern, replacement, new_content, flags=re.MULTILINE)
-        
+
         # Handle more complex cases with AST
         try:
             tree = ast.parse(new_content)
             converter = GuardianSwallowConverter()
             transformed_tree = converter.visit(tree)
             converter.add_imports(transformed_tree)
-            
+
             # Convert back to source
             new_content = ast.unparse(transformed_tree)
-            
+
             return {
                 'file': str(file_path),
                 'success': True,
@@ -174,7 +174,7 @@ def convert_guardian_swallow_to_fixtures(file_path: Path) -> Dict:
                 'patterns_converted': len(converter.imports_added),
                 'new_content': new_content
             }
-            
+
         except (SyntaxError, ValueError) as e:
             # If AST parsing fails, return the regex-processed content
             return {
@@ -184,7 +184,7 @@ def convert_guardian_swallow_to_fixtures(file_path: Path) -> Dict:
                 'error': str(e),
                 'new_content': new_content
             }
-            
+
     except Exception as e:
         return {
             'file': str(file_path),
@@ -198,53 +198,53 @@ def convert_l0_routing_files():
     # Load the analysis from Wave 4a
     with open('artifacts/guardian_swallow_analysis.json', 'r') as f:
         data = json.load(f)
-    
+
     l0_files = data['layers']['L0_routing']
     l0_files_needing = [f for f in l0_files if f.get('needs_conversion', False)]
-    
+
     print(f"=== Wave 4b: Converting L0_routing Guardian Swallow Patterns ===")
     print(f"Found {len(l0_files_needing)} L0_routing files needing conversion")
-    
+
     results = []
-    
+
     for file_info in l0_files_needing:
         file_path = Path(file_info['file'])
         print(f"\nProcessing: {file_path}")
-        
+
         result = convert_guardian_swallow_to_fixtures(file_path)
         results.append(result)
-        
+
         if result['success']:
             # Write the converted content
             file_path.write_text(result['new_content'], encoding='utf-8')
-            
+
             imports_added = result.get('imports_added', [])
             patterns = result.get('patterns_converted', 'regex')
-            
+
             print(f"  ✅ Converted - Imports: {imports_added}, Patterns: {patterns}")
         else:
             print(f"  ❌ Failed - {result.get('error', 'Unknown error')}")
-    
+
     # Summary
     successful = len([r for r in results if r['success']])
     total = len(results)
-    
+
     print(f"\n=== Wave 4b Summary ===")
     print(f"Files processed: {total}")
     print(f"Successfully converted: {successful}")
     print(f"Failed: {total - successful}")
-    
+
     return results
 
 
 def main():
     """Convert L0_routing guardian swallow patterns to fixtures."""
     results = convert_l0_routing_files()
-    
+
     # Save results
     with open('artifacts/wave4b_conversion_results.json', 'w') as f:
         json.dump(results, f, indent=2)
-    
+
     print(f"\nDetailed results saved to: artifacts/wave4b_conversion_results.json")
 
 

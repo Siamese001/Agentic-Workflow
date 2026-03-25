@@ -1,3 +1,4 @@
+import logging
 #!/usr/bin/env python3
 """
 Comprehensive End-to-End MCP Integration Test Suite
@@ -88,7 +89,7 @@ class MCPTestRunner:
         )
         suffix = f"  ({elapsed_ms}ms)" if elapsed_ms else ""
         d = f" — {detail}" if detail else ""
-        print(f"  {e} {status}: {name}{suffix}{d}")
+        logging.debug(f"Test output: f"  {e} {status}: {name}{suffix}{d}"")
         self.results.append({"test": name, "status": status, "detail": detail, "elapsed_ms": elapsed_ms})
 
     # ------------------------------------------------------------------
@@ -598,19 +599,19 @@ async def run_all(timeout: float = CALL_TIMEOUT) -> int:
         "mcp12": "mcp12 — Sequential Thinking  ⚠ HANG SUSPECT",
     }
 
-    print("=" * 72)
-    print("COMPREHENSIVE MCP END-TO-END TEST SUITE")
-    print(f"Repo root : {REPO_ROOT}")
-    print(f"Timeout   : {timeout}s per call")
-    print("=" * 72)
+    logging.debug(f"Test output: "=" * 72")
+    logging.debug(f"Test output: "COMPREHENSIVE MCP END-TO-END TEST SUITE"")
+    logging.debug(f"Test output: f"Repo root : {REPO_ROOT}"")
+    logging.debug(f"Test output: f"Timeout   : {timeout}s per call"")
+    logging.debug(f"Test output: "=" * 72")
 
     for prefix, label in mcp_labels.items():
         group = by_mcp.get(prefix, [])
         if not group:
             continue
-        print(f"\n{'─' * 72}")
-        print(f"  {label}")
-        print(f"{'─' * 72}")
+        logging.debug(f"Test output: f"\n{'─' * 72}"")
+        logging.debug(f"Test output: f"  {label}"")
+        logging.debug(f"Test output: f"{'─' * 72}"")
         # Use a tighter timeout for the known-wrong-schema test
         for case in group:
             t = 5.0 if "WRONG" in case.name else timeout
@@ -625,33 +626,33 @@ async def run_all(timeout: float = CALL_TIMEOUT) -> int:
     counts = runner.summary()
     total = sum(counts.values())
 
-    print(f"\n{'=' * 72}")
-    print("SUMMARY")
-    print(f"{'=' * 72}")
-    print(f"  ✅ PASS : {counts[MCPTestResult.PASS]}/{total}")
-    print(f"  ❌ FAIL : {counts[MCPTestResult.FAIL]}/{total}")
-    print(f"  ⚠️  WARN : {counts[MCPTestResult.WARN]}/{total}  (server absent / no API key)")
-    print(f"  ⏱️  HANG : {counts[MCPTestResult.HANG]}/{total}  ← these are the bugs")
+    logging.debug(f"Test output: f"\n{'=' * 72}"")
+    logging.debug(f"Test output: "SUMMARY"")
+    logging.debug(f"Test output: f"{'=' * 72}"")
+    logging.debug(f"Test output: f"  ✅ PASS : {counts[MCPTestResult.PASS]}/{total}"")
+    logging.debug(f"Test output: f"  ❌ FAIL : {counts[MCPTestResult.FAIL]}/{total}"")
+    logging.debug(f"Test output: f"  ⚠️  WARN : {counts[MCPTestResult.WARN]}/{total}  (server absent / no API key")")
+    logging.debug(f"Test output: f"  ⏱️  HANG : {counts[MCPTestResult.HANG]}/{total}  ← these are the bugs"")
 
     hangs = [r for r in runner.results if r["status"] == MCPTestResult.HANG]
     fails = [r for r in runner.results if r["status"] == MCPTestResult.FAIL]
 
     if hangs:
-        print(f"\n⏱️  HANGING TESTS ({len(hangs)}) — require immediate fix:")
+        logging.debug(f"Test output: f"\n⏱️  HANGING TESTS ({len(hangs")}) — require immediate fix:")
         for r in hangs:
-            print(f"     {r['test']}: {r['detail']}")
+            logging.debug(f"Test output: f"     {r['test']}: {r['detail']}"")
 
     if fails:
-        print(f"\n❌ FAILING TESTS ({len(fails)}) — code errors:")
+        logging.debug(f"Test output: f"\n❌ FAILING TESTS ({len(fails")}) — code errors:")
         for r in fails:
-            print(f"     {r['test']}: {r['detail']}")
+            logging.debug(f"Test output: f"     {r['test']}: {r['detail']}"")
 
     # Save results
     out = ROOT / "docs" / "reports" / "plans" / "mcp_e2e_results.json"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps({"counts": counts, "results": runner.results}, indent=2))
-    print(f"\nDetailed results: {out}")
-    print("=" * 72)
+    logging.debug(f"Test output: f"\nDetailed results: {out}"")
+    logging.debug(f"Test output: "=" * 72")
 
     return 0 if (counts[MCPTestResult.FAIL] == 0 and counts[MCPTestResult.HANG] == 0) else 1
 
