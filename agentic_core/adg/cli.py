@@ -591,21 +591,34 @@ def _cmd_build_artifacts(args: argparse.Namespace) -> int:
     paths = write_all_artifacts(artifact, out_dir=out_dir, ts=ts)
 
     # Phase 2: Auto-disposition violations based on test coverage and guardian comments
-    print("🔗 Phase 2: Auto-dispositioning violations...")
+    print(" Phase 2: Auto-dispositioning violations...")
     disposition_results = run_phase2_disposition_processing(paths.sqlite)
-
-    sizes = paths.size_report()
+        
+    # Phase 3: Auto-remediation analysis
+    print(" Phase 3: Analyzing violations for auto-remediation...")
+    remediation_actions = run_phase3_remediation_analysis(paths.sqlite)
+        
+    # Build final report
     report = {
         "snapshot": str(paths.snapshot),
         "sqlite": str(paths.sqlite),
         "file_graph": str(paths.file_graph),
         "symbol_graph": str(paths.symbol_graph),
         "governance_graph": str(paths.governance_graph),
-        "sizes": sizes,
+        "sizes": paths.size_report(),
         "artifact_digest": artifact.artifact_digest,
         "entities": len(artifact.entities),
         "relations": len(artifact.relations),
         "phase2_dispositions": disposition_results,
+        "phase3_remediation": {
+            "total_candidates": len(remediation_actions),
+            "high_confidence": len([a for a in remediation_actions if a.confidence > 0.7]),
+            "high_risk": len([a for a in remediation_actions if a.risk_score > 0.8]),
+            "strategies": {
+                strategy.value: len([a for a in remediation_actions if a.strategy == strategy])
+                for strategy in set(a.strategy for a in remediation_actions)
+            }
+        }
     }
     print(json.dumps(report, indent=2))
     return 0
