@@ -34,36 +34,36 @@ def analyze_module_api(module_path: str) -> Tuple[List[str], List[str], List[str
         mod = importlib.import_module(module_path)
     except ImportError:
         return [], [], []
-    
+
     # Extract public symbols
     public_symbols = []
     classes = []
     functions = []
-    
+
     for name in dir(mod):
         if name.startswith('_'):
             continue
-        
+
         obj = getattr(mod, name)
         full_path = f"{module_path}.{name}"
-        
+
         public_symbols.append(name)
-        
+
         if isinstance(obj, type):
             classes.append((name, full_path))
         elif callable(obj):
             functions.append((name, full_path))
-    
+
     return public_symbols, classes, functions
 
 
-def generate_enhanced_test(module_path: str, classes: List[Tuple[str, str]], 
+def generate_enhanced_test(module_path: str, classes: List[Tuple[str, str]],
                           functions: List[Tuple[str, str]]) -> str:
     """Generate API-specific behavioral tests for a module."""
-    
+
     # Extract module name for display
     module_name = module_path.split('.')[-1]
-    
+
     test_content = f'''"""Enhanced behavioral tests for {module_path}."""
 from __future__ import annotations
 
@@ -79,7 +79,7 @@ def test_module_importable():
         mod = importlib.import_module(MODULE_PATH)
     except ImportError as e:
         pytest.skip(f"Module not available: {{e}}")
-    
+
     assert mod.__name__ == MODULE_PATH
 
 
@@ -89,7 +89,7 @@ def test_module_exposes_public_api():
         mod = importlib.import_module(MODULE_PATH)
     except ImportError as e:
         pytest.skip(f"Module not available: {{e}}")
-    
+
     public_symbols = [n for n in dir(mod) if not n.startswith("_")]
     if len(public_symbols) == 0:
         # Empty namespace packages (like __init__.py) are valid
@@ -109,7 +109,7 @@ def test_{class_name.lower()}_is_instantiable():
         cls = getattr(mod, "{class_name}")
     except (ImportError, AttributeError) as e:
         pytest.skip(f"{class_name} not available: {{e}}")
-    
+
     if isinstance(cls, type):
         try:
             instance = cls()
@@ -132,7 +132,7 @@ def test_{func_name.lower()}_is_callable():
         func = getattr(mod, "{func_name}")
     except (ImportError, AttributeError) as e:
         pytest.skip(f"{func_name} not available: {{e}}")
-    
+
     assert callable(func), f"{func_name} must be callable"
 '''
 
@@ -140,12 +140,12 @@ def test_{func_name.lower()}_is_callable():
 if __name__ == "__main__":
     pytest.main([__file__])
 '''
-    
+
     return test_content
 
 
-def file_is_tiny_import_only(fp: Path) -> Tuple[bool, int, str, Optional[str]]:
-    """Check if a file is a tiny import-only test."""
+def file_is_import_only(fp: Path) -> Tuple[bool, int, str, Optional[str]]:
+    """Check if a file is an import-only test."""
     try:
         source = fp.read_text(encoding='utf-8')
         tree = ast.parse(source)
@@ -157,9 +157,6 @@ def file_is_tiny_import_only(fp: Path) -> Tuple[bool, int, str, Optional[str]]:
         return False, 0, "", None
     
     lines = len(source.splitlines())
-    if lines > 15:
-        return False, 0, "", None
-    
     module_path = extract_module_from_source(source)
     return True, lines, source, module_path
 
@@ -169,49 +166,49 @@ def enhance_batch(file_paths: List[str]) -> Tuple[int, int, List[str]]:
     enhanced = 0
     failed = 0
     errors = []
-    
+
     for file_path in file_paths:
         fp = Path(file_path)
-        
-        # Check if it's a tiny import-only test
-        is_io, lines, source, module_path = file_is_tiny_import_only(fp)
+
+        # Check if it's an import-only test
+        is_io, lines, source, module_path = file_is_import_only(fp)
         if not is_io or not module_path:
             continue
-        
+
         try:
             # Analyze the module's API
             public_symbols, classes, functions = analyze_module_api(module_path)
-            
+
             # Generate enhanced test
             enhanced_content = generate_enhanced_test(module_path, classes, functions)
-            
+
             # Write the enhanced test
             fp.write_text(enhanced_content, encoding='utf-8')
             enhanced += 1
-            
+
         except Exception as e:
             failed += 1
             errors.append(f"{file_path}: {e}")
-    
+
     return enhanced, failed, errors
 
 
 if __name__ == "__main__":
     import sys
-    
+
     if len(sys.argv) != 2:
         print("Usage: python enhance_import_only_tests.py <batch_file_list>")
         sys.exit(1)
-    
+
     batch_file = sys.argv[1]
     with open(batch_file, 'r') as f:
         file_paths = [line.strip() for line in f if line.strip()]
-    
+
     enhanced, failed, errors = enhance_batch(file_paths)
-    
+
     print(f"Enhanced: {enhanced} files")
     print(f"Failed: {failed} files")
-    
+
     if errors:
         print("\nErrors:")
         for error in errors:

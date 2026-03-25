@@ -15,4 +15,10 @@ import agentic_core.interfaces.mixins as _mod  # noqa: F401
 
 def test_module_importable():
     """Module mixins must be importable or skip gracefully."""
-    pass  # Import verified at module level
+    assert _mod.__name__ == "agentic_core.interfaces.mixins"
+
+
+def test_module_exposes_public_api():
+    """mixins module exposes expected public symbols."""
+    public_symbols = [n for n in dir(_mod) if not n.startswith("_")]
+    assert len(public_symbols) >= 1, "mixins must expose at least one public symbol"

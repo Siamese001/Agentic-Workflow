@@ -15,4 +15,10 @@ import agentic_core.interfaces.determinism_types as _mod  # noqa: F401
 
 def test_module_importable():
     """Module determinism_types must be importable or skip gracefully."""
-    pass  # Import verified at module level
+    assert _mod.__name__ == "agentic_core.interfaces.determinism_types"
+
+
+def test_module_exposes_public_api():
+    """determinism_types module exposes expected public symbols."""
+    public_symbols = [n for n in dir(_mod) if not n.startswith("_")]
+    assert len(public_symbols) >= 1, "determinism_types must expose at least one public symbol"

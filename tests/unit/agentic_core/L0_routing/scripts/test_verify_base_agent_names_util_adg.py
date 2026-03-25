@@ -14,4 +14,14 @@ except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swa
 
 def test_module_importable():
     """Module verify_base_agent_names_util.py is importable (or deps unavailable)."""
-    pass  # Import verified at module level
+    if _mod is None:
+        pytest.skip("verify_base_agent_names_util not available")
+    assert _mod.__name__ == "agentic_core.L0_routing.scripts.verify_base_agent_names_util"
+
+
+def test_module_exposes_public_api():
+    """verify_base_agent_names_util module exposes expected public symbols."""
+    if _mod is None:
+        pytest.skip("verify_base_agent_names_util not available")
+    public_symbols = [n for n in dir(_mod) if not n.startswith("_")]
+    assert len(public_symbols) >= 1, "verify_base_agent_names_util must expose at least one public symbol"
