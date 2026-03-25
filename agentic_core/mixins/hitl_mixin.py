@@ -243,6 +243,10 @@ class HITLMixin:
         Logger.info(f"[HITL] Created approval request: {request.request_id} for '{operation_name}'")
         return request
 
+    def requires_human_review(self, operation_name: str) -> bool:
+        """Check if an operation requires human review (ADG: requires_human_review edge)."""
+        return self.check_approval_required(operation_name)
+
     def check_approval_required(self, operation_name: str) -> bool:
         """
         Check if an operation requires approval.

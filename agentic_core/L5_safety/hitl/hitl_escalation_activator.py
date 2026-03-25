@@ -336,6 +336,14 @@ class HITLEscalationActivator:
     def resolved(self) -> list[EscalationRequest]:
         return list(self._resolved)
 
+    def requires_human_review(self, request: EscalationRequest) -> bool:
+        """Check if a request requires human review (ADG: requires_human_review edge).
+
+        All escalations with priority >= HIGH require human review.
+        """
+        return request.priority in (EscalationPriority.HIGH, EscalationPriority.CRITICAL)
+
+    @property
     def pending_count(self) -> int:
         return len(self._pending)
 

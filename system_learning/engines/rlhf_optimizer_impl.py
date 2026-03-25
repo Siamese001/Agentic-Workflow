@@ -307,5 +307,13 @@ class DefaultRLHFOptimizer:
             preference_strength=round(best_strength, 4),
         )
 
+    def commit_optimization(self, package: RLHFChangePackage) -> bool:
+        """Commit an optimization proposal (ADG: commits_optimization edge).
+
+        Returns True if the preference signal is strong enough to commit.
+        Actual persistence is handled by the caller pipeline.
+        """
+        return package.preference_strength >= _PREFERENCE_SIGNAL_THRESHOLD
+
 
 __all__ = ["DefaultRLHFOptimizer", "RLHFChangePackage"]

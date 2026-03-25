@@ -309,7 +309,7 @@ class DefaultDeterministicRLHFOptimizer:
         changes_bytes = json.dumps(final_config, separators=(",", ":"), sort_keys=True).encode("utf-8")
         num_pairs = len(dpo_data.get("pairs", []))
         confidence = min(1.0, num_pairs * 0.1)
-        return ChangePackage(
+        package = ChangePackage(
             source="rlhf_optimizer",
             target="threshold_config",
             changes=changes_bytes,
@@ -320,3 +320,12 @@ class DefaultDeterministicRLHFOptimizer:
             authority_sensitivity="MEDIUM",
             target_surface="threshold_config",
         )
+        return package
+
+    def commit_optimization(self, package: ChangePackage) -> bool:
+        """Commit an optimization proposal (ADG: commits_optimization edge).
+
+        Returns True if the proposal confidence exceeds the minimum threshold.
+        Actual persistence is handled by the caller pipeline.
+        """
+        return package.confidence >= 0.1

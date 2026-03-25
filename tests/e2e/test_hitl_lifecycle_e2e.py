@@ -46,7 +46,7 @@ from agentic_core.L6_observability.types.dpo_types import (
     DPOExampleId,
     DPOPair,
 )
-from agentic_core.mixins.hitl_mixin import ApprovalStatus, HITLMixin
+from agentic_core.mixins.hitl_mixin import ApprovalStatus, HITLMixin, RiskLevel
 from system_learning.confidence.engine import HealingConfidenceScorer
 from system_learning.confidence.types import HealingAttempt
 from system_learning.engines.hitl_decision_logger import log_hitl_decision
@@ -722,7 +722,89 @@ class TestHITLMixinIntegration:
 
 
 # ===========================================================================
-# E2E TEST 10: ADG Static Edge Verification
+# E2E TEST 10: GAP-FIX Verification (requires_human_review, commits_optimization)
+# ===========================================================================
+
+
+class TestGapFixVerification:
+    """Validates gap-fix wiring for ADG edge coverage."""
+
+    def test_hitl_mixin_requires_human_review(self):
+        """HITLMixin.requires_human_review delegates to check_approval_required."""
+
+        class MockAgent(HITLMixin):
+            pass
+
+        agent = MockAgent()
+        agent.register_sensitive_operation("critical_op", RiskLevel.HIGH)
+        assert agent.requires_human_review("critical_op") is True
+        assert agent.requires_human_review("unknown_op") is False
+
+    def test_escalation_activator_requires_human_review(self):
+        """HITLEscalationActivator.requires_human_review gates on priority."""
+        from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
+            EscalationPriority,
+            EscalationRequest,
+            HITLEscalationActivator,
+        )
+
+        activator = HITLEscalationActivator()
+        high_req = EscalationRequest(
+            trace_id="t1", agent="A", module="m",
+            trigger_reason="r", priority=EscalationPriority.HIGH,
+            proposed_action="p", policy_hash="h",
+        )
+        low_req = EscalationRequest(
+            trace_id="t2", agent="A", module="m",
+            trigger_reason="r", priority=EscalationPriority.LOW,
+            proposed_action="p", policy_hash="h",
+        )
+        assert activator.requires_human_review(high_req) is True
+        assert activator.requires_human_review(low_req) is False
+
+    def test_rlhf_optimizer_commit_optimization(self, rlhf_optimizer):
+        """DefaultDeterministicRLHFOptimizer.commit_optimization gates on confidence."""
+        from system_learning.engines.rlhf_optimizer import ChangePackage
+
+        high_conf = ChangePackage(
+            source="test", target="t", changes=b"{}",
+            confidence=0.5, reason=("test",), timestamp_utc=0,
+            embedding_context_hash=None, authority_sensitivity="LOW",
+            target_surface="threshold_config",
+        )
+        low_conf = ChangePackage(
+            source="test", target="t", changes=b"{}",
+            confidence=0.05, reason=("test",), timestamp_utc=0,
+            embedding_context_hash=None, authority_sensitivity="LOW",
+            target_surface="threshold_config",
+        )
+        assert rlhf_optimizer.commit_optimization(high_conf) is True
+        assert rlhf_optimizer.commit_optimization(low_conf) is False
+
+    def test_rlhf_impl_commit_optimization(self):
+        """DefaultRLHFOptimizer.commit_optimization gates on preference_strength."""
+        from system_learning.engines.rlhf_optimizer_impl import (
+            DefaultRLHFOptimizer,
+            RLHFChangePackage,
+        )
+
+        optimizer = DefaultRLHFOptimizer()
+        strong = RLHFChangePackage(
+            surface_name="s", parameter="threshold", direction="increase",
+            delta=0.01, justification="test", snapshot_id="snap",
+            pair_count=10, preference_strength=0.8,
+        )
+        weak = RLHFChangePackage(
+            surface_name="s", parameter="threshold", direction="increase",
+            delta=0.01, justification="test", snapshot_id="snap",
+            pair_count=2, preference_strength=0.3,
+        )
+        assert optimizer.commit_optimization(strong) is True
+        assert optimizer.commit_optimization(weak) is False
+
+
+# ===========================================================================
+# E2E TEST 11: ADG Static Edge Verification
 # ===========================================================================
 
 
