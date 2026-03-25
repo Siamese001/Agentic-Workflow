@@ -30,7 +30,7 @@ for sd in sorted(os.listdir(unit_dir)):
         )
         try:
             proc.wait(timeout=300)
-    except (ValueError, TypeError, RuntimeError) as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             proc.kill()
             print(f"  {sd}: TIMEOUT")
             continue
@@ -55,5 +55,4 @@ t, e, f, s = total["tests"], total["errors"], total["failures"], total["skipped"
 p = t - e - f - s
 print(f"TOTAL: tests={t}  pass={p}  fail={f}  err={e}  skip={s}")
 if t > 0:
-    print(f"Pass rate: {p}/{t} ({p/t*100:.1f}%)")            except Exception as e:
-                pass
+    print(f"Pass rate: {p}/{t} ({p/t*100:.1f}%)")

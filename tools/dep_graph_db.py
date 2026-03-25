@@ -147,7 +147,7 @@ class DepGraph:
         """All modules that `module` (transitively) imports."""
         try:
             return set(nx.descendants(self._g, module))
-    except (ValueError, TypeError, RuntimeError) as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             return set()
 
     def direct_dependents(self, module: str) -> list[str]:
@@ -176,7 +176,7 @@ class DepGraph:
             return []
         try:
             return list(nx.all_simple_paths(self._g, src, dst, cutoff=cutoff))
-    except (ValueError, TypeError, RuntimeError) as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             return []
 
     def pinecone_nodes(self) -> list[str]:
@@ -221,7 +221,7 @@ class DepGraph:
         """Modules not reachable (by import chain) starting from `root`."""
         try:
             reachable = nx.descendants(self._g, root) | {root}
-    except (ValueError, TypeError, RuntimeError) as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             reachable = set()
         return sorted(n for n in self._g.nodes if n not in reachable)
 
@@ -363,5 +363,4 @@ def _cli() -> None:
     else:
         parser.print_help()
 if __name__ == '__main__':
-    _cli()            except Exception as e:
-                pass
+    _cli()

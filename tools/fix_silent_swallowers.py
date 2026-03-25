@@ -114,14 +114,17 @@ class SilentSwallowerFixer:
             is_violation = True
             
             # Check severity based on exception type
+            found_high = False
             for never_acceptable in self.never_acceptable:
                 if never_acceptable in exception_type:
                     severity = "HIGH"
+                    found_high = True
                     break
-            elif exception_type == "Exception":
-                severity = "MEDIUM"  # Broad exception swallowing
-            else:
-                severity = "LOW"
+            if not found_high:
+                if exception_type == "Exception":
+                    severity = "MEDIUM"  # Broad exception swallowing
+                else:
+                    severity = "LOW"
         
         if is_violation:
             return {
