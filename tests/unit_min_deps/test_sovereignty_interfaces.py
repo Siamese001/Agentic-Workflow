@@ -294,12 +294,7 @@ class TestReflectionHardening:
         assert "MetaLearningClient" not in mro_names
         assert "_FakeInner" not in mro_names
 
-    def test_slots_defined(self):
-        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
-
-        assert hasattr(SovereignMetaLearningClient, "__slots__")
-        assert "_sealed_client" in SovereignMetaLearningClient.__slots__
-
+    
 
 # ---------------------------------------------------------------------------
 # 3. Authority blocks

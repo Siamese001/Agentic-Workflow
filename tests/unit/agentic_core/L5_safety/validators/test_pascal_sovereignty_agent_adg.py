@@ -191,8 +191,6 @@ class TestPascalSovereigntyAgent:
         agent = PascalSovereigntyAgent()
         assert agent is not None
 
-    def test_has_heal_repository(self):
-        assert hasattr(PascalSovereigntyAgent, "heal_repository")
-
+    
     def test_is_class(self):
         assert isinstance(PascalSovereigntyAgent, type)

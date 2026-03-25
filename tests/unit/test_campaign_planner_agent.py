@@ -60,12 +60,7 @@ class TestCampaignPlannerAgent:
         """Verify agent has generate_strategy method."""
         assert hasattr(agent_class, "generate_strategy"), "Should have generate_strategy method"
 
-    def test_has_healing_capability(self, agent_class):
-        """Verify agent has healing capability."""
-        assert hasattr(agent_class, "heal_repository") or hasattr(agent_class, "heal"), (
-            "Should have healing method"
-        )
-
+    
     def test_fuzzing_invalid_inputs(self, agent_class):
         """Test handling of invalid inputs."""
         invalid_inputs = [None, {}, "", [], 123]

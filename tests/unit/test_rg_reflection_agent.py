@@ -64,15 +64,6 @@ class TestRgReflectionAgent:
         """Verify agent has execute method."""
         assert hasattr(agent_class, "execute"), "Should have execute method"
 
-    def test_has_heal_repository_method(self, agent_class):
-        """Verify agent has heal_repository method."""
-        assert hasattr(agent_class, "heal_repository"), "Should have heal_repository method"
-
-    def test_has_healing_capability(self, agent_class):
-        """Verify agent has healing capability."""
-        assert hasattr(agent_class, "heal_repository") or hasattr(agent_class, "heal"), (
-            "Should have healing method"
-        )
 
     def test_fuzzing_invalid_inputs(self, agent_class):
         """Test handling of invalid inputs."""

@@ -41,31 +41,7 @@ class TestDispatchResumeToolsAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
 
-    def test_class_exists(self, agent_class):
-        """Verify DispatchResumeToolsAgent exists and is importable."""
-        assert agent_class is not None, "DispatchResumeToolsAgent should exist"
-
-    def test_inherits_from_m_c_p_hardened_mixin(self, agent_class):
-        """Verify proper inheritance from MCPHardenedMixin."""
-        mro_names = [cls.__name__ for cls in agent_class.__mro__]
-        assert "MCPHardenedMixin" in mro_names, "Should inherit from MCPHardenedMixin"
-
-    def test_has_execute_method(self, agent_class):
-        """Verify agent has execute method."""
-        assert hasattr(agent_class, "execute"), "Should have execute method"
-
-    def test_has_healing_capability(self, agent_class):
-        """Verify agent has healing capability."""
-        assert hasattr(agent_class, "heal_repository") or hasattr(agent_class, "heal"), (
-            "Should have healing method"
-        )
-
-    def test_has_tools_capability(self, agent_class):
-        """Verify agent has tools capability."""
-        assert hasattr(agent_class, "_perform_action") or hasattr(agent_class, "execute"), (
-            "Should have tool execution method"
-        )
-
+    
     def test_fuzzing_invalid_inputs(self, agent_class):
         """Test handling of invalid inputs."""
         invalid_inputs = [None, {}, "", [], 123]

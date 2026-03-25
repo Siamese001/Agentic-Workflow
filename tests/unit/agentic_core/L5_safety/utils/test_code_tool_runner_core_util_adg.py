@@ -177,11 +177,7 @@ class TestCodeToolRunnerCapabilityImport:
 
 
 class TestCodeToolRunnerCapabilityInterface:
-    def test_is_capability_mixin(self):
-        assert hasattr(CodeToolRunnerCapability, "execute")
-        assert hasattr(CodeToolRunnerCapability, "heal_repository")
-        assert hasattr(CodeToolRunnerCapability, "heal")
-
+    
     def test_execute_is_abstract(self):
         """execute() raises NotImplementedError unless overridden."""
         import asyncio

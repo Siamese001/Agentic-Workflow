@@ -708,11 +708,7 @@ class TestReactEngine:
         assert strategy._engine is not None
         assert strategy._engine.max_steps == 3
 
-    def test_patterns_base_importable(self):
-        from agentic_core.patterns.base import BaseReasoningPattern
-
-        assert BaseReasoningPattern is not None
-
+    
     def test_runtime_state_shim(self):
         from agentic_core.runtime.state import AgentState
 

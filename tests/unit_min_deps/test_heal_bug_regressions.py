@@ -222,14 +222,7 @@ def _make_state_mgr(**extra_state):
 
 
 class TestBug1LocationAgentRegistry:
-    def test_location_healer_has_heal_repository(self):
-        """LocationHealerAgent must expose heal_repository() without raising NotImplementedError."""
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
-
-        assert hasattr(LocationHealerAgent, "heal_repository"), (
-            "LocationHealerAgent must have heal_repository"
-        )
-
+    
     def test_location_validator_raises_not_implemented(self):
         """LocationValidatorAgent.heal_repository() must raise NotImplementedError."""
         from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent

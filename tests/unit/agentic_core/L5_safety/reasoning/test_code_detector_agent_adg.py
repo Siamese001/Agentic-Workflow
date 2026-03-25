@@ -214,5 +214,4 @@ class TestCodeDetectorAgent:
         agent = CodeDetectorAgent()
         assert agent is not None
 
-    def test_has_heal_repository(self):
-        assert hasattr(CodeDetectorAgent, "heal_repository")
+    

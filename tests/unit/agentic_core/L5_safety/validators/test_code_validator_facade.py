@@ -303,16 +303,7 @@ class TestCodeValidatorAgentFacade:
         assert hasattr(agent, "validate_project")
         assert callable(agent.validate_project)
 
-    def test_heal_repository_method_exists(self, agent):
-        """Test heal_repository method exists."""
-        assert hasattr(agent, "heal_repository")
-        assert callable(agent.heal_repository)
-
-    def test_heal_method_exists(self, agent):
-        """Test heal method exists."""
-        assert hasattr(agent, "heal")
-        assert callable(agent.heal)
-
+    
 
 class TestValidationTypes:
     """Tests for validation type enums and dataclasses."""

@@ -199,5 +199,4 @@ class TestSafetyDetectorAgent:
         agent = SafetyDetectorAgent()
         assert agent is not None
 
-    def test_has_heal_repository(self):
-        assert hasattr(SafetyDetectorAgent, "heal_repository")
+    

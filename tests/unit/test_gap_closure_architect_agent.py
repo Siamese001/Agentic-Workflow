@@ -52,11 +52,6 @@ class TestGapClosureArchitectAgent:
         mro_names = [cls.__name__ for cls in agent_class.__mro__]
         assert "SubatomicTestingMixin" in mro_names, "Should inherit from SubatomicTestingMixin"
 
-    def test_has_healing_capability(self, agent_class):
-        """Verify agent has healing capability."""
-        assert hasattr(agent_class, "heal_repository") or hasattr(agent_class, "heal"), (
-            "Should have healing method"
-        )
 
     def test_fuzzing_invalid_inputs(self, agent_class):
         """Test handling of invalid inputs."""

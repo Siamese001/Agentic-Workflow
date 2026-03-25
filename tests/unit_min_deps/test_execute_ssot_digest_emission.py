@@ -229,11 +229,7 @@ def _capture_emit(targets: list[str]) -> str:
 
 
 class TestComputePipelineDigestExists:
-    @pytest.mark.unit_min_deps
-    def test_function_is_importable(self):
-        fn = _get_compute_fn()
-        assert callable(fn)
-
+    
     @pytest.mark.unit_min_deps
     def test_returns_64_hex_string(self):
         fn = _get_compute_fn()

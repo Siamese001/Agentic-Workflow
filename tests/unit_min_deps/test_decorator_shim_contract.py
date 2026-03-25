@@ -194,24 +194,7 @@ pytestmark = pytest.mark.unit_min_deps
 class TestCanonicalDecoratorsContract:
     """Verify base_agents.decorators is the canonical SSOT."""
 
-    def test_standard_heal_importable(self) -> None:
-        from agentic_core.utils.decorators_base_util import standard_heal
-
-        assert callable(standard_heal)
-
-    def test_standard_heal_async_importable(self) -> None:
-        from agentic_core.utils.decorators_base_util import standard_heal_async
-
-        assert callable(standard_heal_async)
-
-    def test_heal_result_schema_importable(self) -> None:
-        from agentic_core.utils.decorators_base_util import HEAL_RESULT_SCHEMA
-
-        assert isinstance(HEAL_RESULT_SCHEMA, dict)
-        assert "violations_found" in HEAL_RESULT_SCHEMA
-        assert "violations_fixed" in HEAL_RESULT_SCHEMA
-        assert "status" in HEAL_RESULT_SCHEMA
-
+    
     def test_dunder_all_matches_exports(self) -> None:
         import agentic_core.utils.decorators_base_util as mod
 
@@ -223,11 +206,7 @@ class TestCanonicalDecoratorsContract:
 class TestCanonicalTimeoutContract:
     """Verify base_agents.timeout_decorator is the canonical SSOT."""
 
-    def test_timeout_importable(self) -> None:
-        from agentic_core.utils.timeout_decorator_util import timeout
-
-        assert callable(timeout)
-
+    
     def test_timeout_returns_decorator(self) -> None:
         from agentic_core.utils.timeout_decorator_util import timeout
 

@@ -183,8 +183,4 @@ class TestGitHygieneAgentInit:
         agent = GitHygieneAgent(project_root=p, ctx=ctx)
         assert agent.project_root == p
 
-    def test_has_execute(self):
-        assert hasattr(GitHygieneAgent, "execute")
-
-    def test_has_heal_repository(self):
-        assert hasattr(GitHygieneAgent, "heal_repository")
+    

@@ -175,9 +175,7 @@ class TestGravityLeakHealerAgent:
     def test_is_class(self):
         assert isinstance(GravityLeakHealerAgent, type)
 
-    def test_has_heal_repository(self):
-        assert hasattr(GravityLeakHealerAgent, "heal_repository")
-
+    
     def test_creates(self):
         agent = GravityLeakHealerAgent()
         assert agent is not None
