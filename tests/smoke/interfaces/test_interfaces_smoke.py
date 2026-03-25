@@ -15,221 +15,105 @@ def test_interfaces_importable():
 
 
 @pytest.mark.smoke
-def test_healer_protocol_importable():
-    """Verify IHealerProtocol imports without error."""
+def test_determinism_importable():
+    """Verify determinism functions import without error."""
     try:
-        from agentic_core.interfaces.IHealerProtocol import (
-            IHealerProtocol,
+        from agentic_core.interfaces.determinism import (
+            canonical_bytes,
+            canonical_hash,
+            strip_nondeterministic,
         )
 
+        assert callable(canonical_bytes)
+        assert callable(canonical_hash)
+        assert callable(strip_nondeterministic)
+    except ImportError as e:
+        pytest.skip(f"determinism functions not available: {e}")
+
+
+@pytest.mark.smoke
+def test_embeddings_interface_importable():
+    """Verify embeddings interface imports without error."""
+    try:
+        from agentic_core.interfaces.embeddings import (
+            SimilarityResult,
+            query_similarity,
+        )
+
+        assert SimilarityResult is not None
+        assert callable(query_similarity)
+    except ImportError as e:
+        pytest.skip(f"embeddings interface not available: {e}")
+
+
+@pytest.mark.smoke
+def test_gateway_importable():
+    """Verify gateway imports without error."""
+    try:
+        from agentic_core.interfaces.gateway import (
+            SovereignLLMGateway,
+            GenerationRequest,
+        )
+
+        assert SovereignLLMGateway is not None
+        assert GenerationRequest is not None
+    except ImportError as e:
+        pytest.skip(f"gateway not available: {e}")
+
+
+@pytest.mark.smoke
+def test_protocols_importable():
+    """Verify protocol classes import without error."""
+    try:
+        from agentic_core.interfaces.IValidatorProtocol import ValidatorProtocol
+        from agentic_core.interfaces.IHealerProtocol import IHealerProtocol
+        from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
+        from agentic_core.interfaces.IMemoryStoreProtocol import IMemoryStoreProtocol
+
+        assert ValidatorProtocol is not None
         assert IHealerProtocol is not None
-    except ImportError as e:
-        pytest.skip(f"IHealerProtocol not yet implemented: {e}")
-
-
-@pytest.mark.smoke
-def test_orchestrator_protocol_importable():
-    """Verify IOrchestratorProtocol imports without error."""
-    try:
-        from agentic_core.interfaces.IOrchestratorProtocol import (
-            IOrchestratorProtocol,
-        )
-
         assert IOrchestratorProtocol is not None
+        assert IMemoryStoreProtocol is not None
     except ImportError as e:
-        pytest.skip(f"IOrchestratorProtocol not yet implemented: {e}")
+        pytest.skip(f"protocols not available: {e}")
 
 
 @pytest.mark.smoke
-def test_validator_protocol_importable():
-    """Verify IValidatorProtocol imports without error."""
+def test_mixins_importable():
+    """Verify interface mixins import without error."""
     try:
-        from agentic_core.interfaces.IValidatorProtocol import (
-            IValidatorProtocol,
+        from agentic_core.interfaces.mixins import (
+            HealerMixin,
+            MetaLearningMixin,
         )
 
-        assert IValidatorProtocol is not None
+        assert HealerMixin is not None
+        assert MetaLearningMixin is not None
     except ImportError as e:
-        pytest.skip(f"IValidatorProtocol not yet implemented: {e}")
+        pytest.skip(f"mixins not available: {e}")
 
 
 @pytest.mark.smoke
-def test_agent_protocol_importable():
-    """Verify IAgentProtocol imports without error."""
+def test_validators_importable():
+    """Verify validators import without error."""
     try:
-        from agentic_core.interfaces.IAgentProtocol import (
-            IAgentProtocol,
+        from agentic_core.interfaces.validators import (
+            RuleFailure,
         )
 
-        assert IAgentProtocol is not None
+        assert RuleFailure is not None
     except ImportError as e:
-        pytest.skip(f"IAgentProtocol not yet implemented: {e}")
+        pytest.skip(f"validators not available: {e}")
 
 
 @pytest.mark.smoke
-def test_execution_protocol_importable():
-    """Verify IExecutionProtocol imports without error."""
+def test_write_gateway_importable():
+    """Verify write gateway imports without error."""
     try:
-        from agentic_core.interfaces.IExecutionProtocol import (
-            IExecutionProtocol,
+        from agentic_core.interfaces.write_gateway import (
+            compute_replay_key,
         )
 
-        assert IExecutionProtocol is not None
+        assert callable(compute_replay_key)
     except ImportError as e:
-        pytest.skip(f"IExecutionProtocol not yet implemented: {e}")
-
-
-@pytest.mark.smoke
-def test_cognition_protocol_importable():
-    """Verify ICognitionProtocol imports without error."""
-    try:
-        from agentic_core.interfaces.ICognitionProtocol import (
-            ICognitionProtocol,
-        )
-
-        assert ICognitionProtocol is not None
-    except ImportError as e:
-        pytest.skip(f"ICognitionProtocol not yet implemented: {e}")
-
-
-@pytest.mark.smoke
-def test_state_protocol_importable():
-    """Verify IStateProtocol imports without error."""
-    try:
-        from agentic_core.interfaces.IStateProtocol import (
-            IStateProtocol,
-        )
-
-        assert IStateProtocol is not None
-    except ImportError as e:
-        pytest.skip(f"IStateProtocol not yet implemented: {e}")
-
-
-@pytest.mark.smoke
-def test_safety_protocol_importable():
-    """Verify ISafetyProtocol imports without error."""
-    try:
-        from agentic_core.interfaces.ISafetyProtocol import (
-            ISafetyProtocol,
-        )
-
-        assert ISafetyProtocol is not None
-    except ImportError as e:
-        pytest.skip(f"ISafetyProtocol not yet implemented: {e}")
-
-
-@pytest.mark.smoke
-def test_observability_protocol_importable():
-    """Verify IObservabilityProtocol imports without error."""
-    try:
-        from agentic_core.interfaces.IObservabilityProtocol import (
-            IObservabilityProtocol,
-        )
-
-        assert IObservabilityProtocol is not None
-    except ImportError as e:
-        pytest.skip(f"IObservabilityProtocol not yet implemented: {e}")
-
-
-@pytest.mark.smoke
-def test_routing_protocol_importable():
-    """Verify IRoutingProtocol imports without error."""
-    try:
-        from agentic_core.interfaces.IRoutingProtocol import (
-            IRoutingProtocol,
-        )
-
-        assert IRoutingProtocol is not None
-    except ImportError as e:
-        pytest.skip(f"IRoutingProtocol not yet implemented: {e}")
-
-
-@pytest.mark.smoke
-def test_knowledge_protocol_importable():
-    """Verify IKnowledgeProtocol imports without error."""
-    try:
-        from agentic_core.interfaces.IKnowledgeProtocol import (
-            IKnowledgeProtocol,
-        )
-
-        assert IKnowledgeProtocol is not None
-    except ImportError as e:
-        pytest.skip(f"IKnowledgeProtocol not yet implemented: {e}")
-
-
-@pytest.mark.smoke
-def test_cache_protocol_importable():
-    """Verify ICacheProtocol imports without error."""
-    try:
-        from agentic_core.interfaces.ICacheProtocol import (
-            ICacheProtocol,
-        )
-
-        assert ICacheProtocol is not None
-    except ImportError as e:
-        pytest.skip(f"ICacheProtocol not yet implemented: {e}")
-
-
-@pytest.mark.smoke
-def test_enforcement_protocol_importable():
-    """Verify IEnforcementProtocol imports without error."""
-    try:
-        from agentic_core.interfaces.IEnforcementProtocol import (
-            IEnforcementProtocol,
-        )
-
-        assert IEnforcementProtocol is not None
-    except ImportError as e:
-        pytest.skip(f"IEnforcementProtocol not yet implemented: {e}")
-
-
-@pytest.mark.smoke
-def test_protocol_factory_importable():
-    """Verify protocol factory imports without error."""
-    try:
-        from agentic_core.interfaces.protocol_factory import (
-            ProtocolFactory,
-        )
-
-        assert ProtocolFactory is not None
-    except ImportError as e:
-        pytest.skip(f"ProtocolFactory not yet implemented: {e}")
-
-
-@pytest.mark.smoke
-def test_protocol_registry_importable():
-    """Verify protocol registry imports without error."""
-    try:
-        from agentic_core.interfaces.protocol_registry import (
-            ProtocolRegistry,
-        )
-
-        assert ProtocolRegistry is not None
-    except ImportError as e:
-        pytest.skip(f"ProtocolRegistry not yet implemented: {e}")
-
-
-@pytest.mark.smoke
-def test_protocol_validator_importable():
-    """Verify protocol validator imports without error."""
-    try:
-        from agentic_core.interfaces.protocol_validator import (
-            ProtocolValidator,
-        )
-
-        assert ProtocolValidator is not None
-    except ImportError as e:
-        pytest.skip(f"ProtocolValidator not yet implemented: {e}")
-
-
-@pytest.mark.smoke
-def test_protocol_config_importable():
-    """Verify protocol config imports without error."""
-    try:
-        from agentic_core.interfaces.protocol_config import (
-            get_protocol_config,
-        )
-
-        assert callable(get_protocol_config), "get_protocol_config should be callable"
-    except ImportError as e:
-        pytest.skip(f"protocol_config not yet implemented: {e}")
+        pytest.skip(f"write gateway not available: {e}")
