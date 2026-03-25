@@ -1,0 +1,11 @@
+{
+  "react_node_count": 16,
+  "react_fan_in": 41,
+  "react_fan_out": 256,
+  "late_chunk_node_count": 21,
+  "late_chunk_fan_in": 67,
+  "late_chunk_fan_out": 298,
+  "layer_violation_count": 0,
+  "dead_imports_in_surface": 0,
+  "violations": []
+}
