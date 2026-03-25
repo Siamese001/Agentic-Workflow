@@ -151,11 +151,11 @@ def file_is_import_only(fp: Path) -> Tuple[bool, int, str, Optional[str]]:
         tree = ast.parse(source)
     except:
         return False, 0, "", None
-    
+
     test_funcs = [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name.startswith('test_')]
     if not test_funcs:
         return False, 0, "", None
-    
+
     lines = len(source.splitlines())
     module_path = extract_module_from_source(source)
     return True, lines, source, module_path

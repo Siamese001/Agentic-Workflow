@@ -3,6 +3,7 @@
 Auto-generated stub - covers GT_covers edge for ADG reachability.
 Behavioral tests belong in test_tools.py (no _adg suffix).
 """
+
 from __future__ import annotations
 
 import agentic_core.runtime.tools as _tools_mod  # noqa: F401

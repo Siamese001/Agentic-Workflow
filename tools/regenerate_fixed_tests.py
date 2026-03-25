@@ -17,7 +17,7 @@ files_to_fix = [
 
 for file_path in files_to_fix:
     fp = Path(file_path)
-    
+
     # Extract module path from existing content
     content = fp.read_text('utf-8')
     for line in content.splitlines():
@@ -27,14 +27,14 @@ for file_path in files_to_fix:
     else:
         print(f"No MODULE_PATH found in {file_path}")
         continue
-    
+
     print(f"Regenerating {file_path} -> {module_path}")
-    
+
     try:
         # Analyze module and generate new test
         public_symbols, classes, functions = analyze_module_api(module_path)
         new_content = generate_enhanced_test(module_path, classes, functions)
-        
+
         # Write the fixed content
         fp.write_text(new_content, encoding='utf-8')
         print(f"  Fixed: {len(classes)} classes, {len(functions)} functions")
