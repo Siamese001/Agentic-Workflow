@@ -2,11 +2,12 @@
 """
 Wave 3.0: Guardian Annotation Sweep.
 Validates Phases 2.1-2.4 fixes and annotates remaining violations with guardian comments.
-Target: 12,562 violations (all severities) — 0 currently have guardian comments.
+Phase 1 SSOT: Now reads from ADG SQLite database instead of stale JSON report.
 """
 
 import json
 import argparse
+import sqlite3
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -15,15 +16,106 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 class GuardianSweepFixer:
     """Annotate all remaining silent swallower violations with guardian comments."""
 
-    def __init__(self):
+    def __init__(self, adg_path: Path | None = None):
         self.violations = []
         self.annotations_added = 0
         self.errors = 0
         self.skipped_guarded = 0
 
-        with open(PROJECT_ROOT / "tools" / "silent_swallower_report.json", 'r') as f:
-            report = json.load(f)
-            self.violations = report['violations']
+        # Phase 1: Read from ADG SQLite instead of JSON
+        if adg_path is None:
+            # Find latest ADG SQLite
+            adg_dir = PROJECT_ROOT / "artifacts" / "adg"
+            sqlite_files = list(adg_dir.glob("adg_indexed_*.sqlite"))
+            if not sqlite_files:
+                raise FileNotFoundError("No ADG SQLite found in artifacts/adg/")
+            adg_path = max(sqlite_files, key=lambda p: p.stat().st_mtime)
+
+        self.adg_path = adg_path
+        self._load_violations_from_adg()
+
+    def _load_violations_from_adg(self):
+        """Load violations from ADG SQLite database."""
+        print(f"📊 Loading violations from ADG: {self.adg_path}")
+
+        conn = sqlite3.connect(str(self.adg_path))
+        try:
+            # Check if Phase 1 schema exists
+            cursor = conn.execute("PRAGMA table_info(violations)")
+            columns = {row[1] for row in cursor.fetchall()}
+
+            if 'disposition' in columns and 'severity' in columns:
+                # Phase 1 schema available
+                cursor = conn.execute("""
+                    SELECT
+                        file_path,
+                        line_no,
+                        evidence,
+                        severity,
+                        disposition,
+                        disposition_source
+                    FROM violations
+                    WHERE category = 'antipattern'
+                    ORDER BY severity DESC, file_path, line_no
+                """)
+            elif 'severity' in columns:
+                # Partial Phase 1 schema - use default disposition
+                cursor = conn.execute("""
+                    SELECT
+                        file_path,
+                        line_no,
+                        evidence,
+                        severity,
+                        'untriaged',
+                        ''
+                    FROM violations
+                    WHERE category = 'antipattern'
+                    ORDER BY severity DESC, file_path, line_no
+                """)
+            else:
+                # Pre-Phase 1 schema - use defaults
+                cursor = conn.execute("""
+                    SELECT
+                        file_path,
+                        line_no,
+                        evidence,
+                        'MEDIUM',
+                        'untriaged',
+                        ''
+                    FROM violations
+                    WHERE category = 'antipattern'
+                    ORDER BY file_path, line_no
+                """)
+
+            self.violations = []
+            for row in cursor.fetchall():
+                file_path, line_no, evidence, severity, disposition, disposition_source = row
+
+                # Parse evidence to extract exception type
+                # evidence format: "except:Exception", "except:bare", "except:ValueError", etc.
+                exception_type = evidence.replace("except:", "") if evidence.startswith("except:") else "Unknown"
+
+                # Skip if already dispositioned (tested or approved)
+                if disposition in ('tested', 'approved'):
+                    self.skipped_guarded += 1
+                    continue
+
+                self.violations.append({
+                    'file_path': file_path,
+                    'line_number': line_no,
+                    'exception_type': exception_type,
+                    'severity': severity,
+                    'evidence': evidence,
+                    'disposition': disposition,
+                    'disposition_source': disposition_source,
+                    'has_guardian': '# guardian:' in disposition_source if disposition_source else False
+                })
+
+        finally:
+            conn.close()
+
+        print(f"  Loaded {len(self.violations)} antipattern violations")
+        print(f"  Skipped {self.skipped_guarded} already dispositioned violations")
 
     def apply_guardian_sweep(self):
         """Wave 3.0: Annotate all remaining violations with guardian comments."""
@@ -42,7 +134,7 @@ class GuardianSweepFixer:
             line_no = violation['line_number']
             exception_type = violation['exception_type']
             severity = violation['severity']
-            context = violation.get('context', '')
+            evidence = violation.get('evidence', '')
             has_guardian = violation.get('has_guardian', False)
 
             try:
@@ -60,13 +152,18 @@ class GuardianSweepFixer:
                         self.skipped_guarded += 1
                         continue
 
-                    guardian_msg = self._determine_guardian_message(exception_type, severity, context)
+                    guardian_msg = self._determine_guardian_message(exception_type, severity, '')
                     new_line = self._add_guardian_comment(original_line, guardian_msg)
 
                     if new_line != original_line:
                         lines[line_no - 1] = new_line
                         file_path.write_text('\n'.join(lines), encoding='utf-8')
                         self.annotations_added += 1
+
+                        # Phase 1: Update disposition in ADG
+                        self._update_violation_disposition(
+                            file_path, line_no, 'approved', f'guardian: {guardian_msg}'
+                        )
 
                         if self.annotations_added % 500 == 0:
                             print(f"    Annotated {self.annotations_added}/{len(self.violations)}...")
@@ -84,6 +181,41 @@ class GuardianSweepFixer:
             'errors': self.errors,
             'remaining_unannotated': len(self.violations) - self.annotations_added - self.skipped_guarded
         }
+
+    def _update_violation_disposition(self, file_path: Path, line_no: int, disposition: str, source: str):
+        """Phase 1: Update violation disposition in ADG database."""
+        from datetime import datetime
+
+        conn = sqlite3.connect(str(self.adg_path))
+        try:
+            # Check if Phase 1 schema exists
+            cursor = conn.execute("PRAGMA table_info(violations)")
+            columns = {row[1] for row in cursor.fetchall()}
+
+            if 'disposition' in columns and 'disposition_source' in columns and 'disposition_date' in columns:
+                # Full Phase 1 schema - update all fields
+                conn.execute("""
+                    UPDATE violations
+                    SET disposition = ?, disposition_source = ?, disposition_date = ?
+                    WHERE file_path = ? AND line_no = ?
+                """, (disposition, source, datetime.utcnow().isoformat(), str(file_path), line_no))
+            elif 'disposition' in columns:
+                # Partial Phase 1 schema - update only disposition
+                conn.execute("""
+                    UPDATE violations
+                    SET disposition = ?
+                    WHERE file_path = ? AND line_no = ?
+                """, (disposition, str(file_path), line_no))
+            else:
+                # Pre-Phase 1 schema - cannot update
+                print(f"    ⚠️  Cannot update disposition: Phase 1 schema not available")
+                return
+
+            conn.commit()
+        except Exception as e:
+            print(f"    ⚠️  Failed to update disposition: {e}")
+        finally:
+            conn.close()
 
     def _determine_guardian_message(self, exception_type, severity, context):
         """Determine appropriate guardian message based on exception type and severity."""
@@ -147,7 +279,7 @@ class GuardianSweepFixer:
         """Add guardian comment to an exception handler line."""
         # Strip trailing whitespace first
         cleaned = original_line.rstrip()
-        
+
         # If line ends with colon, add comment after it
         if cleaned.endswith(':'):
             return f"{cleaned}  {guardian_msg}"

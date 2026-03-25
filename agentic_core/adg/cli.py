@@ -578,6 +578,7 @@ def _cmd_build_artifacts(args: argparse.Namespace) -> int:
     from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
     from agentic_core.adg.artifact.builder_types import build_artifact
     from agentic_core.adg.runtime.cache_loader import load_or_scan
+    from agentic_core.adg.processing.phase2_disposition_processor import run_phase2_disposition_processing
 
     repo_root = Path(args.repo_root)
     result = load_or_scan(repo_root=str(repo_root))
@@ -588,6 +589,11 @@ def _cmd_build_artifacts(args: argparse.Namespace) -> int:
     out_dir = Path(getattr(args, "output_dir", None) or repo_root / "artifacts" / "adg")
     artifact = build_artifact(result, repo_root=repo_root)
     paths = write_all_artifacts(artifact, out_dir=out_dir, ts=ts)
+
+    # Phase 2: Auto-disposition violations based on test coverage and guardian comments
+    print("🔗 Phase 2: Auto-dispositioning violations...")
+    disposition_results = run_phase2_disposition_processing(paths.sqlite)
+
     sizes = paths.size_report()
     report = {
         "snapshot": str(paths.snapshot),
@@ -599,6 +605,7 @@ def _cmd_build_artifacts(args: argparse.Namespace) -> int:
         "artifact_digest": artifact.artifact_digest,
         "entities": len(artifact.entities),
         "relations": len(artifact.relations),
+        "phase2_dispositions": disposition_results,
     }
     print(json.dumps(report, indent=2))
     return 0

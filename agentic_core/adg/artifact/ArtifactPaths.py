@@ -321,10 +321,15 @@ CREATE TABLE IF NOT EXISTS violations (
     category      TEXT NOT NULL,
     evidence      TEXT NOT NULL DEFAULT '',
     file_path     TEXT NOT NULL DEFAULT '',
-    line_no       INTEGER NOT NULL DEFAULT 0
+    line_no       INTEGER NOT NULL DEFAULT 0,
+    disposition   TEXT NOT NULL DEFAULT 'untriaged',
+    disposition_source TEXT DEFAULT '',
+    disposition_date TEXT DEFAULT '',
+    severity      TEXT NOT NULL DEFAULT 'MEDIUM'
 );
 CREATE INDEX IF NOT EXISTS idx_violations_cat  ON violations(category);
 CREATE INDEX IF NOT EXISTS idx_violations_file ON violations(file_path);
+CREATE INDEX IF NOT EXISTS idx_violations_disp ON violations(disposition);
 
 CREATE VIEW IF NOT EXISTS edge_view AS
     SELECT
@@ -441,11 +446,28 @@ def _write_sqlite(ng_full, db_path: Path) -> Path:
             edge_rows,
         )
 
-        # Populate violations from governance edges
+        # Populate violations from governance edges with severity derivation
         conn.execute(
-            "INSERT INTO violations (edge_id, category, evidence, file_path, line_no) "
-            "SELECT id, relation_type, symbol, source_file, line_no "
-            "FROM edges WHERE relation_type IN ('violates', 'antipattern', 'dynamic_exec')"
+            """INSERT INTO violations (edge_id, category, evidence, file_path, line_no, severity)
+            SELECT id, relation_type, symbol, source_file, line_no,
+                CASE
+                    WHEN relation_type = 'antipattern' AND (
+                        symbol LIKE 'except:Exception%' OR
+                        symbol LIKE 'except:bare%'
+                    ) AND (
+                        source_file LIKE 'agentic_core/L0_routing/%' OR
+                        source_file LIKE 'agentic_core/L5_safety/%' OR
+                        source_file LIKE 'agentic_core/L2_execution/%' OR
+                        source_file LIKE 'agentic_core/L3_orchestration/%'
+                    ) THEN 'HIGH'
+                    WHEN relation_type = 'antipattern' AND (
+                        symbol LIKE 'except:Exception%' OR
+                        symbol LIKE 'except:bare%'
+                    ) THEN 'MEDIUM'
+                    WHEN relation_type = 'antipattern' THEN 'LOW'
+                    ELSE 'MEDIUM'
+                END as severity
+            FROM edges WHERE relation_type IN ('violates', 'antipattern', 'dynamic_exec')"""
         )
 
         # Meta
