@@ -390,7 +390,15 @@ All queries, searches, and long-running operations MUST have explicit timeout pa
 
 **Timeout ranges:** Fast (grep, file reads, simple AST): 5–30s | Medium (graph construction, test collection): 30–120s | Heavy (full repo analysis): 120–600s | External API: 10–60s.
 
-Operations >5s MUST provide progress reporting (percentage, current item, ETA) at least every 5s.
+**MANDATORY Progress Display Requirements (operations >5s):**
+- **Progress bars** with colored percentage completion (standard 40-character format)
+- **Real-time status updates** at least every 5 seconds
+- **Color-coded indicators**: 🟢 Green (success), 🔵 Blue (in-progress), 🟡 Yellow (warning/slow), 🔴 Red (error), ⚪ White (neutral)
+- **ETA display** for operations >30s (formatted as Xs, Xm, or Xh)
+- **Current item tracking** with descriptive status messages
+- **ANSI color codes** for terminal compatibility (see `.windsurf/skills/progress-display/color_scheme_reference.md`)
+
+**Progress Display Enforcement:** Skill `progress-display` MUST be invoked for all operations >5s. Use standardized formats and color schemes from the skill protocol.
 
 When timeout occurs: use ADG to isolate the bottleneck, identify root cause, rerun with targeted scope, document recovery in `## TIMEOUT_RECOVERY`. Fail-closed: if ADG cannot be built or bottleneck not identified → raise original TimeoutError.
 

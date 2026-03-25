@@ -30,12 +30,12 @@
 |---|-------|-------|--------|------|---------|----------------|--------|
 | 1 | **Dependency Graph Analysis** (merged AST-First Gate) | Windsurf | Before work | Behavioural | None | None | ✅ ENFORCED (Windsurf only, tier-aware) |
 | 2 | **Dedup Guard** | Both | Before work | Behavioural + Structural | `check_dedup_violations.py` (proxy) | T3a-dedup | ✅ ENFORCED |
-| 4 | **Evidence Bundle** | Windsurf | During work | Behavioural | None | None | ✅ WORKFLOW-ENFORCED |
-| 5 | **Import Hygiene** | Both | After work | Structural | Ruff F401, `validate_import_dependencies.py` | T2a, T4a | ✅ ENFORCED |
-| 6 | **Layer Boundary Guard** | Pre-commit | After work | Structural | ADG GV edges | None | ✅ ENFORCED |
-| 7 | **MCP Tool Verify** | Windsurf | During work | Behavioural | None | None | ✅ RUNTIME-ENFORCED |
+| 3 | **Evidence Bundle** | Windsurf | During work | Behavioural | None | None | ✅ WORKFLOW-ENFORCED |
+| 4 | **Import Hygiene** | Both | After work | Structural | Ruff F401, `validate_import_dependencies.py` | T2a, T4a | ✅ ENFORCED |
+| 5 | **Layer Boundary Guard** | Pre-commit | After work | Structural | ADG GV edges | None | ✅ ENFORCED |
+| 6 | **MCP Tool Verify** | Windsurf | During work | Behavioural | None | None | ✅ RUNTIME-ENFORCED |
+| 7 | **Progress Display** | Windsurf | During work | Behavioural | None | None | ✅ ENFORCED (Windsurf only) |
 | 8 | **Pytest Integrity** | Pre-commit | After work | Structural | `adg_ci_lane_gate.py --fail-on-skip` | T3a-skip | ✅ ENFORCED |
-
 | 9 | **Rollback Gate** | Both | Before work | Behavioural + Structural | `check_rollback_checkpoints.py` (artifact) | T3a-rollback | ✅ ENFORCED |
 | 10 | **Scope Guard** | Windsurf | Before work | Behavioural | None | None | ✅ ENFORCED (Windsurf only) |
 | 11 | **Script Sprawl Guard** | Both | Before work | Behavioural + Structural | `check_script_sprawl.py` | T3a-sprawl | ✅ ENFORCED |
@@ -177,7 +177,7 @@
 | Category | Total | Enforced | Partial | Missing |
 |----------|-------|----------|---------|---------|
 | Constitutional Rules | 5 | 5 | 0 | 0 |
-| Skills | 14 | 14 | 0 | 0 |
+| Skills | 15 | 15 | 0 | 0 |
 | CI Gates | 41 | 41 | 0 | 0 |
 | Pre-commit Hooks | 25+ | 25+ | 0 | 0 |
 
@@ -223,6 +223,7 @@ Include justification keywords in commit message:
 **Next Audit**: 2026-04-11
 
 **Changelog**:
+- 2026-03-25: **PROGRESS DISPLAY ENFORCEMENT** — Added `progress-display` skill with mandatory colored progress bars and percentage displays for all operations >5s. Updated §5.3 with detailed progress reporting requirements including ANSI color codes, ETA display, and standardized progress bar formats. Skill provides terminal protocol, color scheme reference, and implementation guide for integration across all Windsurf operations.
 - 2026-03-14: **HITL (HUMAN-IN-THE-LOOP) ENFORCEMENT** — Added §8.5 HITL Framework to `.windsurfrules` and Constitutional Rule #8. Created comprehensive rule (`.windsurf/rules/hitl-enforcement.md`) with 10 mandatory decision triggers. Created workflow (`/hitl-decision-gate`) with option presentation templates. HITL required for: architecture decisions, refactoring scope, anti-patterns, test repair, dependencies, deletions, config changes, error handling, performance trade-offs, ADG timing. Registered as constitutional rule with Windsurf-only enforcement (behavioral, no CI gate).
 - 2026-03-12: **TEST FAILURE TRIAGE PROTOCOL** — Added canonical 5-check decision tree (`docs/technical/TEST_FAILURE_decision_tree.md`). Registered as §2.5 constitutional rule. Added CI condition 8b (`check_broken_test_fix_semantic_equivalence`) to `check_ci_integrity.py`. Updated `adg-repair-discipline.md` with triage step before repair loop. Updated `test-rigor-enforcement` skill with triage trigger. Reference added to `.windsurfrules` §2.5 without duplicating taxonomy.
 - 2026-03-11: **RULES CONSOLIDATION** — `.windsurfrules` reduced 3906→~400 lines. Removed all Python code blocks (redundant with `ops_scripts/ci/`). Added Constitutional Floor banner to top. Wired 4 previously dormant CI gates into `run_contract_gates.py`: `check_powershell_ban`, `check_test_integrity`, `check_no_unconditional_xfail`, `check_utility_silent_swallowers`.

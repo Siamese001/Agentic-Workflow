@@ -228,6 +228,7 @@ def get_validated_project_root() -> Path:
 # ============================================================================
 
 AGENTIC_CORE_DIR: Final[str] = "agentic_core"
+INFRASTRUCTURE_DIR: Final[str] = "infrastructure"
 APPS_EVAL_DIR: Final[str] = "apps_eval"
 APPS_EXEC_DIR: Final[str] = "apps_exec"
 APPS_LIC_DIR: Final[str] = "apps_lic"
@@ -244,6 +245,41 @@ TESTS_UNIT_DIR: Final[str] = "tests/unit"
 TOOLS_DIR: Final[str] = "tools"
 DASHBOARD_DIR: Final[str] = "agentic_core/L6_observability/dashboards"
 REPORTS_DIR: Final[str] = "reports"
+
+# ============================================================================
+# DYNAMIC DIRECTORY DISCOVERY
+# ============================================================================
+
+@lru_cache(maxsize=1)
+def get_apps_directories() -> list[str]:
+    """Dynamically discover all apps_* directories in the repository.
+    
+    Returns:
+        List of directory names starting with 'apps_' that exist in the repo.
+        Cached for performance.
+    """
+    project_root = get_validated_project_root()
+    apps_dirs = []
+    
+    for item in project_root.iterdir():
+        if item.is_dir() and item.name.startswith("apps_"):
+            apps_dirs.append(item.name)
+    
+    # Sort for deterministic ordering
+    return sorted(apps_dirs)
+
+
+@lru_cache(maxsize=1)
+def get_all_apps_paths() -> list[Path]:
+    """Get absolute paths for all apps_* directories.
+    
+    Returns:
+        List of Path objects for all apps_* directories.
+        Cached for performance.
+    """
+    project_root = get_validated_project_root()
+    apps_dirs = get_apps_directories()
+    return [project_root / dir_name for dir_name in apps_dirs]
 
 # Layer-specific directories
 L0_MAINTENANCE_DIR: Final[str] = "agentic_core/L0_maintenance"
@@ -755,3 +791,9 @@ _emit_reads_through("l4", "path_constants", "urg_read_123")
 _emit_reads_through("l4", "path_constants", "urg_read_124")
 _emit_reads_through("l4", "path_constants", "urg_read_125")
 _emit_reads_through("l4", "path_constants", "urg_read_126")
+
+# Export list for __init__.py
+__all__ = [
+    "get_apps_directories",
+    "get_all_apps_paths",
+]

@@ -21,9 +21,11 @@ from typing import Any
 
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
-    APPS_LIC_DIR,
-    APPS_RG_DIR,
-    APPS_SHARED_DIR,
+    get_all_apps_paths,
+    INFRASTRUCTURE_DIR,
+    OPS_SCRIPTS_DIR,
+    SYSTEM_LEARNING_DIR,
+    TOOLS_DIR,
 )
 from agentic_core.L5_safety.validators.base_detector_validator import (
     AntiPatternCategory,
@@ -298,12 +300,27 @@ class AntiPatternScanner:
     """
 
     # Default directories to scan
-    DEFAULT_SCAN_DIRS = [
-        AGENTIC_CORE_DIR,
-        APPS_LIC_DIR,
-        APPS_RG_DIR,
-        APPS_SHARED_DIR,
-    ]
+    @classmethod
+    def get_default_scan_dirs(cls) -> list[str]:
+        """Get default scan directories using dynamic apps discovery.
+        
+        Returns:
+            List of directory names to scan, including all apps_* directories.
+        """
+        dirs = [
+            AGENTIC_CORE_DIR,
+            INFRASTRUCTURE_DIR,
+            OPS_SCRIPTS_DIR,
+            SYSTEM_LEARNING_DIR,
+            TOOLS_DIR,
+        ]
+        
+        # Add all apps_* directories dynamically
+        apps_paths = get_all_apps_paths()
+        apps_dirs = [p.name for p in apps_paths]
+        dirs.extend(apps_dirs)
+        
+        return dirs
 
     # Default exclude patterns
     DEFAULT_EXCLUDES = [
@@ -333,7 +350,7 @@ class AntiPatternScanner:
         """
         self.project_root = Path(project_root).resolve()
         self.enforcement_level = enforcement_level
-        self.scan_dirs = scan_dirs or self.DEFAULT_SCAN_DIRS
+        self.scan_dirs = scan_dirs or self.get_default_scan_dirs()
         self.exclude_patterns = exclude_patterns or self.DEFAULT_EXCLUDES
 
         # Initialize detectors
