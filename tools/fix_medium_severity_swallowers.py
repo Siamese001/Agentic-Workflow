@@ -132,6 +132,8 @@ class MediumSeveritySilentSwallowerFixer:
         print(f"  Processing ALL {len(medium_violations)} MEDIUM severity violations...")
         
         for i, violation in enumerate(medium_violations):
+            if 'file_path' not in violation:
+                continue
             file_path = Path(violation['file_path'])
             line_no = violation['line_number']
             exception_type = violation['exception_type']

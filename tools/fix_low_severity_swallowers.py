@@ -40,6 +40,8 @@ class LowSeveritySilentSwallowerFixer:
         print(f"  Processing ALL {len(low_violations)} LOW severity violations...")
         
         for i, violation in enumerate(low_violations):
+            if 'file_path' not in violation:
+                continue
             file_path = Path(violation['file_path'])
             line_no = violation['line_number']
             exception_type = violation['exception_type']
