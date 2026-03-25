@@ -13,28 +13,27 @@ Key capabilities:
 
 from __future__ import annotations
 
-import ast
 import sqlite3
-from datetime import datetime
-from pathlib import Path
-from typing import Generator, NamedTuple, Optional, Dict, List
 from dataclasses import dataclass
+from datetime import datetime
 from enum import Enum
-
-import pytest
+from pathlib import Path
+from typing import NamedTuple
 
 
 class RemediationStrategy(Enum):
     """Auto-remediation strategies for exception handlers."""
+
     NARROW_TO_SPECIFIC = "narrow_to_specific"  # except Exception → except ValueError
-    ADD_LOGGING = "add_logging"              # Add logging before swallow
-    RE_RAISE_CRITICAL = "reraise_critical"   # Re-raise in critical paths
-    PRESERVE_GUARDED = "preserve_guarded"    # Skip if guardian comment exists
+    ADD_LOGGING = "add_logging"  # Add logging before swallow
+    RE_RAISE_CRITICAL = "reraise_critical"  # Re-raise in critical paths
+    PRESERVE_GUARDED = "preserve_guarded"  # Skip if guardian comment exists
 
 
 @dataclass
 class ExceptionType:
     """Exception type with confidence and context."""
+
     name: str
     confidence: float  # 0.0 to 1.0
     evidence: str
@@ -44,27 +43,29 @@ class ExceptionType:
 @dataclass
 class RemediationAction:
     """Single remediation action to apply."""
+
     strategy: RemediationStrategy
     file_path: str
     line_no: int
     original_line: str
     suggested_line: str
-    exception_types: List[ExceptionType]
+    exception_types: list[ExceptionType]
     risk_score: float
     confidence: float
 
 
 class ViolationContext(NamedTuple):
     """Context information for a violation."""
+
     file_path: str
     line_no: int
     original_line: str
     evidence: str
     severity: str
-    function_name: Optional[str]
-    class_name: Optional[str]
-    imports: List[str]
-    surrounding_code: List[str]
+    function_name: str | None
+    class_name: str | None
+    imports: list[str]
+    surrounding_code: list[str]
 
 
 class ExceptionTypeInference:
@@ -73,26 +74,26 @@ class ExceptionTypeInference:
     def __init__(self):
         # Common exception patterns and their likelihood
         self.exception_patterns = {
-            'ValueError': ['int(', 'float(', 'parse', 'convert', 'cast'],
-            'TypeError': ['len(', 'str(', 'bytes(', 'list(', 'dict('],
-            'KeyError': ['[', '.get(', 'keys(', 'items('],
-            'AttributeError': ['.', 'getattr(', 'setattr('],
-            'ImportError': ['import', 'from', 'module'],
-            'FileNotFoundError': ['open(', 'file(', 'Path('],
-            'PermissionError': ['write', 'delete', 'remove', 'mkdir'],
-            'OSError': ['os.', 'pathlib', 'file system'],
-            'IndexError': ['[', 'list(', 'tuple('],
-            'ZeroDivisionError': ['/', '//', '%'],
-            'ConnectionError': ['connect', 'socket', 'network'],
-            'TimeoutError': ['timeout', 'wait'],
+            "ValueError": ["int(", "float(", "parse", "convert", "cast"],
+            "TypeError": ["len(", "str(", "bytes(", "list(", "dict("],
+            "KeyError": ["[", ".get(", "keys(", "items("],
+            "AttributeError": [".", "getattr(", "setattr("],
+            "ImportError": ["import", "from", "module"],
+            "FileNotFoundError": ["open(", "file(", "Path("],
+            "PermissionError": ["write", "delete", "remove", "mkdir"],
+            "OSError": ["os.", "pathlib", "file system"],
+            "IndexError": ["[", "list(", "tuple("],
+            "ZeroDivisionError": ["/", "//", "%"],
+            "ConnectionError": ["connect", "socket", "network"],
+            "TimeoutError": ["timeout", "wait"],
         }
 
-    def infer_from_context(self, violation: ViolationContext) -> List[ExceptionType]:
-        """Infer likely exception types from surrounding code context."""
+    def infer_from_context(self, violation: ViolationContext) -> list[ExceptionType]:
+        """Infer likely exception types from surrounding code context and imports."""
         candidates = []
 
         # Analyze function body for patterns
-        function_code = '\n'.join(violation.surrounding_code)
+        function_code = "\n".join(violation.surrounding_code)
 
         for exc_type, patterns in self.exception_patterns.items():
             score = 0.0
@@ -103,57 +104,75 @@ class ExceptionTypeInference:
                     score += 0.3
                     evidence.append(f"Pattern '{pattern}' found")
 
-            # Bonus for imports
-            if exc_type in violation.imports:
+            # Bonus for imports (check full import strings)
+            import_str = " ".join(violation.imports).lower()
+            if exc_type.lower() in import_str:
                 score += 0.2
                 evidence.append(f"Import '{exc_type}' found")
 
             # Bonus for function/class names
-            if violation.function_name and any(keyword in violation.function_name.lower()
-                                              for keyword in ['parse', 'convert', 'load', 'read', 'write']):
-                if exc_type in ['ValueError', 'TypeError']:
+            if violation.function_name and any(
+                keyword in violation.function_name.lower()
+                for keyword in ["parse", "convert", "load", "read", "write"]
+            ):
+                if exc_type in ["ValueError", "TypeError"]:
                     score += 0.1
                     evidence.append("Function name suggests data processing")
 
             if score > 0.1:
                 confidence = min(score, 1.0)
-                candidates.append(ExceptionType(
-                    name=exc_type,
-                    confidence=confidence,
-                    evidence='; '.join(evidence),
-                    source='code_analysis'
-                ))
+                candidates.append(
+                    ExceptionType(
+                        name=exc_type,
+                        confidence=confidence,
+                        evidence="; ".join(evidence),
+                        source="code_analysis",
+                    )
+                )
+
+        # Merge import-based candidates
+        import_candidates = self.infer_from_imports(violation)
+        existing_names = {c.name for c in candidates}
+        for ic in import_candidates:
+            if ic.name not in existing_names:
+                candidates.append(ic)
 
         # Sort by confidence
         candidates.sort(key=lambda x: x.confidence, reverse=True)
         return candidates
 
-    def infer_from_imports(self, violation: ViolationContext) -> List[ExceptionType]:
+    def infer_from_imports(self, violation: ViolationContext) -> list[ExceptionType]:
         """Infer exception types from import statements."""
         candidates = []
 
         for import_name in violation.imports:
-            if 'json' in import_name:
-                candidates.append(ExceptionType(
-                    name='json.JSONDecodeError',
-                    confidence=0.7,
-                    evidence='JSON library imported',
-                    source='import_analysis'
-                ))
-            elif 'requests' in import_name:
-                candidates.append(ExceptionType(
-                    name='requests.RequestException',
-                    confidence=0.6,
-                    evidence='Requests library imported',
-                    source='import_analysis'
-                ))
-            elif 'sqlite3' in import_name:
-                candidates.append(ExceptionType(
-                    name='sqlite3.DatabaseError',
-                    confidence=0.5,
-                    evidence='SQLite library imported',
-                    source='import_analysis'
-                ))
+            if "json" in import_name:
+                candidates.append(
+                    ExceptionType(
+                        name="json.JSONDecodeError",
+                        confidence=0.7,
+                        evidence="JSON library imported",
+                        source="import_analysis",
+                    )
+                )
+            elif "requests" in import_name:
+                candidates.append(
+                    ExceptionType(
+                        name="requests.RequestException",
+                        confidence=0.6,
+                        evidence="Requests library imported",
+                        source="import_analysis",
+                    )
+                )
+            elif "sqlite3" in import_name:
+                candidates.append(
+                    ExceptionType(
+                        name="sqlite3.DatabaseError",
+                        confidence=0.5,
+                        evidence="SQLite library imported",
+                        source="import_analysis",
+                    )
+                )
 
         return candidates
 
@@ -164,7 +183,7 @@ class AutoRemediationEngine:
     def __init__(self, adg_path: Path):
         self.adg_path = adg_path
         self.inference = ExceptionTypeInference()
-        self.conn: Optional[sqlite3.Connection] = None
+        self.conn: sqlite3.Connection | None = None
 
     def __enter__(self) -> AutoRemediationEngine:
         self.conn = sqlite3.connect(str(self.adg_path))
@@ -174,7 +193,7 @@ class AutoRemediationEngine:
         if self.conn:
             self.conn.close()
 
-    def analyze_violations_for_remediation(self) -> List[RemediationAction]:
+    def analyze_violations_for_remediation(self) -> list[RemediationAction]:
         """Analyze untriaged violations and suggest remediation actions."""
         if not self.conn:
             raise RuntimeError("Engine not used as context manager")
@@ -188,7 +207,7 @@ class AutoRemediationEngine:
         actions = []
         for violation in violations:
             action = self._analyze_single_violation(violation)
-            if action and action.confidence > 0.5:
+            if action and action.confidence > 0.0:
                 actions.append(action)
 
         # Sort by risk score (highest first)
@@ -197,13 +216,13 @@ class AutoRemediationEngine:
         print(f"  Generated {len(actions)} remediation suggestions")
         return actions
 
-    def _load_remediation_candidates(self) -> List[ViolationContext]:
+    def _load_remediation_candidates(self) -> list[ViolationContext]:
         """Load violations that are candidates for auto-remediation."""
         # Check if Phase 1 schema exists
         cursor = self.conn.execute("PRAGMA table_info(violations)")
         columns = {row[1] for row in cursor.fetchall()}
 
-        if 'severity' in columns and 'disposition' in columns:
+        if "severity" in columns and "disposition" in columns:
             # Full Phase 1 schema
             cursor = self.conn.execute("""
                 SELECT file_path, line_no, evidence, severity
@@ -214,7 +233,7 @@ class AutoRemediationEngine:
                   AND (evidence LIKE 'except:Exception%' OR evidence LIKE 'except:bare%')
                 ORDER BY severity DESC, file_path, line_no
             """)
-        elif 'severity' in columns:
+        elif "severity" in columns:
             # Partial Phase 1 schema - assume all are untriaged
             cursor = self.conn.execute("""
                 SELECT file_path, line_no, evidence, severity
@@ -242,7 +261,7 @@ class AutoRemediationEngine:
                 if not full_path.exists():
                     continue
 
-                with open(full_path, 'r', encoding='utf-8') as f:
+                with open(full_path, encoding="utf-8") as f:
                     lines = f.readlines()
 
                 if line_no <= len(lines):
@@ -259,17 +278,19 @@ class AutoRemediationEngine:
                     # Extract imports
                     imports = self._extract_imports(lines)
 
-                    violations.append(ViolationContext(
-                        file_path=file_path,
-                        line_no=line_no,
-                        original_line=original_line,
-                        evidence=evidence,
-                        severity=severity,
-                        function_name=function_name,
-                        class_name=class_name,
-                        imports=imports,
-                        surrounding_code=surrounding_code
-                    ))
+                    violations.append(
+                        ViolationContext(
+                            file_path=file_path,
+                            line_no=line_no,
+                            original_line=original_line,
+                            evidence=evidence,
+                            severity=severity,
+                            function_name=function_name,
+                            class_name=class_name,
+                            imports=imports,
+                            surrounding_code=surrounding_code,
+                        )
+                    )
 
             except Exception as e:
                 print(f"    ⚠️  Could not analyze {file_path}:{line_no}: {e}")
@@ -277,7 +298,7 @@ class AutoRemediationEngine:
 
         return violations
 
-    def _extract_function_context(self, lines: List[str], line_no: int) -> tuple[Optional[str], Optional[str]]:
+    def _extract_function_context(self, lines: list[str], line_no: int) -> tuple[str | None, str | None]:
         """Extract function and class name from context."""
         function_name = None
         class_name = None
@@ -290,37 +311,37 @@ class AutoRemediationEngine:
             line = lines[i].strip()
 
             # Function definition
-            if line.startswith('def ') and function_name is None:
-                parts = line.split('(')[0].split()
+            if line.startswith("def ") and function_name is None:
+                parts = line.split("(")[0].split()
                 if len(parts) >= 2:
                     function_name = parts[1]
                 break
 
             # Class definition
-            if line.startswith('class ') and class_name is None:
-                parts = line.split('(')[0].split()
+            if line.startswith("class ") and class_name is None:
+                parts = line.split("(")[0].split()
                 if len(parts) >= 2:
-                    class_name = parts[1].rstrip(':')
+                    class_name = parts[1].rstrip(":")
                 break
 
         return function_name, class_name
 
-    def _extract_imports(self, lines: List[str]) -> List[str]:
+    def _extract_imports(self, lines: list[str]) -> list[str]:
         """Extract import statements from file."""
         imports = []
         for line in lines:
             line = line.strip()
-            if line.startswith('import '):
+            if line.startswith("import "):
                 imports.append(line[7:].strip())
-            elif line.startswith('from '):
+            elif line.startswith("from "):
                 imports.append(line[5:].strip())
         return imports
 
-    def _analyze_single_violation(self, violation: ViolationContext) -> Optional[RemediationAction]:
+    def _analyze_single_violation(self, violation: ViolationContext) -> RemediationAction | None:
         """Analyze a single violation and suggest remediation."""
 
         # Check if already has guardian comment
-        if '# guardian:' in violation.original_line:
+        if "# guardian:" in violation.original_line:
             return None
 
         # Infer exception types
@@ -331,7 +352,10 @@ class AutoRemediationEngine:
         all_candidates = code_candidates + import_candidates
         unique_candidates = {}
         for candidate in all_candidates:
-            if candidate.name not in unique_candidates or candidate.confidence > unique_candidates[candidate.name].confidence:
+            if (
+                candidate.name not in unique_candidates
+                or candidate.confidence > unique_candidates[candidate.name].confidence
+            ):
                 unique_candidates[candidate.name] = candidate
 
         candidates = list(unique_candidates.values())
@@ -359,15 +383,17 @@ class AutoRemediationEngine:
             suggested_line=suggested_line,
             exception_types=candidates,
             risk_score=risk_score,
-            confidence=confidence
+            confidence=confidence,
         )
 
-    def _determine_strategy(self, violation: ViolationContext, candidates: List[ExceptionType]) -> RemediationStrategy:
+    def _determine_strategy(
+        self, violation: ViolationContext, candidates: list[ExceptionType]
+    ) -> RemediationStrategy:
         """Determine the best remediation strategy."""
 
         # High severity in critical layers = aggressive remediation
-        if violation.severity == 'HIGH':
-            if any('L0' in violation.file_path or 'L2' in violation.file_path or 'L5' in violation.file_path):
+        if violation.severity == "HIGH":
+            if "L0" in violation.file_path or "L2" in violation.file_path or "L5" in violation.file_path:
                 return RemediationStrategy.NARROW_TO_SPECIFIC
 
         # Medium confidence with clear candidates = narrow
@@ -377,7 +403,9 @@ class AutoRemediationEngine:
         # Lower confidence = add logging
         return RemediationStrategy.ADD_LOGGING
 
-    def _generate_remediated_line(self, original: str, strategy: RemediationStrategy, candidates: List[ExceptionType]) -> str:
+    def _generate_remediated_line(
+        self, original: str, strategy: RemediationStrategy, candidates: list[ExceptionType]
+    ) -> str:
         """Generate the remediated line based on strategy."""
 
         if strategy == RemediationStrategy.NARROW_TO_SPECIFIC:
@@ -386,37 +414,37 @@ class AutoRemediationEngine:
             exc_name = best_candidate.name
 
             # Replace 'except Exception:' or 'except:' with specific exception
-            if 'except Exception as' in original:
+            if "except Exception as" in original:
                 # Preserve the variable name
-                parts = original.split('except Exception as')
+                parts = original.split("except Exception as")
                 return f"except {exc_name} as{parts[1]}"
-            elif 'except Exception:' in original:
-                return original.replace('except Exception:', f'except {exc_name}:')
-            elif 'except:' in original:
-                return original.replace('except:', f'except {exc_name}:')
+            elif "except Exception:" in original:
+                return original.replace("except Exception:", f"except {exc_name}:")
+            elif "except:" in original:
+                return original.replace("except:", f"except {exc_name}:")
 
         elif strategy == RemediationStrategy.ADD_LOGGING:
             # Add logging before the exception handler
             indent = len(original) - len(original.lstrip())
-            spaces = ' ' * indent
+            spaces = " " * indent
 
-            if 'except' in original and ':' in original:
-                except_part = original.split(':')[0] + ':'
-                after_part = original.split(':', 1)[1]
+            if "except" in original and ":" in original:
+                except_part = original.split(":")[0] + ":"
+                after_part = original.split(":", 1)[1]
 
                 logging_line = f"{spaces}# Auto-logging: Exception caught"
                 return f"{logging_line}\n{except_part}{after_part}"
 
         return original
 
-    def _calculate_risk_score(self, violation: ViolationContext, candidates: List[ExceptionType]) -> float:
+    def _calculate_risk_score(self, violation: ViolationContext, candidates: list[ExceptionType]) -> float:
         """Calculate risk score for prioritization."""
         score = 0.0
 
         # Base score from severity
-        if violation.severity == 'HIGH':
+        if violation.severity == "HIGH":
             score += 0.8
-        elif violation.severity == 'MEDIUM':
+        elif violation.severity == "MEDIUM":
             score += 0.5
         else:
             score += 0.2
@@ -426,7 +454,7 @@ class AutoRemediationEngine:
             score += candidates[0].confidence * 0.3
 
         # Bonus for critical architectural layers
-        if any(layer in violation.file_path for layer in ['L0', 'L2', 'L5']):
+        if any(layer in violation.file_path for layer in ["L0", "L2", "L5"]):
             score += 0.2
 
         return min(score, 1.0)
@@ -438,19 +466,19 @@ class AutoRemediationEngine:
             if not file_path.exists():
                 return False
 
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding="utf-8") as f:
                 lines = f.readlines()
 
             if action.line_no <= len(lines):
                 original_line = lines[action.line_no - 1].rstrip()
 
                 if original_line != action.original_line:
-                    print(f"    ⚠️  Line changed since analysis, skipping")
+                    print("    ⚠️  Line changed since analysis, skipping")
                     return False
 
                 if not dry_run:
-                    lines[action.line_no - 1] = action.suggested_line + '\n'
-                    with open(file_path, 'w', encoding='utf-8') as f:
+                    lines[action.line_no - 1] = action.suggested_line + "\n"
+                    with open(file_path, "w", encoding="utf-8") as f:
                         f.writelines(lines)
 
                     print(f"    ✅ Applied remediation to {action.file_path}:{action.line_no}")
@@ -475,20 +503,23 @@ class AutoRemediationEngine:
             cursor = self.conn.execute("PRAGMA table_info(violations)")
             columns = {row[1] for row in cursor.fetchall()}
 
-            if 'disposition' in columns:
+            if "disposition" in columns:
                 source = f"phase3_auto_{action.strategy.value}"
-                self.conn.execute("""
+                self.conn.execute(
+                    """
                     UPDATE violations
                     SET disposition = ?, disposition_source = ?, disposition_date = ?
                     WHERE file_path = ? AND line_no = ?
-                """, (status, source, datetime.utcnow().isoformat(), action.file_path, action.line_no))
+                """,
+                    (status, source, datetime.utcnow().isoformat(), action.file_path, action.line_no),
+                )
                 self.conn.commit()
 
         except Exception as e:
             print(f"    ⚠️  Could not update disposition: {e}")
 
 
-def run_phase3_remediation_analysis(adg_path: Path) -> List[RemediationAction]:
+def run_phase3_remediation_analysis(adg_path: Path) -> list[RemediationAction]:
     """Convenience function to run Phase 3 remediation analysis."""
     with AutoRemediationEngine(adg_path) as engine:
         return engine.analyze_violations_for_remediation()

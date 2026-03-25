@@ -23,23 +23,23 @@ Phase 3 validates:
 from __future__ import annotations
 
 import sqlite3
+
+# Import the modules we're testing
+import sys
 import tempfile
 from pathlib import Path
 from typing import Generator
 
 import pytest
 
-# Import the modules we're testing
-import sys
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "agentic_core" / "adg" / "processing"))
 from phase3_auto_remediation import (
     AutoRemediationEngine,
-    ExceptionTypeInference,
-    ViolationContext,
-    RemediationStrategy,
     ExceptionType,
+    ExceptionTypeInference,
     RemediationAction,
-    run_phase3_remediation_analysis
+    RemediationStrategy,
+    ViolationContext,
 )
 
 
@@ -49,91 +49,91 @@ class TestExceptionTypeInference:
     def test_infers_value_error_from_parsing_code(self) -> None:
         """§1.1: ValueError inference from parsing patterns."""
         violation = ViolationContext(
-            file_path='test_parser.py',
+            file_path="test_parser.py",
             line_no=10,
-            original_line='except Exception:',
-            evidence='except:Exception',
-            severity='MEDIUM',
-            function_name='parse_config',
+            original_line="except Exception:",
+            evidence="except:Exception",
+            severity="MEDIUM",
+            function_name="parse_config",
             class_name=None,
             imports=[],
             surrounding_code=[
-                'def parse_config(data):',
-                '    try:',
-                '        result = int(data)',
-                '        return result',
-                '    except Exception:',
-                '        return None'
-            ]
+                "def parse_config(data):",
+                "    try:",
+                "        result = int(data)",
+                "        return result",
+                "    except Exception:",
+                "        return None",
+            ],
         )
 
         inference = ExceptionTypeInference()
         candidates = inference.infer_from_context(violation)
 
         assert len(candidates) > 0
-        value_error = next((c for c in candidates if c.name == 'ValueError'), None)
+        value_error = next((c for c in candidates if c.name == "ValueError"), None)
         assert value_error is not None
         assert value_error.confidence > 0.3
-        assert 'int(' in value_error.evidence
+        assert "int(" in value_error.evidence
 
     def test_infers_key_error_from_dict_operations(self) -> None:
         """§1.1: KeyError inference from dictionary operations."""
         violation = ViolationContext(
-            file_path='test_dict.py',
+            file_path="test_dict.py",
             line_no=15,
-            original_line='except Exception:',
-            evidence='except:Exception',
-            severity='MEDIUM',
-            function_name='get_value',
+            original_line="except Exception:",
+            evidence="except:Exception",
+            severity="MEDIUM",
+            function_name="get_value",
             class_name=None,
             imports=[],
             surrounding_code=[
-                'def get_value(data, key):',
-                '    try:',
-                '        return data[key]',
-                '    except Exception:',
-                '        return None'
-            ]
+                "def get_value(data, key):",
+                "    try:",
+                "        return data[key]",
+                "    except Exception:",
+                "        return None",
+            ],
         )
 
         inference = ExceptionTypeInference()
         candidates = inference.infer_from_context(violation)
 
         assert len(candidates) > 0
-        key_error = next((c for c in candidates if c.name == 'KeyError'), None)
+        key_error = next((c for c in candidates if c.name == "KeyError"), None)
         assert key_error is not None
         assert key_error.confidence >= 0.3
-        assert '[' in key_error.evidence
+        assert "[" in key_error.evidence
 
     def test_infers_from_imports(self) -> None:
         """§1.1: Exception type inference from imports."""
         violation = ViolationContext(
-            file_path='test_json.py',
+            file_path="test_json.py",
             line_no=20,
-            original_line='except Exception:',
-            evidence='except:Exception',
-            severity='MEDIUM',
-            function_name='load_json',
+            original_line="except Exception:",
+            evidence="except:Exception",
+            severity="MEDIUM",
+            function_name="load_json",
             class_name=None,
-            imports=['import json', 'import os'],
+            imports=["import json", "import os"],
             surrounding_code=[
-                'import json',
-                'def load_json(text):',
-                '    try:',
-                '        return json.loads(text)',
-                '    except Exception:',
-                '        return {}'
-            ]
+                "import json",
+                "def load_json(text):",
+                "    try:",
+                "        return json.loads(text)",
+                "    except Exception:",
+                "        return {}",
+            ],
         )
 
         inference = ExceptionTypeInference()
         candidates = inference.infer_from_context(violation)
 
         assert len(candidates) > 0
-        json_error = next((c for c in candidates if c.name == 'json.JSONDecodeError'), None)
+        json_error = next((c for c in candidates if c.name == "json.JSONDecodeError"), None)
         assert json_error is not None
         assert json_error.confidence > 0.5
-        assert 'JSON library imported' in json_error.evidence
+        assert "JSON library imported" in json_error.evidence
 
 
 class TestAutoRemediationEngine:
@@ -189,19 +189,30 @@ class TestAutoRemediationEngine:
                     )
                 """)
 
-                # Insert test data for remediation analysis
-                conn.execute("INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path) VALUES (1, 'test::module', 'module', 'L0', 'test_remediation.py')")
+                test_file_path = str(Path(tmp_dir) / "test_remediation.py")
 
-                conn.execute("""
+                # Insert test data for remediation analysis
+                conn.execute(
+                    "INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path) VALUES (1, 'test::module', 'module', 'L0', ?)",
+                    (test_file_path,),
+                )
+
+                conn.execute(
+                    """
                     INSERT INTO edges (id, src_id, dst_id, relation_type, edge_kind, source_file, line_no, symbol)
-                    VALUES (1, 1, 1, 'antipattern', 'silent_exception_swallow', 'test_remediation.py', 10, 'except:Exception')
-                """)
+                    VALUES (1, 1, 1, 'antipattern', 'silent_exception_swallow', ?, 10, 'except:Exception')
+                """,
+                    (test_file_path,),
+                )
 
                 # High severity violation (should be prioritized)
-                conn.execute("""
+                conn.execute(
+                    """
                     INSERT INTO violations (edge_id, category, evidence, file_path, line_no, severity, disposition)
-                    VALUES (1, 'antipattern', 'except:Exception', 'test_remediation.py', 6, 'HIGH', 'untriaged')
-                """)
+                    VALUES (1, 'antipattern', 'except:Exception', ?, 6, 'HIGH', 'untriaged')
+                """,
+                    (test_file_path,),
+                )
 
                 conn.commit()
             finally:
@@ -220,14 +231,14 @@ def test_function():
 
             yield db_path
 
-    def test_loads_remediation_candidates(self, phase3_adg_db: Path) -> None:
+    def test_loads_remediation_candidates(self, phase3_adg_db: Path, tmp_path: Path) -> None:
         """§1.4: Loads only high/medium severity untriaged violations."""
         with AutoRemediationEngine(phase3_adg_db) as engine:
             violations = engine._load_remediation_candidates()
 
             assert len(violations) == 1
-            assert violations[0].severity == 'HIGH'
-            assert violations[0].evidence == 'except:Exception'
+            assert violations[0].severity == "HIGH"
+            assert violations[0].evidence == "except:Exception"
             assert violations[0].line_no == 6
 
     def test_generates_remediation_actions(self, phase3_adg_db: Path) -> None:
@@ -238,10 +249,13 @@ def test_function():
             assert len(actions) > 0
             action = actions[0]
 
-            assert action.strategy in [RemediationStrategy.NARROW_TO_SPECIFIC, RemediationStrategy.ADD_LOGGING]
+            assert action.strategy in [
+                RemediationStrategy.NARROW_TO_SPECIFIC,
+                RemediationStrategy.ADD_LOGGING,
+            ]
             assert action.confidence > 0.0
             assert action.risk_score > 0.0
-            assert action.file_path == 'test_remediation.py'
+            assert Path(action.file_path).name == "test_remediation.py"
 
     def test_prioritizes_by_risk_score(self, phase3_adg_db: Path) -> None:
         """§1.7: Actions are sorted by risk score (highest first)."""
@@ -271,12 +285,12 @@ def risky_function():
             action = RemediationAction(
                 strategy=RemediationStrategy.NARROW_TO_SPECIFIC,
                 file_path=str(test_file),
-                line_no=5,
+                line_no=6,
                 original_line="    except Exception:",
                 suggested_line="    except ValueError:",
                 exception_types=[ExceptionType("ValueError", 0.8, "int() pattern found", "code_analysis")],
                 risk_score=0.7,
-                confidence=0.8
+                confidence=0.8,
             )
 
             # Test dry run
@@ -322,11 +336,16 @@ class TestPhase3SchemaCompatibility:
                     )
                 """)
 
+                test_file_path = str(Path(tmp_dir) / "test.py")
+
                 # Insert test violation
-                conn.execute("""
+                conn.execute(
+                    """
                     INSERT INTO violations (edge_id, category, evidence, file_path, line_no)
-                    VALUES (1, 'antipattern', 'except:Exception', 'test.py', 5)
-                """)
+                    VALUES (1, 'antipattern', 'except:Exception', ?, 4)
+                """,
+                    (test_file_path,),
+                )
 
                 conn.commit()
             finally:
@@ -340,7 +359,7 @@ class TestPhase3SchemaCompatibility:
                 # Should not crash with pre-Phase 1 schema
                 violations = engine._load_remediation_candidates()
                 assert len(violations) == 1
-                assert violations[0].severity == 'MEDIUM'  # Default severity
+                assert violations[0].severity == "MEDIUM"  # Default severity
 
     def test_partial_phase1_schema_handling(self) -> None:
         """§1.6: Works with partial Phase 1 schema."""
@@ -362,20 +381,31 @@ class TestPhase3SchemaCompatibility:
                     )
                 """)
 
+                test_file_path2 = str(Path(tmp_dir) / "test.py")
+
                 # Insert test violation
-                conn.execute("""
+                conn.execute(
+                    """
                     INSERT INTO violations (edge_id, category, evidence, file_path, line_no, severity)
-                    VALUES (1, 'antipattern', 'except:Exception', 'test.py', 5, 'HIGH')
-                """)
+                    VALUES (1, 'antipattern', 'except:Exception', ?, 4, 'HIGH')
+                """,
+                    (test_file_path2,),
+                )
 
                 conn.commit()
             finally:
                 conn.close()
 
+            # Create the file for partial schema test
+            test_file2 = Path(tmp_dir) / "test.py"
+            test_file2.write_text(
+                "def test():\n    try:\n        pass\n    except Exception:\n        pass\n"
+            )
+
             with AutoRemediationEngine(db_path) as engine:
                 violations = engine._load_remediation_candidates()
                 assert len(violations) == 1
-                assert violations[0].severity == 'HIGH'
+                assert violations[0].severity == "HIGH"
 
 
 class TestPhase3ErrorHandling:
@@ -445,7 +475,9 @@ class TestPhase3ErrorHandling:
 
             # Create malformed Python file
             test_file = Path(tmp_dir) / "malformed.py"
-            test_file.write_text("def broken_syntax(\n    # Missing closing parenthesis\n    pass\nexcept Exception:\n    pass\n")
+            test_file.write_text(
+                "def broken_syntax(\n    # Missing closing parenthesis\n    pass\nexcept Exception:\n    pass\n"
+            )
 
             with AutoRemediationEngine(db_path) as engine:
                 violations = engine._load_remediation_candidates()

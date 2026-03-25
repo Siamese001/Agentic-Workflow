@@ -22,23 +22,17 @@ Phase 2 validates:
 from __future__ import annotations
 
 import sqlite3
-import tempfile
-from pathlib import Path
-from typing import Generator
-from unittest.mock import patch
-
-import pytest
 
 # Import the modules we're testing
 import sys
+import tempfile
+from pathlib import Path
+from typing import Generator
+
+import pytest
+
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "agentic_core" / "adg" / "processing"))
-from phase2_disposition_processor import (
-    ViolationDispositionProcessor,
-    ViolationInfo,
-    TestCoverage,
-    GuardianComment,
-    run_phase2_disposition_processing
-)
+from phase2_disposition_processor import ViolationDispositionProcessor, run_phase2_disposition_processing
 
 
 class TestPhase2DispositionProcessor:
@@ -97,12 +91,20 @@ class TestPhase2DispositionProcessor:
                 # Insert comprehensive test data
 
                 # 1. Nodes for violations
-                conn.execute("INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (1, 'violation::module1', 'module', 'L0', 'test_file1.py', 1, 50)")
-                conn.execute("INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (2, 'violation::symbol1', 'symbol', 'L0', 'test_file1.py', 10, 15)")
+                conn.execute(
+                    "INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (1, 'violation::module1', 'module', 'L0', 'test_file1.py', 1, 50)"
+                )
+                conn.execute(
+                    "INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (2, 'violation::symbol1', 'symbol', 'L0', 'test_file1.py', 10, 15)"
+                )
 
                 # 2. Nodes for tests
-                conn.execute("INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (101, 'test::test_func1', 'symbol', 'tests', 'test_coverage.py', 5, 20)")
-                conn.execute("INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (102, 'test::test_module1', 'module', 'tests', 'test_coverage.py', 1, 30)")
+                conn.execute(
+                    "INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (101, 'test::test_func1', 'symbol', 'tests', 'test_coverage.py', 5, 20)"
+                )
+                conn.execute(
+                    "INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (102, 'test::test_module1', 'module', 'tests', 'test_coverage.py', 1, 30)"
+                )
 
                 # 3. Violation edges
                 conn.execute("""
@@ -148,9 +150,9 @@ class TestPhase2DispositionProcessor:
 
             # Should only load the untriaged violation
             assert len(violations) == 1
-            assert violations[0].disposition == 'untriaged'
+            assert violations[0].disposition == "untriaged"
             assert violations[0].line_no == 12
-            assert violations[0].file_path == 'test_file1.py'
+            assert violations[0].file_path == "test_file1.py"
 
     def test_loads_test_coverage_with_line_spans(self, phase2_adg_db: Path) -> None:
         """§1.1: Test coverage includes line span information."""
@@ -159,8 +161,8 @@ class TestPhase2DispositionProcessor:
 
             assert len(coverage) == 1
             tc = coverage[0]
-            assert tc.test_name == 'test::test_func1'
-            assert tc.target_file == 'test_file1.py'
+            assert tc.test_name == "test::test_func1"
+            assert tc.target_file == "test_file1.py"
             assert tc.target_line_start == 10
             assert tc.target_line_end == 15
 
@@ -175,13 +177,19 @@ class TestPhase2DispositionProcessor:
                 for table in [
                     "CREATE TABLE violations (id INTEGER PRIMARY KEY, category TEXT NOT NULL, disposition TEXT NOT NULL DEFAULT 'untriaged', file_path TEXT NOT NULL DEFAULT '')",
                     "CREATE TABLE nodes (id INTEGER PRIMARY KEY, adg_name TEXT NOT NULL, entity_type TEXT NOT NULL, layer TEXT NOT NULL, resolved_path TEXT NOT NULL, span_line INTEGER DEFAULT 0, span_end_line INTEGER DEFAULT 0)",
-                    "CREATE TABLE edges (id INTEGER PRIMARY KEY AUTOINCREMENT, src_id INTEGER NOT NULL REFERENCES nodes(id), dst_id INTEGER NOT NULL REFERENCES nodes(id), relation_type TEXT NOT NULL, edge_kind TEXT NOT NULL, source_file TEXT NOT NULL, line_no INTEGER NOT NULL, symbol TEXT NOT NULL DEFAULT '')"
+                    "CREATE TABLE edges (id INTEGER PRIMARY KEY AUTOINCREMENT, src_id INTEGER NOT NULL REFERENCES nodes(id), dst_id INTEGER NOT NULL REFERENCES nodes(id), relation_type TEXT NOT NULL, edge_kind TEXT NOT NULL, source_file TEXT NOT NULL, line_no INTEGER NOT NULL, symbol TEXT NOT NULL DEFAULT '')",
                 ]:
                     conn.execute(table)
 
-                # Insert test data
-                conn.execute("INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path) VALUES (1, 'test::module', 'module', 'L0', 'guardian_file.py')")
-                conn.execute("INSERT INTO violations (id, category, disposition, file_path) VALUES (1, 'antipattern', 'untriaged', 'guardian_file.py')")
+                guardian_abs = str(Path(tmp_dir) / "guardian_file.py")
+                conn.execute(
+                    "INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path) VALUES (1, 'test::module', 'module', 'L0', ?)",
+                    (guardian_abs,),
+                )
+                conn.execute(
+                    "INSERT INTO violations (id, category, disposition, file_path) VALUES (1, 'antipattern', 'untriaged', ?)",
+                    (guardian_abs,),
+                )
                 conn.commit()
             finally:
                 conn.close()
@@ -212,17 +220,17 @@ def risky_function():
 
                 # Check first guardian comment
                 comment1 = comments[0]
-                assert comment1.file_path == 'guardian_file.py'
+                assert Path(comment1.file_path).name == "guardian_file.py"
                 assert comment1.line_no == 5
-                assert comment1.exception_type == 'Exception'
-                assert 'Exception is acceptable here' in comment1.reason
+                assert comment1.exception_type == "Exception"
+                assert "Exception is acceptable here" in comment1.reason
 
                 # Check second guardian comment
                 comment2 = comments[1]
-                assert comment2.file_path == 'guardian_file.py'
+                assert Path(comment2.file_path).name == "guardian_file.py"
                 assert comment2.line_no == 10
-                assert comment2.exception_type == 'ValueError'
-                assert 'ValueError is acceptable here' in comment2.reason
+                assert comment2.exception_type == "ValueError"
+                assert "ValueError is acceptable here" in comment2.reason
 
     def test_auto_disposition_by_test_coverage(self, phase2_adg_db: Path) -> None:
         """§1.3: Violations covered by tests are auto-marked as 'tested'."""
@@ -233,15 +241,17 @@ def risky_function():
 
             # Test the disposition logic
             violation = violations[0]
-            disposition, source = processor._determine_disposition(violation, test_coverage, guardian_comments)
+            disposition, source = processor._determine_disposition(
+                violation, test_coverage, guardian_comments
+            )
 
-            assert disposition == 'tested'
-            assert source == 'test:test::test_func1'
+            assert disposition == "tested"
+            assert source == "test:test::test_func1"
 
     def test_auto_disposition_by_guardian_comment(self) -> None:
         """§1.3: Violations with guardian comments are auto-marked as 'approved'."""
         with tempfile.TemporaryDirectory() as tmp_dir:
-            db_path = Path(tmp_dir) / "guardian_disposition_test.sqlite")
+            db_path = Path(tmp_dir) / "guardian_disposition_test.sqlite"
 
             # Create schema and test data
             conn = sqlite3.connect(str(db_path))
@@ -249,12 +259,19 @@ def risky_function():
                 for table in [
                     "CREATE TABLE violations (id INTEGER PRIMARY KEY, category TEXT NOT NULL, disposition TEXT NOT NULL DEFAULT 'untriaged', file_path TEXT NOT NULL DEFAULT '', line_no INTEGER NOT NULL DEFAULT 0)",
                     "CREATE TABLE nodes (id INTEGER PRIMARY KEY, adg_name TEXT NOT NULL, entity_type TEXT NOT NULL, layer TEXT NOT NULL, resolved_path TEXT NOT NULL, span_line INTEGER DEFAULT 0, span_end_line INTEGER DEFAULT 0)",
-                    "CREATE TABLE edges (id INTEGER PRIMARY KEY AUTOINCREMENT, src_id INTEGER NOT NULL REFERENCES nodes(id), dst_id INTEGER NOT NULL REFERENCES nodes(id), relation_type TEXT NOT NULL, edge_kind TEXT NOT NULL, source_file TEXT NOT NULL, line_no INTEGER NOT NULL, symbol TEXT NOT NULL DEFAULT '')"
+                    "CREATE TABLE edges (id INTEGER PRIMARY KEY AUTOINCREMENT, src_id INTEGER NOT NULL REFERENCES nodes(id), dst_id INTEGER NOT NULL REFERENCES nodes(id), relation_type TEXT NOT NULL, edge_kind TEXT NOT NULL, source_file TEXT NOT NULL, line_no INTEGER NOT NULL, symbol TEXT NOT NULL DEFAULT '')",
                 ]:
                     conn.execute(table)
 
-                conn.execute("INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path) VALUES (1, 'test::module', 'module', 'L0', 'guardian_test.py')")
-                conn.execute("INSERT INTO violations (id, category, disposition, file_path, line_no) VALUES (1, 'antipattern', 'untriaged', 'guardian_test.py', 5)")
+                guardian_test_abs = str(Path(tmp_dir) / "guardian_test.py")
+                conn.execute(
+                    "INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path) VALUES (1, 'test::module', 'module', 'L0', ?)",
+                    (guardian_test_abs,),
+                )
+                conn.execute(
+                    "INSERT INTO violations (id, category, disposition, file_path, line_no) VALUES (1, 'antipattern', 'untriaged', ?, 5)",
+                    (guardian_test_abs,),
+                )
                 conn.commit()
             finally:
                 conn.close()
@@ -276,16 +293,18 @@ def risky_function():
 
                 # Test the disposition logic
                 violation = violations[0]
-                disposition, source = processor._determine_disposition(violation, test_coverage, guardian_comments)
+                disposition, source = processor._determine_disposition(
+                    violation, test_coverage, guardian_comments
+                )
 
-                assert disposition == 'approved'
-                assert 'guardian: allow-silent-swallow' in source
-                assert 'Exception is acceptable here' in source
+                assert disposition == "approved"
+                assert "guardian: allow-silent-swallow" in source
+                assert "Exception is acceptable here" in source
 
     def test_disposition_priority_order(self) -> None:
         """§1.7: Guardian comments take priority over test coverage."""
         with tempfile.TemporaryDirectory() as tmp_dir:
-            db_path = Path(tmp_dir) / "priority_test.sqlite")
+            db_path = Path(tmp_dir) / "priority_test.sqlite"
 
             # Create schema
             conn = sqlite3.connect(str(db_path))
@@ -293,14 +312,20 @@ def risky_function():
                 for table in [
                     "CREATE TABLE violations (id INTEGER PRIMARY KEY, category TEXT NOT NULL, disposition TEXT NOT NULL DEFAULT 'untriaged', file_path TEXT NOT NULL DEFAULT '', line_no INTEGER NOT NULL DEFAULT 0)",
                     "CREATE TABLE nodes (id INTEGER PRIMARY KEY, adg_name TEXT NOT NULL, entity_type TEXT NOT NULL, layer TEXT NOT NULL, resolved_path TEXT NOT NULL, span_line INTEGER DEFAULT 0, span_end_line INTEGER DEFAULT 0)",
-                    "CREATE TABLE edges (id INTEGER PRIMARY KEY AUTOINCREMENT, src_id INTEGER NOT NULL REFERENCES nodes(id), dst_id INTEGER NOT NULL REFERENCES nodes(id), relation_type TEXT NOT NULL, edge_kind TEXT NOT NULL, source_file TEXT NOT NULL, line_no INTEGER NOT NULL, symbol TEXT NOT NULL DEFAULT '')"
+                    "CREATE TABLE edges (id INTEGER PRIMARY KEY AUTOINCREMENT, src_id INTEGER NOT NULL REFERENCES nodes(id), dst_id INTEGER NOT NULL REFERENCES nodes(id), relation_type TEXT NOT NULL, edge_kind TEXT NOT NULL, source_file TEXT NOT NULL, line_no INTEGER NOT NULL, symbol TEXT NOT NULL DEFAULT '')",
                 ]:
                     conn.execute(table)
 
                 # Insert nodes for both test coverage and guardian comment
-                conn.execute("INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (1, 'test::module', 'module', 'L0', 'priority_test.py', 1, 50)")
-                conn.execute("INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (2, 'test::symbol', 'symbol', 'L0', 'priority_test.py', 10, 15)")
-                conn.execute("INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (101, 'test::test_func', 'symbol', 'tests', 'test_priority.py', 5, 20)")
+                conn.execute(
+                    "INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (1, 'test::module', 'module', 'L0', 'priority_test.py', 1, 50)"
+                )
+                conn.execute(
+                    "INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (2, 'test::symbol', 'symbol', 'L0', 'priority_test.py', 10, 15)"
+                )
+                conn.execute(
+                    "INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (101, 'test::test_func', 'symbol', 'tests', 'test_priority.py', 5, 20)"
+                )
 
                 # Insert test coverage edge
                 conn.execute("""
@@ -308,7 +333,11 @@ def risky_function():
                     VALUES (2, 101, 2, 'tests_execution_of', 'test_linkage', 'test_priority.py', 8, 'risky_function')
                 """)
 
-                conn.execute("INSERT INTO violations (id, category, disposition, file_path, line_no) VALUES (1, 'antipattern', 'untriaged', 'priority_test.py', 12)")
+                priority_test_abs = str(Path(tmp_dir) / "priority_test.py")
+                conn.execute(
+                    "INSERT INTO violations (id, category, disposition, file_path, line_no) VALUES (1, 'antipattern', 'untriaged', ?, 5)",
+                    (priority_test_abs,),
+                )
                 conn.commit()
             finally:
                 conn.close()
@@ -330,11 +359,13 @@ def risky_function():
 
                 # Test the disposition logic
                 violation = violations[0]
-                disposition, source = processor._determine_disposition(violation, test_coverage, guardian_comments)
+                disposition, source = processor._determine_disposition(
+                    violation, test_coverage, guardian_comments
+                )
 
                 # Guardian comment should take priority
-                assert disposition == 'approved'
-                assert 'guardian: allow-silent-swallow' in source
+                assert disposition == "approved"
+                assert "guardian: allow-silent-swallow" in source
 
     def test_complete_feedback_loop(self, phase2_adg_db: Path) -> None:
         """§1.3: Complete detection→validation feedback loop works end-to-end."""
@@ -343,8 +374,8 @@ def risky_function():
         try:
             cursor = conn.execute("SELECT disposition, disposition_source FROM violations WHERE id = 1")
             initial = cursor.fetchone()
-            assert initial[0] == 'untriaged'
-            assert initial[1] == ''
+            assert initial[0] == "untriaged"
+            assert initial[1] == ""
         finally:
             conn.close()
 
@@ -352,18 +383,20 @@ def risky_function():
         results = run_phase2_disposition_processing(phase2_adg_db)
 
         # Verify results
-        assert results['tested'] == 1
-        assert results['approved'] == 0
-        assert results['remaining'] == 0
+        assert results["tested"] == 1
+        assert results["approved"] == 0
+        assert results["remaining"] == 0
 
         # Verify ADG was updated
         conn = sqlite3.connect(str(phase2_adg_db))
         try:
-            cursor = conn.execute("SELECT disposition, disposition_source, disposition_date FROM violations WHERE id = 1")
+            cursor = conn.execute(
+                "SELECT disposition, disposition_source, disposition_date FROM violations WHERE id = 1"
+            )
             updated = cursor.fetchone()
-            assert updated[0] == 'tested'
-            assert updated[1] == 'test:test::test_func1'
-            assert updated[2] != ''  # timestamp should be set
+            assert updated[0] == "tested"
+            assert updated[1] == "test:test::test_func1"
+            assert updated[2] != ""  # timestamp should be set
         finally:
             conn.close()
 
@@ -373,8 +406,10 @@ class TestPhase2ErrorHandling:
 
     def test_missing_adg_file_error(self) -> None:
         """§1.8: Missing ADG file fails with clear error."""
-        with pytest.raises(FileNotFoundError):
-            run_phase2_disposition_processing(Path("nonexistent.sqlite"))
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            non_existent = Path(tmp_dir) / "definitely_nonexistent.sqlite"
+            with pytest.raises(FileNotFoundError):
+                run_phase2_disposition_processing(non_existent)
 
     def test_corrupted_adg_handling(self) -> None:
         """§1.6: Handle corrupted ADG gracefully."""
@@ -390,7 +425,7 @@ class TestPhase2ErrorHandling:
     def test_missing_source_file_handling(self) -> None:
         """§1.6: Handle missing source files gracefully during guardian comment scanning."""
         with tempfile.TemporaryDirectory() as tmp_dir:
-            db_path = Path(tmp_dir) / "missing_file_test.sqlite")
+            db_path = Path(tmp_dir) / "missing_file_test.sqlite"
 
             # Create ADG with violation pointing to non-existent file
             conn = sqlite3.connect(str(db_path))
@@ -398,21 +433,25 @@ class TestPhase2ErrorHandling:
                 for table in [
                     "CREATE TABLE violations (id INTEGER PRIMARY KEY, category TEXT NOT NULL, disposition TEXT NOT NULL DEFAULT 'untriaged', file_path TEXT NOT NULL DEFAULT '')",
                     "CREATE TABLE nodes (id INTEGER PRIMARY KEY, adg_name TEXT NOT NULL, entity_type TEXT NOT NULL, layer TEXT NOT NULL, resolved_path TEXT NOT NULL, span_line INTEGER DEFAULT 0, span_end_line INTEGER DEFAULT 0)",
-                    "CREATE TABLE edges (id INTEGER PRIMARY KEY AUTOINCREMENT, src_id INTEGER NOT NULL REFERENCES nodes(id), dst_id INTEGER NOT NULL REFERENCES nodes(id), relation_type TEXT NOT NULL, edge_kind TEXT NOT NULL, source_file TEXT NOT NULL, line_no INTEGER NOT NULL, symbol TEXT NOT NULL DEFAULT '')"
+                    "CREATE TABLE edges (id INTEGER PRIMARY KEY AUTOINCREMENT, src_id INTEGER NOT NULL REFERENCES nodes(id), dst_id INTEGER NOT NULL REFERENCES nodes(id), relation_type TEXT NOT NULL, edge_kind TEXT NOT NULL, source_file TEXT NOT NULL, line_no INTEGER NOT NULL, symbol TEXT NOT NULL DEFAULT '')",
                 ]:
                     conn.execute(table)
 
-                conn.execute("INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path) VALUES (1, 'test::module', 'module', 'L0', 'nonexistent.py')")
-                conn.execute("INSERT INTO violations (id, category, disposition, file_path) VALUES (1, 'antipattern', 'untriaged', 'nonexistent.py')")
+                conn.execute(
+                    "INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path) VALUES (1, 'test::module', 'module', 'L0', 'nonexistent.py')"
+                )
+                conn.execute(
+                    "INSERT INTO violations (id, category, disposition, file_path) VALUES (1, 'antipattern', 'untriaged', 'nonexistent.py')"
+                )
                 conn.commit()
             finally:
                 conn.close()
 
             # Should handle missing file gracefully
             results = run_phase2_disposition_processing(db_path)
-            assert results['tested'] == 0
-            assert results['approved'] == 0
-            assert results['remaining'] == 1  # Still untriaged, but no crash
+            assert results["tested"] == 0
+            assert results["approved"] == 0
+            assert results["remaining"] == 1  # Still untriaged, but no crash
 
 
 class TestPhase2EdgeCases:
@@ -421,14 +460,14 @@ class TestPhase2EdgeCases:
     def test_empty_violations_table(self) -> None:
         """§1.5: Handle empty violations table."""
         with tempfile.TemporaryDirectory() as tmp_dir:
-            db_path = Path(tmp_dir) / "empty_phase2.sqlite")
+            db_path = Path(tmp_dir) / "empty_phase2.sqlite"
 
             conn = sqlite3.connect(str(db_path))
             try:
                 for table in [
                     "CREATE TABLE violations (id INTEGER PRIMARY KEY, category TEXT NOT NULL, disposition TEXT NOT NULL DEFAULT 'untriaged', file_path TEXT NOT NULL DEFAULT '')",
                     "CREATE TABLE nodes (id INTEGER PRIMARY KEY, adg_name TEXT NOT NULL, entity_type TEXT NOT NULL, layer TEXT NOT NULL, resolved_path TEXT NOT NULL, span_line INTEGER DEFAULT 0, span_end_line INTEGER DEFAULT 0)",
-                    "CREATE TABLE edges (id INTEGER PRIMARY KEY AUTOINCREMENT, src_id INTEGER NOT NULL REFERENCES nodes(id), dst_id INTEGER NOT NULL REFERENCES nodes(id), relation_type TEXT NOT NULL, edge_kind TEXT NOT NULL, source_file TEXT NOT NULL, line_no INTEGER NOT NULL, symbol TEXT NOT NULL DEFAULT '')"
+                    "CREATE TABLE edges (id INTEGER PRIMARY KEY AUTOINCREMENT, src_id INTEGER NOT NULL REFERENCES nodes(id), dst_id INTEGER NOT NULL REFERENCES nodes(id), relation_type TEXT NOT NULL, edge_kind TEXT NOT NULL, source_file TEXT NOT NULL, line_no INTEGER NOT NULL, symbol TEXT NOT NULL DEFAULT '')",
                 ]:
                     conn.execute(table)
                 conn.commit()
@@ -436,26 +475,33 @@ class TestPhase2EdgeCases:
                 conn.close()
 
             results = run_phase2_disposition_processing(db_path)
-            assert results['tested'] == 0
-            assert results['approved'] == 0
-            assert results['remaining'] == 0
+            assert results["tested"] == 0
+            assert results["approved"] == 0
+            assert results["remaining"] == 0
 
     def test_malformed_guardian_comments(self) -> None:
         """§1.5: Handle malformed guardian comments gracefully."""
         with tempfile.TemporaryDirectory() as tmp_dir:
-            db_path = Path(tmp_dir) / "malformed_guardian.sqlite")
+            db_path = Path(tmp_dir) / "malformed_guardian.sqlite"
 
             conn = sqlite3.connect(str(db_path))
             try:
                 for table in [
                     "CREATE TABLE violations (id INTEGER PRIMARY KEY, category TEXT NOT NULL, disposition TEXT NOT NULL DEFAULT 'untriaged', file_path TEXT NOT NULL DEFAULT '')",
                     "CREATE TABLE nodes (id INTEGER PRIMARY KEY, adg_name TEXT NOT NULL, entity_type TEXT NOT NULL, layer TEXT NOT NULL, resolved_path TEXT NOT NULL, span_line INTEGER DEFAULT 0, span_end_line INTEGER DEFAULT 0)",
-                    "CREATE TABLE edges (id INTEGER PRIMARY KEY AUTOINCREMENT, src_id INTEGER NOT NULL REFERENCES nodes(id), dst_id INTEGER NOT NULL REFERENCES nodes(id), relation_type TEXT NOT NULL, edge_kind TEXT NOT NULL, source_file TEXT NOT NULL, line_no INTEGER NOT NULL, symbol TEXT NOT NULL DEFAULT '')"
+                    "CREATE TABLE edges (id INTEGER PRIMARY KEY AUTOINCREMENT, src_id INTEGER NOT NULL REFERENCES nodes(id), dst_id INTEGER NOT NULL REFERENCES nodes(id), relation_type TEXT NOT NULL, edge_kind TEXT NOT NULL, source_file TEXT NOT NULL, line_no INTEGER NOT NULL, symbol TEXT NOT NULL DEFAULT '')",
                 ]:
                     conn.execute(table)
 
-                conn.execute("INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path) VALUES (1, 'test::module', 'module', 'L0', 'malformed.py')")
-                conn.execute("INSERT INTO violations (id, category, disposition, file_path) VALUES (1, 'antipattern', 'untriaged', 'malformed.py')")
+                malformed_abs = str(Path(tmp_dir) / "malformed.py")
+                conn.execute(
+                    "INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path) VALUES (1, 'test::module', 'module', 'L0', ?)",
+                    (malformed_abs,),
+                )
+                conn.execute(
+                    "INSERT INTO violations (id, category, disposition, file_path) VALUES (1, 'antipattern', 'untriaged', ?)",
+                    (malformed_abs,),
+                )
                 conn.commit()
             finally:
                 conn.close()
@@ -485,28 +531,36 @@ def risky_function():
 
                 # Should only parse the properly formatted one
                 assert len(comments) == 1
-                assert comments[0].exception_type == 'TypeError'
-                assert 'proper format' in comments[0].reason
+                assert comments[0].exception_type == "TypeError"
+                assert "proper format" in comments[0].reason
 
     def test_line_range_edge_cases(self) -> None:
         """§1.5: Handle edge cases in line range matching."""
         with tempfile.TemporaryDirectory() as tmp_dir:
-            db_path = Path(tmp_dir) / "line_range_test.sqlite")
+            db_path = Path(tmp_dir) / "line_range_test.sqlite"
 
             conn = sqlite3.connect(str(db_path))
             try:
                 for table in [
                     "CREATE TABLE violations (id INTEGER PRIMARY KEY, category TEXT NOT NULL, disposition TEXT NOT NULL DEFAULT 'untriaged', file_path TEXT NOT NULL DEFAULT '', line_no INTEGER NOT NULL DEFAULT 0)",
                     "CREATE TABLE nodes (id INTEGER PRIMARY KEY, adg_name TEXT NOT NULL, entity_type TEXT NOT NULL, layer TEXT NOT NULL, resolved_path TEXT NOT NULL, span_line INTEGER DEFAULT 0, span_end_line INTEGER DEFAULT 0)",
-                    "CREATE TABLE edges (id INTEGER PRIMARY KEY AUTOINCREMENT, src_id INTEGER NOT NULL REFERENCES nodes(id), dst_id INTEGER NOT NULL REFERENCES nodes(id), relation_type TEXT NOT NULL, edge_kind TEXT NOT NULL, source_file TEXT NOT NULL, line_no INTEGER NOT NULL, symbol TEXT NOT NULL DEFAULT '')"
+                    "CREATE TABLE edges (id INTEGER PRIMARY KEY AUTOINCREMENT, src_id INTEGER NOT NULL REFERENCES nodes(id), dst_id INTEGER NOT NULL REFERENCES nodes(id), relation_type TEXT NOT NULL, edge_kind TEXT NOT NULL, source_file TEXT NOT NULL, line_no INTEGER NOT NULL, symbol TEXT NOT NULL DEFAULT '')",
                 ]:
                     conn.execute(table)
 
                 # Insert nodes with various line spans
-                conn.execute("INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (1, 'test::module', 'module', 'L0', 'range_test.py', 1, 50)")
-                conn.execute("INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (2, 'test::symbol1', 'symbol', 'L0', 'range_test.py', 10, 10)")  # Single line
-                conn.execute("INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (3, 'test::symbol2', 'symbol', 'L0', 'range_test.py', 20, 30)")  # Multi-line
-                conn.execute("INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (101, 'test::test_func1', 'symbol', 'tests', 'test_range.py', 5, 15)")
+                conn.execute(
+                    "INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (1, 'test::module', 'module', 'L0', 'range_test.py', 1, 50)"
+                )
+                conn.execute(
+                    "INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (2, 'test::symbol1', 'symbol', 'L0', 'range_test.py', 10, 10)"
+                )  # Single line
+                conn.execute(
+                    "INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (3, 'test::symbol2', 'symbol', 'L0', 'range_test.py', 20, 30)"
+                )  # Multi-line
+                conn.execute(
+                    "INSERT INTO nodes (id, adg_name, entity_type, layer, resolved_path, span_line, span_end_line) VALUES (101, 'test::test_func1', 'symbol', 'tests', 'test_range.py', 5, 15)"
+                )
 
                 # Insert test coverage edges
                 conn.execute("""
@@ -519,9 +573,15 @@ def risky_function():
                 """)
 
                 # Insert violations at various positions
-                conn.execute("INSERT INTO violations (id, category, disposition, file_path, line_no) VALUES (1, 'antipattern', 'untriaged', 'range_test.py', 10)")  # Exactly on single line
-                conn.execute("INSERT INTO violations (id, category, disposition, file_path, line_no) VALUES (2, 'antipattern', 'untriaged', 'range_test.py', 25)")  # Inside multi-line range
-                conn.execute("INSERT INTO violations (id, category, disposition, file_path, line_no) VALUES (3, 'antipattern', 'untriaged', 'range_test.py', 35)")  # Outside any range
+                conn.execute(
+                    "INSERT INTO violations (id, category, disposition, file_path, line_no) VALUES (1, 'antipattern', 'untriaged', 'range_test.py', 10)"
+                )  # Exactly on single line
+                conn.execute(
+                    "INSERT INTO violations (id, category, disposition, file_path, line_no) VALUES (2, 'antipattern', 'untriaged', 'range_test.py', 25)"
+                )  # Inside multi-line range
+                conn.execute(
+                    "INSERT INTO violations (id, category, disposition, file_path, line_no) VALUES (3, 'antipattern', 'untriaged', 'range_test.py', 35)"
+                )  # Outside any range
 
                 conn.commit()
             finally:
@@ -530,8 +590,8 @@ def risky_function():
             results = run_phase2_disposition_processing(db_path)
 
             # Should disposition 2 violations (exact match and inside range)
-            assert results['tested'] == 2
-            assert results['remaining'] == 1
+            assert results["tested"] == 2
+            assert results["remaining"] == 1
 
 
 if __name__ == "__main__":

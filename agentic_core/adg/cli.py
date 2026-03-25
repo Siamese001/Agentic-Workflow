@@ -577,8 +577,8 @@ def _cmd_build_artifacts(args: argparse.Namespace) -> int:
 
     from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
     from agentic_core.adg.artifact.builder_types import build_artifact
-    from agentic_core.adg.runtime.cache_loader import load_or_scan
     from agentic_core.adg.processing.phase2_disposition_processor import run_phase2_disposition_processing
+    from agentic_core.adg.runtime.cache_loader import load_or_scan
 
     repo_root = Path(args.repo_root)
     result = load_or_scan(repo_root=str(repo_root))
@@ -598,6 +598,28 @@ def _cmd_build_artifacts(args: argparse.Namespace) -> int:
     print(" Phase 3: Analyzing violations for auto-remediation...")
     remediation_actions = run_phase3_remediation_analysis(paths.sqlite)
 
+    # Phase 3.2: Enhanced test coverage integration
+    print("🔍 Phase 3.2: Enhanced test coverage analysis...")
+    from .processing.phase3_enhanced_test_coverage import run_phase3_enhanced_test_coverage
+
+    # Find test directories
+    test_dirs = []
+    for test_dir in [repo_root / "tests", repo_root / "test", repo_root / "unit_tests"]:
+        if test_dir.exists():
+            test_dirs.append(test_dir)
+
+    if test_dirs:
+        coverage_results = run_phase3_enhanced_test_coverage(paths.sqlite, test_dirs)
+    else:
+        coverage_results = {"coverage_gaps": 0, "tests_discovered": 0, "test_edges_created": 0}
+        print("  No test directories found")
+
+    # Phase 3.3: Intelligent disposition system
+    print("🧠 Phase 3.3: AI-assisted intelligent disposition analysis...")
+    from .processing.phase3_intelligent_disposition import run_phase3_intelligent_disposition
+
+    disposition_results = run_phase3_intelligent_disposition(paths.sqlite)
+
     # Build final report
     report = {
         "snapshot": str(paths.snapshot),
@@ -616,9 +638,11 @@ def _cmd_build_artifacts(args: argparse.Namespace) -> int:
             "high_risk": len([a for a in remediation_actions if a.risk_score > 0.8]),
             "strategies": {
                 strategy.value: len([a for a in remediation_actions if a.strategy == strategy])
-                for strategy in set(a.strategy for a in remediation_actions)
-            }
-        }
+                for strategy in {a.strategy for a in remediation_actions}
+            },
+        },
+        "phase3_test_coverage": coverage_results,
+        "phase3_intelligent_disposition": disposition_results,
     }
     print(json.dumps(report, indent=2))
     return 0

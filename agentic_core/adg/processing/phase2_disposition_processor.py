@@ -13,15 +13,16 @@ Key capabilities:
 
 from __future__ import annotations
 
-import sqlite3
 import re
+import sqlite3
 from datetime import datetime
 from pathlib import Path
-from typing import Generator, NamedTuple, Optional
+from typing import NamedTuple
 
 
 class ViolationInfo(NamedTuple):
     """Violation data from ADG."""
+
     id: int
     edge_id: int
     file_path: str
@@ -33,6 +34,7 @@ class ViolationInfo(NamedTuple):
 
 class TestCoverage(NamedTuple):
     """Test coverage data from ADG."""
+
     test_name: str
     test_file: str
     target_symbol: str
@@ -43,6 +45,7 @@ class TestCoverage(NamedTuple):
 
 class GuardianComment(NamedTuple):
     """Parsed guardian comment information."""
+
     file_path: str
     line_no: int
     comment_text: str
@@ -55,7 +58,7 @@ class ViolationDispositionProcessor:
 
     def __init__(self, adg_path: Path):
         self.adg_path = adg_path
-        self.conn: Optional[sqlite3.Connection] = None
+        self.conn: sqlite3.Connection | None = None
 
     def __enter__(self) -> ViolationDispositionProcessor:
         self.conn = sqlite3.connect(str(self.adg_path))
@@ -85,22 +88,16 @@ class ViolationDispositionProcessor:
         print(f"  Found {len(guardian_comments)} guardian comments")
 
         # Process dispositions
-        results = {
-            'tested': 0,
-            'approved': 0,
-            'remaining': 0
-        }
+        results = {"tested": 0, "approved": 0, "remaining": 0}
 
         for violation in violations:
-            disposition, source = self._determine_disposition(
-                violation, test_coverage, guardian_comments
-            )
+            disposition, source = self._determine_disposition(violation, test_coverage, guardian_comments)
 
             if disposition != violation.disposition:
                 self._update_violation_disposition(violation.id, disposition, source)
                 results[disposition] += 1
             else:
-                results['remaining'] += 1
+                results["remaining"] += 1
 
         self.conn.commit()
 
@@ -111,35 +108,40 @@ class ViolationDispositionProcessor:
 
     def _load_untriaged_violations(self) -> list[ViolationInfo]:
         """Load untriaged antipattern violations."""
-        # Check if disposition column exists (Phase 1 extension)
+        # Check which columns exist (schema may vary by phase)
         cursor = self.conn.execute("PRAGMA table_info(violations)")
         columns = {row[1] for row in cursor.fetchall()}
 
-        if 'disposition' in columns:
-            if 'severity' in columns:
-                cursor = self.conn.execute("""
-                    SELECT id, edge_id, file_path, line_no, evidence, severity, disposition
+        edge_id_col = "edge_id" if "edge_id" in columns else "0"
+        evidence_col = "evidence" if "evidence" in columns else "''"
+        line_no_col = "line_no" if "line_no" in columns else "0"
+        order_by = "file_path, line_no" if "line_no" in columns else "file_path"
+
+        if "disposition" in columns:
+            if "severity" in columns:
+                cursor = self.conn.execute(f"""
+                    SELECT id, {edge_id_col}, file_path, {line_no_col}, {evidence_col}, severity, disposition
                     FROM violations
                     WHERE category = 'antipattern'
                       AND disposition = 'untriaged'
-                    ORDER BY file_path, line_no
+                    ORDER BY {order_by}
                 """)
             else:
                 # Phase 1 partial schema - use default severity
-                cursor = self.conn.execute("""
-                    SELECT id, edge_id, file_path, line_no, evidence, 'MEDIUM', disposition
+                cursor = self.conn.execute(f"""
+                    SELECT id, {edge_id_col}, file_path, {line_no_col}, {evidence_col}, 'MEDIUM', disposition
                     FROM violations
                     WHERE category = 'antipattern'
                       AND disposition = 'untriaged'
-                    ORDER BY file_path, line_no
+                    ORDER BY {order_by}
                 """)
         else:
             # Pre-Phase 1 schema - all violations are untriaged, use defaults
-            cursor = self.conn.execute("""
-                SELECT id, edge_id, file_path, line_no, evidence, 'MEDIUM', 'untriaged'
+            cursor = self.conn.execute(f"""
+                SELECT id, {edge_id_col}, file_path, {line_no_col}, {evidence_col}, 'MEDIUM', 'untriaged'
                 FROM violations
                 WHERE category = 'antipattern'
-                ORDER BY file_path, line_no
+                ORDER BY {order_by}
             """)
 
         return [ViolationInfo(*row) for row in cursor.fetchall()]
@@ -172,7 +174,7 @@ class ViolationDispositionProcessor:
         cursor = self.conn.execute("PRAGMA table_info(violations)")
         columns = {row[1] for row in cursor.fetchall()}
 
-        if 'disposition' in columns:
+        if "disposition" in columns:
             cursor = self.conn.execute("""
                 SELECT DISTINCT file_path
                 FROM violations
@@ -195,11 +197,11 @@ class ViolationDispositionProcessor:
                 if not file_obj.exists():
                     continue
 
-                content = file_obj.read_text(encoding='utf-8')
+                content = file_obj.read_text(encoding="utf-8")
                 lines = content.splitlines()
 
                 for line_no, line in enumerate(lines, 1):
-                    if '# guardian:' in line:
+                    if "# guardian:" in line:
                         comment = self._parse_guardian_comment(file_path, line_no, line)
                         if comment:
                             guardian_comments.append(comment)
@@ -209,22 +211,30 @@ class ViolationDispositionProcessor:
 
         return guardian_comments
 
-    def _parse_guardian_comment(self, file_path: str, line_no: int, line: str) -> Optional[GuardianComment]:
+    def _parse_guardian_comment(self, file_path: str, line_no: int, line: str) -> GuardianComment | None:
         """Parse a guardian comment line."""
-        # Pattern: # guardian: allow-silent-swallow - <exception_type> is acceptable here
-        match = re.search(r'# guardian:\s*allow-silent-swallow\s*-\s*([^-\s]+)', line)
-        if not match:
+        # Must contain the canonical guardian marker
+        if "# guardian: allow-silent-swallow" not in line:
             return None
 
-        exception_type = match.group(1).strip()
         comment_text = line.strip()
 
-        # Extract reason after the exception type
-        reason = ''
-        if ' - ' in line:
-            parts = line.split(' - ', 1)
-            if len(parts) > 1:
-                reason = parts[1].strip()
+        # Prefer exception type from the except clause on the same line
+        except_match = re.search(r"except\s+(\w+(?:\.\w+)*)\s*[,:]", line)
+        if except_match:
+            exception_type = except_match.group(1)
+        else:
+            # Fall back: first token after ' - ' in the guardian marker
+            fallback = re.search(r"# guardian:\s*allow-silent-swallow\s*-\s*([^-\s]+)", line)
+            exception_type = fallback.group(1).strip() if fallback else "Exception"
+
+        # Extract reason: everything after the first ' - ' following allow-silent-swallow
+        reason = ""
+        marker_idx = line.find("allow-silent-swallow")
+        if marker_idx != -1:
+            after_marker = line[marker_idx + len("allow-silent-swallow") :]
+            if " - " in after_marker:
+                reason = after_marker.split(" - ", 1)[1].strip()
 
         return GuardianComment(file_path, line_no, comment_text, exception_type, reason)
 
@@ -232,24 +242,27 @@ class ViolationDispositionProcessor:
         self,
         violation: ViolationInfo,
         test_coverage: list[TestCoverage],
-        guardian_comments: list[GuardianComment]
+        guardian_comments: list[GuardianComment],
     ) -> tuple[str, str]:
         """Determine the appropriate disposition for a violation."""
 
         # Priority 1: Check for guardian comment on or before the violation line
         for comment in guardian_comments:
-            if (comment.file_path == violation.file_path and
-                abs(comment.line_no - violation.line_no) <= 5):  # Within 5 lines
-                return 'approved', f'guardian: {comment.comment_text}'
+            if (
+                comment.file_path == violation.file_path and abs(comment.line_no - violation.line_no) <= 5
+            ):  # Within 5 lines
+                return "approved", f"guardian: {comment.comment_text}"
 
         # Priority 2: Check for test coverage
         for coverage in test_coverage:
-            if (coverage.target_file == violation.file_path and
-                coverage.target_line_start <= violation.line_no <= coverage.target_line_end):
-                return 'tested', f'test:{coverage.test_name}'
+            if (
+                coverage.target_file == violation.file_path
+                and coverage.target_line_start <= violation.line_no <= coverage.target_line_end
+            ):
+                return "tested", f"test:{coverage.test_name}"
 
         # No disposition change needed
-        return violation.disposition, ''
+        return violation.disposition, ""
 
     def _update_violation_disposition(self, violation_id: int, disposition: str, source: str) -> None:
         """Update a single violation's disposition."""
@@ -257,28 +270,36 @@ class ViolationDispositionProcessor:
         cursor = self.conn.execute("PRAGMA table_info(violations)")
         columns = {row[1] for row in cursor.fetchall()}
 
-        if 'disposition' in columns and 'disposition_source' in columns and 'disposition_date' in columns:
+        if "disposition" in columns and "disposition_source" in columns and "disposition_date" in columns:
             # Full Phase 1 schema - update all fields
-            self.conn.execute("""
+            self.conn.execute(
+                """
                 UPDATE violations
                 SET disposition = ?, disposition_source = ?, disposition_date = ?
                 WHERE id = ?
-            """, (disposition, source, datetime.utcnow().isoformat(), violation_id))
-        elif 'disposition' in columns:
+            """,
+                (disposition, source, datetime.utcnow().isoformat(), violation_id),
+            )
+        elif "disposition" in columns:
             # Partial Phase 1 schema - update only disposition
-            self.conn.execute("""
+            self.conn.execute(
+                """
                 UPDATE violations
                 SET disposition = ?
                 WHERE id = ?
-            """, (disposition, violation_id))
+            """,
+                (disposition, violation_id),
+            )
         else:
             # Pre-Phase 1 schema - cannot update, skip
-            print(f"    ⚠️  Cannot update disposition: Phase 1 schema not available")
+            print("    ⚠️  Cannot update disposition: Phase 1 schema not available")
             return
 
 
 def run_phase2_disposition_processing(adg_path: Path) -> dict[str, int]:
     """Convenience function to run Phase 2 processing."""
+    if not adg_path.exists():
+        raise FileNotFoundError(f"ADG file not found: {adg_path}")
     with ViolationDispositionProcessor(adg_path) as processor:
         return processor.process_all_dispositions()
 
