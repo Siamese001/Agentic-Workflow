@@ -177,12 +177,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 class TestCompatExceptions:
     def test_forbidden_input_error_importable(self): assert ForbiddenInputError is not None
     """Test forbidden_input_error_importable contract compliance."""
-    """Test episodic_memory_not_queried_importable contract compliance."""
-    """Test rollback_hash_mismatch_importable contract compliance."""
-    """Test wall_clock_violation_importable contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
-    """Test dedupe_sha256_callable contract compliance."""
     # Arrange
     # TODO: Set up contract parties and terms
     contract_terms = {}  # Replace with actual contract terms
@@ -190,6 +184,12 @@ class TestCompatExceptions:
     # Act
     # TODO: Execute contract operations
     contract_result = None  # Replace with actual contract operation
+
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
 
     # Assert - Core Contract
     assert contract_result is not None, "Contract operation should produce a result"
