@@ -1,59 +1,67 @@
-"""Embeddings smoke tests — import verification and basic functionality."""
+"""Embeddings smoke tests — behavioral contract verification."""
 
 import pytest
 
 
 @pytest.mark.smoke
-def test_embeddings_importable():
-    """Verify embeddings module imports without error."""
+def test_embeddings_package_has_known_submodules():
+    """Embeddings package contains discoverable submodules (embedding_factory, etc.)."""
     try:
-        import agentic_core.embeddings
+        import importlib
 
-        assert agentic_core.embeddings is not None
-    except ImportError as e:
+        spec = importlib.util.find_spec("agentic_core.embeddings.embedding_factory")
+    except (ImportError, ModuleNotFoundError) as e:
         pytest.skip(f"embeddings not available: {e}")
+
+    assert spec is not None, "agentic_core.embeddings.embedding_factory must be discoverable"
 
 
 @pytest.mark.smoke
-def test_embedding_factory_importable():
-    """Verify embedding factory imports without error."""
+def test_embedding_factory_error_hierarchy():
+    """EmbeddingDisabledError and EmbeddingSovereigntyViolationError are proper Exceptions."""
     try:
         from agentic_core.embeddings.embedding_factory import (
             EmbeddingClient,
             EmbeddingDisabledError,
             EmbeddingSovereigntyViolationError,
         )
-
-        assert EmbeddingClient is not None
-        assert EmbeddingDisabledError is not None
-        assert EmbeddingSovereigntyViolationError is not None
     except ImportError as e:
         pytest.skip(f"EmbeddingClient not available: {e}")
 
+    assert issubclass(EmbeddingDisabledError, Exception)
+    assert issubclass(EmbeddingSovereigntyViolationError, Exception)
+    assert isinstance(EmbeddingClient, type), "EmbeddingClient should be a class"
+
 
 @pytest.mark.smoke
-def test_embedding_input_guard_importable():
-    """Verify embedding input guard imports without error."""
+def test_embedding_factory_disabled_error_message():
+    """EmbeddingDisabledError carries a message when raised."""
     try:
-        from agentic_core.embeddings.embedding_input_guard import (
-            EmbeddingInputGuard,
-        )
+        from agentic_core.embeddings.embedding_factory import EmbeddingDisabledError
+    except ImportError as e:
+        pytest.skip(f"EmbeddingDisabledError not available: {e}")
 
-        assert EmbeddingInputGuard is not None
+    err = EmbeddingDisabledError("kill switch active")
+    assert "kill switch" in str(err)
+
+
+@pytest.mark.smoke
+def test_embedding_input_guard_is_class():
+    """EmbeddingInputGuard is a class with a public interface."""
+    try:
+        from agentic_core.embeddings.embedding_input_guard import EmbeddingInputGuard
     except ImportError as e:
         pytest.skip(f"EmbeddingInputGuard not available: {e}")
 
-
+    assert isinstance(EmbeddingInputGuard, type), "EmbeddingInputGuard should be a class"
 
 
 @pytest.mark.smoke
-def test_tokenization_adapter_importable():
-    """Verify tokenization adapter imports without error."""
+def test_tokenization_adapter_is_class():
+    """TokenCountAdapter is a class suitable for token counting."""
     try:
-        from agentic_core.embeddings.tokenization_adapter import (
-            TokenCountAdapter,
-        )
-
-        assert TokenCountAdapter is not None
+        from agentic_core.embeddings.tokenization_adapter import TokenCountAdapter
     except ImportError as e:
         pytest.skip(f"TokenCountAdapter not available: {e}")
+
+    assert isinstance(TokenCountAdapter, type), "TokenCountAdapter should be a class"

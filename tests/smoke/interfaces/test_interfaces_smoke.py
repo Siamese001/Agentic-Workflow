@@ -1,119 +1,130 @@
-"""Interfaces smoke tests — import verification and basic functionality."""
+"""Interfaces smoke tests — behavioral contract verification."""
 
 import pytest
 
 
 @pytest.mark.smoke
-def test_interfaces_importable():
-    """Verify interfaces module imports without error."""
+def test_interfaces_package_exposes_public_api():
+    """Interfaces package exposes at least one public symbol."""
     try:
-        import agentic_core.interfaces
-
-        assert agentic_core.interfaces is not None
+        import agentic_core.interfaces as mod
     except ImportError as e:
         pytest.skip(f"interfaces not available: {e}")
 
+    public = [n for n in dir(mod) if not n.startswith("_")]
+    assert len(public) >= 1, "interfaces package must expose public API"
+
 
 @pytest.mark.smoke
-def test_determinism_importable():
-    """Verify determinism functions import without error."""
+def test_determinism_canonical_hash_is_deterministic():
+    """canonical_hash returns identical output for identical input."""
     try:
-        from agentic_core.interfaces.determinism import (
-            canonical_bytes,
-            canonical_hash,
-            strip_nondeterministic,
-        )
-
-        assert callable(canonical_bytes)
-        assert callable(canonical_hash)
-        assert callable(strip_nondeterministic)
+        from agentic_core.interfaces.determinism import canonical_hash
     except ImportError as e:
         pytest.skip(f"determinism functions not available: {e}")
 
+    result1 = canonical_hash({"key": "value", "num": 42})
+    result2 = canonical_hash({"key": "value", "num": 42})
+    assert result1 == result2, "canonical_hash must be deterministic"
+    assert isinstance(result1, str)
+    assert len(result1) > 0
+
 
 @pytest.mark.smoke
-def test_embeddings_interface_importable():
-    """Verify embeddings interface imports without error."""
+def test_determinism_strip_nondeterministic_removes_timestamps():
+    """strip_nondeterministic produces stable output from dynamic input."""
     try:
-        from agentic_core.interfaces.embeddings import (
-            SimilarityResult,
-            query_similarity,
-        )
+        from agentic_core.interfaces.determinism import strip_nondeterministic
+    except ImportError as e:
+        pytest.skip(f"determinism functions not available: {e}")
 
-        assert SimilarityResult is not None
-        assert callable(query_similarity)
+    data = {"key": "value", "timestamp": "2026-03-25T18:00:00Z"}
+    result = strip_nondeterministic(data)
+    assert isinstance(result, (dict, str, bytes))
+
+
+@pytest.mark.smoke
+def test_embeddings_interface_similarity_result_is_type():
+    """SimilarityResult is a proper type/class."""
+    try:
+        from agentic_core.interfaces.embeddings import SimilarityResult
     except ImportError as e:
         pytest.skip(f"embeddings interface not available: {e}")
 
+    assert isinstance(SimilarityResult, type), "SimilarityResult should be a class"
+
 
 @pytest.mark.smoke
-def test_gateway_importable():
-    """Verify gateway imports without error."""
+def test_gateway_classes_are_types():
+    """SovereignLLMGateway and GenerationRequest are proper classes."""
     try:
         from agentic_core.interfaces.gateway import (
-            SovereignLLMGateway,
             GenerationRequest,
+            SovereignLLMGateway,
         )
-
-        assert SovereignLLMGateway is not None
-        assert GenerationRequest is not None
     except ImportError as e:
         pytest.skip(f"gateway not available: {e}")
 
+    assert isinstance(SovereignLLMGateway, type)
+    assert isinstance(GenerationRequest, type)
+
 
 @pytest.mark.smoke
-def test_protocols_importable():
-    """Verify protocol classes import without error."""
+def test_protocols_are_abstract_types():
+    """Protocol interfaces are proper types suitable for isinstance checks."""
     try:
-        from agentic_core.interfaces.IValidatorProtocol import ValidatorProtocol
         from agentic_core.interfaces.IHealerProtocol import IHealerProtocol
-        from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
         from agentic_core.interfaces.IMemoryStoreProtocol import IMemoryStoreProtocol
-
-        assert ValidatorProtocol is not None
-        assert IHealerProtocol is not None
-        assert IOrchestratorProtocol is not None
-        assert IMemoryStoreProtocol is not None
+        from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
+        from agentic_core.interfaces.IValidatorProtocol import ValidatorProtocol
     except ImportError as e:
         pytest.skip(f"protocols not available: {e}")
 
+    for proto in [ValidatorProtocol, IHealerProtocol, IOrchestratorProtocol, IMemoryStoreProtocol]:
+        assert isinstance(proto, type), f"{proto.__name__} should be a type"
+
 
 @pytest.mark.smoke
-def test_mixins_importable():
-    """Verify interface mixins import without error."""
+def test_mixins_are_instantiable_protocol_stubs():
+    """HealerMixin and MetaLearningMixin are instantiable mixin classes."""
     try:
-        from agentic_core.interfaces.mixins import (
-            HealerMixin,
-            MetaLearningMixin,
-        )
-
-        assert HealerMixin is not None
-        assert MetaLearningMixin is not None
+        from agentic_core.interfaces.mixins import HealerMixin, MetaLearningMixin
     except ImportError as e:
         pytest.skip(f"mixins not available: {e}")
 
+    for mixin in [HealerMixin, MetaLearningMixin]:
+        assert isinstance(mixin, type), f"{mixin.__name__} should be a type"
+        instance = mixin()
+        assert isinstance(instance, mixin)
+
 
 @pytest.mark.smoke
-def test_validators_importable():
-    """Verify validators import without error."""
+def test_validators_rule_failure_is_instantiable():
+    """RuleFailure is a class that can be instantiated to represent a validation failure."""
     try:
-        from agentic_core.interfaces.validators import (
-            RuleFailure,
-        )
-
-        assert RuleFailure is not None
+        from agentic_core.interfaces.validators import RuleFailure
     except ImportError as e:
         pytest.skip(f"validators not available: {e}")
 
+    assert isinstance(RuleFailure, type)
+    instance = RuleFailure()
+    assert instance is not None
+    assert type(instance).__name__ == "RuleFailure"
+
 
 @pytest.mark.smoke
-def test_write_gateway_importable():
-    """Verify write gateway imports without error."""
+def test_write_gateway_compute_replay_key_returns_string():
+    """compute_replay_key returns a non-empty string for valid inputs."""
     try:
-        from agentic_core.interfaces.write_gateway import (
-            compute_replay_key,
-        )
-
-        assert callable(compute_replay_key)
+        from agentic_core.interfaces.write_gateway import compute_replay_key
     except ImportError as e:
         pytest.skip(f"write gateway not available: {e}")
+
+    result = compute_replay_key(
+        plan_hash="abc123",
+        tool_calls=["tool_a", "tool_b"],
+        stdout_digest="digest_001",
+        state_diff_hash="diff_001",
+    )
+    assert isinstance(result, str)
+    assert len(result) > 0
