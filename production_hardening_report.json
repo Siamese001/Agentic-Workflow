@@ -1,0 +1,46 @@
+{
+  "timestamp": 1774430375.9228475,
+  "summary": {
+    "total_tests": 10,
+    "passed_tests": 9,
+    "failed_tests": 1,
+    "warnings": 1,
+    "errors": 1,
+    "success_rate": 0.9
+  },
+  "results": {
+    "error_handling": {
+      "invalid_file_path": true,
+      "corrupted_file": true,
+      "empty_file": true,
+      "large_file": true,
+      "special_characters": true,
+      "concurrent_access": true
+    },
+    "performance": {
+      "retrieval_latency": {
+        "average_latency": 0.7314277648925781,
+        "max_latency": 7.2126851081848145,
+        "passed": true
+      },
+      "memory_usage": {
+        "baseline_mb": 1730.6328125,
+        "peak_mb": 1731.03125,
+        "increase_mb": 0.3984375,
+        "passed": true
+      }
+    },
+    "security": {
+      "path_traversal": true,
+      "injection_attempts": false,
+      "file_type_validation": true,
+      "size_limits": true
+    }
+  },
+  "warnings": [
+    "    \u26a0 Only 3/5 payloads handled"
+  ],
+  "errors": [
+    "    \u2717 Ingestion throughput test failed"
+  ]
+}

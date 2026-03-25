@@ -296,13 +296,13 @@ class SovereignRagOrchestrator:
         suffix = file_path.suffix.lower()
         if suffix in {".txt", ".md", ".markdown"}:
             if TextDocumentLoader:
-                return TextDocumentLoader.load(file_path)
+                return TextDocumentLoader.load_file(file_path)
         elif suffix == ".pdf":
             if PDFDocumentLoader:
-                return PDFDocumentLoader.load(file_path)
+                return PDFDocumentLoader(file_path).load()
         elif suffix in {".html", ".htm"}:
             if HTMLDocumentLoader:
-                return HTMLDocumentLoader.load(file_path)
+                return HTMLDocumentLoader.load_file(file_path)
         elif suffix == ".csv":
             if CSVDocumentLoader:
                 return CSVDocumentLoader.load(file_path)
