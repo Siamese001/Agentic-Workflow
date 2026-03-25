@@ -8,7 +8,7 @@ enforcement_type: behavioural
 
 # Scope Guard Skill
 
-**PREREQUISITE:** `ast-first-gate` skill MUST be invoked first (§0 DEFAULT ANALYSIS MODE).
+**PREREQUISITE:** `dependency-graph-analysis` skill MUST be invoked first (§0 tier-aware analysis).
 
 Three artifacts for scope discipline with mandatory dependency graph backing:
 
@@ -30,7 +30,7 @@ Three artifacts for scope discipline with mandatory dependency graph backing:
 
 **BEFORE the first file edit in any phase:**
 
-1. **Execute**: Build AST dependency graph (prerequisite: `ast-first-gate` skill)
+1. **Execute**: Build AST dependency graph (prerequisite: `dependency-graph-analysis` skill)
 2. **Declare scope**: Create artifact listing exact files to be modified
 3. **Justify each file**: Document graph edge path showing why file is in blast radius
 4. **Record baseline**: Execute `git diff --name-only HEAD` and verify output is empty

@@ -9,19 +9,19 @@ Do NOT declare "file written successfully" before completing this protocol.
 
 | Tool Used | Verification Method |
 |-----------|-------------------|
-| `mcp8_write_file` | `mcp8_get_file_info` + size check |
-| `write_to_file` | `mcp8_read_text_file` (first 5 lines) |
-| `mcp8_create_directory` | `mcp8_list_directory` to confirm dir exists |
+| `mcp5_write_file` | `mcp5_get_file_info` + size check |
+| `write_to_file` | `mcp5_read_text_file` (first 5 lines) |
+| `mcp5_create_directory` | `mcp5_list_directory` to confirm dir exists |
 | `edit` / `multi_edit` | `read_file` on the edited lines |
 
 ---
 
 ## Step 2 — Execute Verification
 
-### For file writes (`mcp8_write_file` / `write_to_file`):
+### For file writes (`mcp5_write_file` / `write_to_file`):
 
 ```
-1. Call mcp8_get_file_info(<written_path>)
+1. Call mcp5_get_file_info(<written_path>)
    → Check: file exists (no error returned)
    → Check: size > 0 bytes
 
@@ -29,10 +29,10 @@ Do NOT declare "file written successfully" before completing this protocol.
    IF check passes → go to Step 3
 ```
 
-### For directory creation (`mcp8_create_directory`):
+### For directory creation (`mcp5_create_directory`):
 
 ```
-1. Call mcp8_list_directory(<parent_directory>)
+1. Call mcp5_list_directory(<parent_directory>)
    → Confirm new directory appears in listing
 
    IF not present → retry once, then STOP and report to user
@@ -48,7 +48,7 @@ Add to phase evidence:
 FILE WRITE VERIFIED:
   Path: <written_path>
   Tool used: <tool_name>
-  Verification method: mcp8_get_file_info
+  Verification method: mcp5_get_file_info
   File exists: YES
   File size: <N> bytes
   Status: CONFIRMED
@@ -61,7 +61,7 @@ FILE WRITE VERIFIED:
 If primary write tool fails verification:
 
 ```
-Attempt 1 (Primary):   mcp8_write_file   → verify → FAILED
+Attempt 1 (Primary):   mcp5_write_file   → verify → FAILED
 Attempt 2 (Fallback):  write_to_file     → verify → check again
 Attempt 3 (Final):     If write_to_file also fails → STOP
                         Report exact error to user
@@ -74,9 +74,9 @@ Attempt 3 (Final):     If write_to_file also fails → STOP
 
 Watch for these signs that a write silently failed:
 
-- Tool returned success but `mcp8_get_file_info` returns error
+- Tool returned success but `mcp5_get_file_info` returns error
 - File size is 0 bytes after write
-- `mcp8_read_text_file` returns empty content on a non-empty write
+- `mcp5_read_text_file` returns empty content on a non-empty write
 - Subsequent `read_file` shows old content unchanged
 
 Any of the above = **silent failure** → execute Fallback Chain.

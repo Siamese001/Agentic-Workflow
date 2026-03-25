@@ -11,7 +11,7 @@
 
 | Rule | Layer | Timing | Type | Location | Status |
 |------|-------|--------|------|----------|--------|
-| **§0: DEFAULT ANALYSIS MODE** | Windsurf | Before work | Behavioural | `.windsurf/skills/ast-first-gate/` | ✅ ENFORCED |
+| **§0: DEFAULT ANALYSIS MODE (Tier-Aware)** | Windsurf | Before work | Behavioural | `.windsurf/skills/dependency-graph-analysis/` | ✅ ENFORCED |
 | **§ADG-1: ADG Repair Discipline** | Windsurf | Before work | Behavioural | `.windsurf/rules/adg-repair-discipline.md` | ✅ ENFORCED |
 | **§2.5: Test Failure Triage Protocol** | Both | Before repair | Behavioural + Structural | `docs/technical/TEST_FAILURE_decision_tree.md` | ✅ ENFORCED (CI: cond. 8b) |
 | **§8.5: HITL Enforcement** | Windsurf | During work | Behavioural | `.windsurf/rules/hitl-enforcement.md` | ✅ ENFORCED |
@@ -28,9 +28,8 @@
 
 | # | Skill | Layer | Timing | Type | CI Gate | Pre-commit Hook | Status |
 |---|-------|-------|--------|------|---------|----------------|--------|
-| 1 | **AST-First Gate** | Windsurf | Before work | Behavioural | ~~Removed~~ | ~~T3a-ast~~ | ✅ ENFORCED (Windsurf only) |
+| 1 | **Dependency Graph Analysis** (merged AST-First Gate) | Windsurf | Before work | Behavioural | None | None | ✅ ENFORCED (Windsurf only, tier-aware) |
 | 2 | **Dedup Guard** | Both | Before work | Behavioural + Structural | `check_dedup_violations.py` (proxy) | T3a-dedup | ✅ ENFORCED |
-| 3 | **Dependency Graph Analysis** | Windsurf | Before work | Behavioural | None | None | ✅ ENFORCED (Windsurf only) |
 | 4 | **Evidence Bundle** | Windsurf | During work | Behavioural | None | None | ✅ WORKFLOW-ENFORCED |
 | 5 | **Import Hygiene** | Both | After work | Structural | Ruff F401, `validate_import_dependencies.py` | T2a, T4a | ✅ ENFORCED |
 | 6 | **Layer Boundary Guard** | Pre-commit | After work | Structural | ADG GV edges | None | ✅ ENFORCED |
@@ -81,10 +80,6 @@
 - **Hook ID**: `check-anti-patterns`
 - **Script**: `ops_scripts/ci/check_anti_patterns.py`
 - **Purpose**: Landmine detection (silent swallowers, magic config, etc.)
-
-- **Hook ID**: `check-ast-first-gate` ✅ NEW
-- **Script**: `ops_scripts/ci/check_ast_first_gate.py`
-- **Purpose**: Enforce §0 DEFAULT ANALYSIS MODE
 
 - **Hook ID**: `check-dedup-violations` ✅ NEW
 - **Script**: `ops_scripts/ci/check_dedup_violations.py`
@@ -182,7 +177,7 @@
 | Category | Total | Enforced | Partial | Missing |
 |----------|-------|----------|---------|---------|
 | Constitutional Rules | 5 | 5 | 0 | 0 |
-| Skills | 15 | 15 | 0 | 0 |
+| Skills | 14 | 14 | 0 | 0 |
 | CI Gates | 41 | 41 | 0 | 0 |
 | Pre-commit Hooks | 25+ | 25+ | 0 | 0 |
 

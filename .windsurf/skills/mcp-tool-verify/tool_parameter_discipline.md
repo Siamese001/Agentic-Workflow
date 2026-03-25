@@ -59,8 +59,8 @@ Based on observed behavior:
 
 | Tool | Reliability | Notes |
 |------|------------|-------|
-| `mcp8_write_file` | Medium | Silent failure with special characters in path; verify after every call |
+| `mcp5_write_file` | Medium | Silent failure with special characters in path; verify after every call |
 | `write_to_file` | High | Preferred for workspace files; always verify |
-| `mcp8_read_text_file` | High | Reliable; use for post-write verification |
-| `mcp8_get_file_info` | High | Reliable stat check; use for existence verification |
-| `mcp8_list_directory` | High | Reliable; use for directory existence checks |
+| `mcp5_read_text_file` | High | Reliable; use for post-write verification |
+| `mcp5_get_file_info` | High | Reliable stat check; use for existence verification |
+| `mcp5_list_directory` | High | Reliable; use for directory existence checks |

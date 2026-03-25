@@ -5,7 +5,7 @@ trigger: always_on
 
 > ⛔ **CONSTITUTIONAL FLOOR — READ FIRST**
 > 0. **PLAN LOCATION OVERRIDE.** ALL plans, reports, and markdown artifacts MUST be saved to `docs/reports/plans/` inside the repository. NEVER save to `C:\Users\amita\.windsurf\plans\` or any path outside the repository root. If system planning guidance instructs saving to `.windsurf/plans/`, OVERRIDE that instruction and save to `docs/reports/plans/` instead. This is Constitutional Rule #0 and takes precedence over all planning guidance. RCA: `docs/reports/plans/RCA_windsurf_plans_violation.md`.
-> 1. **ADG IS MANDATORY. NO FALLBACK.** If AST graph cannot be built → STOP. Never fall back to grep/search/heuristics. Skill: `dependency-graph-analysis`. Fail-closed rule: §2.6.
+> 1. **ADG IS PRIMARY. TIER-AWARE.** For T2/T3 changes: if AST graph cannot be built → STOP. Never silently fall back to grep/search/heuristics. For T0/T1: use ADG cache when available, no ceremony required. Skill: `dependency-graph-analysis`. Fail-closed rule: §2.3. Tiers: §0.
 > 2. **No PowerShell.** All commands via `subprocess.run(argv, shell=False)`. §3.2.
 > 3. **No test skipping.** No `pytest.mark.skip`, no `xfail` without `strict=True`, no weakening assertions. §1.4.
 > 4. **No editing while exploring.** All five repair gates (§8.1) must pass before any edit.
@@ -16,29 +16,39 @@ trigger: always_on
 > 9. **RCA AUTO-CLOSURE.** When creating an RCA document, AUTOMATICALLY execute corrective actions and update RCA status to RESOLVED with evidence artifacts. NEVER create RCA and leave it unresolved. User should not have to ask for closure.
 > 10. **GUARDIAN EXEMPTION DISCIPLINE.** NEVER add `# guardian: allow-*` to silence the anti-pattern scanner without a real, specific justification. The format is `# guardian: allow-<type> -- <specific justification>`. Generic words ("needed", "required", "temporary", "legacy") are FORBIDDEN as justifications. Every new exemption in production code (`agentic_core/`, `apps_*/`, `system_learning/`) requires explicit HITL approval before the comment is added. The `guardian_exemption_gate.py` ratchet enforces this at commit time — new exemptions that exceed the ceiling will BLOCK the commit. Cascade MUST present a HITL prompt before adding any guardian comment. Gate: `ops_scripts/ci/guardian_exemption_gate.py`. Init after approval: `ADG_EXEMPTION_INIT=1 python ops_scripts/ci/guardian_exemption_gate.py`.
 
-## §0. DEFAULT ANALYSIS MODE
+## §0. DEFAULT ANALYSIS MODE — Tier-Aware
 
-**DEFAULT = DETAILED AST DEPENDENCY GRAPH**
+**DEFAULT = AST DEPENDENCY GRAPH, scaled to change complexity.**
 
-For ANY code investigation, analysis, or modification task, Windsurf MUST:
+### Tier Classification
 
-1. **Build AST dependency graph FIRST** — invoke skill `dependency-graph-analysis`, build per `graph_construction_protocol.md`
-2. **Use graph as PRIMARY evidence** — text search only as secondary confirmation of literals/constants
+| Tier | Scope | ADG Requirement | Evidence |
+|------|-------|----------------|----------|
+| **T0 — Question** | No code changes (explain, review, advise) | Use ADG hot cache if available. No ceremony. | None required |
+| **T1 — Trivial** | ≤1 file, ≤20 lines, obvious scope (typo, docstring, config value, add assertion) | Verify with scoped tests. ADG cache query optional. | No `DEPENDENCY_GRAPH` section needed |
+| **T2 — Scoped** | 2–5 files, single layer | Query ADG cache for blast radius. Run scoped tests. | Brief scope note with graph justification |
+| **T3 — Architectural** | >5 files, cross-layer, governance, or new feature | Full AST dependency graph protocol. Invoke skill `dependency-graph-analysis`. | Full `## DEPENDENCY_GRAPH` section mandatory |
+
+### Core Principle (all tiers)
+
+AST dependency graph is the **PRIMARY** analysis primitive. Text search is secondary confirmation only.
+
+### T2/T3 Protocol
+
+1. **Build/query AST dependency graph FIRST** — invoke skill `dependency-graph-analysis`
+2. **Use graph as PRIMARY evidence** — text search only for literal/constant confirmation
 3. **Block work if graph cannot be built** — fail-closed, record errors, mark conclusions partial, STOP
-4. **Document graph in all evidence** — `## DEPENDENCY_GRAPH` section mandatory in every evidence file
+4. **Document graph in evidence** — `## DEPENDENCY_GRAPH` section mandatory for T3; brief scope note for T2
 
-**AUTOMATIC TRIGGERS** — apply §0 when user mentions: files, functions, classes, modules, imports, dependencies, "what uses this", "blast radius", "impact of", refactor, analyze, debug, trace, test coverage, dead code, duplicates, boundaries.
+### FORBIDDEN (all tiers)
 
-**FORBIDDEN:**
-- ❌ Starting with grep/ripgrep/filename search/text pattern matching
-- ❌ Assuming relationships without graph proof
+- ❌ Assuming relationships without graph proof (T2/T3: hard fail; T0/T1: best-effort cache query)
+- ❌ Silent fallback from AST failure to text search (§2.3)
 - ❌ Claiming "no dependencies" without graph analysis
-- ❌ Silent fallback from AST failure to text search (§2.6)
 
-**REQUIRED:**
-- ✅ Build AST dependency graph first — imports, calls, inheritance, registry, test edges
-- ✅ Identify upstream and downstream relationships
-- ✅ Document graph metadata and completeness in evidence
+### Tier Override
+
+User may explicitly override tier: "this is just a simple fix" → T1. "full analysis please" → T3. When in doubt, default to T2.
 
 ---
 
@@ -120,43 +130,7 @@ Baseline: `tests/_config/test_count_baseline.json`. Count drops = FAIL. xfail in
 
 ### 1.6 Agent Deletion Policy
 
-**Zero-tolerance for unauthorized agent deletion:**
-
-Deleting any `*Agent.py` file is a **destructive operation** requiring the same rigor as database schema changes.
-
-**Required authorization (all mandatory):**
-1. **AGENT-DELETION-AUTHORIZED:** marker in commit message with justification (min 50 chars)
-2. **REPLACEMENT:** Specify replacement agent or 'none'/'unused'
-3. **DEPRECATION-DATE:** Date agent was deprecated (YYYY-MM-DD) or 'N/A'
-4. **REFERENCES-MIGRATED:** 'yes' if all references migrated, 'no' if none existed
-5. **Minimum deprecation period:** 90 days from DEPRECATION-DATE to deletion
-6. **Zero references:** Reference scan must show zero active references (excluding tests and deletion registry)
-
-**Enforcement:** Pre-commit hook `guard-agent-deletion` blocks commits deleting `*Agent.py` files without proper authorization.
-
-**When deletion IS acceptable:**
-- Duplicate/redundant agent with zero references
-- Test fixture agent in test support directory
-- Experimental agent never used in production
-- After full migration with zero references confirmed
-
-**When deletion is NEVER acceptable:**
-- ❌ Active agent with references
-- ❌ Deprecated agent still in deprecation period (<90 days)
-- ❌ Agent with incomplete migration
-- ❌ "Just to make tests pass"
-- ❌ Without replacement specified
-
-**Example authorization:**
-```
-refactor: Remove deprecated LocationAgent shim
-
-AGENT-DELETION-AUTHORIZED: Shim fully migrated after 90-day deprecation period.
-All 80 references redirected to LocationHealerAgent and LocationValidatorAgent.
-REPLACEMENT: LocationHealerAgent + LocationValidatorAgent
-DEPRECATION-DATE: 2026-02-07
-REFERENCES-MIGRATED: yes
-```
+**Zero-tolerance for unauthorized agent deletion.** Deleting any `*Agent.py` requires: `AGENT-DELETION-AUTHORIZED` commit marker, replacement specified, 90-day deprecation period, zero active references. Enforcement: pre-commit hook `guard-agent-deletion`. **Full protocol and example:** Workflow `/agent-deletion-gate`.
 
 ### 1.7 Enforcement Registry
 
@@ -198,23 +172,9 @@ REFERENCES-MIGRATED: yes
 
 ### 2.2 Schema Management
 
-**ADG SCHEMA FREEZE:** On first ADG access, freeze the confirmed field name mapping. Reuse it for ALL subsequent accesses in the same run. Re-probing after freeze = violation. Schema inconsistency mid-run = HARD FAIL.
+**ADG SCHEMA FREEZE:** On first ADG access, freeze the confirmed field name mapping. Reuse it for ALL subsequent accesses in the same run. Re-probing after freeze = violation. Schema inconsistency mid-run = HARD FAIL. Use canonical field names on first attempt — no trial-and-error. Pre-flight schema check REQUIRED before first field access.
 
-**Canonical field names:** ADG artifacts use a single canonical field-name convention. Use canonical names on first attempt — no trial-and-error.
-
-| Concept | Canonical key | Forbidden aliases |
-|---|---|---|
-| Entity type | `entity_type` | `entityType`, `type`, `kind` |
-| Entity name | `name` | `entityName`, `node_name` |
-| Import edges | `imports` | `import_edges`, `dependencies` |
-| Call edges | `calls` | `call_edges`, `invocations` |
-| Test edges | `tests` | `test_edges`, `covered_by` |
-| Fixture edges | `fixtures` | `fixture_edges` |
-| Module path | `module_path` | `path`, `file_path`, `module` |
-| Cluster ID | `cluster_id` | `id`, `clusterID` |
-| Root cause | `root_cause` | `cause`, `rootCause` |
-
-Pre-flight schema check REQUIRED before first field access. Evidence MUST include: `ADG schema pre-flight: PASSED (canonical keys verified: ...)`.
+**Canonical field name table:** See `docs/reference/adg_mcp_reference.md` § ADG Schema Canonical Field Names.
 
 ### 2.3 Fail-Closed Discipline ← **THE HARD RULE**
 
@@ -267,176 +227,13 @@ Class unclear → STOP. Emit as UNRESOLVED. Do not proceed.
 
 Commit message footer MUST include: `repair_class: <class>`
 
-### 2.6 ADG Accelerator Tools — Primary Defaults
+### 2.6 ADG Accelerator Tools, MCP Servers & Memory
 
-These five tools MUST be used as the primary default for their respective tasks. Bypassing them in favour of raw Redis commands, grep, full-suite mypy, or manual test selection is a §2.3 violation.
+**Five accelerator tools** MUST be used as primary defaults for their respective tasks. Bypassing them in favour of raw Redis/grep/full-suite mypy/manual test selection is a §2.3 violation: `adg_antipattern_fixer.py`, `adg_stale_guard.py`, `adg_redis_query.py`, `adg_type_check.py`, `adg_test_selector.py`.
 
-| # | Tool | Primary task | CLI |
-|---|------|-------------|-----|
-| 1 | `tools/adg/adg_antipattern_fixer.py` | Fix non-canonical `# guardian:` comments | `--staged` / `--from-diff` / `<files>` |
-| 2 | `tools/adg/adg_stale_guard.py` | Assert ADG freshness before any query session | `--json` / `--warn` / `--files` |
-| 3 | `tools/adg/adg_redis_query.py` | Search ADG nodes with layer & entity_type filters | `search-nodes --query <q> [--layer L3] [--entity-type class]` |
-| 4 | `tools/adg/adg_type_check.py` | Incremental type checking scoped to blast radius | `--from-diff` / `<files>` |
-| 5 | `tools/adg/adg_test_selector.py` | Select exact pytest nodeids via ADG `covers` edges | `--from-diff` / `<files>` |
+**Custom MCP servers** (`adg_redis` and `memory`) MUST be green before any refactoring session. Call `adg_status` first on every session. Call `mem_recall_session_start` at session start. Marketplace Redis and memory servers are disabled.
 
-**Integration points (automatically enforced):**
-- Pre-commit T2c: `adg_antipattern_fixer.py --staged` runs on every commit (no Redis needed)
-- Pre-commit T3g: `adg_stale_guard.py --warn` runs on every commit (non-blocking; warns when stale)
-- CI workflow `adg-antipattern-ci.yml`: `adg_antipattern_fixer.py --check-only` blocks PRs with violations
-- Workflow `/adg-redis-refresh` STEP 1: uses `adg_stale_guard.py --json`
-- Workflow `/adg-repair-loop` STEP 0: uses `adg_stale_guard.py`; STEP 2: uses `adg_test_selector.py --from-diff`
-
-**Forbidden substitutions:**
-- ❌ `python -c "import redis; r = redis.Redis(...); r.hgetall('adg:meta')"` → use `adg_stale_guard.py`
-- ❌ `grep -r ClassName .` → use `adg_redis_query.py search-nodes`
-- ❌ `python -m mypy <entire_package>` → use `adg_type_check.py --from-diff`
-- ❌ `pytest tests/` (broad) before convergence → use `adg_test_selector.py --from-diff`
-- ❌ Manually editing guardian comments → let pre-commit T2c fix them automatically
-- ❌ `mcp9_get("adg:meta")` or `mcp9_get("adg:node:*")` or `mcp9_get("adg:edge:*")` → marketplace Redis MCP is STRING-only; use the custom `adg_redis` MCP server tools instead
-
-**Custom ADG Redis MCP server — `adg_redis` (MANDATORY, replaces marketplace Redis):**
-
-`tools/adg/adg_mcp_server.py` is wired in `mcp_config.json` as `adg_redis`. The marketplace
-`@modelcontextprotocol/server-redis` is **disabled** — it was STRING-only and could not access
-any ADG cache keys (HASH/SET types). The custom server provides:
-
-| Tool | Redis op | Use for |
-|---|---|---|
-| `adg_status` | GET adg:status | **PRIMARY freshness check — call first** |
-| `adg_meta` | HGETALL adg:meta | Full metadata: timestamp, node/edge counts, digest |
-| `adg_assert_fresh` | HGETALL adg:meta + disk stat | Authoritative freshness verdict vs SQLite mtime |
-| `adg_snapshot` | GET adg:snapshot | Full snapshot JSON (large — use adg_meta for counts) |
-| `adg_node` | HGETALL adg:node:\<id\> | Single node attributes |
-| `adg_nodes_by_layer` | SMEMBERS adg:nodes:by_layer:\<l\> | Paginated node IDs by layer |
-| `adg_nodes_by_file` | SMEMBERS adg:nodes:by_file:\<p\> | Node IDs for all symbols in a file |
-| `adg_edge_fanout` | SMEMBERS adg:edge:\<src\>:\<rel\> | Outgoing edges from a node |
-| `adg_edge_fanin` | SMEMBERS adg:edge:in:\<tgt\>:\<rel\> | Incoming edges to a node |
-| `adg_violations` | LRANGE adg:violations | All anti-pattern violations |
-| `redis_type` | TYPE \<key\> | Determine key type before reading |
-| `redis_hgetall` | HGETALL \<key\> | Read any HASH key |
-| `redis_smembers` | SMEMBERS \<key\> | Read any SET key |
-| `redis_scan` | SCAN cursor | Safe key pattern search (replaces O(N) KEYS \*) |
-| `redis_ttl` | TTL \<key\> | Inspect key expiry |
-
-**Every response includes `cache_meta`** — `{timestamp, node_count, edge_count, ingested_at, age_seconds, is_fresh}` — so freshness is always visible without a separate call.
-
-**Rules:**
-- ✅ Call `adg_status` first on every session to confirm cache is HOT before any analysis
-- ✅ Use `adg_assert_fresh` (reads HASH + disk) when you need an authoritative freshness verdict
-- ✅ Use `adg_meta` for metadata, `adg_nodes_by_layer` / `adg_nodes_by_file` for structure queries
-- ✅ Use `redis_type` when unsure which read tool to use for an arbitrary key
-- ❌ NEVER use `mcp9_get` on HASH/SET keys — marketplace server is disabled; use `adg_redis` tools
-- ❌ NEVER interpret a WRONGTYPE or empty result as "cache cold" — always call `adg_status` to check
-- ❌ NEVER fall back to SQLite after any Redis read failure — fix the cache, do not bypass it
-
-**`adg:status` STRING sentinel** is still written by `adg_redis_ingest.py` on every ingest.
-It is the lowest-overhead freshness probe: `adg_status` reads it + validates against SQLite mtime.
-
----
-
-### 2.7 Custom Memory MCP — `memory` (MANDATORY, replaces marketplace server)
-
-**Why the replacement:** `@modelcontextprotocol/server-memory` uses an in-memory Node.js store.
-The ENTIRE knowledge graph is wiped on every Windsurf restart — constitutional rules, ADG
-context, and session observations vanish. No cross-session knowledge accumulation is possible.
-
-`tools/memory/adg_memory_server.py` is wired as `"memory"` in `mcp_config.json`. It provides:
-- **SQLite-backed persistence** at `artifacts/memory/knowledge_graph.sqlite` — survives restarts
-- **Observation deduplication** — `add_observations` is idempotent; call as many times as needed
-- **Protected entity types** — `ArchitectureLayer`, `ProjectContext`, `ConstitutionalRule` entities
-  survive `mem_cleanup_stale` and represent the durable knowledge base
-
-**Tool reference (same core API as marketplace + enhanced tools):**
-
-| Tool | Action | Notes |
-|---|---|---|
-| `mem_recall_session_start` | Return ALL protected entities | **Call first at session start** |
-| `mem_import_adg_context` | Seed from ADG Redis hot cache | Creates Layer:L0–L6 + Project:ADG |
-| `create_entities` | Create new entities | Skips duplicates silently |
-| `add_observations` | Append observations to entity | Deduped — safe to call repeatedly |
-| `create_relations` | Add directed relation | Auto-creates missing entities |
-| `open_nodes` | Load entities by name | Returns observations + relations |
-| `search_nodes` | Full-text search | Matches name, type, observations |
-| `read_graph` | Dump entire graph | Avoid unless graph is small |
-| `delete_entities` | Delete + cascade | Cascades to observations + relations |
-| `delete_observations` | Remove specific observations | Fine-grained pruning |
-| `delete_relations` | Remove specific relations | |
-| `mem_get_stats` | Entity/obs/rel counts by type | Use for KB health check |
-| `mem_cleanup_stale` | Delete non-protected entities > N days | Default 30 days |
-
-**Entity type conventions:**
-
-| Type | Lifetime | Examples |
-|---|---|---|
-| `ArchitectureLayer` | Permanent (protected) | `Layer:L0` … `Layer:L6` |
-| `ProjectContext` | Permanent (protected) | `Project:ADG` |
-| `ConstitutionalRule` | Permanent (protected) | `ConstitutionalRule:ADG-freshness` |
-| `Agent` | Session → persistent | `Agent:L3-orchestration` |
-| `Violation` | Session | `Violation:path_fragility` |
-| `general` | Session | ad-hoc observations |
-
-**Session startup protocol (MANDATORY):**
-1. Call `mem_recall_session_start` → loads all durable project context in one call
-2. If empty (first run): call `mem_import_adg_context` to seed from ADG hot cache
-3. Add session-specific entities with type `general` or `Agent`/`Violation` as needed
-
-**Rules:**
-- ✅ Always call `mem_recall_session_start` at the start of every session
-- ✅ Use `ArchitectureLayer` / `ProjectContext` / `ConstitutionalRule` types for knowledge
-  that should outlive sessions — these are NEVER deleted by `mem_cleanup_stale`
-- ✅ The DB at `artifacts/memory/knowledge_graph.sqlite` is gitignored (local only)
-- ❌ NEVER rely on `@modelcontextprotocol/server-memory` — it is disabled
-- ❌ NEVER create duplicate entities — `add_observations` is idempotent; use it to extend
-
-### 2.8 MCP Server Health Gate — HARD PREREQUISITE
-
-**Both custom MCP servers MUST be green (connected) before any refactoring, ADG analysis, or code modification session begins.**
-
-| Server | Config key | Script | Status check |
-|---|---|---|---|
-| `adg_redis` | `adg_redis` | `tools/adg/adg_mcp_server.py` | Call `adg_status` — must return `is_fresh=True` |
-| `memory` | `memory` | `tools/memory/adg_memory_server.py` | Call `mem_recall_session_start` — must return without error |
-
-**Enforcement rules:**
-- ❌ **NEVER begin a refactoring phase** if either MCP server shows a red/error status in Windsurf Settings → MCP
-- ❌ **NEVER use ADG hot cache queries** (`adg_status`, `adg_node`, `adg_edge_fanout`, etc.) if `adg_redis` is red — results will be stale or absent
-- ❌ **NEVER read/write memory** (`mem_recall_session_start`, `create_entities`, etc.) if `memory` is red — session context will be lost
-- ✅ **If either server is red**, diagnose and fix BEFORE proceeding (see fix protocol below)
-- ✅ **At session start**, always verify both servers are green as part of the startup checklist
-
-**Fix protocol if servers go red:**
-
-1. Check `C:\Users\amita\.codeium\windsurf\mcp_config.json` — this is the file Windsurf actually reads (NOT the repo `mcp_config.json`)
-2. Both entries MUST use **absolute paths** in `args` and include `"cwd": "C:\\Git\\Agentic-Workflow"`
-3. `memory` server MUST have `"PYTHONPATH": "C:\\Git\\Agentic-Workflow"` in its `env` block (required for `from tools.memory.sqlite_memory_store import ...`)
-4. Restart via `Ctrl+Shift+P` → "MCP: Restart Server"
-
-**Canonical config entries** (copy verbatim if broken):
-```json
-"adg_redis": {
-  "args": ["C:\\Git\\Agentic-Workflow\\tools\\adg\\adg_mcp_server.py"],
-  "command": "python",
-  "cwd": "C:\\Git\\Agentic-Workflow",
-  "disabled": false,
-  "env": {
-    "ADG_DIR": "C:\\Git\\Agentic-Workflow\\artifacts\\adg",
-    "ADG_MCP_CACHE_META_TTL": "5",
-    "ADG_MCP_PAGE_SIZE": "500",
-    "ADG_REDIS_URL": "redis://localhost:6379/0"
-  }
-},
-"memory": {
-  "args": ["C:\\Git\\Agentic-Workflow\\tools\\memory\\adg_memory_server.py"],
-  "command": "python",
-  "cwd": "C:\\Git\\Agentic-Workflow",
-  "disabled": false,
-  "env": {
-    "ADG_REDIS_URL": "redis://localhost:6379/0",
-    "MEMORY_DB": "C:\\Git\\Agentic-Workflow\\artifacts\\memory\\knowledge_graph.sqlite",
-    "PYTHONPATH": "C:\\Git\\Agentic-Workflow"
-  }
-}
-```
+**Full tool reference, CLI examples, forbidden substitutions, config entries, and fix protocol:** See `docs/reference/adg_mcp_reference.md`.
 
 ---
 
@@ -567,13 +364,7 @@ If unrelated files appear: record them → check graph justification → if none
 
 AST detailed parsing by default. Regex/grep for structural logic = FORBIDDEN unless user explicitly states. Repository paths MUST be canonicalized.
 
-### 4.4 No Low-Signal Search as Primary Evidence
-
-Forbidden as primary: grep, rg/ripgrep, regex-only sweeps, filename guesses, substring hunts. These MAY only be used AFTER the AST graph has identified a bounded candidate set, for literal string confirmation only.
-
-Text search MUST NEVER be used to define blast radius, infer architecture, ownership, call flow, dependency direction, dead code, test coverage, or file authority.
-
-### 4.5 Dependency Graph Before Edit
+### 4.4 Dependency Graph Before Edit
 
 Before any edit: determine directly affected nodes, first-order upstream/downstream, required tests, layer boundary crossings, registry/factory/provider edge changes. No edit plan without graph-backed impact analysis.
 
@@ -800,32 +591,6 @@ When HITL is invoked, evidence MUST include:
 
 ---
 
-## §8.6 RCA Auto-Closure Discipline
-
-**ENFORCEMENT**: Constitutional Rule #9 - RCAs must be auto-closed with evidence.
-
-### 8.6.1 RCA Status Lifecycle
-
-- ❌ **OPEN** — violation documented, corrective actions NOT executed
-- 🔄 **IN PROGRESS** — corrective actions partially executed
-- ✅ **RESOLVED** — all immediate corrective actions completed with evidence
-
-### 8.6.2 Required RCA Sections
-
-1. **Document the violation** - Clear description of what went wrong
-2. **Execute corrective actions IMMEDIATELY** - Don't just document, fix it
-3. **Update RCA status to RESOLVED** with timestamp and evidence
-4. **Document evidence artifacts** - What was created/changed
-5. **Mark completed preventive measures** with [x]
-
-### 8.6.3 Auto-Closure Mandate
-
-**NEVER** create RCA and leave it unresolved. User should not have to ask for closure.
-
-**FORBIDDEN**: Open RCAs without immediate corrective actions, documenting without fixing, leaving status as OPEN or IN PROGRESS.
-
----
-
 ## §9. EXECUTION MODALITY
 
 Execution occurs strictly by defined phase. Each phase produces one evidence file. Scope expansion → STOP and produce plan artifact.
@@ -849,56 +614,3 @@ Mixing exploration and repair in the same step = HARD FAIL.
 Structural refactors FORBIDDEN while: active scoped failures > 0, UNRESOLVED facts exist, registered skips have expired/missing resolution plans, full-suite not green.
 
 **Priority order:** Correctness → Determinism → Governance integrity → Reproducible green scoped runs → Structural refactors.
-
----
-
-# MAXIM
-
-## Testing & Evidence
-- Every defect fixed becomes a deterministic invariant enforced by automated tests.
-- If the evidence does not prove it, it did not happen.
-- Proof artifacts must only assert what the raw data proves. Derived facts must be labelled.
-- Three tiers: directly observed / derived / unresolved. Silence is not proof of absence.
-
-## Analysis & Dependencies
-- If the dependency graph does not prove the relationship, assume the relationship is unproven.
-- ADG field names are canonical. Schema pre-flight is mandatory before first field access.
-- Schema is frozen once per run. Re-probing after freeze = violation.
-
-## Scope & Testing
-- Run exact nodeids first. File-level fallback must be recorded as lossy.
-- Silent widening = scope contamination. Every expansion needs explicit justification.
-- No editing while exploring. All five repair gates must pass before the first edit.
-
-## Performance & Reliability
-- Every query has a timeout. Every long operation reports progress.
-
-## Fail-Closed Discipline
-- Critical infrastructure fails closed. No graceful fallbacks.
-- No hidden failure. No fake pass. No ambiguous expected failure.
-- No permanent "temporary" skips.
-- Pre-existing skips are registered debt, not free passes. Convergence blocked until all are registered and non-expired.
-- xfail drift is a failure. Adding skip/xfail to make progress is forbidden.
-
-## Governance & Policy
-- Policy drift is not a generic bug. Classify and escalate before repair.
-- Contract conflicts are escalated, not patched around. Identify the winning contract first.
-- Informational context informs decisions; it does not make them.
-- Local environment behavior is not CI behavior. Prove parity before declaring convergence.
-
-## Stabilization Order
-- Correctness → Determinism → Governance integrity → Green scoped runs → Structural refactors.
-- Do not refactor while the failure surface is unstable.
-
-## Convergence
-- Convergence requires: zero scoped failures + zero unregistered skips + no expired registry entries + empty Unresolved list + documented lossiness.
-- Scoped convergence ≠ repair complete. Blast-radius verification and a post-repair full-suite green run are also required (§7.3).
-- Full suite runs only once: at the end.
-
-## Test Count Invariants
-- Test counts are invariants. Unexpected drops = CI failure.
-
-## Safe Automated Remediation
-- Automated fixes must prove scope before mutation.
-- Parse health and checker health are hard gates — integrity beats numeric burndown.
-- No commits from a corrupted state. Rollback must always be available.

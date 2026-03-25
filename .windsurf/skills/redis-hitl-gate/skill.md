@@ -210,7 +210,7 @@ Save to: `docs/reports/plans/Redis_Fallback_Authorization_<timestamp>.md`
 
 ## Related Skills
 
-- `ast-first-gate` - Similar HITL pattern for AST dependency graph
+- `dependency-graph-analysis` - Graph-first analysis with tier-aware enforcement
 - `anti-pattern-hitl-gate` - General HITL enforcement framework
 
 ## References

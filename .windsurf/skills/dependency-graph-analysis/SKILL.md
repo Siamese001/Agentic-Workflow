@@ -1,67 +1,39 @@
 ---
 name: dependency-graph-analysis
-description: Provides AST-based dependency graph analysis workflows per §3.4-§3.7. Use before any non-trivial code investigation, impact analysis, file selection, or blast radius determination. Enforces graph-first discipline and forbids low-signal search methods. Includes graph construction protocol, impact analysis template, and fail-closed error handling.
+description: Provides AST-based dependency graph analysis workflows per §0 (tier-aware) and §2. Use before any non-trivial code investigation, impact analysis, file selection, or blast radius determination. Enforces graph-first discipline and forbids low-signal search methods. Includes graph construction protocol, impact analysis template, and fail-closed error handling.
 ---
 
 # Dependency Graph Analysis Skill
 
-Enforces constitutional requirements for AST-based dependency graph analysis (§3.4-§3.7, §4.4, §5.2).
+**Unified graph-first skill** — replaces the former `ast-first-gate` + `dependency-graph-analysis` pair. Enforces §0 tier-aware analysis and §2 ADG framework requirements.
+
+## Tier-Aware Enforcement (§0)
+
+| Tier | When | This Skill's Role |
+|------|------|--------------------|
+| **T0 — Question** | No code changes | Use ADG hot cache if available. No ceremony. |
+| **T1 — Trivial** | ≤1 file, ≤20 lines | ADG cache query optional. No `DEPENDENCY_GRAPH` section. |
+| **T2 — Scoped** | 2–5 files, single layer | Query ADG cache for blast radius. Brief scope note. |
+| **T3 — Architectural** | >5 files, cross-layer, governance | **Full protocol below.** `DEPENDENCY_GRAPH` section mandatory. |
+
+**This skill is MANDATORY for T2 and T3.** For T0/T1, best-effort cache use is sufficient.
 
 ## Files
 
-- **`graph_construction_protocol.md`** — Step-by-step protocol for building AST dependency graphs. Defines required node types, edge types, graph roots, and analysis depth. MANDATORY before any code investigation.
+- **`graph_construction_protocol.md`** — T3 protocol: node types, edge types, graph roots, analysis depth.
+- **`impact_analysis_template.md`** — T2/T3 template: upstream, downstream, cross-layer, cycles, blast radius.
+- **`fail_closed_discipline.md`** — If AST parsing fails: record errors, mark partial, STOP. No silent fallback.
+- **`forbidden_methods_checklist.md`** — Forbidden: grep/regex/filename guessing as primary analysis.
 
-- **`impact_analysis_template.md`** — Template for documenting graph-backed impact analysis. Includes upstream dependencies, downstream dependents, cross-layer edges, cycle detection, boundary violations, and test surface implications.
+## When to Use
 
-- **`fail_closed_discipline.md`** — Protocol for handling AST parsing failures. Defines exact error recording, partial conclusion marking, and prohibition of silent fallback to text search.
+**T2/T3 MANDATORY for:** root cause analysis, impact analysis, file selection, duplicate detection, dead code, boundary validation, layer inversion, test selection, healing scope, refactor planning, execution path analysis, registry/wiring validation.
 
-- **`forbidden_methods_checklist.md`** — Checklist of forbidden low-signal search methods (grep, regex, filename guessing). Use to verify compliance with §3.5.
+**FORBIDDEN to skip:** If a task involves architecture, orchestration, healing, routing, registry wiring, or blast radius → this skill is REQUIRED even if the user does not restate it.
 
-## When to use
+## Core Rules
 
-**MANDATORY for (§3.4):**
-- Root cause analysis
-- Impact analysis
-- File selection
-- Duplicate detection
-- Dead code detection
-- Boundary validation
-- Layer inversion detection
-- Test selection
-- Healing scope
-- Refactor planning
-- Execution path analysis
-- Registry and wiring validation
-
-**FORBIDDEN to skip:**
-If a task involves architecture, orchestration, healing, validation, routing, registry wiring, or blast radius, the dependency graph is REQUIRED even if the user does not restate it.
-
-## Constitutional Requirements Enforced
-
-- **§3.4:** AST dependency graphs are PRIMARY and REQUIRED analysis primitive
-- **§3.5:** Low-signal search (grep/regex) FORBIDDEN as primary analysis method
-- **§3.6:** If AST parsing fails, MUST fail closed (no silent fallback)
-- **§3.7:** Evidence MUST include DEPENDENCY_GRAPH section with graph justification for each changed file
-- **§4.3:** Boundary enforcement MUST use AST dependency graph
-- **§4.4:** Before any code edit, MUST determine graph-backed impact analysis
-- **§5.2:** Test selection MUST be dependency-graph-backed
-
-## Graph vs Text Search
-
-**The graph wins:**
-If the dependency graph and text search disagree, the graph wins unless you prove the graph extractor is incomplete and record the limitation explicitly.
-
-**Text search MAY be used only:**
-- AFTER the AST dependency graph has identified a bounded candidate set
-- ONLY as a secondary confirmation tool for literal strings or exact constants
-
-**Text search MUST NEVER be used to:**
-- Define blast radius
-- Infer architecture
-- Infer ownership
-- Infer call flow
-- Infer dependency direction
-- Infer dead code
-- Infer test coverage
-- Infer whether a component is unused
-- Infer whether a file is authoritative
+1. **AST dependency graph is PRIMARY.** Text search is secondary confirmation only.
+2. **Graph wins disagreements.** If graph and text search conflict, graph wins unless extractor limitation is proven and recorded.
+3. **Fail-closed on parse failure.** No silent fallback to grep/regex (§2.3).
+4. **T3 evidence requires `## DEPENDENCY_GRAPH` section** with graph justification for each changed file.

@@ -8,7 +8,7 @@ enforcement_type: structural
 
 # Test Rigor Enforcement Skill
 
-**PREREQUISITE:** `ast-first-gate` skill MUST be invoked first (§0 DEFAULT ANALYSIS MODE).
+**PREREQUISITE:** `dependency-graph-analysis` skill MUST be invoked first (§0 tier-aware analysis).
 
 Enforces constitutional testing requirements (§1.1-§1.12) during code generation with mandatory AST dependency graph backing.
 

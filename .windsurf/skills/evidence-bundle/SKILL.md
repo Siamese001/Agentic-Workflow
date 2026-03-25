@@ -5,7 +5,7 @@ description: Captures raw command outputs into a single evidence file using Pyth
 
 # Evidence Bundle Skill
 
-**PREREQUISITE:** `ast-first-gate` skill MUST be invoked first (§0 DEFAULT ANALYSIS MODE).
+**PREREQUISITE:** `dependency-graph-analysis` skill MUST be invoked first (§0 tier-aware analysis).
 
 Provides three artifacts for evidence-first phase execution with mandatory AST dependency graph documentation:
 
