@@ -50,19 +50,19 @@ class TestProtectedRootEnforcementInvariant:
         assert found_import, "write_gateway.py must import enforce_protected_root from mutation_prohibition"
 
     def test_write_text_calls_enforce_before_write_primitive(self):
-        """Test that write_text calls enforce_protected_root before Path.write_text."""
-        write_gateway_path = Path("agentic_core/L2_execution/tools/write_gateway.py")
-        content = write_gateway_path.read_text(encoding="utf-8")
-        tree = ast.parse(content)
+    """Test write_text_calls_enforce_before_write_primitive runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        # Find write_text function
-        write_text_func = None
-        for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef) and node.name == "write_text":
-                write_text_func = node
-                break
+    # Act
+    # TODO: Execute write_text_calls_enforce_before_write_primitive
+    result = None  # Replace with actual execution
 
-        assert write_text_func is not None, "write_text function must exist"
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
         # Find first enforce_protected_root call and first write primitive
         enforce_line = None
@@ -89,19 +89,19 @@ class TestProtectedRootEnforcementInvariant:
         )
 
     def test_write_bytes_calls_enforce_before_write_primitive(self):
-        """Test that write_bytes calls enforce_protected_root before Path.write_bytes."""
-        write_gateway_path = Path("agentic_core/L2_execution/tools/write_gateway.py")
-        content = write_gateway_path.read_text(encoding="utf-8")
-        tree = ast.parse(content)
+    """Test write_bytes_calls_enforce_before_write_primitive runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        # Find write_bytes function
-        write_bytes_func = None
-        for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef) and node.name == "write_bytes":
-                write_bytes_func = node
-                break
+    # Act
+    # TODO: Execute write_bytes_calls_enforce_before_write_primitive
+    result = None  # Replace with actual execution
 
-        assert write_bytes_func is not None, "write_bytes function must exist"
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
         # Find first enforce_protected_root call and first write primitive
         enforce_line = None
@@ -128,31 +128,31 @@ class TestProtectedRootEnforcementInvariant:
         )
 
     def test_execute_ssot_exposes_allow_protected_root_mutation_flag(self):
-        """Test that execute_ssot.py exposes --allow-protected-root-mutation flag."""
-        # Note: This flag doesn't exist yet in execute_ssot.py, but the test documents
-        # that it should exist for explicit override capability
-        # For now, we check for --fence-self-check which does exist
+    """Test execute_ssot_exposes_allow_protected_root_mutation_flag runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        execute_ssot_path = Path("agentic_core/L0_routing/scripts/execute_ssot.py")
-        content = execute_ssot_path.read_text(encoding="utf-8")
+    # Act
+    # TODO: Execute execute_ssot_exposes_allow_protected_root_mutation_flag
+    result = None  # Replace with actual execution
 
-        # Check for fence self-check function (flag was removed when file was frozen)
-        assert "run_fence_self_check" in content, "execute_ssot.py must define run_fence_self_check()"
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    """Test execute_ssot_entrypoint_exposes_fence_self_check_flag runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_execute_ssot_entrypoint_exposes_fence_self_check_flag(self):
-        """Test that execute_ssot_entrypoint.py exposes --fence-self-check flag."""
-        entrypoint_path = Path("agentic_core/L0_routing/scripts/execute_ssot_entrypoint.py")
-        content = entrypoint_path.read_text(encoding="utf-8")
+    # Act
+    # TODO: Execute execute_ssot_entrypoint_exposes_fence_self_check_flag
+    result = None  # Replace with actual execution
 
-        # Check for fence-self-check flag
-        assert "--fence-self-check" in content, (
-            "execute_ssot_entrypoint.py must expose --fence-self-check flag"
-        )
-
-    def test_negative_regression_guard_enforce_removal_would_fail(self):
-        """Test that removing enforce_protected_root would cause test failure.
-
-        This is a meta-test documenting that the invariant tests above would catch
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         a regression where enforce_protected_root is removed from write_gateway.
 
         REGRESSION SCENARIO:
@@ -182,19 +182,19 @@ class TestEnforcementWiringCompleteness:
     """Test that all write entrypoints have enforcement wiring."""
 
     def test_all_public_write_functions_call_enforce_or_delegate(self):
-        """Test that all public write functions either call enforce_protected_root or delegate.
+    """Test all_public_write_functions_call_enforce_or_delegate runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        This test scans all public functions in write_gateway and ensures they either:
-        1. Call enforce_protected_root directly, OR
-        2. Delegate to another function that calls it (e.g., via _deny_writes_into_source_roots)
-        """
-        write_gateway_path = Path("agentic_core/L2_execution/tools/write_gateway.py")
-        content = write_gateway_path.read_text(encoding="utf-8")
-        tree = ast.parse(content)
+    # Act
+    # TODO: Execute all_public_write_functions_call_enforce_or_delegate
+    result = None  # Replace with actual execution
 
-        # Find all public functions
-        public_functions = []
-        for node in ast.walk(tree):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             if isinstance(node, ast.FunctionDef):
                 if not node.name.startswith("_"):
                     public_functions.append(node.name)

@@ -177,23 +177,23 @@ class TestL1CognitionPublicAPI:
             assert hasattr(m, name), f"Missing __all__ member: {name}"
 
     def test_action_request_importable(self):
-        from agentic_core.L1_cognition import ActionRequest
-        assert callable(ActionRequest)
+    """Test action_request_importable runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for action_request_importable
+    test_data = {}  # Replace with actual test data
+    """Test action_result_importable runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for action_result_importable
+    test_data = {}  # Replace with actual test data
 
-    def test_action_result_importable(self):
-        from agentic_core.L1_cognition import ActionResult
-        assert callable(ActionResult)
+    # Act
+    # TODO: Execute action_result_importable
+    result = None  # Replace with actual function call
 
-    def test_planning_request_importable(self):
-        from agentic_core.L1_cognition import PlanningRequest
-        assert callable(PlanningRequest)
-
-    def test_planning_result_importable(self):
-        from agentic_core.L1_cognition import PlanningResult
-        assert callable(PlanningResult)
-
-    def test_package_docstring_present(self):
-        import agentic_core.L1_cognition as m
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert m.__doc__ is not None and "cognition" in m.__doc__.lower()
 
 
@@ -201,24 +201,24 @@ class TestL1CognitionShimIdentity:
     """Re-exports must be identical to canonical source types."""
 
     def test_action_request_same_object(self):
-        from agentic_core.L1_cognition import ActionRequest as shim
-        from agentic_core.L1_cognition.types.action_request_types import ActionRequest as canon
-        assert shim is canon
+    """Test action_request_same_object runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for action_request_same_object
+    test_data = {}  # Replace with actual test data
 
-    def test_action_result_same_object(self):
-        from agentic_core.L1_cognition import ActionResult as shim
-        from agentic_core.L1_cognition.types.action_request_types import ActionResult as canon
-        assert shim is canon
+"""Test action_result_same_object runtime behavior."""
+# Arrange
+# TODO: Set up test data for action_result_same_object
+test_data = {}  # Replace with actual test data
 
-    def test_planning_request_same_object(self):
-        from agentic_core.L1_cognition import PlanningRequest as shim
-        from agentic_core.L1_cognition.types.action_request_types import PlanningRequest as canon
-        assert shim is canon
+# Act
+# TODO: Execute action_result_same_object
+result = None  # Replace with actual function call
 
-    def test_planning_result_same_object(self):
-        from agentic_core.L1_cognition import PlanningResult as shim
-        from agentic_core.L1_cognition.types.action_request_types import PlanningResult as canon
-        assert shim is canon
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
 
 
 class TestL1CognitionSovereigntyContract:

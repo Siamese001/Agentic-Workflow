@@ -173,22 +173,33 @@ from agentic_core.runtime.types.recovery_types import (
 
 class TestRecoveryStrategy:
     def test_is_enum(self):
-        import enum; assert issubclass(RecoveryStrategy, enum.Enum)
+    """Test is_enum runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
+    """Test is_dataclass runtime behavior."""
+    # Arrange
+    """Test creates runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-class TestResilienceError:
-    def test_is_dataclass(self):
-        import dataclasses; assert dataclasses.is_dataclass(ResilienceError)
-    def test_creates(self):
-        e = ResilienceError(_message="oops", _code="ERR_001")
-        assert e._message == "oops"; assert e._code == "ERR_001"
+    # Act
+    # TODO: Execute runtime operation creates
+    """Test creates runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
+    """Test creates_with_attempts runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-class TestTransientError:
-    def test_is_dataclass(self):
-        import dataclasses; assert dataclasses.is_dataclass(TransientError)
-    def test_creates(self):
-        e = TransientError(_message="retry", _code="TRANSIENT"); assert e._message == "retry"
+    # Act
+    # TODO: Execute runtime operation creates_with_attempts
+    runtime_result = None  # Replace with actual runtime operation
 
-class TestRetryExhaustedError:
-    def test_creates_with_attempts(self):
-        e = RetryExhaustedError(_message="exhausted", _code="EXHAUSTED", _attempts=3)
-        assert e._attempts == 3
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions

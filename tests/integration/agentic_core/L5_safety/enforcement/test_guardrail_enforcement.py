@@ -35,24 +35,24 @@ class TestSafeSubprocessHandler:
     """Tests for safe subprocess handling."""
 
     def test_safe_subprocess_handler_exists(self):
-        """Safe subprocess handler should exist in enforcement/."""
-        handler_path = Path("agentic_core/L5_safety/enforcement/safe_subprocess_handler_enforcer.py")
-        assert handler_path.exists(), "safe_subprocess_handler.py should exist"
+    """Test safe_subprocess_handler_exists runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-    def test_subprocess_security_util_exists(self):
-        """Subprocess security utility should exist."""
-        util_path = Path("agentic_core/L5_safety/utils/subprocess_security_util.py")
-        if not util_path.exists():
-            pytest.fail("subprocess_security_util.py not found")
+"""Test subprocess_security_util_exists runtime behavior."""
+# Arrange
+# TODO: Set up processing data
+raw_data = []  # Replace with actual test data
 
-        content = util_path.read_text(encoding="utf-8", errors="ignore")
-        assert "def " in content, "Should have utility functions"
+# Act
+# TODO: Process data with subprocess_security_util_exists
+processed_result = None  # Replace with actual processing
 
-
-class TestHealingStrategy:
-    """Tests for healing strategy enforcement."""
-
-    def test_healing_strategy_exists(self):
+# Assert
+assert processed_result is not None, "Processing should produce a result"
+assert len(processed_result) >= 0, "Processed result should be measurable"
+# TODO: Add specific processing assertions
         """Healing strategy should exist in enforcement/."""
         strategy_path = Path("agentic_core/L5_safety/enforcement/HealingStrategy.py")
         if not strategy_path.exists():

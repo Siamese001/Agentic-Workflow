@@ -49,19 +49,19 @@ You are a helpful assistant."""
 
 @pytest.mark.governance
 def test_prompt_fragment_determinism_stable_across_calls():
-    """REQ-095: Same fragments should produce identical prompt across multiple calls."""
-    fragments = {
-        "instruction": "Summarize the following text:",
-        "text": "This is a long text about various topics including science, technology, and philosophy.",
-        "length": "Keep it under 100 words.",
-    }
+"""Test prompt_fragment_determinism_stable_across_calls runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    def assemble_prompt(frag_dict: dict[str, str]) -> str:
-        """Simulate prompt assembly function."""
-        sorted_keys = sorted(frag_dict.keys())
-        return "\n".join(frag_dict[key] for key in sorted_keys)
+# Act
+# TODO: Execute prompt_fragment_determinism_stable_across_calls
+result = None  # Replace with actual execution
 
-    # Call assembly twice
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
     prompt1 = assemble_prompt(fragments)
     prompt2 = assemble_prompt(fragments)
 

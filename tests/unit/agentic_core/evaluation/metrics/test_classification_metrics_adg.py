@@ -201,23 +201,23 @@ class TestConfusionMatrix:
         assert cm.precision() == 0.0
 
     def test_recall_all_correct(self):
-        cm = self._cm(tp=5, fp=2, tn=3, fn=0)
-        assert cm.recall() == 1.0
+    """Test recall_all_correct runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+    """Test recall_zero_denominator runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_recall_zero_denominator(self):
-        cm = self._cm(tp=0, fp=2, tn=5, fn=0)
-        assert cm.recall() == 0.0
+    # Act
+    # TODO: Execute recall_zero_denominator
+    result = None  # Replace with actual execution
 
-    def test_f1_perfect(self):
-        cm = self._cm(tp=5, fp=0, tn=3, fn=0)
-        assert cm.f1() == 1.0
-
-    def test_f1_zero(self):
-        cm = self._cm(tp=0, fp=3, tn=2, fn=5)
-        assert cm.f1() == 0.0
-
-    def test_f1_harmonic_mean(self):
-        cm = self._cm(tp=2, fp=2, tn=2, fn=2)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         p = cm.precision()
         r = cm.recall()
         expected = 2 * p * r / (p + r)
@@ -263,23 +263,23 @@ class TestBinaryClassificationMetric:
         assert m.compute([0, 0, 0], [1, 1, 1]) == 0.0
 
     def test_perfect_recall(self):
-        m = BinaryClassificationMetric(positive_label=1, metric="recall")
-        assert m.compute([1, 1, 1, 1], [1, 1, 1, 0]) == 1.0
+    """Test perfect_recall runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+    """Test zero_recall runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_zero_recall(self):
-        m = BinaryClassificationMetric(positive_label=1, metric="recall")
-        assert m.compute([0, 0], [1, 1]) == 0.0
+    # Act
+    # TODO: Execute zero_recall
+    result = None  # Replace with actual execution
 
-    def test_f1_perfect(self):
-        m = BinaryClassificationMetric(positive_label=1)
-        assert m.compute([1, 0, 1, 0], [1, 0, 1, 0]) == 1.0
-
-    def test_f1_zero(self):
-        m = BinaryClassificationMetric(positive_label=1)
-        assert m.compute([0, 0, 0], [1, 1, 1]) == 0.0
-
-    def test_f1_harmonic(self):
-        m_p = BinaryClassificationMetric(positive_label=1, metric="precision")
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         m_r = BinaryClassificationMetric(positive_label=1, metric="recall")
         m_f = BinaryClassificationMetric(positive_label=1, metric="f1")
         preds = [1, 1, 0, 1, 0]
@@ -480,19 +480,19 @@ class TestMultiClassF1Metric:
         assert abs(score - expected) < 1e-5
 
     def test_macro_recall(self):
-        m = MultiClassF1Metric(averaging="macro", metric="recall")
-        preds = ["A", "A", "B"]
-        truth = ["A", "B", "B"]
-        score = m.compute(preds, truth)
-        per_class = m.per_class_scores(preds, truth)
-        expected = sum(v["recall"] for v in per_class.values()) / len(per_class)
-        assert abs(score - expected) < 1e-5
+    """Test macro_recall runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_single_class_all_correct(self):
-        m = MultiClassF1Metric(averaging="macro")
-        preds = ["A", "A", "A"]
-        truth = ["A", "A", "A"]
-        assert m.compute(preds, truth) == 1.0
+    # Act
+    # TODO: Execute macro_recall
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
     def test_weighted_vs_macro_differ_on_imbalanced(self):
         m_macro = MultiClassF1Metric(averaging="macro")

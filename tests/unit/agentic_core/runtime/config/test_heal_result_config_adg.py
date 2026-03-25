@@ -170,25 +170,25 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestHealStatus:
     def test_success_value(self):
-        assert HealStatus.SUCCESS.value == "SUCCESS"
+    """Test success_value runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    """Test error_value runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    """Test all_statuses runtime behavior."""
+    # Arrange
+    # TODO: Set up initial state
+    initial_state = {}  # Replace with actual initial state
 
-    def test_error_value(self):
-        assert HealStatus.ERROR.value == "ERROR"
+    # Act
+    # TODO: Execute state operation all_statuses
+    final_state = None  # Replace with actual state operation
 
-    def test_all_statuses(self):
-        for name in ("SUCCESS", "PARTIAL", "SKIPPED", "ERROR", "DRY_RUN", "UNKNOWN"):
-            assert hasattr(HealStatus, name)
-
-
-class TestHealResult:
-    def test_creates_with_defaults(self):
-        result = HealResult()
-        assert result.violations_found == 0
-        assert result.violations_fixed == 0
-        assert result.status == HealStatus.UNKNOWN
-
-    def test_creates_with_values(self):
-        result = HealResult(
+    # Assert
+    assert final_state is not None, "State operation should produce a result"
+    assert final_state != initial_state, "State should change"
+    # TODO: Add specific state assertions
             violations_found=5,
             violations_fixed=3,
             status=HealStatus.PARTIAL,

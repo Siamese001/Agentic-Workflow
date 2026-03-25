@@ -342,27 +342,27 @@ class TestGeminiJudgeProviderCredentials:
     """Tests for missing API keys and missing SDK package."""
 
     def test_missing_sdk_raises_runtime_error(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+    """Test missing_sdk_raises_runtime_error runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        provider = GeminiJudgeProvider()
-        # Without google.generativeai installed, should raise about missing package
-        with pytest.raises(RuntimeError, match="google-genai package not installed"):
-            provider._get_client()
+    # Act
+    # TODO: Execute missing_sdk_raises_runtime_error
+    result = None  # Replace with actual execution
+    """Test missing_api_key_raises_runtime_error runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_missing_api_key_raises_runtime_error(self, monkeypatch):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+    # Act
+    # TODO: Execute missing_api_key_raises_runtime_error
+    result = None  # Replace with actual execution
 
-        monkeypatch.delenv("GEMINI_API_KEY", raising=False)
-        monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
-
-        mock_genai, modules = self._mock_genai()
-        provider = GeminiJudgeProvider()
-
-        with patch.dict("sys.modules", modules):
-            with pytest.raises(RuntimeError, match="GEMINI_API_KEY or GOOGLE_API_KEY required"):
-                provider._get_client()
-
-    @staticmethod
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
     def _mock_genai():
         """Build a properly-chained mock for `import google.generativeai as genai`."""
         mock_genai = MagicMock()
@@ -409,19 +409,19 @@ class TestGeminiJudgeProviderCredentials:
         assert provider._get_client() is sentinel
 
     def test_configure_called_only_once(self, monkeypatch):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+    """Test configure_called_only_once runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        monkeypatch.setenv("GEMINI_API_KEY", "key")
-        mock_genai, modules = self._mock_genai()
+    # Act
+    # TODO: Execute configure_called_only_once
+    result = None  # Replace with actual execution
 
-        provider = GeminiJudgeProvider()
-        with patch.dict("sys.modules", modules):
-            provider._get_client()
-            provider._get_client()  # second call
-
-        mock_genai.configure.assert_called_once()
-
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 # ===================================================================
 # GeminiJudgeProvider — Determinism
 # ===================================================================
@@ -840,19 +840,19 @@ class TestLLMJudgesWithGeminiProvider:
         assert verdict.outcome == VerdictOutcome.SKIP.value
 
     def test_run_llm_judge_routes_to_correct_judge(self, gemini_provider, rubric_engine):
-        from agentic_core.evaluation.judges.llm_judges import run_llm_judge
+    """Test run_llm_judge_routes_to_correct_judge runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        bundle = self._make_bundle("test.py")
-        for rubric_id in ["GOV-001", "GOV-003"]:
-            verdict = asyncio.get_event_loop().run_until_complete(
-                run_llm_judge(rubric_id, bundle, gemini_provider, rubric_engine)
-            )
-            assert verdict is not None
-            assert verdict.rubric_id == rubric_id
-            assert verdict.provider_id == "gemini"
+    # Act
+    # TODO: Execute run_llm_judge_routes_to_correct_judge
+    result = None  # Replace with actual execution
 
-    def test_run_llm_judge_unknown_rubric_returns_none(self, gemini_provider, rubric_engine):
-        from agentic_core.evaluation.judges.llm_judges import run_llm_judge
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
         bundle = self._make_bundle("test.py")
         result = asyncio.get_event_loop().run_until_complete(

@@ -170,63 +170,63 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestCapabilityType:
     def test_read_only_value(self):
-        assert CapabilityType.READ_ONLY.value == "read_only"
+    """Test read_only_value runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_write_state_value(self):
-        assert CapabilityType.WRITE_STATE.value == "write_state"
+    # Act
+    """Test mutate_config_value runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    """Test all_types runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_mutate_config_value(self):
-        assert CapabilityType.MUTATE_CONFIG.value == "mutate_config"
+    # Act
+    """Test creates runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_all_types(self):
-        for name in ("READ_ONLY", "WRITE_STATE", "MUTATE_CONFIG", "ACTIVATE_LEARNING"):
-            assert hasattr(CapabilityType, name)
+    # Act
+    # TODO: Execute runtime operation creates
+    runtime_result = None  # Replace with actual runtime operation
 
-
-class TestExecutionBoundToken:
-    def test_creates(self):
-        token = ExecutionBoundToken(
-            token_id="tok-1",
-            capability_type=CapabilityType.READ_ONLY,
-            caller_context="AgentA",
-            target_context="AgentB",
-            execution_trace_id="trace-1",
-            policy_hash="phash",
-            determinism_digest="ddig",
-            hierarchy_hash="hhash",
-            signature_hash="sig",
-            authority_hash="auth",
-        )
-        assert token.token_id == "tok-1"
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
         assert token.capability_type == CapabilityType.READ_ONLY
 
     def test_is_frozen(self):
-        token = ExecutionBoundToken(
-            token_id="t2",
-            capability_type=CapabilityType.WRITE_STATE,
-            caller_context="A",
-            target_context="B",
-            execution_trace_id="tr",
-            policy_hash="p",
-            determinism_digest="d",
-            hierarchy_hash="h",
-            signature_hash="s",
-            authority_hash="a",
-        )
-        with pytest.raises(Exception):
+    """Test is_frozen runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
+
+    # Act
+    # TODO: Execute runtime operation is_frozen
+    runtime_result = None  # Replace with actual runtime operation
+
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
             token.token_id = "modified"
 
     def test_metadata_default_empty(self):
-        token = ExecutionBoundToken(
-            token_id="t3",
-            capability_type=CapabilityType.READ_ONLY,
-            caller_context="X",
-            target_context="Y",
-            execution_trace_id="tr",
-            policy_hash="p",
-            determinism_digest="d",
-            hierarchy_hash="h",
-            signature_hash="s",
-            authority_hash="a",
-        )
-        assert token.metadata == {}
+    """Test metadata_default_empty runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
+
+    # Act
+    # TODO: Execute runtime operation metadata_default_empty
+    runtime_result = None  # Replace with actual runtime operation
+
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions

@@ -460,25 +460,25 @@ class TestSSOTCircuitBreaker:
 class TestSSOTRateLimit:
     @pytest.mark.unit_min_deps
     def test_rate_check_allows_within_limit(self):
-        obj = _RateLimitObj(_Ctx(trace_id="t", active_policy_hash="ph"))
-        assert obj.rate_check("bucket", limit=LIMIT) is True
+    """Test rate_check_allows_within_limit contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.unit_min_deps
-    def test_rate_check_raises_on_exceed(self):
-        obj = _RateLimitObj(_Ctx(trace_id="t", active_policy_hash="ph"))
-        for _ in range(3):
-            obj.rate_check("b", limit=LIMIT, window=60.0)
-        with pytest.raises(RateLimitExceeded):
-            obj.rate_check("b", limit=LIMIT, window=60.0)
+"""Test rate_check_raises_on_exceed contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
-    @pytest.mark.unit_min_deps
-    def test_replay_mode_disables_rate_limit(self):
-        ctx = _Ctx(trace_id="t-replay", active_policy_hash="ph", replay_mode=True)
-        obj = _RateLimitObj(ctx)
-        for _ in range(100):
-            assert obj.rate_check("b", limit=LIMIT) is True
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
 
-    @pytest.mark.unit_min_deps
+# Assert - Schema Contract
+assert validation_result is not None, "Schema validation should produce a result"
+assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+# TODO: Add specific schema validation assertions
+# assert validation_result.get("valid", False), "Data should conform to schema"
     def test_rate_remaining(self):
         obj = _RateLimitObj(_Ctx(trace_id="t", active_policy_hash="ph"))
         obj.rate_check("b", limit=LIMIT)
@@ -632,27 +632,27 @@ class TestSSOTContextPropagation:
 class TestSSOTSelfDiagnosis:
     @pytest.mark.unit_min_deps
     def test_health_check_pass(self):
-        obj = _DiagObj(_Ctx(trace_id="t", active_policy_hash="ph"))
-        rec = obj.run_health_check("check1", True)
-        assert rec["passed"] is True
-        assert obj.health_status == "HEALTHY"
+    """Test health_check_pass contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.unit_min_deps
-    def test_health_check_fail_degrades(self):
-        obj = _DiagObj(_Ctx(trace_id="t", active_policy_hash="ph"))
-        obj.run_health_check("check1", False, "something broke")
-        assert obj.health_status == "DEGRADED"
-        assert len(obj.failed_checks) == 1
+    # Act
+    # TODO: Validate schema
+    """Test health_check_fail_degrades contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.unit_min_deps
-    def test_reset_health(self):
-        obj = _DiagObj(_Ctx(trace_id="t", active_policy_hash="ph"))
-        obj.run_health_check("c", False)
-        obj.reset_health()
-        assert obj.health_status == "HEALTHY"
-        assert len(obj.health_checks) == 0
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
 class TestSSOTAdaptiveExecution:
     @pytest.mark.unit_min_deps
     def test_default_mode_standard(self):

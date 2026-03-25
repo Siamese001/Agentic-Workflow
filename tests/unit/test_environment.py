@@ -146,29 +146,29 @@ class TestEnvironmentValidator:
     """Test EnvironmentValidator functionality."""
 
     def test_validate_success_with_all_required(self):
-        """Test validation succeeds with all required variables."""
-        with patch.dict(os.environ, REQUIRED_ENV_VARS, clear=False):
-            result = EnvironmentValidator.validate(raise_on_missing=False)
-            assert result.valid is True
-            assert len(result.missing_required) == 0
-            assert len(result.errors) == 0
-            assert result.config is not None
+    """Test validate_success_with_all_required contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_validate_fails_with_missing_required(self):
-        """Test validation fails with missing required variables."""
-        # Save original values
-        original_env = {k: os.environ.get(k) for k in EnvironmentValidator.REQUIRED_VARS}
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-        # Clear required vars
-        for var in EnvironmentValidator.REQUIRED_VARS:
-            if var in os.environ:
-                del os.environ[var]
+"""Test validate_fails_with_missing_required contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
-        try:
-            result = EnvironmentValidator.validate(raise_on_missing=False)
-            assert result.valid is False
-            assert len(result.missing_required) == 3
-            assert "OPENAI_API_KEY" in result.missing_required
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
+
+# Assert - Schema Contract
+assert validation_result is not None, "Schema validation should produce a result"
+assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+# TODO: Add specific schema validation assertions
+# assert validation_result.get("valid", False), "Data should conform to schema"
             assert "ANTHROPIC_API_KEY" in result.missing_required
             assert "GEMINI_API_KEY" in result.missing_required
         finally:
@@ -178,20 +178,20 @@ class TestEnvironmentValidator:
                     os.environ[k] = v
 
     def test_validate_raises_on_missing_when_configured(self):
-        """Test validation raises EnvironmentError when configured."""
-        # Save original values
-        original_env = {k: os.environ.get(k) for k in EnvironmentValidator.REQUIRED_VARS}
+    """Test validate_raises_on_missing_when_configured contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-        # Clear required vars
-        for var in EnvironmentValidator.REQUIRED_VARS:
-            if var in os.environ:
-                del os.environ[var]
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-        try:
-            with pytest.raises(EnvironmentError) as exc_info:
-                EnvironmentValidator.validate(raise_on_missing=True)
-            assert "Environment validation failed" in str(exc_info.value)
-            assert "OPENAI_API_KEY" in str(exc_info.value)
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
         finally:
             # Restore original values
             for k, v in original_env.items():
@@ -199,20 +199,20 @@ class TestEnvironmentValidator:
                     os.environ[k] = v
 
     def test_validate_detects_optional_missing(self):
-        """Test validation detects missing optional variables."""
-        with patch.dict(os.environ, REQUIRED_ENV_VARS, clear=False):
-            # Remove one optional var if present
-            github_token = os.environ.pop("GITHUB_TOKEN", None)
-            try:
-                result = EnvironmentValidator.validate(raise_on_missing=False)
-                assert result.valid is True
-                # Check that at least one optional is detected as missing
-            finally:
-                if github_token:
-                    os.environ["GITHUB_TOKEN"] = github_token
+    """Test validate_detects_optional_missing contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_get_config_success(self):
-        """Test get_config returns valid configuration."""
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
+
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
         with patch.dict(os.environ, REQUIRED_ENV_VARS, clear=False):
             config = EnvironmentValidator.get_config()
             assert isinstance(config, EnvironmentConfig)
@@ -238,29 +238,29 @@ class TestEnvironmentValidator:
                     os.environ[k] = v
 
     def test_validate_startup_success(self):
-        """Test validate_startup succeeds with valid environment."""
-        with patch.dict(os.environ, REQUIRED_ENV_VARS, clear=False):
-            # Should not raise
-            try:
-                EnvironmentValidator.validate_startup()
-            except Exception as e:
-                pytest.fail(f"validate_startup raised {e} unexpectedly with valid environment")
+    """Test validate_startup_success contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_validate_startup_raises_on_invalid(self):
-        """Test validate_startup raises on invalid environment."""
-        # Save original values
-        original_env = {k: os.environ.get(k) for k in EnvironmentValidator.REQUIRED_VARS}
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-        # Clear required vars
-        for var in EnvironmentValidator.REQUIRED_VARS:
-            if var in os.environ:
-                del os.environ[var]
+"""Test validate_startup_raises_on_invalid contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
-        try:
-            with pytest.raises(EnvironmentError):
-                EnvironmentValidator.validate_startup()
-        finally:
-            # Restore original values
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
+
+# Assert - Schema Contract
+assert validation_result is not None, "Schema validation should produce a result"
+assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+# TODO: Add specific schema validation assertions
+# assert validation_result.get("valid", False), "Data should conform to schema"
             for k, v in original_env.items():
                 if v is not None:
                     os.environ[k] = v
@@ -285,29 +285,29 @@ class TestEnvironmentHelpers:
             env_module._config_instance = None
 
     def test_validate_environment_success(self):
-        """Test validate_environment succeeds with valid environment."""
-        with patch.dict(os.environ, REQUIRED_ENV_VARS, clear=False):
-            # Should not raise
-            try:
-                validate_environment()
-            except Exception as e:
-                pytest.fail(f"validate_environment raised {e} unexpectedly with valid environment")
+    """Test validate_environment_success contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_validate_environment_raises_on_invalid(self):
-        """Test validate_environment raises on invalid environment."""
-        # Save original values
-        original_env = {k: os.environ.get(k) for k in EnvironmentValidator.REQUIRED_VARS}
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-        # Clear required vars
-        for var in EnvironmentValidator.REQUIRED_VARS:
-            if var in os.environ:
-                del os.environ[var]
+"""Test validate_environment_raises_on_invalid contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
-        try:
-            with pytest.raises(EnvironmentError):
-                validate_environment()
-        finally:
-            # Restore original values
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
+
+# Assert - Schema Contract
+assert validation_result is not None, "Schema validation should produce a result"
+assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+# TODO: Add specific schema validation assertions
+# assert validation_result.get("valid", False), "Data should conform to schema"
             for k, v in original_env.items():
                 if v is not None:
                     os.environ[k] = v

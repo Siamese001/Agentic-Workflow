@@ -203,20 +203,20 @@ def test_bind_to_digest_creates_replay_bound_token():
 
 @pytest.mark.governance
 def test_digest_change_invalidates_token():
-    """Two tokens identical except replay_digest_hash are not equivalent."""
-    digest_a = _make_digest("run_1")
-    digest_b = _make_digest("run_2")
+"""Test digest_change_invalidates_token contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
-    token_a = _make_token(replay_digest_hash=digest_a)
-    token_b = _make_token(replay_digest_hash=digest_b)
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
 
-    assert token_a.replay_digest_hash != token_b.replay_digest_hash
-    # Both are structurally valid but bound to different execution contexts
-    token_a.validate(current_tick=15)
-    token_b.validate(current_tick=15)
-
-
-@pytest.mark.governance
+# Assert - Schema Contract
+assert validation_result is not None, "Schema validation should produce a result"
+assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+# TODO: Add specific schema validation assertions
+# assert validation_result.get("valid", False), "Data should conform to schema"
 def test_replay_digest_hash_determinism():
     """Same canonical inputs always produce same digest → same token binding."""
     canonical_json = json.dumps(

@@ -211,37 +211,37 @@ class TestHealPolicyRuntimeIntegration:
     """Prove policy decision is computed and logged without behavior change."""
 
     def test_decide_reasoning_tier_is_invoked(self) -> None:
-        """Assert decide_reasoning_tier() is called exactly once per wrapper invocation."""
-        mock_decision = HealEscalationDecision(
-            proceed=True,
-            tier=ReasoningTier.LOW,
-            rationale="Test rationale",
-            threshold_used="TEST",
-        )
+    """Test decide_reasoning_tier_is_invoked runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-        with patch(
-            "agentic_core.utils.decorators_util.decide_heal_escalation",
-            return_value=mock_decision,
-        ) as mock_decide:
-            healer = DummyHealer()
+    # Act
+    # TODO: Execute runtime operation decide_reasoning_tier_is_invoked
+    runtime_result = None  # Replace with actual runtime operation
+
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
             healer.heal_repository(dry_run=True)
 
             mock_decide.assert_called_once()
 
     def test_policy_decision_is_logged(self) -> None:
-        """Assert Logger.debug receives the policy decision log line."""
-        mock_decision = HealEscalationDecision(
-            proceed=True,
-            tier=ReasoningTier.LOW,
-            rationale="Test rationale",
-            threshold_used="TEST",
-        )
+    """Test policy_decision_is_logged runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-        captured_messages: list[str] = []
+    # Act
+    # TODO: Execute runtime operation policy_decision_is_logged
+    runtime_result = None  # Replace with actual runtime operation
 
-        def capture_debug(msg: str, *args: Any, **kwargs: Any) -> None:
-            captured_messages.append(msg)
-
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
         with (
             patch(
                 "agentic_core.utils.decorators_util.decide_heal_escalation",

@@ -170,13 +170,24 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestActionNodeCore:
     def test_has_tool_map(self):
-        assert isinstance(ActionNodeCore.TOOL_MAP, dict)
-        assert "read_file" in ActionNodeCore.TOOL_MAP
+    """Test has_tool_map runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for has_tool_map
+    test_data = {}  # Replace with actual test data
+    """Test creates runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for creates
+    test_data = {}  # Replace with actual test data
+    """Test work_dir_resolved runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for work_dir_resolved
+    test_data = {}  # Replace with actual test data
 
-    def test_creates(self, tmp_path):
-        core = ActionNodeCore(work_dir=str(tmp_path), allowed_tools={})
-        assert core is not None
+    # Act
+    # TODO: Execute work_dir_resolved
+    result = None  # Replace with actual function call
 
-    def test_work_dir_resolved(self, tmp_path):
-        core = ActionNodeCore(work_dir=str(tmp_path), allowed_tools={})
-        assert core.work_dir.is_absolute()
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions

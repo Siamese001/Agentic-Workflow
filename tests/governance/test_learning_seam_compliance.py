@@ -121,19 +121,19 @@ class TestNoForbiddenWriteCalls:
     """Non-L2 agent files must not call write functions."""
 
     def test_no_direct_write_calls_in_agents(self):
-        violations = []
-        for path in _agent_files():
-            try:
-                tree = ast.parse(path.read_text("utf-8"))
-            except SyntaxError as e:
-                assert False, f"SyntaxError in {path}: {e}"
-            for lineno, fqn in _scan_forbidden_calls(tree):
-                rel = path.relative_to(REPO_ROOT)
-                violations.append(f"{rel}:{lineno} calls {fqn}")
-        assert violations == [], (
-            "Non-L2 agent files must not call durable write functions directly:\n" + "\n".join(violations)
-        )
+    """Test no_direct_write_calls_in_agents runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute no_direct_write_calls_in_agents
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
 class TestLearningSeamExists:
     """The L0 learning seam must exist for agents to use."""

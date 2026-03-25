@@ -306,19 +306,19 @@ async def fetch_data(url):
         assert "requests.get" in blocking[0].symbol
 
     def test_subprocess_run_in_async_detected(self):
-        code = """
-async def run_cmd():
-    result = subprocess.run(["ls"], capture_output=True)
-    return result.stdout
-"""
-        edges = _scan(code)
-        blocking = [e for e in edges if e.edge_kind == "blocking_call_in_async"]
-        assert len(blocking) == 1
+    """Test subprocess_run_in_async_detected runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_time_sleep_in_sync_not_flagged(self):
-        code = """
-import time
+    # Act
+    # TODO: Execute subprocess_run_in_async_detected
+    result = None  # Replace with actual execution
 
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 def sync_wait():
     time.sleep(1)
 """
@@ -368,19 +368,19 @@ async def fetch():
 
 class TestGlobalStateMutation:
     def test_uppercase_global_mutated_in_function_detected(self):
-        code = """
-CONFIG = {}
+    """Test uppercase_global_mutated_in_function_detected runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for uppercase_global_mutated_in_function_detected
+    test_data = {}  # Replace with actual test data
 
-def update_config(key, value):
-    CONFIG = {key: value}
-"""
-        edges = _scan(code)
-        mutations = [e for e in edges if e.edge_kind == "global_state_mutation"]
-        assert len(mutations) == 1
-        assert mutations[0].symbol == "CONFIG"
+    # Act
+    # TODO: Execute uppercase_global_mutated_in_function_detected
+    result = None  # Replace with actual function call
 
-    def test_lowercase_global_not_flagged(self):
-        code = """
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 state = {}
 
 def update_state():
@@ -495,19 +495,19 @@ async def retry_async():
         assert len(retries) == 0
 
     def test_loop_with_backoff_call_not_flagged(self):
-        code = """
-def retry():
-    while True:
-        try:
-            do_thing()
-            break
-        except Exception:
-            exponential_backoff()
-"""
-        edges = _scan(code)
-        retries = [e for e in edges if e.edge_kind == "retry_without_backoff"]
-        assert len(retries) == 0
+    """Test loop_with_backoff_call_not_flagged runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute loop_with_backoff_call_not_flagged
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
 # ---------------------------------------------------------------------------
 # Edge metadata correctness

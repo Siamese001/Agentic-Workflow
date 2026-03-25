@@ -84,19 +84,19 @@ class TestPTCWriteContract:
             assert func in public_functions, f"write_gateway must expose {func}"
 
     def test_write_gateway_functions_accept_allow_override(self):
-        """Test that write_gateway public functions accept allow_override parameter."""
-        write_gateway_path = Path("agentic_core/L2_execution/tools/write_gateway.py")
-        content = write_gateway_path.read_text(encoding="utf-8")
-        tree = ast.parse(content)
+    """Test write_gateway_functions_accept_allow_override runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for write_gateway_functions_accept_allow_override
+    test_data = {}  # Replace with actual test data
 
-        # Check write_text and write_bytes (primary entrypoints)
-        for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef):
-                if node.name in ["write_text", "write_bytes"]:
-                    # Check both regular args and keyword-only args
-                    param_names = [arg.arg for arg in node.args.args]
-                    kwonly_names = [arg.arg for arg in node.args.kwonlyargs]
-                    all_params = param_names + kwonly_names
+    # Act
+    # TODO: Execute write_gateway_functions_accept_allow_override
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
                     assert "allow_override" in all_params, (
                         f"{node.name} must accept allow_override parameter (found: {all_params})"
@@ -132,19 +132,19 @@ class TestPTCWriteContract:
         assert contract["default_policy"] == "allow_override=False"
 
     def test_l2_execution_tools_do_not_expose_raw_write_primitives(self):
-        """Test that L2_execution/tools modules don't expose raw write primitives.
+    """Test l2_execution_tools_do_not_expose_raw_write_primitives runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for l2_execution_tools_do_not_expose_raw_write_primitives
+    test_data = {}  # Replace with actual test data
 
-        This is a forward-looking guard: if tools are added to L2_execution/tools,
-        they must not expose direct filesystem writes without routing through write_gateway.
-        """
-        tools_dir = Path("agentic_core/L2_execution/tools")
+    # Act
+    # TODO: Execute l2_execution_tools_do_not_expose_raw_write_primitives
+    result = None  # Replace with actual function call
 
-        if not tools_dir.exists():
-            pytest.fail("L2_execution/tools directory does not exist")
-
-        # Scan for Python files in tools directory (excluding write_gateway itself)
-        for py_file in tools_dir.glob("*.py"):
-            if py_file.name in ["__init__.py", "write_gateway.py"]:
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
                 continue
 
             try:

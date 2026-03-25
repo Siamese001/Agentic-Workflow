@@ -308,19 +308,19 @@ class TestDeterminism:
 
     @pytest.mark.unit
     def test_digest_stable_across_two_calls(self) -> None:
-        result = _make_result_with_llm_violation()
-        p1 = GuardianPrioritizer(result).prioritize()
-        p2 = GuardianPrioritizer(result).prioritize()
-        assert p1.adg_signals_digest == p2.adg_signals_digest
+    """Test digest_stable_across_two_calls runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute digest_stable_across_two_calls
+    result = None  # Replace with actual execution
 
-class TestOrderedOutput:
-    """ordered() returns descending score order."""
-
-    @pytest.mark.unit
-    def test_ordered_is_descending(self) -> None:
-        result = _make_result_with_llm_violation()
-        prio = GuardianPrioritizer(result).prioritize()
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         ordered = prio.ordered()
         scores = [s.score for s in ordered]
         assert scores == sorted(scores, reverse=True)

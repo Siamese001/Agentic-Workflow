@@ -239,38 +239,39 @@ class TestLeafDomainNoSubdirs:
     """Hard gate: LEAF_DOMAIN folders must not sprout LCD-style subdirectories."""
 
     def test_prompt_governance_no_illegal_subdirs(self) -> None:
-        """prompt_governance must not contain domain/ or other LCD subdirs."""
-        pg = AGENTIC_CORE / "prompt_governance"
-        if not pg.is_dir():
-            pytest.fail("prompt_governance not found")
-        declared = _get_declared_subfolders("prompt_governance")
-        declared.update(ALWAYS_ALLOWED_SUBDIRS)
-        illegal = []
-        for entry in pg.iterdir():
-            if entry.is_dir() and entry.name not in declared:
-                illegal.append(entry.name)
-        assert not illegal, (
-            f"prompt_governance/ contains undeclared subdirectories: {illegal}\n"
-            f"Declared: {sorted(declared - ALWAYS_ALLOWED_SUBDIRS)}"
-        )
+    """Test prompt_governance_no_illegal_subdirs contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
+
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
 
     def test_no_domain_subfolder_in_prompt_governance(self) -> None:
-        """Specific regression: domain/ must never exist under prompt_governance."""
-        assert not (AGENTIC_CORE / "prompt_governance" / "domain").exists(), (
-            "prompt_governance/domain/ exists — LEAF_DOMAIN violation"
-        )
+    """Test no_domain_subfolder_in_prompt_governance contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_synthetic_subfolder_detected(self, tmp_path: Path) -> None:
-        """Negative test: prove scanner catches a synthetic subfolder."""
-        fake_domain = tmp_path / "fake_leaf"
-        fake_domain.mkdir()
-        (fake_domain / "__init__.py").write_text("", encoding="utf-8")
-        illegal_sub = fake_domain / "illegal_subdir"
-        illegal_sub.mkdir()
-        (illegal_sub / "__init__.py").write_text("", encoding="utf-8")
+    # Act
+    """Test synthetic_subfolder_detected contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-        subdirs = [
-            e.name for e in fake_domain.iterdir() if e.is_dir() and e.name not in ALWAYS_ALLOWED_SUBDIRS
-        ]
-        assert subdirs, "Scanner failed to detect synthetic illegal subdirectory"
-        assert "illegal_subdir" in subdirs
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"

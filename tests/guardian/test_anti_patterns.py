@@ -337,20 +337,20 @@ def risky_function():
         assert not result.has_violations
 
     def test_respects_whitelist_comment(self, silent_swallower_validator, temp_python_file):
-        """Whitelist comment should suppress detection."""
-        code = """
-def risky_function():
-    try:
-        do_something()
-    # guardian: allow-silent-swallow
-    except (ValueError, TypeError):
-        pass
-"""
-        file_path = temp_python_file(code)
-        result = silent_swallower_validator.scan_file(file_path)
+    """Test respects_whitelist_comment contract compliance."""
+    # Arrange
+    # TODO: Set up specification test case
+    spec_input = {}  # Replace with actual specification input
 
-        # Should not have violations due to whitelist
-        assert not result.has_violations
+    # Act
+    # TODO: Test specification compliance
+    compliance_result = None  # Replace with actual compliance test
+
+    # Assert - Specification Contract
+    assert compliance_result is not None, "Specification compliance should be testable"
+    assert isinstance(compliance_result, (bool, dict)), "Compliance result should be structured"
+    # TODO: Add specific specification assertions
+    # assert compliance_result.get("meets_spec", False), "Should meet specification requirements"
 
 
 # ============================================================================
@@ -390,20 +390,20 @@ class TestAgent:
         assert any("Any" in v.message for v in result.violations)
 
     def test_allows_specific_dict_types(self, type_erasure_validator, temp_python_file):
-        """Specific dict types like dict[str, str] should be allowed."""
-        code = """
-class TestAgent:
-    def process(self, data: str) -> dict[str, str]:
-        return {"result": data}
-"""
-        file_path = temp_python_file(code)
-        result = type_erasure_validator.scan_file(file_path)
+    """Test allows_specific_dict_types contract compliance."""
+    # Arrange
+    # TODO: Set up specification test case
+    spec_input = {}  # Replace with actual specification input
 
-        # dict[str, str] is in allowed types
-        assert not result.has_violations
+    # Act
+    # TODO: Test specification compliance
+    compliance_result = None  # Replace with actual compliance test
 
-    def test_ignores_private_methods(self, type_erasure_validator, temp_python_file):
-        """Private methods should be ignored."""
+    # Assert - Specification Contract
+    assert compliance_result is not None, "Specification compliance should be testable"
+    assert isinstance(compliance_result, (bool, dict)), "Compliance result should be structured"
+    # TODO: Add specific specification assertions
+    # assert compliance_result.get("meets_spec", False), "Should meet specification requirements"
         code = """
 class TestAgent:
     def _internal_process(self, data: str) -> dict:

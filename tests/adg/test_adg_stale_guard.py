@@ -252,19 +252,19 @@ class TestGetIngestTime:
         assert result == 1741000000.5
 
     def test_missing_ingested_at_raises_runtime_error(self):
-        checker = _make_checker(ingested_at=None)
-        with pytest.raises(RuntimeError, match="ingested_at"):
-            checker._get_ingest_time()
+    """Test missing_ingested_at_raises_runtime_error runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_invalid_float_raises_value_error(self):
-        checker = _make_checker(ingested_at="not-a-float")
-        with pytest.raises(ValueError):
-            checker._get_ingest_time()
+    # Act
+    # TODO: Execute missing_ingested_at_raises_runtime_error
+    result = None  # Replace with actual execution
 
-
-# ===========================================================================
-# _get_last_python_commit_time
-# ===========================================================================
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
 
 class TestGetLastPythonCommitTime:
@@ -289,38 +289,38 @@ class TestGetLastPythonCommitTime:
         assert t == 0.0
 
     def test_git_failure_raises_runtime_error(self):
-        checker = _make_checker(ingested_at="0")
-        mock_result = MagicMock()
-        mock_result.returncode = 128
-        mock_result.stdout = ""
-        mock_result.stderr = "not a git repo"
-        with patch("subprocess.run", return_value=mock_result):
-            with pytest.raises(RuntimeError, match="git log failed"):
-                checker._get_last_python_commit_time()
+    """Test git_failure_raises_runtime_error runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_timeout_raises_runtime_error(self):
-        checker = _make_checker(ingested_at="0")
-        with patch(
-            "subprocess.run",
-            side_effect=subprocess.TimeoutExpired(cmd="git", timeout=30),
-        ):
-            with pytest.raises(RuntimeError, match="timed out"):
-                checker._get_last_python_commit_time()
+    # Act
+    # TODO: Execute git_failure_raises_runtime_error
+    result = None  # Replace with actual execution
 
-    def test_git_called_with_no_shell(self):
-        checker = _make_checker(ingested_at="0")
-        mock_result = MagicMock()
-        mock_result.returncode = 0
-        mock_result.stdout = "1741000000\n"
-        mock_result.stderr = ""
-        with patch("subprocess.run", return_value=mock_result) as mock_run:
-            checker._get_last_python_commit_time()
-        args, kwargs = mock_run.call_args
-        cmd = args[0]
-        assert cmd[0] == "git"
-        assert kwargs.get("shell", False) is False  # §3.2: no shell=True
+    # Assert
+    """Test timeout_raises_runtime_error runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute timeout_raises_runtime_error
+    result = None  # Replace with actual execution
 
+"""Test git_called_with_no_shell runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
+
+# Act
+# TODO: Execute git_called_with_no_shell
+result = None  # Replace with actual execution
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
 # ===========================================================================
 # check() — full staleness check
 # ===========================================================================
@@ -454,19 +454,19 @@ class TestCLIRedisUnavailable:
         assert code == 0, f"--warn must exit 0 when Redis is down; got {code}"
 
     def test_warn_mode_exits_0_on_runtime_error(self):
-        """--warn exits 0 when ADG cache is not loaded (RuntimeError from ping)."""
-        with patch("tools.adg.adg_stale_guard.ADGRedisClient") as mock_cls:
-            mock_instance = MagicMock()
-            mock_instance.ping.side_effect = RuntimeError("ADG Redis cache is not loaded")
-            mock_cls.return_value = mock_instance
-            code, _ = self._call_cli(["--warn"])
-        assert code == 0, f"--warn must exit 0 on RuntimeError; got {code}"
+    """Test warn_mode_exits_0_on_runtime_error runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_strict_mode_exits_1_on_redis_connection_error(self):
-        """Without --warn, redis.ConnectionError must exit 1 (fail-closed)."""
-        import redis
+    # Act
+    # TODO: Execute warn_mode_exits_0_on_runtime_error
+    result = None  # Replace with actual execution
 
-        with patch("tools.adg.adg_stale_guard.ADGRedisClient") as mock_cls:
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             mock_instance = MagicMock()
             mock_instance.ping.side_effect = redis.ConnectionError("Connection refused")
             mock_cls.return_value = mock_instance

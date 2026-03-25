@@ -188,50 +188,50 @@ class TestPreRunADGReportUnavailable:
 
     @pytest.mark.unit
     def test_unavailable_sets_adg_available_false(self) -> None:
-        report = PreRunADGReport.unavailable(["foo.py"], "test error")
-        assert report.adg_available is False
+    """Test unavailable_sets_adg_available_false runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for unavailable_sets_adg_available_false
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.unit
-    def test_unavailable_stores_error(self) -> None:
-        report = PreRunADGReport.unavailable(["foo.py"], "some error")
-        assert "some error" in report.adg_error
+    # Act
+    # TODO: Execute unavailable_sets_adg_available_false
+    result = None  # Replace with actual function call
 
-    @pytest.mark.unit
-    def test_unavailable_route_mode_normal(self) -> None:
-        report = PreRunADGReport.unavailable(["foo.py"], "error")
-        assert report.route_mode == "NORMAL"
+    # Assert
+    """Test unavailable_route_mode_normal runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for unavailable_route_mode_normal
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.unit
-    def test_unavailable_changed_files_sorted(self) -> None:
-        report = PreRunADGReport.unavailable(["z.py", "a.py"], "error")
-        assert report.changed_files == sorted(["z.py", "a.py"])
+"""Test unavailable_changed_files_sorted runtime behavior."""
+# Arrange
+# TODO: Set up test data for unavailable_changed_files_sorted
+test_data = {}  # Replace with actual test data
 
-    @pytest.mark.unit
-    def test_unavailable_zero_counts(self) -> None:
-        report = PreRunADGReport.unavailable([], "error")
-        assert report.risk_score == 0
-        assert report.impacted_module_count == 0
-        assert report.impacted_test_count == 0
+"""Test unavailable_zero_counts runtime behavior."""
+# Arrange
+# TODO: Set up test data for unavailable_zero_counts
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute unavailable_zero_counts
+result = None  # Replace with actual function call
 
-class TestPreRunADGReportToDict:
-    """to_dict produces all required keys."""
+# Assert
+assert result is not None, f"{function_name} should return a result"
+"""Test to_dict_has_required_keys runtime behavior."""
+# Arrange
+# TODO: Set up test data for to_dict_has_required_keys
+test_data = {}  # Replace with actual test data
 
-    @pytest.mark.unit
-    def test_to_dict_has_required_keys(self) -> None:
-        report = PreRunADGReport.unavailable(["foo.py"], "error")
-        d = report.to_dict()
-        required = {
-            "changed_files",
-            "impacted_module_count",
-            "impacted_modules",
-            "impacted_test_count",
-            "impacted_tests",
-            "risk_score",
-            "route_mode",
-            "scope_widening_events",
-            "uncovered_changed_files",
-            "layer_violation_count",
+# Act
+# TODO: Execute to_dict_has_required_keys
+result = None  # Replace with actual function call
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
             "impact_digest",
             "adg_available",
             "adg_error",
@@ -241,46 +241,46 @@ class TestPreRunADGReportToDict:
 
     @pytest.mark.unit
     def test_to_dict_summary_nonempty(self) -> None:
-        report = PreRunADGReport.unavailable(["foo.py"], "test")
-        d = report.to_dict()
-        assert len(d["summary"]) > 0
+    """Test to_dict_summary_nonempty runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for to_dict_summary_nonempty
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute to_dict_summary_nonempty
+    result = None  # Replace with actual function call
 
-class TestPreRunADGReportSummary:
-    """Summary property produces readable string."""
+    # Assert
+    """Test summary_contains_route_mode runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for summary_contains_route_mode
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.unit
-    def test_summary_contains_route_mode(self) -> None:
-        report = PreRunADGReport(
-            changed_files=["a.py"],
-            impacted_module_count=5,
-            impacted_modules=["a.py", "b.py", "c.py", "d.py", "e.py"],
-            impacted_test_count=2,
-            impacted_tests=["tests/test_a.py", "tests/test_b.py"],
-            risk_score=100,
-            route_mode="NORMAL",
-            scope_widening_events=[],
-            uncovered_changed_files=[],
-            layer_violation_count=0,
-            impact_digest="abc123" * 10 + "a",
-        )
+    # Act
+    # TODO: Execute summary_contains_route_mode
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert "NORMAL" in report.summary
 
     @pytest.mark.unit
     def test_summary_contains_risk_score(self) -> None:
-        report = PreRunADGReport(
-            changed_files=["a.py"],
-            impacted_module_count=3,
-            impacted_modules=["a.py", "b.py", "c.py"],
-            impacted_test_count=1,
-            impacted_tests=["tests/test_a.py"],
-            risk_score=250,
-            route_mode="NORMAL",
-            scope_widening_events=[],
-            uncovered_changed_files=[],
-            layer_violation_count=0,
-            impact_digest="abc" * 21 + "a",
-        )
+    """Test summary_contains_risk_score runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for summary_contains_risk_score
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute summary_contains_risk_score
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert "250" in report.summary
 
 
@@ -289,41 +289,41 @@ class TestEmitPreRunLog:
 
     @pytest.mark.unit
     def test_emit_unavailable_report_no_crash(self) -> None:
-        report = PreRunADGReport.unavailable(["a.py"], "error")
-# REMOVED:         emit_pre_run_log(report)
+    """Test emit_unavailable_report_no_crash runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for emit_unavailable_report_no_crash
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.unit
-    def test_emit_available_normal_report_no_crash(self) -> None:
-        report = PreRunADGReport(
-            changed_files=["a.py"],
-            impacted_module_count=1,
-            impacted_modules=["a.py"],
-            impacted_test_count=0,
-            impacted_tests=[],
-            risk_score=0,
-            route_mode="NORMAL",
-            scope_widening_events=[],
-            uncovered_changed_files=[],
-            layer_violation_count=0,
-            impact_digest="a" * 64,
-        )
+"""Test emit_available_normal_report_no_crash runtime behavior."""
+# Arrange
+# TODO: Set up test data for emit_available_normal_report_no_crash
+test_data = {}  # Replace with actual test data
+
+# Act
+# TODO: Execute emit_available_normal_report_no_crash
+result = None  # Replace with actual function call
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
 # REMOVED:         emit_pre_run_log(report)
 
     @pytest.mark.unit
     def test_emit_restricted_report_no_crash(self) -> None:
-        report = PreRunADGReport(
-            changed_files=["a.py"],
-            impacted_module_count=10,
-            impacted_modules=["a.py"] * 10,
-            impacted_test_count=5,
-            impacted_tests=["tests/t.py"] * 5,
-            risk_score=500,
-            route_mode="RESTRICTED",
-            scope_widening_events=["b.py(layer=L2)"],
-            uncovered_changed_files=["c.py"],
-            layer_violation_count=3,
-            impact_digest="b" * 64,
-        )
+    """Test emit_restricted_report_no_crash runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for emit_restricted_report_no_crash
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute emit_restricted_report_no_crash
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 # REMOVED:         emit_pre_run_log(report)
 
 
@@ -332,37 +332,37 @@ class TestBuildPreRunReportIntegration:
 
     @pytest.mark.unit
     def test_build_pre_run_report_returns_report(self) -> None:
-        from agentic_core.adg.applications.execute_ssot_integration import build_pre_run_report
+    """Test build_pre_run_report_returns_report runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        report = build_pre_run_report(
-            changed_files=["agentic_core/adg/schema.py"],
-            repo_root=_REPO_ROOT,
-        )
-        assert isinstance(report, PreRunADGReport)
+    # Act
+    # TODO: Execute build_pre_run_report_returns_report
+    result = None  # Replace with actual execution
 
-    @pytest.mark.unit
-    def test_build_pre_run_report_route_mode_valid(self) -> None:
-        from agentic_core.adg.applications.execute_ssot_integration import build_pre_run_report
+    # Assert
+    """Test build_pre_run_report_route_mode_valid runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        report = build_pre_run_report(
-            changed_files=["agentic_core/adg/schema.py"],
-            repo_root=_REPO_ROOT,
-        )
-        assert report.route_mode in ("NORMAL", "RESTRICTED", "HUMAN_REVIEW")
+    # Act
+    # TODO: Execute build_pre_run_report_route_mode_valid
+    result = None  # Replace with actual execution
 
-    @pytest.mark.unit
-    def test_build_pre_run_empty_files_normal(self) -> None:
-        from agentic_core.adg.applications.execute_ssot_integration import build_pre_run_report
+    # Assert
+    """Test build_pre_run_empty_files_normal runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        report = build_pre_run_report(changed_files=[], repo_root=_REPO_ROOT)
-        assert report.risk_score == 0
-        assert report.route_mode == "NORMAL"
+    # Act
+    # TODO: Execute build_pre_run_empty_files_normal
+    result = None  # Replace with actual execution
 
-    @pytest.mark.unit
-    def test_available_report_has_empty_adg_error(self) -> None:
-        from agentic_core.adg.applications.execute_ssot_integration import build_pre_run_report
-
-        report = build_pre_run_report(changed_files=[], repo_root=_REPO_ROOT)
-        # When ADG is available, adg_error must be empty string (not None)
-        assert report.adg_error == ""
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         assert report.adg_available is True

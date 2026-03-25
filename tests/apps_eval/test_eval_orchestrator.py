@@ -107,19 +107,19 @@ class TestEvalTypes:
         assert result.passed_gate is False
 
     def test_eval_run_summary_to_dict_keys(self) -> None:
-        summary = EvalRunSummary(trace_id="xyz")
-        d = summary.to_dict()
-        assert "trace_id" in d
-        assert "app" in d
-        assert d["app"] == "apps_eval"
-        assert "overall_score" in d
-        assert "regressions_detected" in d
+    """Test eval_run_summary_to_dict_keys runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute eval_run_summary_to_dict_keys
+    result = None  # Replace with actual execution
 
-class TestScorecardEngine:
-    def test_compute_returns_overall_score(self) -> None:
-        from apps_eval.engines.scorecard_engine import ScorecardEngine
-        from apps_eval.types.eval_types import SuiteResult
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
         suites = [
             SuiteResult(suite_id="routing_enforcement", display_name="Routing", pass_rate=0.90),

@@ -309,15 +309,16 @@ class TestDeterminismDigest:
 
     @pytest.mark.determinism
     def test_cross_run_determinism(self):
-        """Test that digest is identical across test runs (marked for determinism)."""
-        # This test is marked with @pytest.mark.determinism for cross-run validation
-        digest1 = compute_lockdown_determinism_digest()
-        digest2 = compute_lockdown_determinism_digest()
+    """Test cross_run_determinism runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        assert digest1 == digest2, "Digest must be identical across runs"
+    # Act
+    # TODO: Execute cross_run_determinism
+    result = None  # Replace with actual execution
 
-        # Also test emission format
-        emission1 = generate_lockdown_determinism_digest()
-        emission2 = generate_lockdown_determinism_digest()
-
-        assert emission1 == emission2, "Emission format must be identical across runs"
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions

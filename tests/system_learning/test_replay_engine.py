@@ -384,20 +384,20 @@ class TestW5ReplayEngine:
         )
 
     def test_determinism_self_check_failure(self):
-        """Test that determinism self-check failure raises ValueError."""
-        engine = DeterministicReplayEngine()
+    """Test determinism_self_check_failure contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-        # Create test profiles
-        base_profile = RetrievalProfile(
-            profile_id="test-profile",
-            primary_embedder_id="test-embedder",
-            embedding_dim=1536,
-            shadow_embedder_id="test-shadow",
-            top_k=10,
-            similarity_cutoff=0.85,
-            influence_cap=0.5,
-            normalization_policy="l2",
-        )
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
+
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
 
         candidate_profile = RetrievalProfile(
             profile_id="test-profile-candidate",

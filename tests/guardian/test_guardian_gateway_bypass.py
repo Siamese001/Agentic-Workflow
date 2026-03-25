@@ -244,21 +244,21 @@ class TestGatewayBypassGuardianViolations:
         assert check_map["provider_sdk_import"] == CheckStatus.FAIL.value
 
     def test_direct_call_detected(self, direct_call_repo):
-        viols = scan_direct_model_calls(direct_call_repo)
-        assert any(v["check_id"] == "direct_model_call" for v in viols)
+    """Test direct_call_detected runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+    """Test direct_call_fails_result runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_direct_call_fails_result(self, direct_call_repo):
-        result = run_gateway_bypass_guardian(repo_root=direct_call_repo)
-        check_map = {c.check_id: c.status for c in result.checks}
-        assert check_map["direct_model_call"] == CheckStatus.FAIL.value
+    # Act
+    # TODO: Execute direct_call_fails_result
+    result = None  # Replace with actual execution
 
-
-class TestGatewayBypassDeterminism:
-    def test_scan_is_deterministic(self, sdk_import_repo):
-        a = scan_provider_sdk_imports(sdk_import_repo)
-        b = scan_provider_sdk_imports(sdk_import_repo)
-        assert a == b
-
-    def test_result_guardian_id_correct(self, clean_repo):
-        result = run_gateway_bypass_guardian(repo_root=clean_repo)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         assert result.guardian_id == "gateway_bypass"

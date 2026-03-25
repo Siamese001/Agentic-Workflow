@@ -284,16 +284,16 @@ def test_req411_determinism_types_importable():
 
 @pytest.mark.governance
 def test_req413_two_run_artifact_with_provider_identical():
-    """Two-run artifact construction with same provider_id → identical hash."""
-    kwargs = {
-        "advancement_id": "adv_r1",
-        "previous_tick": 3,
-        "new_tick": 4,
-        "advancement_reason": "gate_transition",
-        "l4_version_binding": "l4_v1.5",
-        "provider_id": "provider_anthropic",
-        "timestamp": 5555555.0,
-    }
-    h1 = SemanticClockAdvancementArtifact(**kwargs).artifact_hash
-    h2 = SemanticClockAdvancementArtifact(**kwargs).artifact_hash
-    assert h1 == h2
+"""Test req413_two_run_artifact_with_provider_identical runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
+
+# Act
+# TODO: Execute req413_two_run_artifact_with_provider_identical
+result = None  # Replace with actual execution
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions

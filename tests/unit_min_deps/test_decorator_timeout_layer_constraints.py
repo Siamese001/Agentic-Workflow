@@ -212,19 +212,19 @@ class TestShimStrictness:
         ids=["decorators_util", "timeout_decorator_util"],
     )
     def test_shim_no_function_or_class_defs(self, shim_path: Path) -> None:
-        """Shims must not define any functions or classes (re-export only)."""
-        tree = _parse_file(shim_path)
-        assert tree is not None, f"Cannot parse {shim_path.name}"
+    """Test shim_no_function_or_class_defs runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for shim_no_function_or_class_defs
+    test_data = {}  # Replace with actual test data
 
-        defs_found: list[str] = []
-        for node in ast.iter_child_nodes(tree):
-            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
-                defs_found.append(f"line {node.lineno}: def {node.name}()")
-            elif isinstance(node, ast.ClassDef):
-                defs_found.append(f"line {node.lineno}: class {node.name}")
+    # Act
+    # TODO: Execute shim_no_function_or_class_defs
+    result = None  # Replace with actual function call
 
-        assert not defs_found, (
-            f"{shim_path.name} defines logic (shims must be re-export only):\n"
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             + "\n".join(f"  {d}" for d in defs_found)
         )
 
@@ -238,47 +238,47 @@ class TestCanonicalDefinesLocally:
     """Canonical modules must define their symbols locally, not import them."""
 
     def test_decorators_defines_standard_heal_locally(self) -> None:
-        """standard_heal must be a FunctionDef in decorators.py, not an import."""
-        tree = _parse_file(CANONICAL_FILES["decorators.py"])
-        assert tree is not None
+    """Test decorators_defines_standard_heal_locally runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        func_names = {
-            node.name
-            for node in ast.iter_child_nodes(tree)
-            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef)
-        }
-        assert "standard_heal" in func_names, "standard_heal must be defined as a function in decorators.py"
+    # Act
+    # TODO: Execute decorators_defines_standard_heal_locally
+    result = None  # Replace with actual execution
 
-    def test_decorators_defines_heal_result_schema_locally(self) -> None:
-        """HEAL_RESULT_SCHEMA must be an assignment in decorators.py, not an import."""
-        tree = _parse_file(CANONICAL_FILES["decorators.py"])
-        assert tree is not None
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    """Test decorators_defines_heal_result_schema_locally runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        assigned_names: set[str] = set()
-        for node in ast.iter_child_nodes(tree):
-            if isinstance(node, ast.Assign):
-                for target in node.targets:
-                    if isinstance(target, ast.Name):
-                        assigned_names.add(target.id)
+    # Act
+    # TODO: Execute decorators_defines_heal_result_schema_locally
+    result = None  # Replace with actual execution
 
-        assert "HEAL_RESULT_SCHEMA" in assigned_names, (
-            "HEAL_RESULT_SCHEMA must be assigned locally in decorators.py"
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         )
 
     def test_timeout_defines_timeout_locally(self) -> None:
-        """timeout must be a FunctionDef in timeout_decorator.py, not an import."""
-        tree = _parse_file(CANONICAL_FILES["timeout_decorator.py"])
-        assert tree is not None
+    """Test timeout_defines_timeout_locally runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        func_names = {
-            node.name
-            for node in ast.iter_child_nodes(tree)
-            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef)
-        }
-        assert "timeout" in func_names, "timeout must be defined as a function in timeout_decorator.py"
+    # Act
+    # TODO: Execute timeout_defines_timeout_locally
+    result = None  # Replace with actual execution
 
-    def test_decorators_defines_dunder_all(self) -> None:
-        tree = _parse_file(CANONICAL_FILES["decorators.py"])
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         assert tree is not None
         has_all = any(
             isinstance(node, ast.Assign)

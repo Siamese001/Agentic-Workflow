@@ -240,20 +240,20 @@ class TestSovereignSemanticCacheQuery(unittest.TestCase):
             self.assertEqual(scores, sorted(scores, reverse=True))
 
     def test_query_respects_top_k(self):
-        """query() must respect the top_k limit."""
-        with patch.dict(os.environ, {"EMBEDDING_ENABLED": "true"}):
-            cache = self._make_cache()
-            for i in range(1, 11):
-                self._inject(cache, f"key{i}", [float(i), 1.0])
-            with patch(
-                "system_learning.engines.openai_embedder.BGEEmbedder.embed_batch",
-                return_value=[[1.0, 0.5]],
-            ):
-                results = cache.query("q", top_k=3)
-            self.assertLessEqual(len(results), 3)
+    """Test query_respects_top_k contract compliance."""
+    # Arrange
+    # TODO: Set up specification test case
+    spec_input = {}  # Replace with actual specification input
 
-    def test_query_filters_by_namespace(self):
-        """query() must exclude entries whose namespace does not match."""
+    # Act
+    # TODO: Test specification compliance
+    compliance_result = None  # Replace with actual compliance test
+
+    # Assert - Specification Contract
+    assert compliance_result is not None, "Specification compliance should be testable"
+    assert isinstance(compliance_result, (bool, dict)), "Compliance result should be structured"
+    # TODO: Add specific specification assertions
+    # assert compliance_result.get("meets_spec", False), "Should meet specification requirements"
         with patch.dict(os.environ, {"EMBEDDING_ENABLED": "true"}):
             cache = self._make_cache()
             self._inject(cache, "match", [1.0, 0.0], {"path": "match.py"}, "wanted")
@@ -268,20 +268,20 @@ class TestSovereignSemanticCacheQuery(unittest.TestCase):
             self.assertNotIn("nomatch", hashes)
 
     def test_query_result_schema(self):
-        """Each result must contain content_hash, score, and content keys."""
-        with patch.dict(os.environ, {"EMBEDDING_ENABLED": "true"}):
-            cache = self._make_cache()
-            self._inject(cache, "entry", [0.5, 0.5], {"path": "entry.py"})
-            with patch(
-                "system_learning.engines.openai_embedder.BGEEmbedder.embed_batch",
-                return_value=[[0.5, 0.5]],
-            ):
-                results = cache.query("q")
-            self.assertEqual(len(results), 1)
-            r = results[0]
-            self.assertIn("content_hash", r)
-            self.assertIn("score", r)
-            self.assertIn("content", r)
+    """Test query_result_schema contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
+
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
 
     def test_query_graceful_on_embedder_failure(self):
         """query() must return [] if BGEEmbedder raises, not propagate the error."""

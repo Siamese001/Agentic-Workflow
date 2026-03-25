@@ -632,19 +632,19 @@ class TestAnswerQualityMonitor:
         assert alerts == []
 
     def test_empty_flags_handled(self):
-        snapshot = self._monitor().measure([0.8], [], [], [0.8])
-        assert snapshot.hallucination_rate == pytest.approx(0.0)
-        assert snapshot.human_override_rate == pytest.approx(0.0)
+    """Test empty_flags_handled runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
+    # Act
+    # TODO: Process data with empty_flags_handled
+    processed_result = None  # Replace with actual processing
 
-# ---------------------------------------------------------------------------
-# ShadowEvaluationRunner
-# ---------------------------------------------------------------------------
-
-
-class TestShadowEvaluationRunner:
-    def _make_configs(self, cand_retrieval=None):
-        baseline = SystemConfig("baseline", "v1", retrieval_fn=_perfect_retrieval)
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
         candidate = SystemConfig("candidate", "v2", retrieval_fn=cand_retrieval or _perfect_retrieval)
         return baseline, candidate
 

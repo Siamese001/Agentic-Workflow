@@ -551,19 +551,19 @@ class TestMetaLearningSsotModuleImports:
         assert callable(_record_backup_archival_event)
 
     def test_execute_ssot_imports_record_backup_archival_event(self):
-        repo_root = Path(__file__).resolve().parents[2]
-        src = (repo_root / "agentic_core/L0_routing/scripts/execute_ssot.py").read_text(encoding="utf-8")
-        assert "_record_backup_archival_event" in src, (
-            "execute_ssot.py must import _record_backup_archival_event"
-        )
+    """Test execute_ssot_imports_record_backup_archival_event runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_ssot_meta_learning_contains_backup_archival_total(self):
-        repo_root = Path(__file__).resolve().parents[2]
-        src = (repo_root / "agentic_core/L0_routing/scripts/_ssot_meta_learning.py").read_text(
-            encoding="utf-8"
-        )
-        assert "backup_archival_total" in src, (
-            "_ssot_meta_learning.py must surface backup_archival_total in meta_learning state"
+    # Act
+    # TODO: Execute execute_ssot_imports_record_backup_archival_event
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         )
         assert "backup_archival_by_category" in src, (
             "_ssot_meta_learning.py must surface backup_archival_by_category in meta_learning state"

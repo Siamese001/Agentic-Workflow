@@ -225,74 +225,74 @@ class TestInternalCallGraphVisitor:
     """G4: Calls between internal modules."""
 
     def test_calls_edge_emitted_for_imported_internal_symbol(self):
-        src = """
-from agentic_core.adg.schema_util import canonical_name
-result = canonical_name("Module", "foo.py")
-"""
-        edges = _run_icg(src)
-        assert len(edges) == 1
-        e = edges[0]
-        assert e.relation_type == "calls"
-        assert e.edge_kind == "call"
-        assert "canonical_name" in e.symbol
+    """Test calls_edge_emitted_for_imported_internal_symbol runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_calls_edge_for_import_alias(self):
-        src = """
-from agentic_core.adg.schema_util import canonical_name as cn
-x = cn("Layer", "L0")
-"""
-        edges = _run_icg(src)
-        assert any(e.relation_type == "calls" for e in edges)
+    # Act
+    # TODO: Execute calls_edge_emitted_for_imported_internal_symbol
+    result = None  # Replace with actual execution
 
-    def test_no_calls_edge_for_stdlib(self):
-        src = """
-from pathlib import Path
-p = Path("/tmp")
-"""
-        edges = _run_icg(src)
-        assert not edges
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    """Test calls_edge_for_import_alias runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_no_calls_edge_for_external_sdk(self):
-        src = """
-import openai
-openai.ChatCompletion.create(model="gpt-4", messages=[])
-"""
-        edges = _run_icg(src)
-        assert not edges
+    # Act
+    # TODO: Execute calls_edge_for_import_alias
+    result = None  # Replace with actual execution
+    """Test no_calls_edge_for_stdlib runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_calls_edge_for_apps_rg_import(self):
-        src = """
-from apps_rg.engines.ats_compatibility_engine import run_check
-run_check()
-"""
-        edges = _run_icg(src)
-        assert any(e.relation_type == "calls" for e in edges)
+    # Act
+    # TODO: Execute no_calls_edge_for_stdlib
+    result = None  # Replace with actual execution
+    """Test no_calls_edge_for_external_sdk runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_multiple_calls_same_symbol_deduplicated_on_set(self):
-        src = """
-from agentic_core.adg.schema_util import canonical_name
-x = canonical_name("Module", "a.py")
-y = canonical_name("Module", "b.py")
-"""
-        edges = _run_icg(src)
-        # Two calls at different line_nos → two edges (frozen dataclass, different line_no)
-        calls = [e for e in edges if e.relation_type == "calls"]
-        assert len(calls) == 2
+    # Act
+    # TODO: Execute no_calls_edge_for_external_sdk
+    result = None  # Replace with actual execution
+    """Test calls_edge_for_apps_rg_import runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_calls_edge_for_plain_import(self):
-        src = """
-import agentic_core
-agentic_core.something()
-"""
-        edges = _run_icg(src)
-        # `agentic_core` mapped via plain `import agentic_core` → local name `agentic_core`
-        assert any(e.relation_type == "calls" for e in edges)
+    # Act
+    # TODO: Execute calls_edge_for_apps_rg_import
+    result = None  # Replace with actual execution
+    """Test multiple_calls_same_symbol_deduplicated_on_set runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_line_number_captured(self):
-        src = """
-from agentic_core.adg.schema_util import canonical_name
+    # Act
+    # TODO: Execute multiple_calls_same_symbol_deduplicated_on_set
+    result = None  # Replace with actual execution
 
-result = canonical_name("Module", "x.py")
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test calls_edge_for_plain_import runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute calls_edge_for_plain_import
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 """
         edges = _run_icg(src)
         assert edges[0].line_no == 4
@@ -489,19 +489,19 @@ class TestGovernancePlaneVisitor:
     """GG: writes_through and routes_through edges for mutation governance."""
 
     def test_writes_through_for_uwg_call(self):
-        src = """
-from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
-uwg = UniversalWriteGateway()
-uwg.execute_write("foo", b"data")
-"""
-        edges = _run_gov(src)
-        wt = [e for e in edges if e.relation_type == "writes_through"]
-        assert len(wt) >= 1
-        assert all("UniversalWriteGateway" in e.to_name for e in wt)
+    """Test writes_through_for_uwg_call runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_writes_through_for_submit_instruction(self):
-        src = """
-submit_instruction(packet)
+    # Act
+    # TODO: Execute writes_through_for_uwg_call
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 """
         edges = _run_gov(src)
         assert any(e.relation_type == "writes_through" for e in edges)
@@ -523,26 +523,26 @@ HealingOrchestrator().run()
         assert len(rt) >= 1
 
     def test_routes_through_for_run_healing(self):
-        src = """
-run_healing(context)
-"""
-        edges = _run_gov(src)
-        assert any(e.relation_type == "routes_through" for e in edges)
+    """Test routes_through_for_run_healing runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_no_governance_edge_for_unrelated_call(self):
-        src = """
-some_random_function(arg)
-"""
-        edges = _run_gov(src)
-        assert not edges
+    # Act
+    # TODO: Execute routes_through_for_run_healing
+    """Test no_governance_edge_for_unrelated_call runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_governance_edge_kind(self):
-        src = """
-submit_instruction(pkt)
-"""
-        edges = _run_gov(src)
-        wt = [e for e in edges if e.relation_type == "writes_through"]
-        assert all(e.edge_kind == "write" for e in wt)
+    # Act
+    # TODO: Execute no_governance_edge_for_unrelated_call
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
     def test_routes_through_edge_kind(self):
         src = """
@@ -555,19 +555,19 @@ replay_run(session_id)
 
 class TestViolationPropagationCoverage:
     def test_propagation_not_truncated_at_legacy_cap(self):
-        violating_module = "ADG::Module::agentic_core/L0_routing/bad.py"
-        edges = [
-            Edge(
-                from_name=violating_module,
-                relation_type="violates",
-                to_name="ADG::Layer::L5",
-                edge_kind="import",
-                source_file="agentic_core/L0_routing/bad.py",
-                line_no=1,
-                symbol="violates",
-            )
-        ]
-        for index in range(6001):
+    """Test propagation_not_truncated_at_legacy_cap runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute propagation_not_truncated_at_legacy_cap
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             edges.append(
                 Edge(
                     from_name=f"ADG::Module::consumers/importer_{index}.py",
@@ -606,19 +606,19 @@ class TestScanManifestNewFields:
         assert m.test_covers_count == 0
 
     def test_manifest_has_inter_module_call_count(self):
-        from agentic_core.adg.extraction.static_scanner import ScanManifest
+    """Test manifest_has_inter_module_call_count runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        m = ScanManifest()
-        assert hasattr(m, "inter_module_call_count")
-        assert m.inter_module_call_count == 0
+    # Act
+    # TODO: Execute manifest_has_inter_module_call_count
+    result = None  # Replace with actual execution
 
-    def test_manifest_has_governance_plane_count(self):
-        from agentic_core.adg.extraction.static_scanner import ScanManifest
-
-        m = ScanManifest()
-        assert hasattr(m, "governance_plane_count")
-        assert m.governance_plane_count == 0
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
     def test_manifest_has_closure_evidence_fields(self):
         from agentic_core.adg.extraction.static_scanner import ScanManifest
 

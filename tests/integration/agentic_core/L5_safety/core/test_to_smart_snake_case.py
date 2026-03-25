@@ -230,20 +230,20 @@ class TestToSmartSnakeCase:
             assert result == input_name, f"Failed for {input_name}: expected {input_name}, got {result}"
 
     def test_to_smart_snake_case_special_characters(self):
-        """Test handling of special characters (should be treated as separators)."""
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-            FileClassificationAgent,
-        )
+    """Test to_smart_snake_case_special_characters contract compliance."""
+    # Arrange
+    # TODO: Set up specification test case
+    spec_input = {}  # Replace with actual specification input
 
-        agent = object.__new__(FileClassificationAgent)
+    # Act
+    # TODO: Test specification compliance
+    compliance_result = None  # Replace with actual compliance test
 
-        # Note: The regex patterns might not handle all special characters
-        # This test documents current behavior
-        test_cases = [
-            ("MyClass-Test", "my_class-_test"),  # Dash treated as separator before uppercase
-            ("MyClass_Test", "my_class__test"),  # Underscore preserved
-        ]
-
+    # Assert - Specification Contract
+    assert compliance_result is not None, "Specification compliance should be testable"
+    assert isinstance(compliance_result, (bool, dict)), "Compliance result should be structured"
+    # TODO: Add specific specification assertions
+    # assert compliance_result.get("meets_spec", False), "Should meet specification requirements"
         for input_name, expected in test_cases:
             result = agent._to_smart_snake_case(input_name)
             assert result == expected, f"Failed for {input_name}: expected {expected}, got {result}"

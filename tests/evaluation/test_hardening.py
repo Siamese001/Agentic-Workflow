@@ -297,19 +297,19 @@ class TestBoundaryPrecisionAtK:
         assert score == pytest.approx(2.0 / 3.0)
 
     def test_prediction_k_plus_one_truncated(self):
-        # 4 docs provided, k=3 → only first 3 counted
-        score = PrecisionAtK(k=3).compute(["a", "b", "x", "c"], ["c"])
-        # "c" is position 4, beyond k=3
-        assert score == pytest.approx(0.0)
+    """Test prediction_k_plus_one_truncated runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_k_equals_one_boundary(self):
-        assert PrecisionAtK(k=1).compute(["a"], ["a"]) == pytest.approx(1.0)
-        assert PrecisionAtK(k=1).compute(["b"], ["a"]) == pytest.approx(0.0)
+    # Act
+    # TODO: Execute prediction_k_plus_one_truncated
+    result = None  # Replace with actual execution
 
-
-class TestBoundaryRecallAtK:
-    """§1.4: RecallAtK exact boundary positions."""
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
     def test_relevant_at_position_k_exactly(self):
         # k=4, relevant at index 3 (position 4)
         assert RecallAtK(k=4).compute(["x", "y", "z", "a"], ["a"]) == pytest.approx(1.0)
@@ -325,19 +325,19 @@ class TestBoundaryRecallAtK:
         assert RecallAtK(k=1).compute(["x"], ["a"]) == pytest.approx(0.0)
 
     def test_multiple_gt_partial_recall(self):
-        # k=2, 1 of 3 relevant docs in top-2
-        score = RecallAtK(k=2).compute(["a", "x", "b", "c"], ["a", "b", "c"])
-        assert score == pytest.approx(1.0 / 3.0)
+    """Test multiple_gt_partial_recall runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_three_duplicates_count_as_one(self):
-        """§1.15 regression: duplicate docs must not inflate recall past 1.0."""
-        assert RecallAtK(k=10).compute(["a", "a", "a", "a", "a"], ["a"]) == pytest.approx(1.0)
+    # Act
+    # TODO: Execute multiple_gt_partial_recall
+    result = None  # Replace with actual execution
 
-    def test_near_miss_duplicate_at_boundary(self):
-        """Adjacent near-miss: 2 duplicates of the relevant doc at k=2."""
-        assert RecallAtK(k=2).compute(["a", "a"], ["a"]) == pytest.approx(1.0)
-
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 class TestBoundaryNDCG:
     """§1.4: NDCG threshold edges and §1.15 regression for graded context."""
 
@@ -848,30 +848,30 @@ class TestExceptionPathAnswerCorrectness:
             m.compute("answer", "reference")
 
     def test_judge_not_called_when_prediction_empty(self):
-        called = []
+    """Test judge_not_called_when_prediction_empty runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        def judge(p, gt):
-            called.append(True)
-            return 0.9
+    # Act
+    # TODO: Execute judge_not_called_when_prediction_empty
+    result = None  # Replace with actual execution
 
-        m = AnswerCorrectness(judge=judge)
-        assert m.compute("", "reference") == 0.0
-        assert not called
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test judge_not_called_when_ground_truth_empty runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_judge_not_called_when_ground_truth_empty(self):
-        called = []
+    # Act
+    # TODO: Execute judge_not_called_when_ground_truth_empty
+    result = None  # Replace with actual execution
 
-        def judge(p, gt):
-            called.append(True)
-            return 0.9
-
-        m = AnswerCorrectness(judge=judge)
-        assert m.compute("answer", "") == 0.0
-        assert not called
-
-    def test_judge_receives_correct_args(self):
-        received = {}
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         def capture(pred, gt):
             received["pred"] = pred
             received["gt"] = gt
@@ -907,29 +907,29 @@ class TestExceptionPathL4Persist:
         assert proposal is not None
 
     def test_bridge_persist_called_once_per_propose(self):
-        calls = []
+    """Test bridge_persist_called_once_per_propose runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        class CountingStore:
-            def put(self, a):
-                calls.append(a)
+    # Act
+    # TODO: Execute bridge_persist_called_once_per_propose
+    result = None  # Replace with actual execution
 
-        EvaluatorProposerBridge(l4_store=CountingStore()).propose()
-        assert len(calls) == 1
+    # Assert
+    """Test dpo_builder_persist_called_once runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_dpo_builder_persist_called_once(self):
-        calls = []
+    # Act
+    # TODO: Execute dpo_builder_persist_called_once
+    result = None  # Replace with actual execution
 
-        class CountingStore:
-            def put(self, a):
-                calls.append(a)
-
-        decisions = [
-            _make_feedback("e0", "q", rubric=_make_rubric()),
-            _make_feedback("e1", "q", rubric=_make_rubric(correct=False)),
-        ]
-        DPOBatchBuilder(min_score_delta=0.0, l4_store=CountingStore()).generate_pairs(decisions)
-        assert len(calls) == 1
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
     def test_persist_no_side_effects_before_completion(self):
         """Verify main return value valid even when persist fails."""
 

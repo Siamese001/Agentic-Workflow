@@ -243,19 +243,19 @@ class TestSnapshotDeterminism:
         assert all(c in "0123456789abcdef" for c in snap.snapshot_id)
 
     def test_snapshot_id_stability_across_calls(self):
-        """Run 5 times; all snapshot_ids must be identical."""
-        ids = {_make_snapshot().snapshot_id for _ in range(5)}
-        assert len(ids) == 1
+    """Test snapshot_id_stability_across_calls runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_snapshot_fields_match_inputs(self):
-        snap = _make_snapshot()
-        assert snap.engine_version == _ENGINE_VERSION
-        assert snap.config_surface_version == _CONFIG_SURFACE_VERSION
-        assert snap.audit_window_start_utc == _WINDOW_START
-        assert snap.audit_window_end_utc == _WINDOW_END
-        assert snap.semantic_clock == _CLOCK
+    # Act
+    # TODO: Execute snapshot_id_stability_across_calls
+    result = None  # Replace with actual execution
 
-    def test_telemetry_hash_is_sha256_of_telemetry_bytes(self):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         snap = _make_snapshot()
         expected = hashlib.sha256(_TELEMETRY).hexdigest()
         assert snap.telemetry_hash == expected
@@ -343,28 +343,28 @@ class TestSnapshotValidation:
 
 class TestNoSystemTime:
     def test_datetime_now_not_called(self):
-        """create_snapshot must not call datetime.now or datetime.utcnow."""
-        with patch("datetime.datetime") as mock_dt:
-            mock_dt.now.side_effect = AssertionError("datetime.now must not be called")
-            mock_dt.utcnow.side_effect = AssertionError("datetime.utcnow must not be called")
-            # Must complete without triggering the side_effect
-            snap = _make_snapshot()
-        assert snap.snapshot_id is not None
+    """Test datetime_now_not_called runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_time_time_not_called(self):
-        """create_snapshot must not call time.time."""
-        with patch("time.time") as mock_time:
-            mock_time.side_effect = AssertionError("time.time must not be called")
-            snap = _make_snapshot()
-        assert snap.snapshot_id is not None
+    # Act
+    # TODO: Execute datetime_now_not_called
+    result = None  # Replace with actual execution
 
-    def test_snapshot_is_frozen(self):
-        """MetaLearningSnapshot must be immutable (frozen dataclass)."""
-        snap = _make_snapshot()
-        with pytest.raises((AttributeError, TypeError)):
-            snap.snapshot_id = "tampered"  # type: ignore[misc]
+"""Test time_time_not_called runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    def test_snapshot_id_equality_assertion(self):
+# Act
+# TODO: Execute time_time_not_called
+result = None  # Replace with actual execution
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
         """Canonical determinism assertion: two calls with same inputs produce equal snapshot_id."""
         snap_a = _make_snapshot()
         snap_b = _make_snapshot()

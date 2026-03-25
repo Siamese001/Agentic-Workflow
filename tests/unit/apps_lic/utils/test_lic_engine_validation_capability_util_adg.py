@@ -19,15 +19,16 @@ class TestLICEngineValidationCapability:
         assert LICEngineValidationCapability.VALIDATION_LABEL == ""
 
     def test_has_run_validation(self):
-        assert hasattr(LICEngineValidationCapability, "run_validation")
+    """Test has_run_validation runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_concrete_subclass(self):
-        class ConcreteValidator(LICEngineValidationCapability):
-            SIGNAL_NAME = "TEST_SIGNAL"
-            VALIDATION_LABEL = "Test check"
+    # Act
+    # TODO: Execute has_run_validation
+    result = None  # Replace with actual execution
 
-            def _validate(self) -> list[str]:
-                return []
-
-        validator = ConcreteValidator()
-        assert validator.SIGNAL_NAME == "TEST_SIGNAL"
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions

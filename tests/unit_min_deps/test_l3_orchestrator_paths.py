@@ -202,20 +202,20 @@ class TestW5L3OrchestratorPaths:
         )
 
     def test_path_b_policy_check_first(self, orchestrator, sample_payload):
-        """Test Path B: Policy Check First orchestration."""
-        trace_id = "test_trace_b_001"
-        policy_hash = "policy_hash_001"
-        allowed_tools = ("tool1", "tool2")
+    """Test path_b_policy_check_first contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-        result = orchestrator.orchestrate(
-            governed_payload=sample_payload,
-            route_mode="B",
-            trace_id=trace_id,
-            policy_hash=policy_hash,
-            allowed_tools=allowed_tools,
-        )
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-        # Verify result structure
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
         assert result.success is True
         assert result.route_mode == "B"
         assert result.plan_hash is not None

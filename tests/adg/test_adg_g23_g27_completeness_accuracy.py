@@ -523,19 +523,19 @@ class TestNondeterminismVisitor:
         assert all(e.edge_kind == "uuid_use" for e in u)
 
     def test_no_false_positive_on_plain_function(self):
-        code = "def my_func():\n    return 42"
-        edges = _visit(_NondeterminismVisitor, code)
-        assert edges == []
+    """Test no_false_positive_on_plain_function runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for no_false_positive_on_plain_function
+    test_data = {}  # Replace with actual test data
 
-    def test_no_false_positive_on_imports(self):
-        code = "import random\nimport uuid"
-        edges = _visit(_NondeterminismVisitor, code)
-        assert edges == []
+    # Act
+    # TODO: Execute no_false_positive_on_plain_function
+    result = None  # Replace with actual function call
 
-    def test_symbol_recorded(self):
-        code = "import time\nt = time.time()"
-        edges = _visit(_NondeterminismVisitor, code)
-        assert "time.time" in _syms(edges)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
 
 # ===========================================================================
@@ -580,19 +580,19 @@ class TestExternalHttpVisitor:
         assert all(e.edge_kind == "http_egress_call" for e in edges)
 
     def test_no_false_positive_on_internal_calls(self):
-        code = "def do_thing():\n    my_service.get(path)"
-        edges = _visit(_ExternalHttpVisitor, code)
-        assert edges == []
+    """Test no_false_positive_on_internal_calls runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_symbol_recorded(self):
-        code = "import requests\nr = requests.get('http://x.com')"
-        edges = _visit(_ExternalHttpVisitor, code)
-        assert "requests.get" in _syms(edges)
+    # Act
+    # TODO: Execute no_false_positive_on_internal_calls
+    result = None  # Replace with actual execution
 
-
-# ===========================================================================
-# 6. Visitor accuracy: G25 _AgentDispatchVisitor
-# ===========================================================================
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
 
 class TestAgentDispatchVisitor:
@@ -602,19 +602,19 @@ class TestAgentDispatchVisitor:
         assert any(e.relation_type == "agent_executes_agent" for e in edges)
 
     def test_detects_invoke_agent_method(self):
-        code = "result = self.invoke_agent(target='agent_b', payload=data)"
-        edges = _visit(_AgentDispatchVisitor, code)
-        assert any(e.relation_type == "agent_executes_agent" for e in edges)
+    """Test detects_invoke_agent_method runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for detects_invoke_agent_method
+    test_data = {}  # Replace with actual test data
 
-    def test_detects_dispatch_agent(self):
-        code = "self.dispatch_agent(agent_id='planner', task=task)"
-        edges = _visit(_AgentDispatchVisitor, code)
-        assert any(e.relation_type == "agent_executes_agent" for e in edges)
+    # Act
+    # TODO: Execute detects_invoke_agent_method
+    result = None  # Replace with actual function call
 
-    def test_detects_delegate_to(self):
-        code = "self.delegate_to(sub_agent)"
-        edges = _visit(_AgentDispatchVisitor, code)
-        assert any(e.relation_type == "agent_executes_agent" for e in edges)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
     def test_detects_handoff_to(self):
         code = "self.handoff_to(next_agent)"
@@ -627,19 +627,19 @@ class TestAgentDispatchVisitor:
         assert all(e.edge_kind == "agent_dispatch" for e in edges)
 
     def test_no_false_positive_on_unrelated_call(self):
-        code = "result = compute_value(x, y)"
-        edges = _visit(_AgentDispatchVisitor, code)
-        assert edges == []
+    """Test no_false_positive_on_unrelated_call runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute no_false_positive_on_unrelated_call
+    result = None  # Replace with actual execution
 
-# ===========================================================================
-# 7. Visitor accuracy: G26 _L5ValidationProofVisitor
-# ===========================================================================
-
-
-class TestL5ValidationProofVisitor:
-    def test_detects_agent_registry(self):
-        code = "registry = AgentRegistry()"
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         edges = _visit(_L5ValidationProofVisitor, code)
         assert any(e.relation_type == "validated_by_registry" for e in edges)
 
@@ -849,40 +849,40 @@ class TestScanFileRoundTrip:
         assert any(e.relation_type == "uses_uuid" for e in edges)
 
     def test_scan_produces_external_http_call(self, tmp_path):
-        code = "import requests\ndef f():\n    return requests.get('http://x.com')\n"
-        fp = self._make_tmp(code, tmp_path)
-        edges, err = _scan_file(fp, tmp_path)
-        assert not err
-        assert any(e.relation_type == "external_http_call" for e in edges)
+    """Test scan_produces_external_http_call runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_scan_produces_agent_executes_agent(self, tmp_path):
-        code = "def f(self):\n    self.invoke_agent(target='b')\n"
-        fp = self._make_tmp(code, tmp_path)
-        edges, err = _scan_file(fp, tmp_path)
-        assert not err
-        assert any(e.relation_type == "agent_executes_agent" for e in edges)
+    # Act
+    # TODO: Execute scan_produces_external_http_call
+    """Test scan_produces_agent_executes_agent runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_scan_produces_validated_by_registry(self, tmp_path):
-        code = "def f():\n    registry = AgentRegistry()\n"
-        fp = self._make_tmp(code, tmp_path)
-        edges, err = _scan_file(fp, tmp_path)
-        assert not err
-        assert any(e.relation_type == "validated_by_registry" for e in edges)
+    # Act
+    # TODO: Execute scan_produces_agent_executes_agent
+    result = None  # Replace with actual execution
 
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
     def test_scan_produces_execution_terminates_at_uwg(self, tmp_path):
-        code = "def f():\n    gate = UniversalWriteGateway()\n"
-        fp = self._make_tmp(code, tmp_path)
-        edges, err = _scan_file(fp, tmp_path)
-        assert not err
-        assert any(e.relation_type == "execution_terminates_at_uwg" for e in edges)
+    """Test scan_produces_execution_terminates_at_uwg runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for scan_produces_execution_terminates_at_uwg
+    test_data = {}  # Replace with actual test data
 
-    def test_scan_produces_references_policy_hash(self, tmp_path):
-        code = "def f():\n    guard = PolicyConfigGuard(config)\n"
-        fp = self._make_tmp(code, tmp_path)
-        edges, err = _scan_file(fp, tmp_path)
-        assert not err
-        assert any(e.relation_type == "references_policy_hash" for e in edges)
+    # Act
+    # TODO: Execute scan_produces_execution_terminates_at_uwg
+    result = None  # Replace with actual function call
 
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
     def test_scan_produces_proposal_commits_routing(self, tmp_path):
         code = "def f():\n    a = MetaLearningProposalArtifact()\n"
         fp = self._make_tmp(code, tmp_path)

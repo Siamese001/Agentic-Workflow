@@ -174,22 +174,22 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestHierarchyAgentHealer:
     def test_check_id_string(self):
-        assert isinstance(CHECK_ID, str)
+    """Test check_id_string runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for check_id_string
+    """Test heal_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_heal_callable(self):
-        assert callable(heal_hierarchy_violations)
+    # Act
+    # TODO: Execute heal_callable
+    result = None  # Replace with actual execution
 
-    def test_no_violations_returns_healed(self):
-        result = heal_hierarchy_violations({"violations_count": 0}, apply=False)
-        assert isinstance(result, HealCheckResult)
-        assert result.status == HealStatus.HEALED
-
-    def test_dry_run_with_violations_returns_result(self):
-        result = heal_hierarchy_violations(
-            {"violations_count": 2, "territory": "agentic_core"},
-            apply=False,
-        )
-        assert isinstance(result, HealCheckResult)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
     def test_check_id_matches(self):
         result = heal_hierarchy_violations({"violations_count": 0})

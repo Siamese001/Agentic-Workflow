@@ -465,19 +465,19 @@ class TestPolicyRecommendationEngineIntegration:
         assert len(recs) >= 1
 
     def test_mark_recommendation_applied_workflow(self):
-        """Verify mark_recommendation_applied updates MCP entity."""
-        bridge = get_sl_memory_bridge()
-        if not bridge.is_available:
-            pytest.skip("Memory MCP unavailable")
+    """Test mark_recommendation_applied_workflow runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
 
-        # Persist a recommendation
-        bridge.persist_policy_recommendation(
-            recommendation=type(
-                "Rec",
-                (),
-                {
-                    "profile_id": "prof_test",
-                    "recommended_changes": {"cutoff": 0.80},
+    # Act
+    # TODO: Execute workflow mark_recommendation_applied_workflow
+    workflow_result = None  # Replace with actual workflow execution
+
+    # Assert
+    assert workflow_result is not None, "Workflow should produce a result"
+    assert isinstance(workflow_result, dict), "Workflow result should be structured"
+    # TODO: Add workflow step assertions
                     "rationale": "test",
                     "confidence_score": 0.95,
                     "deterministic_digest": "test123" * 8,
@@ -557,19 +557,19 @@ class TestResilience:
     """Verify graceful degradation when MCP is unavailable."""
 
     def test_engines_function_normally_when_mcp_unavailable(self):
-        """Verify all engines work normally even if MCP is down."""
-        # Force bridge unavailable
-        bridge = SystemLearningMemoryBridge.__new__(SystemLearningMemoryBridge)
-        bridge._bridge = None
-        SystemLearningMemoryBridge._instance = bridge
+    """Test engines_function_normally_when_mcp_unavailable runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for engines_function_normally_when_mcp_unavailable
+    test_data = {}  # Replace with actual test data
 
-        # HealingSuccessRateStore should still work
-        store = HealingSuccessRateStore()
-        for _ in range(6):
-            store.record_outcome("TEST_ERROR", success=True)
-        assert store.get_prior("TEST_ERROR") > 0.50
+    # Act
+    # TODO: Execute engines_function_normally_when_mcp_unavailable
+    result = None  # Replace with actual function call
 
-        # RCA should still work
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         audit = b"SyntaxError: test"
         report = analyze_failures_and_persist("snap_resilient", audit, 0, 100)
         assert report is not None

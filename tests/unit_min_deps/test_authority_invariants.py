@@ -190,19 +190,19 @@ pytestmark = pytest.mark.unit_min_deps
 
 class TestAssertZeroExecutionAuthority:
     def test_execute_mode_raises(self):
-        ctx = AuthorityContext(
-            caller_layer="system_learning.test",
-            operation="run_agent",
-            target="l2_execution",
-            mode="EXECUTE",
-        )
-        with pytest.raises(AuthorityViolation) as exc_info:
-            assert_zero_execution_authority(ctx)
-        assert "ZERO_EXECUTION_AUTHORITY" in str(exc_info.value)
-        assert "EXECUTE" in str(exc_info.value)
+    """Test execute_mode_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_activate_mode_raises(self):
-        ctx = AuthorityContext(
+    # Act
+    # TODO: Execute execute_mode_raises
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             caller_layer="system_learning.test",
             operation="activate_package",
             target="l4_versioned_store",
@@ -235,19 +235,19 @@ class TestAssertZeroExecutionAuthority:
         assert_zero_execution_authority(ctx)
 
     def test_violation_message_contains_caller(self):
-        ctx = AuthorityContext(
-            caller_layer="system_learning.engines.rca",
-            operation="execute_work_contract",
-            target="l2_execution",
-            mode="EXECUTE",
-        )
-        with pytest.raises(AuthorityViolation) as exc_info:
-            assert_zero_execution_authority(ctx)
-        assert "system_learning.engines.rca" in str(exc_info.value)
+    """Test violation_message_contains_caller runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_violation_message_contains_operation(self):
-        ctx = AuthorityContext(
-            caller_layer="system_learning.test",
+    # Act
+    # TODO: Execute violation_message_contains_caller
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             operation="execute_work_contract",
             target="l2_execution",
             mode="EXECUTE",

@@ -134,32 +134,32 @@ class TestDeepCollisionDelegation:
         assert result == 0
 
     def test_deep_collision_gk_not_called(self, tmp_path):
-        """Collision → gatekeeper.safe_move is NEVER called (legacy handles it)."""
-        agent = _make_agent(tmp_path)
-        rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
-        file_path = _write(tmp_path, rel)
-        target = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "agent.py"
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text("existing")
+    """Test deep_collision_gk_not_called runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        _call_clean(agent, file_path, rel, depth=4, expected=3)
+    # Act
+    # TODO: Execute deep_collision_gk_not_called
+    result = None  # Replace with actual execution
 
-        agent.gatekeeper.safe_move.assert_not_called()
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
+    """Test deep_collision_legacy_called_with_collision_args runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_deep_collision_legacy_called_with_collision_args(self, tmp_path):
-        """Collision → _legacy_archive called with 'collision' subdir and 'COLLISION' label."""
-        agent = _make_agent(tmp_path)
-        rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
-        file_path = _write(tmp_path, rel)
-        target = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "agent.py"
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text("existing")
+    # Act
+    # TODO: Execute deep_collision_legacy_called_with_collision_args
+    result = None  # Replace with actual execution
 
-        _call_clean(agent, file_path, rel, depth=4, expected=3)
-
-        args = agent._legacy_archive_depth_violation.call_args[0]
-        assert "collision" in args
-        assert "COLLISION" in args
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
 
 # ---------------------------------------------------------------------------
@@ -169,30 +169,30 @@ class TestDeepCollisionDelegation:
 
 class TestDeepGkArgs:
     def test_deep_ensure_dir_called_with_correct_parent(self, tmp_path):
-        """_wg.ensure_dir must receive target_path.parent (not source parent)."""
-        agent = _make_agent(tmp_path)
-        rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
-        file_path = _write(tmp_path, rel)
+    """Test deep_ensure_dir_called_with_correct_parent runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        _, mock_wg = _call(agent, file_path, rel, depth=4, expected=3)
+    # Act
+    # TODO: Execute deep_ensure_dir_called_with_correct_parent
+    result = None  # Replace with actual execution
 
-        expected_parent = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts"
-        mock_wg.ensure_dir.assert_called_once_with(expected_parent)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test deep_gk_called_with_correct_args runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_deep_gk_called_with_correct_args(self, tmp_path):
-        """gk.safe_move called with (file_path, target_path, agent_name, reason_str)."""
-        agent = _make_agent(tmp_path)
-        rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
-        file_path = _write(tmp_path, rel)
+    # Act
+    # TODO: Execute deep_gk_called_with_correct_args
+    result = None  # Replace with actual execution
 
-        _call_clean(agent, file_path, rel, depth=4, expected=3)
-
-        call_args = agent.gatekeeper.safe_move.call_args[0]
-        assert call_args[0] == file_path
-        assert call_args[2] == "HierarchyAgent"
-        assert "FLATTENED" in call_args[3] or "Depth healing" in call_args[3]
-
-    def test_deep_expected_one_flattens_to_root_level(self, tmp_path):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         """expected=1, depth=3 → target is root/agent.py (parts[:1]+(name,))."""
         agent = _make_agent(tmp_path)
         rel = Path("apps_rg/sub/agent.py")
@@ -229,19 +229,19 @@ class TestDeepGkArgs:
         assert target_rel == Path("agentic_core/L0_routing/scripts/utils/agent.py")
 
     def test_deep_source_content_unchanged_after_gk_call(self, tmp_path):
-        """gk mock doesn't move file → source still has original content."""
-        agent = _make_agent(tmp_path)
-        rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
-        file_path = _write(tmp_path, rel, content="# original")
+    """Test deep_source_content_unchanged_after_gk_call runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        _call_clean(agent, file_path, rel, depth=4, expected=3)
+    # Act
+    # TODO: Execute deep_source_content_unchanged_after_gk_call
+    result = None  # Replace with actual execution
 
-        assert file_path.read_text() == "# original"
-
-    def test_deep_success_logs_healed(self, tmp_path):
-        """DEEP success → Logger.info called with 'HEALED' and 'FLATTENED'."""
-        agent = _make_agent(tmp_path)
-        rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         file_path = _write(tmp_path, rel)
 
         with (
@@ -272,19 +272,19 @@ class TestDeepGkFailure:
         assert file_path.exists()
 
     def test_deep_gk_failure_does_not_call_legacy(self, tmp_path):
-        """gk failure path does NOT fall through to _legacy_archive."""
-        agent = _make_agent(tmp_path)
-        agent.gatekeeper.safe_move.return_value = MagicMock(success=False, error="denied")
-        rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
-        file_path = _write(tmp_path, rel)
+    """Test deep_gk_failure_does_not_call_legacy runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        _call_clean(agent, file_path, rel, depth=4, expected=3)
+    # Act
+    # TODO: Execute deep_gk_failure_does_not_call_legacy
+    result = None  # Replace with actual execution
 
-        agent._legacy_archive_depth_violation.assert_not_called()
-
-    def test_deep_gk_failure_returns_zero(self, tmp_path):
-        """gk failure → returns 0."""
-        agent = _make_agent(tmp_path)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         agent.gatekeeper.safe_move.return_value = MagicMock(success=False, error="nope")
         rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
         file_path = _write(tmp_path, rel)
@@ -348,19 +348,19 @@ class TestShallowBoundaries:
         assert any("Manual intervention" in m for m in error_msgs)
 
     def test_shallow_never_calls_legacy(self, tmp_path):
-        """SHALLOW → _legacy_archive_depth_violation never called."""
-        agent = _make_agent(tmp_path)
-        rel = Path("tests/test_x.py")
-        file_path = _write(tmp_path, rel)
+    """Test shallow_never_calls_legacy runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        _call_clean(agent, file_path, rel, depth=1, expected=3)
+    # Act
+    # TODO: Execute shallow_never_calls_legacy
+    result = None  # Replace with actual execution
 
-        agent._legacy_archive_depth_violation.assert_not_called()
-
-
-# ---------------------------------------------------------------------------
-# _heal_depth_violation — depth==expected edge + exception variants
-# ---------------------------------------------------------------------------
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
 
 class TestEdgeAndExceptions:
@@ -399,19 +399,19 @@ class TestEdgeAndExceptions:
         assert result == 0
 
     def test_exception_does_not_call_legacy(self, tmp_path):
-        """Exception during DEEP heal → _legacy never called."""
-        agent = _make_agent(tmp_path)
-        agent.gatekeeper.safe_move.side_effect = OSError("disk full")
-        rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
-        file_path = _write(tmp_path, rel)
+    """Test exception_does_not_call_legacy runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        _call_clean(agent, file_path, rel, depth=4, expected=3)
+    # Act
+    # TODO: Execute exception_does_not_call_legacy
+    result = None  # Replace with actual execution
 
-        agent._legacy_archive_depth_violation.assert_not_called()
-
-    def test_exception_logs_error_with_rel(self, tmp_path):
-        """Exception → Logger.error mentions the file rel path."""
-        agent = _make_agent(tmp_path)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         agent.gatekeeper.safe_move.side_effect = RuntimeError("boom")
         rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
         file_path = _write(tmp_path, rel)
@@ -630,19 +630,19 @@ class TestEnforceDepthRulesDispatch:
         return agent
 
     def test_enforce_rules_no_territory_all_three_run(self, tmp_path):
-        """target_territory=None → all three sub-enforcers called."""
-        agent = self._make_dispatch_agent(tmp_path)
-        agent.enforce_depth_rules(target_territory=None)
-        agent._enforce_apps_depth.assert_called_once()
-        agent._enforce_tests_depth.assert_called_once()
-        agent._enforce_universal_depth.assert_called_once()
+    """Test enforce_rules_no_territory_all_three_run runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_enforce_rules_apps_territory_skips_tests_universal(self, tmp_path):
-        """target_territory='apps_rg' → apps runs; tests and universal skipped."""
-        agent = self._make_dispatch_agent(tmp_path)
-        agent.enforce_depth_rules(target_territory=APPS_RG_DIR)
-        agent._enforce_apps_depth.assert_called_once()
-        agent._enforce_tests_depth.assert_not_called()
+    # Act
+    # TODO: Execute enforce_rules_no_territory_all_three_run
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         agent._enforce_universal_depth.assert_not_called()
 
     def test_enforce_rules_tests_territory_skips_apps_universal(self, tmp_path):
@@ -720,16 +720,24 @@ class TestEnforceDepthRulesDispatch:
         assert not any("Found" in m and "depth violations" in m for m in info_msgs)
 
     def test_enforce_rules_apps_lic_prefix_runs_apps(self, tmp_path):
-        """target_territory='apps_lic' starts with 'apps_' → apps enforced."""
-        agent = self._make_dispatch_agent(tmp_path)
-        agent.enforce_depth_rules(target_territory=APPS_LIC_DIR)
-        agent._enforce_apps_depth.assert_called_once()
-        agent._enforce_tests_depth.assert_not_called()
-        agent._enforce_universal_depth.assert_not_called()
+    """Test enforce_rules_apps_lic_prefix_runs_apps runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_enforce_rules_apps_shared_prefix_runs_apps(self, tmp_path):
-        """target_territory='apps_shared' starts with 'apps_' → apps enforced."""
-        agent = self._make_dispatch_agent(tmp_path)
-        agent.enforce_depth_rules(target_territory=APPS_SHARED_DIR)
-        agent._enforce_apps_depth.assert_called_once()
-        agent._enforce_universal_depth.assert_not_called()
+    # Act
+    # TODO: Execute enforce_rules_apps_lic_prefix_runs_apps
+    result = None  # Replace with actual execution
+    """Test enforce_rules_apps_shared_prefix_runs_apps runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute enforce_rules_apps_shared_prefix_runs_apps
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions

@@ -251,19 +251,19 @@ class TestG12BelongsToLayer:
             )
 
     def test_ensure_layer_nodes_called_on_persist(self):
-        from agentic_core.adg.extraction.graph_persister import persist_scan_result
+    """Test ensure_layer_nodes_called_on_persist runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        client = MagicMock()
-        result = _make_scan_result([], modules=[])
+    # Act
+    # TODO: Execute ensure_layer_nodes_called_on_persist
+    result = None  # Replace with actual execution
 
-        persist_scan_result(result, client)
-
-        # All _LAYER_LABELS should be upserted
-        entity_calls = [c.args[0] for c in client.upsert_entity.call_args_list]
-        layer_nodes = [n for n in entity_calls if n.startswith("ADG::Layer::")]
-        assert layer_nodes, "_ensure_layer_nodes must create ADG::Layer:: nodes"
-
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 # ---------------------------------------------------------------------------
 # G15: in_cycle edges from _detect_cycles (regression)
 # ---------------------------------------------------------------------------

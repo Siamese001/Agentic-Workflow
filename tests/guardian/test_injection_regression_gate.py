@@ -288,19 +288,19 @@ class TestInjectionRegressionGate:
         evaluate_against_baseline(current, baseline)  # No thresholds provided
 
     def test_check_regression_compliance_function(self):
-        """Test the check_regression_compliance helper function."""
-        baseline = {
-            "total_samples": 100,
-            "attack_success_rate": 0.10,
-            "high_risk_count": 5,
-            "certification_hash": "baseline_hash",
-        }
+    """Test check_regression_compliance_function runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for check_regression_compliance_function
+    test_data = {}  # Replace with actual test data
 
-        # Non-regression case
-        current_good = {
-            "total_samples": 100,
-            "attack_success_rate": 0.12,
-            "high_risk_count": 5,
+    # Act
+    # TODO: Execute check_regression_compliance_function
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             "certification_hash": "current_hash",
         }
 

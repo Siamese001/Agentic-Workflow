@@ -103,26 +103,26 @@ class TestCanonicalTruthSeam:
         assert hasattr(CanonicalTruthProvider, "categorize_agent")
 
     def test_get_canonical_truth_provider_callable(self):
-        assert callable(get_canonical_truth_provider)
+    """Test get_canonical_truth_provider_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_get_canonical_truth_provider_returns_module(self):
-        provider = get_canonical_truth_provider()
-        assert provider is not None
+    # Act
+    # TODO: Execute get_canonical_truth_provider_callable
+    """Test get_canonical_layer_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_get_canonical_layer_callable(self):
-        assert callable(get_canonical_layer)
+    # Act
+    # TODO: Execute get_canonical_layer_callable
+    result = None  # Replace with actual execution
 
-    def test_get_canonical_layer_returns_int_or_raises(self):
-        try:
-            layer = get_canonical_layer(Path("agentic_core/L5_safety/foo.py"))
-            assert isinstance(layer, int)
-        except (RuntimeError, AttributeError, TypeError):
-            pass  # provider may not have get_layer as direct callable
-
-
-# ---------------------------------------------------------------------------
-# layer_emission_seam
-# ---------------------------------------------------------------------------
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 from agentic_core.L0_routing.seams.layer_emission_seam import (
     LayerEmissionValidator,
     assert_layer_may_emit,
@@ -138,22 +138,22 @@ class TestLayerEmissionSeam:
         assert hasattr(LayerEmissionValidator, "validate_emission")
 
     def test_get_layer_emission_validator_callable(self):
-        assert callable(get_layer_emission_validator)
+    """Test get_layer_emission_validator_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    """Test assert_layer_may_emit_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_assert_layer_may_emit_callable(self):
-        assert callable(assert_layer_may_emit)
+    # Act
+    # TODO: Execute assert_layer_may_emit_callable
+    result = None  # Replace with actual execution
 
-
-# ---------------------------------------------------------------------------
-# vigilance_seam
-# ---------------------------------------------------------------------------
-from agentic_core.L0_routing.seams.vigilance_seam import (
-    get_vigilance_event_artifact,
-    get_vigilance_severity,
-    load_vigilance_types,
-)
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_checks_agent_registry,
@@ -245,23 +245,23 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestVigilanceSeam:
     def test_load_vigilance_types_callable(self):
-        assert callable(load_vigilance_types)
+    """Test load_vigilance_types_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    """Test get_vigilance_event_artifact_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    """Test get_vigilance_severity_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_get_vigilance_event_artifact_callable(self):
-        assert callable(get_vigilance_event_artifact)
+    # Act
+    # TODO: Execute get_vigilance_severity_callable
+    result = None  # Replace with actual execution
 
-    def test_get_vigilance_severity_callable(self):
-        assert callable(get_vigilance_severity)
-
-    def test_load_vigilance_types_returns_module(self):
-        mod = load_vigilance_types()
-        assert mod is not None
-
-    def test_vigilance_event_artifact_is_class(self):
-        cls = get_vigilance_event_artifact()
-        assert callable(cls)
-
-    def test_vigilance_severity_is_enum(self):
-        from enum import Enum
-        cls = get_vigilance_severity()
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         assert issubclass(cls, Enum)

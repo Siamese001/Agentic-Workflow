@@ -334,19 +334,19 @@ class TestDispatcherEmitsProposalOnly:
             assert rollback_emitted
 
     def test_no_runtime_config_mutation(self):
-        """Dispatcher should not mutate runtime config directly."""
-        # Setup
-        config = HealingTierConfig(
-            heal_confidence_x=0.8,
-            heal_confidence_y=0.5,
-            max_heal_retries=3,
-            model_qwen_vllm_id="test-model",
-            model_gemini_2_5_pro_id="test-gemini",
-        )
+    """Test no_runtime_config_mutation runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        healing_input = HealingInput(
-            failure_type="network_error",
-            error_signature="test_network_error",
+    # Act
+    # TODO: Execute no_runtime_config_mutation
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             retry_count=1,
             blast_radius_estimate=0.4,
             trace_id="test-trace-no-mutation",

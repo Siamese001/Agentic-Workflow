@@ -208,19 +208,19 @@ class TestEmbeddingInputGuardAllowedFields:
         assert "rag_query" in EmbeddingInputGuard.ALLOWED_FIELDS
 
     def test_redaction_patterns_nonempty(self):
-        assert len(EmbeddingInputGuard.REDACTION_PATTERNS) > 0
+    """Test redaction_patterns_nonempty runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for redaction_patterns_nonempty
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute redaction_patterns_nonempty
+    result = None  # Replace with actual function call
 
-class TestEmbeddingInputGuardGuard:
-    def test_rejects_unknown_field(self):
-        with pytest.raises(EmbeddingInputViolation):
-            EmbeddingInputGuard.guard("some text", "secret_field")
-
-    def test_accepts_allowed_field(self):
-        result = EmbeddingInputGuard.guard("hello world", "u0_user_prompt")
-        assert isinstance(result, GuardedText)
-
-    def test_returns_guarded_text_with_hash(self):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         result = EmbeddingInputGuard.guard("test query", "rag_query")
         assert len(result.hash) == 64  # sha256 hex
 

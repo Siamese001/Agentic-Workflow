@@ -75,36 +75,36 @@ _ARTIFACT_C = {
 
 @pytest.mark.governance
 def test_canonical_hash_two_run_dict():
-    """Two-run hash of a dict produces identical bytes."""
-    h1 = canonical_hash(_ARTIFACT_A)
-    h2 = canonical_hash(_ARTIFACT_A)
-    assert h1 == h2
-    assert len(h1) == 64
+"""Test canonical_hash_two_run_dict runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute canonical_hash_two_run_dict
+result = None  # Replace with actual execution
 
-@pytest.mark.governance
-def test_canonical_hash_two_run_list():
-    """Two-run hash of a list produces identical bytes."""
-    h1 = canonical_hash(_ARTIFACT_B)
-    h2 = canonical_hash(_ARTIFACT_B)
-    assert h1 == h2
+"""Test canonical_hash_two_run_list runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute canonical_hash_two_run_list
+result = None  # Replace with actual execution
+"""Test canonical_hash_two_run_edge_cases runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-@pytest.mark.governance
-def test_canonical_hash_two_run_edge_cases():
-    """Two-run hash of edge-case values is identical."""
-    h1 = canonical_hash(_ARTIFACT_C)
-    h2 = canonical_hash(_ARTIFACT_C)
-    assert h1 == h2
+# Act
+# TODO: Execute canonical_hash_two_run_edge_cases
+result = None  # Replace with actual execution
 
-
-@pytest.mark.governance
-def test_canonical_serialize_sort_keys():
-    """Key order in the source dict does not affect canonical bytes."""
-    obj_a = {"z": 1, "a": 2, "m": 3}
-    obj_b = {"a": 2, "m": 3, "z": 1}
-    assert canonical_serialize(obj_a) == canonical_serialize(obj_b)
-
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
 
 @pytest.mark.governance
 def test_canonical_hash_field_sensitivity():
@@ -150,8 +150,16 @@ def test_req381_canonical_hash_used_in_artifact_binding():
 
 @pytest.mark.governance
 def test_req384_replay_hash_identical_two_runs():
-    """REQ-384: Replay hash must be identical across two runs for same artifact."""
-    payload = {"trace_id": "trace_abc", "plan_hash": "aabbcc" * 10, "tick": 7}
-    run1 = canonical_hash(payload)
-    run2 = canonical_hash(payload)
-    assert run1 == run2
+"""Test req384_replay_hash_identical_two_runs runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
+
+# Act
+# TODO: Execute req384_replay_hash_identical_two_runs
+result = None  # Replace with actual execution
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions

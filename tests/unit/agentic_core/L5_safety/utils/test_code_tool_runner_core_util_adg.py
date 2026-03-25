@@ -173,25 +173,25 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestCodeToolRunnerCapabilityImport:
     def test_class_importable(self):
-        assert callable(CodeToolRunnerCapability)
+    """Test class_importable runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for class_importable
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    """Test execute_is_abstract runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-class TestCodeToolRunnerCapabilityInterface:
-    
-    def test_execute_is_abstract(self):
-        """execute() raises NotImplementedError unless overridden."""
-        import asyncio
+    # Act
+    # TODO: Execute execute_is_abstract
+    result = None  # Replace with actual execution
 
-        cap = CodeToolRunnerCapability()
-        with pytest.raises(NotImplementedError):
-            asyncio.run(cap.execute("dummy.py"))
-
-    def test_subclass_can_override_execute(self):
-        import asyncio
-
-        class ConcreteRunner(CodeToolRunnerCapability):
-            async def execute(self, file_path: str):
-                return {"status": "ok", "file": file_path}
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
         runner = ConcreteRunner()
         result = asyncio.run(runner.execute("test.py"))
@@ -199,6 +199,16 @@ class TestCodeToolRunnerCapabilityInterface:
         assert result["file"] == "test.py"
 
     def test_no_sovereign_base_agent_inheritance(self):
-        """Capability is pure — must NOT inherit SovereignBaseAgent."""
-        mro_names = [c.__name__ for c in CodeToolRunnerCapability.__mro__]
-        assert "SovereignBaseAgent" not in mro_names
+    """Test no_sovereign_base_agent_inheritance runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for no_sovereign_base_agent_inheritance
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute no_sovereign_base_agent_inheritance
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions

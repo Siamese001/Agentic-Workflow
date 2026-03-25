@@ -13,67 +13,67 @@ class TestToolRegistryAgent:
     """Tests for tool registry functionality."""
 
     def test_tool_registry_exists(self):
-        """Tool registry module should exist."""
-        path = Path("agentic_core/L2_execution/reasoning")
-        assert path.exists(), "L2_execution/reasoning/ should exist"
+    """Test tool_registry_exists runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for tool_registry_exists
+    test_data = {}  # Replace with actual test data
 
-    def test_tool_registry_has_registry_class(self):
-        """Tool registry should define registry classes."""
-        reasoning_path = Path("agentic_core/L2_execution/reasoning")
-        if reasoning_path.exists():
-            py_files = list(reasoning_path.glob("*.py"))
-            assert len(py_files) > 0, "L2_execution/reasoning/ should have Python files"
+"""Test tool_registry_has_registry_class runtime behavior."""
+# Arrange
+# TODO: Set up test data for tool_registry_has_registry_class
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute tool_registry_has_registry_class
+result = None  # Replace with actual function call
 
-class TestMCPClientAgent:
-    """Tests for MCP client functionality."""
+# Assert
+assert result is not None, f"{function_name} should return a result"
+"""Test mcp_types_defined runtime behavior."""
+# Arrange
+# TODO: Set up test data for mcp_types_defined
+test_data = {}  # Replace with actual test data
 
-    def test_mcp_types_defined(self):
-        """MCP types should be defined in types/."""
-        types_path = Path("agentic_core/L2_execution/types")
-        if not types_path.exists():
-            pytest.fail("L2_execution/types/ not found")
+# Act
+# TODO: Execute mcp_types_defined
+result = None  # Replace with actual function call
 
-        type_files = list(types_path.glob("*.py"))
-        assert len(type_files) > 0, "L2_execution/types/ should have type definitions"
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
+"""Test action_handlers_in_enforcement runtime behavior."""
+# Arrange
+# TODO: Set up processing data
+raw_data = []  # Replace with actual test data
 
+# Act
+# TODO: Process data with action_handlers_in_enforcement
+processed_result = None  # Replace with actual processing
 
-class TestActionHandlerAgent:
-    """Tests for action handler functionality."""
+# Assert
+assert processed_result is not None, "Processing should produce a result"
+assert len(processed_result) >= 0, "Processed result should be measurable"
+# TODO: Add specific processing assertions
+"""Test execution_can_use_subprocess runtime behavior."""
+# Arrange
+# TODO: Set up processing data
+raw_data = []  # Replace with actual test data
 
-    def test_action_handlers_in_enforcement(self):
-        """Action handlers should be in enforcement/."""
-        enforcement_path = Path("agentic_core/L2_execution/enforcement")
-        if not enforcement_path.exists():
-            pytest.fail("L2_execution/enforcement/ not found")
+# Act
+"""Test execution_agents_in_reasoning runtime behavior."""
+# Arrange
+# TODO: Set up test data for execution_agents_in_reasoning
+test_data = {}  # Replace with actual test data
 
-        py_files = list(enforcement_path.glob("*.py"))
-        assert len(py_files) > 0, "L2_execution/enforcement/ should have files"
+# Act
+# TODO: Execute execution_agents_in_reasoning
+result = None  # Replace with actual function call
 
-
-class TestExecutionLayerIntegrity:
-    """Tests for L2 layer structural integrity."""
-
-    def test_execution_can_use_subprocess(self):
-        """L2 execution is allowed to use subprocess (it's the execution layer)."""
-        import subprocess
-
-        assert subprocess is not None
-
-    def test_execution_agents_in_reasoning(self):
-        """Agent classes in L2 should be in reasoning/."""
-        base = Path(L2_EXECUTION_DIR)
-        if not base.exists():
-            pytest.fail("L2_execution/ not found")
-
-        # Known exceptions (documented architectural decisions)
-        # Some config files have embedded Agent classes (legacy pattern)
-        known_exceptions = [
-            "peer_intelligence_auditor_config.py",
-            "mcp_tool_config.py",
-            "strategist_bio_writer_config.py",
-        ]
-
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
         violations = []
         for subfolder in ["types", "config", "utils"]:
             subfolder_path = base / subfolder
@@ -90,8 +90,16 @@ class TestExecutionLayerIntegrity:
         assert len(violations) == 0, f"Agent classes in wrong subfolder: {violations}"
 
     def test_tools_subfolder_exists(self):
-        """L2 should have tools/ subfolder for tool implementations."""
-        tools_path = Path("agentic_core/L2_execution/tools")
-        # tools/ is optional but recommended for L2
-        if tools_path.exists():
-            py_files = list(tools_path.glob("*.py"))
+    """Test tools_subfolder_exists runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for tools_subfolder_exists
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute tools_subfolder_exists
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions

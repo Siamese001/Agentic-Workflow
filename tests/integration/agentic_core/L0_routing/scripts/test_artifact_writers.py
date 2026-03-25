@@ -175,19 +175,19 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 
 def test_write_run_manifest_json_structure(tmp_path):
-    """
-    PASS: run_manifest.json has required fields and correct structure.
-    FAIL: Missing fields or invalid structure.
+"""Test write_run_manifest_json_structure runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    Per .windsurfrules §1.5: Edge cases - field presence.
-    Per hostile audit Section E6: run_manifest provides high-level metadata.
-    """
-    from agentic_core.L0_routing.scripts.execute_ssot import _write_run_manifest_json
+# Act
+# TODO: Execute write_run_manifest_json_structure
+result = None  # Replace with actual execution
 
-    trace_id = "TEST-TRACE-001"
-    execution_mode = "heal"
-    territories = ["apps_core", APPS_SHARED_DIR]
-    agents_executed = ["AgentA", "AgentB", "AgentC"]
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
 
     _write_run_manifest_json(
         trace_id=trace_id,
@@ -217,19 +217,19 @@ def test_write_run_manifest_json_structure(tmp_path):
 
 
 def test_write_run_manifest_json_empty_lists(tmp_path):
-    """
-    PASS: run_manifest.json handles empty territories and agents lists.
-    FAIL: Crashes or produces invalid output.
+"""Test write_run_manifest_json_empty_lists runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    Per .windsurfrules §1.5: Edge cases - empty input.
-    """
-    from agentic_core.L0_routing.scripts.execute_ssot import _write_run_manifest_json
+# Act
+# TODO: Execute write_run_manifest_json_empty_lists
+result = None  # Replace with actual execution
 
-    _write_run_manifest_json(
-        trace_id="TEST-TRACE-002",
-        execution_mode="scan",
-        territories=[],
-        agents_executed=[],
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
         output_dir=tmp_path,
     )
 

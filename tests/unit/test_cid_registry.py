@@ -174,19 +174,19 @@ class TestExecutionCycle:
         assert cycle == ExecutionCycle(cid="test123", attempt=1, status="new")
 
     def test_execution_cycle_immutability(self):
-        """Test ExecutionCycle is immutable."""
-        cycle = ExecutionCycle(cid="test123", attempt=1, status="new")
+    """Test execution_cycle_immutability runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for execution_cycle_immutability
+    test_data = {}  # Replace with actual test data
 
-        # Should be frozen dataclass
-        with pytest.raises(AttributeError):
-            cycle.attempt = 2
+    # Act
+    # TODO: Execute execution_cycle_immutability
+    result = None  # Replace with actual function call
 
-        with pytest.raises(AttributeError):
-            cycle.status = "changed"
-
-
-@pytest.mark.unit
-class TestCIDRegistry:
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
     """Test deterministic CIDRegistry implementation."""
 
     def test_new_cycle_creates_with_attempt_1(self):

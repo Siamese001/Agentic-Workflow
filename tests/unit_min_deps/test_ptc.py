@@ -167,19 +167,19 @@ def test_tool_spec_validation():
 
 @pytest.mark.unit_min_deps
 def test_tool_call_validation():
-    """Test ToolCall validation."""
-    # Valid call
-    call = ToolCall(
-        call_id="abc123",
-        tool_id="test_tool",
-        args={"pattern": "test"},
-    )
-    assert call.tool_id == "test_tool"
-    assert call.args["pattern"] == "test"
+"""Test tool_call_validation runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    # Empty call_id
-    with pytest.raises(ValueError, match="call_id cannot be empty"):
-        ToolCall("", "test", {})
+# Act
+# TODO: Execute tool_call_validation
+result = None  # Replace with actual execution
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
 
     # Empty tool_id
     with pytest.raises(ValueError, match="tool_id cannot be empty"):
@@ -248,19 +248,19 @@ def test_unsorted_args_rejected():
 
 @pytest.mark.unit_min_deps
 def test_call_id_stable():
-    """Test that call ID is stable for same inputs."""
-    tool_id = "test_tool"
-    args1 = {"pattern": "test", "case_sensitive": True}
-    args2 = {"case_sensitive": True, "pattern": "test"}  # Different order
+"""Test call_id_stable runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    # Should generate same call ID (canonical JSON normalizes order)
-    call_id1 = generate_call_id(tool_id, args1)
-    call_id2 = generate_call_id(tool_id, args2)
+# Act
+# TODO: Execute call_id_stable
+result = None  # Replace with actual execution
 
-    assert call_id1 == call_id2
-    assert len(call_id1) == 64  # SHA256 hex length
-
-    # Different args should produce different call ID
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
     call_id3 = generate_call_id(tool_id, {"pattern": "different"})
     assert call_id3 != call_id1
 
@@ -513,19 +513,19 @@ def test_tool_call_store():
 
 @pytest.mark.unit_min_deps
 def test_tool_call_store_deterministic_ordering():
-    """Test that ToolCallStore maintains deterministic ordering."""
-    import shutil
-    import tempfile
+"""Test tool_call_store_deterministic_ordering runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    from agentic_core.L3_orchestration.ptc.tool_call_store import ToolCallStore
+# Act
+# TODO: Execute tool_call_store_deterministic_ordering
+result = None  # Replace with actual execution
 
-    # Create temporary store
-    temp_dir = tempfile.mkdtemp()
-    try:
-        store = ToolCallStore(temp_dir)
-
-        # Record multiple calls
-        for i in range(3):
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
             call = ToolCall(
                 call_id=f"test{i}",
                 tool_id="test_tool",

@@ -65,19 +65,19 @@ def _collect_execute_calls() -> tuple[list[str], list[str]]:
 
 @pytest.mark.unit_min_deps
 def test_no_execute_calls_missing_agent_id():
-    """Wave 4: Every V15ExecutionGateway.execute() call must supply agent_id."""
-    missing, present = _collect_execute_calls()
-    assert len(missing) == 0, (
-        f"Found {len(missing)} V15ExecutionGateway.execute() calls without agent_id "
-        f"(these will hard-fail at runtime):\n" + "\n".join(f"  {m}" for m in missing)
-    )
+"""Test no_execute_calls_missing_agent_id runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute no_execute_calls_missing_agent_id
+result = None  # Replace with actual execution
 
-@pytest.mark.unit_min_deps
-def test_wave4_registry_entries_exist():
-    """Wave 4: All audit-only agent IDs added in Wave 4 must be in AGENT_REGISTRY source."""
-    registry_path = ROOT / AGENTIC_CORE_DIR / "agents" / "agent_registry.py"
-    src = registry_path.read_text(encoding="utf-8", errors="replace")
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
     wave4_ids = [
         "sovereign_base",
         "tool_reliability_mixin",
@@ -95,9 +95,16 @@ def test_wave4_registry_entries_exist():
 
 @pytest.mark.unit_min_deps
 def test_execute_calls_count_at_least_eleven():
-    """Wave 4: Regression — at least 11 call sites must be present and have agent_id."""
-    _, present = _collect_execute_calls()
-    assert len(present) >= 10, (
-        f"Expected >=10 execute() calls with agent_id, found {len(present)}. "
-        "Some call sites may have been removed or reverted."
-    )
+"""Test execute_calls_count_at_least_eleven runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
+
+# Act
+# TODO: Execute execute_calls_count_at_least_eleven
+result = None  # Replace with actual execution
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions

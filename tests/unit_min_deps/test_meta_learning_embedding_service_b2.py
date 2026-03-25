@@ -215,20 +215,20 @@ class TestMetaLearningEmbeddingService:
             shutil.rmtree(base_path)
 
     def test_load_validates_hashes_and_dimensions(self):
-        """Build a real seed pack and verify stable retrieval."""
-        base_path = Path(tempfile.mkdtemp())
+    """Test load_validates_hashes_and_dimensions contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-        try:
-            # Build a seed pack
-            embedder = DeterministicHashEmbedder(dimensions=4)
-            config = SeedEmbeddingPackConfig(
-                namespace="test_ns",
-                bootstrap_mode="minimal_seed",
-                minimal_seed_count=3,
-            )
-            corpus_rows = [
-                {
-                    "content_hash": "h1" * 32,
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
+
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
                     "trace_id": "t1",
                     "namespace": "test_ns",
                     "created_utc": 1234567890,

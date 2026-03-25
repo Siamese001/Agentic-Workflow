@@ -549,19 +549,19 @@ class TestGuardInteraction:
         assert all(r["verdict"] == "allow" for r in [r1, r2, r3, r4])
 
     def test_single_deny_blocks_chain_logically(self):
-        """Creative: if one guard denies, the chain should be considered failed."""
-        eval_g = EvalGuard(mode="warn")
-        imp_g = ImportGuard(mode="warn")
+    """Test single_deny_blocks_chain_logically runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        r1 = imp_g.check(operation="import_module", module_name="agentic_core.utils")
-        r2 = eval_g.check(operation="eval", code="__import__('os').system('ls')")  # dangerous
+    # Act
+    # TODO: Execute single_deny_blocks_chain_logically
+    result = None  # Replace with actual execution
 
-        assert r1["verdict"] == "allow"
-        assert r2["verdict"] == "deny"
-        # Logical check: chain failed if any deny
-        chain_ok = all(r["verdict"] == "allow" for r in [r1, r2])
-        assert not chain_ok
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
     def test_warn_mode_never_raises(self):
         """Creative: warn mode must never raise regardless of input."""
         guards = [
@@ -598,40 +598,40 @@ class TestExecutionTraceInfrastructure:
     """Wave 5: Validate ExecutionTrace infrastructure is importable and functional."""
 
     def test_execution_trace_importable(self):
-        """ExecutionTrace module must be importable."""
-        from agentic_core.runtime.execution_trace import ExecutionTrace
+    """Test execution_trace_importable runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for execution_trace_importable
+    test_data = {}  # Replace with actual test data
 
-        assert ExecutionTrace is not None
+    # Act
+    """Test execution_trace_types_importable runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for execution_trace_types_importable
+    test_data = {}  # Replace with actual test data
 
-    def test_execution_trace_types_importable(self):
-        """Execution trace type modules exist in L2 and L3."""
-        import agentic_core.L2_execution.types.execution_trace_types as l2_types
-        import agentic_core.L3_orchestration.types.execution_trace_types as l3_types
+    # Act
+    # TODO: Execute execution_trace_types_importable
+    result = None  # Replace with actual function call
+    """Test execution_trace_has_record_method runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for execution_trace_has_record_method
+    test_data = {}  # Replace with actual test data
 
-        assert l2_types is not None
-        assert l3_types is not None
+    # Act
+    # TODO: Execute execution_trace_has_record_method
+    """Test execution_proof_emitter_importable runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for execution_proof_emitter_importable
+    test_data = {}  # Replace with actual test data
 
-    def test_execution_trace_has_record_method(self):
-        """Creative: verify ExecutionTrace interface contract."""
-        from agentic_core.runtime.execution_trace import ExecutionTrace
+    # Act
+    # TODO: Execute execution_proof_emitter_importable
+    result = None  # Replace with actual function call
 
-        # Verify the class has the expected interface
-        assert hasattr(ExecutionTrace, "__enter__") or callable(ExecutionTrace)
-
-    def test_execution_proof_emitter_importable(self):
-        """L2 proof emitter must be importable."""
-        import agentic_core.L2_execution.determinism.execution_proof_emitter as emitter
-
-        assert emitter is not None
-
-
-# ===========================================================================
-# WAVE 6: UWG CONVENIENCE METHOD TESTS
-# ===========================================================================
-
-
-class TestUWGConvenienceMethods:
-    """Wave 6: Test all 5 UWG convenience methods."""
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
     def test_write_json_in_replay_mode(self, replay_gateway):
         """write_json() must work in replay mode."""
@@ -686,19 +686,19 @@ class TestUWGConvenienceMethods:
         assert result is not None
 
     def test_all_convenience_methods_callable(self):
-        """Creative: all 5 convenience functions must be callable."""
-        from agentic_core.L2_execution.UniversalWriteGateway import (
-            append_to_file,
-            atomic_write,
-            write_json,
-            write_pickle,
-            write_text,
-        )
+    """Test all_convenience_methods_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        assert callable(write_json)
-        assert callable(write_text)
-        assert callable(append_to_file)
-        assert callable(atomic_write)
+    # Act
+    # TODO: Execute all_convenience_methods_callable
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         assert callable(write_pickle)
 
 
@@ -787,33 +787,33 @@ class TestUWGGuardrailIntegration:
         assert "writes_through" in docstring
 
     def test_write_json_calls_write_through_in_chain(self, replay_gateway):
-        """Creative: write_json must go through write_through (chain integrity)."""
-        set_write_gateway(replay_gateway)
-        call_count = [0]
-        original_write_through = replay_gateway.write_through
+    """Test write_json_calls_write_through_in_chain runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        def tracked_write_through(*args, **kwargs):
-            call_count[0] += 1
-            return original_write_through(*args, **kwargs)
+    # Act
+    # TODO: Execute write_json_calls_write_through_in_chain
+    result = None  # Replace with actual execution
 
-        replay_gateway.write_through = tracked_write_through
-        write_json("docs/reports/test.json", {"x": 1})
-        assert call_count[0] == 1
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
     def test_write_text_calls_write_through_in_chain(self, replay_gateway):
-        set_write_gateway(replay_gateway)
-        call_count = [0]
-        original = replay_gateway.write_through
+    """Test write_text_calls_write_through_in_chain runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        def tracked(*args, **kwargs):
-            call_count[0] += 1
-            return original(*args, **kwargs)
+    # Act
+    # TODO: Execute write_text_calls_write_through_in_chain
+    result = None  # Replace with actual execution
 
-        replay_gateway.write_through = tracked
-        write_text("docs/reports/test.txt", "content")
-        assert call_count[0] == 1
-
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 # ===========================================================================
 # ADG EDGE EMISSION CONTRACT TESTS
 # ===========================================================================

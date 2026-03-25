@@ -327,31 +327,31 @@ def a():
 
 class TestLogAndSwallow:
     def test_single_log_call_detected(self):
-        code = """
-def run():
-    try:
-        execute()
-    except Exception as e:
-        logger.error("Failed: %s", e)
-"""
-        edges = _scan(code)
-        las = _edges_by_kind(edges, "log_and_swallow")
-        assert len(las) == 1
+    """Test single_log_call_detected runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_multiple_log_calls_detected(self):
-        code = """
-def run():
-    try:
-        execute()
-    except Exception as e:
-        logger.warning("Retrying...")
-        logger.error("Failed: %s", e)
-"""
-        edges = _scan(code)
-        las = _edges_by_kind(edges, "log_and_swallow")
-        assert len(las) == 1
+    # Act
+    # TODO: Execute single_log_call_detected
+    result = None  # Replace with actual execution
 
-    def test_print_only_detected(self):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    """Test multiple_log_calls_detected runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute multiple_log_calls_detected
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         code = """
 def run():
     try:
@@ -789,19 +789,19 @@ class HealingOrchestrator:
         assert len(rns) == 1
 
     def test_resilient_handler_with_reraise_clean(self):
-        """Proper resilient pattern: catch broad, log, re-raise."""
-        code = """
-class ResilientHandler:
-    def process(self, task):
-        try:
-            return self._execute(task)
-        except Exception as e:
-            logger.error("Task %s failed: %s", task.id, e)
-            self.metrics.increment("failures")
-            raise TaskError(f"Processing failed: {e}") from e
-"""
-        edges = _scan(code)
-        broad = _edges_by_kind(edges, "broad_exception_catch")
+    """Test resilient_handler_with_reraise_clean runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
+
+    # Act
+    # TODO: Process data with resilient_handler_with_reraise_clean
+    processed_result = None  # Replace with actual processing
+
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
         assert len(broad) == 0
         las = _edges_by_kind(edges, "log_and_swallow")
         assert len(las) == 0

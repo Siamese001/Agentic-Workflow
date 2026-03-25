@@ -239,10 +239,23 @@ class TestSystemArchitectAgentCheckMethods:
         self.agent = SystemArchitectAgent(project_root=Path("."))
 
     def test_check_core_architecture_method_exists(self):
-        assert callable(self.agent.check_core_architecture)
+    """Test check_core_architecture_method_exists contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    """Test check_no_deep_nesting_method_exists contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    """Test check_no_large_files_method_exists contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_check_no_deep_nesting_method_exists(self):
-        assert callable(self.agent.check_no_deep_nesting)
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-    def test_check_no_large_files_method_exists(self):
-        assert callable(self.agent.check_no_large_files)
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"

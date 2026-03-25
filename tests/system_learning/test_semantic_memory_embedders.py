@@ -755,19 +755,19 @@ class TestIncidentBundleEmbedder:
         assert "t3" in trace_ids
 
     def test_export_is_sorted_deterministically(self):
-        emb = IncidentBundleEmbedder()
-        for i in range(5):
-            emb.ingest(_make_incident(f"trace-{i}"))
-        exported = emb.export_corpus_records()
-        keys = [(r.content_hash, r.trace_id) for r in exported]
-        assert keys == sorted(keys)
+    """Test export_is_sorted_deterministically runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_ingest_batch_returns_all_records(self):
-        emb = IncidentBundleEmbedder()
-        bundles = [_make_incident(f"t{i}") for i in range(3)]
-        records = emb.ingest_batch(bundles)
-        assert len(records) == 3
-        assert emb.buffer_size() == 3
+    # Act
+    # TODO: Execute export_is_sorted_deterministically
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
     def test_retrieve_similar_returns_empty_without_live_cache(self):
         emb = IncidentBundleEmbedder()

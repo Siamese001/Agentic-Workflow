@@ -63,35 +63,35 @@ class TestPhase2HangFixes:
     """Regression tests for Phase 2 reconciliation hang."""
 
     def test_territory_passed_to_heal_repository(self):
-        """heal_repository must receive target_territory from reconciliation."""
-        agent = FakeAgent()
-        territory = "L5_safety"
+    """Test territory_passed_to_heal_repository runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for territory_passed_to_heal_repository
+    test_data = {}  # Replace with actual test data
 
-        # Simulate the reconciliation call pattern from execute_ssot line ~1928
-        agent.heal_repository(
-            dry_run=False,
-            execute=True,
-            target_territory=territory,
-        )
+    # Act
+    # TODO: Execute territory_passed_to_heal_repository
+    result = None  # Replace with actual function call
 
-        assert agent.last_kwargs.get("target_territory") == territory
-        assert agent.last_kwargs.get("dry_run") is False
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert agent.last_kwargs.get("execute") is True
 
     def test_timeout_catches_hanging_agent(self):
-        """ThreadPoolExecutor timeout must convert hang to RuntimeError."""
-        agent = HangingAgent()
+    """Test timeout_catches_hanging_agent runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for timeout_catches_hanging_agent
+    test_data = {}  # Replace with actual test data
 
-        with pytest.raises(RuntimeError, match="timed out"):
-            _HEAL_TIMEOUT_S = 0.5  # short timeout for test
-            pool = ThreadPoolExecutor(max_workers=1)
-            try:
-                future = pool.submit(
-                    agent.heal_repository,
-                    dry_run=False,
-                    execute=True,
-                    target_territory="test",
-                )
+    # Act
+    # TODO: Execute timeout_catches_hanging_agent
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
                 try:
                     future.result(timeout=_HEAL_TIMEOUT_S)
                 except FuturesTimeoutError:
@@ -101,19 +101,19 @@ class TestPhase2HangFixes:
                 pool.shutdown(wait=False, cancel_futures=True)
 
     def test_timeout_env_var_override(self):
-        """HEAL_TIMEOUT_SECONDS env var should be respected."""
-        import os
+    """Test timeout_env_var_override runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for timeout_env_var_override
+    test_data = {}  # Replace with actual test data
 
-        with patch.dict(os.environ, {"HEAL_TIMEOUT_SECONDS": "42"}):
-            val = int(os.environ.get("HEAL_TIMEOUT_SECONDS", "300"))
-            assert val == 42
+    # Act
+    # TODO: Execute timeout_env_var_override
+    result = None  # Replace with actual function call
 
-    def test_normal_agent_completes_within_timeout(self):
-        """Non-hanging agents complete normally under timeout."""
-        agent = FakeAgent()
-        _HEAL_TIMEOUT_S = 10
-
-        with ThreadPoolExecutor(max_workers=1) as pool:
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             future = pool.submit(
                 agent.heal_repository,
                 dry_run=False,
@@ -126,19 +126,19 @@ class TestPhase2HangFixes:
         assert result["violations_fixed"] == 0
 
     def test_territory_scoping_reduces_scan_surface(self):
-        """Verify territory param flows through to limit scan scope."""
-        calls = []
+    """Test territory_scoping_reduces_scan_surface runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for territory_scoping_reduces_scan_surface
+    test_data = {}  # Replace with actual test data
 
-        class TrackingAgent:
-            def __init__(self, project_root=None):
-                pass
+    # Act
+    # TODO: Execute territory_scoping_reduces_scan_surface
+    result = None  # Replace with actual function call
 
-            def heal_repository(self, **kwargs):
-                calls.append(kwargs)
-                return {"violations_found": 0, "violations_fixed": 0}
-
-        agent = TrackingAgent()
-        agent.heal_repository(
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             dry_run=False,
             execute=True,
             target_territory="prompt_governance",

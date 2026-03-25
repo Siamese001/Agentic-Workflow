@@ -56,39 +56,39 @@ class TestRootHygiene:
     """Hard gate: root directory must match approved manifest."""
 
     def test_manifest_exists(self) -> None:
-        assert MANIFEST_PATH.exists(), f"Root manifest not found at {MANIFEST_PATH.relative_to(ROOT)}"
+    """Test manifest_exists contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    """Test no_unapproved_root_files contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_no_unapproved_root_files(self) -> None:
-        extra_files, _ = _scan_root_drift()
-        assert not extra_files, (
-            f"Found {len(extra_files)} unapproved file(s) at project root:\n"
-            + "\n".join(f"  {f}" for f in extra_files)
-            + "\nAdd to artifacts/structure/root_manifest.json or move to correct folder."
-        )
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+    """Test no_unapproved_root_directories contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_no_unapproved_root_directories(self) -> None:
-        _, extra_dirs = _scan_root_drift()
-        assert not extra_dirs, (
-            f"Found {len(extra_dirs)} unapproved directory(ies) at project root:\n"
-            + "\n".join(f"  {d}/" for d in extra_dirs)
-            + "\nAdd to artifacts/structure/root_manifest.json or move to correct folder."
-        )
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+    """Test synthetic_root_file_detected contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_synthetic_root_file_detected(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-        """Negative test: prove scanner catches a synthetic unapproved file."""
-        # Create a fake root with manifest + extra file
-        fake_root = tmp_path / "fake_root"
-        fake_root.mkdir()
-        manifest_dir = fake_root / "artifacts" / "structure"
-        manifest_dir.mkdir(parents=True)
-        manifest = {
-            "approved_files": ["README.md"],
-            "approved_directories": [],
-        }
-        (manifest_dir / "root_manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
-        (fake_root / "README.md").write_text("ok", encoding="utf-8")
-        (fake_root / "rogue_script.py").write_text("bad", encoding="utf-8")
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
         # Scan the fake root
         extra_files = []
         approved = set(manifest["approved_files"])

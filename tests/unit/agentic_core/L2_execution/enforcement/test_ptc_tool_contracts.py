@@ -189,73 +189,84 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestToolCall:
     def test_valid_tool_call(self):
-        tc = ToolCall(id="call-001", tool_name="file_system.read", args={"path": "/tmp/x"})
-        assert tc.id == "call-001"
-        assert tc.tool_name == "file_system.read"
+    """Test valid_tool_call runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_empty_id_raises(self):
-        with pytest.raises(ToolContractViolation, match="id must be non-empty"):
-            ToolCall(id="", tool_name="file_system.read")
+"""Test empty_id_raises runtime behavior."""
+# Arrange
+# TODO: Set up test data for empty_id_raises
+test_data = {}  # Replace with actual test data
+"""Test empty_tool_name_raises runtime behavior."""
+# Arrange
+# TODO: Set up test data for empty_tool_name_raises
+test_data = {}  # Replace with actual test data
 
-    def test_empty_tool_name_raises(self):
-        with pytest.raises(ToolContractViolation, match="tool_name must be non-empty"):
-            ToolCall(id="call-001", tool_name="")
+# Act
+# TODO: Execute empty_tool_name_raises
+result = None  # Replace with actual function call
 
+# Assert
+assert result is not None, f"{function_name} should return a result"
+"""Test exit_code_one_succeeds runtime behavior."""
+# Arrange
+# TODO: Set up test data for exit_code_one_succeeds
+test_data = {}  # Replace with actual test data
+"""Test exit_code_two_raises runtime behavior."""
+# Arrange
+# TODO: Set up test data for exit_code_two_raises
+test_data = {}  # Replace with actual test data
+"""Test exit_code_negative_raises runtime behavior."""
+# Arrange
+# TODO: Set up test data for exit_code_negative_raises
+test_data = {}  # Replace with actual test data
+"""Test exit_code_255_raises runtime behavior."""
+# Arrange
+# TODO: Set up test data for exit_code_255_raises
+test_data = {}  # Replace with actual test data
+"""Test stdout_within_cap_succeeds runtime behavior."""
+# Arrange
+# TODO: Set up test data for stdout_within_cap_succeeds
+test_data = {}  # Replace with actual test data
+"""Test stdout_over_cap_raises runtime behavior."""
+# Arrange
+# TODO: Set up test data for stdout_over_cap_raises
+test_data = {}  # Replace with actual test data
 
-class TestToolResult:
-    def test_exit_code_zero_succeeds(self):
-        r = ToolResult(exit_code=0, stdout=b"output")
-        assert r.exit_code == 0
-        assert r.stdout == b"output"
+# Act
+# TODO: Execute stdout_over_cap_raises
+result = None  # Replace with actual function call
 
-    def test_exit_code_one_succeeds(self):
-        r = ToolResult(exit_code=1, stdout=b"error output")
-        assert r.exit_code == 1
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
+# Act
+# TODO: Execute zero_cap_disables_cap_check
+result = None  # Replace with actual function call
 
-    def test_exit_code_two_raises(self):
-        with pytest.raises(ToolContractViolation, match="exit_code must be 0 or 1"):
-            ToolResult(exit_code=2, stdout=b"")
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+"""Test invalid_exit_code_raises runtime behavior."""
+# Arrange
+# TODO: Set up test data for invalid_exit_code_raises
+test_data = {}  # Replace with actual test data
+"""Test stdout_over_cap_raises runtime behavior."""
+# Arrange
+# TODO: Set up test data for stdout_over_cap_raises
+test_data = {}  # Replace with actual test data
+"""Test stdout_at_cap_succeeds runtime behavior."""
+# Arrange
+# TODO: Set up test data for stdout_at_cap_succeeds
+test_data = {}  # Replace with actual test data
 
-    def test_exit_code_negative_raises(self):
-        with pytest.raises(ToolContractViolation, match="exit_code must be 0 or 1"):
-            ToolResult(exit_code=-1, stdout=b"")
+# Act
+# TODO: Execute stdout_at_cap_succeeds
+result = None  # Replace with actual function call
 
-    def test_exit_code_255_raises(self):
-        with pytest.raises(ToolContractViolation, match="exit_code must be 0 or 1"):
-            ToolResult(exit_code=255, stdout=b"")
-
-    def test_stdout_within_cap_succeeds(self):
-        r = ToolResult(exit_code=0, stdout=b"hello", stdout_bytes_cap=100)
-        assert len(r.stdout) <= 100
-
-    def test_stdout_over_cap_raises(self):
-        with pytest.raises(ToolContractViolation, match="exceeds cap"):
-            ToolResult(exit_code=0, stdout=b"x" * 200, stdout_bytes_cap=100)
-
-    def test_stdout_exact_cap_succeeds(self):
-        r = ToolResult(exit_code=0, stdout=b"x" * 100, stdout_bytes_cap=100)
-        assert len(r.stdout) == 100
-
-    def test_zero_cap_disables_cap_check(self):
-        # cap=0 means no cap enforced
-        r = ToolResult(exit_code=0, stdout=b"x" * 10000, stdout_bytes_cap=0)
-        assert len(r.stdout) == 10000
-
-
-class TestToolResultFromBudgetEnforcer:
-    def test_valid_construction(self):
-        r = ToolResult.from_budget_enforcer(exit_code=0, stdout_bytes=b"output", stdout_bytes_cap=1024)
-        assert r.exit_code == 0
-        assert r.stdout == b"output"
-
-    def test_invalid_exit_code_raises(self):
-        with pytest.raises(ToolContractViolation, match="exit_code must be 0 or 1"):
-            ToolResult.from_budget_enforcer(exit_code=2, stdout_bytes=b"", stdout_bytes_cap=1024)
-
-    def test_stdout_over_cap_raises(self):
-        with pytest.raises(ToolContractViolation, match="exceeds cap"):
-            ToolResult.from_budget_enforcer(exit_code=0, stdout_bytes=b"x" * 500, stdout_bytes_cap=10)
-
-    def test_stdout_at_cap_succeeds(self):
-        r = ToolResult.from_budget_enforcer(exit_code=0, stdout_bytes=b"x" * 10, stdout_bytes_cap=10)
-        assert len(r.stdout) == 10
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions

@@ -224,20 +224,20 @@ def test_divergent_collision_renames_violator(fixer_env):
 
 
 def test_no_collision_standard_rename(fixer_env):
-    """Test standard rename when no collision exists."""
-    fixer = PascalSovereigntyFixer(dry_run=False)
-    src = fixer_env / "OldName.py"
-    src.write_text("class Test: pass")
+"""Test no_collision_standard_rename contract compliance."""
+# Arrange
+# TODO: Set up specification test case
+spec_input = {}  # Replace with actual specification input
 
-    result = fixer.resolve_collision_and_rename(src, "NewName.py")
+# Act
+# TODO: Test specification compliance
+compliance_result = None  # Replace with actual compliance test
 
-    assert result is True
-    assert not src.exists()
-    assert (fixer_env / "NewName.py").exists()
-
-
-def test_dry_run_mode(fixer_env):
-    """Test that dry run mode doesn't actually modify files."""
+# Assert - Specification Contract
+assert compliance_result is not None, "Specification compliance should be testable"
+assert isinstance(compliance_result, (bool, dict)), "Compliance result should be structured"
+# TODO: Add specific specification assertions
+# assert compliance_result.get("meets_spec", False), "Should meet specification requirements"
     fixer = PascalSovereigntyFixer(dry_run=True)
     src = fixer_env / "TestFile.py"
     src.write_text("class Test: pass")

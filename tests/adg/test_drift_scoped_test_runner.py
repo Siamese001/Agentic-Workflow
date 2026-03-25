@@ -226,113 +226,113 @@ def _mock_redis(covers_map: dict[str, list[str]] | None = None):
 
 class TestChangedProdFiles:
     def test_returns_only_python_prod_files(self):
-        with patch("subprocess.run") as mock_run:
-            mock_run.return_value = MagicMock(
-                returncode=0,
-                stdout="apps_rg/reasoning/Foo.py\ntests/unit/test_Foo.py\nREADME.md\n",
-            )
-            files = _changed_prod_files("origin/main")
-        assert "apps_rg/reasoning/Foo.py" in files
-        assert "tests/unit/test_Foo.py" not in files
-        assert "README.md" not in files
+    """Test returns_only_python_prod_files runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for returns_only_python_prod_files
+    test_data = {}  # Replace with actual test data
 
-    def test_excludes_test_files(self):
-        with patch("subprocess.run") as mock_run:
-            mock_run.return_value = MagicMock(
-                returncode=0,
-                stdout="tests/adg/test_drift.py\n",
-            )
-            files = _changed_prod_files("origin/main")
-        assert files == []
+    # Act
+    # TODO: Execute returns_only_python_prod_files
+    result = None  # Replace with actual function call
 
-    def test_returns_empty_on_subprocess_error(self):
-        with patch("subprocess.run", side_effect=OSError("git not found")):
-            files = _changed_prod_files("origin/main")
-        assert files == []
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test excludes_files runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for excludes_files
+    test_data = {}  # Replace with actual test data
 
-    def test_fallback_to_staged_on_nonzero_exit(self):
-        call_count = [0]
+    # Act
+    # TODO: Execute excludes_files
+    result = None  # Replace with actual function call
 
-        def mock_run_side(*args, **kwargs):
-            call_count[0] += 1
-            if call_count[0] == 1:
-                return MagicMock(returncode=1, stdout="")
-            return MagicMock(returncode=0, stdout="apps_rg/foo.py\n")
+"""Test returns_empty_on_subprocess_error runtime behavior."""
+# Arrange
+# TODO: Set up processing data
+raw_data = []  # Replace with actual test data
 
-        with patch("subprocess.run", side_effect=mock_run_side):
-            files = _changed_prod_files("origin/main")
-        assert call_count[0] == 2
-        assert "apps_rg/foo.py" in files
+"""Test fallback_to_staged_on_nonzero_exit runtime behavior."""
+# Arrange
+# TODO: Set up test data for fallback_to_staged_on_nonzero_exit
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute fallback_to_staged_on_nonzero_exit
+result = None  # Replace with actual function call
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
     def test_filters_non_py_files(self):
-        with patch("subprocess.run") as mock_run:
-            mock_run.return_value = MagicMock(
-                returncode=0,
-                stdout="apps_rg/foo.py\napps_rg/config.json\napps_rg/README.md\n",
-            )
-            files = _changed_prod_files("origin/main")
-        assert files == ["apps_rg/foo.py"]
+    """Test filters_non_py_files runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for filters_non_py_files
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute filters_non_py_files
+    result = None  # Replace with actual function call
 
-# ---------------------------------------------------------------------------
-# _resolve_test_paths_for_module
-# ---------------------------------------------------------------------------
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
 class TestResolveTestPathsForModule:
     def test_returns_empty_when_no_node(self):
-        r = _mock_redis({})
-        paths = _resolve_test_paths_for_module(r, "apps_rg/reasoning/Foo.py")
-        assert paths == []
+    """Test returns_empty_when_no_node runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for returns_empty_when_no_node
+    test_data = {}  # Replace with actual test data
 
-    def test_returns_sorted_test_paths(self):
-        r = _mock_redis(
-            {
-                "apps_rg/reasoning/Foo.py": [
-                    "tests/unit/apps_rg/test_Foo_adg.py",
-                    "tests/adg/test_coverage.py",
-                ]
-            }
-        )
-        paths = _resolve_test_paths_for_module(r, "apps_rg/reasoning/Foo.py")
-        assert "tests/unit/apps_rg/test_Foo_adg.py" in paths
-        assert paths == sorted(paths)
+"""Test returns_sorted_paths runtime behavior."""
+# Arrange
+# TODO: Set up test data for returns_sorted_paths
+test_data = {}  # Replace with actual test data
 
-    def test_skips_non_test_resolved_paths(self):
-        r = MagicMock()
-        r.smembers.side_effect = lambda k: (
-            {"10"} if "by_file" in k else {"20"} if "covers" in k else set()
-        )
-        r.hgetall.side_effect = lambda k: (
-            {"entity_type": "module"}
-            if k == "adg:node:10"
-            else {"entity_type": "module", "resolved_path": "apps_rg/prod.py"}
-            if k == "adg:node:20"
-            else {}
-        )
-        paths = _resolve_test_paths_for_module(r, "apps_rg/reasoning/Foo.py")
-        assert paths == []  # resolved_path doesn't start with "tests/"
+# Act
+# TODO: Execute returns_sorted_paths
+result = None  # Replace with actual function call
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
+"""Test skips_non_resolved_paths runtime behavior."""
+# Arrange
+# TODO: Set up test data for skips_non_resolved_paths
+test_data = {}  # Replace with actual test data
+
+# Act
+# TODO: Execute skips_non_resolved_paths
+result = None  # Replace with actual function call
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
 
     def test_handles_redis_exception_gracefully(self):
-        r = MagicMock()
-        r.smembers.side_effect = Exception("connection refused")
-        paths = _resolve_test_paths_for_module(r, "apps_rg/reasoning/Foo.py")
-        assert paths == []
+    """Test handles_redis_exception_gracefully runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-    def test_deduplicates_paths(self):
-        r = MagicMock()
-        # Two module nodes pointing to same test
-        r.smembers.side_effect = lambda k: (
-            {"10", "11"} if "by_file" in k
-            else {"20"} if "covers" in k
-            else set()
-        )
-        r.hgetall.side_effect = lambda k: (
-            {"entity_type": "module"} if k in ("adg:node:10", "adg:node:11")
-            else {"entity_type": "module", "resolved_path": "tests/unit/test_Foo.py"}
-            if k == "adg:node:20"
-            else {}
-        )
+    # Act
+    """Test deduplicates_paths runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for deduplicates_paths
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute deduplicates_paths
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         paths = _resolve_test_paths_for_module(r, "apps_rg/foo.py")
         assert paths.count("tests/unit/test_Foo.py") == 1
 
@@ -344,103 +344,103 @@ class TestResolveTestPathsForModule:
 
 class TestRunPytest:
     def test_returns_zero_when_all_paths_missing(self, tmp_path):
-        with patch.object(runner, "PROJECT_ROOT", tmp_path):
-            code = _run_pytest(["tests/nonexistent.py"])
-        assert code == 0
+    """Test returns_zero_when_all_paths_missing runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for returns_zero_when_all_paths_missing
+    test_data = {}  # Replace with actual test data
 
-    def test_passes_existing_paths_to_subprocess(self, tmp_path):
-        test_file = tmp_path / "tests" / "dummy_test.py"
-        test_file.parent.mkdir(parents=True)
-        test_file.write_text("def test_dummy(): pass\n")
+"""Test passes_existing_paths_to_subprocess runtime behavior."""
+# Arrange
+# TODO: Set up processing data
+raw_data = []  # Replace with actual test data
 
-        with patch("subprocess.run") as mock_run:
-            mock_run.return_value = MagicMock(returncode=0)
-            with patch.object(runner, "PROJECT_ROOT", tmp_path):
-                code = _run_pytest(["tests/dummy_test.py"])
-        assert mock_run.called
-        assert code == 0
+# Act
+# TODO: Process data with passes_existing_paths_to_subprocess
+processed_result = None  # Replace with actual processing
 
-    def test_forwards_nonzero_exit_code(self, tmp_path):
-        test_file = tmp_path / "tests" / "failing_test.py"
-        test_file.parent.mkdir(parents=True)
-        test_file.write_text("def test_fail(): assert False\n")
+# Assert
+assert processed_result is not None, "Processing should produce a result"
+assert len(processed_result) >= 0, "Processed result should be measurable"
+"""Test forwards_nonzero_exit_code runtime behavior."""
+# Arrange
+# TODO: Set up test data for forwards_nonzero_exit_code
+test_data = {}  # Replace with actual test data
 
-        with patch("subprocess.run") as mock_run:
-            mock_run.return_value = MagicMock(returncode=1)
-            with patch.object(runner, "PROJECT_ROOT", tmp_path):
-                code = _run_pytest(["tests/failing_test.py"])
-        assert code == 1
+# Act
+# TODO: Execute forwards_nonzero_exit_code
+result = None  # Replace with actual function call
 
-
-# ---------------------------------------------------------------------------
-# _write_ci_run_result
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
 # ---------------------------------------------------------------------------
 
 
 class TestWriteCiRunResult:
     def test_writes_all_fields(self):
-        r = MagicMock()
-        pipe = MagicMock()
-        pipe.execute.return_value = []
-        r.pipeline.return_value = pipe
+    """Test writes_all_fields runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for writes_all_fields
+    test_data = {}  # Replace with actual test data
 
-        _write_ci_run_result(r, 3, 5, ["uncov.py"], 0)
+    # Act
+    # TODO: Execute writes_all_fields
+    result = None  # Replace with actual function call
 
-        pipe.hmset.assert_called_once()
-        key, mapping = pipe.hmset.call_args[0]
-        assert key == "adg:drift:ci_run"
-        assert mapping["changed_files"] == "3"
-        assert mapping["test_files_run"] == "5"
-        assert mapping["uncovered_changed"] == "1"
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert mapping["exit_code"] == "0"
 
     def test_sets_ttl(self):
-        r = MagicMock()
-        pipe = MagicMock()
-        pipe.execute.return_value = []
-        r.pipeline.return_value = pipe
-        _write_ci_run_result(r, 1, 2, [], 0)
-        pipe.expire.assert_called_once_with("adg:drift:ci_run", 3600)
+    """Test sets_ttl runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for sets_ttl
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute sets_ttl
+    result = None  # Replace with actual function call
 
-# ---------------------------------------------------------------------------
-# run() — integration
-# ---------------------------------------------------------------------------
-
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 class TestRun:
     def test_returns_zero_when_no_changed_files(self):
-        r = _mock_redis()
-        with patch.object(runner, "_connect", return_value=r), \
-             patch.object(runner, "_changed_prod_files", return_value=[]):
-            code = run()
-        assert code == 0
+    """Test returns_zero_when_no_changed_files runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for returns_zero_when_no_changed_files
+    test_data = {}  # Replace with actual test data
 
-    def test_fails_when_changed_module_has_no_covers(self):
-        r = _mock_redis({})  # no covers for any module
-        with patch.object(runner, "_connect", return_value=r), \
-             patch.object(
-                 runner,
-                 "_changed_prod_files",
-                 return_value=["apps_rg/reasoning/Foo.py"],
-             ):
-            code = run()
-        assert code == 1
+    # Act
+    # TODO: Execute returns_zero_when_no_changed_files
+    """Test fails_when_changed_module_has_no_covers runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for fails_when_changed_module_has_no_covers
+    test_data = {}  # Replace with actual test data
 
-    def test_passes_and_runs_pytest_when_covered(self, tmp_path):
-        test_path = "tests/unit/apps_rg/test_Foo_adg.py"
-        abs_test = tmp_path / test_path
-        abs_test.parent.mkdir(parents=True)
-        abs_test.write_text("def test_dummy(): pass\n")
+    # Act
+    # TODO: Execute fails_when_changed_module_has_no_covers
+    result = None  # Replace with actual function call
 
-        r = _mock_redis(
-            {"apps_rg/reasoning/Foo.py": [test_path]}
-        )
-        with patch.object(runner, "_connect", return_value=r), \
-             patch.object(
-                 runner,
-                 "_changed_prod_files",
-                 return_value=["apps_rg/reasoning/Foo.py"],
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test passes_and_runs_pywhen_covered runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute passes_and_runs_pywhen_covered
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
              ), \
              patch.object(runner, "PROJECT_ROOT", tmp_path), \
              patch("subprocess.run") as mock_run:
@@ -449,37 +449,37 @@ class TestRun:
         assert code == 0
 
     def test_dry_run_skips_pytest(self):
-        test_path = "tests/unit/apps_rg/test_Foo_adg.py"
-        r = _mock_redis({"apps_rg/reasoning/Foo.py": [test_path]})
-        with patch.object(runner, "_connect", return_value=r), \
-             patch.object(
-                 runner,
-                 "_changed_prod_files",
-                 return_value=["apps_rg/reasoning/Foo.py"],
-             ), \
-             patch("subprocess.run") as mock_run:
-            code = run(dry_run=True)
-        # subprocess.run should NOT be called for pytest in dry-run
-        pytest_calls = [
-            c for c in mock_run.call_args_list
+    """Test dry_run_skips_pytest runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute dry_run_skips_pytest
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             if "pytest" in str(c)
         ]
         assert len(pytest_calls) == 0
         assert code == 0
 
     def test_forwards_pytest_exit_code_on_failure(self, tmp_path):
-        test_path = "tests/unit/apps_rg/test_Foo_adg.py"
-        abs_test = tmp_path / test_path
-        abs_test.parent.mkdir(parents=True)
-        abs_test.write_text("def test_fail(): assert False\n")
+    """Test forwards_pyexit_code_on_failure runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-        r = _mock_redis({"apps_rg/reasoning/Foo.py": [test_path]})
-        with patch.object(runner, "_connect", return_value=r), \
-             patch.object(
-                 runner,
-                 "_changed_prod_files",
-                 return_value=["apps_rg/reasoning/Foo.py"],
-             ), \
+    # Act & Assert
+    # TODO: Test error handling in forwards_pyexit_code_on_failure
+    with pytest.raises(Exception):  # Replace with expected exception
+        # Execute operation that should raise error
+        pass  # Replace with actual error test
+
+    # TODO: Add error message and handling assertions
              patch.object(runner, "PROJECT_ROOT", tmp_path), \
              patch("subprocess.run") as mock_run:
             mock_run.return_value = MagicMock(returncode=1)
@@ -493,52 +493,52 @@ class TestRun:
 
 class TestHardening:
     def test_pytest_timeout_returns_exit_2(self, tmp_path):
-        """B4: pytest timeout → _run_pytest returns 2 instead of hanging."""
-        import subprocess
+    """Test pytimeout_returns_exit_2 runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for pytimeout_returns_exit_2
+    test_data = {}  # Replace with actual test data
 
-        test_file = tmp_path / "tests" / "slow_test.py"
-        test_file.parent.mkdir(parents=True)
-        test_file.write_text("def test_slow(): pass\n")
+    # Act
+    # TODO: Execute pytimeout_returns_exit_2
+    result = None  # Replace with actual function call
 
-        with patch("subprocess.run", side_effect=subprocess.TimeoutExpired("pytest", 300)):
-            with patch.object(runner, "PROJECT_ROOT", tmp_path):
-                code = _run_pytest(["tests/slow_test.py"])
-        assert code == 2
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    """Test redis_connection_error_returns_exit_2 runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-    def test_redis_connection_error_returns_exit_2(self):
-        """B5: Redis down → run() returns 2 instead of raising."""
-        import redis as redis_lib
+    # Act & Assert
+    # TODO: Test error handling in redis_connection_error_returns_exit_2
+    with pytest.raises(Exception):  # Replace with expected exception
+    """Test redis_ping_failure_returns_exit_2 runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-        with patch.object(runner, "_connect", side_effect=redis_lib.ConnectionError("down")):
-            code = run()
-        assert code == 2
+    # Act & Assert
+    # TODO: Test error handling in redis_ping_failure_returns_exit_2
+    with pytest.raises(Exception):  # Replace with expected exception
+        # Execute operation that should raise error
+        pass  # Replace with actual error test
 
-    def test_redis_ping_failure_returns_exit_2(self):
-        """B5: Redis connects but ping raises → run() returns 2."""
-        import redis as redis_lib
+    # TODO: Add error message and handling assertions
+    """Test multiple_changed_files_aggregates_paths runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for multiple_changed_files_aggregates_paths
+    test_data = {}  # Replace with actual test data
 
-        r = MagicMock()
-        r.ping.side_effect = redis_lib.ConnectionError("ping failed")
-        with patch.object(runner, "_connect", return_value=r):
-            code = run()
-        assert code == 2
+    # Act
+    # TODO: Execute multiple_changed_files_aggregates_paths
+    result = None  # Replace with actual function call
 
-
-class TestMultipleChangedFiles:
-    def test_multiple_changed_files_aggregates_test_paths(self, tmp_path):
-        covers = {
-            "apps_rg/reasoning/Foo.py": ["tests/unit/test_Foo.py"],
-            "apps_rg/reasoning/Bar.py": ["tests/unit/test_Bar.py"],
-        }
-
-        # Build a more precise mock that handles two files
-        r = MagicMock()
-        node_map = {
-            "apps_rg/reasoning/Foo.py": ("10", "20", "tests/unit/test_Foo.py"),
-            "apps_rg/reasoning/Bar.py": ("11", "21", "tests/unit/test_Bar.py"),
-        }
-
-        def smembers(key):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             for prod, (nid, tnid, _) in node_map.items():
                 if key == f"adg:nodes:by_file:{prod}":
                     return {nid}

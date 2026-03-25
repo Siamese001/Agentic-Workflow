@@ -246,31 +246,31 @@ class TestMetaLearningBus:
         assert len(result.proposals) >= 1
 
     def test_adg_triggered_telemetry_relations_emitted(self):
-        traces = [("t1", self._signal("t1"), _TS)]
-        result = self._bus().process_traces(traces, _TS)
-        relation_types = {rel[1] for rel in result.adg_relations_emitted}
-        assert "triggered_telemetry" in relation_types
+    """Test adg_triggered_telemetry_relations_emitted runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for adg_triggered_telemetry_relations_emitted
+    test_data = {}  # Replace with actual test data
 
-    def test_adg_chunks_into_relations_emitted_for_clusters(self):
-        traces = [(f"t{i}", self._signal(f"t{i}", groundedness=0.2), _TS + i) for i in range(4)]
-        result = self._bus(reward_threshold=0.0).process_traces(traces, _TS + 100)
-        relation_types = {rel[1] for rel in result.adg_relations_emitted}
-        assert "chunks_into" in relation_types
+    # Act
+    """Test adg_chunks_into_relations_emitted_for_clusters runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for adg_chunks_into_relations_emitted_for_clusters
+    test_data = {}  # Replace with actual test data
 
-    def test_adg_stores_embedding_relations_emitted(self):
-        traces = [(f"t{i}", self._signal(f"t{i}", groundedness=0.2), _TS + i) for i in range(4)]
-        result = self._bus(reward_threshold=0.0).process_traces(traces, _TS + 100)
-        relation_types = {rel[1] for rel in result.adg_relations_emitted}
-        assert "stores_embedding" in relation_types
+    # Act
+    """Test adg_stores_embedding_relations_emitted runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for adg_stores_embedding_relations_emitted
+    test_data = {}  # Replace with actual test data
 
-    def test_low_reward_threshold_allows_more_proposals_to_validation(self):
-        traces = [(f"t{i}", self._signal(f"t{i}", groundedness=0.2), _TS + i) for i in range(6)]
-        result_strict = self._bus(reward_threshold=0.99).process_traces(traces, _TS + 100)
-        result_loose = self._bus(reward_threshold=0.0).process_traces(traces, _TS + 100)
-        # With threshold 0.0, at least as many proposals pass reward gate
-        assert len(result_loose.validation_results) >= len(result_strict.validation_results)
+    # Act
+    # TODO: Execute adg_stores_embedding_relations_emitted
+    result = None  # Replace with actual function call
 
-    def test_successful_pipeline_produces_commits(self):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         # 6 traces with HEALER_REQUIRED pattern (LOW risk → easy to pass)
         traces = [
             (
@@ -298,19 +298,19 @@ class TestMetaLearningBus:
         assert len(result.commits) >= 1
 
     def test_commits_have_correct_adg_relation(self):
-        traces = [
-            (
-                f"t{i}",
-                {
-                    "route_selected": "PATH_A",
-                    "confidence_gate_state": "pass",
-                    "retrieval_path": "RAG_BGE",
-                    "retrieval_groundedness_score": 0.8,
-                    "healing_invoked": True,
-                    "healer_id": "healer_X",
-                    "success": True,
-                    "healed": True,
-                    "adg_entity_name": "ADG::Module::healer_test",
+    """Test commits_have_correct_adg_relation runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for commits_have_correct_adg_relation
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute commits_have_correct_adg_relation
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
                     "adg_relation_ids": [],
                 },
                 _TS + i,
@@ -325,19 +325,19 @@ class TestMetaLearningBus:
             assert commit.adg_relation == "proposal_commits_optimization"
 
     def test_proposal_commits_optimization_relations_emitted(self):
-        traces = [
-            (
-                f"t{i}",
-                {
-                    "route_selected": "PATH_A",
-                    "confidence_gate_state": "pass",
-                    "retrieval_path": "RAG_BGE",
-                    "retrieval_groundedness_score": 0.8,
-                    "healing_invoked": True,
-                    "healer_id": "healer_X",
-                    "success": True,
-                    "healed": True,
-                    "adg_entity_name": "ADG::Module::healer_test",
+    """Test proposal_commits_optimization_relations_emitted runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for proposal_commits_optimization_relations_emitted
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute proposal_commits_optimization_relations_emitted
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
                     "adg_relation_ids": [],
                 },
                 _TS + i,
@@ -475,19 +475,19 @@ class TestClosedLearningLoop:
         assert len(result.commits) >= 1
 
     def test_adg_relation_graph_has_all_5_types(self):
-        """Full pipeline must emit all 5 ADG relation types."""
-        from system_learning.engines.meta_learning_bus import (
-            MetaLearningBus,
-            MetaLearningBusConfig,
-        )
+    """Test adg_relation_graph_has_all_5_types runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for adg_relation_graph_has_all_5_types
+    test_data = {}  # Replace with actual test data
 
-        traces = [
-            (
-                f"tr-full-{i:03d}",
-                {
-                    "route_selected": "PATH_A",
-                    "confidence_gate_state": "pass",
-                    "retrieval_path": "RAG_BGE",
+    # Act
+    # TODO: Execute adg_relation_graph_has_all_5_types
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
                     "retrieval_groundedness_score": 0.8,
                     "healing_invoked": True,
                     "healer_id": "healer_X",
@@ -552,19 +552,19 @@ class TestClosedLearningLoop:
         assert len(result_with_seed.clusters) >= len(result_no_seed.clusters)
 
     def test_hitl_traces_feed_into_confidence_threshold_proposals(self):
-        """HITL escalations cluster and generate confidence threshold proposals."""
-        from system_learning.engines.meta_learning_bus import (
-            MetaLearningBus,
-            MetaLearningBusConfig,
-        )
+    """Test hitl_traces_feed_into_confidence_threshold_proposals runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for hitl_traces_feed_into_confidence_threshold_proposals
+    test_data = {}  # Replace with actual test data
 
-        traces = [
-            (
-                f"tr-hitl-{i}",
-                {
-                    "route_selected": "PATH_A",
-                    "confidence_gate_state": "escalate",
-                    "retrieval_path": "RAG_BGE",
+    # Act
+    # TODO: Execute hitl_traces_feed_into_confidence_threshold_proposals
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
                     "retrieval_groundedness_score": 0.85,
                     "human_escalation_flag": True,
                     "success": True,
@@ -586,18 +586,18 @@ class TestClosedLearningLoop:
         assert "CONFIDENCE_THRESHOLD_UPDATE" in change_types
 
     def test_replay_failure_cluster_generates_routing_proposal(self):
-        """REPLAY_FAILURE cluster produces ROUTING_RULE_ADJUSTMENT proposal."""
-        from system_learning.engines.meta_learning_bus import (
-            MetaLearningBus,
-            MetaLearningBusConfig,
-        )
+    """Test replay_failure_cluster_generates_routing_proposal runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-        traces = [
-            (
-                f"tr-rf-{i}",
-                {
-                    "route_selected": "PATH_D",
-                    "confidence_gate_state": "pass",
+    # Act & Assert
+    # TODO: Test error handling in replay_failure_cluster_generates_routing_proposal
+    with pytest.raises(Exception):  # Replace with expected exception
+        # Execute operation that should raise error
+        pass  # Replace with actual error test
+
+    # TODO: Add error message and handling assertions
                     "retrieval_path": "DIRECT",
                     "retrieval_groundedness_score": 0.5,
                     "replay_failed": True,

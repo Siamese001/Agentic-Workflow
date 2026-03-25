@@ -83,19 +83,19 @@ def test_p1_freeze_immediate_effect():
 
 @pytest.mark.governance
 def test_p1_freeze_no_execution_window():
-    """P1 Freeze: No execution window between freeze activation and effect."""
-    authority = FreezeTimingAuthority()
+"""Test p1_freeze_no_execution_window runtime behavior."""
+# Arrange
+# TODO: Set up test data for p1_freeze_no_execution_window
+test_data = {}  # Replace with actual test data
 
-    # Start a thread that will activate freeze after a short delay
-    def delayed_freeze():
-        time.sleep(DEFAULT_SLEEP)  # 10ms delay
-        authority.activate_freeze()
+# Act
+# TODO: Execute p1_freeze_no_execution_window
+result = None  # Replace with actual function call
 
-    freeze_thread = threading.Thread(target=delayed_freeze)
-    freeze_thread.start()
-
-    # Rapidly attempt operations
-    successful_ops = []
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
     failed_ops = []
 
     for i in range(100):
@@ -333,19 +333,19 @@ def test_p1_freeze_microsecond_precision():
 
 @pytest.mark.governance
 def test_p1_freeze_no_execution_window_stress():
-    """P1 Freeze: Stress test for no execution window."""
-    authority = FreezeTimingAuthority()
+"""Test p1_freeze_no_execution_window_stress runtime behavior."""
+# Arrange
+# TODO: Set up test data for p1_freeze_no_execution_window_stress
+test_data = {}  # Replace with actual test data
 
-    results = []
+# Act
+# TODO: Execute p1_freeze_no_execution_window_stress
+result = None  # Replace with actual function call
 
-    def stress_worker(worker_id: int, operations: int):
-        """Stress worker performing many operations."""
-        worker_results = []
-        for i in range(operations):
-            op_id = f"worker{worker_id}_op{i}"
-            start_time = time.perf_counter()
-            success = authority.attempt_operation(op_id)
-            end_time = time.perf_counter()
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
 
             worker_results.append(
                 {

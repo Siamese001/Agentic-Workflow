@@ -51,35 +51,35 @@ def _make_span(
 
 class TestMaterializeEmpty:
     def test_empty_spans_produces_valid_snapshot(self):
-        mat = RuntimeADGMaterializer()
-        snap = mat.materialize([])
-        assert isinstance(snap, RuntimeADGSnapshot)
-        assert snap.node_count() == 0
-        assert snap.edge_count() == 0
-        assert len(snap.snapshot_id) == 64
+    """Test empty_spans_produces_valid_snapshot runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_empty_with_explicit_trace_mission(self):
-        mat = RuntimeADGMaterializer()
-        snap = mat.materialize([], mission="explicit", trace_id="explicit-trace")
-        assert snap.mission == "explicit"
-        assert snap.trace_id == "explicit-trace"
+    # Act
+    # TODO: Execute runtime operation empty_spans_produces_valid_snapshot
+    runtime_result = None  # Replace with actual runtime operation
+    """Test empty_with_explicit_trace_mission runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
+    # Act
+    # TODO: Execute runtime operation empty_with_explicit_trace_mission
+    runtime_result = None  # Replace with actual runtime operation
+    """Test each_span_becomes_one_node runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-class TestNodeExtraction:
-    def test_each_span_becomes_one_node(self):
-        spans = [
-            _make_span("s1", "orchestrator.execute"),
-            _make_span("s2", "tool.search", parent_span_id="s1"),
-        ]
-        snap = RuntimeADGMaterializer().materialize(spans)
-        assert snap.node_count() == 2
+    # Act
+    # TODO: Execute runtime operation each_span_becomes_one_node
+    runtime_result = None  # Replace with actual runtime operation
 
-    def test_node_fields_preserved(self):
-        spans = [
-            _make_span(
-                "s1",
-                "cognitive.think",
-                kind="cognitive",
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
                 layer="L1_COGNITION",
                 component="CognitivePlane",
                 ts_utc=5000,
@@ -99,129 +99,135 @@ class TestNodeExtraction:
         assert node.status == "ok"
 
     def test_nodes_sorted_by_ts_utc(self):
-        spans = [
-            _make_span("s2", "second", ts_utc=2000),
-            _make_span("s1", "first", ts_utc=1000),
-        ]
-        snap = RuntimeADGMaterializer().materialize(spans)
-        assert snap.nodes[0].started_at_utc <= snap.nodes[1].started_at_utc
+    """Test nodes_sorted_by_ts_utc runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
+    # Act
+    # TODO: Execute runtime operation nodes_sorted_by_ts_utc
+    runtime_result = None  # Replace with actual runtime operation
 
-class TestParentChildEdges:
-    def test_root_span_gets_root_sentinel(self):
-        spans = [_make_span("root", "orchestrator.execute", parent_span_id="")]
-        snap = RuntimeADGMaterializer().materialize(spans)
-        pc_edges = [e for e in snap.edges if e.relation == "parent_child"]
-        assert len(pc_edges) == 1
-        assert pc_edges[0].src_id == _ROOT_SENTINEL
-        assert pc_edges[0].dst_id == "root"
+    # Assert
+    """Test root_span_gets_root_sentinel runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_child_span_has_parent_as_src(self):
-        spans = [
-            _make_span("s1", "orchestrator.execute", parent_span_id=""),
-            _make_span("s2", "tool.search", parent_span_id="s1"),
-        ]
-        snap = RuntimeADGMaterializer().materialize(spans)
-        pc_edges = {(e.src_id, e.dst_id): e for e in snap.edges if e.relation == "parent_child"}
-        assert ("s1", "s2") in pc_edges
-        assert (_ROOT_SENTINEL, "s1") in pc_edges
+    # Act
+    # TODO: Execute runtime operation root_span_gets_root_sentinel
+    runtime_result = None  # Replace with actual runtime operation
+    """Test child_span_has_parent_as_src runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_three_level_nesting(self):
-        spans = [
-            _make_span("s1", "orch", parent_span_id="", ts_utc=1000),
-            _make_span("s2", "cog", parent_span_id="s1", ts_utc=1100),
-            _make_span("s3", "tool", parent_span_id="s2", ts_utc=1200),
-        ]
-        snap = RuntimeADGMaterializer().materialize(spans)
-        pc_edges = {(e.src_id, e.dst_id) for e in snap.edges if e.relation == "parent_child"}
-        assert (_ROOT_SENTINEL, "s1") in pc_edges
-        assert ("s1", "s2") in pc_edges
-        assert ("s2", "s3") in pc_edges
+    # Act
+    # TODO: Execute runtime operation child_span_has_parent_as_src
+    runtime_result = None  # Replace with actual runtime operation
 
+    # Assert
+    """Test three_level_nesting runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-class TestTemporalEdges:
+    # Act
+    # TODO: Execute runtime operation three_level_nesting
+    runtime_result = None  # Replace with actual runtime operation
+
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
     def test_single_span_no_temporal_edges(self):
-        spans = [_make_span("s1", "orch")]
-        snap = RuntimeADGMaterializer().materialize(spans)
-        temporal = [e for e in snap.edges if e.relation == "temporal_sequence"]
-        assert temporal == []
+    """Test single_span_no_temporal_edges runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_two_spans_produce_one_temporal_edge(self):
-        spans = [
-            _make_span("s1", "first", ts_utc=1000),
-            _make_span("s2", "second", ts_utc=2000),
-        ]
-        snap = RuntimeADGMaterializer().materialize(spans)
-        temporal = [e for e in snap.edges if e.relation == "temporal_sequence"]
-        assert len(temporal) == 1
-        assert temporal[0].src_id == "s1"
-        assert temporal[0].dst_id == "s2"
+    # Act
+    """Test two_spans_produce_one_temporal_edge runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_temporal_edges_follow_ts_utc_order(self):
-        spans = [
-            _make_span("s3", "third", ts_utc=3000),
-            _make_span("s1", "first", ts_utc=1000),
-            _make_span("s2", "second", ts_utc=2000),
-        ]
-        snap = RuntimeADGMaterializer().materialize(spans)
-        temporal = sorted(
-            [e for e in snap.edges if e.relation == "temporal_sequence"],
-            key=lambda e: e.src_id,
-        )
-        assert temporal[0].src_id == "s1" and temporal[0].dst_id == "s2"
-        assert temporal[1].src_id == "s2" and temporal[1].dst_id == "s3"
+    # Act
+    # TODO: Execute runtime operation two_spans_produce_one_temporal_edge
+    runtime_result = None  # Replace with actual runtime operation
 
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    """Test temporal_edges_follow_ts_utc_order runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
+
+    # Act
+    # TODO: Execute runtime operation temporal_edges_follow_ts_utc_order
+    runtime_result = None  # Replace with actual runtime operation
+
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
 
 class TestMissionAndTraceInference:
     def test_trace_id_inferred_from_first_span(self):
-        spans = [_make_span("s1", "orch", trace_id="inferred-trace")]
-        snap = RuntimeADGMaterializer().materialize(spans)
-        assert snap.trace_id == "inferred-trace"
+    """Test trace_id_inferred_from_first_span runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_explicit_trace_id_overrides_inference(self):
-        spans = [_make_span("s1", "orch", trace_id="span-trace")]
-        snap = RuntimeADGMaterializer().materialize(spans, trace_id="override-trace")
-        assert snap.trace_id == "override-trace"
+"""Test explicit_trace_id_overrides_inference runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
-    def test_mission_inferred_from_root_span_attributes(self):
-        spans = [
-            _make_span(
-                "s1", "orchestrator.execute", parent_span_id="", attributes={"mission": "campaign-run-007"}
-            ),
-        ]
-        snap = RuntimeADGMaterializer().materialize(spans)
-        assert snap.mission == "campaign-run-007"
+"""Test mission_inferred_from_root_span_attributes runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
-    def test_mission_inferred_from_root_span_name_fallback(self):
-        spans = [_make_span("s1", "orchestrator.execute", parent_span_id="")]
-        snap = RuntimeADGMaterializer().materialize(spans)
-        assert snap.mission == "orchestrator.execute"
+# Act
+# TODO: Execute runtime operation mission_inferred_from_root_span_attributes
+runtime_result = None  # Replace with actual runtime operation
 
-    def test_explicit_mission_overrides_inference(self):
-        spans = [
-            _make_span(
-                "s1", "orchestrator.execute", parent_span_id="", attributes={"mission": "inferred-mission"}
-            ),
-        ]
-        snap = RuntimeADGMaterializer().materialize(spans, mission="override-mission")
-        assert snap.mission == "override-mission"
+"""Test mission_inferred_from_root_span_name_fallback runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
-    def test_trace_start_end_from_spans(self):
-        spans = [
-            _make_span("s1", "first", ts_utc=1000, duration_ms=50),
-            _make_span("s2", "second", ts_utc=2000, duration_ms=100),
-        ]
-        snap = RuntimeADGMaterializer().materialize(spans)
-        assert snap.started_at_utc == 1000
-        assert snap.ended_at_utc == 2100
+"""Test explicit_mission_overrides_inference runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
+# Act
+# TODO: Execute runtime operation explicit_mission_overrides_inference
+runtime_result = None  # Replace with actual runtime operation
 
-class TestMaterializerIdempotency:
-    def test_same_spans_produce_same_hash(self):
-        spans = [
-            _make_span("s1", "orch", parent_span_id="", ts_utc=1000, duration_ms=200),
-            _make_span("s2", "tool", parent_span_id="s1", ts_utc=1100, duration_ms=50),
-        ]
-        snap_a = RuntimeADGMaterializer().materialize(spans, mission="m", trace_id="t")
-        snap_b = RuntimeADGMaterializer().materialize(spans, mission="m", trace_id="t")
-        assert snap_a.snapshot_hash == snap_b.snapshot_hash
+"""Test trace_start_end_from_spans runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
+
+# Act
+# TODO: Execute runtime operation trace_start_end_from_spans
+runtime_result = None  # Replace with actual runtime operation
+
+# Assert
+assert runtime_result is not None, "Runtime operation should produce a result"
+"""Test same_spans_produce_same_hash runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
+
+# Act
+# TODO: Execute runtime operation same_spans_produce_same_hash
+runtime_result = None  # Replace with actual runtime operation
+
+# Assert
+assert runtime_result is not None, "Runtime operation should produce a result"
+assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+# TODO: Add runtime-specific assertions

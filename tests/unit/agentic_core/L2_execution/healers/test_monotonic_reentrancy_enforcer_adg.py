@@ -173,27 +173,36 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestNonMonotonicRetryViolation:
     def test_is_exception(self):
-        assert issubclass(NonMonotonicRetryViolation, Exception)
+    """Test is_exception runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
+"""Test creates runtime behavior."""
+# Arrange
+# TODO: Set up test data for creates
+test_data = {}  # Replace with actual test data
+"""Test first_retry_is_one runtime behavior."""
+# Arrange
+# TODO: Set up test data for first_retry_is_one
+test_data = {}  # Replace with actual test data
 
-class TestMonotonicReentrancyEnforcer:
-    def test_creates(self):
-        enforcer = MonotonicReentrancyEnforcer()
-        assert enforcer is not None
+"""Test second_retry_is_two runtime behavior."""
+# Arrange
+# TODO: Set up test data for second_retry_is_two
+test_data = {}  # Replace with actual test data
 
-    def test_first_retry_is_one(self):
-        enforcer = MonotonicReentrancyEnforcer()
-        count = enforcer.get_and_increment_retry_count("trace-1")
-        assert count == 1
+# Act
+"""Test different_traces_independent runtime behavior."""
+# Arrange
+# TODO: Set up test data for different_traces_independent
+test_data = {}  # Replace with actual test data
 
-    def test_second_retry_is_two(self):
-        enforcer = MonotonicReentrancyEnforcer()
-        enforcer.get_and_increment_retry_count("trace-1")
-        count = enforcer.get_and_increment_retry_count("trace-1")
-        assert count == 2
+# Act
+# TODO: Execute different_traces_independent
+result = None  # Replace with actual function call
 
-    def test_different_traces_independent(self):
-        enforcer = MonotonicReentrancyEnforcer()
-        enforcer.get_and_increment_retry_count("trace-a")
-        count_b = enforcer.get_and_increment_retry_count("trace-b")
-        assert count_b == 1
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions

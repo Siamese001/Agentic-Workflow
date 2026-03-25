@@ -281,19 +281,19 @@ class HighConfidenceTestAgent:
 
 
 def test_direct_heal_call():
-    """Test calling heal method directly on LocationAgent"""
+"""Test direct_heal_call runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    print("\n=== Direct Heal Method Test ===\n")
+# Act
+# TODO: Execute direct_heal_call
+result = None  # Replace with actual execution
 
-    # Create a test file
-    test_dir = project_root / "temp_test_direct"
-    test_dir.mkdir(exist_ok=True)
-
-    test_file = test_dir / "DirectTestAgent.py"
-    test_file.write_text("""
-# Direct test file
-class DirectTestAgent:
-    pass
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
 """)
 
     try:

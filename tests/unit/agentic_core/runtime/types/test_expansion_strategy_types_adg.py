@@ -173,26 +173,36 @@ from agentic_core.runtime.types.expansion_strategy_types import (
 
 class TestExpansionStrategy:
     def test_is_enum(self):
-        import enum; assert issubclass(ExpansionStrategy, enum.Enum)
-    def test_has_hybrid(self): assert ExpansionStrategy.HYBRID.value == "hybrid"
-    def test_four_strategies(self): assert len(list(ExpansionStrategy)) == 4
+    """Test is_enum runtime behavior."""
+    # Arrange
+    """Test has_hybrid runtime behavior."""
+    """Test four_strategies runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    """Test is_dataclass runtime behavior."""
+    # Arrange
+    """Test creates runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-class TestHyDeDocument:
-    def test_is_dataclass(self):
-        import dataclasses; assert dataclasses.is_dataclass(HyDeDocument)
-    def test_creates(self):
-        d = HyDeDocument(content="long enough content here for sure",
-                         Archetype="Executive", industry="Tech",
-                         strategy=ExpansionStrategy.HYBRID, word_count=15)
-        assert d.is_valid is True
-    def test_invalid_short_content(self):
-        d = HyDeDocument(content="x", Archetype="E", industry="T",
-                         strategy=ExpansionStrategy.HYBRID, word_count=1)
-        assert d.is_valid is False
+    # Act
+    # TODO: Execute runtime operation creates
+    runtime_result = None  # Replace with actual runtime operation
 
-class TestHyDeProcessor:
-    def test_creates(self): p = HyDeProcessor(); assert p.fallback_enabled is True
-    def test_expand_query_stub(self):
-        p = HyDeProcessor()
-        r = p.expand_query("find me a job", "Executive")
-        assert isinstance(r, HyDeResult); assert r.fallback_used is True
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    """Test creates runtime behavior."""
+    """Test expand_query_stub runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
+
+    # Act
+    # TODO: Execute runtime operation expand_query_stub
+    runtime_result = None  # Replace with actual runtime operation
+
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions

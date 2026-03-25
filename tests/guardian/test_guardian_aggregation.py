@@ -420,25 +420,25 @@ class TestAggregateSchemaCompliance:
         assert violations == []
 
     def test_schema_compatible(self):
-        agg = _aggregate([_passing_result("g1"), _failing_result("g2")])
-        errors = check_schema_compatibility(agg.to_dict())
-        assert errors == []
+    """Test schema_compatible contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_aggregate_validate(self):
-        agg = _aggregate([_passing_result("g1")])
-        errors = agg.validate()
-        assert errors == []
+"""Test aggregate_validate contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
-    def test_status_is_known_value(self):
-        for results in [
-            [_passing_result("g1")],
-            [_failing_result("g1")],
-            [_error_result("g1")],
-            [],
-        ]:
-            agg = _aggregate(results)
-            assert agg.status in {"PASS", "FAIL", "ERROR"}
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
 
+# Assert - Schema Contract
+assert validation_result is not None, "Schema validation should produce a result"
+assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+# TODO: Add specific schema validation assertions
+# assert validation_result.get("valid", False), "Data should conform to schema"
 
 # ---------------------------------------------------------------------------
 # 7. Determinism

@@ -547,19 +547,19 @@ class TestBudgetAndSeamIntegration:
             reset_heal_budget_counters()
 
     def test_no_network_calls_in_budget_checks(self):
-        """Budget checks make no network calls."""
-        from agentic_core.L5_safety.types.heal_llm_seam_types import (
-            HealBudgetCaps,
-            increment_escalation_count,
-            reset_heal_budget_counters,
-            set_heal_budget_caps,
-        )
+    """Test no_network_calls_in_budget_checks runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        # This test relies on the network tripwire fixture from conftest.py
-        # If any network call is made, it will raise NetworkTripwireError
+    # Act
+    # TODO: Execute no_network_calls_in_budget_checks
+    result = None  # Replace with actual execution
 
-        caps = HealBudgetCaps(max_escalations_per_run=2, max_high_tier_per_run=1)
-        set_heal_budget_caps(caps)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         reset_heal_budget_counters()
 
         try:

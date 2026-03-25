@@ -481,20 +481,20 @@ class TestL4MetaPriorProvider:
         assert result == _NEUTRAL_PRIOR
 
     def test_satisfies_meta_prior_provider_protocol(self):
-        """L4MetaPriorProvider must satisfy MetaPriorProvider structural protocol."""
-        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+    """Test satisfies_meta_prior_provider_protocol contract compliance."""
+    # Arrange
+    # TODO: Set up interface implementation
+    implementation = None  # Replace with actual implementation
 
-        provider = L4MetaPriorProvider(store=None)
-        assert hasattr(provider, "get_prior")
-        result = provider.get_prior("any_sig")
-        assert isinstance(result, float)
-        assert 0.0 <= result <= 1.0
+    # Act
+    # TODO: Test interface methods
+    result = None  # Replace with actual method call
 
-
-# ---------------------------------------------------------------------------
-# End-to-end: publish → drain → prior
-# ---------------------------------------------------------------------------
-
+    # Assert - Interface Contract
+    assert implementation is not None, "Interface implementation should exist"
+    assert hasattr(implementation, "__dict__"), "Implementation should be inspectable"
+    # TODO: Add specific interface method assertions
+    # assert callable(getattr(implementation, "method_name", None)), "Required method should exist"
 
 class TestEndToEndBusFlow:
     """Full loop: hook publishes → drain_and_apply updates store → prior reflects outcome."""

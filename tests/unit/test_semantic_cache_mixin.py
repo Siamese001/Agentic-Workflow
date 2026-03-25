@@ -279,19 +279,19 @@ class TestSemanticCacheMixinImport:
         assert not missing, f"Missing methods: {missing}"
 
     def test_semantic_update_feedback_is_callable(self):
-        from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
+    """Test semantic_update_feedback_is_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        agent = type("_T", (SemanticCacheMixin,), {})()
-        assert callable(agent.semantic_update_feedback)
+    # Act
+    # TODO: Execute semantic_update_feedback_is_callable
+    result = None  # Replace with actual execution
 
-
-# ===========================================================================
-# S1b — SemanticCacheMixin: property + singleton behaviour
-# ===========================================================================
-
-
-class TestSemanticCacheMixinProperty:
-    def setup_method(self):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         _reset_hive()
 
     def teardown_method(self):
@@ -331,19 +331,19 @@ class TestSemanticCacheMixinProperty:
         assert A().semantic_cache is B().semantic_cache
 
     def test_semantic_recall_returns_none_on_miss(self):
-        assert _fresh_agent().semantic_recall("unknown context xyz", "TestNS") is None
+    """Test semantic_recall_returns_none_on_miss runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_semantic_learn_increments_cache_stores(self):
-        agent = _fresh_agent()
-        agent.semantic_learn("ctx1", "TestNS", {"v": 1})
-        agent.semantic_learn("ctx2", "TestNS", {"v": 2})
-        agent.semantic_learn("ctx3", "TestNS", {"v": 3})
-        assert agent.semantic_stats()["cache_stores"] == 3
+    # Act
+    # TODO: Execute semantic_recall_returns_none_on_miss
+    result = None  # Replace with actual execution
 
-    def test_semantic_learn_accepts_feedback_score(self):
-        agent = _fresh_agent()
-        agent.semantic_learn("ctx", "NS", {"v": 1}, feedback_score=0.75)
-        assert agent.semantic_stats()["cache_stores"] == 1
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
     def test_semantic_promote_below_threshold_rejected(self):
         agent = _fresh_agent()

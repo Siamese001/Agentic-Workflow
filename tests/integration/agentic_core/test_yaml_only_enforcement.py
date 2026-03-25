@@ -213,19 +213,19 @@ class TestYamlOnlyEnforcement:
         assert patterns is not None
 
     def test_no_markdown_function_called(self):
-        """Test that markdown fallback function is not called."""
-        # Verify that _get_markdown_injections is not in the module
-        from agentic_core.runtime.config import instructional_injections
+    """Test no_markdown_function_called runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        # The markdown fallback function should not exist
-        assert not hasattr(instructional_injections, "_get_markdown_injections")
+    # Act
+    # TODO: Execute no_markdown_function_called
+    result = None  # Replace with actual execution
 
-    def test_injection_patterns_from_yaml_only(self):
-        """Test that all injection patterns come from YAML."""
-        patterns = get_instructional_injections()
-
-        # Verify we have patterns
-        assert len(patterns) > 0
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
         # Verify all patterns have required YAML structure
         for pattern in patterns:

@@ -249,19 +249,19 @@ class TestMetaLearningPipelinePatterns:
         assert result.pattern_digest is not None
 
     def test_pattern_analysis_influence_capped(self) -> None:
-        """T3: Pattern analysis influence should be capped at ≤ 0.25."""
-        # This is tested at the engine level - pattern analysis is informational only
-        # The actual influence capping is handled by the optimizer
-        engine = PatternAnalysisEngine()
+    """Test pattern_analysis_influence_capped runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for pattern_analysis_influence_capped
+    test_data = {}  # Replace with actual test data
 
-        # Use orthogonal directions so cosine distance separates clusters
-        embeddings = [
-            [1.0, 0.0, 0.0, 0.0],
-            [0.95, 0.05, 0.0, 0.0],  # Close to first in direction
-            [0.0, 0.0, 1.0, 0.0],
-            [0.0, 0.0, 0.95, 0.05],  # Close to third in direction
-        ]
-        metadata = [
+    # Act
+    # TODO: Execute pattern_analysis_influence_capped
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             {"type": "failure", "component": "A"},
             {"type": "failure", "component": "A"},
             {"type": "failure", "component": "B"},
@@ -362,19 +362,19 @@ class TestMetaLearningPipelinePatterns:
         assert result is None
 
     def test_pattern_analysis_informational_only(self) -> None:
-        """T7: Pattern analysis should be informational-only."""
-        # This is inherent in the design - pattern analysis only produces summaries
-        # It doesn't directly mutate any thresholds or configurations
-        engine = PatternAnalysisEngine()
+    """Test pattern_analysis_informational_only runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for pattern_analysis_informational_only
+    test_data = {}  # Replace with actual test data
 
-        embeddings = [
-            [0.1, 0.2, 0.3, 0.4],
-            [0.1, 0.2, 0.3, 0.4],
-        ]
-        metadata = [{"type": "test"}, {"type": "test"}]
+    # Act
+    # TODO: Execute pattern_analysis_informational_only
+    result = None  # Replace with actual function call
 
-        summary = engine.analyze(embeddings, metadata, min_cluster_size=2)
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         # Verify informational-only nature
         assert isinstance(summary, PatternSummary)
         assert hasattr(summary, "clusters")

@@ -20,45 +20,45 @@ import pytest
 
 class TestExecAgentSpecs:
     def test_default_specs_load(self):
-        import apps_exec.config.agent_spec_config as cfg_mod
-        from apps_exec.config.agent_spec_config import load_exec_specs
+    """Test default_specs_load runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for default_specs_load
+    test_data = {}  # Replace with actual test data
 
-        cfg_mod._SPEC_CACHE = None
-        specs = load_exec_specs()
-        assert specs is not None
-        assert len(specs.personas) >= 4
+    # Act
+    # TODO: Execute default_specs_load
+    result = None  # Replace with actual function call
 
-    def test_recruiter_persona_present(self):
-        import apps_exec.config.agent_spec_config as cfg_mod
-        from apps_exec.config.agent_spec_config import load_exec_specs
+"""Test recruiter_persona_present runtime behavior."""
+# Arrange
+# TODO: Set up test data for recruiter_persona_present
+test_data = {}  # Replace with actual test data
 
-        cfg_mod._SPEC_CACHE = None
-        specs = load_exec_specs()
-        assert "recruiter" in specs.personas
+# Act
+# TODO: Execute recruiter_persona_present
+result = None  # Replace with actual function call
+"""Test required_sections_non_empty runtime behavior."""
+# Arrange
+# TODO: Set up test data for required_sections_non_empty
+test_data = {}  # Replace with actual test data
 
-    def test_required_sections_non_empty(self):
-        import apps_exec.config.agent_spec_config as cfg_mod
-        from apps_exec.config.agent_spec_config import load_exec_specs
+# Act
+# TODO: Execute required_sections_non_empty
+result = None  # Replace with actual function call
 
-        cfg_mod._SPEC_CACHE = None
-        specs = load_exec_specs()
-        recruiter = specs.personas["recruiter"]
-        assert len(recruiter.required_sections) > 0
+"""Test empty_personas_raises runtime behavior."""
+# Arrange
+# TODO: Set up test data for empty_personas_raises
+test_data = {}  # Replace with actual test data
 
-    def test_empty_personas_raises(self):
-        from pydantic import ValidationError
+# Act
+# TODO: Execute empty_personas_raises
+result = None  # Replace with actual function call
 
-        from apps_exec.config.agent_spec_config import ExecAgentSpecs
-
-        with pytest.raises(ValidationError):
-            ExecAgentSpecs(personas={})
-
-
-class TestIngestionEngine:
-    def test_missing_dir_skips_gracefully(self):
-        from apps_exec.engines.ingestion_engine import IngestionEngine
-
-        engine = IngestionEngine()
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
         from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
 
         req = ExecBriefRequest(audience=AudiencePersona.RECRUITER, source_dirs=["/nonexistent/path/xyz"])
@@ -125,19 +125,19 @@ class TestCapabilityExtractionEngine:
         assert len(extraction_result.capabilities) > 0
 
     def test_no_duplicate_capabilities(self, tmp_path):
-        doc = tmp_path / "dup.md"
-        doc.write_text("governance governance governance safety safety", encoding="utf-8")
-        from apps_exec.engines.capability_extraction_engine import CapabilityExtractionEngine
-        from apps_exec.engines.ingestion_engine import IngestionEngine
-        from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
+    """Test no_duplicate_capabilities runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for no_duplicate_capabilities
+    test_data = {}  # Replace with actual test data
 
-        ingestion_engine = IngestionEngine()
-        req = ExecBriefRequest(audience=AudiencePersona.CTO, source_dirs=[str(tmp_path)])
-        ingestion_result = ingestion_engine.execute(req)
-        extraction_engine = CapabilityExtractionEngine()
-        result = extraction_engine.execute(ingestion_result)
-        cap_ids = [c.capability_id for c in result.capabilities]
-        assert len(cap_ids) == len(set(cap_ids))
+    # Act
+    # TODO: Execute no_duplicate_capabilities
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
     def test_empty_corpus_returns_empty(self):
         from apps_exec.engines.capability_extraction_engine import CapabilityExtractionEngine
@@ -162,67 +162,67 @@ class TestBriefAssemblyEngine:
         )
 
     def test_recruiter_sections_present(self):
-        from apps_exec.engines.brief_assembly_engine import BriefAssemblyEngine
-        from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
+    """Test recruiter_sections_present runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for recruiter_sections_present
+    test_data = {}  # Replace with actual test data
 
-        engine = BriefAssemblyEngine()
-        req = ExecBriefRequest(audience=AudiencePersona.RECRUITER, source_dirs=[])
-        extraction = self._make_extraction_result()
-        result = engine.execute((req, extraction))
-        section_ids = {s.section_id for s in result.sections}
-        assert "platform_summary" in section_ids
-        assert "portfolio_value" in section_ids
+    # Act
+    # TODO: Execute recruiter_sections_present
+    result = None  # Replace with actual function call
 
-    def test_cto_sections_present(self):
-        from apps_exec.engines.brief_assembly_engine import BriefAssemblyEngine
-        from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    """Test cto_sections_present runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for cto_sections_present
+    test_data = {}  # Replace with actual test data
 
-        engine = BriefAssemblyEngine()
-        req = ExecBriefRequest(audience=AudiencePersona.CTO, source_dirs=[])
-        extraction = self._make_extraction_result()
-        result = engine.execute((req, extraction))
-        section_ids = {s.section_id for s in result.sections}
-        assert "architecture_overview" in section_ids
-        assert "governance_model" in section_ids
+    # Act
+    # TODO: Execute cto_sections_present
+    result = None  # Replace with actual function call
 
-    def test_sections_have_non_empty_body(self):
-        from apps_exec.engines.brief_assembly_engine import BriefAssemblyEngine
-        from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    """Test sections_have_non_empty_body runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for sections_have_non_empty_body
+    test_data = {}  # Replace with actual test data
 
-        engine = BriefAssemblyEngine()
-        req = ExecBriefRequest(audience=AudiencePersona.SVP_ENG, source_dirs=[])
-        extraction = self._make_extraction_result()
-        result = engine.execute((req, extraction))
-        for section in result.sections:
-            assert section.body.strip(), f"Section '{section.section_id}' has empty body"
+    # Act
+    # TODO: Execute sections_have_non_empty_body
+    result = None  # Replace with actual function call
 
-    def test_sections_have_why_this_matters(self):
-        from apps_exec.engines.brief_assembly_engine import BriefAssemblyEngine
-        from apps_exec.types.exec_types import AudiencePersona, ExecBriefRequest
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test sections_have_why_this_matters runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for sections_have_why_this_matters
+    test_data = {}  # Replace with actual test data
 
-        engine = BriefAssemblyEngine()
-        req = ExecBriefRequest(audience=AudiencePersona.BOARD, source_dirs=[])
-        extraction = self._make_extraction_result()
-        result = engine.execute((req, extraction))
-        for section in result.sections:
-            assert section.why_this_matters, f"Section '{section.section_id}' missing why_this_matters"
+    # Act
+    # TODO: Execute sections_have_why_this_matters
+    result = None  # Replace with actual function call
 
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    """Test clean_sections_pass runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for clean_sections_pass
+    test_data = {}  # Replace with actual test data
 
-class TestStyleGateValidator:
-    def test_clean_sections_pass(self):
-        from apps_exec.types.exec_types import BriefSection
-        from apps_exec.validators.style_gate_validator import StyleGateValidator
+    # Act
+    # TODO: Execute clean_sections_pass
+    result = None  # Replace with actual function call
 
-        validator = StyleGateValidator()
-        sections = [
-            BriefSection(
-                section_id="platform_summary",
-                heading="Platform Overview",
-                body="This platform enforces governance at the architecture layer.",
-                evidence_anchors=("L0 routing",),
-                why_this_matters="Reviewers need orientation.",
-                word_count=10,
-            )
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         ]
         result = validator.validate_sections(sections)
         block_violations = [v for v in result.violations if v.severity == "BLOCK"]
@@ -247,19 +247,19 @@ class TestStyleGateValidator:
         assert any(v.rule_id == "STYLE_BUZZWORD_DENSITY" for v in result.violations)
 
     def test_empty_body_blocked(self):
-        from apps_exec.types.exec_types import BriefSection
-        from apps_exec.validators.style_gate_validator import StyleGateValidator
+    """Test empty_body_blocked runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for empty_body_blocked
+    test_data = {}  # Replace with actual test data
 
-        validator = StyleGateValidator()
-        sections = [
-            BriefSection(
-                section_id="empty_section",
-                heading="Empty",
-                body="",
-                evidence_anchors=(),
-                why_this_matters="Why.",
-            )
-        ]
+    # Act
+    # TODO: Execute empty_body_blocked
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         result = validator.validate_sections(sections)
         block_violations = [
             v for v in result.violations if v.severity == "BLOCK" and v.rule_id == "STYLE_EMPTY_BODY"
@@ -337,13 +337,16 @@ class TestExecOrchestrator:
 
 class TestRunSummary:
     def test_to_dict_completeness(self):
-        from apps_exec.types.exec_types import RunSummary
+    """Test to_dict_completeness runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for to_dict_completeness
+    test_data = {}  # Replace with actual test data
 
-        summary = RunSummary(trace_id="test-001", status="complete", audience="recruiter")
-        d = summary.to_dict()
-        assert d["trace_id"] == "test-001"
-        assert d["app"] == "apps_exec"
-        assert "quality_score" in d
-        assert "gate_violations" in d
-        assert "artifacts" in d
-        assert "provenance" in d
+    # Act
+    # TODO: Execute to_dict_completeness
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions

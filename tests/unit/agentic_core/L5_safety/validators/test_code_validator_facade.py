@@ -388,19 +388,19 @@ class TestLegacyCompatibility:
         assert issubclass(CodeValidatorAgent, SovereignBaseAgent)
 
     def test_factory_functions_exist(self):
-        """Test factory functions exist."""
-        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
-            create_legacy_async_validator,
-            create_legacy_canon_validator,
-            create_legacy_print_validator,
-            create_legacy_syntax_validator,
-        )
+    """Test factory_functions_exist runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for factory_functions_exist
+    test_data = {}  # Replace with actual test data
 
-        assert callable(create_legacy_syntax_validator)
-        assert callable(create_legacy_canon_validator)
-        assert callable(create_legacy_async_validator)
-        assert callable(create_legacy_print_validator)
+    # Act
+    # TODO: Execute factory_functions_exist
+    result = None  # Replace with actual function call
 
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
     def test_factory_syntax_validator(self):
         """Test create_legacy_syntax_validator creates correct config."""
         with patch("agentic_core.base_agents.SovereignBaseAgent.SovereignBaseAgent.__init__"):

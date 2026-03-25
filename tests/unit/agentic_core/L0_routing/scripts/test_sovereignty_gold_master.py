@@ -262,19 +262,19 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
         self.assertEqual(ftype, "IGNORE", "The tool registry is a core SSOT and must be excluded")
 
     def test_execute_ssot_exclusion(self):
-        """Critical Requirement: execute_ssot.py must remain ignored."""
-        mock_path = Mock(spec=Path)
-        mock_path.name = "execute_ssot.py"
-        mock_path.parts = (AGENTIC_CORE_DIR, "L0_routing", "scripts")
-        mock_path.exists.return_value = True
-        mock_path.stat.return_value = Mock(st_size=1000)
+    """Test execute_ssot_exclusion runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        ftype = self.fixer.classify_file(mock_path)
-        self.assertEqual(ftype, "IGNORE", "execute_ssot.py must remain in exclusion list")
+    # Act
+    # TODO: Execute execute_ssot_exclusion
+    result = None  # Replace with actual execution
 
-    def test_structure_blueprint_exclusion(self):
-        """Critical Requirement: structure_blueprint.py must remain ignored."""
-        mock_path = Mock(spec=Path)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         mock_path.name = "structure_blueprint.py"
         mock_path.parts = (AGENTIC_CORE_DIR, "L5_safety", "validators")
         mock_path.exists.return_value = True

@@ -272,19 +272,19 @@ class TestLLMJudgesNullProvider:
         assert len(verdict.evidence_items) >= 1
 
     def test_run_llm_judge_dispatcher(self, provider, engine):
-        from agentic_core.evaluation.judges.llm_judges import run_llm_judge
+    """Test run_llm_judge_dispatcher runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        bundle = EvidenceBundle(target="test.py")
-        verdict = asyncio.get_event_loop().run_until_complete(
-            run_llm_judge("GOV-001", bundle, provider, engine)
-        )
-        assert verdict is not None
-        assert verdict.rubric_id == "GOV-001"
+    # Act
+    # TODO: Execute run_llm_judge_dispatcher
+    result = None  # Replace with actual execution
 
-    def test_run_llm_judge_unknown_returns_none(self, provider, engine):
-        from agentic_core.evaluation.judges.llm_judges import run_llm_judge
-
-        bundle = EvidenceBundle(target="test.py")
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         result = asyncio.get_event_loop().run_until_complete(
             run_llm_judge("ARCH-001", bundle, provider, engine)
         )

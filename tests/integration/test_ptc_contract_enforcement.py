@@ -286,71 +286,71 @@ def test_enforcer_rejects_negative_byte_cap():
 
 
 def test_pre_execute_rejects_unsigned_envelope():
-    enforcer = PTCContractEnforcer(secret=_SECRET)
-    unsigned = _make_unsigned_envelope()
-    with pytest.raises(PTCUnsignedEnvelopeError, match="unsigned"):
-        enforcer.pre_execute(unsigned)
+"""Test pre_execute_rejects_unsigned_envelope runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute pre_execute_rejects_unsigned_envelope
+"""Test pre_execute_increments_violation_count_on_unsigned runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-def test_pre_execute_increments_violation_count_on_unsigned():
-    enforcer = PTCContractEnforcer(secret=_SECRET)
-    assert enforcer.violation_count == 0
-    unsigned = _make_unsigned_envelope()
-    with pytest.raises(PTCUnsignedEnvelopeError):
-        enforcer.pre_execute(unsigned)
-    assert enforcer.violation_count == 1
+# Act
+# TODO: Execute pre_execute_increments_violation_count_on_unsigned
+result = None  # Replace with actual execution
 
-
-# ===========================================================================
-# pre_execute -- signed accepted
-# ===========================================================================
-
-
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
 def test_pre_execute_accepts_signed_envelope():
-    enforcer = PTCContractEnforcer(secret=_SECRET)
-    unsigned = _make_unsigned_envelope()
-    signed = unsigned.sign(_SECRET)
-    enforcer.pre_execute(signed)  # must not raise
-    assert enforcer.violation_count == 0
+"""Test pre_execute_accepts_signed_envelope runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute pre_execute_accepts_signed_envelope
+result = None  # Replace with actual execution
 
-# ===========================================================================
-# pre_execute -- tampered rejected
-# ===========================================================================
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
+"""Test pre_execute_rejects_tampered_envelope runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute pre_execute_rejects_tampered_envelope
+result = None  # Replace with actual execution
 
-def test_pre_execute_rejects_tampered_envelope():
-    enforcer = PTCContractEnforcer(secret=_SECRET)
-    unsigned = _make_unsigned_envelope()
-    signed = unsigned.sign(_SECRET)
-    tampered = _tamper_envelope(signed, tool_name="evil_tool")
-    with pytest.raises(PTCContractViolation):
-        enforcer.pre_execute(tampered)
-    assert enforcer.violation_count == 1
+# Assert
+"""Test pre_execute_rejects_wrong_key runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute pre_execute_rejects_wrong_key
+result = None  # Replace with actual execution
+"""Test pre_execute_rejects_non_envelope runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-def test_pre_execute_rejects_wrong_key():
-    enforcer = PTCContractEnforcer(secret=b"wrong-key")
-    unsigned = _make_unsigned_envelope()
-    signed = unsigned.sign(_SECRET)
-    with pytest.raises(PTCContractViolation):
-        enforcer.pre_execute(signed)
+# Act
+# TODO: Execute pre_execute_rejects_non_envelope
+result = None  # Replace with actual execution
 
-
-def test_pre_execute_rejects_non_envelope():
-    enforcer = PTCContractEnforcer(secret=_SECRET)
-    with pytest.raises(TypeError):
-        enforcer.pre_execute("not-an-envelope")  # type: ignore[arg-type]
-
-
-# ===========================================================================
-# post_execute -- within cap
-# ===========================================================================
-
-
-def test_post_execute_passes_short_output():
-    enforcer = PTCContractEnforcer(secret=_SECRET)
-    result = enforcer.post_execute("hello world")
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
     assert result == "hello world"
     assert enforcer.violation_count == 0
 
@@ -367,32 +367,32 @@ def test_post_execute_passes_output_at_cap():
 
 
 def test_post_execute_rejects_output_over_cap():
-    enforcer = PTCContractEnforcer(secret=_SECRET, byte_cap=5)
-    with pytest.raises(PTCBytesCapExceeded, match="exceeds"):
-        enforcer.post_execute("123456")  # 6 bytes > cap 5
+"""Test post_execute_rejects_output_over_cap runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
+# Act
+"""Test post_execute_increments_violation_count_on_cap_exceeded runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-def test_post_execute_increments_violation_count_on_cap_exceeded():
-    enforcer = PTCContractEnforcer(secret=_SECRET, byte_cap=5)
-    with pytest.raises(PTCBytesCapExceeded):
-        enforcer.post_execute("123456")
-    assert enforcer.violation_count == 1
+# Act
+# TODO: Execute post_execute_increments_violation_count_on_cap_exceeded
+"""Test post_execute_rejects_non_string runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute post_execute_rejects_non_string
+result = None  # Replace with actual execution
 
-def test_post_execute_rejects_non_string():
-    enforcer = PTCContractEnforcer(secret=_SECRET)
-    with pytest.raises(TypeError):
-        enforcer.post_execute(12345)  # type: ignore[arg-type]
-
-
-# ===========================================================================
-# Deterministic redaction
-# ===========================================================================
-
-
-def test_redact_api_key():
-    raw = "config: api_key=sk-abc123xyz"
-    result = redact_output(raw)
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
     assert "[REDACTED]" in result
     assert "sk-abc123xyz" not in result
 

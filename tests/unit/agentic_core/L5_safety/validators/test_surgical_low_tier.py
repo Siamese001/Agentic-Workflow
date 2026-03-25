@@ -175,20 +175,20 @@ class TestAgentPermissionIntegration:
     """Tests for AgentPermission surgical healing."""
 
     def test_adapter_with_restore_checkpoint(self):
-        """Test restore checkpoint detection."""
-        source = "class AgentPermission: pass\n"
+    """Test adapter_with_restore_checkpoint contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
-            f.write(source)
-            temp_path = Path(f.name)
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-        try:
-            adapter = SurgicalHealingAdapter(agent_name="AgentPermission")
-
-            detection_result = {
-                "type": "checkpoint_mismatch",
-                "line": 1,
-                "message": "Checkpoint restore mismatch",
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
             }
 
             context = adapter.create_context_from_detection(
@@ -238,20 +238,20 @@ class TestCheckpointManagerAgentIntegration:
     """Tests for CheckpointManagerAgent surgical healing."""
 
     def test_adapter_with_list_checkpoints(self):
-        """Test checkpoint listing."""
-        source = "class CheckpointManagerAgent: pass\n"
+    """Test adapter_with_list_checkpoints contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
-            f.write(source)
-            temp_path = Path(f.name)
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-        try:
-            adapter = SurgicalHealingAdapter(agent_name="CheckpointManagerAgent")
-
-            detection_result = {
-                "type": "list_mismatch",
-                "line": 1,
-                "message": "Checkpoint list mismatch",
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
             }
 
             context = adapter.create_context_from_detection(

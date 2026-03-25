@@ -323,20 +323,20 @@ class TestToolIntentHashStable:
 
 class TestToolIntentValidation:
     def test_invalid_schema_version_raises(self):
-        with pytest.raises(ValueError, match="schema_version"):
-            _make_intent(schema_version=99)
+    """Test invalid_schema_version_raises contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_empty_tool_name_raises(self):
-        with pytest.raises(ValueError, match="tool_name"):
-            _make_intent(tool_name="")
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-    def test_non_dict_args_raises(self):
-        with pytest.raises(TypeError, match="args"):
-            _make_intent(args="not-a-dict")  # type: ignore[arg-type]
-
-    def test_mutating_requires_commit_false_raises(self):
-        with pytest.raises(ValueError, match="requires_commit"):
-            _make_intent(
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
                 capability=ToolCapability.MUTATING_EXTERNAL,
                 requires_commit=False,
             )

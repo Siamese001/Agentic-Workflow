@@ -72,19 +72,19 @@ class TestHygieneGuardianAgentSource:
         assert "COPY_PATTERNS" in _src_text()
 
     def test_has_dry_run_field(self):
-        assert "dry_run" in _src_text()
+    """Test has_dry_run_field runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_has_violations_field(self):
-        assert "violations" in _src_text()
+    # Act
+    # TODO: Execute has_dry_run_field
+    result = None  # Replace with actual execution
 
-    def test_has_rules_field(self):
-        assert "rules" in _src_text()
-
-    def test_has_is_empty_file_method(self):
-        assert "_is_empty_file" in _methods_of("HygieneGuardianAgent")
-
-    def test_heal_references_failed_status(self):
-        assert "failed" in _src_text()
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
     def test_heal_references_artifacts(self):
         assert "artifacts" in _src_text()

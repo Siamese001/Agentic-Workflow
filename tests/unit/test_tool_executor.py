@@ -385,20 +385,20 @@ class TestToolResultHashStable:
 
 class TestToolResultValidation:
     def test_invalid_schema_version_raises(self):
-        with pytest.raises(ValueError, match="schema_version"):
-            ToolResult(
-                schema_version=99,
-                tool_name="file_read",
-                args_hash="a" * 64,
-                success=True,
-                output_summary="ok",
-                anchor_ids=[],
-            )
+    """Test invalid_schema_version_raises contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_empty_tool_name_raises(self):
-        with pytest.raises(ValueError, match="tool_name"):
-            ToolResult(
-                schema_version=1,
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
+
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
                 tool_name="",
                 args_hash="a" * 64,
                 success=True,

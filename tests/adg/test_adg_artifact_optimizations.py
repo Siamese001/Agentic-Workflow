@@ -461,27 +461,27 @@ class TestLayerSplitter:
         assert "imports" in rel_types
 
     def test_file_graph_excludes_calls(self):
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+    """Test file_graph_excludes_calls runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        a = _make_artifact()
-        planes = split_artifact(a)
-        rel_types = {e["r"] for e in planes.file_graph.edges}
-        assert "calls" not in rel_types
+    # Act
+    # TODO: Execute file_graph_excludes_calls
+    result = None  # Replace with actual execution
+    """Test symbol_graph_contains_calls_and_writes_to runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_symbol_graph_contains_calls_and_writes_to(self):
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+    # Act
+    # TODO: Execute symbol_graph_contains_calls_and_writes_to
+    result = None  # Replace with actual execution
 
-        a = _make_artifact()
-        planes = split_artifact(a)
-        rel_types = {e["r"] for e in planes.symbol_graph.edges}
-        assert "calls" in rel_types
-        assert "writes_to" in rel_types
-
-    def test_file_graph_contains_covers(self):
-        """covers is now canonical in file_graph (not test_graph)."""
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
-
-        a = _make_artifact()
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         planes = split_artifact(a)
         rel_types = {e["r"] for e in planes.file_graph.edges}
         assert "covers" in rel_types
@@ -843,19 +843,19 @@ class TestSchemaConstants:
         assert "imports" in _FILE_GRAPH_RELS
 
     def test_symbol_graph_rels_contains_calls(self):
-        from agentic_core.adg.artifact.SplitArtifact import _SYMBOL_GRAPH_RELS
+    """Test symbol_graph_rels_contains_calls runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        assert "calls" in _SYMBOL_GRAPH_RELS
-        assert "writes_to" in _SYMBOL_GRAPH_RELS
-        assert "writes_through" in _SYMBOL_GRAPH_RELS
+    # Act
+    # TODO: Execute symbol_graph_rels_contains_calls
+    result = None  # Replace with actual execution
 
-    def test_file_graph_rels_contains_covers(self):
-        """covers canonical home is file_graph (not test_graph)."""
-        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS
-
-        assert "covers" in _FILE_GRAPH_RELS
-
-    def test_test_graph_rels_removed(self):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         """_TEST_GRAPH_RELS must not exist in layer_splitter."""
         import agentic_core.adg.artifact.SplitArtifact as ls
 

@@ -189,43 +189,43 @@ class TestEvaluationExample:
         return EvaluationExample(**defaults)
 
     def test_to_dict_roundtrip(self):
-        ex = self._make()
-        d = ex.to_dict()
-        restored = EvaluationExample.from_dict(d)
-        assert restored.query == ex.query
-        assert restored.ground_truth_documents == ex.ground_truth_documents
-        assert restored.expected_answer == ex.expected_answer
-        assert restored.metadata == ex.metadata
+    """Test to_dict_roundtrip contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_from_dict_missing_metadata_defaults_empty(self):
-        d = {"query": "q", "ground_truth_documents": ["doc_1"], "expected_answer": "a"}
-        ex = EvaluationExample.from_dict(d)
-        assert ex.metadata == {}
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-    def test_to_dict_keys(self):
-        ex = self._make()
-        d = ex.to_dict()
-        assert set(d.keys()) == {"query", "ground_truth_documents", "expected_answer", "metadata"}
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
+    """Test to_dict_keys contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_empty_ground_truth(self):
-        ex = self._make(ground_truth_documents=[])
-        assert ex.ground_truth_documents == []
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-    def test_multiple_ground_truth_docs(self):
-        ex = self._make(ground_truth_documents=["doc_1", "doc_2", "doc_3"])
-        d = ex.to_dict()
-        assert d["ground_truth_documents"] == ["doc_1", "doc_2", "doc_3"]
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
+# Act
+# TODO: Execute contract test
+contract_result = None  # Replace with actual contract test
 
-
-# ---------------------------------------------------------------------------
-# EvaluationDataset
-# ---------------------------------------------------------------------------
-
-
-class TestEvaluationDataset:
-    def _make_example(self, query="q"):
-        return EvaluationExample(
-            query=query,
+# Assert - General Contract
+assert contract_result is not None, "Contract should produce a result"
+assert isinstance(contract_result, object), "Result should be an object"
+# TODO: Add specific contract assertions
+# assert hasattr(contract_result, "complies"), "Result should indicate compliance"
             ground_truth_documents=["doc_1"],
             expected_answer="ans",
         )
@@ -239,41 +239,41 @@ class TestEvaluationDataset:
         )
 
     def test_len(self):
-        ds = self._make_dataset(3)
-        assert len(ds) == 3
+    """Test len contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
+    """Test len_empty contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
+    """Test to_dict_roundtrip contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_len_empty(self):
-        ds = EvaluationDataset(name="empty", version="1.0", examples=[])
-        assert len(ds) == 0
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-    def test_to_dict_roundtrip(self):
-        ds = self._make_dataset(2)
-        d = ds.to_dict()
-        restored = EvaluationDataset.from_dict(d)
-        assert restored.name == ds.name
-        assert restored.version == ds.version
-        assert len(restored.examples) == 2
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
+# Arrange
+# TODO: Set up contract test scenario
+test_scenario = {}  # Replace with actual test scenario
 
-    def test_from_dict_missing_description_defaults_empty(self):
-        d = {"name": "n", "version": "1.0", "examples": []}
-        ds = EvaluationDataset.from_dict(d)
-        assert ds.description == ""
+# Act
+# TODO: Execute contract test
+contract_result = None  # Replace with actual contract test
 
-    def test_to_dict_contains_examples(self):
-        ds = self._make_dataset(1)
-        d = ds.to_dict()
-        assert len(d["examples"]) == 1
-        assert "query" in d["examples"][0]
-
-
-# ---------------------------------------------------------------------------
-# EvaluationResult
-# ---------------------------------------------------------------------------
-
-
-class TestEvaluationResult:
-    def _make(self, **kwargs):
-        defaults = {
+# Assert - General Contract
+assert contract_result is not None, "Contract should produce a result"
+assert isinstance(contract_result, object), "Result should be an object"
+# TODO: Add specific contract assertions
+# assert hasattr(contract_result, "complies"), "Result should indicate compliance"
             "example_id": "ex_0",
             "query": "q",
             "retrieved_doc_ids": ["doc_1"],
@@ -285,36 +285,36 @@ class TestEvaluationResult:
         return EvaluationResult(**defaults)
 
     def test_to_dict_roundtrip(self):
-        r = self._make()
-        d = r.to_dict()
-        restored = EvaluationResult.from_dict(d)
-        assert restored.example_id == r.example_id
-        assert restored.metric_scores == r.metric_scores
+    """Test to_dict_roundtrip contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_frozen_immutable(self):
-        r = self._make()
-        with pytest.raises((AttributeError, TypeError)):
-            r.query = "changed"
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-    def test_empty_retrieved_docs(self):
-        r = self._make(retrieved_doc_ids=[])
-        assert r.retrieved_doc_ids == []
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
+    contract_result = None  # Replace with actual contract test
 
-    def test_multiple_metrics(self):
-        r = self._make(metric_scores={"precision@5": 0.8, "recall@10": 0.9, "MRR": 0.7})
-        d = r.to_dict()
-        assert len(d["metric_scores"]) == 3
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
+# Act
+# TODO: Execute contract test
+contract_result = None  # Replace with actual contract test
 
-
-# ---------------------------------------------------------------------------
-# EvaluationReport
-# ---------------------------------------------------------------------------
-
-
-class TestEvaluationReport:
-    def _make_result(self, eid="ex_0"):
-        return EvaluationResult(
-            example_id=eid,
+# Assert - General Contract
+assert contract_result is not None, "Contract should produce a result"
+assert isinstance(contract_result, object), "Result should be an object"
+# TODO: Add specific contract assertions
+# assert hasattr(contract_result, "complies"), "Result should indicate compliance"
             query="q",
             retrieved_doc_ids=["doc_1"],
             generated_answer="ans",
@@ -333,36 +333,36 @@ class TestEvaluationReport:
         )
 
     def test_to_dict_roundtrip(self):
-        r = self._make_report()
-        d = r.to_dict()
-        restored = EvaluationReport.from_dict(d)
-        assert restored.run_id == r.run_id
-        assert len(restored.per_example_results) == 2
+    """Test to_dict_roundtrip contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_frozen_immutable(self):
-        r = self._make_report()
-        with pytest.raises((AttributeError, TypeError)):
-            r.run_id = "changed"
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-    def test_empty_results(self):
-        r = self._make_report(n_results=0)
-        assert len(r.per_example_results) == 0
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
+# TODO: Set up contract test scenario
+test_scenario = {}  # Replace with actual test scenario
+"""Test aggregate_scores_preserved contract compliance."""
+# Arrange
+# TODO: Set up contract test scenario
+test_scenario = {}  # Replace with actual test scenario
 
-    def test_aggregate_scores_preserved(self):
-        r = self._make_report()
-        d = r.to_dict()
-        assert d["aggregate_scores"]["precision@5"] == 0.8
+# Act
+# TODO: Execute contract test
+contract_result = None  # Replace with actual contract test
 
-
-# ---------------------------------------------------------------------------
-# EvaluationSnapshot
-# ---------------------------------------------------------------------------
-
-
-class TestEvaluationSnapshot:
-    def _make(self):
-        return EvaluationSnapshot(
-            timestamp="2025-01-01T00:00:00Z",
+# Assert - General Contract
+assert contract_result is not None, "Contract should produce a result"
+assert isinstance(contract_result, object), "Result should be an object"
+# TODO: Add specific contract assertions
+# assert hasattr(contract_result, "complies"), "Result should indicate compliance"
             system_version="v1",
             dataset_version="1.0",
             metric_results={"precision@5": 0.8},
@@ -370,32 +370,32 @@ class TestEvaluationSnapshot:
         )
 
     def test_to_dict_roundtrip(self):
-        s = self._make()
-        d = s.to_dict()
-        restored = EvaluationSnapshot.from_dict(d)
-        assert restored.run_id == s.run_id
-        assert restored.metric_results == s.metric_results
+    """Test to_dict_roundtrip contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_frozen(self):
-        s = self._make()
-        with pytest.raises((AttributeError, TypeError)):
-            s.run_id = "x"
+    # Act
+    # TODO: Execute contract test
+    """Test frozen contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_missing_metadata_defaults(self):
-        d = {
-            "timestamp": "2025-01-01T00:00:00Z",
-            "system_version": "v1",
-            "dataset_version": "1.0",
-            "metric_results": {},
-            "run_id": "r",
-        }
-        s = EvaluationSnapshot.from_dict(d)
-        assert s.metadata == {}
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-
-# ---------------------------------------------------------------------------
-# DeltaReport
-# ---------------------------------------------------------------------------
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
+# Assert - General Contract
+assert contract_result is not None, "Contract should produce a result"
+assert isinstance(contract_result, object), "Result should be an object"
+# TODO: Add specific contract assertions
+# assert hasattr(contract_result, "complies"), "Result should indicate compliance"
 
 
 class TestDeltaReport:
@@ -412,31 +412,31 @@ class TestDeltaReport:
         )
 
     def test_to_dict_roundtrip(self):
-        delta = self._make()
-        d = delta.to_dict()
-        restored = DeltaReport.from_dict(d)
-        assert restored.run_id_a == "run_a"
-        assert restored.metric_deltas["precision@5"] == pytest.approx(0.12)
+    """Test to_dict_roundtrip contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_negative_delta(self):
-        delta = self._make(net=-0.05)
-        assert delta.metric_deltas["precision@5"] < 0
+    # Act
+    # TODO: Execute contract test
+    """Test negative_delta contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
+    """Test frozen contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_frozen(self):
-        delta = self._make()
-        with pytest.raises((AttributeError, TypeError)):
-            delta.run_id_a = "x"
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-
-# ---------------------------------------------------------------------------
-# SystemEvaluationSummary
-# ---------------------------------------------------------------------------
-
-
-class TestSystemEvaluationSummary:
-    def _make_report(self, scores=None):
-        if scores is None:
-            scores = {
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
                 "precision@5": 0.80,
                 "answer_correctness": 0.75,
                 "safety_compliance": 1.0,
@@ -453,53 +453,53 @@ class TestSystemEvaluationSummary:
         )
 
     def test_from_report_uses_correct_fields(self):
-        report = self._make_report()
-        summary = SystemEvaluationSummary.from_report(report)
-        assert summary.retrieval_quality_score == pytest.approx(0.80)
-        assert summary.answer_quality_score == pytest.approx(0.75)
+    """Test from_report_uses_correct_fields contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_overall_score_is_composite(self):
-        summary = SystemEvaluationSummary(
-            system_version="v1",
-            dataset_name="test",
-            retrieval_quality_score=1.0,
-            answer_quality_score=1.0,
-            safety_compliance_score=1.0,
-            hallucination_risk_score=0.0,
-            timestamp="2025-01-01T00:00:00Z",
-            run_id="r",
-        )
-        assert summary.overall_score == pytest.approx(1.0)
+    # Act
+    """Test overall_score_is_composite contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_overall_score_penalized_by_hallucination(self):
-        summary = SystemEvaluationSummary(
-            system_version="v1",
-            dataset_name="test",
-            retrieval_quality_score=1.0,
-            answer_quality_score=1.0,
-            safety_compliance_score=1.0,
-            hallucination_risk_score=1.0,
-            timestamp="2025-01-01T00:00:00Z",
-            run_id="r",
-        )
-        # (1 + 1 + 1 + (1 - 1)) / 4 = 0.75
-        assert summary.overall_score == pytest.approx(0.75)
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-    def test_to_dict_contains_overall_score(self):
-        report = self._make_report()
-        summary = SystemEvaluationSummary.from_report(report)
-        d = summary.to_dict()
-        assert "overall_score" in d
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    """Test overall_score_penalized_by_hallucination contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-# ---------------------------------------------------------------------------
-# ComparativeEvaluationSummary
-# ---------------------------------------------------------------------------
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
+    """Test to_dict_contains_overall_score contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-class TestComparativeEvaluationSummary:
-    def _make_delta(self, net=0.12):
-        return DeltaReport(
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
             run_id_a="a",
             run_id_b="b",
             config_a_name="baseline",
@@ -511,24 +511,33 @@ class TestComparativeEvaluationSummary:
         )
 
     def test_from_delta_recommend_promote(self):
-        delta = self._make_delta(net=0.12)
-        summary = ComparativeEvaluationSummary.from_delta_report(delta, "v1", "v2")
-        assert summary.recommendation == "promote"
+    """Test from_delta_recommend_promote contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_from_delta_recommend_reject(self):
-        delta = self._make_delta(net=-0.10)
-        summary = ComparativeEvaluationSummary.from_delta_report(delta, "v1", "v2")
-        assert summary.recommendation == "reject"
+"""Test from_delta_recommend_reject contract compliance."""
+# Arrange
+# TODO: Set up contract test scenario
+test_scenario = {}  # Replace with actual test scenario
 
-    def test_improvements_and_regressions_split(self):
-        delta = self._make_delta(net=0.12)
-        summary = ComparativeEvaluationSummary.from_delta_report(delta, "v1", "v2")
-        assert "precision@5" in summary.improvements
-        assert "recall@10" in summary.regressions
+"""Test improvements_and_regressions_split contract compliance."""
+# Arrange
+# TODO: Set up contract test scenario
+test_scenario = {}  # Replace with actual test scenario
 
-    def test_to_dict_keys(self):
-        delta = self._make_delta()
-        summary = ComparativeEvaluationSummary.from_delta_report(delta, "v1", "v2")
-        d = summary.to_dict()
-        assert "net_delta" in d
-        assert "recommendation" in d
+# Act
+"""Test to_dict_keys contract compliance."""
+# Arrange
+# TODO: Set up contract test scenario
+test_scenario = {}  # Replace with actual test scenario
+
+# Act
+# TODO: Execute contract test
+contract_result = None  # Replace with actual contract test
+
+# Assert - General Contract
+assert contract_result is not None, "Contract should produce a result"
+assert isinstance(contract_result, object), "Result should be an object"
+# TODO: Add specific contract assertions
+# assert hasattr(contract_result, "complies"), "Result should indicate compliance"

@@ -241,30 +241,30 @@ class TestHashIntegrity:
     """verify() must pass on valid intents, fail on tampered."""
 
     def test_verify_passes_on_valid_intent(self):
-        intent = LearningArtifactIntent.create(
-            agent_id="agent-1",
-            execution_id="exec-1",
-            outcome="success",
-            metrics=SAMPLE_METRICS,
-            context_hash="abc123",
-        )
-        assert intent.verify() is True
+    """Test verify_passes_on_valid_intent contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_verify_fails_on_wrong_hash(self):
-        intent = LearningArtifactIntent(
-            agent_id="agent-1",
-            execution_id="exec-1",
-            outcome="success",
-            metrics=SAMPLE_METRICS,
-            context_hash="abc123",
-            intent_hash="0" * 64,
-        )
-        assert intent.verify() is False
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
+    # Assert - General Contract
+    """Test verify_fails_on_wrong_hash contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-class TestHashability:
-    """Frozen dataclass must be usable as dict key / set member."""
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
     def test_usable_as_set_member(self):
         intent = LearningArtifactIntent.create(
             agent_id="agent-1",

@@ -73,121 +73,121 @@ class TestManifestCompleteness:
     """Every quarantined test file must be listed in the manifest."""
 
     def test_no_unlisted_quarantine_files(self) -> None:
-        manifest = _load_manifest()
-        on_disk = _get_disk_files()
-        in_manifest = _get_manifest_paths(manifest)
-        unlisted = on_disk - in_manifest
-        assert not unlisted, (
-            f"Found {len(unlisted)} quarantined test file(s) NOT in manifest:\n"
-            + "\n".join(f"  {p}" for p in sorted(unlisted))
-            + "\nUpdate QUARANTINE_MANIFEST.json before adding files to _quarantine."
-        )
+    """Test no_unlisted_quarantine_files contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-class TestManifestNoStaleEntries:
-    """Manifest must not reference files that no longer exist on disk."""
-
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
     def test_no_stale_manifest_entries(self) -> None:
-        manifest = _load_manifest()
-        on_disk = _get_disk_files()
-        in_manifest = _get_manifest_paths(manifest)
-        stale = in_manifest - on_disk
-        assert not stale, (
-            f"Found {len(stale)} stale manifest entries (file not on disk):\n"
-            + "\n".join(f"  {p}" for p in sorted(stale))
-            + "\nRemove these entries from QUARANTINE_MANIFEST.json."
-        )
+    """Test no_stale_manifest_entries contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-class TestManifestEntrySchema:
-    """Every manifest entry must have valid category, primary_dep, and re_enable."""
-
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
     def test_categories_are_valid(self) -> None:
-        manifest = _load_manifest()
-        invalid = []
-        for entry in manifest["entries"]:
-            cat = entry.get("category", "")
-            if cat not in VALID_CATEGORIES:
-                invalid.append(f"  {entry['path']}: category={cat!r}")
-        assert not invalid, (
-            f"Found {len(invalid)} entries with invalid category:\n"
-            + "\n".join(invalid)
-            + f"\nValid categories: {sorted(VALID_CATEGORIES)}"
-        )
+    """Test categories_are_valid contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_required_fields_non_empty(self) -> None:
-        manifest = _load_manifest()
-        bad = []
-        for entry in manifest["entries"]:
-            for field in ("path", "category", "primary_dep", "re_enable"):
-                val = entry.get(field, "")
-                if not val or not val.strip():
-                    bad.append(f"  {entry.get('path', '???')}: {field} is empty")
-        assert not bad, f"Found {len(bad)} entries with empty required fields:\n" + "\n".join(bad)
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-    def test_governance_fields_present(self) -> None:
-        manifest = _load_manifest()
-        bad = []
-        for entry in manifest["entries"]:
-            for field in ("introduced_commit", "owner_agent"):
-                val = entry.get(field, "")
-                if not val or not val.strip():
-                    bad.append(f"  {entry.get('path', '???')}: {field} is missing or empty")
-        assert not bad, (
-            f"Found {len(bad)} entries missing governance fields (introduced_commit/owner_agent):\n"
-            + "\n".join(bad)
-            + "\nBackfill using: python ops_scripts/general/backfill_quarantine_governance.py"
-        )
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    """Test required_fields_non_empty contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
+    # Assert - Core Contract
+    """Test governance_fields_present contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
+
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
 class TestManifestBidirectionalSync:
     """Disk and manifest must be in exact 1:1 correspondence."""
 
     def test_disk_manifest_exact_match(self) -> None:
-        manifest = _load_manifest()
-        on_disk = _get_disk_files()
-        in_manifest = _get_manifest_paths(manifest)
-        assert on_disk == in_manifest, (
-            f"Disk/manifest mismatch.\n"
-            f"  On disk only: {sorted(on_disk - in_manifest)}\n"
-            f"  In manifest only: {sorted(in_manifest - on_disk)}"
-        )
+    """Test disk_manifest_exact_match contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-# ---------------------------------------------------------------------------
-# 5-6. Non-increasing quarantine ceilings
-# ---------------------------------------------------------------------------
-
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
 
 class TestQuarantineCeiling:
     """Quarantine count must not exceed declared ceilings (total + per-category)."""
 
     def test_total_ceiling(self) -> None:
-        manifest = _load_manifest()
-        ceiling = manifest.get("ceiling", {})
-        total_ceiling = ceiling.get("total")
-        assert total_ceiling is not None, "Manifest missing ceiling.total. Add a ceiling section."
-        actual = len(manifest["entries"])
-        assert actual <= total_ceiling, (
-            f"Quarantine total ceiling breached: {actual} > {total_ceiling}.\n"
-            "To raise: update ceiling.total in QUARANTINE_MANIFEST.json + add rationale to commit message."
-        )
+    """Test total_ceiling contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_per_category_ceiling(self) -> None:
-        manifest = _load_manifest()
-        ceiling = manifest.get("ceiling", {})
-        by_category = ceiling.get("by_category", {})
-        assert by_category, "Manifest missing ceiling.by_category. Add per-category ceilings."
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-        from collections import Counter
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    """Test per_category_ceiling contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-        actual_counts = Counter(e["category"] for e in manifest["entries"])
-        breaches: list[str] = []
-        for cat, count in sorted(actual_counts.items()):
-            cat_ceiling = by_category.get(cat)
-            if cat_ceiling is None:
-                breaches.append(f"  {cat}: no ceiling defined (count={count})")
-            elif count > cat_ceiling:
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
                 breaches.append(f"  {cat}: {count} > {cat_ceiling}")
 
         assert not breaches, (

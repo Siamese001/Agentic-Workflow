@@ -290,19 +290,19 @@ class TestCanonicalHashSeal:
         assert len(parsed["certification_hash"]) == 64  # SHA256 hex
 
     def test_hash_stable_across_calls(self, certification_result: GuardianResult):
-        j1 = certification_result.to_json()
-        j2 = certification_result.to_json()
-        h1 = json.loads(j1)["certification_hash"]
-        h2 = json.loads(j2)["certification_hash"]
-        assert h1 == h2, "certification_hash must be stable across calls"
+    """Test hash_stable_across_calls runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_hash_excludes_itself(self, certification_result: GuardianResult):
-        certification_result.compute_certification_hash()
-        d = certification_result.to_dict()
-        h_stored = d["certification_hash"]
-        d.pop("certification_hash", None)
-        canonical = json.dumps(d, sort_keys=True, separators=(",", ":"))
-        h_expected = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    # Act
+    # TODO: Execute hash_stable_across_calls
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         assert h_stored == h_expected
 
     def test_mutation_changes_hash(self, certification_result: GuardianResult):

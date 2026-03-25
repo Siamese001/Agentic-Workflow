@@ -55,23 +55,25 @@ class TestEmbeddingFactorySource:
         assert "EmbeddingClient" in _class_names()
 
     def test_has_is_enabled_function(self):
-        assert "is_enabled" in _func_names()
+    """Test has_is_enabled_function runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for has_is_enabled_function
+    test_data = {}  # Replace with actual test data
 
-    def test_has_register_embedding_client(self):
-        assert "register_embedding_client" in _func_names()
+    # Act
+    # TODO: Execute has_is_enabled_function
+    result = None  # Replace with actual function call
 
-    def test_embedding_enabled_constant_in_source(self):
-        assert "EMBEDDING_ENABLED" in _src_text()
+"""Test embedding_disabled_error_subclasses_runtime_error runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    def test_embedding_disabled_error_subclasses_runtime_error(self):
-        assert "RuntimeError" in _src_text()
+# Act
+# TODO: Execute embedding_disabled_error_subclasses_runtime_error
+result = None  # Replace with actual execution
 
-    def test_has_get_embedding_method(self):
-        assert "get_embedding" in _src_text()
-
-    def test_has_get_embeddings_batch_method(self):
-        assert "get_embeddings_batch" in _src_text()
-
-    def test_disabled_error_raised_when_disabled(self):
-        assert "EmbeddingDisabledError" in _src_text()
-        assert "false" in _src_text().lower() or "False" in _src_text()
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions

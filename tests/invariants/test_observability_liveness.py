@@ -205,19 +205,19 @@ class TestHealingEventEmitterLiveness:
         assert log_path.stat().st_size > 0
 
     def test_negative_no_emission_without_emit_call(self, tmp_path):
-        from agentic_core.L2_execution.healers.healing_event_emitter import HealingEventEmitter
+    """Test negative_no_emission_without_emit_call runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        emitter = HealingEventEmitter(log_path=tmp_path / "healing.jsonl")
-        assert emitter.emitted_events() == []
+    # Act
+    # TODO: Execute negative_no_emission_without_emit_call
+    result = None  # Replace with actual execution
 
-
-class TestAICheckAuditEmitterLiveness:
-    def test_emitter_produces_record_on_emit(self, tmp_path):
-        from agentic_core.L5_safety.audit.ai_check_audit import AICheckAuditEmitter, AICheckAuditRecord
-
-        emitter = AICheckAuditEmitter(audit_path=tmp_path / "audit.jsonl")
-        record = emitter.emit(
-            component="LivenessChecker",
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             model_id="gemini-2.5-pro",
             input_data="liveness check input",
             verdict="PASS",

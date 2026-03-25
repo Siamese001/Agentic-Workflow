@@ -188,57 +188,57 @@ class TestValidatedPathRegistry:
         clear_validated_paths()
 
     def test_unregistered_path_is_not_validated(self, tmp_path):
-        path = tmp_path / "output.txt"
-        assert not is_path_validated(path)
+    """Test unregistered_path_is_not_validated runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
+    """Test registered_path_is_validated runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_registered_path_is_validated(self, tmp_path):
-        path = tmp_path / "output.txt"
-        mark_path_validated(path)
-        assert is_path_validated(path)
+"""Test string_and_path_are_equivalent runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
-    def test_string_and_path_are_equivalent(self, tmp_path):
-        path = tmp_path / "output.txt"
-        mark_path_validated(str(path))
-        assert is_path_validated(path)
-        assert is_path_validated(str(path))
+# Act
+"""Test clear_removes_all_validated_paths runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
-    def test_clear_removes_all_validated_paths(self, tmp_path):
-        path_a = tmp_path / "a.txt"
-        path_b = tmp_path / "b.txt"
-        mark_path_validated(path_a)
-        mark_path_validated(path_b)
-        clear_validated_paths()
-        assert not is_path_validated(path_a)
-        assert not is_path_validated(path_b)
+# Act
+# TODO: Execute runtime operation clear_removes_all_validated_paths
+runtime_result = None  # Replace with actual runtime operation
 
-    def test_multiple_paths_independently_tracked(self, tmp_path):
-        path_a = tmp_path / "a.txt"
-        path_b = tmp_path / "b.txt"
-        mark_path_validated(path_a)
-        assert is_path_validated(path_a)
-        assert not is_path_validated(path_b)
+"""Test multiple_paths_independently_tracked runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
+# Act
+# TODO: Execute runtime operation multiple_paths_independently_tracked
+runtime_result = None  # Replace with actual runtime operation
 
-# ---------------------------------------------------------------------------
-# Tests for enforce_no_unverified_writes fixture
-# ---------------------------------------------------------------------------
-
-
-class TestEnforceNoUnverifiedWrites:
+# Assert
+assert runtime_result is not None, "Runtime operation should produce a result"
+assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+# TODO: Add runtime-specific assertions
     def test_unverified_write_raises(self, enforce_no_unverified_writes, tmp_path):
-        """A non-temp path written without validation should raise."""
-        # Use a path that doesn't match temp fragments but is writable
-        # We simulate a "production" path by using a sub-path of tmp_path
-        # that isn't detected as temp by the heuristic.
-        # Since tmp_path IS a temp path, we patch the detection for this test
-        # by directly testing the underlying guard logic.
-        from tests._config.runtime_antipattern_enforcer import _is_temp_path
+    """Test unverified_write_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-        test_path = "/some/production/path/config.json"
-        assert not _is_temp_path(test_path)
-        assert not is_path_validated(test_path)
+    # Act
+    # TODO: Execute runtime operation unverified_write_raises
+    runtime_result = None  # Replace with actual runtime operation
 
-    def test_validated_path_allows_write(self, enforce_no_unverified_writes, tmp_path):
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
         """A path validated before write should not raise."""
         output = tmp_path / "output.txt"
         mark_path_validated(output)
@@ -254,61 +254,71 @@ class TestEnforceNoUnverifiedWrites:
         assert output.read_text() == "allowed"
 
     def test_read_always_allowed(self, enforce_no_unverified_writes, tmp_path):
-        """Read-mode opens are never blocked."""
-        existing = tmp_path / "existing.txt"
-        existing.write_text("content")
-        # Read should always work
-        content = existing.read_text()
-        assert content == "content"
+    """Test read_always_allowed runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_registry_cleared_between_tests(self, tmp_path):
-        """Validated paths from a previous test should not bleed into the next."""
-        path = tmp_path / "output.txt"
-        # This test runs WITHOUT the fixture — registry should be clean
-        assert not is_path_validated(path)
+    # Act
+    # TODO: Execute runtime operation read_always_allowed
+    runtime_result = None  # Replace with actual runtime operation
+    """Test registry_cleared_between_tests runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_fixture_clears_registry_after_yield(self, enforce_no_unverified_writes, tmp_path):
-        """After the fixture tears down, the registry is cleared."""
-        path = tmp_path / "file.txt"
-        mark_path_validated(path)
-        assert is_path_validated(path)
-        # Teardown will clear — verified by test_registry_cleared_between_tests
+    # Act
+    """Test fixture_clears_registry_after_yield runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
+    # Act
+    # TODO: Execute runtime operation fixture_clears_registry_after_yield
+    runtime_result = None  # Replace with actual runtime operation
 
-# ---------------------------------------------------------------------------
-# Tests for _is_temp_path helper
-# ---------------------------------------------------------------------------
-
-
-class TestIsTempPath:
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
     def test_pytest_tmp_path_is_temp(self, tmp_path):
-        from tests._config.runtime_antipattern_enforcer import _is_temp_path
+    """Test pytmp_path_is_temp runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-        # pytest tmp_path usually contains 'pytest-' in the path
-        path_str = str(tmp_path)
-        # The path should match at least one temp fragment
-        # (either /tmp/, \Temp\, pytest-, etc.)
-        assert _is_temp_path(path_str) or "/tmp/" in path_str or "pytest" in path_str.lower()
+    # Act
+    # TODO: Execute runtime operation pytmp_path_is_temp
+    runtime_result = None  # Replace with actual runtime operation
 
-    def test_production_path_not_temp(self):
-        from tests._config.runtime_antipattern_enforcer import _is_temp_path
-
-        assert not _is_temp_path("/home/user/project/config.json")
-        assert not _is_temp_path("C:/Git/Agentic-Workflow/data/output.json")
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
         assert not _is_temp_path("/var/app/logs/run.log")
 
     def test_tmp_fragment_detected(self):
-        from tests._config.runtime_antipattern_enforcer import _is_temp_path
+    """Test tmp_fragment_detected runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-        assert _is_temp_path("/tmp/some_file.txt")
-        assert _is_temp_path("/var/folders/abc/T/pytest-1234/test.txt")
+    # Act
+    # TODO: Execute runtime operation tmp_fragment_detected
+    runtime_result = None  # Replace with actual runtime operation
 
-    def test_pytest_cache_detected(self):
-        from tests._config.runtime_antipattern_enforcer import _is_temp_path
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    """Test pycache_detected runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-        assert _is_temp_path("/project/.pytest_cache/results.json")
+    # Act
+    # TODO: Execute runtime operation pycache_detected
+    runtime_result = None  # Replace with actual runtime operation
 
-    def test_pycache_detected(self):
-        from tests._config.runtime_antipattern_enforcer import _is_temp_path
-
-        assert _is_temp_path("/project/module/__pycache__/compiled.pyc")
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions

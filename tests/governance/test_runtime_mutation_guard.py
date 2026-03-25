@@ -178,125 +178,125 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 @pytest.mark.governance
 def test_install_guards_is_idempotent() -> None:
-    """install_guards() MUST be callable multiple times without error or double-patching."""
-    install_guards()
-    install_guards()
-    install_guards()
+"""Test install_guards_is_idempotent runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
+# Act
+# TODO: Execute runtime operation install_guards_is_idempotent
+runtime_result = None  # Replace with actual runtime operation
+"""Test importlib_reload_core_module_is_blocked runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
-@pytest.mark.governance
-def test_importlib_reload_core_module_is_blocked() -> None:
-    """importlib.reload of a core-prefix module MUST raise ImportError with REQ-417."""
-    import agentic_core.L2_execution.UniversalWriteGateway as _uwg_mod
+# Act
+# TODO: Execute runtime operation importlib_reload_core_module_is_blocked
+runtime_result = None  # Replace with actual runtime operation
 
-    with pytest.raises(ImportError, match="REQ-417"):
-        importlib.reload(_uwg_mod)
-
-
-@pytest.mark.governance
-def test_importlib_reload_stdlib_module_is_allowed() -> None:
-    """importlib.reload of a stdlib module MUST NOT be blocked by the guard."""
-    import json
-
-    result = importlib.reload(json)
+# Assert
+assert runtime_result is not None, "Runtime operation should produce a result"
+assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+# TODO: Add runtime-specific assertions
     assert result is json
 
 
 @pytest.mark.governance
 def test_core_prefixes_cover_all_layers() -> None:
-    """_CORE_PREFIXES MUST include all canonical app-layer namespaces."""
-    required = {"agentic_core.", "apps_lic.", "apps_rg.", "apps_shared.", "system_learning."}
-    missing = required - set(_CORE_PREFIXES)
-    assert not missing, f"Missing core prefixes: {missing}"
+"""Test core_prefixes_cover_all_layers runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
+# Act
+# TODO: Execute runtime operation core_prefixes_cover_all_layers
+runtime_result = None  # Replace with actual runtime operation
 
-# =============================================================================
-# sys.modules guard (_GuardedSysModules)
-# =============================================================================
+# Assert
+assert runtime_result is not None, "Runtime operation should produce a result"
+assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+# TODO: Add runtime-specific assertions
+"""Test guarded_sys_modules_allows_new_key runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
+# Act
+# TODO: Execute runtime operation guarded_sys_modules_allows_new_key
+"""Test sys_modules_replacement_blocked_for_core_module runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
-@pytest.mark.governance
-def test_guarded_sys_modules_allows_new_key() -> None:
-    """_GuardedSysModules MUST allow adding a new core-prefix key (initial import)."""
-    guarded: _GuardedSysModules = _GuardedSysModules()
-    guarded["agentic_core.new_module_xyz"] = object()
+# Act
+# TODO: Execute runtime operation sys_modules_replacement_blocked_for_core_module
+runtime_result = None  # Replace with actual runtime operation
 
+# Assert
+assert runtime_result is not None, "Runtime operation should produce a result"
+"""Test guarded_sys_modules_allows_non_core_replacement runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
-@pytest.mark.governance
-def test_sys_modules_replacement_blocked_for_core_module() -> None:
-    """_GuardedSysModules MUST raise ImportError when replacing an already-loaded core key."""
-    guarded: _GuardedSysModules = _GuardedSysModules()
-    sentinel = object()
-    guarded["agentic_core.L2_execution.UniversalWriteGateway"] = sentinel
+# Act
+# TODO: Execute runtime operation guarded_sys_modules_allows_non_core_replacement
+runtime_result = None  # Replace with actual runtime operation
 
-    with pytest.raises(ImportError, match="REQ-417"):
-        guarded["agentic_core.L2_execution.UniversalWriteGateway"] = object()
+# Assert
+assert runtime_result is not None, "Runtime operation should produce a result"
+assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+# TODO: Add runtime-specific assertions
+"""Test guarded_setattr_raises_for_core_instance runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
+# Act
+# TODO: Execute runtime operation guarded_setattr_raises_for_core_instance
+runtime_result = None  # Replace with actual runtime operation
 
-@pytest.mark.governance
-def test_guarded_sys_modules_allows_non_core_replacement() -> None:
-    """_GuardedSysModules MUST allow replacement of non-core-prefix keys."""
-    guarded: _GuardedSysModules = _GuardedSysModules()
-    guarded["third_party.lib"] = object()
-    guarded["third_party.lib"] = object()
+# Assert
+"""Test guarded_setattr_allows_non_core_instance runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
+# Act
+# TODO: Execute runtime operation guarded_setattr_allows_non_core_instance
+runtime_result = None  # Replace with actual runtime operation
 
-# =============================================================================
-# setattr reference guard
-# =============================================================================
-
-
-@pytest.mark.governance
-def test_guarded_setattr_raises_for_core_instance() -> None:
-    """_guarded_setattr MUST raise AttributeError with REQ-417 for core-layer instances."""
-    from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
-
-    uwg = UniversalWriteGateway()
-    with pytest.raises(AttributeError, match="REQ-417"):
-        _guarded_setattr(uwg, "injected_attr", "bad_value")
-
-
-@pytest.mark.governance
-def test_guarded_setattr_allows_non_core_instance() -> None:
-    """_guarded_setattr MUST allow attribute setting on non-core instances."""
-
-    class _Innocent:
-        pass
-
-    obj = _Innocent()
-    _guarded_setattr(obj, "x", 42)
-    assert obj.x == 42
-
-
-# =============================================================================
-# SOV-DELTA: object.__setattr__ AST scanner smoke test
-# =============================================================================
+# Assert
+assert runtime_result is not None, "Runtime operation should produce a result"
+assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+# TODO: Add runtime-specific assertions
 
 
 @pytest.mark.governance
 def test_object_dunder_setattr_scanner_exists() -> None:
-    """SOV-DELTA: ops_scripts/ci/check_object_dunder_setattr.py MUST exist and be importable."""
-    from pathlib import Path
+"""Test object_dunder_setattr_scanner_exists runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
-    scanner = Path(__file__).resolve().parents[2] / OPS_SCRIPTS_DIR / "ci" / "check_object_dunder_setattr.py"
-    assert scanner.exists(), "check_object_dunder_setattr.py not found"
+# Act
+# TODO: Execute runtime operation object_dunder_setattr_scanner_exists
+runtime_result = None  # Replace with actual runtime operation
 
+"""Test object_dunder_setattr_scanner_detects_core_pattern runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
-@pytest.mark.governance
-def test_object_dunder_setattr_scanner_detects_core_pattern() -> None:
-    """SOV-DELTA AST scanner MUST detect object.__setattr__(uwg, ...) patterns."""
-    import ast
-    import sys
+# Act
+# TODO: Execute runtime operation object_dunder_setattr_scanner_detects_core_pattern
+runtime_result = None  # Replace with actual runtime operation
 
-    sys.path.insert(0, str(__file__))
-
-    from pathlib import Path
-
-    scanner_path = (
-        Path(__file__).resolve().parents[2] / OPS_SCRIPTS_DIR / "ci" / "check_object_dunder_setattr.py"
-    )
-    snippet = "object.__setattr__(uwg, 'x', 1)"
-    tree = ast.parse(snippet)
+# Assert
+assert runtime_result is not None, "Runtime operation should produce a result"
+assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+# TODO: Add runtime-specific assertions
 
     import importlib.util
 

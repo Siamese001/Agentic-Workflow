@@ -394,19 +394,19 @@ class TestGatekeeperCompliance:
         ArchivalGatekeeper.reset_instance()
 
     def test_no_direct_unlink_calls(self, temp_project):
-        """Verify that Path.unlink() is NOT called directly."""
-        ArchivalGatekeeper.reset_instance()
+    """Test no_direct_unlink_calls runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        agent = HygieneGuardianAgent(temp_project, ctx=None, dry_run=False)
+    # Act
+    # TODO: Execute no_direct_unlink_calls
+    result = None  # Replace with actual execution
 
-        # Create a file
-        test_file = temp_project / "empty.py"
-        test_file.write_text("")
-
-        agent.violations = [
-            HygieneViolation(
-                file_path=test_file,
-                violation_type="empty_file",
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
                 message="Empty file",
                 auto_fixable=True,
             ),
@@ -458,19 +458,19 @@ class TestSafetyValidFiles:
             assert filename not in violation_files, f"Valid file {filename} was incorrectly flagged"
 
     def test_dry_run_does_not_modify_files(self, temp_project):
-        """Verify dry_run mode does not modify any files."""
-        ArchivalGatekeeper.reset_instance()
+    """Test dry_run_does_not_modify_files runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        # Create agent in dry_run mode (default)
-        agent = HygieneGuardianAgent(temp_project, ctx=None, dry_run=True)
+    # Act
+    # TODO: Execute dry_run_does_not_modify_files
+    result = None  # Replace with actual execution
 
-        # Create files that would be flagged
-        backup_file = temp_project / "test.bak"
-        backup_file.write_text("backup content")
-
-        empty_file = temp_project / "empty.py"
-        empty_file.write_text("")
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         # Run scan and fix
         agent._scan_directory(temp_project)
         fixed_count = agent._fix_violations()

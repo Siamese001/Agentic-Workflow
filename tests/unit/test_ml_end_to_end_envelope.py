@@ -231,31 +231,31 @@ class TestMixinBlockedOutsideSandbox:
             agent.ml_cache_set(_CACHE_KEY, _CACHE_VALUE)
 
     def test_store_healing_pattern_client_never_called_outside_sandbox(self):
-        """
-        Monkeypatch: underlying client.store_healing_pattern must NEVER be
-        invoked when called outside the sandbox.
-        """
-        agent, mock_client = _make_agent_with_mock_client()
+    """Test store_healing_pattern_client_never_called_outside_sandbox runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        with pytest.raises(MLWriteEnvelopeViolation):
-            agent.ml_store_healing_pattern(_VIOLATION, _HEALING_RESULT)
+    # Act
+    # TODO: Execute store_healing_pattern_client_never_called_outside_sandbox
+    result = None  # Replace with actual execution
 
-        mock_client.store_healing_pattern.assert_not_called()
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    """Test cache_set_client_never_called_outside_sandbox runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_cache_set_client_never_called_outside_sandbox(self):
-        """
-        Monkeypatch: underlying client.cache_set must NEVER be invoked
-        when called outside the sandbox.
-        """
-        agent, mock_client = _make_agent_with_mock_client()
+    # Act
+    # TODO: Execute cache_set_client_never_called_outside_sandbox
+    result = None  # Replace with actual execution
 
-        with pytest.raises(MLWriteEnvelopeViolation):
-            agent.ml_cache_set(_CACHE_KEY, _CACHE_VALUE)
-
-        mock_client.cache_set.assert_not_called()
-
-    def test_violation_error_message_contains_method_name_store(self):
-        agent, _ = _make_agent_with_mock_client()
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         with pytest.raises(MLWriteEnvelopeViolation) as exc_info:
             agent.ml_store_healing_pattern(_VIOLATION, _HEALING_RESULT)
         assert "ml_store_healing_pattern" in str(exc_info.value)

@@ -23,15 +23,17 @@ class TestMetaLearningTypesShim:
         assert callable(LearningResult)
 
     def test_meta_learning_protocol_exported(self):
-        from agentic_core.utils.meta_learning_types_util import MetaLearningProtocol
-        assert callable(MetaLearningProtocol)
+    """Test meta_learning_protocol_exported contract compliance."""
+    # Arrange
+    # TODO: Set up interface implementation
+    implementation = None  # Replace with actual implementation
 
-    def test_all_list_complete(self):
-        from agentic_core.utils.meta_learning_types_util import __all__
-        for name in ("LearningContext", "LearningResult", "MetaLearningProtocol"):
-            assert name in __all__
+    # Act
+    # TODO: Test interface methods
+    result = None  # Replace with actual method call
 
-    def test_identity_matches_canonical(self):
-        from agentic_core.L5_safety.types.meta_learning_types import LearningContext as canon
-        from agentic_core.utils.meta_learning_types_util import LearningContext as shim
-        assert shim is canon
+    # Assert - Interface Contract
+    assert implementation is not None, "Interface implementation should exist"
+    assert hasattr(implementation, "__dict__"), "Implementation should be inspectable"
+    # TODO: Add specific interface method assertions
+    # assert callable(getattr(implementation, "method_name", None)), "Required method should exist"

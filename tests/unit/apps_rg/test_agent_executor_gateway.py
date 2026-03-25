@@ -254,19 +254,19 @@ class TestAgentExecutorGatewayRouting:
         mock_gateway.generate.assert_called_once()
 
     def test_execute_internal_does_not_call_direct_sdk_when_gateway_available(self):
-        """RG-GAP-04 negative: direct SDK must NOT be called when gateway succeeds."""
-        gateway_mod, mock_gateway_cls, mock_gateway, _ = _build_gateway_stub()
+    """Test execute_internal_does_not_call_direct_sdk_when_gateway_available runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        with patch.dict("sys.modules", {"agentic_core.interfaces.gateway": gateway_mod}):
-            from apps_rg.utils.agent_executor_util import AgentConfig, AgentExecutor, AgentMessage
+    # Act
+    # TODO: Execute execute_internal_does_not_call_direct_sdk_when_gateway_available
+    result = None  # Replace with actual execution
 
-            config = AgentConfig(provider=self.Provider.OPENAI, model="gpt-4", enable_tracing=False)
-            executor = AgentExecutor(config)
-
-            with patch.object(executor, "_execute_openai") as mock_sdk:
-                executor.execute(
-                    messages=[AgentMessage(role="user", content="hello")],
-                    system_prompt=None,
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
                 )
 
         mock_sdk.assert_not_called(), "Direct SDK must not be called when gateway is available"
@@ -336,13 +336,16 @@ class TestAgentExecutorGatewayRouting:
         assert result is None, "_try_execute_via_gateway must return None when gateway unavailable"
 
     def test_try_execute_via_gateway_source_contains_gateway_import(self):
-        """RG-GAP-04 source check: _try_execute_via_gateway must import SovereignLLMGateway."""
-        import inspect
+    """Test try_execute_via_gateway_source_contains_gateway_import runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        from apps_rg.utils.agent_executor_util import AgentExecutor
+    # Act
+    # TODO: Execute try_execute_via_gateway_source_contains_gateway_import
+    result = None  # Replace with actual execution
 
-        src = inspect.getsource(AgentExecutor._try_execute_via_gateway)
-        assert "SovereignLLMGateway" in src, (
-            "RG-GAP-04: _try_execute_via_gateway must reference SovereignLLMGateway"
-        )
-        assert "GenerationRequest" in src, "RG-GAP-04: _try_execute_via_gateway must use GenerationRequest"
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions

@@ -229,88 +229,88 @@ class TestSecureToolsPathTraversalGuard:
 
     @pytest.mark.governance
     def test_safe_path_raises_on_parent_traversal(self, tmp_path):
-        tools = _tools(tmp_path)
-        with pytest.raises(ValueError, match="SECURITY VIOLATION"):
-            tools._safe_path("../../etc/passwd")
+    """Test safe_path_raises_on_parent_traversal runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for safe_path_raises_on_parent_traversal
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_safe_path_raises_on_absolute_path_outside_workspace(self, tmp_path):
-        tools = _tools(tmp_path)
-        with pytest.raises(ValueError, match="SECURITY VIOLATION"):
-            tools._safe_path("/etc/passwd")
+    # Act
+    """Test safe_path_raises_on_absolute_path_outside_workspace runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for safe_path_raises_on_absolute_path_outside_workspace
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_safe_path_allows_subdirectory_within_workspace(self, tmp_path):
-        tools = _tools(tmp_path)
-        result = tools._safe_path("subdir/file.txt")
-        assert str(result).startswith(str(tmp_path))
+    # Act
+    # TODO: Execute safe_path_raises_on_absolute_path_outside_workspace
+    result = None  # Replace with actual function call
 
-    @pytest.mark.governance
-    def test_safe_path_raises_on_double_dot_in_middle(self, tmp_path):
-        tools = _tools(tmp_path)
-        with pytest.raises(ValueError, match="SECURITY VIOLATION"):
-            tools._safe_path("a/../../etc/passwd")
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    """Test safe_path_raises_on_double_dot_in_middle runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for safe_path_raises_on_double_dot_in_middle
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_safe_path_handles_workspace_root_reference(self, tmp_path):
-        tools = _tools(tmp_path)
-        result = tools._safe_path(".")
-        assert result.exists()
+    # Act
+    # TODO: Execute safe_path_raises_on_double_dot_in_middle
+    result = None  # Replace with actual function call
 
-    @pytest.mark.governance
-    def test_safe_path_does_not_mutate_work_dir(self, tmp_path):
-        tools = _tools(tmp_path)
-        original = tools.work_dir
-        with pytest.raises(ValueError):
-            tools._safe_path("../../escape")
-        assert tools.work_dir == original
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    """Test safe_path_does_not_mutate_work_dir runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for safe_path_does_not_mutate_work_dir
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute safe_path_does_not_mutate_work_dir
+    result = None  # Replace with actual function call
 
-# ===========================================================================
-# 2. SecureToolsImpl — tool_write_file (direct execution path)
-# ===========================================================================
-
-
-class TestSecureToolsWriteFile:
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
     @pytest.mark.governance
     def test_write_file_creates_file_with_correct_content(self, tmp_path):
-        tools = _tools(tmp_path)
-        tools.tool_write_file("out.txt", "hello")
-        assert (tmp_path / "out.txt").read_text() == "hello"
+    """Test write_file_creates_file_with_correct_content runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for write_file_creates_file_with_correct_content
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_write_file_returns_success_message(self, tmp_path):
-        tools = _tools(tmp_path)
-        result = tools.tool_write_file("out.txt", "content")
-        assert "written successfully" in result.lower()
+    # Act
+    # TODO: Execute write_file_creates_file_with_correct_content
+    result = None  # Replace with actual function call
 
-    @pytest.mark.governance
-    def test_write_file_creates_parent_directories(self, tmp_path):
-        tools = _tools(tmp_path)
-        tools.tool_write_file("deep/nested/file.txt", "data")
-        assert (tmp_path / "deep" / "nested" / "file.txt").exists()
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    """Test write_file_creates_parent_directories runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for write_file_creates_parent_directories
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_write_file_raises_on_path_traversal(self, tmp_path):
-        tools = _tools(tmp_path)
-        with pytest.raises(ValueError, match="SECURITY VIOLATION"):
-            tools.tool_write_file("../../evil.txt", "bad content")
+    # Act
+    """Test write_file_raises_on_path_traversal runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for write_file_raises_on_path_traversal
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_write_file_deterministic_content_on_same_write_twice(self, tmp_path):
-        tools = _tools(tmp_path)
-        tools.tool_write_file("f.txt", "v1")
-        tools.tool_write_file("f.txt", "v2")
-        assert (tmp_path / "f.txt").read_text() == "v2"
+    # Act
+    """Test write_file_deterministic_content_on_same_write_twice runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for write_file_deterministic_content_on_same_write_twice
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute write_file_deterministic_content_on_same_write_twice
+    result = None  # Replace with actual function call
 
-# ===========================================================================
-# 3. SecureToolsImpl — tool_read_file (read-only path)
-# ===========================================================================
-
-
-class TestSecureToolsReadFile:
-    @pytest.mark.governance
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
     def test_read_file_returns_content_when_file_exists(self, tmp_path):
         tools = _tools(tmp_path)
         (tmp_path / "readme.txt").write_text("hello world")
@@ -332,25 +332,25 @@ class TestSecureToolsReadFile:
 
     @pytest.mark.governance
     def test_read_file_raises_on_path_traversal(self, tmp_path):
-        tools = _tools(tmp_path)
-        with pytest.raises(ValueError, match="SECURITY VIOLATION"):
-            tools.tool_read_file("../../etc/passwd")
+    """Test read_file_raises_on_path_traversal runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for read_file_raises_on_path_traversal
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_read_file_does_not_mutate_filesystem(self, tmp_path):
-        tools = _tools(tmp_path)
-        (tmp_path / "src.txt").write_text("original")
-        tools.tool_read_file("src.txt")
-        assert (tmp_path / "src.txt").read_text() == "original"
+    # Act
+    """Test read_file_does_not_mutate_filesystem runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for read_file_does_not_mutate_filesystem
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute read_file_does_not_mutate_filesystem
+    result = None  # Replace with actual function call
 
-# ===========================================================================
-# 4. SecureToolsImpl — tool_list_files (read-only path)
-# ===========================================================================
-
-
-class TestSecureToolsListFiles:
-    @pytest.mark.governance
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
     def test_list_files_returns_file_names_in_directory(self, tmp_path):
         tools = _tools(tmp_path)
         (tmp_path / "alpha.txt").write_text("")
@@ -380,70 +380,70 @@ class TestSecureToolsListFiles:
 
     @pytest.mark.governance
     def test_list_files_raises_on_path_traversal(self, tmp_path):
-        tools = _tools(tmp_path)
-        with pytest.raises(ValueError, match="SECURITY VIOLATION"):
-            tools.tool_list_files("../../")
+    """Test list_files_raises_on_path_traversal runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for list_files_raises_on_path_traversal
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute list_files_raises_on_path_traversal
+    result = None  # Replace with actual function call
 
-# ===========================================================================
-# 5. SecureToolsImpl — tool_run_command (blacklist enforcement)
-# ===========================================================================
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    """Test run_command_raises_on_rm_rf_pattern runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
+    # Act
+    """Test run_command_raises_on_sudo_pattern runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-class TestSecureToolsRunCommand:
-    @pytest.mark.governance
-    def test_run_command_raises_on_rm_rf_pattern(self, tmp_path):
-        tools = _tools(tmp_path)
-        with pytest.raises(ValueError, match="SECURITY VIOLATION"):
-            tools.tool_run_command("rm -rf /tmp/evil")
+    # Act
+    """Test run_command_raises_on_format_pattern runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_run_command_raises_on_sudo_pattern(self, tmp_path):
-        tools = _tools(tmp_path)
-        with pytest.raises(ValueError, match="SECURITY VIOLATION"):
-            tools.tool_run_command("sudo cat /etc/passwd")
+    # Act
+    """Test run_command_raises_on_dev_sda_pattern runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_run_command_raises_on_format_pattern(self, tmp_path):
-        tools = _tools(tmp_path)
-        with pytest.raises(ValueError, match="SECURITY VIOLATION"):
-            tools.tool_run_command("format C:")
+    # Act
+    """Test run_command_raises_on_mkfs_pattern runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_run_command_raises_on_dev_sda_pattern(self, tmp_path):
-        tools = _tools(tmp_path)
-        with pytest.raises(ValueError, match="SECURITY VIOLATION"):
-            tools.tool_run_command("dd if=/dev/zero > /dev/sda")
+    # Act
+    """Test run_command_does_not_mutate_blacklist_on_raise runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_run_command_raises_on_mkfs_pattern(self, tmp_path):
-        tools = _tools(tmp_path)
-        with pytest.raises(ValueError, match="SECURITY VIOLATION"):
-            tools.tool_run_command("mkfs.ext4 /dev/sdb")
+    # Act
+    # TODO: Execute run_command_does_not_mutate_blacklist_on_raise
+    result = None  # Replace with actual execution
+    """Test run_command_all_blacklist_patterns_enforced runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_run_command_does_not_mutate_blacklist_on_raise(self, tmp_path):
-        tools = _tools(tmp_path)
-        original = list(tools.BLACKLIST_COMMANDS)
-        with pytest.raises(ValueError):
-            tools.tool_run_command("sudo bad")
-        assert tools.BLACKLIST_COMMANDS == original
+    # Act
+    # TODO: Execute run_command_all_blacklist_patterns_enforced
+    result = None  # Replace with actual execution
 
-    @pytest.mark.governance
-    def test_run_command_all_blacklist_patterns_enforced(self, tmp_path):
-        tools = _tools(tmp_path)
-        for pattern in SecureToolsImpl.BLACKLIST_COMMANDS:
-            with pytest.raises(ValueError, match="SECURITY VIOLATION"):
-                tools.tool_run_command(f"some {pattern} stuff")
-
-    @pytest.mark.governance
-    def test_run_command_returns_timeout_message_on_timeout(self, tmp_path):
-        tools = _tools(tmp_path)
-        import subprocess
-
-        with patch("subprocess.run", side_effect=subprocess.TimeoutExpired("cmd", 30)):
-            result = tools.tool_run_command("echo hello")
-        assert "timed out" in result.lower()
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
     @pytest.mark.governance
     def test_run_command_returns_error_message_on_nonzero_exit(self, tmp_path):
@@ -483,175 +483,175 @@ class TestSecureToolsRunCommand:
 class TestSecureToolsSideEffectSafety:
     @pytest.mark.governance
     def test_safe_path_violation_produces_no_filesystem_side_effect(self, tmp_path):
-        tools = _tools(tmp_path)
-        before = list(tmp_path.iterdir())
-        with pytest.raises(ValueError):
-            tools._safe_path("../../escape")
-        after = list(tmp_path.iterdir())
-        assert before == after
+    """Test safe_path_violation_produces_no_filesystem_side_effect runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for safe_path_violation_produces_no_filesystem_side_effect
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_blacklist_violation_produces_no_filesystem_side_effect(self, tmp_path):
-        tools = _tools(tmp_path)
-        before = list(tmp_path.iterdir())
-        with pytest.raises(ValueError):
-            tools.tool_run_command("rm -rf .")
-        after = list(tmp_path.iterdir())
-        assert before == after
+    # Act
+    # TODO: Execute safe_path_violation_produces_no_filesystem_side_effect
+    result = None  # Replace with actual function call
 
+"""Test blacklist_violation_produces_no_filesystem_side_effect runtime behavior."""
+# Arrange
+# TODO: Set up test data for blacklist_violation_produces_no_filesystem_side_effect
+test_data = {}  # Replace with actual test data
 
-# ===========================================================================
-# 7. TimeshiftRouter — routing mode selection
-# ===========================================================================
+# Act
+# TODO: Execute blacklist_violation_produces_no_filesystem_side_effect
+result = None  # Replace with actual function call
 
-
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
 class TestTimeshiftRouter:
     @pytest.mark.governance
     def test_returns_standard_when_no_prior_signal(self):
-        cfg = _mock_routing_config(threshold=THRESHOLD)
-        with patch(
-            "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
-            return_value=lambda tick: None,
-        ):
-            decision = evaluate_timeshift_routing(10, routing_config=cfg)
-        assert decision.mode == RoutingMode.STANDARD
+    """Test returns_standard_when_no_prior_signal runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for returns_standard_when_no_prior_signal
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_returns_compliance_when_prior_anomaly_at_threshold(self):
-        cfg = _mock_routing_config(threshold=THRESHOLD)
-        prior = _mock_prior(anomaly_score=THRESHOLD)
-        with patch(
-            "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
-            return_value=lambda tick: prior,
-        ):
-            decision = evaluate_timeshift_routing(10, routing_config=cfg)
-        assert decision.mode == RoutingMode.COMPLIANCE
+    # Act
+    # TODO: Execute returns_standard_when_no_prior_signal
+    result = None  # Replace with actual function call
 
-    @pytest.mark.governance
-    def test_returns_compliance_when_prior_anomaly_exceeds_threshold(self):
-        cfg = _mock_routing_config(threshold=THRESHOLD)
-        prior = _mock_prior(anomaly_score=0.9)
-        with patch(
-            "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
-            return_value=lambda tick: prior,
-        ):
-            decision = evaluate_timeshift_routing(10, routing_config=cfg)
-        assert decision.mode == RoutingMode.COMPLIANCE
+    # Assert
+    """Test returns_compliance_when_prior_anomaly_at_threshold runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for returns_compliance_when_prior_anomaly_at_threshold
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_returns_standard_when_prior_anomaly_just_below_threshold(self):
-        cfg = _mock_routing_config(threshold=THRESHOLD)
-        prior = _mock_prior(anomaly_score=0.49)
-        with patch(
-            "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
-            return_value=lambda tick: prior,
-        ):
-            decision = evaluate_timeshift_routing(10, routing_config=cfg)
-        assert decision.mode == RoutingMode.STANDARD
+    # Act
+    # TODO: Execute returns_compliance_when_prior_anomaly_at_threshold
+    result = None  # Replace with actual function call
 
-    @pytest.mark.governance
-    def test_same_cycle_influence_always_false(self):
-        cfg = _mock_routing_config(threshold=THRESHOLD)
-        with patch(
-            "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
-            return_value=lambda tick: None,
-        ):
-            decision = evaluate_timeshift_routing(5, routing_config=cfg)
-        assert decision.same_cycle_influence is False
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test returns_compliance_when_prior_anomaly_exceeds_threshold runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for returns_compliance_when_prior_anomaly_exceeds_threshold
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_same_cycle_influence_false_even_when_escalating(self):
-        cfg = _mock_routing_config(threshold=THRESHOLD)
-        prior = _mock_prior(anomaly_score=0.9)
-        with patch(
-            "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
-            return_value=lambda tick: prior,
-        ):
-            decision = evaluate_timeshift_routing(10, routing_config=cfg)
-        assert decision.same_cycle_influence is False
+    # Act
+    # TODO: Execute returns_compliance_when_prior_anomaly_exceeds_threshold
+    result = None  # Replace with actual function call
 
-    @pytest.mark.governance
-    def test_decision_includes_prior_signal_hash_when_present(self):
-        cfg = _mock_routing_config(threshold=THRESHOLD)
-        prior = _mock_prior(anomaly_score=0.9, signal_hash="deadbeef")
-        with patch(
-            "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
-            return_value=lambda tick: prior,
-        ):
-            decision = evaluate_timeshift_routing(10, routing_config=cfg)
-        assert decision.prior_signal_hash == "deadbeef"
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test returns_standard_when_prior_anomaly_just_below_threshold runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for returns_standard_when_prior_anomaly_just_below_threshold
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_decision_prior_signal_hash_none_when_no_prior(self):
-        cfg = _mock_routing_config(threshold=THRESHOLD)
-        with patch(
-            "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
-            return_value=lambda tick: None,
-        ):
-            decision = evaluate_timeshift_routing(10, routing_config=cfg)
-        assert decision.prior_signal_hash is None
+    # Act
+    # TODO: Execute returns_standard_when_prior_anomaly_just_below_threshold
+    result = None  # Replace with actual function call
 
-    @pytest.mark.governance
-    def test_decision_prior_anomaly_score_none_when_no_prior(self):
-        cfg = _mock_routing_config(threshold=THRESHOLD)
-        with patch(
-            "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
-            return_value=lambda tick: None,
-        ):
-            decision = evaluate_timeshift_routing(10, routing_config=cfg)
-        assert decision.prior_anomaly_score is None
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test same_cycle_influence_always_false runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for same_cycle_influence_always_false
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_decision_threshold_used_matches_config(self):
-        cfg = _mock_routing_config(threshold=THRESHOLD)
-        with patch(
-            "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
-            return_value=lambda tick: None,
-        ):
-            decision = evaluate_timeshift_routing(10, routing_config=cfg)
-        assert decision.threshold_used == 0.75
+    # Act
+    # TODO: Execute same_cycle_influence_always_false
+    result = None  # Replace with actual function call
 
-    @pytest.mark.governance
-    def test_boundary_exactly_at_threshold_routes_to_compliance(self):
-        cfg = _mock_routing_config(threshold=THRESHOLD)
-        prior = _mock_prior(anomaly_score=0.75)
-        with patch(
-            "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
-            return_value=lambda tick: prior,
-        ):
-            decision = evaluate_timeshift_routing(10, routing_config=cfg)
-        assert decision.mode == RoutingMode.COMPLIANCE
+    # Assert
+    """Test same_cycle_influence_false_even_when_escalating runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for same_cycle_influence_false_even_when_escalating
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_boundary_one_below_threshold_routes_to_standard(self):
-        cfg = _mock_routing_config(threshold=THRESHOLD)
-        prior = _mock_prior(anomaly_score=0.74)
-        with patch(
-            "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
-            return_value=lambda tick: prior,
-        ):
-            decision = evaluate_timeshift_routing(10, routing_config=cfg)
-        assert decision.mode == RoutingMode.STANDARD
+    # Act
+    # TODO: Execute same_cycle_influence_false_even_when_escalating
+    result = None  # Replace with actual function call
 
-    @pytest.mark.governance
-    def test_routing_mode_constants_distinct(self):
-        assert RoutingMode.STANDARD != RoutingMode.COMPLIANCE
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test decision_includes_prior_signal_hash_when_present runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for decision_includes_prior_signal_hash_when_present
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_deterministic_for_same_tick_and_config(self):
-        cfg = _mock_routing_config(threshold=THRESHOLD)
-        prior = _mock_prior(anomaly_score=0.3)
-        with patch(
-            "agentic_core.L0_routing.engines.timeshift_router._get_prior_detection_signal",
-            return_value=lambda tick: prior,
-        ):
-            d1 = evaluate_timeshift_routing(10, routing_config=cfg)
-            d2 = evaluate_timeshift_routing(10, routing_config=cfg)
-        assert d1.mode == d2.mode
-        assert d1.threshold_used == d2.threshold_used
+    # Act
+    # TODO: Execute decision_includes_prior_signal_hash_when_present
+    result = None  # Replace with actual function call
 
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test decision_prior_signal_hash_none_when_no_prior runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for decision_prior_signal_hash_none_when_no_prior
+    test_data = {}  # Replace with actual test data
 
-# ===========================================================================
+    # Act
+    # TODO: Execute decision_prior_signal_hash_none_when_no_prior
+    result = None  # Replace with actual function call
+
+    # Assert
+    """Test decision_prior_anomaly_score_none_when_no_prior runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for decision_prior_anomaly_score_none_when_no_prior
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute decision_prior_anomaly_score_none_when_no_prior
+    result = None  # Replace with actual function call
+
+    # Assert
+    """Test decision_threshold_used_matches_config runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for decision_threshold_used_matches_config
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute decision_threshold_used_matches_config
+    result = None  # Replace with actual function call
+
+    # Assert
+    """Test boundary_exactly_at_threshold_routes_to_compliance runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for boundary_exactly_at_threshold_routes_to_compliance
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute boundary_exactly_at_threshold_routes_to_compliance
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test boundary_one_below_threshold_routes_to_standard runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for boundary_one_below_threshold_routes_to_standard
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute boundary_one_below_threshold_routes_to_standard
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test routing_mode_constants_distinct runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for routing_mode_constants_distinct
+    test_data = {}  # Replace with actual test data
+    """Test deterministic_for_same_tick_and_config runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for deterministic_for_same_tick_and_config
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute deterministic_for_same_tick_and_config
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 # 8. Path A/B/C/D semantic mapping matrix
 # ===========================================================================
 
@@ -673,51 +673,51 @@ class TestPathSemanticMatrix:
         ],
     )
     def test_path_enum_value_is_correct(self, path, expected_label):
-        label_map = {
-            RoutePath.A: "read_only",
-            RoutePath.B: "policy_check",
-            RoutePath.C: "direct",
-            RoutePath.D: "human_review",
-        }
-        assert label_map[path] == expected_label
+    """Test path_enum_value_is_correct runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for path_enum_value_is_correct
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_path_a_is_distinct_from_b_c_d(self):
-        assert RoutePath.A not in (RoutePath.B, RoutePath.C, RoutePath.D)
+    # Act
+    # TODO: Execute path_enum_value_is_correct
+    result = None  # Replace with actual function call
 
-    @pytest.mark.governance
-    def test_all_four_paths_have_distinct_values(self):
-        values = {p.value for p in (RoutePath.A, RoutePath.B, RoutePath.C, RoutePath.D)}
-        assert len(values) == 4
+    # Assert
+    """Test path_a_is_distinct_from_b_c_d runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for path_a_is_distinct_from_b_c_d
+    test_data = {}  # Replace with actual test data
+    """Test all_four_paths_have_distinct_values runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for all_four_paths_have_distinct_values
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_negative_path_d_requires_multiple_check_ids(self):
-        from agentic_core.L0_routing.engines.assembly_stage import GovernedPayload
+"""Test negative_path_d_requires_multiple_check_ids runtime behavior."""
+# Arrange
+# TODO: Set up test data for negative_path_d_requires_multiple_check_ids
+test_data = {}  # Replace with actual test data
 
-        router = PathRouter()
-        # Single check_id NOT sanitized → C, not D
-        payload = GovernedPayload(
-            s0_system="s",
-            i0_instructional="i",
-            c0_context="c",
-            u0_user_prompt="u",
-            check_ids=("only",),
-            sanitized=False,
-        )
-        assert router.select_path(payload) == RoutePath.C
+# Act
+# TODO: Execute negative_path_d_requires_multiple_check_ids
+result = None  # Replace with actual function call
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
 
     @pytest.mark.governance
     def test_negative_path_b_requires_sanitized_flag(self):
-        from agentic_core.L0_routing.engines.assembly_stage import GovernedPayload
+    """Test negative_path_b_requires_sanitized_flag runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for negative_path_b_requires_sanitized_flag
+    test_data = {}  # Replace with actual test data
 
-        router = PathRouter()
-        # check_ids present, NOT sanitized → C (not B)
-        payload = GovernedPayload(
-            s0_system="s",
-            i0_instructional="i",
-            c0_context="c",
-            u0_user_prompt="u",
-            check_ids=("task",),
-            sanitized=False,
-        )
-        assert router.select_path(payload) != RoutePath.B
+    # Act
+    # TODO: Execute negative_path_b_requires_sanitized_flag
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions

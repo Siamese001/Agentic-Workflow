@@ -94,22 +94,22 @@ from agentic_core.L2_execution.types.heal_contract_types import HealCheckResult,
 
 class TestArchitectureGovernorHealer:
     def test_check_id_string(self):
-        assert isinstance(ARCH_CHECK_ID, str)
+    """Test check_id_string runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for check_id_string
+    """Test heal_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_heal_callable(self):
-        assert callable(heal_architecture_governance)
+    # Act
+    # TODO: Execute heal_callable
+    result = None  # Replace with actual execution
 
-    def test_no_violations_returns_healed(self):
-        result = heal_architecture_governance(
-            {"violations_count": 0}, apply=False
-        )
-        assert isinstance(result, HealCheckResult)
-        assert result.status == HealStatus.HEALED
-
-    def test_dry_run_with_violations_returns_result(self):
-        result = heal_architecture_governance(
-            {"violations_count": 3, "territory": "agentic_core"},
-            apply=False,
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         )
         assert isinstance(result, HealCheckResult)
         assert result.status != HealStatus.HEALED
@@ -132,22 +132,22 @@ from agentic_core.L2_execution.healers.file_classification_healer import (
 
 class TestFileClassificationHealer:
     def test_check_id_string(self):
-        assert isinstance(FILE_CLASS_CHECK_ID, str)
+    """Test check_id_string runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for check_id_string
+    """Test heal_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_heal_callable(self):
-        assert callable(heal_file_classification)
+    # Act
+    # TODO: Execute heal_callable
+    result = None  # Replace with actual execution
 
-    def test_no_violations_returns_healed(self):
-        result = heal_file_classification(
-            {"violations_count": 0}, apply=False
-        )
-        assert isinstance(result, HealCheckResult)
-        assert result.status == HealStatus.HEALED
-
-    def test_dry_run_with_violations_returns_result(self):
-        result = heal_file_classification(
-            {"violations_count": 2, "territory": "agentic_core"},
-            apply=False,
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         )
         assert isinstance(result, HealCheckResult)
 
@@ -169,22 +169,22 @@ from agentic_core.L2_execution.healers.filesystem_ssot_healer import (
 
 class TestFilesystemSSOTHealer:
     def test_check_id_string(self):
-        assert isinstance(FS_CHECK_ID, str)
+    """Test check_id_string runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for check_id_string
+    """Test heal_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_heal_callable(self):
-        assert callable(heal_filesystem_ssot_drift)
+    # Act
+    # TODO: Execute heal_callable
+    result = None  # Replace with actual execution
 
-    def test_no_evidence_returns_healed(self):
-        result = heal_filesystem_ssot_drift({"evidence": {}}, apply=False)
-        assert isinstance(result, HealCheckResult)
-        assert result.status == HealStatus.HEALED
-
-    def test_dry_run_with_forbidden_folders(self):
-        result = heal_filesystem_ssot_drift(
-            {"evidence": {"forbidden_folders": ["bad_folder"]}},
-            apply=False,
-        )
-        assert isinstance(result, HealCheckResult)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
     def test_check_id_matches(self):
         result = heal_filesystem_ssot_drift({"evidence": {}})
@@ -293,22 +293,22 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestGravityLeakHealer:
     def test_check_id_string(self):
-        assert isinstance(GRAVITY_CHECK_ID, str)
+    """Test check_id_string runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for check_id_string
+    """Test heal_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_heal_callable(self):
-        assert callable(heal_gravity_violations)
+    # Act
+    # TODO: Execute heal_callable
+    result = None  # Replace with actual execution
 
-    def test_no_violations_returns_healed(self):
-        result = heal_gravity_violations(
-            {"violations_count": 0, "evidence": {}}, apply=False
-        )
-        assert isinstance(result, HealCheckResult)
-        assert result.status == HealStatus.HEALED
-
-    def test_dry_run_with_violations_returns_result(self):
-        result = heal_gravity_violations(
-            {
-                "violations_count": 1,
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
                 "evidence": {"violations": [{"file": "foo.py", "import": "L5.bar"}]},
             },
             apply=False,

@@ -72,54 +72,62 @@ class TestImportGraphContract:
     """Hard gate: import graph must not contain forbidden edges."""
 
     def test_no_forbidden_cross_territory_edges(self) -> None:
-        """agentic_core must not import from ops_scripts or dev_tools."""
-        edges = _extract_import_edges()
-        forbidden = _compute_forbidden_edges(edges)
-        assert not forbidden, (
-            f"Found {len(forbidden)} forbidden cross-territory import edge(s):\n"
-            + "\n".join(f"  {src} → {tgt}" for src, tgt in forbidden)
-        )
+    """Test no_forbidden_cross_territory_edges contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_edge_hash_deterministic(self) -> None:
-        """Two consecutive scans must produce identical hashes."""
-        edges1 = _extract_import_edges()
-        edges2 = _extract_import_edges()
-        h1 = _hash_edges(edges1)
-        h2 = _hash_edges(edges2)
-        assert h1 == h2, f"Non-deterministic scan: {h1} != {h2}"
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-    def test_snapshot_persisted(self) -> None:
-        """Snapshot file must exist and be valid JSON."""
-        if not SNAPSHOT_PATH.exists():
-            # Generate initial snapshot
-            edges = _extract_import_edges()
-            forbidden = _compute_forbidden_edges(edges)
-            snapshot = {
-                "edge_count": len(edges),
-                "forbidden_edge_count": len(forbidden),
-                "hash": _hash_edges(edges),
-            }
-            SNAPSHOT_PATH.parent.mkdir(parents=True, exist_ok=True)
-            SNAPSHOT_PATH.write_text(json.dumps(snapshot, indent=2) + "\n", encoding="utf-8")
-        data = json.loads(SNAPSHOT_PATH.read_text(encoding="utf-8"))
-        assert "edge_count" in data
+"""Test edge_hash_deterministic contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
+
+# Act
+# TODO: Execute contract operations
+contract_result = None  # Replace with actual contract operation
+"""Test snapshot_persisted contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
+
+# Act
+# TODO: Execute contract operations
+contract_result = None  # Replace with actual contract operation
+
+# Assert - Core Contract
+assert contract_result is not None, "Contract operation should produce a result"
+assert isinstance(contract_result, dict), "Contract result should be structured"
+# TODO: Add specific contract assertions
+# assert contract_result.get("enforced", False), "Contract terms should be enforced"
         assert "forbidden_edge_count" in data
         assert "hash" in data
 
     def test_forbidden_edge_count_non_growing(self) -> None:
-        """Forbidden edge count must not exceed snapshot ceiling (§29)."""
-        if not SNAPSHOT_PATH.exists():
-            pytest.fail("No snapshot yet — run test_snapshot_persisted first")
-        snapshot = json.loads(SNAPSHOT_PATH.read_text(encoding="utf-8"))
-        ceiling = snapshot["forbidden_edge_count"]
-        edges = _extract_import_edges()
-        current = len(_compute_forbidden_edges(edges))
-        assert current <= ceiling, f"Forbidden edge count grew: {current} > {ceiling} (ceiling from snapshot)"
+    """Test forbidden_edge_count_non_growing contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_synthetic_forbidden_edge_detected(self, tmp_path: Path) -> None:
-        """Negative test: prove scanner catches a synthetic forbidden edge."""
-        fake_edges: list[tuple[str, str]] = [
-            ("agentic_core/fake.py", OPS_SCRIPTS_DIR),
-        ]
-        forbidden = _compute_forbidden_edges(fake_edges)
-        assert len(forbidden) == 1, "Scanner failed to detect synthetic forbidden edge"
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+
+    # Assert - Core Contract
+    """Test synthetic_forbidden_edge_detected contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
+
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"

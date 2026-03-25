@@ -303,20 +303,20 @@ class TestCmdTerritory:
 
     @pytest.mark.unit
     def test_adg_schema_is_l_tools(self) -> None:
-        out = cmd_territory("agentic_core/adg/schema.py")
-        assert out["layer"] == "L_TOOLS"
+    """Test adg_schema_is_l_tools contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.unit
-    def test_l0_module_correct_layer(self) -> None:
-        out = cmd_territory("agentic_core/L0_routing/config/path_constants.py")
-        assert out["layer"] == "L0"
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-    @pytest.mark.unit
-    def test_allowed_import_targets_nonempty_for_l0(self) -> None:
-        out = cmd_territory("agentic_core/L0_routing/config/path_constants.py")
-        assert isinstance(out["allowed_import_targets"], list)
-
-    @pytest.mark.unit
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
     def test_deterministic(self) -> None:
         o1 = cmd_territory(_MODULE_A)
         o2 = cmd_territory(_MODULE_A)

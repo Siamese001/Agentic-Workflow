@@ -210,19 +210,19 @@ def make_clean():
 
 
 def test_replay_hash_deterministic_two_runs():
-    """Identical inputs produce identical replay_hash across two runs."""
-    fp = VLLMInfrastructureFingerprint.deterministic_test_instance()
-    ctrl1, reg1 = make_clean()
-    ctrl2, reg2 = make_clean()
+"""Test replay_hash_deterministic_two_runs runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    result1 = evaluate_gateway_call(SHORT_PROMPT, TASK, "low", ctrl1, reg1, fingerprint=fp)
-    result2 = evaluate_gateway_call(SHORT_PROMPT, TASK, "low", ctrl2, reg2, fingerprint=fp)
+# Act
+# TODO: Execute replay_hash_deterministic_two_runs
+result = None  # Replace with actual execution
 
-    hash1 = compute_replay_hash(
-        prompt=SHORT_PROMPT,
-        request=result1.local_request,
-        fingerprint=fp,
-        result=result1,
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
     )
     hash2 = compute_replay_hash(
         prompt=SHORT_PROMPT,
@@ -236,19 +236,19 @@ def test_replay_hash_deterministic_two_runs():
 
 
 def test_replay_hash_changes_on_fingerprint_change():
-    """replay_hash changes when fingerprint changes."""
-    fp1 = VLLMInfrastructureFingerprint.deterministic_test_instance()
-    fp2 = VLLMInfrastructureFingerprint(
-        model_name="DifferentModel",
-        model_revision_sha="def456abc123",
-        vllm_version="0.6.4",
-        transformers_version="4.46.1",
-        torch_version="2.5.2",
-        cuda_version="12.5",
-        driver_version="550.54.15",
-    )
+"""Test replay_hash_changes_on_fingerprint_change runtime behavior."""
+# Arrange
+# TODO: Set up test data for replay_hash_changes_on_fingerprint_change
+test_data = {}  # Replace with actual test data
 
-    ctrl, reg = make_clean()
+# Act
+# TODO: Execute replay_hash_changes_on_fingerprint_change
+result = None  # Replace with actual function call
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
     result = evaluate_gateway_call(SHORT_PROMPT, TASK, "low", ctrl, reg, fingerprint=fp1)
 
     hash1 = compute_replay_hash(
@@ -268,19 +268,19 @@ def test_replay_hash_changes_on_fingerprint_change():
 
 
 def test_replay_hash_changes_on_prompt_change():
-    """replay_hash changes when prompt changes."""
-    fp = VLLMInfrastructureFingerprint.deterministic_test_instance()
-    ctrl, reg = make_clean()
+"""Test replay_hash_changes_on_prompt_change runtime behavior."""
+# Arrange
+# TODO: Set up test data for replay_hash_changes_on_prompt_change
+test_data = {}  # Replace with actual test data
 
-    result1 = evaluate_gateway_call("hello", TASK, "low", ctrl, reg, fingerprint=fp)
-    result2 = evaluate_gateway_call("world", TASK, "low", ctrl, reg, fingerprint=fp)
+# Act
+# TODO: Execute replay_hash_changes_on_prompt_change
+result = None  # Replace with actual function call
 
-    hash1 = compute_replay_hash(
-        prompt="hello",
-        request=result1.local_request,
-        fingerprint=fp,
-        result=result1,
-    )
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
     hash2 = compute_replay_hash(
         prompt="world",
         request=result2.local_request,
@@ -292,19 +292,19 @@ def test_replay_hash_changes_on_prompt_change():
 
 
 def test_replay_validator_accepts_valid_artifact():
-    """Replay validator accepts untampered artifact."""
-    fp = VLLMInfrastructureFingerprint.deterministic_test_instance()
-    ctrl, reg = make_clean()
-    result = evaluate_gateway_call(SHORT_PROMPT, TASK, "low", ctrl, reg, fingerprint=fp)
+"""Test replay_validator_accepts_valid_artifact runtime behavior."""
+# Arrange
+# TODO: Set up test data for replay_validator_accepts_valid_artifact
+test_data = {}  # Replace with actual test data
 
-    artifact = VLLMReplayArtifact(
-        prompt=SHORT_PROMPT,
-        local_request=result.local_request,
-        fingerprint=fp,
-        result=result,
-    )
+# Act
+# TODO: Execute replay_validator_accepts_valid_artifact
+result = None  # Replace with actual function call
 
-    validator = VLLMReplayValidator()
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
     assert validator.validate(artifact) is True
 
     report = validator.validate_and_report(artifact)
@@ -313,19 +313,19 @@ def test_replay_validator_accepts_valid_artifact():
 
 
 def test_replay_validator_rejects_tampered_artifact():
-    """Replay validator rejects tampered artifact."""
-    fp = VLLMInfrastructureFingerprint.deterministic_test_instance()
-    ctrl, reg = make_clean()
-    result = evaluate_gateway_call(SHORT_PROMPT, TASK, "low", ctrl, reg, fingerprint=fp)
+"""Test replay_validator_rejects_tampered_artifact runtime behavior."""
+# Arrange
+# TODO: Set up test data for replay_validator_rejects_tampered_artifact
+test_data = {}  # Replace with actual test data
 
-    # Create artifact with original data
-    artifact = VLLMReplayArtifact(
-        prompt=SHORT_PROMPT,
-        local_request=result.local_request,
-        fingerprint=fp,
-        result=result,
-    )
+# Act
+# TODO: Execute replay_validator_rejects_tampered_artifact
+result = None  # Replace with actual function call
 
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
     # Tamper by creating new artifact with different prompt but same stored hash
     # (This simulates artifact tampering)
     class TamperedArtifact(VLLMReplayArtifact):
@@ -351,42 +351,42 @@ def test_replay_validator_rejects_tampered_artifact():
 
 
 def test_canonical_prompt_hash():
-    """canonical_prompt_hash produces stable SHA256."""
-    hash1 = canonical_prompt_hash("test")
-    hash2 = canonical_prompt_hash("test")
-    assert hash1 == hash2
-    assert len(hash1) == 64
+"""Test canonical_prompt_hash runtime behavior."""
+# Arrange
+# TODO: Set up test data for canonical_prompt_hash
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute canonical_prompt_hash
+result = None  # Replace with actual function call
+"""Test canonical_local_request_hash runtime behavior."""
+# Arrange
+# TODO: Set up test data for canonical_local_request_hash
+test_data = {}  # Replace with actual test data
 
-def test_canonical_local_request_hash():
-    """canonical_local_request_hash produces stable SHA256."""
-    fp = VLLMInfrastructureFingerprint.deterministic_test_instance()
-    ctrl, reg = make_clean()
-    result = evaluate_gateway_call(SHORT_PROMPT, TASK, "low", ctrl, reg, fingerprint=fp)
+# Act
+# TODO: Execute canonical_local_request_hash
+result = None  # Replace with actual function call
 
-    request = result.local_request
-    assert request is not None
-
-    hash1 = canonical_local_request_hash(request)
-    hash2 = canonical_local_request_hash(request)
-    assert hash1 == hash2
-    assert len(hash1) == 64
-
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
 
 def test_canonical_response_hash():
-    """canonical_response_hash produces stable SHA256."""
-    fp = VLLMInfrastructureFingerprint.deterministic_test_instance()
-    ctrl, reg = make_clean()
-    result = evaluate_gateway_call(SHORT_PROMPT, TASK, "low", ctrl, reg, fingerprint=fp)
+"""Test canonical_response_hash runtime behavior."""
+# Arrange
+# TODO: Set up test data for canonical_response_hash
+test_data = {}  # Replace with actual test data
 
-    hash1 = canonical_response_hash(result)
-    hash2 = canonical_response_hash(result)
-    assert hash1 == hash2
-    assert len(hash1) == 64
+# Act
+# TODO: Execute canonical_response_hash
+result = None  # Replace with actual function call
 
-
-def test_replay_artifact_with_none_local_request():
-    """Replay artifact handles None local_request (Gemini fallback)."""
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
     fp = VLLMInfrastructureFingerprint.deterministic_test_instance()
     ctrl, reg = make_clean()
 

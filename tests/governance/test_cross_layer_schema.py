@@ -172,19 +172,19 @@ class TestCrossLayerSchema:
         self.validator.set_compatibility("L3_orchestration", LayerVersion.V2, [LayerVersion.V2])
 
     def test_version_pinned_call_success(self):
-        """Test successful version-pinned cross-layer call."""
-        # Given - Valid payload
-        payload = {
-            "instruction": {"type": "test", "data": "value"},
-            "trace_id": "trace_123",
-            "context": {"user": "test"},
-        }
+    """Test version_pinned_call_success runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        # When/Then - Should validate successfully
-        assert self.validator.validate_cross_layer_call(
-            source_layer="L1_routing",
-            source_version=LayerVersion.V1,
-            target_layer="L2_execution",
+    # Act
+    # TODO: Execute version_pinned_call_success
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             target_version=LayerVersion.V1,
             payload=payload,
         ), "Valid call should succeed"

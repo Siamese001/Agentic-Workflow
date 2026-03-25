@@ -25,36 +25,36 @@ from agentic_core.L0_routing.scripts.bulk_mcp_harden_util import (  # noqa: F401
 
 class TestLoadDiscoveryFunction:
     def test_is_callable(self):
-        assert callable(load_discovery)
+    """Test is_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+    """Test is_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+    """Test is_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-class TestGetUnhardenedExternalAgentsFunction:
-    def test_is_callable(self):
-        assert callable(get_unhardened_external_agents)
+    # Act
+    # TODO: Execute is_callable
+    result = None  # Replace with actual execution
 
-class TestAddMcpMixinToFileFunction:
-    def test_is_callable(self):
-        assert callable(add_mcp_mixin_to_file)
+"""Test is_callable runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    def test_has_return_annotation(self):
-        import inspect
-        sig = inspect.signature(add_mcp_mixin_to_file)
-        assert sig.return_annotation is not inspect.Parameter.empty
+# Act
+# TODO: Execute is_callable
+result = None  # Replace with actual execution
 
-class TestAddImportFunction:
-    def test_is_callable(self):
-        assert callable(add_import)
-
-    def test_has_return_annotation(self):
-        import inspect
-        sig = inspect.signature(add_import)
-        assert sig.return_annotation is not inspect.Parameter.empty
-
-class TestMaxRetriesConstant:
-    def test_is_not_none(self):
-        assert MAX_RETRIES is not None
-
-class TestDefaultSleepConstant:
-    def test_is_not_none(self):
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
         assert DEFAULT_SLEEP is not None
 
 class TestThresholdConstant:

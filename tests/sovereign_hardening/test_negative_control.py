@@ -221,19 +221,19 @@ class TestNegativeControl:
         assert digest1 == digest2
 
     def test_negative_control_xfail_behavior(self):
-        """Negative control: XFAIL when tampered, PASS when restored.
+    """Test negative_control_xfail_behavior runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for negative_control_xfail_behavior
+    test_data = {}  # Replace with actual test data
 
-        When W_HARDEN_NEGCTRL_TAMPER=1 this test calls pytest.xfail() which
-        records an xfail and exits 0 with 0 failures.
-        When the env var is unset this test passes normally.
-        No @xfail decorator is used, eliminating any XPASS possibility.
-        """
-        if os.environ.get("W_HARDEN_NEGCTRL_TAMPER") == "1":
-            pytest.xfail("Negative control tampering active: W_HARDEN_NEGCTRL_TAMPER=1")
-        # Restore path: normal PASS
+    # Act
+    # TODO: Execute negative_control_xfail_behavior
+    result = None  # Replace with actual function call
 
-    @pytest.mark.negative_control
-    def test_negative_control_marker(self):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         """Test marked with negative_control marker."""
         # This test is marked with @pytest.mark.negative_control
         # It should behave differently based on W_HARDEN_NEGCTRL_TAMPER

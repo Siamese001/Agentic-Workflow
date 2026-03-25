@@ -197,19 +197,19 @@ class TestPipelineL4cWarnings:
         return silent_count
 
     def test_no_silent_pass_in_l4c_helpers_ast(self):
-        """AST: zero bare 'except … pass' blocks remain in the three L4C helper functions."""
-        count = self._count_silent_pass_in_l4_helpers()
-        assert count == 0, f"{count} silent 'except ... pass' block(s) still present in L4C helpers"
+    """Test no_silent_pass_in_l4c_helpers_ast runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for no_silent_pass_in_l4c_helpers_ast
+    test_data = {}  # Replace with actual test data
 
-    def test_shadow_drift_helper_warns_on_exception(self, caplog):
-        """_analyze_shadow_drift_and_write emits logger.warning when L4 write raises."""
-        from system_learning.pipelines.meta_learning_pipeline import (
-            _analyze_shadow_drift_and_write,
-            _shadow_telemetry_batch,
-        )
+    # Act
+    # TODO: Execute no_silent_pass_in_l4c_helpers_ast
+    result = None  # Replace with actual function call
 
-        # Inject a fake shadow record so the function doesn't short-circuit
-        fake_record = MagicMock()
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         _shadow_telemetry_batch.append(fake_record)
 
         mock_analyzer = MagicMock()

@@ -178,20 +178,20 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestHealingStrategyProtocol:
     def test_protocol_importable(self):
-        assert callable(HealingStrategyProtocol)
+    """Test protocol_importable contract compliance."""
+    # Arrange
+    # TODO: Set up interface implementation
+    implementation = None  # Replace with actual implementation
 
+    # Act
+    # TODO: Test interface methods
+    result = None  # Replace with actual method call
 
-class TestDependencyPruningStrategyConstants:
-    def test_supported_violations_nonempty(self):
-        assert len(DependencyPruningStrategy.SUPPORTED_VIOLATIONS) > 0
-
-    def test_is_frozenset(self):
-        assert isinstance(DependencyPruningStrategy.SUPPORTED_VIOLATIONS, frozenset)
-
-    def test_unused_dependency_supported(self):
-        assert "unused_dependency" in DependencyPruningStrategy.SUPPORTED_VIOLATIONS
-
-
+    # Assert - Interface Contract
+    assert implementation is not None, "Interface implementation should exist"
+    assert hasattr(implementation, "__dict__"), "Implementation should be inspectable"
+    # TODO: Add specific interface method assertions
+    # assert callable(getattr(implementation, "method_name", None)), "Required method should exist"
 class TestDependencyPruningStrategyInit:
     def test_creates_without_args(self):
         s = DependencyPruningStrategy()

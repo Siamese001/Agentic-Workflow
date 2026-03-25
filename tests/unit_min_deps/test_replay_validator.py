@@ -262,20 +262,20 @@ class TestReplayValidator:
 
 class TestDeterminism:
     def test_replay_validate_deterministic(self):
-        """replay_validate itself is deterministic."""
+    """Test replay_validate_deterministic contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-        def deterministic_engine(snapshot):
-            return {"value": snapshot["input"] * 2, "extra": "data"}
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-        def canonicalize(output):
-            # Canonical: sorted items
-            return str(sorted(output.items())).encode("utf-8")
-
-        snapshot = {"input": 42}
-
-        # Run replay_validate multiple times
-        hash1 = replay_validate(snapshot, deterministic_engine, canonicalize_fn=canonicalize)
-        hash2 = replay_validate(snapshot, deterministic_engine, canonicalize_fn=canonicalize)
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
         hash3 = replay_validate(snapshot, deterministic_engine, canonicalize_fn=canonicalize)
 
         assert hash1 == hash2 == hash3

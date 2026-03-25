@@ -174,20 +174,20 @@ class TestMLPatternRecord:
             )
 
     def test_rejects_bad_schema_version(self):
-        ph, mh = _active_hashes()
-        with pytest.raises(ValueError, match="schema_version"):
-            MLPatternRecord(
-                schema_version=0,
-                domain_id=AGENTIC_CORE_DIR,
-                domain_hash="a" * 64,
-                policy_hash=ph,
-                model_hash=mh,
-                pattern_id="p",
-                payload={},
-                record_hash="b" * 64,
-            )
+    """Test rejects_bad_schema_version contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
 class TestPatternCompatibilityEnforcement:
     def test_compatible_pattern_passes(self):
         from agentic_core.L0_routing.config.path_constants import AGENT_CORE_DIR

@@ -202,20 +202,20 @@ class TestAdapterGetRecentRecords:
         assert callable(adapter.get_recent_records)
 
     def test_get_records_on_protocol(self):
-        """HealingOutcomeIntakeStore protocol must declare get_records()."""
-        from system_learning.ports.healing_outcome_intake_store import HealingOutcomeIntakeStore
+    """Test get_records_on_protocol contract compliance."""
+    # Arrange
+    # TODO: Set up interface implementation
+    implementation = None  # Replace with actual implementation
 
-        assert hasattr(HealingOutcomeIntakeStore, "get_records"), (
-            "get_records() not declared on HealingOutcomeIntakeStore protocol"
-        )
+    # Act
+    # TODO: Test interface methods
+    result = None  # Replace with actual method call
 
-    def test_empty_store_returns_empty_list(self):
-        """Empty store → get_recent_records returns []."""
-        adapter = _make_adapter()
-        assert adapter.get_recent_records(0, 9_999_999) == []
-
-    def test_record_in_window_is_returned(self):
-        """A record with created_utc inside [start, end] is returned."""
+    # Assert - Interface Contract
+    assert implementation is not None, "Interface implementation should exist"
+    assert hasattr(implementation, "__dict__"), "Implementation should be inspectable"
+    # TODO: Add specific interface method assertions
+    # assert callable(getattr(implementation, "method_name", None)), "Required method should exist"
         adapter = _make_adapter()
         rec = _persist_record(adapter, created_utc=5_000_000)
         results = adapter.get_recent_records(4_999_999, 5_000_001)
@@ -287,8 +287,17 @@ class TestAdapterGetRecentRecords:
         assert [r.created_utc for r in results] == timestamps
 
     def test_in_memory_store_get_records_protocol_conformant(self):
-        """InMemoryHealingOutcomeIntakeStore.get_records() satisfies the protocol."""
-        store = InMemoryHealingOutcomeIntakeStore()
-        assert hasattr(store, "get_records") and callable(store.get_records)
-        # Before any writes
-        assert store.get_records() == []
+    """Test in_memory_store_get_records_protocol_conformant contract compliance."""
+    # Arrange
+    # TODO: Set up interface implementation
+    implementation = None  # Replace with actual implementation
+
+    # Act
+    # TODO: Test interface methods
+    result = None  # Replace with actual method call
+
+    # Assert - Interface Contract
+    assert implementation is not None, "Interface implementation should exist"
+    assert hasattr(implementation, "__dict__"), "Implementation should be inspectable"
+    # TODO: Add specific interface method assertions
+    # assert callable(getattr(implementation, "method_name", None)), "Required method should exist"

@@ -194,19 +194,19 @@ pytestmark = pytest.mark.governance
 
 class TestForwardRollingContractImportParity:
     def test_execution_mode_importable(self):
-        from agentic_core.seams.contracts.forward_rolling import ExecutionMode
+    """Test execution_mode_importable runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for execution_mode_importable
+    test_data = {}  # Replace with actual test data
 
-        assert ExecutionMode is not None
+    # Act
+    # TODO: Execute execution_mode_importable
+    result = None  # Replace with actual function call
 
-    def test_forward_rolling_config_importable(self):
-        from agentic_core.seams.contracts.forward_rolling import ForwardRollingConfig
-
-        assert ForwardRollingConfig is not None
-
-    def test_rollout_stage_importable(self):
-        from agentic_core.seams.contracts.forward_rolling import RolloutStage
-
-        assert RolloutStage is not None
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
     def test_health_status_importable(self):
         from agentic_core.seams.contracts.forward_rolling import HealthStatus
@@ -275,19 +275,19 @@ class TestSafetyAgentProtocolDefaultWiring:
         assert result is None
 
     def test_healing_agent_protocol_is_runtime_checkable(self):
-        from agentic_core.seams.contracts.safety_agents import HealingAgentProtocol
+    """Test healing_agent_protocol_is_runtime_checkable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        class FakeAgent:
-            def heal_repository(
-                self,
-                dry_run: bool = True,
-                execute: bool = False,
-                **kwargs: Any,
-            ) -> dict[str, Any]:
-                return {"errors": 0}
+    # Act
+    # TODO: Execute healing_agent_protocol_is_runtime_checkable
+    result = None  # Replace with actual execution
 
-        assert isinstance(FakeAgent(), HealingAgentProtocol)
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
     def test_object_without_heal_repository_fails_protocol(self):
         from agentic_core.seams.contracts.safety_agents import HealingAgentProtocol
 

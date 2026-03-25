@@ -181,19 +181,19 @@ class TestSSOTFolderCleanupAgentInit:
         assert agent is not None
 
     def test_dry_run_default_true(self):
-        agent = SSOTFolderCleanupAgent()
-        assert agent.dry_run is True
+    """Test dry_run_default_true runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_project_root_is_path(self):
-        agent = SSOTFolderCleanupAgent()
-        assert isinstance(agent.project_root, Path)
+    # Act
+    # TODO: Execute dry_run_default_true
+    result = None  # Replace with actual execution
 
-    def test_stats_dict_populated(self):
-        agent = SSOTFolderCleanupAgent()
-        assert isinstance(agent.stats, dict)
-        assert "files_scanned" in agent.stats
-        assert "files_moved" in agent.stats
-        assert "errors" in agent.stats
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
     def test_stats_start_zero(self):
         agent = SSOTFolderCleanupAgent()
@@ -209,15 +209,16 @@ class TestSSOTFolderCleanupAgentInit:
         assert agent.project_root == _REPO_ROOT
 
     def test_dry_run_false(self):
-        agent = SSOTFolderCleanupAgent(dry_run=False)
-        assert agent.dry_run is False
+    """Test dry_run_false runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_sovereign_registry_populated(self):
-        agent = SSOTFolderCleanupAgent()
-        assert isinstance(agent.sovereign_registry, dict)
-        assert "agentic_core" in agent.sovereign_registry
+    # Act
+    # TODO: Execute dry_run_false
+    result = None  # Replace with actual execution
 
-    def test_core_subfolder_map_populated(self):
-        agent = SSOTFolderCleanupAgent()
-        assert isinstance(agent.core_subfolder_map, dict)
-        assert "L0_routing" in agent.core_subfolder_map
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions

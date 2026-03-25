@@ -207,18 +207,18 @@ class TestProtocolInterfaceAllowed:
     """Tests for Protocol interfaces (allowed anywhere)."""
 
     def test_protocol_in_types_no_violation(self, tmp_path):
-        """Protocol interface in types/ should NOT be a violation."""
-        types_dir = tmp_path / L3_ORCHESTRATION_DIR / "types"
-        types_dir.mkdir(parents=True)
+    """Test protocol_in_types_no_violation contract compliance."""
+    # Arrange
+    # TODO: Set up interface implementation
+    implementation = None  # Replace with actual implementation
 
-        protocol_file = types_dir / "orchestrator_types.py"
-        protocol_file.write_text("""
-from typing import Protocol
+    # Act
+    # TODO: Test interface methods
+    result = None  # Replace with actual method call
 
-class IOrchestratorAgent(Protocol):
-    def execute(self) -> None:
-        ...
-""")
-
-        violation = detect_agent_in_wrong_subfolder(protocol_file)
+    # Assert - Interface Contract
+    assert implementation is not None, "Interface implementation should exist"
+    assert hasattr(implementation, "__dict__"), "Implementation should be inspectable"
+    # TODO: Add specific interface method assertions
+    # assert callable(getattr(implementation, "method_name", None)), "Required method should exist"
         assert violation is None

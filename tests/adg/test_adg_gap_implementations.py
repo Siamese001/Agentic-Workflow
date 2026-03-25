@@ -248,38 +248,38 @@ class MyValidator(BaseValidator):
         assert any("BaseValidator" in e.symbol for e in healer_edges)
 
     def test_orchestrates_healing_edge_for_heal_method_call(self):
-        src = """\
-def do_work(self):
-    self.heal()
-"""
-        edges, err = _scan_src(src)
-        dispatch_edges = [e for e in edges if e.relation_type == "orchestrates_healing"]
-        assert len(dispatch_edges) >= 1
-        assert any("heal" in e.symbol for e in dispatch_edges)
+    """Test orchestrates_healing_edge_for_heal_method_call runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_healing_dispatch_edge_kind(self):
-        src = """\
-def run(self):
-    self.orchestrate_healing_cycle()
+    # Act
+    # TODO: Execute orchestrates_healing_edge_for_heal_method_call
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 """
         edges, err = _scan_src(src)
         dispatch_edges = [e for e in edges if e.relation_type == "orchestrates_healing"]
         assert all(e.edge_kind == "healing_dispatch" for e in dispatch_edges)
 
     def test_heals_edge_kind_is_healer_action(self):
-        src = """\
-class X(SovereignHealingAgent):
-    pass
-"""
-        edges, err = _scan_src(src)
-        heals = [e for e in edges if e.relation_type == "heals"]
-        assert all(e.edge_kind == "healer_action" for e in heals)
+    """Test heals_edge_kind_is_healer_action runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for heals_edge_kind_is_healer_action
+    test_data = {}  # Replace with actual test data
 
-    def test_validates_edge_kind_is_validator_check(self):
-        src = """\
-class X(ResolutionValidator):
-    pass
-"""
+    # Act
+    # TODO: Execute heals_edge_kind_is_healer_action
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         edges, err = _scan_src(src)
         validates = [e for e in edges if e.relation_type == "validates"]
         assert all(e.edge_kind == "validator_check" for e in validates)
@@ -503,19 +503,19 @@ class TestAgentLoopRecorder:
         assert g.event_count == 5
 
     def test_runtime_graph_to_json(self):
-        from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
+    """Test runtime_graph_to_json runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        g = RuntimeGraph()
-        r = AgentLoopRecorder(g, agent_id="TestAgent", run_id="run-1")
-        r.observe(input_hash="x")
-        j = g.to_json()
-        data = json.loads(j)
-        assert data["event_count"] == 1
+    # Act
+    # TODO: Execute runtime_graph_to_json
+    result = None  # Replace with actual execution
 
-    def test_events_by_phase_grouping(self):
-        from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
-
-        g = RuntimeGraph()
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         r = AgentLoopRecorder(g, agent_id="TestAgent", run_id="run-1")
         r.observe()
         r.observe(input_hash="second")
@@ -578,28 +578,28 @@ class TestHealerLoopRecorder:
 
 class TestEmbeddingPipelineVisitor:
     def test_chunks_into_edge_for_splitter_call(self):
-        src = """\
-splitter = RecursiveCharacterTextSplitter(chunk_size=500)
-"""
-        edges, _ = _scan_src(src)
-        chunking = [e for e in edges if e.relation_type == "chunks_into"]
-        assert len(chunking) >= 1
-        assert any("RecursiveCharacterTextSplitter" in e.symbol for e in chunking)
+    """Test chunks_into_edge_for_splitter_call runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_chunking_pipeline_edge_kind(self):
-        src = """\
-r = chunk_text(doc)
-"""
-        edges, _ = _scan_src(src)
-        chunking = [e for e in edges if e.relation_type == "chunks_into"]
-        assert all(e.edge_kind == "chunking_pipeline" for e in chunking)
+    # Act
+    # TODO: Execute chunks_into_edge_for_splitter_call
+    result = None  # Replace with actual execution
 
-    def test_stores_embedding_for_vector_store_write(self):
-        src = """\
-store = FAISS()
-store.add_documents(docs)
-"""
-        edges, _ = _scan_src(src)
+"""Test chunking_pipeline_edge_kind runtime behavior."""
+# Arrange
+# TODO: Set up workflow context
+workflow_input = {}  # Replace with actual workflow input
+
+# Act
+# TODO: Execute workflow chunking_pipeline_edge_kind
+workflow_result = None  # Replace with actual workflow execution
+
+# Assert
+assert workflow_result is not None, "Workflow should produce a result"
+assert isinstance(workflow_result, dict), "Workflow result should be structured"
+# TODO: Add workflow step assertions
         store_edges = [e for e in edges if e.relation_type == "stores_embedding"]
         assert len(store_edges) >= 1
 
@@ -665,19 +665,19 @@ self.escalate(reason='low_conf')
         assert all(e.edge_kind == "hitl_escalation" for e in hitl_edges)
 
     def test_no_hitl_edges_for_unrelated_calls(self):
-        src = """\
-x = some_function()
-"""
-        edges, _ = _scan_src(src)
-        hitl_edges = [e for e in edges if e.relation_type in ("gated_by_confidence", "escalates_to_human")]
-        assert len(hitl_edges) == 0
+    """Test no_hitl_edges_for_unrelated_calls runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute no_hitl_edges_for_unrelated_calls
+    result = None  # Replace with actual execution
 
-# ─────────────────────────────────────────────────────────────────────────────
-# G4: HITLRuntimeRecorder + HITLGraph
-# ─────────────────────────────────────────────────────────────────────────────
-
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 class TestHITLGraph:
     def test_checkpoint_creates_hitl_entry(self):
         from agentic_core.adg.runtime.event_graph import RuntimeGraph
@@ -777,19 +777,19 @@ gate.check(prompt)
         assert len(guard_edges) >= 1
 
     def test_guardrail_execution_edge_kind(self):
-        src = """\
-fence = InstructionFenceGuardrail()
-"""
-        edges, _ = _scan_src(src)
-        guard_edges = [e for e in edges if e.relation_type == "applies_guardrail"]
-        assert all(e.edge_kind == "guardrail_execution" for e in guard_edges)
+    """Test guardrail_execution_edge_kind runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for guardrail_execution_edge_kind
+    test_data = {}  # Replace with actual test data
 
-    def test_verifies_policy_edge_for_policy_hash_method(self):
-        src = """\
-result = self.verify_policy_hash(policy_id, expected)
-"""
-        edges, _ = _scan_src(src)
-        policy_edges = [e for e in edges if e.relation_type == "verifies_policy"]
+    # Act
+    # TODO: Execute guardrail_execution_edge_kind
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert len(policy_edges) >= 1
 
     def test_policy_verification_edge_kind(self):

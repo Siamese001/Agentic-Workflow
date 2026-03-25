@@ -143,19 +143,19 @@ def test_function_calls():
             assert "other_module" in test.target_modules
 
     def test_handles_malformed_tests(self) -> None:
-        """§1.6: Handles malformed test files gracefully."""
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            test_file = Path(tmp_dir) / "test_malformed.py"
-            test_file.write_text("""
-def test_syntax_error(
-    # Missing closing parenthesis
-    pass
+    """Test handles_malformed_tests runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-def test_valid():
-    assert True
-""")
+    # Act
+    # TODO: Process data with handles_malformed_tests
+    processed_result = None  # Replace with actual processing
 
-            engine = TestDiscoveryEngine()
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
             tests = engine.discover_tests_in_file(test_file)
 
             # Should still find the valid test

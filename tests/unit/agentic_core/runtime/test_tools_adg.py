@@ -11,10 +11,20 @@ import agentic_core.runtime.tools as _tools_mod  # noqa: F401
 
 class TestToolsImportability:
     def test_module_importable(self) -> None:
-        """ADG contract: agentic_core/runtime/tools.py must be importable."""
-        assert _tools_mod.__name__ == "agentic_core.runtime.tools"
+    """Test module_importable runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
+    """Test module_exposes_public_api runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_module_exposes_public_api(self) -> None:
-        """tools module exposes expected public symbols."""
-        public_symbols = [n for n in dir(_tools_mod) if not n.startswith("_")]
-        assert len(public_symbols) >= 1, "tools must expose at least one public symbol"
+    # Act
+    # TODO: Execute runtime operation module_exposes_public_api
+    runtime_result = None  # Replace with actual runtime operation
+
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions

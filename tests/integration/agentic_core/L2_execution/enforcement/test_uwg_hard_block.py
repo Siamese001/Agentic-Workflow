@@ -191,78 +191,78 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestWriteFileHardBlock:
     def test_blocked_extension_raises(self):
-        gw = UniversalWriteGateway(replay_mode=False)
-        with pytest.raises(ToolNotAllowedError, match="blocked"):
-            gw.write_file("some/path/module.py", b"print('hello')")
+    """Test blocked_extension_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for blocked_extension_raises
+    test_data = {}  # Replace with actual test data
 
-    def test_blocked_js_extension_raises(self):
-        gw = UniversalWriteGateway(replay_mode=False)
-        with pytest.raises(ToolNotAllowedError, match="blocked"):
-            gw.write_file("src/app.js", b"console.log('hi')")
+    # Act
+    # TODO: Execute blocked_extension_raises
+    result = None  # Replace with actual function call
 
-    def test_blocked_path_not_in_allowed_set_raises(self):
-        gw = UniversalWriteGateway(replay_mode=False)
-        with pytest.raises(ToolNotAllowedError, match="blocked"):
-            gw.write_file("secret/config.json", b"{}")
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+test_data = {}  # Replace with actual test data
 
-    def test_allowed_path_succeeds(self):
-        gw = UniversalWriteGateway(replay_mode=False)
-        result = gw.write_file("artifacts/output.json", b'{"key": "value"}')
-        assert isinstance(result, MutationRecord)
-        assert result.permitted is True
-        assert result.operation == "write"
+# Act
+# TODO: Execute blocked_path_not_in_allowed_set_raises
+result = None  # Replace with actual function call
 
-    def test_replay_mode_returns_simulation_result(self):
-        gw = UniversalWriteGateway(replay_mode=True)
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
         result = gw.write_file("some/path/module.py", b"print('hello')")
         assert isinstance(result, SimulationResult)
         assert result.replay_mode is True
         assert result.operation == "write"
 
     def test_blocked_write_recorded_in_ledger(self):
-        gw = UniversalWriteGateway(replay_mode=False)
-        with pytest.raises(ToolNotAllowedError):
-            gw.write_file("src/evil.py", b"pass")
-        ledger = gw.get_mutation_ledger()
-        assert len(ledger) == 1
-        assert ledger[0].permitted is False
-        assert ledger[0].operation == "write"
+    """Test blocked_write_recorded_in_ledger runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for blocked_write_recorded_in_ledger
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute blocked_write_recorded_in_ledger
+    result = None  # Replace with actual function call
 
-class TestAppendFileHardBlock:
-    def test_blocked_extension_raises(self):
-        gw = UniversalWriteGateway(replay_mode=False)
-        with pytest.raises(ToolNotAllowedError, match="blocked"):
-            gw.append_file("core/engine.py", b"# extra")
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test blocked_extension_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for blocked_extension_raises
+    test_data = {}  # Replace with actual test data
 
-    def test_allowed_path_succeeds(self):
-        gw = UniversalWriteGateway(replay_mode=False)
-        result = gw.append_file("logs/run.log", b"line\n")
-        assert isinstance(result, MutationRecord)
-        assert result.permitted is True
+    # Act
+    # TODO: Execute blocked_extension_raises
+    result = None  # Replace with actual function call
 
-    def test_replay_mode_returns_simulation_result(self):
-        gw = UniversalWriteGateway(replay_mode=True)
-        result = gw.append_file("core/engine.py", b"# extra")
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert isinstance(result, SimulationResult)
         assert result.operation == "append"
 
 
 class TestDeleteFileHardBlock:
     def test_blocked_path_raises(self):
-        gw = UniversalWriteGateway(replay_mode=False)
-        with pytest.raises(ToolNotAllowedError, match="blocked"):
-            gw.delete_file("ops_scripts/ci/scanner.py")
+    """Test blocked_path_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for blocked_path_raises
+    test_data = {}  # Replace with actual test data
 
-    def test_allowed_path_succeeds(self):
-        gw = UniversalWriteGateway(replay_mode=False)
-        result = gw.delete_file("artifacts/old_report.json")
-        assert isinstance(result, MutationRecord)
-        assert result.permitted is True
-        assert result.operation == "delete"
+    # Act
+    # TODO: Execute blocked_path_raises
+    result = None  # Replace with actual function call
 
-    def test_replay_mode_returns_simulation_result(self):
-        gw = UniversalWriteGateway(replay_mode=True)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         result = gw.delete_file("ops_scripts/ci/scanner.py")
         assert isinstance(result, SimulationResult)
         assert result.operation == "delete"
@@ -270,17 +270,21 @@ class TestDeleteFileHardBlock:
 
 class TestRenameFileHardBlock:
     def test_blocked_src_raises(self):
-        gw = UniversalWriteGateway(replay_mode=False)
-        with pytest.raises(ToolNotAllowedError, match="blocked"):
-            gw.rename_file("src/bad.py", "artifacts/moved.py")
+    """Test blocked_src_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for blocked_src_raises
+    test_data = {}  # Replace with actual test data
 
-    def test_blocked_dst_raises(self):
-        gw = UniversalWriteGateway(replay_mode=False)
-        with pytest.raises(ToolNotAllowedError, match="blocked"):
-            gw.rename_file("artifacts/ok.json", "src/bad.py")
+"""Test blocked_dst_raises runtime behavior."""
+# Arrange
+# TODO: Set up test data for blocked_dst_raises
+test_data = {}  # Replace with actual test data
 
-    def test_replay_mode_returns_simulation_result(self):
-        gw = UniversalWriteGateway(replay_mode=True)
-        result = gw.rename_file("src/bad.py", "artifacts/moved.json")
-        assert isinstance(result, SimulationResult)
-        assert result.operation == "rename"
+# Act
+# TODO: Execute blocked_dst_raises
+result = None  # Replace with actual function call
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions

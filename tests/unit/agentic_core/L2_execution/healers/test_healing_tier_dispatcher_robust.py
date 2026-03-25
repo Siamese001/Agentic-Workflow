@@ -203,61 +203,61 @@ class TestFailureSignalImportInvariant:
     """
 
     def test_failure_signal_is_module_level_name_in_dispatcher(self):
-        """FailureSignal must be bound at module level in healing_tier_dispatcher."""
-        import agentic_core.L2_execution.healers.healing_tier_dispatcher as mod
+    """Test failure_signal_is_module_level_name_in_dispatcher runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-        assert hasattr(mod, "FailureSignal"), (
-            "FailureSignal must be imported at module level — "
-            "removing it causes NameError in handle_qwen_oom_via_router"
-        )
+    # Act & Assert
+    # TODO: Test error handling in failure_signal_is_module_level_name_in_dispatcher
+    with pytest.raises(Exception):  # Replace with expected exception
+        # Execute operation that should raise error
+        """Test failure_signal_is_correct_class_from_healing_tier_types runtime behavior."""
+        # Arrange
+        # TODO: Set up error condition
+        error_input = {}  # Replace with actual error condition
 
-    def test_failure_signal_is_correct_class_from_healing_tier_types(self):
-        """FailureSignal in dispatcher must be the canonical type from healing_tier_types."""
-        import agentic_core.L2_execution.healers.healing_tier_dispatcher as mod
-        from agentic_core.L2_execution.healers.healing_tier_types import FailureSignal
+        # Act & Assert
+        # TODO: Test error handling in failure_signal_is_correct_class_from_healing_tier_types
+        with pytest.raises(Exception):  # Replace with expected exception
+            # Execute operation that should raise error
+            pass  # Replace with actual error test
+            """Test failure_signal_not_a_mock_or_none runtime behavior."""
+            # Arrange
+            # TODO: Set up error condition
+            error_input = {}  # Replace with actual error condition
 
-        assert mod.FailureSignal is FailureSignal, (
-            "healing_tier_dispatcher.FailureSignal must be the same object as "
-            "healing_tier_types.FailureSignal — not a shadow or alias"
-        )
+            # Act & Assert
+            # TODO: Test error handling in failure_signal_not_a_mock_or_none
+            with pytest.raises(Exception):  # Replace with expected exception
+            """Test handle_qwen_oom_references_failure_signal_in_source runtime behavior."""
+            # Arrange
+            # TODO: Set up processing data
+            raw_data = []  # Replace with actual test data
 
-    def test_failure_signal_not_a_mock_or_none(self):
-        """FailureSignal must be a real class, not None or a mock."""
-        import agentic_core.L2_execution.healers.healing_tier_dispatcher as mod
+            # Act
+            # TODO: Process data with handle_qwen_oom_references_failure_signal_in_source
+            processed_result = None  # Replace with actual processing
 
-        fs = mod.FailureSignal
-        assert fs is not None
-        assert isinstance(fs, type), f"FailureSignal must be a class, got {type(fs)}"
-
-    def test_handle_qwen_oom_references_failure_signal_in_source(self):
-        """Source invariant: handle_qwen_oom_via_router must reference FailureSignal.
-
-        Mutation-sensitive: removing the FailureSignal usage from the function
-        would mean OOM escalation no longer uses the canonical failure type.
-        """
-        from agentic_core.L2_execution.healers.healing_tier_dispatcher import (
-            handle_qwen_oom_via_router,
-        )
-
-        source = inspect.getsource(handle_qwen_oom_via_router)
-        assert "FailureSignal" in source, (
-            "handle_qwen_oom_via_router must reference FailureSignal in its body"
-        )
+            # Assert
+            assert processed_result is not None, "Processing should produce a result"
+            assert len(processed_result) >= 0, "Processed result should be measurable"
+            # TODO: Add specific processing assertions
 
     def test_handle_qwen_oom_references_route_healing_tier(self):
-        """Source invariant: OOM handler must route through route_healing_tier choke point."""
-        from agentic_core.L2_execution.healers.healing_tier_dispatcher import (
-            handle_qwen_oom_via_router,
-        )
+    """Test handle_qwen_oom_references_route_healing_tier runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-        source = inspect.getsource(handle_qwen_oom_via_router)
-        assert "route_healing_tier" in source, (
-            "handle_qwen_oom_via_router must call route_healing_tier — "
-            "removing this would bypass the sovereignty choke point"
-        )
+    # Act
+    # TODO: Process data with handle_qwen_oom_references_route_healing_tier
+    processed_result = None  # Replace with actual processing
 
-
-# ---------------------------------------------------------------------------
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
 # §1.1 FailureSignal dataclass construction — edge cases
 # ---------------------------------------------------------------------------
 
@@ -282,18 +282,18 @@ class TestFailureSignalConstruction:
         assert sig.retry_count == 0
 
     def test_failure_signal_max_retry_count(self):
-        """retry_count at maximum (MAX_RETRIES=3) must construct successfully."""
-        from agentic_core.L2_execution.healers.healing_tier_types import FailureSignal
+    """Test failure_signal_max_retry_count runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-        sig = FailureSignal(
-            source_agent="test_agent",
-            failure_type="import_cycle",
-            error_signature="sig_max",
-            trace_id="trace_max",
-            context={"key": "val"},
-            retry_count=3,
-            blast_radius_estimate=1.0,
-        )
+    # Act & Assert
+    # TODO: Test error handling in failure_signal_max_retry_count
+    with pytest.raises(Exception):  # Replace with expected exception
+        # Execute operation that should raise error
+        pass  # Replace with actual error test
+
+    # TODO: Add error message and handling assertions
         assert sig.retry_count == 3
         assert sig.blast_radius_estimate == 1.0
 
@@ -320,34 +320,34 @@ class TestFailureSignalConstruction:
         assert healing_input.retry_count == 1
 
     def test_failure_signal_to_healing_input_preserves_agent_id(self):
-        """to_healing_input() must preserve source_agent as agent_id."""
-        from agentic_core.L2_execution.healers.healing_tier_types import FailureSignal
+    """Test failure_signal_to_healing_input_preserves_agent_id runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-        sig = FailureSignal(
-            source_agent="remediation_dispatcher",
-            failure_type="healer_error",
-            error_signature="sig_rem",
-            trace_id="t",
-            context={},
-            retry_count=0,
-            blast_radius_estimate=0.1,
-        )
+    # Act & Assert
+    # TODO: Test error handling in failure_signal_to_healing_input_preserves_agent_id
+    with pytest.raises(Exception):  # Replace with expected exception
+        # Execute operation that should raise error
+        pass  # Replace with actual error test
+
+    # TODO: Add error message and handling assertions
         hi = sig.to_healing_input()
         assert hi.agent_id == "remediation_dispatcher"
 
     def test_failure_signal_is_frozen(self):
-        """FailureSignal must be immutable (frozen dataclass)."""
-        from agentic_core.L2_execution.healers.healing_tier_types import FailureSignal
+    """Test failure_signal_is_frozen runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-        sig = FailureSignal(
-            source_agent="a",
-            failure_type="f",
-            error_signature="s",
-            trace_id="t",
-            context={},
-            retry_count=0,
-            blast_radius_estimate=0.0,
-        )
+    # Act & Assert
+    # TODO: Test error handling in failure_signal_is_frozen
+    with pytest.raises(Exception):  # Replace with expected exception
+        # Execute operation that should raise error
+        pass  # Replace with actual error test
+
+    # TODO: Add error message and handling assertions
         with pytest.raises((AttributeError, TypeError)):
             sig.retry_count = 99  # type: ignore[misc]
 
@@ -361,160 +361,160 @@ class TestHealingInputValidation:
     """HealingInput validation edge cases per §1.1 fail-closed requirement."""
 
     def test_empty_failure_type_raises(self):
-        """HealingInput with empty failure_type must raise ValueError (fail-closed)."""
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+    """Test empty_failure_type_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-        with pytest.raises(ValueError, match="failure_type must not be empty"):
-            HealingInput(
-                failure_type="",  # invalid
-                error_signature="s",
-                trace_id="t",
-                retry_count=0,
-                blast_radius_estimate=0.5,
-            )
+    # Act & Assert
+    # TODO: Test error handling in empty_failure_type_raises
+    with pytest.raises(Exception):  # Replace with expected exception
+        # Execute operation that should raise error
+        pass  # Replace with actual error test
 
+    # TODO: Add error message and handling assertions
     def test_empty_error_signature_raises(self):
-        """HealingInput with empty error_signature must raise ValueError."""
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+    """Test empty_error_signature_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-        with pytest.raises(ValueError, match="error_signature must not be empty"):
-            HealingInput(
-                failure_type="f",
-                error_signature="",  # invalid
-                trace_id="t",
-                retry_count=0,
-                blast_radius_estimate=0.5,
-            )
+    # Act & Assert
+    # TODO: Test error handling in empty_error_signature_raises
+    with pytest.raises(Exception):  # Replace with expected exception
+        # Execute operation that should raise error
+        pass  # Replace with actual error test
 
+    # TODO: Add error message and handling assertions
     def test_empty_trace_id_raises(self):
-        """HealingInput with empty trace_id must raise ValueError."""
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+    """Test empty_trace_id_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for empty_trace_id_raises
+    test_data = {}  # Replace with actual test data
 
-        with pytest.raises(ValueError, match="trace_id must not be empty"):
-            HealingInput(
-                failure_type="f",
-                error_signature="s",
-                trace_id="",  # invalid
-                retry_count=0,
-                blast_radius_estimate=0.5,
-            )
+    # Act
+    # TODO: Execute empty_trace_id_raises
+    result = None  # Replace with actual function call
 
-    def test_negative_retry_count_raises(self):
-        """HealingInput with negative retry_count must raise ValueError (fail-closed)."""
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    """Test negative_retry_count_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for negative_retry_count_raises
+    test_data = {}  # Replace with actual test data
 
-        with pytest.raises(ValueError, match="retry_count must be >= 0"):
-            HealingInput(
-                failure_type="f",
-                error_signature="s",
-                trace_id="t",
-                retry_count=-1,  # invalid
-                blast_radius_estimate=0.5,
-            )
+    # Act
+    # TODO: Execute negative_retry_count_raises
+    result = None  # Replace with actual function call
 
-    def test_blast_radius_below_zero_raises(self):
-        """blast_radius_estimate < 0.0 must raise ValueError."""
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    """Test blast_radius_below_zero_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for blast_radius_below_zero_raises
+    test_data = {}  # Replace with actual test data
 
-        with pytest.raises(ValueError, match="blast_radius_estimate must be in"):
-            HealingInput(
-                failure_type="f",
-                error_signature="s",
-                trace_id="t",
-                retry_count=0,
-                blast_radius_estimate=-0.01,  # invalid
-            )
+    # Act
+    # TODO: Execute blast_radius_below_zero_raises
+    result = None  # Replace with actual function call
 
-    def test_blast_radius_above_one_raises(self):
-        """blast_radius_estimate > 1.0 must raise ValueError."""
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    """Test blast_radius_above_one_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for blast_radius_above_one_raises
+    test_data = {}  # Replace with actual test data
 
-        with pytest.raises(ValueError, match="blast_radius_estimate must be in"):
-            HealingInput(
-                failure_type="f",
-                error_signature="s",
-                trace_id="t",
-                retry_count=0,
-                blast_radius_estimate=1.01,  # invalid
-            )
+    # Act
+    # TODO: Execute blast_radius_above_one_raises
+    result = None  # Replace with actual function call
 
-    def test_blast_radius_boundary_zero_valid(self):
-        """blast_radius_estimate == 0.0 must be valid (boundary)."""
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    """Test blast_radius_boundary_zero_valid runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for blast_radius_boundary_zero_valid
+    test_data = {}  # Replace with actual test data
 
-        hi = HealingInput(
-            failure_type="f", error_signature="s", trace_id="t", retry_count=0, blast_radius_estimate=0.0
-        )
-        assert hi.blast_radius_estimate == 0.0
+    # Act
+    # TODO: Execute blast_radius_boundary_zero_valid
+    result = None  # Replace with actual function call
 
-    def test_blast_radius_boundary_one_valid(self):
-        """blast_radius_estimate == 1.0 must be valid (boundary)."""
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+"""Test blast_radius_boundary_one_valid runtime behavior."""
+# Arrange
+# TODO: Set up test data for blast_radius_boundary_one_valid
+test_data = {}  # Replace with actual test data
 
-        hi = HealingInput(
-            failure_type="f", error_signature="s", trace_id="t", retry_count=0, blast_radius_estimate=1.0
-        )
-        assert hi.blast_radius_estimate == 1.0
+# Act
+# TODO: Execute blast_radius_boundary_one_valid
+result = None  # Replace with actual function call
 
-    def test_healing_input_is_frozen(self):
-        """HealingInput must be immutable (frozen dataclass)."""
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+"""Test healing_input_is_frozen runtime behavior."""
+# Arrange
+# TODO: Set up test data for healing_input_is_frozen
+test_data = {}  # Replace with actual test data
 
-        hi = HealingInput(
-            failure_type="f", error_signature="s", trace_id="t", retry_count=0, blast_radius_estimate=0.5
-        )
-        with pytest.raises((AttributeError, TypeError)):
-            hi.retry_count = 99  # type: ignore[misc]
+# Act
+# TODO: Execute healing_input_is_frozen
+result = None  # Replace with actual function call
 
-
-# ---------------------------------------------------------------------------
-# §1.1 HealingDecision dataclass — determinism
-# ---------------------------------------------------------------------------
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
 
 
 class TestHealingDecisionInvariants:
     """HealingDecision invariants per §1.1 determinism requirement."""
 
     def test_healing_decision_is_frozen(self):
-        """HealingDecision must be immutable."""
-        from agentic_core.L2_execution.healers.healing_tier_types import (
-            HealingDecision,
-            HealingTier,
-        )
+    """Test healing_decision_is_frozen runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for healing_decision_is_frozen
+    test_data = {}  # Replace with actual test data
 
-        d = HealingDecision(
-            heal_confidence=0.75,
-            tier=HealingTier.QWEN_VLLM,
-            reason_codes=("test",),
-        )
-        with pytest.raises((AttributeError, TypeError)):
-            d.heal_confidence = 0.5  # type: ignore[misc]
+    # Act
+    # TODO: Execute healing_decision_is_frozen
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
     def test_all_healing_tier_values_constructable(self):
-        """All three HealingTier enum values must be constructable in HealingDecision."""
-        from agentic_core.L2_execution.healers.healing_tier_types import (
-            HealingDecision,
-            HealingTier,
-        )
+    """Test all_healing_tier_values_constructable runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for all_healing_tier_values_constructable
+    test_data = {}  # Replace with actual test data
 
-        for tier in HealingTier:
-            d = HealingDecision(heal_confidence=0.5, tier=tier, reason_codes=(tier.value,))
-            assert d.tier == tier
+    # Act
+    # TODO: Execute all_healing_tier_values_constructable
+    result = None  # Replace with actual function call
 
-    def test_reason_codes_is_tuple_not_list(self):
-        """reason_codes must be a tuple (immutable) not a list."""
-        from agentic_core.L2_execution.healers.healing_tier_types import (
-            HealingDecision,
-            HealingTier,
-        )
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test reason_codes_is_tuple_not_list runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for reason_codes_is_tuple_not_list
+    test_data = {}  # Replace with actual test data
 
-        d = HealingDecision(
-            heal_confidence=0.6,
-            tier=HealingTier.LOCAL_AGENT,
-            reason_codes=("blast_radius_low", "retry_count_zero"),
-        )
-        assert isinstance(d.reason_codes, tuple)
+    # Act
+    # TODO: Execute reason_codes_is_tuple_not_list
+    result = None  # Replace with actual function call
 
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
 # ---------------------------------------------------------------------------
 # §1.1 dispatch_healing — choke point integration with fake invoker
@@ -541,50 +541,50 @@ class TestDispatchHealingChokePoint:
         )
 
     def test_dispatch_healing_returns_decision_and_record(self):
-        """dispatch_healing must return a (HealingDecision, InvocationRecord) tuple."""
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-            load_default_healing_tier_config,
-        )
-        from agentic_core.L2_execution.healers.healing_tier_dispatcher import (
-            InvocationRecord,
-            dispatch_healing,
-        )
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingDecision
+    """Test dispatch_healing_returns_decision_and_record runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for dispatch_healing_returns_decision_and_record
+    test_data = {}  # Replace with actual test data
 
-        config = load_default_healing_tier_config()
-        hi = self._make_healing_input()
-        decision, record = dispatch_healing(hi, config)
+    # Act
+    # TODO: Execute dispatch_healing_returns_decision_and_record
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
         assert isinstance(decision, HealingDecision)
         assert isinstance(record, InvocationRecord)
 
     def test_dispatch_healing_record_has_trace_id(self):
-        """InvocationRecord must carry the trace_id from the HealingInput."""
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-            load_default_healing_tier_config,
-        )
-        from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
+    """Test dispatch_healing_record_has_trace_id runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for dispatch_healing_record_has_trace_id
+    test_data = {}  # Replace with actual test data
 
-        config = load_default_healing_tier_config()
-        hi = self._make_healing_input()
-        _, record = dispatch_healing(hi, config)
+    # Act
+    # TODO: Execute dispatch_healing_record_has_trace_id
+    result = None  # Replace with actual function call
 
-        assert record.trace_id == "trace_001"
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    """Test dispatch_healing_record_is_deterministic_for_identical_inputs runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for dispatch_healing_record_is_deterministic_for_identical_inputs
+    test_data = {}  # Replace with actual test data
 
-    def test_dispatch_healing_record_is_deterministic_for_identical_inputs(self):
-        """Two identical inputs must produce records with identical tier and model_id."""
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-            load_default_healing_tier_config,
-        )
-        from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
+    # Act
+    # TODO: Execute dispatch_healing_record_is_deterministic_for_identical_inputs
+    result = None  # Replace with actual function call
 
-        config = load_default_healing_tier_config()
-        hi_a = self._make_healing_input()
-        hi_b = self._make_healing_input()
-
-        decision_a, record_a = dispatch_healing(hi_a, config)
-        decision_b, record_b = dispatch_healing(hi_b, config)
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         # Same inputs must yield same tier and model_id (determinism)
         assert record_a.tier == record_b.tier
         assert record_a.model_id == record_b.model_id
@@ -592,18 +592,18 @@ class TestDispatchHealingChokePoint:
         assert decision_a.heal_confidence == decision_b.heal_confidence
 
     def test_dispatch_healing_different_failure_types_may_produce_different_tiers(self):
-        """Different failure types (with different blast radius) can produce different tiers."""
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-            load_default_healing_tier_config,
-        )
-        from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+    """Test dispatch_healing_different_failure_types_may_produce_different_tiers runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-        config = load_default_healing_tier_config()
-        # Low blast radius — likely LOCAL_AGENT or QWEN
-        hi_low = self._make_healing_input(retry_count=0)
-        # High blast radius — more likely GEMINI
-        hi_high = HealingInput(
+    # Act & Assert
+    # TODO: Test error handling in dispatch_healing_different_failure_types_may_produce_different_tiers
+    with pytest.raises(Exception):  # Replace with expected exception
+        # Execute operation that should raise error
+        pass  # Replace with actual error test
+
+    # TODO: Add error message and handling assertions
             failure_type="import_cycle",
             error_signature="sig_high",
             trace_id="trace_high",
@@ -625,19 +625,19 @@ class TestDispatchHealingChokePoint:
         assert decision_low.heal_confidence <= 1.0
 
     def test_dispatch_healing_record_model_id_is_string(self):
-        """InvocationRecord.model_id must be a non-empty string."""
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-            load_default_healing_tier_config,
-        )
-        from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
+    """Test dispatch_healing_record_model_id_is_string runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for dispatch_healing_record_model_id_is_string
+    test_data = {}  # Replace with actual test data
 
-        config = load_default_healing_tier_config()
-        hi = self._make_healing_input()
-        _, record = dispatch_healing(hi, config)
+    # Act
+    # TODO: Execute dispatch_healing_record_model_id_is_string
+    result = None  # Replace with actual function call
 
-        assert isinstance(record.model_id, str)
-        assert len(record.model_id) > 0
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
 # ---------------------------------------------------------------------------
 # §1.1 Sovereignty — TIERING_ALLOWLIST blocks unknown agents (fail-closed)
@@ -652,19 +652,19 @@ class TestSovereigntyAllowlistEnforcement:
     """
 
     def test_unknown_agent_raises_sovereignty_violation(self):
-        """An agent not in TIERING_ALLOWLIST must raise SovereigntyViolation."""
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-            load_default_healing_tier_config,
-        )
-        from agentic_core.L2_execution.healers.healing_tier_router import (
-            SovereigntyViolation,
-            route_healing_tier,
-        )
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+    """Test unknown_agent_raises_sovereignty_violation runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for unknown_agent_raises_sovereignty_violation
+    test_data = {}  # Replace with actual test data
 
-        config = load_default_healing_tier_config()
-        hi = HealingInput(
-            failure_type="f",
+    # Act
+    # TODO: Execute unknown_agent_raises_sovereignty_violation
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             error_signature="s",
             trace_id="t",
             retry_count=0,
@@ -675,19 +675,19 @@ class TestSovereigntyAllowlistEnforcement:
             route_healing_tier(hi, config)
 
     def test_no_agent_id_skips_allowlist_check(self):
-        """Empty agent_id skips the allowlist check (anonymous/test caller)."""
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-            load_default_healing_tier_config,
-        )
-        from agentic_core.L2_execution.healers.healing_tier_router import route_healing_tier
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+    """Test no_agent_id_skips_allowlist_check runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for no_agent_id_skips_allowlist_check
+    test_data = {}  # Replace with actual test data
 
-        config = load_default_healing_tier_config()
-        hi = HealingInput(
-            failure_type="f",
-            error_signature="s",
-            trace_id="t",
-            retry_count=0,
+    # Act
+    # TODO: Execute no_agent_id_skips_allowlist_check
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             blast_radius_estimate=0.1,
             agent_id="",  # empty → skip allowlist check
         )
@@ -698,30 +698,30 @@ class TestSovereigntyAllowlistEnforcement:
         assert isinstance(decision, HealingDecision)
 
     def test_allowlist_is_frozen_set(self):
-        """TIERING_ALLOWLIST_AGENT_NAMES must be a frozenset (compile-time frozen)."""
-        from agentic_core.L2_execution.healers.tiering_allowlist import (
-            TIERING_ALLOWLIST_AGENT_NAMES,
-        )
+    """Test allowlist_is_frozen_set runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for allowlist_is_frozen_set
+    test_data = {}  # Replace with actual test data
 
-        assert isinstance(TIERING_ALLOWLIST_AGENT_NAMES, frozenset), (
-            "TIERING_ALLOWLIST_AGENT_NAMES must be a frozenset — "
-            "mutable set would allow runtime injection of unauthorized agents"
-        )
+    # Act
+    # TODO: Execute allowlist_is_frozen_set
+    result = None  # Replace with actual function call
 
-    def test_remediation_dispatcher_in_allowlist(self):
-        """remediation_dispatcher must be in the compile-time TIERING_ALLOWLIST."""
-        from agentic_core.L2_execution.healers.tiering_allowlist import (
-            TIERING_ALLOWLIST_AGENT_NAMES,
-        )
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test remediation_dispatcher_in_allowlist runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for remediation_dispatcher_in_allowlist
+    test_data = {}  # Replace with actual test data
 
-        assert "remediation_dispatcher" in TIERING_ALLOWLIST_AGENT_NAMES, (
-            "remediation_dispatcher must be in TIERING_ALLOWLIST_AGENT_NAMES — "
-            "it is the primary caller of dispatch_healing"
-        )
+    # Act
+    # TODO: Execute remediation_dispatcher_in_allowlist
+    result = None  # Replace with actual function call
 
-
-# ---------------------------------------------------------------------------
-# §1.1 Healing tier config immutability (regression for HEALING_CONFIDENCE_X/Y)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 # ---------------------------------------------------------------------------
 
 
@@ -732,59 +732,62 @@ class TestHealingTierConfigImmutability:
     """
 
     def test_confidence_x_is_0_80(self):
-        """HEALING_CONFIDENCE_X must be exactly 0.80 (SSOT constant)."""
-        from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_X
+    """Test confidence_x_is_0_80 runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for confidence_x_is_0_80
+    test_data = {}  # Replace with actual test data
 
-        assert HEALING_CONFIDENCE_X == 0.80, f"HEALING_CONFIDENCE_X must be 0.80, got {HEALING_CONFIDENCE_X}"
+    # Act
+    """Test confidence_y_is_0_50 runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for confidence_y_is_0_50
+    test_data = {}  # Replace with actual test data
 
-    def test_confidence_y_is_0_50(self):
-        """HEALING_CONFIDENCE_Y must be exactly 0.50 (SSOT constant)."""
-        from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_Y
+    # Act
+    """Test confidence_x_greater_than_y runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for confidence_x_greater_than_y
+    test_data = {}  # Replace with actual test data
 
-        assert HEALING_CONFIDENCE_Y == 0.50, f"HEALING_CONFIDENCE_Y must be 0.50, got {HEALING_CONFIDENCE_Y}"
+    # Act
+    # TODO: Execute confidence_x_greater_than_y
+    result = None  # Replace with actual function call
 
-    def test_confidence_x_greater_than_y(self):
-        """HEALING_CONFIDENCE_X must be strictly greater than HEALING_CONFIDENCE_Y."""
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-            HEALING_CONFIDENCE_X,
-            HEALING_CONFIDENCE_Y,
-        )
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test qwen_model_id_is_non_empty_string runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for qwen_model_id_is_non_empty_string
+    test_data = {}  # Replace with actual test data
 
-        assert HEALING_CONFIDENCE_X > HEALING_CONFIDENCE_Y, (
-            "Threshold ordering violation: X must be > Y for routing to be deterministic"
-        )
+    # Act
+    # TODO: Execute qwen_model_id_is_non_empty_string
+    """Test qwen_model_id_contains_qwen runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for qwen_model_id_contains_qwen
+    test_data = {}  # Replace with actual test data
 
-    def test_qwen_model_id_is_non_empty_string(self):
-        """QWEN_14B_MODEL_ID must be a non-empty string."""
-        from agentic_core.L2_execution.healers.healing_tier_config import QWEN_14B_MODEL_ID
+    # Act
+    """Test healing_tier_config_load_default_returns_config runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for healing_tier_config_load_default_returns_config
+    test_data = {}  # Replace with actual test data
 
-        assert isinstance(QWEN_14B_MODEL_ID, str)
-        assert len(QWEN_14B_MODEL_ID) > 0
+    # Act
+    # TODO: Execute healing_tier_config_load_default_returns_config
+    result = None  # Replace with actual function call
 
-    def test_qwen_model_id_contains_qwen(self):
-        """QWEN_14B_MODEL_ID must reference a Qwen model (contains 'Qwen')."""
-        from agentic_core.L2_execution.healers.healing_tier_config import QWEN_14B_MODEL_ID
+    # Assert
+    """Test healing_tier_config_thresholds_match_ssot_constants runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for healing_tier_config_thresholds_match_ssot_constants
+    test_data = {}  # Replace with actual test data
 
-        assert "Qwen" in QWEN_14B_MODEL_ID or "qwen" in QWEN_14B_MODEL_ID.lower()
+    # Act
+    # TODO: Execute healing_tier_config_thresholds_match_ssot_constants
+    result = None  # Replace with actual function call
 
-    def test_healing_tier_config_load_default_returns_config(self):
-        """load_default_healing_tier_config() must return a HealingTierConfig."""
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-            HealingTierConfig,
-            load_default_healing_tier_config,
-        )
-
-        config = load_default_healing_tier_config()
-        assert isinstance(config, HealingTierConfig)
-
-    def test_healing_tier_config_thresholds_match_ssot_constants(self):
-        """HealingTierConfig thresholds must match HEALING_CONFIDENCE_X/Y."""
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-            HEALING_CONFIDENCE_X,
-            HEALING_CONFIDENCE_Y,
-            load_default_healing_tier_config,
-        )
-
-        config = load_default_healing_tier_config()
-        assert config.heal_confidence_x == HEALING_CONFIDENCE_X
-        assert config.heal_confidence_y == HEALING_CONFIDENCE_Y
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions

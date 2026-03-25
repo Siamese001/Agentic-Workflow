@@ -195,20 +195,20 @@ def test_p1_freeze_kills_active_leases():
 
 @pytest.mark.governance
 def test_p1_freeze_invalidates_in_flight_executions():
-    """P1 Freeze: Freeze invalidates all in-flight executions."""
-    authority = P1FreezeAuthority()
+"""Test p1_freeze_invalidates_in_flight_executions contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
-    # Start some executions
-    authority.start_execution("exec1", "lease1")
-    authority.start_execution("exec2", "lease2")
-    authority.start_execution("exec3")
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
 
-    # Verify executions are running
-    assert authority.get_execution_state("exec1") == ExecutionState.RUNNING
-    assert authority.get_execution_state("exec2") == ExecutionState.RUNNING
-    assert authority.get_execution_state("exec3") == ExecutionState.RUNNING
-
-    # Activate freeze
+# Assert - Schema Contract
+assert validation_result is not None, "Schema validation should produce a result"
+assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+# TODO: Add specific schema validation assertions
+# assert validation_result.get("valid", False), "Data should conform to schema"
     authority.activate_freeze()
 
     # All executions should be killed

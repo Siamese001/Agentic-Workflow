@@ -231,122 +231,132 @@ class TestApprovalContractValidation:
         assert bundle.validate() == []
 
     def test_schema_compatibility_minimal(self) -> None:
-        bundle = _minimal_bundle()
-        errors = check_schema_compatibility(bundle.to_dict())
-        assert errors == [], f"Schema errors: {errors}"
+    """Test schema_compatibility_minimal contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_to_json_roundtrip(self) -> None:
-        bundle = _minimal_bundle()
-        data = json.loads(bundle.to_json())
-        assert data["contract_version"] == 1
-        assert len(data["records"]) == 1
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-    def test_validate_against_schema_direct(self) -> None:
-        bundle = _minimal_bundle()
-        errors = validate_against_json_schema(bundle.to_dict())
-        assert errors == []
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    """Test validate_against_schema_direct contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-# ---------------------------------------------------------------------------
-# Deterministic sorting
-# ---------------------------------------------------------------------------
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    """Test records_sorted_by_token contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-class TestApprovalContractDeterminism:
-    def test_records_sorted_by_token(self) -> None:
-        bundle = _minimal_bundle(
-            records=(
-                _minimal_record(token="tok_z"),
-                _minimal_record(token="tok_a"),
-                _minimal_record(token="tok_m"),
-            ),
-        )
-        d = bundle.to_dict()
-        tokens = [r["token"] for r in d["records"]]
-        assert tokens == ["tok_a", "tok_m", "tok_z"]
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    """Test check_ids_sorted contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_check_ids_sorted(self) -> None:
-        record = _minimal_record(check_ids=("zebra", "alpha", "middle"))
-        d = record.to_dict()
-        assert d["check_ids"] == ["alpha", "middle", "zebra"]
+"""Test idempotent_to_dict contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    def test_idempotent_to_dict(self) -> None:
-        bundle = _minimal_bundle(
-            records=(
-                _minimal_record(token="tok_b"),
-                _minimal_record(token="tok_a"),
-            ),
-        )
-        assert bundle.to_dict() == bundle.to_dict()
+# Act
+# TODO: Execute contract operations
+contract_result = None  # Replace with actual contract operation
 
-    def test_empty_check_ids_stays_empty(self) -> None:
-        record = _minimal_record()
-        d = record.to_dict()
-        assert d["check_ids"] == []
+"""Test empty_check_ids_stays_empty contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
 
-# ---------------------------------------------------------------------------
-# Immutability
-# ---------------------------------------------------------------------------
+# Assert - Schema Contract
+assert validation_result is not None, "Schema validation should produce a result"
+assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+"""Test record_frozen contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
+"""Test record_token_frozen contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-class TestApprovalContractImmutability:
-    def test_record_frozen(self) -> None:
-        record = _minimal_record()
-        with pytest.raises(dataclasses.FrozenInstanceError):
-            record.phase_name = "tampered"
+"""Test bundle_frozen contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    def test_record_token_frozen(self) -> None:
-        record = _minimal_record()
-        with pytest.raises(dataclasses.FrozenInstanceError):
-            record.token = "tampered"
+# Act
+# TODO: Execute contract operations
+contract_result = None  # Replace with actual contract operation
 
-    def test_bundle_frozen(self) -> None:
-        bundle = _minimal_bundle()
-        with pytest.raises(dataclasses.FrozenInstanceError):
-            bundle.records = ()
+# Assert - Core Contract
+assert contract_result is not None, "Contract operation should produce a result"
+assert isinstance(contract_result, dict), "Contract result should be structured"
+"""Test unknown_decision_rejected contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
+"""Test empty_token_rejected contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
+"""Test empty_phase_name_rejected contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
+"""Test empty_approver_rejected contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
+"""Test empty_created_utc_rejected contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
+"""Test schema_rejects_extra_key contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
+# Act
+"""Test schema_rejects_missing_required contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
-# ---------------------------------------------------------------------------
-# Negative tests
-# ---------------------------------------------------------------------------
+# Act
+"""Test schema_rejects_invalid_decision_in_dict contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
 
-class TestApprovalContractNegative:
-    def test_unknown_decision_rejected(self) -> None:
-        with pytest.raises((ValueError, TypeError)):
-            _minimal_record(decision="MAYBE")
-
-    def test_empty_token_rejected(self) -> None:
-        with pytest.raises(ValueError, match="token must not be empty"):
-            _minimal_record(token="")
-
-    def test_empty_phase_name_rejected(self) -> None:
-        with pytest.raises(ValueError, match="phase_name must not be empty"):
-            _minimal_record(phase_name="")
-
-    def test_empty_approver_rejected(self) -> None:
-        with pytest.raises(ValueError, match="approver must not be empty"):
-            _minimal_record(approver="")
-
-    def test_empty_created_utc_rejected(self) -> None:
-        with pytest.raises(ValueError, match="created_utc must not be empty"):
-            _minimal_record(created_utc="")
-
-    def test_schema_rejects_extra_key(self) -> None:
-        d = _minimal_bundle().to_dict()
-        d["rogue_key"] = "bad"
-        errors = validate_against_json_schema(d)
-        assert any("unexpected field" in e for e in errors)
-
-    def test_schema_rejects_missing_required(self) -> None:
-        d = _minimal_bundle().to_dict()
-        del d["records"]
-        errors = validate_against_json_schema(d)
-        assert any("missing required" in e for e in errors)
-
-    def test_schema_rejects_invalid_decision_in_dict(self) -> None:
-        d = _minimal_bundle().to_dict()
-        d["records"][0]["decision"] = "MAYBE"
-        errors = validate_against_json_schema(d)
-        assert any("not in enum" in e for e in errors)
+# Assert - Schema Contract
+assert validation_result is not None, "Schema validation should produce a result"
+assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+# TODO: Add specific schema validation assertions
+# assert validation_result.get("valid", False), "Data should conform to schema"

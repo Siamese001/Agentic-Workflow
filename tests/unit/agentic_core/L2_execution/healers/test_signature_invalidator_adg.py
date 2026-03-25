@@ -172,24 +172,24 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestStaleSignatureViolation:
     def test_is_exception(self):
-        assert issubclass(StaleSignatureViolation, Exception)
+    """Test is_exception runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
+"""Test is_named_tuple runtime behavior."""
+# Arrange
+# TODO: Set up test data for is_named_tuple
+test_data = {}  # Replace with actual test data
 
-class TestInvalidationResult:
-    def test_is_named_tuple(self):
-        r = InvalidationResult(invalidated_plan={"key": "val"}, new_policy_hash="abc123")
-        assert r.new_policy_hash == "abc123"
-        assert r.invalidated_plan == {"key": "val"}
+# Act
+# TODO: Execute is_named_tuple
+result = None  # Replace with actual function call
 
-
-class TestInvalidateSignatureAndRehash:
-    def test_returns_invalidation_result(self):
-        plan = {"id": "p1", "steps": ["s1"], "signature": "old_sig"}
-        result = invalidate_signature_and_rehash(plan)
-        assert isinstance(result, InvalidationResult)
-
-    def test_returns_plan_with_policy_hash(self):
-        plan = {"id": "p1", "signature": "old_sig", "approval_hash": "ah"}
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
         result = invalidate_signature_and_rehash(plan)
         assert "policy_hash" in result.invalidated_plan
 

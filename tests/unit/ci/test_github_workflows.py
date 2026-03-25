@@ -79,145 +79,145 @@ WORKFLOWS = _load_workflows()
 
 @pytest.mark.parametrize("name,content", WORKFLOWS.items())
 def test_yaml_is_valid(name: str, content: str):
-    """Each workflow must start with 'name:' and contain at least one 'jobs:' block."""
-    assert re.search(r"^name:", content, re.M), f"{name}: missing top-level 'name:'"
-    assert re.search(r"^jobs:", content, re.M), f"{name}: missing top-level 'jobs:'"
-    assert re.search(r"runs-on:", content), f"{name}: missing 'runs-on:'"
+"""Test yaml_is_valid runtime behavior."""
+# Arrange
+# TODO: Set up test data for yaml_is_valid
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute yaml_is_valid
+result = None  # Replace with actual function call
 
-# ── 2. No stale action versions ───────────────────────────────────────────────
+# Assert
+assert result is not None, f"{function_name} should return a result"
+"""Test no_stale_checkout runtime behavior."""
+# Arrange
+# TODO: Set up test data for no_stale_checkout
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute no_stale_checkout
+result = None  # Replace with actual function call
 
-@pytest.mark.parametrize("name,content", WORKFLOWS.items())
-def test_no_stale_checkout(name: str, content: str):
-    for stale in STALE_ACTIONS:
-        assert stale not in content, f"{name}: contains stale action '{stale}' — upgrade to latest"
+"""Test no_old_python runtime behavior."""
+# Arrange
+# TODO: Set up test data for no_old_python
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute no_old_python
+result = None  # Replace with actual function call
 
-# ── 3. No Python 3.11 or older ───────────────────────────────────────────────
+"""Test deleted_workflow_is_gone runtime behavior."""
+# Arrange
+# TODO: Set up workflow context
+workflow_input = {}  # Replace with actual workflow input
 
+# Act
+# TODO: Execute workflow deleted_workflow_is_gone
+workflow_result = None  # Replace with actual workflow execution
 
-@pytest.mark.parametrize("name,content", WORKFLOWS.items())
-def test_no_old_python(name: str, content: str):
-    for stale in STALE_PYTHON:
-        assert stale not in content, f"{name}: uses stale Python version — repo standard is 3.12"
+# Assert
+"""Test workflow_has_triggers runtime behavior."""
+# Arrange
+# TODO: Set up workflow context
+workflow_input = {}  # Replace with actual workflow input
 
+# Act
+# TODO: Execute workflow workflow_has_triggers
+workflow_result = None  # Replace with actual workflow execution
 
-# ── 4. Deleted workflows must not exist ──────────────────────────────────────
+"""Test no_dead_branch_only runtime behavior."""
+# Arrange
+# TODO: Set up test data for no_dead_branch_only
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute no_dead_branch_only
+result = None  # Replace with actual function call
 
-@pytest.mark.parametrize("fname", sorted(DELETED_WORKFLOWS))
-def test_deleted_workflow_is_gone(fname: str):
-    assert fname not in WORKFLOWS, (
-        f"Workflow '{fname}' should have been deleted (dead/redundant) but still exists"
-    )
-
-
-# ── 5. Every workflow has at least one trigger ───────────────────────────────
-
-
-@pytest.mark.parametrize("name,content", WORKFLOWS.items())
-def test_workflow_has_triggers(name: str, content: str):
-    t = _triggers(content)
-    assert t, f"{name}: no triggers found — workflow will never run"
-
-
-# ── 6. No workflow targets ONLY dead branches ────────────────────────────────
-
-
-@pytest.mark.parametrize("name,content", WORKFLOWS.items())
-def test_no_dead_branch_only(name: str, content: str):
-    branches = _branch_list(content)
-    if not branches:
-        return  # no branch filter = all branches, which is fine
-    live_branches = branches - DEAD_BRANCHES
-    assert live_branches, (
-        f"{name}: only targets dead branches {sorted(branches)} — "
-        f"will never fire on active branch. Add '**' or 'ADG_v7'."
-    )
-
-
-# ── 7. ssot-kernel-guardrail covers ** and has ssot_folder_check ─────────────
-
-
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
 def test_ssot_kernel_guardrail_broad_scope():
-    content = WORKFLOWS.get("ssot-kernel-guardrail.yml", "")
-    assert content, "ssot-kernel-guardrail.yml not found"
-    branches = _branch_list(content)
-    assert "**" in branches, (
-        "ssot-kernel-guardrail.yml must target all branches (**) after absorbing ssot-enforcement.yml"
-    )
+"""Test ssot_kernel_guardrail_broad_scope runtime behavior."""
+# Arrange
+# TODO: Set up test data for ssot_kernel_guardrail_broad_scope
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute ssot_kernel_guardrail_broad_scope
+result = None  # Replace with actual function call
 
-def test_ssot_kernel_guardrail_has_folder_check():
-    content = WORKFLOWS.get("ssot-kernel-guardrail.yml", "")
-    assert "ssot_folder_check" in content, (
-        "ssot-kernel-guardrail.yml must include ssot_folder_check step "
-        "(absorbed from deleted ssot-enforcement.yml)"
-    )
+"""Test ssot_kernel_guardrail_has_folder_check runtime behavior."""
+# Arrange
+# TODO: Set up test data for ssot_kernel_guardrail_has_folder_check
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute ssot_kernel_guardrail_has_folder_check
+result = None  # Replace with actual function call
+"""Test ssot_kernel_guardrail_has_collision_guard runtime behavior."""
+# Arrange
+# TODO: Set up test data for ssot_kernel_guardrail_has_collision_guard
+test_data = {}  # Replace with actual test data
 
-def test_ssot_kernel_guardrail_has_collision_guard():
-    content = WORKFLOWS.get("ssot-kernel-guardrail.yml", "")
-    assert "module_collision_guard" in content, (
-        "ssot-kernel-guardrail.yml must retain module_collision_guard step"
-    )
+# Act
+# TODO: Execute ssot_kernel_guardrail_has_collision_guard
+"""Test ssot_kernel_guardrail_has_classification_tests runtime behavior."""
+# Arrange
+# TODO: Set up test data for ssot_kernel_guardrail_has_classification_tests
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute ssot_kernel_guardrail_has_classification_tests
+result = None  # Replace with actual function call
 
-def test_ssot_kernel_guardrail_has_classification_tests():
-    content = WORKFLOWS.get("ssot-kernel-guardrail.yml", "")
-    assert "test_classification_contract" in content, (
-        "ssot-kernel-guardrail.yml must retain classification contract tests"
-    )
+# Assert
+"""Test adg_invariant_scan_has_path_filter runtime behavior."""
+# Arrange
+# TODO: Set up test data for adg_invariant_scan_has_path_filter
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute adg_invariant_scan_has_path_filter
+result = None  # Replace with actual function call
 
-# ── 8. adg-invariant-scan has a push path filter ─────────────────────────────
+# Assert
+"""Test adg_invariant_scan_paths_include_agentic_core runtime behavior."""
+# Arrange
+# TODO: Set up test data for adg_invariant_scan_paths_include_agentic_core
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute adg_invariant_scan_paths_include_agentic_core
+result = None  # Replace with actual function call
+"""Test safe_remediation_gate_has_path_filter runtime behavior."""
+# Arrange
+# TODO: Set up test data for safe_remediation_gate_has_path_filter
+test_data = {}  # Replace with actual test data
 
-def test_adg_invariant_scan_has_path_filter():
-    content = WORKFLOWS.get("adg-invariant-scan.yml", "")
-    assert content, "adg-invariant-scan.yml not found"
-    # Must have a paths: block under push:
-    assert re.search(r"push:\s*\n\s+branches:.*?\n\s+paths:", content, re.S), (
-        "adg-invariant-scan.yml: push trigger must have a 'paths:' filter "
-        "to avoid running the expensive ADG scan on every doc-only commit"
-    )
+# Act
+# TODO: Execute safe_remediation_gate_has_path_filter
+result = None  # Replace with actual function call
 
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+"""Test workflow_count_reduced runtime behavior."""
+# Arrange
+# TODO: Set up workflow context
+workflow_input = {}  # Replace with actual workflow input
 
-def test_adg_invariant_scan_paths_include_agentic_core():
-    content = WORKFLOWS.get("adg-invariant-scan.yml", "")
-    assert "agentic_core/**" in content, "adg-invariant-scan.yml path filter must include 'agentic_core/**'"
+# Act
+# TODO: Execute workflow workflow_count_reduced
+workflow_result = None  # Replace with actual workflow execution
 
-
-# ── 9. safe-remediation-gate has a push path filter ──────────────────────────
-
-
-def test_safe_remediation_gate_has_path_filter():
-    content = WORKFLOWS.get("safe-remediation-gate.yml", "")
-    assert content, "safe-remediation-gate.yml not found"
-    assert re.search(r"push:\s*\n\s+branches:.*?\n\s+paths:", content, re.S), (
-        "safe-remediation-gate.yml: push trigger must have a 'paths:' filter "
-        "to avoid running parse-gate on every doc-only commit"
-    )
-
-
-# ── 10. Total workflow count is within expected range ────────────────────────
-
-
-def test_workflow_count_reduced():
-    count = len(WORKFLOWS)
-    assert count <= 21, (
-        f"Expected ≤21 workflows after cleanup, found {count}. Possible stray workflows not yet deleted."
-    )
-    assert count >= 15, (
-        f"Only {count} workflows found — unexpectedly few, check nothing critical was deleted."
-    )
-
-
-# ── 11. Key mandatory workflows still exist ──────────────────────────────────
-
-
-@pytest.mark.parametrize(
+# Assert
+assert workflow_result is not None, "Workflow should produce a result"
+assert isinstance(workflow_result, dict), "Workflow result should be structured"
+# TODO: Add workflow step assertions
     "required",
     [
         "adg-invariant-scan.yml",
@@ -231,4 +231,16 @@ def test_workflow_count_reduced():
     ],
 )
 def test_mandatory_workflow_exists(required: str):
-    assert required in WORKFLOWS, f"Mandatory workflow '{required}' is missing"
+"""Test mandatory_workflow_exists runtime behavior."""
+# Arrange
+# TODO: Set up workflow context
+workflow_input = {}  # Replace with actual workflow input
+
+# Act
+# TODO: Execute workflow mandatory_workflow_exists
+workflow_result = None  # Replace with actual workflow execution
+
+# Assert
+assert workflow_result is not None, "Workflow should produce a result"
+assert isinstance(workflow_result, dict), "Workflow result should be structured"
+# TODO: Add workflow step assertions

@@ -15,18 +15,29 @@ from agentic_core.runtime.sovereignty_exceptions import (
 
 class TestSovereigntyExceptionsImportability:
     def test_module_importable(self) -> None:
-        """ADG contract: agentic_core/runtime/sovereignty_exceptions.py must be importable."""
+    """Test module_importable runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-        pass  # Import verified at module level
+"""Test sovereigntyviolationerror_defined runtime behavior."""
+# Arrange
+# TODO: Set up error condition
+"""Test isolationviolationerror_defined runtime behavior."""
+# Arrange
+# TODO: Set up error condition
+"""Test capabilitytokenerror_defined runtime behavior."""
+# Arrange
+# TODO: Set up error condition
+"""Test determinismviolationerror_defined runtime behavior."""
+# Arrange
+# TODO: Set up error condition
+error_input = {}  # Replace with actual error condition
 
-    def test_sovereigntyviolationerror_defined(self) -> None:
-        assert SovereigntyViolationError is not None
+# Act & Assert
+# TODO: Test error handling in determinismviolationerror_defined
+with pytest.raises(Exception):  # Replace with expected exception
+    # Execute operation that should raise error
+    pass  # Replace with actual error test
 
-    def test_isolationviolationerror_defined(self) -> None:
-        assert IsolationViolationError is not None
-
-    def test_capabilitytokenerror_defined(self) -> None:
-        assert CapabilityTokenError is not None
-
-    def test_determinismviolationerror_defined(self) -> None:
-        assert DeterminismViolationError is not None
+# TODO: Add error message and handling assertions

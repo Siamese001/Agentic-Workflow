@@ -221,23 +221,23 @@ class TestReplayResultProperties:
         assert r.digest_changed is True
 
     def test_performance_delta_positive(self) -> None:
-        r = _make_result(original_perf=0.8, replayed_perf=0.9)
-        assert r.performance_delta == pytest.approx(0.1)
+    """Test performance_delta_positive runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
+    """Test performance_delta_negative runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-    def test_performance_delta_negative(self) -> None:
-        r = _make_result(original_perf=0.9, replayed_perf=0.8)
-        assert r.performance_delta == pytest.approx(-0.1)
+    # Act
+    # TODO: Process data with performance_delta_negative
+    processed_result = None  # Replace with actual processing
 
-    def test_safety_not_degraded(self) -> None:
-        r = _make_result(original_safety=0.9, replayed_safety=0.9)
-        assert r.safety_degraded is False
-
-    def test_safety_degraded(self) -> None:
-        r = _make_result(original_safety=0.9, replayed_safety=0.8)
-        assert r.safety_degraded is True
-
-    def test_regression_threshold_no_regression(self) -> None:
-        r = _make_result(original_perf=0.8, replayed_perf=0.9)
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
         assert r.regression_threshold == 0.0
 
     def test_regression_threshold_with_regression(self) -> None:

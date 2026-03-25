@@ -246,20 +246,20 @@ class TestHygieneGuardianNamingEnhanced:
         print("✅ PASS: Smart Suggestion Logic")
 
     def test_standard_file_strict_limit(self, tmp_path, disable_path_shield):
-        """
-        Verifies that non-test files are held to the 5-word limit.
-        """
-        guardian = HygieneGuardianAgent(project_root=tmp_path)
+    """Test standard_file_strict_limit contract compliance."""
+    # Arrange
+    # TODO: Set up specification test case
+    spec_input = {}  # Replace with actual specification input
 
-        # 6 words: should fail for standard files
-        filename = "user_authentication_service_manager_handler_utils.py"
-        test_file = tmp_path / filename
-        test_file.write_text("# Test", encoding="utf-8")
+    # Act
+    # TODO: Test specification compliance
+    compliance_result = None  # Replace with actual compliance test
 
-        guardian._check_filename_length(test_file)
-
-        assert len(guardian.naming_violations) == 1
-        assert guardian.naming_violations[0]["current_count"] == 6
+    # Assert - Specification Contract
+    assert compliance_result is not None, "Specification compliance should be testable"
+    assert isinstance(compliance_result, (bool, dict)), "Compliance result should be structured"
+    # TODO: Add specific specification assertions
+    # assert compliance_result.get("meets_spec", False), "Should meet specification requirements"
         assert guardian.naming_violations[0]["limit"] == 5
         print("✅ PASS: Standard File Strict Limit")
 

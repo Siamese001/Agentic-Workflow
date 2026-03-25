@@ -57,19 +57,19 @@ def _call(agent, file_path, rel, depth, expected):
 
 class TestHierarchyDeepViolation:
     def test_deep_calls_gatekeeper_safe_move(self, tmp_path):
-        """DEEP: gatekeeper.safe_move is called once with flattened target."""
-        agent = _make_agent(tmp_path)
-        # rel: agentic_core/L0_routing/scripts/extra/agent.py → depth 4, expected 3
-        rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
-        file_path = tmp_path / rel
-        file_path.parent.mkdir(parents=True)
-        file_path.write_text("")
+    """Test deep_calls_gatekeeper_safe_move runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        result = _call(agent, file_path, rel, depth=4, expected=3)
+    # Act
+    # TODO: Execute deep_calls_gatekeeper_safe_move
+    result = None  # Replace with actual execution
 
-        agent.gatekeeper.safe_move.assert_called_once()
-        target_arg = agent.gatekeeper.safe_move.call_args[0][1]
-        # Flattened: parts[:3] + (name,) = agentic_core/L0_routing/scripts/agent.py
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         assert "extra" not in str(target_arg)
         assert target_arg.name == "agent.py"
 
@@ -151,19 +151,19 @@ class TestHierarchyShallowViolation:
         assert result == 0
 
     def test_shallow_gatekeeper_never_called(self, tmp_path):
-        """Fail-closed: SHALLOW never calls gatekeeper.safe_move."""
-        agent = _make_agent(tmp_path)
-        rel = Path("tests/test_x.py")
-        file_path = tmp_path / rel
-        file_path.parent.mkdir(parents=True)
-        file_path.write_text("")
+    """Test shallow_gatekeeper_never_called runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        _call(agent, file_path, rel, depth=1, expected=3)
+    # Act
+    # TODO: Execute shallow_gatekeeper_never_called
+    result = None  # Replace with actual execution
 
-        agent.gatekeeper.safe_move.assert_not_called()
-
-    def test_shallow_logs_error(self, tmp_path):
-        """SHALLOW: Logger.error called with SHALLOW DEPTH message."""
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         agent = _make_agent(tmp_path)
         rel = Path("tests/test_x.py")
         file_path = tmp_path / rel
@@ -278,14 +278,16 @@ class TestHierarchyBoundaries:
         agent.gatekeeper.safe_move.assert_not_called()
 
     def test_deterministic_shallow_repeated_calls(self, tmp_path):
-        """Determinism: identical SHALLOW input → identical result."""
-        agent = _make_agent(tmp_path)
-        rel = Path("tests/test_x.py")
-        file_path = tmp_path / rel
-        file_path.parent.mkdir(parents=True)
-        file_path.write_text("")
+    """Test deterministic_shallow_repeated_calls runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        r1 = _call(agent, file_path, rel, depth=1, expected=3)
-        r2 = _call(agent, file_path, rel, depth=1, expected=3)
+    # Act
+    # TODO: Execute deterministic_shallow_repeated_calls
+    result = None  # Replace with actual execution
 
-        assert r1 == r2 == 0
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions

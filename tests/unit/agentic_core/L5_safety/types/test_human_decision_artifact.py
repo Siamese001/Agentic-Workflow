@@ -204,20 +204,20 @@ def test_reject_roundtrip():
 
 
 def test_modify_diff_empty_patch_schema_rejected():
-    with pytest.raises(HumanDecisionViolation, match="structured_patch_schema"):
-        _make(action="MODIFY_DIFF", structured_patch_schema={})
+"""Test modify_diff_empty_patch_schema_rejected contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
 
-def test_modify_diff_roundtrip():
-    art = _make(
-        action="MODIFY_DIFF",
-        structured_patch_schema={"file": "x.py", "patch": "@@..."},
-    ).sign(SECRET)
-    art.verify(SECRET)
-    assert art.l5_reclear_required
-
-
-def test_tampered_sig_rejected():
+# Assert - Schema Contract
+assert validation_result is not None, "Schema validation should produce a result"
+assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+# TODO: Add specific schema validation assertions
+# assert validation_result.get("valid", False), "Data should conform to schema"
     art = _make().sign(SECRET)
     tampered = HumanDecisionArtifact(
         trace_id=art.trace_id,

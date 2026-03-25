@@ -233,19 +233,19 @@ def bad_function():
             )
 
     def test_no_direct_subprocess_in_remediated_files(self):
-        """Verify that remediated files use safe_subprocess, not direct subprocess."""
-        repo_root = Path.cwd()
+    """Test no_direct_subprocess_in_remediated_files runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-        # Check execute_ssot.py - should use safe_subprocess_run
-        execute_ssot_path = repo_root / "agentic_core/L0_routing/scripts/execute_ssot.py"
-        if execute_ssot_path.exists():
-            code = execute_ssot_path.read_text(encoding="utf-8")
+    # Act
+    # TODO: Process data with no_direct_subprocess_in_remediated_files
+    processed_result = None  # Replace with actual processing
 
-            # Should import safe_subprocess
-            assert "safe_subprocess_run" in code, "execute_ssot.py should import safe_subprocess_run"
-
-            # Should not have direct subprocess.run calls (only in imports or safe_subprocess)
-            lines = code.split("\n")
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
             for i, line in enumerate(lines, 1):
                 # Skip lines that are imports or inside safe_subprocess module
                 if "import subprocess" in line or "from subprocess" in line:

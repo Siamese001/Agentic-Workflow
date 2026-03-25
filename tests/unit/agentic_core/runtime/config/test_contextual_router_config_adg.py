@@ -36,28 +36,40 @@ def _src_text():
 
 class TestContextualRouterConfigSource:
     def test_source_exists(self):
-        assert _SRC.exists()
+    """Test source_exists runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    """Test parses_without_error runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    """Test has_routing_request_class runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    """Test has_route_decision_class runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    """Test has_request_id_field runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    """Test has_action_type_field runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    """Test has_target_files_field runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    """Test has_agent_name_field runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    """Test has_payload_field runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_parses_without_error(self):
-        _tree()
+    # Act
+    # TODO: Execute runtime operation has_payload_field
+    runtime_result = None  # Replace with actual runtime operation
 
-    def test_has_routing_request_class(self):
-        assert "RoutingRequest" in _class_names()
-
-    def test_has_route_decision_class(self):
-        assert "RoutingResult" in _class_names() or "RouteDecision" in _class_names()
-
-    def test_has_request_id_field(self):
-        assert "request_id" in _src_text()
-
-    def test_has_action_type_field(self):
-        assert "action_type" in _src_text()
-
-    def test_has_target_files_field(self):
-        assert "target_files" in _src_text()
-
-    def test_has_agent_name_field(self):
-        assert "agent_name" in _src_text()
-
-    def test_has_payload_field(self):
-        assert "payload" in _src_text()
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions

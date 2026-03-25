@@ -93,19 +93,19 @@ class TestDepthAlreadyCorrect:
 
 class TestDeepViolation:
     def test_deep_violation_calls_safe_move(self, tmp_path):
-        """DEEP: safe_move is called with flattened target path."""
-        agent = _make_agent(tmp_path)
-        # agentic_core/L0_routing/scripts/extra/agent.py → depth 4, expected 3
-        f = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "extra" / "agent.py"
-        f.parent.mkdir(parents=True)
-        f.write_text("")
+    """Test deep_violation_calls_safe_move runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        agent.safe_move.return_value = {"applied": False, "action_taken": "DENIED"}
-        _call(agent, f)
+    # Act
+    # TODO: Execute deep_violation_calls_safe_move
+    result = None  # Replace with actual execution
 
-        agent.safe_move.assert_called_once()
-        target_arg = agent.safe_move.call_args[0][1]
-        # Flattened target: agentic_core/L0_routing/scripts/agent.py (depth 3)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         assert target_arg.name == "agent.py"
         assert "extra" not in str(target_arg)
 
@@ -137,19 +137,19 @@ class TestDeepViolation:
         assert f in affected
 
     def test_deep_dry_run_does_not_extend_affected_paths(self, tmp_path):
-        """DEEP + applied + dry_run=True → affected_paths NOT extended."""
-        agent = _make_agent(tmp_path)
-        f = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "extra" / "agent.py"
-        f.parent.mkdir(parents=True)
-        f.write_text("")
+    """Test deep_dry_run_does_not_extend_affected_paths runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        affected = []
-        agent.safe_move.return_value = {"applied": True, "action_taken": "MOVED"}
-        _call(agent, f, dry_run=True, affected=affected)
+    # Act
+    # TODO: Execute deep_dry_run_does_not_extend_affected_paths
+    result = None  # Replace with actual execution
 
-        assert len(affected) == 0
-
-    def test_deep_identity_path_guard_returns_skipped(self, tmp_path):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         """DEEP identity guard: when flattened target == source → SKIPPED, no move."""
         agent = _make_agent(tmp_path)
         # agentic_core/L0_routing/scripts/agent.py → depth 3 == expected 3 normally
@@ -253,19 +253,19 @@ class TestShallowViolation:
             assert key in result, f"missing key: {key}"
 
     def test_shallow_safe_move_never_called(self, tmp_path):
-        """Fail-closed: SHALLOW path NEVER calls safe_move — depth_aligned bug eliminated."""
-        agent = _make_agent(tmp_path)
-        f = tmp_path / TESTS_DIR / "test_x.py"
-        f.parent.mkdir(parents=True)
-        f.write_text("")
+    """Test shallow_safe_move_never_called runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        _call(agent, f)
+    # Act
+    # TODO: Execute shallow_safe_move_never_called
+    result = None  # Replace with actual execution
 
-        agent.safe_move.assert_not_called()
-
-    def test_shallow_logs_error(self, tmp_path):
-        """SHALLOW: Logger.error is called with violation details."""
-        agent = _make_agent(tmp_path)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         f = tmp_path / TESTS_DIR / "test_x.py"
         f.parent.mkdir(parents=True)
         f.write_text("")

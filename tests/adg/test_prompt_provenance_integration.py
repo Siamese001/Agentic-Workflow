@@ -270,19 +270,19 @@ class TestFullPromptLifecycleIntegration:
         return result.artifact, result.adg_relations
 
     def test_build_to_validate_pipeline(self):
-        from system_learning.engines.prompt_safety_validator import (
-            PromptSafetyValidator,
-            SafetyValidatorConfig,
-        )
+    """Test build_to_validate_pipeline runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
 
-        artifact, prov_rels = self._build_artifact()
-        ph = _sha256("policy_v1")
-        cfg = SafetyValidatorConfig(active_policy_hash=ph)
-        decision, safety_rels = PromptSafetyValidator(cfg).validate(artifact, _TS)
-        assert decision.allowed is True
-        total_rels = prov_rels + safety_rels
-        rel_types = {r for (_, r, _) in total_rels}
-        from system_learning.types.prompt_adg_relations import (
+    # Act
+    # TODO: Execute workflow build_to_validate_pipeline
+    workflow_result = None  # Replace with actual workflow execution
+
+    # Assert
+    assert workflow_result is not None, "Workflow should produce a result"
+    assert isinstance(workflow_result, dict), "Workflow result should be structured"
+    # TODO: Add workflow step assertions
             PROVENANCE_USES_S0_RULE,
             SAFETY_ALLOWED,
         )

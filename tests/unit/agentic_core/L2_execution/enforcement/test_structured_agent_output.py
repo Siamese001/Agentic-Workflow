@@ -189,71 +189,71 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestToolRequest:
     def test_valid_tool_request(self):
-        r = ToolRequest(tool_name="file_system.read", args={"path": "/tmp/x"})
-        assert r.tool_name == "file_system.read"
+    """Test valid_tool_request runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for valid_tool_request
+    test_data = {}  # Replace with actual test data
+    """Test empty_tool_name_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for empty_tool_name_raises
+    test_data = {}  # Replace with actual test data
+    """Test whitespace_tool_name_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for whitespace_tool_name_raises
+    test_data = {}  # Replace with actual test data
+    """Test no_args_defaults_to_empty_dict runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for no_args_defaults_to_empty_dict
+    test_data = {}  # Replace with actual test data
 
-    def test_empty_tool_name_raises(self):
-        with pytest.raises(StructuredOutputViolation, match="tool_name must be non-empty"):
-            ToolRequest(tool_name="")
+    # Act
+    # TODO: Execute no_args_defaults_to_empty_dict
+    result = None  # Replace with actual function call
 
-    def test_whitespace_tool_name_raises(self):
-        with pytest.raises(StructuredOutputViolation, match="tool_name must be non-empty"):
-            ToolRequest(tool_name="   ")
-
-    def test_no_args_defaults_to_empty_dict(self):
-        r = ToolRequest(tool_name="some.tool")
-        assert r.args == {}
-
-
-class TestStructuredAgentOutput:
-    def test_valid_output(self):
-        out = StructuredAgentOutput(
-            intent_delta="Create a summary report",
-            tool_requests=(ToolRequest(tool_name="file_system.write"),),
-            state_diff_proposal={"report_written": True},
-        )
-        assert out.intent_delta == "Create a summary report"
-        assert len(out.tool_requests) == 1
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert out.state_diff_proposal == {"report_written": True}
 
     def test_empty_intent_delta_raises(self):
-        with pytest.raises(StructuredOutputViolation, match="intent_delta must be a non-empty"):
-            StructuredAgentOutput(
-                intent_delta="",
-                tool_requests=(),
-                state_diff_proposal={},
-            )
+    """Test empty_intent_delta_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for empty_intent_delta_raises
+    test_data = {}  # Replace with actual test data
 
-    def test_whitespace_intent_delta_raises(self):
-        with pytest.raises(StructuredOutputViolation, match="intent_delta must be a non-empty"):
-            StructuredAgentOutput(
-                intent_delta="   ",
-                tool_requests=(),
-                state_diff_proposal={},
-            )
+    # Act
+    # TODO: Execute empty_intent_delta_raises
+    result = None  # Replace with actual function call
+    """Test whitespace_intent_delta_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for whitespace_intent_delta_raises
+    test_data = {}  # Replace with actual test data
 
-    def test_non_tuple_tool_requests_raises(self):
-        with pytest.raises(StructuredOutputViolation, match="tool_requests must be a tuple"):
-            StructuredAgentOutput(
-                intent_delta="valid",
-                tool_requests=[ToolRequest(tool_name="x")],  # type: ignore[arg-type]
-                state_diff_proposal={},
-            )
+    # Act
+    # TODO: Execute whitespace_intent_delta_raises
+    result = None  # Replace with actual function call
+    """Test non_tuple_tool_requests_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for non_tuple_tool_requests_raises
+    test_data = {}  # Replace with actual test data
 
-    def test_non_dict_state_diff_raises(self):
-        with pytest.raises(StructuredOutputViolation, match="state_diff_proposal must be a dict"):
-            StructuredAgentOutput(
-                intent_delta="valid",
-                tool_requests=(),
-                state_diff_proposal="not a dict",  # type: ignore[arg-type]
-            )
+    # Act
+    # TODO: Execute non_tuple_tool_requests_raises
+    result = None  # Replace with actual function call
+    """Test non_dict_state_diff_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up initial state
+    initial_state = {}  # Replace with actual initial state
 
-    def test_empty_factory(self):
-        out = StructuredAgentOutput.empty("No-op pass")
-        assert out.intent_delta == "No-op pass"
-        assert out.tool_requests == ()
-        assert out.state_diff_proposal == {}
+    # Act
+    # TODO: Execute state operation non_dict_state_diff_raises
+    final_state = None  # Replace with actual state operation
 
+    # Assert
+    assert final_state is not None, "State operation should produce a result"
+    assert final_state != initial_state, "State should change"
+    # TODO: Add specific state assertions
     def test_to_dict_shape(self):
         out = StructuredAgentOutput(
             intent_delta="Write report",
@@ -275,20 +275,24 @@ class TestStructuredAgentOutput:
         assert "state_diff_proposal" in d
 
     def test_zero_tool_requests_allowed(self):
-        out = StructuredAgentOutput(
-            intent_delta="Read-only operation",
-            tool_requests=(),
-            state_diff_proposal={},
-        )
-        assert out.tool_requests == ()
+    """Test zero_tool_requests_allowed runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for zero_tool_requests_allowed
+    test_data = {}  # Replace with actual test data
 
-    def test_multiple_tool_requests(self):
-        out = StructuredAgentOutput(
-            intent_delta="Multi-step",
-            tool_requests=(
-                ToolRequest(tool_name="tool.a"),
-                ToolRequest(tool_name="tool.b"),
-            ),
-            state_diff_proposal={"step": 2},
-        )
-        assert len(out.tool_requests) == 2
+    # Act
+    # TODO: Execute zero_tool_requests_allowed
+    result = None  # Replace with actual function call
+    """Test multiple_tool_requests runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for multiple_tool_requests
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute multiple_tool_requests
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions

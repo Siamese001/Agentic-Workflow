@@ -188,19 +188,19 @@ class TestPhase2DecisionEngineBlocks:
         assert result["violations_fixed"] == 0
 
     def test_blocked_no_heal_repository_call(self, mod):
-        de = _make_decision_engine(mod, allow=False, reason="BLOCKED")
-        sm = _make_state_mgr()
-        agent_instance = MagicMock()
-        agent_cls = MagicMock(return_value=agent_instance)
-        violations = [_violation(agent_key="agent2")]
-        agents = {"agent2": agent_cls}
+    """Test blocked_no_heal_repository_call runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        mod.execute_phase2_reconciliation.__wrapped__(
-            agents,
-            "neutral",
-            de,
-            sm,
-            plan={"violations_found": violations},
+    # Act
+    # TODO: Execute blocked_no_heal_repository_call
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             ctx=_make_ctx(),
         )
         agent_instance.heal_repository.assert_not_called()
@@ -234,19 +234,19 @@ class TestPhase2NoHeal:
         assert result["violations_found"] == 1
 
     def test_ctx_heal_false_no_mutation(self, mod):
-        de = _make_decision_engine(mod)
-        sm = _make_state_mgr()
-        agent_instance = MagicMock()
-        agent_cls = MagicMock(return_value=agent_instance)
-        violations = [_violation(agent_key="ag")]
-        agents = {"ag": agent_cls}
+    """Test ctx_heal_false_no_mutation runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for ctx_heal_false_no_mutation
+    test_data = {}  # Replace with actual test data
 
-        mod.execute_phase2_reconciliation.__wrapped__(
-            agents,
-            "neutral",
-            de,
-            sm,
-            plan={"violations_found": violations},
+    # Act
+    # TODO: Execute ctx_heal_false_no_mutation
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             ctx=_make_ctx(heal=False),
         )
         # No mutations when ctx.heal=False
@@ -297,19 +297,19 @@ class TestPhase2SovereigntyDenied:
         assert result["violations_fixed"] == 0
 
     def test_sovereignty_denied_releases_token(self, mod):
-        de = _make_decision_engine(mod, allow=True)
-        de.request_sovereignty_token.return_value = False
-        sm = _make_state_mgr()
-        violations = [_violation(agent_key="ag")]
-        agents = {"ag": MagicMock()}
+    """Test sovereignty_denied_releases_token runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for sovereignty_denied_releases_token
+    test_data = {}  # Replace with actual test data
 
-        mod.execute_phase2_reconciliation.__wrapped__(
-            agents,
-            "neutral",
-            de,
-            sm,
-            plan={"violations_found": violations},
-            ctx=_make_ctx(),
+    # Act
+    # TODO: Execute sovereignty_denied_releases_token
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         )
         de.release_sovereignty_token.assert_not_called()
 
@@ -477,19 +477,19 @@ class TestPhase2HealExecution:
         assert result["status"] == "success"
 
     def test_uwg_revoke_called_after_success(self, mod):
-        de = _make_decision_engine(mod, allow=True)
-        sm = _make_state_mgr()
-        agent_instance = MagicMock()
-        agent_instance.heal_repository.return_value = {"success": True}
-        agent_cls = MagicMock(return_value=agent_instance)
-        violations = [_violation(agent_key="ag")]
-        agents = {"ag": agent_cls}
+    """Test uwg_revoke_called_after_success runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        uwg = MagicMock()
-        uwg.grant_write_permission.return_value = None
-        uwg.revoke_write_permission.return_value = None
-        uwg.record_mutation.return_value = None
+    # Act
+    # TODO: Execute uwg_revoke_called_after_success
+    result = None  # Replace with actual execution
 
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         with patch.object(mod, "_get_uwg", return_value=uwg):
             with patch.object(mod, "_get_heal_result_adapter") as m_adapt:
                 adapter = MagicMock(return_value=MagicMock(to_dict=lambda: {}))

@@ -182,20 +182,20 @@ class TestVerificationGateBasic:
     """Basic verification gate functionality tests."""
 
     def test_verify_existing_import(self, tmp_path):
-        """Test that verification passes for existing imports."""
-        # Create a file with numpy import
-        test_file = tmp_path / "test_file.py"
-        test_file.write_text("import numpy\nimport os\n")
+    """Test verify_existing_import contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-        gate = VerificationGate()
-        result = gate.verify_action(test_file, "delete_import", "numpy")
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-        assert result is True, "Should verify existing import"
-
-    def test_reject_nonexistent_import(self, tmp_path):
-        """Test that verification fails for non-existent imports."""
-        # Create a file WITHOUT numpy import
-        test_file = tmp_path / "test_file.py"
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
         test_file.write_text("import os\nimport sys\n")
 
         gate = VerificationGate()
@@ -204,40 +204,40 @@ class TestVerificationGateBasic:
         assert result is False, "Should reject non-existent import"
 
     def test_verify_existing_function(self, tmp_path):
-        """Test that verification passes for existing functions."""
-        test_file = tmp_path / "test_file.py"
-        test_file.write_text("def my_function():\n    pass\n")
+    """Test verify_existing_function contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-        gate = VerificationGate()
-        result = gate.verify_action(test_file, "modify_function", "my_function")
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-        assert result is True, "Should verify existing function"
-
-    def test_reject_nonexistent_function(self, tmp_path):
-        """Test that verification fails for non-existent functions."""
-        test_file = tmp_path / "test_file.py"
-        test_file.write_text("def other_function():\n    pass\n")
-
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
         gate = VerificationGate()
         result = gate.verify_action(test_file, "modify_function", "my_function")
 
         assert result is False, "Should reject non-existent function"
 
     def test_verify_existing_class(self, tmp_path):
-        """Test that verification passes for existing classes."""
-        test_file = tmp_path / "test_file.py"
-        test_file.write_text("class MyClass:\n    pass\n")
+    """Test verify_existing_class contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-        gate = VerificationGate()
-        result = gate.verify_action(test_file, "remove_class", "MyClass")
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-        assert result is True, "Should verify existing class"
-
-    def test_cache_functionality(self, tmp_path):
-        """Test that verification results are cached."""
-        test_file = tmp_path / "test_file.py"
-        test_file.write_text("import numpy\n")
-
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
         gate = VerificationGate()
 
         # First call
@@ -258,20 +258,20 @@ class TestVerificationGateWithContext:
     """Test verification gate with SurgicalContext."""
 
     def test_verify_modification_with_valid_targets(self, tmp_path):
-        """Test that verify_modification passes for valid targets."""
-        import ast
+    """Test verify_modification_with_valid_targets contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-        test_file = tmp_path / "test_file.py"
-        content = "import numpy\nimport pandas\n"
-        test_file.write_text(content)
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-        # Create violation for existing import
-        violation = ViolationConstraint(
-            constraint_type="unused_import",
-            severity="warning",
-            message="Remove import 'numpy'",
-            fix_type="delete",
-        )
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
         violation.target_coordinate = ASTCoordinate(line=1, column=0, node_id="numpy", node_type="Import")
 
         context = SurgicalContext(

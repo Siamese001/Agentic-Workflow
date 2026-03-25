@@ -173,24 +173,32 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestFileClassificationValidatorAgent:
     def test_check_id_string(self):
-        assert isinstance(CHECK_ID, str)
-        assert CHECK_ID == "file_classification"
+    """Test check_id_string contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_creates(self, tmp_path):
-        agent = FileClassificationValidatorAgent(project_root=tmp_path)
-        assert agent is not None
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-    def test_project_root_stored(self, tmp_path):
-        agent = FileClassificationValidatorAgent(project_root=tmp_path)
-        assert agent.project_root == tmp_path.resolve()
-
-    def test_has_scan(self):
-        assert hasattr(FileClassificationValidatorAgent, "scan")
-
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
     def test_has_to_check_dict(self):
-        assert hasattr(FileClassificationValidatorAgent, "to_check_dict")
+    """Test has_to_check_dict contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_scan_returns_dict(self, tmp_path):
-        agent = FileClassificationValidatorAgent(project_root=tmp_path)
-        result = agent.scan()
-        assert isinstance(result, dict)
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
+
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"

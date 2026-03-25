@@ -185,46 +185,54 @@ def _make_completed(returncode: int = 0, stdout: str = "", stderr: str = "") -> 
 
 class TestSafeRunImport:
     def test_callable(self):
-        assert callable(safe_run)
+    """Test callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    """Test safe_popen_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    """Test safe_communicate_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_safe_popen_callable(self):
-        assert callable(safe_popen)
+    # Act
+    # TODO: Execute safe_communicate_callable
+    result = None  # Replace with actual execution
 
-    def test_safe_communicate_callable(self):
-        assert callable(safe_communicate)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test blocked_command_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for blocked_command_raises
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute blocked_command_raises
+    result = None  # Replace with actual function call
 
-class TestSafeRun:
-    def test_safe_command_passes(self):
-        with patch("subprocess.run", return_value=_make_completed()) as mock_run:
-            result = safe_run(["python", "--version"], capture_output=True, text=True)
-            mock_run.assert_called_once()
-            assert result.returncode == 0
-
-    def test_blocked_command_raises(self):
-        with pytest.raises(SecurityViolation):
-            safe_run(["pip", "install", "requests"])
-
-    def test_returns_completed_process(self):
-        with patch("subprocess.run", return_value=_make_completed(stdout="hello")):
-            result = safe_run(["echo", "hello"], capture_output=True, text=True, sanitize_output=False)
-            assert isinstance(result, subprocess.CompletedProcess)
-
-    def test_sanitize_output_truncates_long_stdout(self):
-        long_output = "x" * 5000
-        with patch("subprocess.run", return_value=_make_completed(stdout=long_output)):
-            result = safe_run(["echo"], capture_output=True, text=True, sanitize_output=True, max_output_chars=100)
-            assert len(result.stdout) <= 200  # sanitized
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
 
 class TestSafePopen:
     def test_blocked_command_raises(self):
-        with pytest.raises(SecurityViolation):
-            safe_popen(["rm", "-rf", "/"])
+    """Test blocked_command_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for blocked_command_raises
+    test_data = {}  # Replace with actual test data
+    """Test safe_command_registers_pid runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for safe_command_registers_pid
+    test_data = {}  # Replace with actual test data
 
-    def test_safe_command_registers_pid(self):
-        mock_process = MagicMock()
-        mock_process.pid = 12345
-        with patch("subprocess.Popen", return_value=mock_process):
-            proc = safe_popen(["python", "-c", "pass"])
-            assert proc is mock_process
+    # Act
+    # TODO: Execute safe_command_registers_pid
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions

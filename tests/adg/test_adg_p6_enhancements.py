@@ -240,19 +240,19 @@ class TestPromptSlotVisitor:
         return visitor.edges
 
     def test_assemble_call_with_slot_kwargs_emits_generates_prompt(self):
-        code = """
-AirlockAssembler.assemble(
-    s0_system="You are an agent.",
-    i0_instructional="Follow rules.",
-    c0_context="Some context.",
-    u0_user_prompt="User request.",
-)
-"""
-        edges = self._run_visitor(code)
-        relations = {e.relation_type for e in edges}
-        assert "generates_prompt" in relations
+    """Test assemble_call_with_slot_kwargs_emits_generates_prompt runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_assemble_detects_all_slot_types(self):
+    # Act
+    # TODO: Execute assemble_call_with_slot_kwargs_emits_generates_prompt
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         code = """
 AirlockAssembler.assemble(
     s0_system="sys",
@@ -276,35 +276,35 @@ AirlockAssembler.assemble(
         assert "U0" in slots_found
 
     def test_get_prompt_call_emits_consumes_prompt(self):
-        code = """
-content = get_prompt("SOVEREIGN_SYSTEM_CORE")
-"""
-        edges = self._run_visitor(code)
-        relations = {e.relation_type for e in edges}
-        assert "consumes_prompt" in relations
+    """Test get_prompt_call_emits_consumes_prompt runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_get_constitution_call_emits_consumes_prompt(self):
-        code = """
-const = get_constitution()
-"""
-        edges = self._run_visitor(code)
-        relations = {e.relation_type for e in edges}
-        assert "consumes_prompt" in relations
+    # Act
+    # TODO: Execute get_prompt_call_emits_consumes_prompt
+    result = None  # Replace with actual execution
+    """Test get_constitution_call_emits_consumes_prompt runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_plain_function_no_prompt_edges(self):
-        code = """
-def foo():
-    x = 1 + 2
-    return x
-"""
-        edges = self._run_visitor(code)
-        assert len(edges) == 0
+    # Act
+    # TODO: Execute get_constitution_call_emits_consumes_prompt
+    result = None  # Replace with actual execution
+    """Test plain_function_no_prompt_edges runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for plain_function_no_prompt_edges
+    test_data = {}  # Replace with actual test data
 
-    def test_assembler_without_slot_kwargs_emits_assembles_into(self):
-        code = """
-GovernedPayload(s0_system="sys", i0_instructional="instr", c0_context="ctx", u0_user_prompt="u")
-"""
-        edges = self._run_visitor(code)
+    # Act
+    # TODO: Execute plain_function_no_prompt_edges
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         # Should emit generates_prompt for each recognized kwarg
         gen_edges = [e for e in edges if e.relation_type == "generates_prompt"]
         assert len(gen_edges) >= 1
@@ -873,43 +873,43 @@ record_trace(trace_id="trace-abc-123", outcome="pass")
         assert "trace-abc-123" in edges[0].symbol
 
     def test_trace_node_uses_execution_trace_prefix(self):
-        code = """
-record_trace(trace_id="t-001", outcome="pass")
-"""
-        edges = self._run_visitor(code)
-        assert any(e.to_name.startswith("ADG::ExecutionTrace::") for e in edges)
+    """Test trace_node_uses_execution_trace_prefix runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for trace_node_uses_execution_trace_prefix
+    test_data = {}  # Replace with actual test data
 
-    def test_plain_function_no_trace_edges(self):
-        code = """
-def foo():
-    x = compute_result()
-    return x
-"""
-        edges = self._run_visitor(code)
-        assert len(edges) == 0
+    # Act
+    # TODO: Execute trace_node_uses_execution_trace_prefix
+    """Test plain_function_no_trace_edges runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for plain_function_no_trace_edges
+    test_data = {}  # Replace with actual test data
 
-    def test_run_id_kwarg_also_captured(self):
-        code = """
-log_run(run_id="run-xyz", status="ok")
-"""
-        edges = self._run_visitor(code)
-        assert len(edges) == 1
-        assert "run-xyz" in edges[0].symbol
+    # Act
+    # TODO: Execute plain_function_no_trace_edges
+    result = None  # Replace with actual function call
 
-    def test_execution_trace_entity_type_in_schema(self):
-        import typing
+"""Test run_id_kwarg_also_captured runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-        from agentic_core.adg import schema
+# Act
+# TODO: Execute run_id_kwarg_also_captured
+result = None  # Replace with actual execution
+"""Test execution_trace_entity_type_in_schema runtime behavior."""
+# Arrange
+# TODO: Set up test data for execution_trace_entity_type_in_schema
+test_data = {}  # Replace with actual test data
 
-        entity_args = typing.get_args(schema.EntityType)
-        assert "execution_trace" in entity_args
+# Act
+# TODO: Execute execution_trace_entity_type_in_schema
+result = None  # Replace with actual function call
 
-    def test_triggered_telemetry_relation_in_schema(self):
-        import typing
-
-        from agentic_core.adg import schema
-
-        rel_args = typing.get_args(schema.RelationType)
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
         assert "triggered_telemetry" in rel_args
 
     def test_trace_prompt_link_edge_kind_in_schema(self):

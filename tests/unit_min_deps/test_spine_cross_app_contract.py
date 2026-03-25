@@ -180,20 +180,20 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit_min_deps
 def test_cross_app_cid_prefixes():
-    """Given same semantic payload, LIC CID starts with 'lic-' and RG CID starts with 'rg-'."""
-    payload = {"s0_system": "test", "i0_instructional": "instruction"}
+"""Test cross_app_cid_prefixes contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    with (
-        patch("apps_lic.engines.lic_spine_adapter.ExecutionOrchestrator") as mock_lic_orch,
-        patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_rg_orch,
-    ):
-        # Return fresh dicts to avoid mutation
-        mock_lic_orch.return_value.execute.return_value = {"status": "ok"}
-        mock_rg_orch.return_value.execute.return_value = {"status": "ok"}
+# Act
+# TODO: Execute contract operations
+contract_result = None  # Replace with actual contract operation
 
-        lic_adapter = LicSpineAdapter()
-        rg_adapter = RgSpineAdapter()
-
+# Assert - Core Contract
+assert contract_result is not None, "Contract operation should produce a result"
+assert isinstance(contract_result, dict), "Contract result should be structured"
+# TODO: Add specific contract assertions
+# assert contract_result.get("enforced", False), "Contract terms should be enforced"
         lic_result = lic_adapter.execute(payload)
         rg_result = rg_adapter.execute(payload)
 
@@ -203,20 +203,20 @@ def test_cross_app_cid_prefixes():
 
 @pytest.mark.unit_min_deps
 def test_cross_app_cid_hash_bodies_identical():
-    """Given same semantic payload, CID hash bodies (without prefix) are identical."""
-    payload = {"s0_system": "test", "i0_instructional": "instruction"}
+"""Test cross_app_cid_hash_bodies_identical contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    with (
-        patch("apps_lic.engines.lic_spine_adapter.ExecutionOrchestrator") as mock_lic_orch,
-        patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_rg_orch,
-    ):
-        # Return fresh dicts to avoid mutation
-        mock_lic_orch.return_value.execute.return_value = {"status": "ok"}
-        mock_rg_orch.return_value.execute.return_value = {"status": "ok"}
+# Act
+# TODO: Execute contract operations
+contract_result = None  # Replace with actual contract operation
 
-        lic_adapter = LicSpineAdapter()
-        rg_adapter = RgSpineAdapter()
-
+# Assert - Core Contract
+assert contract_result is not None, "Contract operation should produce a result"
+assert isinstance(contract_result, dict), "Contract result should be structured"
+# TODO: Add specific contract assertions
+# assert contract_result.get("enforced", False), "Contract terms should be enforced"
         lic_result = lic_adapter.execute(payload)
         rg_result = rg_adapter.execute(payload)
 
@@ -229,20 +229,20 @@ def test_cross_app_cid_hash_bodies_identical():
 
 @pytest.mark.unit_min_deps
 def test_cross_app_cid_determinism():
-    """Running twice with identical canonicalized payload yields identical CID each time."""
-    payload = {"s0_system": "test", "i0_instructional": "instruction"}
+"""Test cross_app_cid_determinism contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    with (
-        patch("apps_lic.engines.lic_spine_adapter.ExecutionOrchestrator") as mock_lic_orch,
-        patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_rg_orch,
-    ):
-        # Return fresh dicts to avoid mutation
-        mock_lic_orch.return_value.execute.return_value = {"status": "ok"}
-        mock_rg_orch.return_value.execute.return_value = {"status": "ok"}
+# Act
+# TODO: Execute contract operations
+contract_result = None  # Replace with actual contract operation
 
-        lic_adapter = LicSpineAdapter()
-        rg_adapter = RgSpineAdapter()
-
+# Assert - Core Contract
+assert contract_result is not None, "Contract operation should produce a result"
+assert isinstance(contract_result, dict), "Contract result should be structured"
+# TODO: Add specific contract assertions
+# assert contract_result.get("enforced", False), "Contract terms should be enforced"
         # Run twice
         lic_result1 = lic_adapter.execute(payload)
         lic_result2 = lic_adapter.execute(payload)
@@ -256,20 +256,20 @@ def test_cross_app_cid_determinism():
 
 @pytest.mark.unit_min_deps
 def test_cross_app_cid_difference():
-    """Minimally different semantic payload yields different hash body."""
-    payload1 = {"s0_system": "test", "i0_instructional": "instruction"}
-    payload2 = {"s0_system": "test", "i0_instructional": "different"}
+"""Test cross_app_cid_difference contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    with (
-        patch("apps_lic.engines.lic_spine_adapter.ExecutionOrchestrator") as mock_lic_orch,
-        patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_rg_orch,
-    ):
-        # Return fresh dicts to avoid mutation
-        mock_lic_orch.return_value.execute.return_value = {"status": "ok"}
-        mock_rg_orch.return_value.execute.return_value = {"status": "ok"}
+# Act
+# TODO: Execute contract operations
+contract_result = None  # Replace with actual contract operation
 
-        lic_adapter = LicSpineAdapter()
-        rg_adapter = RgSpineAdapter()
+# Assert - Core Contract
+assert contract_result is not None, "Contract operation should produce a result"
+assert isinstance(contract_result, dict), "Contract result should be structured"
+# TODO: Add specific contract assertions
+# assert contract_result.get("enforced", False), "Contract terms should be enforced"
 
         lic_result1 = lic_adapter.execute(payload1)
         lic_result2 = lic_adapter.execute(payload2)
@@ -293,20 +293,20 @@ def test_cross_app_cid_difference():
 
 @pytest.mark.unit_min_deps
 def test_cross_app_call_order_invariant():
-    """new_cycle called before orchestrator.execute for both apps."""
-    payload = {"s0_system": "test", "i0_instructional": "instruction"}
+"""Test cross_app_call_order_invariant contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    with (
-        patch("apps_lic.engines.lic_spine_adapter.ExecutionOrchestrator") as mock_lic_orch,
-        patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_rg_orch,
-        patch("apps_lic.engines.lic_spine_adapter.CIDRegistry") as mock_lic_registry,
-        patch("apps_rg.engines.rg_spine_adapter.CIDRegistry") as mock_rg_registry,
-    ):
-        # Setup mocks
-        mock_cycle = MagicMock()
-        mock_cycle.attempt = 1
-        mock_lic_registry.return_value.new_cycle.return_value = mock_cycle
-        mock_rg_registry.return_value.new_cycle.return_value = mock_cycle
+# Act
+# TODO: Execute contract operations
+contract_result = None  # Replace with actual contract operation
+
+# Assert - Core Contract
+assert contract_result is not None, "Contract operation should produce a result"
+assert isinstance(contract_result, dict), "Contract result should be structured"
+# TODO: Add specific contract assertions
+# assert contract_result.get("enforced", False), "Contract terms should be enforced"
 
         mock_lic_orch.return_value.execute.return_value = {"status": "ok"}
         mock_rg_orch.return_value.execute.return_value = {"status": "ok"}

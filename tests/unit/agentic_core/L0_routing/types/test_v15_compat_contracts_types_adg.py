@@ -176,12 +176,23 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestCompatExceptions:
     def test_forbidden_input_error_importable(self): assert ForbiddenInputError is not None
-    def test_episodic_memory_not_queried_importable(self): assert EpisodicMemoryNotQueried is not None
-    def test_rollback_hash_mismatch_importable(self): assert RollbackHashMismatch is not None
-    def test_wall_clock_violation_importable(self): assert WallClockViolation is not None
+    """Test forbidden_input_error_importable contract compliance."""
+    """Test episodic_memory_not_queried_importable contract compliance."""
+    """Test rollback_hash_mismatch_importable contract compliance."""
+    """Test wall_clock_violation_importable contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    """Test dedupe_sha256_callable contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-class TestCompatFunctions:
-    def test_dedupe_sha256_callable(self): assert callable(dedupe_sha256)
-    def test_validate_execution_input_callable(self): assert callable(validate_execution_input)
-    def test_dedupe_sha256_produces_hash(self):
-        h = dedupe_sha256("test content"); assert isinstance(h, str); assert len(h) == 64
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"

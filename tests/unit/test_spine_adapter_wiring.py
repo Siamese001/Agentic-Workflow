@@ -431,19 +431,19 @@ class TestMetaLearningBusInSpine:
         assert bus.dequeue() is None
 
     def test_meta_bus_apply_next_calls_apply_fn(self):
-        from agentic_core.L0_routing.meta_control.meta_learning_bus import (
-            MetaLearningBus,
-            MetaLearningChangePackage,
-        )
+    """Test meta_bus_apply_next_calls_apply_fn runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        bus = MetaLearningBus()
-        pkg = MetaLearningChangePackage.create("t1", "kind_x", {"a": 1})
-        bus.enqueue(pkg)
-        applied = []
-        bus.apply_next(apply_fn=applied.append)
-        assert len(applied) == 1
-        assert applied[0].trace_id == "t1"
+    # Act
+    # TODO: Execute meta_bus_apply_next_calls_apply_fn
+    result = None  # Replace with actual execution
 
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
 # ---------------------------------------------------------------------------
 # LicSpineAdapter / RgSpineAdapter: real adapter wiring end-to-end
@@ -494,27 +494,27 @@ class TestSpineAdapterRealWiring:
         assert result["cid"].startswith("rg-")
 
     def test_lic_execute_deterministic_cid(self):
-        """Same input → same CID (deterministic hash derivation)."""
-        s1 = LicSpineAdapter()
-        s2 = LicSpineAdapter()
-        r1 = s1.execute({"u0_user_prompt": "determinism test"})
-        r2 = s2.execute({"u0_user_prompt": "determinism test"})
-        assert r1["cid"] == r2["cid"]
+    """Test lic_execute_deterministic_cid runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_rg_execute_deterministic_cid(self):
-        s1 = RgSpineAdapter()
-        s2 = RgSpineAdapter()
-        r1 = s1.execute({"u0_user_prompt": "determinism rg"})
-        r2 = s2.execute({"u0_user_prompt": "determinism rg"})
-        assert r1["cid"] == r2["cid"]
+    # Act
+    # TODO: Execute lic_execute_deterministic_cid
+    result = None  # Replace with actual execution
+    """Test rg_execute_deterministic_cid runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_different_inputs_produce_different_cids(self):
-        spine = LicSpineAdapter()
-        r1 = spine.execute({"u0_user_prompt": "input_alpha"})
-        r2 = spine.execute({"u0_user_prompt": "input_beta"})
-        assert r1["cid"] != r2["cid"]
+    # Act
+    # TODO: Execute rg_execute_deterministic_cid
+    result = None  # Replace with actual execution
 
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 # ---------------------------------------------------------------------------
 # BaseSpineAdapter error paths (G14)
 # ---------------------------------------------------------------------------

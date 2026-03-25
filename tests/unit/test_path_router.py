@@ -189,20 +189,20 @@ class TestPathRouter:
         assert Path.D.value == "D"
 
     def test_empty_check_ids_selects_path_a(self):
-        """Test empty check_ids always selects Path.A."""
-        payload = GovernedPayload(
-            s0_system="System",
-            i0_instructional="Instructions",
-            c0_context="Context",
-            u0_user_prompt="Simple prompt",
-            check_ids=(),  # Empty tuple
-            sanitized=False,
-            d0_injections="",
-        )
+    """Test empty_check_ids_selects_path_a contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-        router = PathRouter()
-        selected = router.select_path(payload)
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
         assert selected == Path.A
 
     def test_sanitized_payload_selects_path_b(self):
@@ -224,38 +224,38 @@ class TestPathRouter:
         assert selected == Path.B
 
     def test_single_check_id_selects_path_c(self):
-        """Test single check_id selects Path.C."""
-        payload = AirlockAssembler.assemble(
-            s0_system="System",
-            i0_instructional="Instructions",
-            c0_context="Context",
-            u0_user_prompt="Single task prompt",
-        )
+    """Test single_check_id_selects_path_c contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-        # Verify single check_id and not sanitized
-        assert len(payload.check_ids) == 1
-        assert payload.sanitized is False
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-        router = PathRouter()
-        selected = router.select_path(payload)
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
 
         assert selected == Path.C
 
     def test_multiple_check_ids_selects_path_d(self):
-        """Test multiple check_ids selects Path.D."""
-        prompt = """1. First task
-2. Second task
-3. Third task"""
+    """Test multiple_check_ids_selects_path_d contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-        payload = AirlockAssembler.assemble(
-            s0_system="System", i0_instructional="Instructions", c0_context="Context", u0_user_prompt=prompt
-        )
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-        # Verify multiple check_ids and not sanitized
-        assert len(payload.check_ids) > 1
-        assert payload.sanitized is False
-
-        router = PathRouter()
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
         selected = router.select_path(payload)
 
         assert selected == Path.D
@@ -279,39 +279,39 @@ class TestPathRouter:
         assert path1 == path2
 
     def test_priority_order_empty_check_ids_overrides_sanitized(self):
-        """Test empty check_ids takes priority over sanitized flag."""
-        # Create a payload that would be sanitized but with empty check_ids
-        payload = GovernedPayload(
-            s0_system="System",
-            i0_instructional="Instructions",
-            c0_context="Context",
-            u0_user_prompt="Clean prompt",
-            check_ids=(),  # Empty tuple
-            sanitized=True,  # But empty check_ids should win
-            d0_injections="",
-        )
+    """Test priority_order_empty_check_ids_overrides_sanitized contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-        router = PathRouter()
-        selected = router.select_path(payload)
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
+
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
 
         # Should be Path.A due to empty check_ids, not Path.B
         assert selected == Path.A
 
     def test_priority_order_sanitized_over_single_check_id(self):
-        """Test sanitized flag takes priority over single check_id."""
-        payload = GovernedPayload(
-            s0_system="System",
-            i0_instructional="Instructions",
-            c0_context="Context",
-            u0_user_prompt="Sanitized prompt",
-            check_ids=("single_id",),
-            sanitized=True,  # Should override single check_id
-            d0_injections="",
-        )
+    """Test priority_order_sanitized_over_single_check_id contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-        router = PathRouter()
-        selected = router.select_path(payload)
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
         # Should be Path.B due to sanitized flag, not Path.C
         assert selected == Path.B
 

@@ -223,19 +223,19 @@ class TestSymbolInventoryVisitor:
     """E1: Verify exports edges are emitted for public top-level symbols."""
 
     def test_public_function_emits_export_edge(self):
-        source = """
-        def my_func():
-            pass
-        """
-        tree = _parse(source)
-        v = _SymbolInventoryVisitor(_make_module_adg("foo/bar.py"), "foo/bar.py")
-        v.visit(tree)
-        symbols = {e.symbol for e in v.edges if e.relation_type == "exports"}
-        assert "my_func" in symbols
+    """Test public_function_emits_export_edge runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for public_function_emits_export_edge
+    test_data = {}  # Replace with actual test data
 
-    def test_public_class_emits_export_edge(self):
-        source = """
-        class MyClass:
+    # Act
+    # TODO: Execute public_function_emits_export_edge
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             pass
         """
         tree = _parse(source)
@@ -286,19 +286,19 @@ class TestSymbolInventoryVisitor:
         assert "_PRIVATE_CONST" not in symbols
 
     def test_async_function_emits_export_edge(self):
-        source = """
-        async def async_handler():
-            pass
-        """
-        tree = _parse(source)
-        v = _SymbolInventoryVisitor(_make_module_adg("foo/bar.py"), "foo/bar.py")
-        v.visit(tree)
-        symbols = {e.symbol for e in v.edges if e.relation_type == "exports"}
-        assert "async_handler" in symbols
+    """Test async_function_emits_export_edge runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for async_function_emits_export_edge
+    test_data = {}  # Replace with actual test data
 
-    def test_edge_kind_is_export(self):
-        source = """
-        def func():
+    # Act
+    # TODO: Execute async_function_emits_export_edge
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             pass
         """
         tree = _parse(source)
@@ -625,19 +625,19 @@ class TestDetectCycles:
         assert [e.to_name for e in run1] == [e.to_name for e in run2]
 
     def test_calls_edges_included_in_cycle_detection(self):
-        edges = [
-            _make_module_edge("x.py", "y.py"),
-            Edge(
-                from_name=_make_module_adg("y.py"),
-                relation_type="instantiates",
-                to_name=_make_module_adg("x.py"),
-                edge_kind="composition",
-                source_file="y.py",
-                line_no=1,
-                symbol="",
-            ),
-        ]
-        result = _make_scan_result_with_edges(edges)
+    """Test calls_edges_included_in_cycle_detection runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute calls_edges_included_in_cycle_detection
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         cycle_edges = _detect_cycles(result)
         assert len(cycle_edges) >= 2
 

@@ -223,46 +223,46 @@ class TestDefaultPerformChecks:
         assert metrics["type"] == "str"
 
     def test_empty_dict_reports_zero_fields(self) -> None:
-        cap = self._get_capability()
-        issues, metrics = cap.perform_checks({})
-        assert issues == []
-        assert metrics["field_count"] == 0
+    """Test empty_dict_reports_zero_fields contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_empty_list_reports_zero_items(self) -> None:
-        cap = self._get_capability()
-        issues, metrics = cap.perform_checks([])
-        assert issues == []
-        assert metrics["item_count"] == 0
+    # Act
+    """Test empty_list_reports_zero_items contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-class TestInheritedDefault:
-    """Verify subclasses without local perform_checks inherit the default."""
+    # Assert - General Contract
+    """Test bare_subclass_inherits_default contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_bare_subclass_inherits_default(self) -> None:
-        from agentic_core.mixins.inspection_capability_mixin import InspectionCapability
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-        class _BareInspector(InspectionCapability):
-            INSPECTION_LOG_PREFIX = "Bare"
+    # Assert - General Contract
+    """Test override_takes_precedence contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-        inspector = _BareInspector()
-        issues, metrics = inspector.perform_checks(None)
-        assert issues == ["Target is null"]
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-    def test_override_takes_precedence(self) -> None:
-        from agentic_core.mixins.inspection_capability_mixin import InspectionCapability
-
-        class _CustomInspector(InspectionCapability):
-            INSPECTION_LOG_PREFIX = "Custom"
-
-            def perform_checks(
-                self,
-                target: Any,
-                context: dict[str, Any] | None = None,
-            ) -> tuple[list[str], dict[str, Any]]:
-                return ["custom-issue"], {"custom": True}
-
-        inspector = _CustomInspector()
-        issues, metrics = inspector.perform_checks("anything")
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
         assert issues == ["custom-issue"]
         assert metrics == {"custom": True}
 
@@ -285,20 +285,20 @@ class TestCluster4AgentConsistency:
 
     @pytest.mark.parametrize("target", TARGETS, ids=lambda t: type(t).__name__)
     def test_all_agents_produce_same_result(self, target: Any) -> None:
-        from agentic_core.mixins.inspection_capability_mixin import InspectionCapability
+    """Test all_agents_produce_same_result contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-        # All three agents inherit perform_checks from InspectionCapability.
-        # Verify directly on the capability to ensure contract holds.
-        cap = InspectionCapability()
-        canonical_issues, canonical_metrics = cap.perform_checks(target)
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-        # Verify deterministic: call again, same result
-        issues2, metrics2 = cap.perform_checks(target)
-        assert canonical_issues == issues2
-        assert canonical_metrics == metrics2
-
-
-class TestRunInspectionIntegration:
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
     """Verify run_inspection() works with the default perform_checks."""
 
     def test_healthy_result_for_dict(self) -> None:

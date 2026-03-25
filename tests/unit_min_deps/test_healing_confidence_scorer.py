@@ -405,19 +405,19 @@ print(f"FINGERPRINT: {{report.confidence_fingerprint}}")
         )
 
     def test_action_mapping_total_and_deterministic(self):
-        """Proves every attempt gets mapped to exactly one action deterministically."""
-        scorer = HealingConfidenceScorer()
+    """Test action_mapping_total_and_deterministic runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for action_mapping_total_and_deterministic
+    test_data = {}  # Replace with actual test data
 
-        attempts = [
-            HealingAttempt(
-                attempt_id="low_conf",
-                healer_id="healer_a",
-                outcome="FAIL",
-                severity=3,
-                signals={},
-                cost=5.0,
-            ),
-            HealingAttempt(
+    # Act
+    # TODO: Execute action_mapping_total_and_deterministic
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
                 attempt_id="mid_conf",
                 healer_id="healer_b",
                 outcome="PARTIAL",

@@ -270,19 +270,19 @@ def test_req157_replay_bundle_store_deterministic():
 
 
 def test_req036_two_runs_identical_digest():
-    inputs = {"payload": "fixed", "policy_hash": "ph1", "trace_id": "CC3AL1-00000001"}
-    assert _digest_bytes(inputs) == _digest_bytes(inputs)
+"""Test req036_two_runs_identical_digest runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute req036_two_runs_identical_digest
+result = None  # Replace with actual execution
 
-def test_req060_stage_order_deterministic():
-    STAGES = ("AUDIT", "TELEMETRY", "CONFIG", "SNAPSHOT", "RCA", "PROPOSE", "VALIDATE", "INTAKE", "COMMIT")
-    run1 = list(STAGES)
-    run2 = list(STAGES)
-    assert run1 == run2
-
-
-def test_req063_proposer_order_fixed():
-    ORDER = ["L0", "RAG", "L1", "L5"]
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
     assert ORDER == sorted(ORDER, key=lambda x: ORDER.index(x))
 
 

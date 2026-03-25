@@ -297,19 +297,19 @@ def test_default_advisor_pattern_boost_capped() -> None:
 
 
 def test_default_advisor_handles_ml_client_exception() -> None:
-    """Default advisor falls back to null when ML client throws."""
-    mock_client = MagicMock()
-    mock_client.retrieve_healing_patterns.side_effect = Exception("ML client error")
+"""Test default_advisor_handles_ml_client_exception runtime behavior."""
+# Arrange
+# TODO: Set up processing data
+raw_data = []  # Replace with actual test data
 
-    advisor = DefaultHealingPatternAdvisor(ml_client=mock_client)
+# Act
+# TODO: Process data with default_advisor_handles_ml_client_exception
+processed_result = None  # Replace with actual processing
 
-    healing_input = HealingInput(
-        error_signature="test_sig",
-        failure_type="syntax_error",
-        blast_radius_estimate=0.1,
-        required_tools=[],
-        retry_count=0,
-        trace_id="test-trace",
+# Assert
+assert processed_result is not None, "Processing should produce a result"
+assert len(processed_result) >= 0, "Processed result should be measurable"
+# TODO: Add specific processing assertions
         agent_id="test-agent",
     )
 

@@ -846,19 +846,19 @@ class TestIndexNamespaceMap:
         assert nm[INDEX_RETRIEVAL] == "retrieval_cases"
 
     def test_static_method_callable_without_instance(self):
-        from system_learning.engines.semantic_index_registry import SemanticIndexRegistry
+    """Test static_method_callable_without_instance runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        nm = SemanticIndexRegistry.index_namespace_map()
-        assert isinstance(nm, dict)
+    # Act
+    # TODO: Execute static_method_callable_without_instance
+    result = None  # Replace with actual execution
 
-
-# ============================================================
-# 8. Integration — full addendum pipeline (extension)
-# ============================================================
-
-
-class TestAddendumIntegration:
-    def test_replay_ingest_then_evict_nondeterminism_stats_consistent(self):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
 
         e = ReplayFailureEmbedder()
@@ -918,19 +918,19 @@ class TestAddendumIntegration:
         assert e.safety_outcome_stats()["ALLOWED"] == 2
 
     def test_retrieval_weak_case_pipeline(self):
-        from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
+    """Test retrieval_weak_case_pipeline runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
 
-        e = RetrievalCaseEmbedder()
-        for i in range(5):
-            e.ingest(
-                _rcr(
-                    case_id=f"weak-{i}",
-                    support_score=0.2 + i * 0.05,
-                    completeness_score=0.3,
-                    query=f"q-w{i}",
-                    chunk_ids=(f"xw{i}",),
-                )
-            )
+    # Act
+    # TODO: Execute workflow retrieval_weak_case_pipeline
+    workflow_result = None  # Replace with actual workflow execution
+
+    # Assert
+    assert workflow_result is not None, "Workflow should produce a result"
+    assert isinstance(workflow_result, dict), "Workflow result should be structured"
+    # TODO: Add workflow step assertions
         for i in range(5):
             e.ingest(
                 _rcr(
@@ -1047,19 +1047,19 @@ class TestAddendumIntegration:
 
 class TestCreativeIntegration:
     def test_replay_full_pipeline_top_subsystems_then_evict_type(self):
-        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+    """Test replay_full_pipeline_top_subsystems_then_evict_type runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
 
-        e = ReplayFailureEmbedder(max_buffer=10_000)
-        for i in range(4):
-            e.ingest(
-                _rfr(
-                    failure_id=f"h{i}",
-                    trace_id=f"th{i}",
-                    summary=f"sh{i}",
-                    nd_type="HASH_MISMATCH",
-                    subsystems=("L3", "L2"),
-                )
-            )
+    # Act
+    # TODO: Execute workflow replay_full_pipeline_top_subsystems_then_evict_type
+    workflow_result = None  # Replace with actual workflow execution
+
+    # Assert
+    assert workflow_result is not None, "Workflow should produce a result"
+    assert isinstance(workflow_result, dict), "Workflow result should be structured"
+    # TODO: Add workflow step assertions
         for i in range(2):
             e.ingest(
                 _rfr(

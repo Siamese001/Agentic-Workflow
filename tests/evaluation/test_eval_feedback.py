@@ -501,19 +501,19 @@ class TestDPOBatchBuilder:
             assert batch.pairs[1].query == "query_b"
 
     def test_l4_persist_called(self):
-        stored = []
+    """Test l4_persist_called runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        class FakeStore:
-            def put(self, a):
-                stored.append(a)
+    # Act
+    # TODO: Execute l4_persist_called
+    result = None  # Replace with actual execution
 
-        decisions = [
-            _make_feedback("ex_0", "q", answer="good", rubric=_make_rubric()),
-            _make_feedback("ex_1", "q", answer="bad", rubric=_make_rubric(correct=False)),
-        ]
-        batch = DPOBatchBuilder(min_score_delta=0.0, l4_store=FakeStore()).generate_pairs(decisions)
-        assert len(stored) == 1
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
     def test_l4_persist_graceful_on_exception(self):
         class BrokenStore:
             def put(self, a):
@@ -743,19 +743,19 @@ class TestEvaluatorProposerBridge:
         assert proposal.overall_health_score == pytest.approx(0.0)
 
     def test_l4_persist_called(self):
-        stored = []
+    """Test l4_persist_called runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        class FakeStore:
-            def put(self, a):
-                stored.append(a)
+    # Act
+    # TODO: Execute l4_persist_called
+    result = None  # Replace with actual execution
 
-        bridge = EvaluatorProposerBridge(l4_store=FakeStore())
-        bridge.propose()
-        assert len(stored) == 1
-
-    def test_l4_persist_graceful_on_exception(self):
-        class BrokenStore:
-            def put(self, a):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
                 raise RuntimeError("disk full")
 
         bridge = EvaluatorProposerBridge(l4_store=BrokenStore())

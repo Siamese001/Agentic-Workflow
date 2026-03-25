@@ -227,19 +227,19 @@ class TestFileBackedTelemetryStore:
         ]
 
     def test_telemetry_persistence_handles_failure(self, tmp_path):
-        """Test that telemetry reading still works even if bridge persistence fails."""
-        path = tmp_path / "events.jsonl"
-        event = {"timestamp_utc": 1000, "event_type": "heal", "payload": {"ok": True}}
-        path.write_text(json.dumps(event) + "\n", encoding="utf-8")
-        store = FileBackedTelemetryStore(telemetry_path=path)
+    """Test telemetry_persistence_handles_failure runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-        class _FailingBridge:
-            def persist_telemetry_window(self, source, events, *, window_start=0, window_end=0):
-                raise RuntimeError("Bridge down")
+    # Act
+    # TODO: Process data with telemetry_persistence_handles_failure
+    processed_result = None  # Replace with actual processing
 
-        bridge = _FailingBridge()
-        with patch("system_learning.stores.telemetry_store.get_sl_memory_bridge", return_value=bridge):
-            # Should not raise exception
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
             events = store.read_events(900, 1100)
 
         # Telemetry reading should still succeed

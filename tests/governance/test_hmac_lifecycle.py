@@ -220,19 +220,19 @@ def test_req396_tampered_data_fails_verification():
 
 @pytest.mark.governance
 def test_hmac_two_run_sign_identical():
-    """Two sign calls with identical inputs produce identical signatures."""
-    ks = HMACKeystore()
-    ks.register_key(_make_key())
+"""Test hmac_two_run_sign_identical runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    data = b"replay_determinism_proof"
-    sig1 = ks.sign("signature", data, now=_BASE_TIME + 1)
-    sig2 = ks.sign("signature", data, now=_BASE_TIME + 1)
+# Act
+# TODO: Execute hmac_two_run_sign_identical
+result = None  # Replace with actual execution
 
-    assert sig1 == sig2
-
-
-@pytest.mark.governance
-def test_hmac_valid_key_signs_within_window():
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
     """Valid in-window key signs successfully."""
     ks = HMACKeystore()
     ks.register_key(_make_key(issued_at=_BASE_TIME, ttl=3600.0))

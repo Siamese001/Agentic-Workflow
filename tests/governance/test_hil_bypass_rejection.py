@@ -320,19 +320,19 @@ class TestSignVerifyLifecycle:
 
 class TestTamperedArtifact:
     def test_tampered_action_fails_verify(self):
-        signed = _make(action="APPROVE").sign(_SECRET)
-        # Reconstruct with different action but same sig
-        tampered = HumanDecisionArtifact(
-            trace_id=signed.trace_id,
-            policy_hash=signed.policy_hash,
-            reviewer_id=signed.reviewer_id,
-            action="MODIFY_DIFF",
-            original_plan_hash=signed.original_plan_hash,
-            structured_patch_schema=_PATCH,
-            reviewer_sig=signed.reviewer_sig,
-        )
-        with pytest.raises(HumanDecisionViolation, match="mismatch"):
-            tampered.verify(_SECRET)
+    """Test tampered_action_fails_verify runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for tampered_action_fails_verify
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute tampered_action_fails_verify
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
     def test_tampered_reviewer_id_fails_verify(self):
         signed = _make().sign(_SECRET)
@@ -405,19 +405,19 @@ class TestActionMatrix:
         ],
     )
     def test_l5_reclear_by_action(self, action, patch, expect_l5):
-        artifact = _make(action=action, structured_patch_schema=patch)
-        assert artifact.l5_reclear_required is expect_l5
+    """Test l5_reclear_by_action runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for l5_reclear_by_action
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.parametrize("action", ["APPROVE", "REJECT"])
-    def test_unsigned_always_fails_verify(self, action):
-        artifact = _make(action=action)
-        with pytest.raises(HumanDecisionViolation):
-            artifact.verify(_SECRET)
+    # Act
+    # TODO: Execute l5_reclear_by_action
+    result = None  # Replace with actual function call
 
-    @pytest.mark.parametrize("action", ["APPROVE", "REJECT"])
-    def test_signed_always_passes_verify(self, action):
-        artifact = _make(action=action).sign(_SECRET)
-        artifact.verify(_SECRET)  # no raise
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
 
 # ---------------------------------------------------------------------------

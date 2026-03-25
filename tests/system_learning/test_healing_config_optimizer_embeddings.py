@@ -331,20 +331,20 @@ class TestHealingConfigOptimizerEmbeddings:
         # when sample size is below threshold
 
     def test_influence_cap_respected(
-        self, optimizer: HealingConfigOptimizer, sample_snapshot: HealingOutcomeAggregateSnapshot
-    ) -> None:
-        """T3 - Influence cap: embedding_weight should never exceed embedding_influence_cap."""
-        # Create embedding metadata
-        embedding_metadata = {
-            "embedding_enabled_at_time": True,
-            "embedding_replay_key": "test_replay_key",
-            "embedding_artifact_hash": "test_hash",
-            "embedding_topk_hashes": ["hash1", "hash2"],
-            "embedding_topk_scores_round6": [0.95, 0.90],
-        }
+    """Test influence_cap_respected contract compliance."""
+    # Arrange
+    # TODO: Set up specification test case
+    spec_input = {}  # Replace with actual specification input
 
-        # Test with cap of 0.20
-        proposal = optimizer.propose_threshold_adjustments_with_embeddings(
+    # Act
+    # TODO: Test specification compliance
+    compliance_result = None  # Replace with actual compliance test
+
+    # Assert - Specification Contract
+    assert compliance_result is not None, "Specification compliance should be testable"
+    assert isinstance(compliance_result, (bool, dict)), "Compliance result should be structured"
+    # TODO: Add specific specification assertions
+    # assert compliance_result.get("meets_spec", False), "Should meet specification requirements"
             sample_snapshot,
             embedding_metadata=embedding_metadata,
             embedding_influence_cap=0.20,

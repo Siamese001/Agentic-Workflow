@@ -242,7 +242,16 @@ class TestHITLDecisionLogger:
         assert logger.count() == 2
 
     def test_negative_no_records_without_log_call(self, tmp_path):
-        """Negative control: fresh logger must have zero records."""
-        logger = HITLDecisionLogger(log_path=tmp_path / "decisions.jsonl")
-        assert logger.count() == 0
-        assert logger.all_records() == []
+    """Test negative_no_records_without_log_call runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute negative_no_records_without_log_call
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions

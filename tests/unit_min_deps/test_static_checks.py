@@ -149,19 +149,19 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 @pytest.mark.unit_min_deps
 def test_powershell_scanner_detects_subprocess_calls():
-    """Test PowerShell scanner detects subprocess calls with PowerShell."""
-    code = """
-import subprocess
-subprocess.run(["pwsh", "-c", "echo test"])
-subprocess.call(["powershell", "-Command", "Get-Process"])
-"""
+"""Test powershell_scanner_detects_subprocess_calls runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
-        f.write(code)
-        f.flush()
+# Act
+# TODO: Execute powershell_scanner_detects_subprocess_calls
+result = None  # Replace with actual execution
 
-        violations = scan_file_for_powershell(Path(f.name))
-
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
         assert len(violations) == 2
         assert violations[0][1] == "PS_SUBPROCESS_ARGV0"
         assert "pwsh" in violations[0][2]

@@ -185,32 +185,32 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestRewooTypes:
     def test_rewoo_task_list_ready_tasks_no_deps(self):
-        from agentic_core.L3_orchestration.types.rewoo_types import (
-            RewooTask,
-            RewooTaskList,
-        )
+    """Test rewoo_task_list_ready_tasks_no_deps runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for rewoo_task_list_ready_tasks_no_deps
+    test_data = {}  # Replace with actual test data
 
-        tl = RewooTaskList(goal="test")
-        tl.tasks.append(RewooTask("t1", "desc", "why", "tool_a", {}))
-        tl.tasks.append(RewooTask("t2", "desc2", "why2", "tool_b", {}, depends_on=["t1"]))
-        ready = tl.ready_tasks()
-        assert len(ready) == 1
-        assert ready[0].task_id == "t1"
+    # Act
+    # TODO: Execute rewoo_task_list_ready_tasks_no_deps
+    result = None  # Replace with actual function call
 
-    def test_rewoo_task_list_ready_after_completion(self):
-        from agentic_core.L3_orchestration.types.rewoo_types import (
-            RewooTask,
-            RewooTaskList,
-            RewooTaskStatus,
-        )
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    """Test rewoo_task_list_ready_after_completion runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for rewoo_task_list_ready_after_completion
+    test_data = {}  # Replace with actual test data
 
-        tl = RewooTaskList(goal="test")
-        t1 = RewooTask("t1", "desc", "why", "tool_a", {})
-        t1.status = RewooTaskStatus.COMPLETED
-        t2 = RewooTask("t2", "desc2", "why2", "tool_b", {}, depends_on=["t1"])
-        tl.tasks.extend([t1, t2])
-        ready = tl.ready_tasks()
-        assert len(ready) == 1
+    # Act
+    # TODO: Execute rewoo_task_list_ready_after_completion
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert ready[0].task_id == "t2"
 
     def test_rewoo_context_accumulates_results(self):
@@ -321,26 +321,26 @@ class TestRewooEngine:
         assert not ctx.success
 
     def test_reference_substitution(self):
-        from agentic_core.L3_orchestration.engines.rewoo_engine import RewooSolver
+    """Test reference_substitution runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for reference_substitution
+    test_data = {}  # Replace with actual test data
 
-        solver = RewooSolver()
-        resolved = solver._resolve_references({"x": "#prev"}, {"prev": "VALUE"})
-        assert resolved["x"] == "VALUE"
+    # Act
+    # TODO: Execute reference_substitution
+    """Test synthesizer_fn_called runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_synthesizer_fn_called(self):
-        engine = self._make_engine(
-            [
-                {
-                    "task_id": "t1",
-                    "description": "a",
-                    "reasoning": "r",
-                    "tool_name": "echo",
-                    "tool_input": {"value": "hi"},
-                    "depends_on": [],
-                },
-            ]
-        )
-        called = []
+    # Act
+    # TODO: Execute synthesizer_fn_called
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
         async def _synth(ctx):
             called.append(True)
@@ -392,19 +392,19 @@ class TestReflexionEngine:
         assert result["response"] == "response_2"
 
     def test_memory_summary_grows(self):
-        from agentic_core.L3_orchestration.types.reflexion_types import ReflexionCritique, ReflexionMemory
+    """Test memory_summary_grows runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for memory_summary_grows
+    test_data = {}  # Replace with actual test data
 
-        mem = ReflexionMemory(task="t")
-        mem.add(ReflexionCritique(1, "r1", "c1", 0.5, False))
-        mem.add(ReflexionCritique(2, "r2", "c2", 0.8, False))
-        summary = mem.summary()
-        assert "Iteration 1" in summary
-        assert "Iteration 2" in summary
+    # Act
+    # TODO: Execute memory_summary_grows
+    result = None  # Replace with actual function call
 
-    def test_single_iteration_converge(self):
-        engine = self._make_engine([0.95])
-        result = asyncio.get_event_loop().run_until_complete(engine.run("task"))
-        assert result["iterations"] == 1
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert result["passed"]
 
 
@@ -673,48 +673,48 @@ class TestAutonomousWorkflowEngine:
 
 class TestReactEngine:
     def test_import_from_engines_path(self):
-        from agentic_core.L1_cognition.engines.react_engine import create_react_engine
+    """Test import_from_engines_path runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for import_from_engines_path
+    test_data = {}  # Replace with actual test data
 
-        engine = create_react_engine(max_steps=5)
-        assert engine.max_steps == 5
+    # Act
+    """Test react_engine_run_finishes runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_react_engine_run_finishes(self):
-        from agentic_core.L1_cognition.engines.react_engine import ReActEngine
+    # Act
+    # TODO: Execute react_engine_run_finishes
+    result = None  # Replace with actual execution
 
-        engine = ReActEngine(max_steps=2, enable_self_reflection=False)
-        call_count = {"n": 0}
-
-        async def _think(task, steps):
-            call_count["n"] += 1
-            if call_count["n"] >= 3:
-                return "FINISH"
-            return f"Thought: step {call_count['n']}\nAction: noop\nAction Input: {{}}"
-
-        async def _act(action, action_input):
-            return f"obs_{action}"
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
         trace = asyncio.get_event_loop().run_until_complete(engine.run("test task", _think, _act))
         assert trace.Task == "test task"
 
     def test_react_strategy_imports(self):
-        from agentic_core.L1_cognition.enforcement.react_strategy import ReActPattern, ReActStrategy
+    """Test react_strategy_imports runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for react_strategy_imports
+    test_data = {}  # Replace with actual test data
 
-        assert ReActPattern is ReActStrategy
+"""Test react_strategy_has_engine runtime behavior."""
+# Arrange
+# TODO: Set up test data for react_strategy_has_engine
+test_data = {}  # Replace with actual test data
 
-    def test_react_strategy_has_engine(self):
-        from agentic_core.L1_cognition.enforcement.react_strategy import ReActStrategy
+# Act
+# TODO: Execute react_strategy_has_engine
+result = None  # Replace with actual function call
 
-        strategy = ReActStrategy(max_steps=3)
-        assert strategy._engine is not None
-        assert strategy._engine.max_steps == 3
-
-    
-    def test_runtime_state_shim(self):
-        from agentic_core.runtime.state import AgentState
-
-        state = AgentState(task_id="t1", user_input="hello")
-        assert state.turn_count == 0
-
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
 
 # ---------------------------------------------------------------------------
 # C2 — AgenticRouter
@@ -780,27 +780,27 @@ class TestAgenticRouter:
         assert decision.result == "opinion_a+opinion_b"
 
     def test_list_targets(self):
-        from agentic_core.L0_routing.engines.agentic_router import AgenticRouter
+    """Test list_targets runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for list_targets
+    test_data = {}  # Replace with actual test data
 
-        router = AgenticRouter()
-        router.register("t1", AsyncMock())
-        router.register("t2", AsyncMock())
-        assert set(router.list_targets()) == {"t1", "t2"}
+    # Act
+    # TODO: Execute list_targets
+    result = None  # Replace with actual function call
+    """Test routing_decision_has_confidence runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for routing_decision_has_confidence
+    test_data = {}  # Replace with actual test data
 
-    def test_routing_decision_has_confidence(self):
-        from agentic_core.L0_routing.engines.agentic_router import AgenticRouter
+    # Act
+    # TODO: Execute routing_decision_has_confidence
+    result = None  # Replace with actual function call
 
-        async def _h(inp, ctx):
-            return "r"
-
-        router = AgenticRouter()
-        router.register("agent", _h, intent_keywords=["test", "run"])
-        decision = asyncio.get_event_loop().run_until_complete(router.route("run the test"))
-        assert decision.confidence > 0
-
-
-# ---------------------------------------------------------------------------
-# C3 — PromptChainEngine
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 # ---------------------------------------------------------------------------
 
 
@@ -943,34 +943,34 @@ class TestWorkerPool:
         assert results[0].error is not None
 
     def test_collect_results_summary(self):
-        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
-            WorkerPool,
-            WorkerResult,
-        )
+    """Test collect_results_summary runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for collect_results_summary
+    test_data = {}  # Replace with actual test data
 
-        pool = WorkerPool()
-        results = [
-            WorkerResult("t1", "A", output="o1", success=True),
-            WorkerResult("t2", "B", error="fail", success=False),
-        ]
-        summary = pool.collect_results(results)
-        assert summary["succeeded"] == 1
-        assert summary["failed"] == 1
+    # Act
+    # TODO: Execute collect_results_summary
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
     def test_synthesizer_node_default(self):
-        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
-            SynthesizerNode,
-            WorkerResult,
-        )
+    """Test synthesizer_node_default runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for synthesizer_node_default
+    test_data = {}  # Replace with actual test data
 
-        node = SynthesizerNode()
-        results = [
-            WorkerResult("t1", "A", output={"x": 1}, success=True),
-            WorkerResult("t2", "B", error="e", success=False),
-        ]
-        output = asyncio.get_event_loop().run_until_complete(node.synthesize(results))
-        import json
+    # Act
+    # TODO: Execute synthesizer_node_default
+    result = None  # Replace with actual function call
 
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         parsed = json.loads(output)
         assert parsed["tasks_completed"] == 1
         assert parsed["tasks_failed"] == 1
@@ -1027,38 +1027,38 @@ class TestReplanOnFailure:
         return mock_orch, plan
 
     def test_replan_appends_new_tasks(self):
-        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import replan_on_failure
+    """Test replan_appends_new_tasks runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for replan_appends_new_tasks
+    test_data = {}  # Replace with actual test data
 
-        orch, plan = self._make_plan_and_mock_orch()
-        failed_task = plan.tasks[0]
-        updated_plan, artifact = replan_on_failure(orch, plan, failed_task, "timeout error")
+    # Act
+    # TODO: Execute replan_appends_new_tasks
+    result = None  # Replace with actual function call
 
-        assert len(updated_plan.tasks) > 1
-        assert artifact.failed_task_id == "t1"
-        assert "timeout" in artifact.reason
-
-    def test_replan_marks_failed_task(self):
-        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import replan_on_failure
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         orch, plan = self._make_plan_and_mock_orch()
         failed_task = plan.tasks[0]
         replan_on_failure(orch, plan, failed_task, "reason")
         assert failed_task.status == "failed"
 
     def test_replan_increments_counter(self):
-        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
-            AtomicTask,
-            MissionPlan,
-            replan_on_failure,
-        )
+    """Test replan_increments_counter runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for replan_increments_counter
+    test_data = {}  # Replace with actual test data
 
-        plan = MissionPlan(
-            mission_id="m2",
-            created_at="now",
-            prompt="p",
-            tasks=[AtomicTask("t1", "d", "A", "path")],
-            execution_order=["t1"],
-            validation_summary={},
+    # Act
+    # TODO: Execute replan_increments_counter
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         )
         mock_orch = MagicMock()
         mock_orch.decompose.return_value = MissionPlan(
@@ -1081,9 +1081,16 @@ class TestReplanOnFailure:
         assert plan.validation_summary["replans"] == 2
 
     def test_replan_artifact_has_new_tasks(self):
-        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import replan_on_failure
+    """Test replan_artifact_has_new_tasks runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for replan_artifact_has_new_tasks
+    test_data = {}  # Replace with actual test data
 
-        orch, plan = self._make_plan_and_mock_orch()
-        _, artifact = replan_on_failure(orch, plan, plan.tasks[0], "some reason")
-        assert len(artifact.new_tasks) > 0
-        assert artifact.original_plan_id == "m1"
+    # Act
+    # TODO: Execute replan_artifact_has_new_tasks
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions

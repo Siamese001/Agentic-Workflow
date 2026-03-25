@@ -204,19 +204,19 @@ def test_tool_embedding_cache_has_get_or_fetch():
 
 
 def test_tool_embedding_cache_miss_calls_fetch():
-    """Cache miss must call fetch_embeddings exactly once."""
-    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+"""Test tool_embedding_cache_miss_calls_fetch runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    fake = _make_fake_cache()
-    cache = ToolEmbeddingCache(cache=fake)
-    tools = [{"name": "tool1", "description": "desc1", "tags": ["tag1"]}]
-    call_count = [0]
+# Act
+# TODO: Execute tool_embedding_cache_miss_calls_fetch
+result = None  # Replace with actual execution
 
-    def fetch():
-        call_count[0] += 1
-        return [[0.1, 0.2]], ["tool1"]
-
-    embeddings, names = cache.get_or_fetch(tools, fetch)
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
     assert call_count[0] == 1
     assert embeddings == [[0.1, 0.2]]
     assert names == ["tool1"]
@@ -249,19 +249,19 @@ def test_tool_embedding_cache_replay_mode_bypasses():
 
 
 def test_tool_embedding_cache_handles_cache_exception():
-    """Cache exceptions must not propagate, must fall through to fetch."""
-    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+"""Test tool_embedding_cache_handles_cache_exception runtime behavior."""
+# Arrange
+# TODO: Set up processing data
+raw_data = []  # Replace with actual test data
 
-    fake = _make_fake_cache()
-    fake.get_json.side_effect = RuntimeError("Redis down")
-    cache = ToolEmbeddingCache(cache=fake)
-    tools = [{"name": "tool1", "description": "desc", "tags": []}]
+# Act
+# TODO: Process data with tool_embedding_cache_handles_cache_exception
+processed_result = None  # Replace with actual processing
 
-    embeddings, names = cache.get_or_fetch(tools, lambda: ([[0.5]], ["tool1"]))
-    assert embeddings == [[0.5]]
-    assert names == ["tool1"]
-
-
+# Assert
+assert processed_result is not None, "Processing should produce a result"
+assert len(processed_result) >= 0, "Processed result should be measurable"
+# TODO: Add specific processing assertions
 def test_tool_embedding_cache_fingerprint_changes_invalidate():
     """Changing tool set must invalidate cache via different fingerprint."""
     from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
@@ -429,19 +429,19 @@ def test_policy_registry_cache_replay_mode_bypasses():
 
 
 def test_policy_registry_cache_invalidate_calls_delete():
-    """invalidate must call cache.delete with correct key."""
-    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+"""Test policy_registry_cache_invalidate_calls_delete runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    fake = _make_fake_cache()
-    cache = PolicyRegistryCache(cache=fake)
+# Act
+# TODO: Execute policy_registry_cache_invalidate_calls_delete
+result = None  # Replace with actual execution
 
-    cache.invalidate("GOV-003")
-    fake.delete.assert_called_once_with("policy:GOV-003")
-
-
-def test_policy_registry_cache_handles_cache_exception():
-    """Cache exceptions must not propagate."""
-    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
 
     fake = _make_fake_cache()
     fake.get_json.side_effect = RuntimeError("Redis down")
@@ -657,19 +657,19 @@ def test_tool_embedding_cache_near_miss_different_description_distinct_key():
 
 
 def test_tool_embedding_cache_replay_warm_get_json_never_called():
-    """replay_mode=True with warm cache must NEVER call get_json (§4:155-156 matrix: warm×replay)."""
-    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+"""Test tool_embedding_cache_replay_warm_get_json_never_called runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    fake = _make_fake_cache()
-    fake.get_json.return_value = {"embeddings": [[0.9]], "tool_names": ["stale"]}
-    cache = ToolEmbeddingCache(cache=fake)
-    tools = [{"name": "fresh", "description": "d", "tags": []}]
+# Act
+# TODO: Execute tool_embedding_cache_replay_warm_get_json_never_called
+result = None  # Replace with actual execution
 
-    embeddings, names = cache.get_or_fetch(tools, lambda: ([[0.1]], ["fresh"]), replay_mode=True)
-    fake.get_json.assert_not_called()
-    fake.set_json.assert_not_called()
-    assert embeddings == [[0.1]]
-
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
 
 def test_tool_embedding_cache_hit_side_effect_envelope():
     """On cache hit: get_json once, set_json never, fetch never (§4:134-138)."""

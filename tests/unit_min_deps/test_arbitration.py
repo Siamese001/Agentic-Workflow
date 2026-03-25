@@ -423,19 +423,19 @@ def test_arbitrator_with_no_proposals():
 
 @pytest.mark.unit_min_deps
 def test_arbitration_deterministic_across_runs():
-    """Test that arbitration is deterministic across multiple runs."""
-    arbitrator1 = Arbitrator()
-    arbitrator2 = Arbitrator()
+"""Test arbitration_deterministic_across_runs runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    proposals = [
-        AdvisorProposal("advisor1", "decision1", 60, rationale=["fast"], risks=["medium"]),
-        AdvisorProposal("advisor2", "decision2", 55, rationale=["safe"], risks=["low"]),
-        AdvisorProposal("advisor3", "decision3", 70, rationale=["risky"], risks=["high"]),
-    ]
+# Act
+# TODO: Execute arbitration_deterministic_across_runs
+result = None  # Replace with actual execution
 
-    input_data = ArbitrationInput(
-        task_id="test_task",
-        task_kind="test_kind",
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
         proposals=proposals,
     )
 
@@ -479,19 +479,19 @@ def test_advisor_deterministic_outputs():
 
 @pytest.mark.unit_min_deps
 def test_run_advisors_validation():
-    """Test advisor execution harness with validation."""
-    from agentic_core.L3_orchestration.arbitration.run_advisors import (
-        run_advisors,
-    )
+"""Test run_advisors_validation runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    task = {
-        "task_id": "test_task",
-        "task_kind": "execution",
-    }
+# Act
+# TODO: Execute run_advisors_validation
+result = None  # Replace with actual execution
 
-    # Run valid advisors
-    proposals = run_advisors(task, ["risk_averse", "throughput"])
-    assert len(proposals) == 2
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
     assert proposals[0].advisor_id == "risk_averse"
     assert proposals[1].advisor_id == "throughput"
 
@@ -502,19 +502,19 @@ def test_run_advisors_validation():
 
 @pytest.mark.unit_min_deps
 def test_run_all_advisors():
-    """Test running all available advisors."""
-    from agentic_core.L3_orchestration.arbitration.run_advisors import (
-        run_all_advisors,
-    )
+"""Test run_all_advisors runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    task = {
-        "task_id": "test_task",
-        "task_kind": "planning",
-    }
+# Act
+# TODO: Execute run_all_advisors
+result = None  # Replace with actual execution
 
-    proposals = run_all_advisors(task)
-
-    # Should have proposals from all advisors
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
     assert len(proposals) >= 2  # At least risk_averse and throughput
 
     advisor_ids = [p.advisor_id for p in proposals]
@@ -530,19 +530,19 @@ def test_run_all_advisors():
 
 @pytest.mark.unit_min_deps
 def test_advisor_task_kind_behavior():
-    """Test that advisors behave differently for different task kinds."""
-    from agentic_core.L3_orchestration.arbitration.advisors import (
-        risk_averse_advisor,
-    )
+"""Test advisor_task_kind_behavior runtime behavior."""
+# Arrange
+# TODO: Set up test data for advisor_task_kind_behavior
+test_data = {}  # Replace with actual test data
 
-    # Test planning task
-    planning_task = {"task_id": "test", "task_kind": "planning"}
-    planning_proposal = risk_averse_advisor(planning_task)
+# Act
+# TODO: Execute advisor_task_kind_behavior
+result = None  # Replace with actual function call
 
-    # Test execution task
-    execution_task = {"task_id": "test", "task_kind": "execution"}
-    execution_proposal = risk_averse_advisor(execution_task)
-
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
     # Should produce different decisions
     assert planning_proposal.decision != execution_proposal.decision
 

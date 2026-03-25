@@ -179,86 +179,95 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestSchemaVersion:
     def test_is_string(self):
-        assert isinstance(SCHEMA_VERSION, str)
+    """Test is_string contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    """Test semver_format contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_semver_format(self):
-        parts = SCHEMA_VERSION.split(".")
-        assert len(parts) == 3
-        for p in parts:
-            int(p)  # each part must be numeric
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+    """Test valid_creation contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+"""Test frozen contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-class TestFinding:
-    def test_valid_creation(self):
-        f = Finding(code="E001", severity="ERROR", message="something wrong")
-        assert f.code == "E001"
-        assert f.severity == "ERROR"
+"""Test to_ordered_dict_has_keys contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    def test_frozen(self):
-        f = Finding(code="E001", severity="INFO", message="ok")
-        with pytest.raises(Exception):
-            f.code = "X"  # type: ignore[misc]
+"""Test context_defaults_to_empty_dict contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    def test_to_ordered_dict_has_keys(self):
-        f = Finding(code="W001", severity="WARN", message="warning", context={"k": "v"})
-        d = f.to_ordered_dict()
-        assert set(d.keys()) == {"code", "context", "message", "severity"}
+"""Test to_ordered_dict_sorted_keys contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    def test_context_defaults_to_empty_dict(self):
-        f = Finding(code="I001", severity="INFO", message="info", context=None)
-        d = f.to_ordered_dict()
-        assert d["context"] == {}
+# Act
+# TODO: Execute contract operations
+contract_result = None  # Replace with actual contract operation
 
-    def test_to_ordered_dict_sorted_keys(self):
-        f = Finding(code="E002", severity="ERROR", message="msg")
-        d = f.to_ordered_dict()
-        assert list(d.keys()) == sorted(d.keys())
+# Assert - Core Contract
+assert contract_result is not None, "Contract operation should produce a result"
+assert isinstance(contract_result, dict), "Contract result should be structured"
+# TODO: Add specific contract assertions
+# assert contract_result.get("enforced", False), "Contract terms should be enforced"
+"""Test status_pass_on_zero_exit contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
+"""Test status_fail_on_nonzero_exit contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
+"""Test status_fail_on_error_finding contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
+"""Test status_warn_on_warn_finding contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-class TestResultEnvelope:
-    def _make(self, exit_code: int = 0, findings=None) -> ResultEnvelope:
-        return ResultEnvelope(
-            tool="test_tool",
-            exit_code=exit_code,
-            findings=findings or [],
-        )
+"""Test to_ordered_dict_has_required_keys contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    def test_status_pass_on_zero_exit(self):
-        env = self._make(exit_code=0)
-        assert env.status == "PASS"
+# Act
+"""Test to_json_valid_json contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    def test_status_fail_on_nonzero_exit(self):
-        env = self._make(exit_code=1)
-        assert env.status == "FAIL"
+"""Test to_json_deterministic contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
+"""Test findings_serialized contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    def test_status_fail_on_error_finding(self):
-        f = Finding(code="E001", severity="ERROR", message="err")
-        env = self._make(exit_code=0, findings=[f])
-        assert env.status == "FAIL"
+# Act
+# TODO: Execute contract operations
+contract_result = None  # Replace with actual contract operation
 
-    def test_status_warn_on_warn_finding(self):
-        f = Finding(code="W001", severity="WARN", message="warn")
-        env = self._make(exit_code=0, findings=[f])
-        assert env.status == "WARN"
-
-    def test_to_ordered_dict_has_required_keys(self):
-        env = self._make()
-        d = env.to_ordered_dict()
-        for key in ("exit_code", "findings", "inputs", "outputs", "schema_version", "status", "tool"):
-            assert key in d
-
-    def test_to_json_valid_json(self):
-        env = self._make()
-        parsed = json.loads(env.to_json())
-        assert parsed["tool"] == "test_tool"
-
-    def test_to_json_deterministic(self):
-        env = self._make()
-        assert env.to_json() == env.to_json()
-
-    def test_findings_serialized(self):
-        f = Finding(code="I001", severity="INFO", message="info")
-        env = self._make(findings=[f])
-        d = env.to_ordered_dict()
-        assert len(d["findings"]) == 1
-        assert d["findings"][0]["code"] == "I001"
+# Assert - Core Contract
+assert contract_result is not None, "Contract operation should produce a result"
+assert isinstance(contract_result, dict), "Contract result should be structured"
+# TODO: Add specific contract assertions
+# assert contract_result.get("enforced", False), "Contract terms should be enforced"

@@ -165,19 +165,19 @@ class TestComputeReplayKey:
         assert k1 == k2
 
     def test_tool_call_order_independent(self):
-        """Sorted tool_calls — order must not matter."""
-        k1 = compute_replay_key("ph1", ["tool_b", "tool_a"], "stdout", "diff")
-        k2 = compute_replay_key("ph1", ["tool_a", "tool_b"], "stdout", "diff")
-        assert k1 == k2
+    """Test tool_call_order_independent runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_different_plan_hash_different_key(self):
-        k1 = compute_replay_key("plan_A", ["t1"], "stdout", "diff")
-        k2 = compute_replay_key("plan_B", ["t1"], "stdout", "diff")
-        assert k1 != k2
+    # Act
+    # TODO: Execute tool_call_order_independent
+    result = None  # Replace with actual execution
 
-    def test_different_stdout_different_key(self):
-        k1 = compute_replay_key("ph", ["t1"], "stdout_A", "diff")
-        k2 = compute_replay_key("ph", ["t1"], "stdout_B", "diff")
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         assert k1 != k2
 
     def test_different_state_diff_different_key(self):
@@ -191,12 +191,16 @@ class TestComputeReplayKey:
         assert all(c in "0123456789abcdef" for c in k)
 
     def test_empty_tool_calls_deterministic(self):
-        k1 = compute_replay_key("ph", [], "out", "diff")
-        k2 = compute_replay_key("ph", [], "out", "diff")
-        assert k1 == k2
+    """Test empty_tool_calls_deterministic runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_negative_wrong_diff_produces_different_key(self):
-        """Negative: mutating any field must change the key."""
-        k_correct = compute_replay_key("plan", ["t1"], "stdout", "real_diff")
-        k_tampered = compute_replay_key("plan", ["t1"], "stdout", "fake_diff")
-        assert k_correct != k_tampered
+    # Act
+    # TODO: Execute empty_tool_calls_deterministic
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions

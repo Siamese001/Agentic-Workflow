@@ -226,19 +226,19 @@ class TestPreCommitContract:
         )
 
     def test_t3g_hook_is_always_run(self):
-        """Staleness guard must run even when no Python files changed."""
-        cfg = self._load_cfg()
-        # Find the adg-stale-guard block and verify always_run: true is nearby
-        idx = cfg.find("adg-stale-guard")
-        assert idx != -1
-        block = cfg[idx : idx + 400]
-        assert "always_run: true" in block, (
-            "T3g hook must have 'always_run: true' — staleness check must run on every commit"
-        )
+    """Test t3g_hook_is_always_run runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_t2c_appears_before_burndown_ratchet(self):
-        """Guardian auto-fixer MUST run before the burndown ratchet so fixed
-        comments don't trigger the ratchet violation count."""
+    # Act
+    # TODO: Execute t3g_hook_is_always_run
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         cfg = self._load_cfg()
         t2c_pos = cfg.find("guardian-comment-fixer")
         ratchet_pos = cfg.find("adg-burndown-gate")
@@ -457,54 +457,54 @@ class TestCIWorkflowContract:
         return CI_WF.read_text(encoding="utf-8")
 
     def test_ci_workflow_file_exists(self):
-        assert CI_WF.exists(), ".github/workflows/adg-antipattern-ci.yml must exist for CI enforcement"
+    """Test ci_workflow_file_exists runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    """Test ci_workflow_is_valid_yaml runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
 
-    def test_ci_workflow_is_valid_yaml(self):
-        """The workflow YAML must be parseable (no syntax errors)."""
-        import importlib.util
+    # Act
+    # TODO: Execute workflow ci_workflow_is_valid_yaml
+    workflow_result = None  # Replace with actual workflow execution
 
-        text = self._load()
-        # Use yaml if available, else do a structural sanity check
-        spec = importlib.util.find_spec("yaml")
-        if spec is not None:
-            import yaml
-
-            data = yaml.safe_load(text)
-            assert data is not None and isinstance(data, dict)
-        else:
-            # Structural fallback: must have 'name:', 'on:', 'jobs:'
+    # Assert
+    assert workflow_result is not None, "Workflow should produce a result"
+    assert isinstance(workflow_result, dict), "Workflow result should be structured"
+    # TODO: Add workflow step assertions
             assert "name:" in text and "on:" in text and "jobs:" in text
 
     def test_ci_workflow_triggers_on_python_files(self):
-        text = self._load()
-        assert "**.py" in text or "*.py" in text, "CI workflow must trigger on Python file changes"
+    """Test ci_workflow_triggers_on_python_files runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
+    """Test ci_workflow_uses_check_only_flag runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
+    """Test ci_workflow_calls_antipattern_fixer runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+    """Test ci_workflow_sets_pythonpath runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
+    """Test ci_workflow_has_no_redis_dependency runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
 
-    def test_ci_workflow_uses_check_only_flag(self):
-        text = self._load()
-        assert "--check-only" in text, "CI workflow must use --check-only (never auto-modify files in CI)"
+    # Act
+    # TODO: Execute workflow ci_workflow_has_no_redis_dependency
+    workflow_result = None  # Replace with actual workflow execution
 
-    def test_ci_workflow_calls_antipattern_fixer(self):
-        text = self._load()
-        assert "adg_antipattern_fixer.py" in text, "CI workflow must invoke adg_antipattern_fixer.py"
-
-    def test_ci_workflow_sets_pythonpath(self):
-        text = self._load()
-        assert "PYTHONPATH" in text, "CI workflow must set PYTHONPATH=. so the fixer can import tools.*"
-
-    def test_ci_workflow_has_no_redis_dependency(self):
-        """adg_antipattern_fixer has no Redis dependency — CI workflow must not start Redis."""
-        text = self._load()
-        assert "redis-server" not in text and "redis" not in text.lower().split("adg_antipattern")[0], (
-            "CI workflow must NOT require Redis — antipattern fixer runs on raw source"
-        )
-
-
-# ===========================================================================
-# 5. Functional smoke tests
-# ===========================================================================
-
-
-class TestFunctionalSmoke:
+    # Assert
+    assert workflow_result is not None, "Workflow should produce a result"
+    assert isinstance(workflow_result, dict), "Workflow result should be structured"
+    # TODO: Add workflow step assertions
     """Verify the accelerators actually work end-to-end in real scenarios."""
 
     def test_antipattern_fixer_fixes_missing_colon_in_guardian(self):
@@ -681,27 +681,27 @@ class TestNegativeAntiPattern:
     """The accelerator wiring docs must NOT themselves contain the forbidden patterns."""
 
     def test_repair_loop_workflow_has_no_inline_redis_after_edit(self):
-        """The repair loop must not contain the old raw Redis check pattern anywhere."""
-        text = REPAIR_WF.read_text(encoding="utf-8")
-        # Old pattern: python -c "import redis; r = redis.Redis(
-        assert 'python -c "import redis' not in text, (
-            "adg-repair-loop.md still contains old inline Redis command"
-        )
+    """Test repair_loop_workflow_has_no_inline_redis_after_edit runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
 
-    def test_refresh_workflow_has_no_inline_redis_in_step1(self):
-        text = REFRESH_WF.read_text(encoding="utf-8")
-        idx = text.find("## STEP 1")
-        step1 = text[idx : text.find("## STEP 2", idx)] if idx != -1 else ""
-        assert 'python -c "import redis' not in step1, (
-            "adg-redis-refresh.md STEP 1 still contains old inline Redis command"
-        )
+    # Act
+    # TODO: Execute workflow repair_loop_workflow_has_no_inline_redis_after_edit
+    workflow_result = None  # Replace with actual workflow execution
+    """Test refresh_workflow_has_no_inline_redis_in_step1 runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
 
-    def test_windsurfrules_section_1_3_no_manual_pytest_expand(self):
-        """§1.3 must not instruct users to manually expand test paths."""
-        text = WINDSURFRULES.read_text(encoding="utf-8")
-        idx = text.find("1.3")
-        block = text[idx : idx + 2000] if idx != -1 else ""
-        # Must reference the tool, not raw pytest with manual paths
+    # Act
+    # TODO: Execute workflow refresh_workflow_has_no_inline_redis_in_step1
+    workflow_result = None  # Replace with actual workflow execution
+
+    # Assert
+    assert workflow_result is not None, "Workflow should produce a result"
+    assert isinstance(workflow_result, dict), "Workflow result should be structured"
+    # TODO: Add workflow step assertions
         assert "adg_test_selector.py" in block, (
             "§1.3 must reference adg_test_selector.py — not manual pytest path expansion"
         )

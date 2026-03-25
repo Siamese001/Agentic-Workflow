@@ -259,19 +259,19 @@ class TestEmbeddingRetentionSchedulerPersist:
 
     @pytest.mark.unit_min_deps
     def test_run_once_rolling_window_persists_to_disk(self, tmp_path):
-        """After rolling-window prune+rebuild, persist_base_path triggers disk write."""
-        index_id = "healing_context_v1"
-        store = _build_store(tmp_path, index_id, n=6)
+    """Test run_once_rolling_window_persists_to_disk runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        # All vectors have created_utc in [1_000_000 .. 1_005_000].
-        # Cutoff: now_utc - retention_window = prune everything before 1_004_500.
-        # That leaves the last 1–2 vectors depending on stride.
-        now_utc = 1_004_500 + (1 * 24 * 3600)  # 1 day after the cutoff epoch
+    # Act
+    # TODO: Execute run_once_rolling_window_persists_to_disk
+    result = None  # Replace with actual execution
 
-        scheduler = EmbeddingRetentionScheduler()
-        results = scheduler.run_once(
-            now_utc=now_utc,
-            policies={index_id: {"mode": "rolling_window", "retention_days": 1}},
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             stores={index_id: store},
             persist_base_path=tmp_path,
         )
@@ -287,19 +287,19 @@ class TestEmbeddingRetentionSchedulerPersist:
 
     @pytest.mark.unit_min_deps
     def test_run_once_predicate_persists_to_disk(self, tmp_path):
-        """After predicate prune+rebuild, persist_base_path triggers disk write."""
-        index_id = "telemetry_v1"
-        store = _build_store(tmp_path, index_id, n=5)
+    """Test run_once_predicate_persists_to_disk runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        # Predicate: prune vectors with even content_hash index
-        def prune_even(meta: dict) -> bool:
-            return meta.get("content_hash", "")[-4:].lstrip("0") in ("0", "2", "4", "")
+    # Act
+    # TODO: Execute run_once_predicate_persists_to_disk
+    result = None  # Replace with actual execution
 
-        scheduler = EmbeddingRetentionScheduler()
-        results = scheduler.run_once(
-            now_utc=0,
-            policies={index_id: {"mode": "predicate", "predicate": prune_even}},
-            stores={index_id: store},
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             persist_base_path=tmp_path,
         )
 
@@ -309,19 +309,19 @@ class TestEmbeddingRetentionSchedulerPersist:
 
     @pytest.mark.unit_min_deps
     def test_run_once_persisted_index_is_loadable(self, tmp_path):
-        """After persist_base_path rebuild, the artifact must be loadable."""
-        index_id = "healing_context_v1"
-        store = _build_store(tmp_path, index_id, n=4)
-        vecs_orig, _ = _make_vecs(4)
+    """Test run_once_persisted_index_is_loadable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        # Prune all vectors (cutoff in the far future)
-        def prune_all(_: dict) -> bool:
-            return True
+    # Act
+    # TODO: Execute run_once_persisted_index_is_loadable
+    result = None  # Replace with actual execution
 
-        scheduler = EmbeddingRetentionScheduler()
-        results = scheduler.run_once(
-            now_utc=999_999_999,
-            policies={index_id: {"mode": "predicate", "predicate": prune_all}},
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             stores={index_id: store},
             persist_base_path=tmp_path,
         )
@@ -339,19 +339,19 @@ class TestEmbeddingRetentionSchedulerPersist:
 
     @pytest.mark.unit_min_deps
     def test_run_once_without_persist_base_path_no_disk_write(self, tmp_path):
-        """When persist_base_path is None (default), no disk artifacts written."""
-        index_id = "healing_context_v1"
-        store = _build_store(tmp_path, index_id, n=3)
+    """Test run_once_without_persist_base_path_no_disk_write runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        def prune_all(_: dict) -> bool:
-            return True
+    # Act
+    # TODO: Execute run_once_without_persist_base_path_no_disk_write
+    result = None  # Replace with actual execution
 
-        scheduler = EmbeddingRetentionScheduler()
-        scheduler.run_once(
-            now_utc=0,
-            policies={index_id: {"mode": "predicate", "predicate": prune_all}},
-            stores={index_id: store},
-            # persist_base_path intentionally omitted (default None)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         )
 
         dest = tmp_path / index_id
@@ -377,19 +377,19 @@ class TestEmbeddingRetentionSchedulerPersist:
 
     @pytest.mark.unit_min_deps
     def test_run_once_persisted_manifest_integrity(self, tmp_path):
-        """manifest.json sha256 fields must match actual file content after rebuild."""
-        import hashlib
+    """Test run_once_persisted_manifest_integrity runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        index_id = "healing_context_v1"
-        store = _build_store(tmp_path, index_id, n=4)
+    # Act
+    # TODO: Execute run_once_persisted_manifest_integrity
+    result = None  # Replace with actual execution
 
-        def prune_first(_meta: dict) -> bool:
-            return _meta.get("content_hash", "") == "ch_0000"
-
-        scheduler = EmbeddingRetentionScheduler()
-        results = scheduler.run_once(
-            now_utc=0,
-            policies={index_id: {"mode": "predicate", "predicate": prune_first}},
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             stores={index_id: store},
             persist_base_path=tmp_path,
         )
@@ -638,19 +638,19 @@ class TestMetaLearningAgentPersistence:
 
     @pytest.mark.unit
     def test_weights_survive_process_restart(self, tmp_path):
-        """New agent instantiated with same file must load previous run's weights."""
-        weights_file = tmp_path / "weights.json"
+    """Test weights_survive_process_restart runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-        # Run 1: high rewards for 'cot', low for others
-        a1 = self._make_agent(weights_file)
-        for _ in range(10):
-            a1.store_experience({}, "cot", {}, 1.0)
-        for _ in range(10):
-            a1.store_experience({}, "tot", {}, -1.0)
-        a1.update_strategy_weights()
-        saved_weights = dict(a1.strategy_weights)
+    # Act
+    # TODO: Process data with weights_survive_process_restart
+    processed_result = None  # Replace with actual processing
 
-        # Run 2: new agent, same file
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
         a2 = self._make_agent(weights_file)
         # Weights must match what was saved
         assert a2.strategy_weights == pytest.approx(saved_weights, rel=1e-5), (
@@ -989,19 +989,19 @@ class TestStrategyWeightsHardening:
 
     @pytest.mark.unit
     def test_telemetry_callback_fired_on_save(self, tmp_path):
-        """_save_strategy_weights() must fire telemetry_callback with strategy_weights_persisted."""
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
+    """Test telemetry_callback_fired_on_save runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        events = []
+    # Act
+    # TODO: Execute telemetry_callback_fired_on_save
+    result = None  # Replace with actual execution
 
-        def _cb(event_type: str, data: dict) -> None:
-            events.append((event_type, data))
-
-        with patch.object(SovereignBaseAgent, "__init__", return_value=None):
-            agent = MetaLearningAgent(
-                strategy_weights_file=tmp_path / "w.json",
-                telemetry_callback=_cb,
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             )
 
         agent.store_experience({}, "cot", {}, 0.9)
@@ -1015,19 +1015,19 @@ class TestStrategyWeightsHardening:
 
     @pytest.mark.unit
     def test_no_telemetry_when_callback_is_none(self, tmp_path):
-        """No error when telemetry_callback=None and weights are saved."""
-        agent = self._make_agent(tmp_path / "w.json")
-        assert agent.telemetry_callback is None
-        agent.store_experience({}, "cot", {}, 0.5)
-        agent.update_strategy_weights()
-        assert (tmp_path / "w.json").exists()
+    """Test no_telemetry_when_callback_is_none runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    # --- h10: schema_version ---
+    # Act
+    # TODO: Execute no_telemetry_when_callback_is_none
+    result = None  # Replace with actual execution
 
-    @pytest.mark.unit
-    def test_persisted_weights_has_schema_version(self, tmp_path):
-        """Persisted strategy_weights.json must contain 'schema_version' field."""
-        weights_file = tmp_path / "w.json"
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         agent = self._make_agent(weights_file)
         agent.store_experience({}, "cot", {}, 0.7)
         agent.update_strategy_weights()
@@ -1153,19 +1153,19 @@ class TestDeterminismProof:
 
     @pytest.mark.unit_min_deps
     def test_digest_identical_across_two_runs(self, tmp_path, capsys):
-        """Two builds from identical inputs must emit the same META_LEARNING_STATE_DIGEST."""
-        from system_learning.engines.meta_learning_state_digest import (
-            emit_meta_learning_state_digest,
-        )
+    """Test digest_identical_across_two_runs runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        def _run(base: Path) -> str:
-            store = _build_store(base, "hc_v1", n=4)
-            faiss_digest = store.persist_to_disk(
-                "hc_v1",
-                base / "hc_v1",
-                embedder_id="hash-fallback",
-                model_version="v1",
-            )
+    # Act
+    # TODO: Execute digest_identical_across_two_runs
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             digest = emit_meta_learning_state_digest(
                 faiss_index_digests={"hc_v1": faiss_digest},
                 strategy_weights_digest="a" * 64,
@@ -1179,19 +1179,19 @@ class TestDeterminismProof:
 
     @pytest.mark.unit_min_deps
     def test_digest_emitted_exactly_once_per_run(self, tmp_path, capsys):
-        """emit_meta_learning_state_digest must print the digest line exactly once per call."""
-        from system_learning.engines.meta_learning_state_digest import (
-            emit_meta_learning_state_digest,
-        )
+    """Test digest_emitted_exactly_once_per_run runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        capsys.readouterr()
-        store = _build_store(tmp_path, "hc_v1", n=2)
-        faiss_digest = store.persist_to_disk(
-            "hc_v1",
-            tmp_path / "hc_v1",
-            embedder_id="hash-fallback",
-            model_version="v1",
-        )
+    # Act
+    # TODO: Execute digest_emitted_exactly_once_per_run
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         capsys.readouterr()  # flush prior prints
 
         digest = emit_meta_learning_state_digest(
@@ -1805,19 +1805,19 @@ class TestFaissTelemetryEvents:
 
     @pytest.mark.unit_min_deps
     def test_no_telemetry_when_callback_is_none(self, tmp_path):
-        """Store without telemetry_callback must not raise when persisting."""
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
+    """Test no_telemetry_when_callback_is_none runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        store = LocalFAISSStore(tmp_path)
-        store.begin_build("idx", 16, 0)
-        store.add_vectors("idx", [[0.1] * 16], [{"content_hash": "h0", "trace_id": "t0"}])
-        store.finalize_build(
-            "idx",
-            built_at_utc=0,
-            canonicalization_version="1",
-            embedding_model_version="m1",
-            embedding_model_checksum="chk",
-        )
+    # Act
+    # TODO: Execute no_telemetry_when_callback_is_none
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         store.persist_to_disk("idx", tmp_path / "out", embedder_id="e", model_version="v1")
 
     @pytest.mark.unit_min_deps

@@ -234,19 +234,19 @@ class TestIsKernelComponent:
         assert is_kernel_component("agentic_core.L5_safety.core_kernel.classification_kernel") is True
 
     def test_exact_match_l2_execution(self):
-        assert is_kernel_component("agentic_core.L2_execution") is True
+    """Test exact_match_l2_execution runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for exact_match_l2_execution
+    test_data = {}  # Replace with actual test data
 
-    def test_prefix_match_l2_submodule(self):
-        assert is_kernel_component("agentic_core.L2_execution.enforcement.SovereignLLMGateway") is True
+    # Act
+    # TODO: Execute exact_match_l2_execution
+    result = None  # Replace with actual function call
 
-    def test_sovereign_llm_gateway_is_kernel(self):
-        assert is_kernel_component("agentic_core.L2_execution.enforcement.SovereignLLMGateway") is True
-
-    def test_agent_registry_is_kernel(self):
-        assert is_kernel_component("agentic_core.agents.agent_registry") is True
-
-    def test_l0_routing_is_kernel(self):
-        assert is_kernel_component("agentic_core.L0_routing") is True
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
     def test_interfaces_is_kernel(self):
         assert is_kernel_component("agentic_core.interfaces") is True

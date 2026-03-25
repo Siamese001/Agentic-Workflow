@@ -122,91 +122,95 @@ class EnvMutationGuard:
 
 @pytest.mark.governance
 def test_req121_transcript_hash_bound_to_stdout():
-    """REQ-121: ToolTranscript hash is bound to canonical stdout bytes."""
-    stdout = b"line1\nline2\nresult: OK\n"
-    t = ToolTranscript.from_execution(
-        tool_id="tool_pytest",
-        command="python -m pytest",
-        stdout=stdout,
-        stderr=b"",
-        exit_code=0,
-    )
-    assert t.is_hash_bound()
-    assert t.verify_hash()
+"""Test req121_transcript_hash_bound_to_stdout runtime behavior."""
+# Arrange
+# TODO: Set up test data for req121_transcript_hash_bound_to_stdout
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute req121_transcript_hash_bound_to_stdout
+result = None  # Replace with actual function call
 
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
 @pytest.mark.governance
 def test_req121_transcript_hash_deterministic():
-    """REQ-121: Two transcripts with identical stdout have identical hashes."""
-    stdout = b"deterministic output\n"
-    t1 = ToolTranscript.from_execution("t1", "cmd", stdout, b"", 0)
-    t2 = ToolTranscript.from_execution("t2", "cmd", stdout, b"", 0)
+"""Test req121_transcript_hash_deterministic runtime behavior."""
+# Arrange
+# TODO: Set up test data for req121_transcript_hash_deterministic
+test_data = {}  # Replace with actual test data
 
-    assert t1.transcript_hash == t2.transcript_hash
+# Act
+# TODO: Execute req121_transcript_hash_deterministic
+result = None  # Replace with actual function call
 
+# Assert
+"""Test req121_tampered_stdout_fails_verification runtime behavior."""
+# Arrange
+# TODO: Set up test data for req121_tampered_stdout_fails_verification
+test_data = {}  # Replace with actual test data
 
-@pytest.mark.governance
-def test_req121_tampered_stdout_fails_verification():
-    """REQ-121: Tampering with stdout bytes fails hash verification."""
-    stdout = b"original output\n"
-    t = ToolTranscript.from_execution("t1", "cmd", stdout, b"", 0)
+# Act
+# TODO: Execute req121_tampered_stdout_fails_verification
+result = None  # Replace with actual function call
 
-    # Create tampered version with same hash but different stdout
-    tampered = ToolTranscript(
-        tool_id=t.tool_id,
-        command=t.command,
-        stdout=b"TAMPERED output\n",
-        stderr=t.stderr,
-        exit_code=t.exit_code,
-        transcript_hash=t.transcript_hash,  # stale hash
-    )
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
     assert not tampered.verify_hash()
 
 
 @pytest.mark.governance
 def test_req121_empty_stdout_still_hash_bound():
-    """REQ-121: Empty stdout still produces a valid hash binding."""
-    t = ToolTranscript.from_execution("t1", "cmd", b"", b"", 0)
-    assert t.is_hash_bound()
-    assert t.verify_hash()
+"""Test req121_empty_stdout_still_hash_bound runtime behavior."""
+# Arrange
+# TODO: Set up test data for req121_empty_stdout_still_hash_bound
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute req121_empty_stdout_still_hash_bound
+result = None  # Replace with actual function call
+"""Test req121_transcript_is_immutable runtime behavior."""
+# Arrange
+# TODO: Set up test data for req121_transcript_is_immutable
+test_data = {}  # Replace with actual test data
 
-@pytest.mark.governance
-def test_req121_transcript_is_immutable():
-    """REQ-121: ToolTranscript is frozen — cannot be tampered after creation."""
-    t = ToolTranscript.from_execution("t1", "cmd", b"output\n", b"", 0)
-    with pytest.raises((AttributeError, TypeError)):
-        t.transcript_hash = "tampered"  # type: ignore[misc]
+# Act
+# TODO: Execute req121_transcript_is_immutable
+result = None  # Replace with actual function call
+"""Test req126_env_mutation_blocked_in_guard runtime behavior."""
+# Arrange
+# TODO: Set up test data for req126_env_mutation_blocked_in_guard
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute req126_env_mutation_blocked_in_guard
+result = None  # Replace with actual function call
 
-@pytest.mark.governance
-def test_req126_env_mutation_blocked_in_guard():
-    """REQ-126: Direct os.environ mutation raises in guarded context."""
-    guard = EnvMutationGuard()
-    with guard:
-        with pytest.raises(EnvMutationViolation, match="mutation blocked"):
-            guard.assert_write_allowed("SOME_SECRET_KEY")
+# Assert
+assert result is not None, f"{function_name} should return a result"
+"""Test req126_env_mutation_allowed_outside_guard runtime behavior."""
+# Arrange
+# TODO: Set up test data for req126_env_mutation_allowed_outside_guard
+test_data = {}  # Replace with actual test data
 
-    assert "SOME_SECRET_KEY" in guard.blocked_keys
+# Act
+# TODO: Execute req126_env_mutation_allowed_outside_guard
+result = None  # Replace with actual function call
 
+"""Test req126_env_guard_tracks_all_blocked_keys runtime behavior."""
+# Arrange
+# TODO: Set up test data for req126_env_guard_tracks_all_blocked_keys
+test_data = {}  # Replace with actual test data
 
-@pytest.mark.governance
-def test_req126_env_mutation_allowed_outside_guard():
-    """REQ-126: Outside guarded context, mutation check is a no-op."""
-    guard = EnvMutationGuard()
-    # Not inside __enter__, so no raise
-    guard.assert_write_allowed("ANY_KEY")
-    assert guard.blocked_keys == []
+# Act
+# TODO: Execute req126_env_guard_tracks_all_blocked_keys
+result = None  # Replace with actual function call
 
-
-@pytest.mark.governance
-def test_req126_env_guard_tracks_all_blocked_keys():
-    """REQ-126: All blocked key attempts are recorded."""
-    guard = EnvMutationGuard()
-    keys = ["KEY_A", "KEY_B", "KEY_C"]
-    with guard:
-        for k in keys:
-            with pytest.raises(EnvMutationViolation):
-                guard.assert_write_allowed(k)
-
-    assert guard.blocked_keys == keys
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions

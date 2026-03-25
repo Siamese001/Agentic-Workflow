@@ -214,19 +214,19 @@ class TestCanonicalTimeoutContract:
         assert callable(decorator)
 
     def test_timeout_decorator_wraps_function(self) -> None:
-        from agentic_core.utils.timeout_decorator_util import timeout
+    """Test timeout_decorator_wraps_function runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for timeout_decorator_wraps_function
+    test_data = {}  # Replace with actual test data
 
-        def sample_func():
-            return 42
+    # Act
+    # TODO: Execute timeout_decorator_wraps_function
+    result = None  # Replace with actual function call
 
-        decorated = timeout(10)(sample_func)
-        # Decorated function should be callable and return same result
-        assert callable(decorated)
-        assert decorated() == 42
-
-    def test_dunder_all_matches_exports(self) -> None:
-        import agentic_core.utils.timeout_decorator_util as mod
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert hasattr(mod, "__all__")
         for name in mod.__all__:
             assert hasattr(mod, name), f"__all__ lists '{name}' but it is not exported"

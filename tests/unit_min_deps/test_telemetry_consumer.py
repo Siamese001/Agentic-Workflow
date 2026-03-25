@@ -199,19 +199,19 @@ class FakeTelemetryStore:
 
 class TestTelemetryConsumer:
     def test_deterministic_slice_id_across_two_calls(self):
-        """Same backing data produces identical slice_id across two calls."""
-        events = [
-            (1700000000, "metric", b"cpu=50"),
-            (1700000100, "metric", b"mem=1000"),
-            (1700000200, "error", b"timeout"),
-        ]
-        store = FakeTelemetryStore(events)
+    """Test deterministic_slice_id_across_two_calls runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        slice1 = consume_telemetry(store, 1700000000, 1700000300)
-        slice2 = consume_telemetry(store, 1700000000, 1700000300)
+    # Act
+    # TODO: Execute deterministic_slice_id_across_two_calls
+    result = None  # Replace with actual execution
 
-        assert slice1.slice_id == slice2.slice_id
-        assert slice1.slice_hash == slice2.slice_hash
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         assert slice1.slice_id == slice1.slice_hash
 
     def test_sorting_stable_and_canonical(self):

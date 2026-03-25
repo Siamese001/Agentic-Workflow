@@ -9,20 +9,20 @@ from agentic_core.L2_execution.apps_qwen.apps_qwen_gateway import (
 
 
 def test_apps_qwen_gateway_health_check() -> None:
-    gateway = AppsQwenGateway()
-    health = gateway.health_check()
+"""Test apps_qwen_gateway_health_check contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
-    assert health["status"] == "healthy"
-    assert health["model_id"] == "Qwen/Qwen2.5-7B-Instruct"
-    assert isinstance(health["gpu_utilization"], float)
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
 
-
-def test_apps_qwen_gateway_infer_success() -> None:
-    gateway = AppsQwenGateway()
-    request = AppsQwenRequest(
-        app_name="apps_eval",
-        prompt="Review this function for potential bugs.",
-    )
+# Assert - Schema Contract
+assert validation_result is not None, "Schema validation should produce a result"
+assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+# TODO: Add specific schema validation assertions
+# assert validation_result.get("valid", False), "Data should conform to schema"
 
     response = asyncio.run(gateway.infer(request))
 

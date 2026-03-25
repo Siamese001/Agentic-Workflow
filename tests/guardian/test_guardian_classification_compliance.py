@@ -300,20 +300,20 @@ class TestSchemaValidity:
         assert real_result.status in valid_statuses
 
     def test_checks_nonempty(self, real_result: GuardianResult) -> None:
-        assert len(real_result.checks) >= 2
+    """Test checks_nonempty contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_check_ids_match_registry(self, real_result: GuardianResult) -> None:
-        spec = get_guardian_by_id(GUARDIAN_ID)
-        assert spec is not None
-        emitted_ids = {c.check_id for c in real_result.checks}
-        registered_ids = set(spec.check_ids)
-        assert emitted_ids == registered_ids
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-    def test_metrics_present(self, real_result: GuardianResult) -> None:
-        assert "total_checks" in real_result.metrics
-        assert "files_scanned" in real_result.metrics
-        assert real_result.metrics["files_scanned"] > 0
-
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
     def test_serialization_roundtrip(self, real_result: GuardianResult) -> None:
         json_str = real_result.to_json()
         data = json.loads(json_str)

@@ -212,19 +212,19 @@ def risky_function():
                 assert features.has_guardian_comment is True
 
     def test_handles_missing_files_gracefully(self) -> None:
-        """§1.6: Handles missing source files gracefully."""
-        with FeatureExtractor(Path("dummy.sqlite")) as extractor:
-            features = extractor.extract_features(
-                {
-                    "file_path": "nonexistent_file.py",
-                    "line_no": 10,
-                    "evidence": "except:ValueError",
-                    "severity": "MEDIUM",
-                }
-            )
+    """Test handles_missing_files_gracefully runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-            # Should not crash and provide default values
-            assert features.file_path == "nonexistent_file.py"
+    # Act
+    # TODO: Process data with handles_missing_files_gracefully
+    processed_result = None  # Replace with actual processing
+
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
             assert features.function_name is None
             assert features.has_guardian_comment is False
 

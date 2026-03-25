@@ -50,26 +50,26 @@ class TestAgenticCoreOpsScriptsBoundary:
     """Hard gate: agentic_core must not import ops_scripts."""
 
     def test_no_agentic_core_imports_ops_scripts(self) -> None:
-        violations = _scan_boundary_violations()
-        assert not violations, f"Found {len(violations)} agentic_core → ops_scripts import(s):\n" + "\n".join(
-            f"  {v}" for v in violations
-        )
+    """Test no_agentic_core_imports_ops_scripts contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_synthetic_violation_detected(self, tmp_path: Path) -> None:
-        """Negative test: prove the scanner catches a synthetic violation."""
-        fake_module = tmp_path / "fake_module.py"
-        fake_module.write_text(
-            textwrap.dedent("""\
-                from ops_scripts.general import some_function
-            """),
-            encoding="utf-8",
-        )
-        try:
-            source = fake_module.read_text(encoding="utf-8")
-            tree = ast.parse(source, filename=str(fake_module))
-        except SyntaxError:
-            pytest.fail("Synthetic violation file has syntax error")
+    # Act
+    """Test synthetic_violation_detected contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
         found = False
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom):

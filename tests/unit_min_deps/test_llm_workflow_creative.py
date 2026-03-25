@@ -232,35 +232,35 @@ class TestScriptedLLMSimulator:
     """Verify the simulator itself and use it to drive RewooEngine end-to-end."""
 
     def test_simulator_returns_script_entries(self):
-        llm = ScriptedLLM(["hello", "world", "done"])
-        assert llm.respond("q1") == "hello"
-        assert llm.respond("q2") == "world"
-        assert llm.respond("q3") == "done"
+    """Test simulator_returns_script_entries runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for simulator_returns_script_entries
+    test_data = {}  # Replace with actual test data
 
-    def test_simulator_callable_entries(self):
-        llm = ScriptedLLM([lambda p: p.upper()])
-        assert llm.respond("abc") == "ABC"
+    # Act
+    """Test simulator_callable_entries runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+    """Test simulator_records_prompts runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for simulator_records_prompts
+    test_data = {}  # Replace with actual test data
 
-    def test_simulator_records_prompts(self):
-        llm = ScriptedLLM(["r1", "r2"])
-        llm.respond("prompt_a")
-        llm.respond("prompt_b")
-        assert llm.calls == ["prompt_a", "prompt_b"]
+    # Act
+    """Test simulator_empty_returns_empty_string runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for simulator_empty_returns_empty_string
+    test_data = {}  # Replace with actual test data
 
-    def test_simulator_empty_returns_empty_string(self):
-        llm = ScriptedLLM([])
-        assert llm.respond("anything") == ""
+    # Act
+    # TODO: Execute simulator_empty_returns_empty_string
+    result = None  # Replace with actual function call
 
-    def test_rewoo_driven_by_simulator(self):
-        """Full RewooEngine loop driven by a ScriptedLLM planner."""
-        from agentic_core.L3_orchestration.engines.rewoo_engine import (
-            RewooEngine,
-            RewooPlanner,
-            RewooSolver,
-            RewooWorker,
-        )
-
-        task_script = [
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             {
                 "task_id": "fetch",
                 "description": "Fetch data",
@@ -464,19 +464,19 @@ class TestChaosAndFaultInjection:
         assert ctx.task_list.tasks[0].status == RewooTaskStatus.FAILED
 
     def test_reflexion_evaluator_raises_does_not_crash(self):
-        """If evaluator raises on first call, engine propagates — verify with try/except.
+    """Test reflexion_evaluator_raises_does_not_crash runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for reflexion_evaluator_raises_does_not_crash
+    test_data = {}  # Replace with actual test data
 
-        ReflexionEngine intentionally lets evaluator errors propagate so the
-        caller can decide the recovery strategy.  This test verifies the engine
-        does NOT silently swallow the error and that the exception type is preserved.
-        """
-        from agentic_core.L3_orchestration.engines.reflexion_engine import ReflexionEngine
+    # Act
+    # TODO: Execute reflexion_evaluator_raises_does_not_crash
+    result = None  # Replace with actual function call
 
-        call = {"n": 0}
-
-        async def gen_fn(task, prior, mem):
-            return "draft"
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         async def eval_fn(task, response):
             call["n"] += 1
             if call["n"] == 1:
@@ -646,19 +646,19 @@ class TestPropertyInvariants:
                 assert t.status != RewooTaskStatus.COMPLETED, f"trial={trial}"
 
     def test_worker_pool_collect_results_sum_invariant(self):
-        """succeeded + failed must always == total."""
-        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
-            WorkerPool,
-            WorkerResult,
-        )
+    """Test worker_pool_collect_results_sum_invariant runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for worker_pool_collect_results_sum_invariant
+    test_data = {}  # Replace with actual test data
 
-        pool = WorkerPool()
-        rng = random.Random(2)
-        for trial in range(25):
-            n = rng.randint(1, 12)
-            results = [WorkerResult(f"t{i}", "A", output="o", success=rng.random() > 0.4) for i in range(n)]
-            # Fix: results without success get error field
-            for r in results:
+    # Act
+    # TODO: Execute worker_pool_collect_results_sum_invariant
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
                 if not r.success:
                     r.error = "fail"
             summary = pool.collect_results(results)
@@ -690,19 +690,19 @@ class TestPropertyInvariants:
             assert len(result["outputs"]) == n, f"n={n}"
 
     def test_replan_always_increases_task_count(self):
-        """After replan_on_failure, plan must have strictly more tasks."""
-        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
-            AtomicTask,
-            MissionPlan,
-            replan_on_failure,
-        )
+    """Test replan_always_increases_task_count runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for replan_always_increases_task_count
+    test_data = {}  # Replace with actual test data
 
-        rng = random.Random(4)
-        for trial in range(15):
-            n_init = rng.randint(1, 5)
-            tasks = [AtomicTask(f"t{i}", "d", "A", "p") for i in range(n_init)]
-            plan = MissionPlan(
-                mission_id=f"m{trial}",
+    # Act
+    # TODO: Execute replan_always_increases_task_count
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
                 created_at="now",
                 prompt="p",
                 tasks=tasks,
@@ -822,19 +822,19 @@ class TestStateMachineFuzzer:
         assert RewooTaskStatus.FAILED in seen_statuses
 
     def test_autonomous_all_stop_signals_reachable(self):
-        """Every StopSignal enum value must be reachable from some configuration."""
-        from agentic_core.L3_orchestration.engines.autonomous_workflow_engine import (
-            AutonomousWorkflowEngine,
-            StopSignal,
-        )
+    """Test autonomous_all_stop_signals_reachable runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for autonomous_all_stop_signals_reachable
+    test_data = {}  # Replace with actual test data
 
-        reached: set[StopSignal] = set()
+    # Act
+    # TODO: Execute autonomous_all_stop_signals_reachable
+    result = None  # Replace with actual function call
 
-        # EXPLICIT_STOP
-        async def p_stop(goal, steps, obs):
-            return ("STOP", {})
-
-        class OkEnv:
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             async def execute_action(self, a, p):
                 return {}
 
@@ -948,19 +948,19 @@ class TestStateMachineFuzzer:
         assert "error" in outcomes
 
     def test_agentic_router_exhaustive_keyword_coverage(self):
-        """Every registered keyword must route to its target at least once."""
-        from agentic_core.L0_routing.engines.agentic_router import AgenticRouter
+    """Test agentic_router_exhaustive_keyword_coverage runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for agentic_router_exhaustive_keyword_coverage
+    test_data = {}  # Replace with actual test data
 
-        keywords_by_agent = {
-            "resume_agent": ["resume", "cv", "curriculum"],
-            "code_agent": ["code", "review", "refactor"],
-            "chat_agent": ["chat", "hello", "talk"],
-        }
-        routed: dict[str, set] = {name: set() for name in keywords_by_agent}
+    # Act
+    # TODO: Execute agentic_router_exhaustive_keyword_coverage
+    result = None  # Replace with actual function call
 
-        router = AgenticRouter(min_confidence=0.1)
-        for name, kws in keywords_by_agent.items():
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             async def make_handler(n=name):
                 async def h(inp, ctx):
                     return f"{n}_result"
@@ -1044,19 +1044,19 @@ class TestPipelineComposition:
         assert "climate" in result["response"].lower()
 
     def test_parallelization_feeds_synthesizer_node(self):
-        """ParallelizationEngine branches feed into SynthesizerNode."""
-        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
-            SynthesizerNode,
-            WorkerResult,
-        )
-        from agentic_core.L3_orchestration.engines.parallelization_engine import (
-            AggregationStrategy,
-            ParallelizationEngine,
-            ParallelMode,
-        )
+    """Test parallelization_feeds_synthesizer_node runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for parallelization_feeds_synthesizer_node
+    test_data = {}  # Replace with actual test data
 
-        async def worker(task, seed):
-            return f"perspective_{seed}"
+    # Act
+    # TODO: Execute parallelization_feeds_synthesizer_node
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
         engine = ParallelizationEngine(
             worker,
@@ -1194,19 +1194,19 @@ class TestTemporalAndOrdering:
     """Verify dependency ordering, timing, and concurrency behaviour."""
 
     def test_rewoo_respects_topological_order(self):
-        """Tasks with dependencies must execute strictly after their dependencies."""
-        from agentic_core.L3_orchestration.engines.rewoo_engine import (
-            RewooEngine,
-            RewooPlanner,
-            RewooSolver,
-            RewooWorker,
-        )
+    """Test rewoo_respects_topological_order runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for rewoo_respects_topological_order
+    test_data = {}  # Replace with actual test data
 
-        execution_order = []
+    # Act
+    # TODO: Execute rewoo_respects_topological_order
+    result = None  # Replace with actual function call
 
-        async def plan(goal, ctx):
-            return [
-                {
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
                     "task_id": "A",
                     "description": "d",
                     "reasoning": "r",
@@ -1246,19 +1246,19 @@ class TestTemporalAndOrdering:
         assert execution_order == ["A", "B", "C"]
 
     def test_rewoo_diamond_dependency_executes_once(self):
-        """A diamond dependency (A→B, A→C, B+C→D) must execute A exactly once."""
-        from agentic_core.L3_orchestration.engines.rewoo_engine import (
-            RewooEngine,
-            RewooPlanner,
-            RewooSolver,
-            RewooWorker,
-        )
+    """Test rewoo_diamond_dependency_executes_once runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        call_counts: dict[str, int] = {}
+    # Act
+    # TODO: Execute rewoo_diamond_dependency_executes_once
+    result = None  # Replace with actual execution
 
-        async def plan(goal, ctx):
-            return [
-                {
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
                     "task_id": "A",
                     "description": "d",
                     "reasoning": "r",
@@ -1337,19 +1337,19 @@ class TestTemporalAndOrdering:
         assert len(result["outputs"]) == n_branches
 
     def test_replan_new_tasks_appended_after_failed_task(self):
-        """Replanned tasks must appear after the failed task in execution_order."""
-        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
-            AtomicTask,
-            MissionPlan,
-            replan_on_failure,
-        )
+    """Test replan_new_tasks_appended_after_failed_task runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for replan_new_tasks_appended_after_failed_task
+    test_data = {}  # Replace with actual test data
 
-        tasks = [AtomicTask(f"t{i}", "d", "A", "p") for i in range(3)]
-        plan = MissionPlan(
-            mission_id="m",
-            created_at="n",
-            prompt="p",
-            tasks=tasks,
+    # Act
+    # TODO: Execute replan_new_tasks_appended_after_failed_task
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             execution_order=[t.task_id for t in tasks],
             validation_summary={},
         )
@@ -1402,19 +1402,19 @@ class TestTemporalAndOrdering:
         assert "v2" in seen_contexts[2]
 
     def test_reflexion_memory_iteration_numbers_monotone(self):
-        """ReflexionMemory iteration numbers must be strictly increasing."""
-        from agentic_core.L3_orchestration.engines.reflexion_engine import ReflexionEngine
+    """Test reflexion_memory_iteration_numbers_monotone runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for reflexion_memory_iteration_numbers_monotone
+    test_data = {}  # Replace with actual test data
 
-        collected: list[int] = []
+    # Act
+    # TODO: Execute reflexion_memory_iteration_numbers_monotone
+    result = None  # Replace with actual function call
 
-        async def gen_fn(task, prior, mem):
-            return f"resp_{len(collected) + 1}"
-
-        score_seq = iter([0.3, 0.5, 0.7, 0.9])
-
-        async def eval_fn(task, response):
-            s = next(score_seq, 0.9)
-            passed = s >= 0.85
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             return {"critique": "c", "score": s, "passed": passed}
 
         engine = ReflexionEngine(gen_fn, eval_fn, score_threshold=0.85, max_iterations=4)

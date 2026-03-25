@@ -43,14 +43,14 @@
     "type-erasure": 6
   },
   "agentic_core/L0_routing/scripts/_ssot_meta_learning.py": {
-    "silent-swallow": 2
+    "silent-swallow": 1
   },
   "agentic_core/L0_routing/scripts/_ssot_phases.py": {
     "path-string": 5,
-    "silent-swallow": 7
+    "silent-swallow": 4
   },
   "agentic_core/L0_routing/scripts/_ssot_pipeline.py": {
-    "silent-swallow": 4
+    "silent-swallow": 3
   },
   "agentic_core/L0_routing/scripts/_ssot_reporting.py": {
     "silent-swallow": 1
@@ -134,12 +134,9 @@
   "agentic_core/L0_routing/scripts/code_entity.py": {
     "silent-swallow": 3
   },
-  "agentic_core/L0_routing/scripts/collision_resolver.py": {
-    "silent-swallow": 3
-  },
   "agentic_core/L0_routing/scripts/colors.py": {
     "global-mutation": 7,
-    "silent-swallow": 10
+    "silent-swallow": 9
   },
   "agentic_core/L0_routing/scripts/compare_archive_to_current_util.py": {
     "silent-swallow": 1
@@ -172,9 +169,6 @@
     "path-string": 3,
     "silent-swallow": 3
   },
-  "agentic_core/L0_routing/scripts/emoji_fixer.py": {
-    "silent-swallow": 1
-  },
   "agentic_core/L0_routing/scripts/error_handler.py": {
     "magic-config": 1,
     "silent-swallow": 1
@@ -186,7 +180,7 @@
     "global-mutation": 5,
     "magic-config": 5,
     "path-string": 5,
-    "silent-swallow": 22,
+    "silent-swallow": 21,
     "silent-swallower": 1,
     "type-erasure": 9
   },
@@ -197,7 +191,6 @@
     "silent-swallow": 4
   },
   "agentic_core/L0_routing/scripts/execution_context.py": {
-    "silent-swallow": 1,
     "type-erasure": 6
   },
   "agentic_core/L0_routing/scripts/extract_unique_content_util.py": {
@@ -215,9 +208,6 @@
   "agentic_core/L0_routing/scripts/flatten_scripts_directory_util.py": {
     "silent-swallow": 2
   },
-  "agentic_core/L0_routing/scripts/forensic_discovery_prep.py": {
-    "silent-swallow": 7
-  },
   "agentic_core/L0_routing/scripts/forward_rolling_facade.py": {
     "magic-config": 3
   },
@@ -225,8 +215,7 @@
     "silent-swallow": 10
   },
   "agentic_core/L0_routing/scripts/handler.py": {
-    "magic-config": 1,
-    "silent-swallow": 1
+    "magic-config": 1
   },
   "agentic_core/L0_routing/scripts/hardened_anti_pattern_visitor.py": {
     "global-mutation": 1,
@@ -352,26 +341,16 @@
   "agentic_core/L0_routing/seam/seam_audit.py": {
     "silent-swallow": 1
   },
-  "agentic_core/L0_routing/seams/observability_seam.py": {
-    "silent-swallow": 1
-  },
   "agentic_core/L0_routing/types/routing_contracts_types.py": {
     "config-with-logic": 1,
     "magic-config": 2,
     "silent-swallow": 1
   },
   "agentic_core/L0_routing/utils/complexity_visitor_util.py": {
-    "global-mutation": 2,
-    "silent-swallow": 9
-  },
-  "agentic_core/L0_routing/utils/component_util.py": {
-    "silent-swallow": 1
+    "global-mutation": 2
   },
   "agentic_core/L0_routing/utils/core_integrity_util.py": {
     "silent-swallow": 1
-  },
-  "agentic_core/L0_routing/utils/find_misnamed_agents_util.py": {
-    "silent-swallow": 2
   },
   "agentic_core/L0_routing/utils/fix_all_tunnels_util.py": {
     "silent-swallow": 2
@@ -400,9 +379,6 @@
   "agentic_core/L0_routing/utils/ssot_discovery_util.py": {
     "silent-swallow": 1
   },
-  "agentic_core/L1_cognition/config/react_config.py": {
-    "silent-swallow": 5
-  },
   "agentic_core/L1_cognition/context/reasoning_context_envelope.py": {
     "magic-config": 2
   },
@@ -416,18 +392,14 @@
     "config-with-logic": 1,
     "magic-config": 3
   },
-  "agentic_core/L1_cognition/engines/cognitive_engine.py": {
-    "silent-swallow": 1
-  },
   "agentic_core/L1_cognition/engines/episodic_manager.py": {
-    "magic-config": 2,
-    "silent-swallow": 1
+    "magic-config": 2
   },
   "agentic_core/L1_cognition/engines/memory_embedder.py": {
     "silent-swallow": 3
   },
   "agentic_core/L1_cognition/engines/meta_client.py": {
-    "silent-swallow": 5
+    "silent-swallow": 2
   },
   "agentic_core/L1_cognition/engines/meta_observability.py": {
     "magic-config": 1
@@ -435,11 +407,8 @@
   "agentic_core/L1_cognition/engines/pitch_engine.py": {
     "silent-swallow": 2
   },
-  "agentic_core/L1_cognition/engines/query_planner.py": {
-    "silent-swallow": 5
-  },
   "agentic_core/L1_cognition/memory/healing_memory_retriever.py": {
-    "silent-swallow": 4
+    "silent-swallow": 2
   },
   "agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py": {
     "magic-config": 2,
@@ -467,18 +436,8 @@
     "magic-config": 2,
     "silent-swallow": 3
   },
-  "agentic_core/L2_execution/enforcement/budget_enforcer.py": {
-    "silent-swallow": 1
-  },
-  "agentic_core/L2_execution/enforcement/filesystem_mcp.py": {
-    "silent-swallow": 1
-  },
   "agentic_core/L2_execution/enforcement/firecracker_manager.py": {
-    "magic-config": 1,
-    "silent-swallow": 1
-  },
-  "agentic_core/L2_execution/enforcement/preventative_sandbox.py": {
-    "silent-swallow": 1
+    "magic-config": 1
   },
   "agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py": {
     "silent-swallow": 9
@@ -513,7 +472,7 @@
     "silent-swallow": 1
   },
   "agentic_core/L2_execution/healers/healing_provider_adapters.py": {
-    "silent-swallow": 3
+    "silent-swallow": 2
   },
   "agentic_core/L2_execution/healers/healing_tier_dispatcher.py": {
     "silent-swallow": 9
@@ -536,9 +495,6 @@
   "agentic_core/L2_execution/healers/vllm_process_manager.py": {
     "silent-swallow": 4
   },
-  "agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py": {
-    "silent-swallow": 1
-  },
   "agentic_core/L2_execution/reasoning/RedisSovereignAgent.py": {
     "magic-config": 1,
     "silent-swallow": 2,
@@ -554,7 +510,6 @@
   "agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py": {
     "global-mutation": 1,
     "magic-config": 2,
-    "silent-swallow": 1,
     "type-erasure": 5
   },
   "agentic_core/L2_execution/reasoning/ToolsmithAgent.py": {
@@ -566,14 +521,10 @@
     "silent-swallow": 1
   },
   "agentic_core/L2_execution/tools/file_io_impl.py": {
-    "path-string": 1,
-    "silent-swallow": 4
+    "path-string": 1
   },
   "agentic_core/L2_execution/tools/git_ops_impl.py": {
     "silent-swallow": 7
-  },
-  "agentic_core/L2_execution/tools/read_gateway.py": {
-    "silent-swallow": 4
   },
   "agentic_core/L2_execution/tools/time_utils_impl.py": {
     "silent-swallow": 5
@@ -587,9 +538,6 @@
   "agentic_core/L2_execution/tools/web_search_client.py": {
     "silent-swallow": 2
   },
-  "agentic_core/L2_execution/types/ephemeral_vm_types.py": {
-    "silent-swallow": 5
-  },
   "agentic_core/L2_execution/utils/analysis_ops_util.py": {
     "silent-swallow": 6
   },
@@ -600,21 +548,13 @@
     "silent-swallow": 3
   },
   "agentic_core/L2_execution/utils/text_similarity_util.py": {
-    "magic-config": 1,
-    "silent-swallow": 1
+    "magic-config": 1
   },
   "agentic_core/L3_orchestration/enforcement/mission_runner.py": {
-    "silent-swallow": 5
-  },
-  "agentic_core/L3_orchestration/engines/AgentFactory.py": {
-    "silent-swallow": 1
-  },
-  "agentic_core/L3_orchestration/engines/agent_gym_engine.py": {
-    "silent-swallow": 2
+    "silent-swallow": 4
   },
   "agentic_core/L3_orchestration/engines/autonomous_execution_engine.py": {
-    "magic-config": 3,
-    "silent-swallow": 1
+    "magic-config": 3
   },
   "agentic_core/L3_orchestration/engines/context_curator_engine.py": {
     "magic-config": 3
@@ -626,8 +566,7 @@
     "silent-swallow": 1
   },
   "agentic_core/L3_orchestration/engines/dag_manager.py": {
-    "magic-config": 1,
-    "silent-swallow": 1
+    "magic-config": 1
   },
   "agentic_core/L3_orchestration/engines/decomposition_orchestrator.py": {
     "magic-config": 2,
@@ -659,7 +598,6 @@
   },
   "agentic_core/L3_orchestration/engines/sovereign_redis_orchestrator.py": {
     "magic-config": 2,
-    "silent-swallow": 1,
     "type-erasure": 7
   },
   "agentic_core/L3_orchestration/engines/sub_atomic_engine_impl.py": {
@@ -676,8 +614,7 @@
     "silent-swallow": 1
   },
   "agentic_core/L3_orchestration/reasoning/CoverageAgent.py": {
-    "magic-config": 2,
-    "silent-swallow": 4
+    "magic-config": 2
   },
   "agentic_core/L3_orchestration/reasoning/DAGMutatorAgent.py": {
     "config-with-logic": 2,
@@ -688,8 +625,7 @@
     "magic-config": 1
   },
   "agentic_core/L3_orchestration/reasoning/DomainPlannerAgent.py": {
-    "magic-config": 6,
-    "silent-swallow": 1
+    "magic-config": 6
   },
   "agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py": {
     "magic-config": 1,
@@ -730,7 +666,7 @@
   },
   "agentic_core/L3_orchestration/reasoning/mcp_manager.py": {
     "config-with-logic": 2,
-    "silent-swallow": 3
+    "silent-swallow": 2
   },
   "agentic_core/L3_orchestration/replay/deterministic_replay.py": {
     "path-string": 1,
@@ -750,9 +686,6 @@
   },
   "agentic_core/L3_orchestration/types/orchestrator_types.py": {
     "magic-config": 1
-  },
-  "agentic_core/L3_orchestration/types/permission_scope_types.py": {
-    "silent-swallow": 1
   },
   "agentic_core/L3_orchestration/types/recursion_monitor_types.py": {
     "magic-config": 2,
@@ -780,9 +713,6 @@
   "agentic_core/L4_state/enforcement/mission_historian.py": {
     "silent-swallow": 2
   },
-  "agentic_core/L4_state/enforcement/neo4j_store.py": {
-    "silent-swallow": 1
-  },
   "agentic_core/L4_state/memory/blob_storage_provider.py": {
     "silent-swallow": 1
   },
@@ -792,7 +722,7 @@
   },
   "agentic_core/L4_state/memory/reasoning_memory.py": {
     "magic-config": 2,
-    "silent-swallow": 3
+    "silent-swallow": 2
   },
   "agentic_core/L4_state/memory/runtime_state_guard.py": {
     "silent-swallow": 1
@@ -886,7 +816,7 @@
     "silent-swallow": 1
   },
   "agentic_core/L5_safety/enforcement/AdapterBase.py": {
-    "silent-swallow": 5
+    "silent-swallow": 4
   },
   "agentic_core/L5_safety/enforcement/SurgicalHealingAdapter.py": {
     "silent-swallow": 3
@@ -1030,7 +960,6 @@
   },
   "agentic_core/L5_safety/reasoning/CodeDeduplicationAgent.py": {
     "magic-config": 2,
-    "silent-swallow": 1,
     "type-erasure": 8
   },
   "agentic_core/L5_safety/reasoning/CodeDetectorAgent.py": {
@@ -1070,7 +999,6 @@
   },
   "agentic_core/L5_safety/reasoning/ConstitutionalReviewerAgent.py": {
     "magic-config": 1,
-    "silent-swallow": 1,
     "type-erasure": 2
   },
   "agentic_core/L5_safety/reasoning/CostGovernorAgent.py": {
@@ -1081,8 +1009,7 @@
     "magic-config": 1
   },
   "agentic_core/L5_safety/reasoning/DDDAlignmentAgent.py": {
-    "magic-config": 1,
-    "silent-swallow": 1
+    "magic-config": 1
   },
   "agentic_core/L5_safety/reasoning/DependencyPruningAgent.py": {
     "magic-config": 1,
@@ -1099,20 +1026,19 @@
   },
   "agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py": {
     "magic-config": 1,
-    "silent-swallow": 7,
+    "silent-swallow": 6,
     "type-erasure": 4
   },
   "agentic_core/L5_safety/reasoning/FileClassificationAgent.py": {
     "magic-config": 1,
     "path-string": 4,
-    "silent-swallow": 8,
+    "silent-swallow": 7,
     "silent-swallower": 1,
     "type-erasure": 10
   },
   "agentic_core/L5_safety/reasoning/GenerativeGuardAgent.py": {
     "magic-config": 1,
     "path-string": 1,
-    "silent-swallow": 2,
     "type-erasure": 5
   },
   "agentic_core/L5_safety/reasoning/GitHygieneAgent.py": {
@@ -1122,13 +1048,12 @@
   },
   "agentic_core/L5_safety/reasoning/GovernanceAgent.py": {
     "magic-config": 1,
-    "silent-swallow": 14,
     "type-erasure": 12
   },
   "agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py": {
     "magic-config": 2,
     "path-string": 4,
-    "silent-swallow": 8,
+    "silent-swallow": 6,
     "type-erasure": 6
   },
   "agentic_core/L5_safety/reasoning/HygieneGuardianAgent.py": {
@@ -1144,7 +1069,6 @@
     "type-erasure": 4
   },
   "agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py": {
-    "silent-swallow": 7,
     "type-erasure": 9
   },
   "agentic_core/L5_safety/reasoning/LocationHealerAgent.py": {
@@ -1159,7 +1083,7 @@
   "agentic_core/L5_safety/reasoning/PascalSovereigntyAgent.py": {
     "magic-config": 1,
     "path-string": 3,
-    "silent-swallow": 10,
+    "silent-swallow": 9,
     "type-erasure": 3
   },
   "agentic_core/L5_safety/reasoning/PolicyNeuralAutoImmuneAgent.py": {
@@ -1253,8 +1177,7 @@
     "type-erasure": 3
   },
   "agentic_core/L5_safety/reasoning/TerritoryChangeHandlerAgent.py": {
-    "magic-config": 3,
-    "silent-swallow": 1
+    "magic-config": 3
   },
   "agentic_core/L5_safety/reasoning/TypeHintFixerAgent.py": {
     "type-erasure": 1
@@ -1267,7 +1190,6 @@
   },
   "agentic_core/L5_safety/reasoning/filesystem_ssot_reconciler.py": {
     "magic-config": 3,
-    "silent-swallow": 7,
     "type-erasure": 12
   },
   "agentic_core/L5_safety/reasoning/gravity_validator.py": {
@@ -1278,7 +1200,7 @@
   },
   "agentic_core/L5_safety/reasoning/hierarchy_healer.py": {
     "magic-config": 3,
-    "silent-swallow": 11,
+    "silent-swallow": 10,
     "type-erasure": 1
   },
   "agentic_core/L5_safety/reasoning/location_validator.py": {
@@ -1286,7 +1208,6 @@
   },
   "agentic_core/L5_safety/reasoning/root_hygiene_healer.py": {
     "magic-config": 2,
-    "silent-swallow": 6,
     "type-erasure": 1
   },
   "agentic_core/L5_safety/runners/agent_roster_runner.py": {
@@ -1373,17 +1294,11 @@
   "agentic_core/L5_safety/utils/gravity_visitor_util.py": {
     "silent-swallow": 1
   },
-  "agentic_core/L5_safety/utils/guard_ddd_alignment_util.py": {
-    "silent-swallow": 1
-  },
   "agentic_core/L5_safety/utils/guard_observability_footprint_util.py": {
     "silent-swallow": 1
   },
   "agentic_core/L5_safety/utils/location_utils_util.py": {
     "path-string": 1
-  },
-  "agentic_core/L5_safety/utils/register_all_validators_util.py": {
-    "silent-swallow": 1
   },
   "agentic_core/L5_safety/utils/subprocess_security_util.py": {
     "magic-config": 1
@@ -1398,12 +1313,8 @@
   "agentic_core/L5_safety/utils/validate_path_ssot_util.py": {
     "silent-swallow": 1
   },
-  "agentic_core/L5_safety/utils/verify_no_mock_data_util.py": {
-    "silent-swallow": 1
-  },
   "agentic_core/L5_safety/utils/verify_semantic_meta_learning_util.py": {
-    "global-mutation": 1,
-    "silent-swallow": 1
+    "global-mutation": 1
   },
   "agentic_core/L5_safety/validators/HygieneGuardianAgent.py": {
     "silent-swallower": 5
@@ -1427,15 +1338,12 @@
     "silent-swallower": 2
   },
   "agentic_core/L5_safety/validators/dependencygraph_validator.py": {
-    "magic-config": 3,
-    "silent-swallow": 1
+    "magic-config": 3
   },
   "agentic_core/L5_safety/validators/intervention_server_validator.py": {
-    "magic-config": 1,
-    "silent-swallow": 1
+    "magic-config": 1
   },
   "agentic_core/L5_safety/validators/mission_preflight_validator.py": {
-    "silent-swallow": 1,
     "silent-swallower": 1
   },
   "agentic_core/L5_safety/validators/silent_degradation_validator.py": {
@@ -1443,9 +1351,6 @@
   },
   "agentic_core/L5_safety/validators/verb_canonicalizer_validator.py": {
     "path-string": 1
-  },
-  "agentic_core/L6_observability/enforcement/reasoning_streamer.py": {
-    "silent-swallow": 1
   },
   "agentic_core/L6_observability/engines/PerformanceAnalystAgentSimple.py": {
     "magic-config": 1
@@ -1469,9 +1374,6 @@
   },
   "agentic_core/L6_observability/reasoning/observability_probe_executor.py": {
     "type-erasure": 10
-  },
-  "agentic_core/L6_observability/utils/fix_testing_observability_util.py": {
-    "silent-swallow": 1
   },
   "agentic_core/adg/analysis/hotspot_index.py": {
     "path-string": 2
@@ -1583,11 +1485,8 @@
   "agentic_core/config/core/gateway_config.py": {
     "silent-swallow": 1
   },
-  "agentic_core/config/core/non_conforming_agent_finder_config.py": {
-    "silent-swallow": 2
-  },
   "agentic_core/config/core/reflection_config.py": {
-    "silent-swallow": 5
+    "silent-swallow": 1
   },
   "agentic_core/config/core/yaml_injection_loader.py": {
     "silent-swallow": 1
@@ -1750,9 +1649,6 @@
   "agentic_core/prompt_governance/scripts/detect_template_drift.py": {
     "silent-swallow": 1
   },
-  "agentic_core/prompt_governance/scripts/dry_run_compiler.py": {
-    "silent-swallow": 3
-  },
   "agentic_core/prompt_governance/scripts/import_violation_visitor.py": {
     "silent-swallow": 1
   },
@@ -1762,17 +1658,11 @@
   "agentic_core/prompt_governance/scripts/template_render_visitor.py": {
     "silent-swallow": 2
   },
-  "agentic_core/prompt_governance/security/validators/output_schema_validator.py": {
-    "silent-swallow": 2
-  },
   "agentic_core/runtime/config/contextual_router_config.py": {
     "silent-swallow": 2
   },
-  "agentic_core/runtime/config/prompt_injection_loader_config.py": {
-    "silent-swallow": 1
-  },
   "agentic_core/runtime/config/security_level_config.py": {
-    "silent-swallow": 4
+    "silent-swallow": 1
   },
   "agentic_core/runtime/engine/agent_engine.py": {
     "magic-config": 1,
@@ -1791,23 +1681,11 @@
   "agentic_core/runtime/types/sovereign_events_types.py": {
     "magic-config": 1
   },
-  "agentic_core/runtime/utils/__init__.py": {
-    "silent-swallow": 1
-  },
   "agentic_core/runtime/utils/discovery_util.py": {
     "silent-swallow": 3
   },
-  "agentic_core/runtime/utils/main_util.py": {
-    "silent-swallow": 2
-  },
-  "agentic_core/runtime/utils/sovereign_index_util.py": {
-    "silent-swallow": 1
-  },
   "agentic_core/runtime/utils/trait_system_util.py": {
     "magic-config": 2
-  },
-  "agentic_core/seams/contracts/authority.py": {
-    "silent-swallow": 1
   },
   "agentic_core/seams/contracts/safety_agents.py": {
     "silent-swallow": 1

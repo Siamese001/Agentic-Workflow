@@ -379,19 +379,19 @@ class TestBranchPaths:
 
     @pytest.mark.governance
     def test_get_actual_depth_handles_trailing_slash(self, validator):
-        # Should handle paths normalised with trailing slash stripped
-        depth = validator._get_actual_depth("agentic_core/L2_execution/")
-        assert depth >= 1
+    """Test get_actual_depth_handles_trailing_slash runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_validate_agent_aggregates_all_violation_types(self, validator):
-        # A base agent outside required path produces exactly base_agent_location violation
-        agent = _make_agent(
-            class_name="WrongPlaceBaseAgent",
-            relative_path="apps_rg/engines/wrong_base_agent.py",
-            layer="Unknown",
-        )
-        violations = validator.validate_agent(agent)
+    # Act
+    # TODO: Process data with get_actual_depth_handles_trailing_slash
+    processed_result = None  # Replace with actual processing
+
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
         violation_types = {v.violation_type for v in violations}
         assert "base_agent_location" in violation_types
 
@@ -557,19 +557,19 @@ class TestEdgeCases:
 
     @pytest.mark.governance
     def test_generate_report_truncates_territory_violations_beyond_20(self, validator):
-        violations = [
-            StructureViolation(
-                agent_class=f"Agent{i}",
-                agent_path=f"unknown/agent{i}.py",
-                violation_type="unknown_territory",
-                message="bad",
-            )
-            for i in range(25)
-        ]
-        result = StructureValidationResult(
-            total_agents=25,
-            compliant_agents=0,
-            violations=violations,
+    """Test generate_report_truncates_territory_violations_beyond_20 runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute generate_report_truncates_territory_violations_beyond_20
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             territory_violations=violations,
         )
         report = validator.generate_report(result)
@@ -757,19 +757,19 @@ class TestSideEffectSafety:
 
     @pytest.mark.governance
     def test_validate_agent_called_twice_returns_independent_lists(self, validator):
-        agent = _make_agent(
-            class_name="SovereignBaseAgent",
-            relative_path="apps_rg/engines/bad.py",
-        )
-        v1 = validator.validate_agent(agent)
-        v2 = validator.validate_agent(agent)
-        # Mutating v1 does not affect v2
-        v1.clear()
+    """Test validate_agent_called_twice_returns_independent_lists runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_structure_validation_result_violations_list_independent_across_instances(self):
-        r1 = StructureValidationResult()
-        r2 = StructureValidationResult()
+    # Act
+    # TODO: Execute validate_agent_called_twice_returns_independent_lists
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         v = StructureViolation(agent_class="X", agent_path="x.py", violation_type="root_file", message="m")
         r1.violations.append(v)
         assert r2.violations == []

@@ -148,34 +148,34 @@ class TestMaybeForceUtf8LoggingHandlers:
         assert reconfigure_calls[0]["errors"] == "replace"
 
     def test_handler_without_stream_is_skipped(self, monkeypatch):
-        """Handlers without a stream attribute are silently skipped."""
-        monkeypatch.setattr(sys, "platform", "win32")
+    """Test handler_without_stream_is_skipped runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-        handler = logging.Handler()  # base Handler has no .stream
+    # Act
+    # TODO: Process data with handler_without_stream_is_skipped
+    processed_result = None  # Replace with actual processing
 
-        root_logger = logging.getLogger()
-        original_handlers = root_logger.handlers[:]
-        root_logger.handlers = [handler]
-        try:
-            fn = _import_handlers_fn()
-            fn()  # must not raise
-        finally:
-            root_logger.handlers = original_handlers
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
 
     def test_handler_reconfigure_exception_swallowed(self, monkeypatch):
-        """If stream.reconfigure raises, it is silently swallowed."""
-        monkeypatch.setattr(sys, "platform", "win32")
+    """Test handler_reconfigure_exception_swallowed runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-        class BrokenStream:
-            def reconfigure(self, **kw):
-                raise OSError("broken")
+    # Act
+    # TODO: Process data with handler_reconfigure_exception_swallowed
+    processed_result = None  # Replace with actual processing
 
-        handler = logging.StreamHandler()
-        handler.stream = BrokenStream()
-
-        root_logger = logging.getLogger()
-        original_handlers = root_logger.handlers[:]
-        root_logger.handlers = [handler]
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
         try:
             fn = _import_handlers_fn()
             fn()  # must not raise

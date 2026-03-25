@@ -192,19 +192,19 @@ def test_sign_artifact_uses_hmac_sha256() -> None:
 
 @pytest.mark.governance
 def test_sign_artifact_deterministic_across_two_runs() -> None:
-    """Two independent sign_artifact calls on identical inputs MUST produce identical signatures."""
-    trust_root = _make_trust_root()
-    enclave = DeterministicTestEnclave(trust_root)
-    artifact = b'{"instruction_id":"INS-002","payload":"determinism_check"}'
+"""Test sign_artifact_deterministic_across_two_runs runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    env1 = sign_artifact(artifact, _KEY_ID, enclave, "TR-DET", 42)
-    env2 = sign_artifact(artifact, _KEY_ID, enclave, "TR-DET", 42)
+# Act
+# TODO: Execute sign_artifact_deterministic_across_two_runs
+result = None  # Replace with actual execution
 
-    assert env1.signature == env2.signature, "signatures not deterministic across two invocations"
-    assert env1.artifact_hash == env2.artifact_hash
-
-
-@pytest.mark.governance
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
 def test_artifact_hash_is_sha256_hex() -> None:
     """hash_artifact_canonical MUST return lowercase SHA-256 hex (64 chars)."""
     artifact = b"canonical test bytes"

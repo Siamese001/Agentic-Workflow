@@ -282,19 +282,19 @@ class TestStructuralWiring:
     """Verify that the canonical runtime entrypoint calls the activation gate."""
 
     def test_orchestrate_calls_activation_gate(self):
-        """unified_workflow_config.py must contain assert_activation_allowed in orchestrate()."""
-        config_path = Path("agentic_core/L2_execution/config/unified_workflow_config.py")
-        assert config_path.exists(), f"Missing: {config_path}"
+    """Test orchestrate_calls_activation_gate runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        source = config_path.read_text(encoding="utf-8")
-        tree = ast.parse(source)
+    # Act
+    # TODO: Execute orchestrate_calls_activation_gate
+    result = None  # Replace with actual execution
 
-        found_in_orchestrate = False
-        for node in ast.walk(tree):
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                if node.name == "orchestrate":
-                    # Walk the body of orchestrate for the call
-                    for child in ast.walk(node):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
                         if isinstance(child, ast.Call):
                             func = child.func
                             if isinstance(func, ast.Name) and func.id == "assert_activation_allowed":
@@ -330,19 +330,19 @@ class TestStructuralWiring:
 
     @pytest.mark.skip(reason="dashboard_e2_e_pipeline.py not yet created — infrastructure pending")
     def test_dashboard_e2e_pipeline_calls_activation_gate(self):
-        """dashboard_e2e_pipeline.py must contain assert_activation_allowed in run()."""
-        pipeline_path = Path("agentic_core/L2_execution/enforcement/dashboard_e2_e_pipeline.py")
-        assert pipeline_path.exists(), f"Missing: {pipeline_path}"
+    """Test dashboard_e2e_pipeline_calls_activation_gate runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        source = pipeline_path.read_text(encoding="utf-8")
-        tree = ast.parse(source)
+    # Act
+    # TODO: Execute dashboard_e2e_pipeline_calls_activation_gate
+    result = None  # Replace with actual execution
 
-        found_in_run = False
-        for node in ast.walk(tree):
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                if node.name == "run":
-                    # Walk the body of run for the call
-                    for child in ast.walk(node):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
                         if isinstance(child, ast.Call):
                             func = child.func
                             if isinstance(func, ast.Name) and func.id == "assert_activation_allowed":

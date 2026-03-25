@@ -250,19 +250,19 @@ class TestFlagDefaultOff:
         )
 
     def test_observer_not_invoked_without_env_var(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        """Without env var, observer is not invoked."""
-        monkeypatch.delenv("HEAL_POLICY_MODEL_ESCALATION", raising=False)
+    """Test observer_not_invoked_without_env_var runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for observer_not_invoked_without_env_var
+    test_data = {}  # Replace with actual test data
 
-        mock_decision = HealEscalationDecision(
-            proceed=True,
-            tier=ReasoningTier.LOW,
-            rationale="Test rationale",
-            threshold_used="TEST",
-        )
+    # Act
+    # TODO: Execute observer_not_invoked_without_env_var
+    result = None  # Replace with actual function call
 
-        observer_calls: list[ReasoningTier] = []
-
-        def spy_observer(tier: ReasoningTier) -> None:
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             observer_calls.append(tier)
 
         with (

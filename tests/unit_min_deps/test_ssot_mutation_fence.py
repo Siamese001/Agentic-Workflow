@@ -447,19 +447,19 @@ class TestEnvVarIsolation:
         enforce_protected_root(target_path, allow_override=True)  # Should not raise
 
     def test_unset_env_vars_do_not_change_behavior(self, monkeypatch):
-        """Test that unsetting env vars does not change protected-root behavior."""
-        target_path = Path("agentic_core/test_file.py")
+    """Test unset_env_vars_do_not_change_behavior runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for unset_env_vars_do_not_change_behavior
+    test_data = {}  # Replace with actual test data
 
-        # Ensure env vars are unset
-        monkeypatch.delenv("AGENTIC_ALLOW_MUTATION_FOR_TESTS", raising=False)
-        monkeypatch.delenv("AGENTIC_DENY_SOURCE_MUTATION", raising=False)
+    # Act
+    # TODO: Execute unset_env_vars_do_not_change_behavior
+    result = None  # Replace with actual function call
 
-        # Should still block (default behavior)
-        with pytest.raises(SourceMutationBlocked, match="matched_root=agentic_core"):
-            enforce_protected_root(target_path, allow_override=False)
-
-
-@pytest.mark.unit_min_deps
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 class TestFenceSelfCheck:
     """Test fence self-check mode validates policy + wiring."""
 

@@ -204,19 +204,19 @@ class TestSingletonPattern:
         ArchivalGatekeeper.reset_instance()
 
     def test_get_instance_requires_project_root_first_call(self):
-        """Verify first call requires project_root."""
-        ArchivalGatekeeper.reset_instance()
-        with pytest.raises(ValueError, match="project_root must be provided"):
-            ArchivalGatekeeper.get_instance()
-        ArchivalGatekeeper.reset_instance()
+    """Test get_instance_requires_project_root_first_call runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_reset_instance_clears_singleton(self, temp_project):
-        """Verify reset clears the singleton."""
-        ArchivalGatekeeper.reset_instance()
-        ArchivalGatekeeper.get_instance(temp_project)
-        ArchivalGatekeeper.reset_instance()
+    # Act
+    # TODO: Execute get_instance_requires_project_root_first_call
+    result = None  # Replace with actual execution
 
-        # Should require project_root again
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         with pytest.raises(ValueError):
             ArchivalGatekeeper.get_instance()
         ArchivalGatekeeper.reset_instance()

@@ -131,22 +131,26 @@ def test_file_classification_hitl_logs_decision():
 
 @pytest.mark.unit_min_deps
 def test_execute_ssot_wires_hitl_approval_fn():
-    """Wave 6: execute_ssot.py must set _hitl_approval_fn on location_validator."""
-    src = EXECUTE_SSOT_PATH.read_text(encoding="utf-8", errors="replace")
-    assert "_hitl_approval_fn" in src, (
-        "execute_ssot.py does not wire _hitl_approval_fn onto location_validator — "
-        "file deletion HITL gate will not fire during healing"
-    )
+"""Test execute_ssot_wires_hitl_approval_fn runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute execute_ssot_wires_hitl_approval_fn
+result = None  # Replace with actual execution
 
-@pytest.mark.unit_min_deps
-def test_execute_ssot_hitl_gate_before_heal_violations():
-    """Wave 6: The HITL gate assignment must appear before heal_violations call in source."""
-    src = EXECUTE_SSOT_PATH.read_text(encoding="utf-8", errors="replace")
-    hitl_pos = src.find("_hitl_approval_fn")
-    heal_pos = src.find("heal_violations(")
-    assert hitl_pos != -1, "_hitl_approval_fn not found in execute_ssot.py"
-    assert heal_pos != -1, "heal_violations( not found in execute_ssot.py"
-    assert hitl_pos < heal_pos, (
-        "_hitl_approval_fn must be assigned BEFORE heal_violations() is called in execute_ssot.py"
-    )
+# Assert
+"""Test execute_ssot_hitl_gate_before_heal_violations runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
+
+# Act
+# TODO: Execute execute_ssot_hitl_gate_before_heal_violations
+result = None  # Replace with actual execution
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions

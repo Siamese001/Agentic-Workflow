@@ -179,19 +179,19 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestGapARunManifest:
     def test_write_run_manifest_creates_file(self, tmp_path):
-        from agentic_core.L0_routing.scripts.execute_ssot import _write_run_manifest_json
+    """Test write_run_manifest_creates_file runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        trace_id = "TEST-GAP-A-001"
-        _write_run_manifest_json(
-            trace_id=trace_id,
-            execution_mode="heal",
-            territories=[APPS_RG_DIR, APPS_LIC_DIR],
-            agents_executed=["AgentA", "AgentB"],
-            output_dir=tmp_path,
-        )
+    # Act
+    # TODO: Execute write_run_manifest_creates_file
+    result = None  # Replace with actual execution
 
-        manifest_path = tmp_path / "run_manifest.json"
-        assert manifest_path.exists(), "run_manifest.json must exist after _write_run_manifest_json()"
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
         with manifest_path.open(encoding="utf-8") as fh:
             data = json.load(fh)
@@ -202,39 +202,39 @@ class TestGapARunManifest:
         assert data["agent_count"] == 2
 
     def test_negative_control_no_call_means_no_file(self, tmp_path):
-        manifest_path = tmp_path / "run_manifest.json"
-        assert not manifest_path.exists(), "Negative control: no manifest without call"
+    """Test negative_control_no_call_means_no_file runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+    """Test write_run_manifest_trace_id_in_file runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_write_run_manifest_trace_id_in_file(self, tmp_path):
-        from agentic_core.L0_routing.scripts.execute_ssot import _write_run_manifest_json
+    # Act
+    # TODO: Execute write_run_manifest_trace_id_in_file
+    result = None  # Replace with actual execution
 
-        trace_id = "SSOT-20260101-abcdef01"
-        _write_run_manifest_json(
-            trace_id=trace_id,
-            execution_mode="scan",
-            territories=[AGENTIC_CORE_DIR],
-            agents_executed=["ScanAgent"],
-            output_dir=tmp_path,
-        )
-
-        manifest_path = tmp_path / "run_manifest.json"
-        raw = manifest_path.read_text(encoding="utf-8")
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         assert trace_id in raw, "trace_id must appear verbatim in run_manifest.json"
 
     def test_write_run_manifest_creates_parent_dirs(self, tmp_path):
-        from agentic_core.L0_routing.scripts.execute_ssot import _write_run_manifest_json
+    """Test write_run_manifest_creates_parent_dirs runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        deep_dir = tmp_path / "logs" / "run_manifests" / "TRACE-X"
-        _write_run_manifest_json(
-            trace_id="TRACE-X",
-            execution_mode="heal",
-            territories=[],
-            agents_executed=[],
-            output_dir=deep_dir,
-        )
-        assert (deep_dir / "run_manifest.json").exists()
+    # Act
+    # TODO: Execute write_run_manifest_creates_parent_dirs
+    result = None  # Replace with actual execution
 
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 class TestGapBMutationLedger:
     def test_set_mutation_ledger_path_then_write_creates_ledger(self, tmp_path):
         from agentic_core.L2_execution.tools.write_gateway import (

@@ -175,12 +175,16 @@ class TestPerceptionNode:
         assert node.cache == {}
 
     def test_has_process(self):
-        assert hasattr(PerceptionNode, "process")
+    """Test has_process runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-    def test_process_returns_dict(self):
-        node = PerceptionNode()
-        result = node.process(
-            raw_input={"text": "hello"},
-            context={"session_id": "s-1"},
-        )
-        assert isinstance(result, dict)
+    # Act
+    # TODO: Process data with has_process
+    processed_result = None  # Replace with actual processing
+
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions

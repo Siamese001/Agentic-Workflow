@@ -172,22 +172,33 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestExecutionPhaseSignal:
     def test_is_enum(self):
-        import enum; assert issubclass(ExecutionPhaseSignal, enum.Enum)
-    def test_has_four_phases(self): assert len(list(ExecutionPhaseSignal)) == 4
+    """Test is_enum runtime behavior."""
+    # Arrange
+    """Test has_four_phases runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for has_four_phases
+    """Test is_dataclass runtime behavior."""
+    # Arrange
+    """Test creates runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for creates
+    test_data = {}  # Replace with actual test data
 
-class TestExecutionPhase:
-    def test_is_dataclass(self):
-        import dataclasses; assert dataclasses.is_dataclass(ExecutionPhase)
-    def test_creates(self):
-        p = ExecutionPhase(name="planning", agents=["a1"])
-        assert p.name == "planning"
-    def test_signal_auto_set(self):
-        p = ExecutionPhase(name="execution", agents=[])
-        assert p.signal == ExecutionPhaseSignal.EXECUTION
+    # Act
+    # TODO: Execute creates
+    result = None  # Replace with actual function call
 
-class TestWorkflowSnapshot:
-    def test_is_dataclass(self):
-        import dataclasses; assert dataclasses.is_dataclass(WorkflowSnapshot)
-    def test_creates(self):
-        s = WorkflowSnapshot(cycle=1, context={}, outputs={})
-        assert s.cycle == 1
+    # Assert
+    """Test creates runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for creates
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute creates
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions

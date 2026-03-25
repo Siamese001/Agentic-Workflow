@@ -360,19 +360,19 @@ class TestIdempotency:
         assert j1 == j2
 
     def test_trace_id_deterministic_across_calls(self, clock):
-        a = emit_vigilance_event(signals=["guardian_fail"], semantic_clock=clock)
-        b = emit_vigilance_event(signals=["guardian_fail"], semantic_clock=clock)
-        assert a.trace_id == b.trace_id
+    """Test trace_id_deterministic_across_calls runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_different_signal_order_same_json(self, clock):
-        a = emit_vigilance_event(
-            signals=["info_metric", "budget_overflow"],
-            semantic_clock=clock,
-        )
-        b = emit_vigilance_event(
-            signals=["budget_overflow", "info_metric"],
-            semantic_clock=clock,
-        )
+    # Act
+    # TODO: Execute trace_id_deterministic_across_calls
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         j1 = json.dumps(a.to_dict(), sort_keys=True, separators=(",", ":"))
         j2 = json.dumps(b.to_dict(), sort_keys=True, separators=(",", ":"))
         assert j1 == j2

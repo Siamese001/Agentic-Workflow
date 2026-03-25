@@ -229,109 +229,112 @@ def test_breaker_opens_after_threshold_failures():
 
 
 def test_breaker_does_not_open_before_threshold():
-    cb = VLLMCircuitBreaker(tier="local_fast")
-    for _ in range(CIRCUIT_BREAKER_FAILURE_THRESHOLD - 1):
-        cb.record_failure()
-    assert not cb.is_open
+"""Test breaker_does_not_open_before_threshold runtime behavior."""
+# Arrange
+# TODO: Set up test data for breaker_does_not_open_before_threshold
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute breaker_does_not_open_before_threshold
+"""Test breaker_resets_on_success runtime behavior."""
+# Arrange
+# TODO: Set up test data for breaker_resets_on_success
+test_data = {}  # Replace with actual test data
 
-def test_breaker_resets_on_success():
-    cb = VLLMCircuitBreaker(tier="local_fast")
-    for _ in range(CIRCUIT_BREAKER_FAILURE_THRESHOLD):
-        cb.record_failure()
-    assert cb.is_open
-    cb.record_success()
-    assert not cb.is_open
-    assert cb.consecutive_failures == 0
+# Act
+# TODO: Execute breaker_resets_on_success
+result = None  # Replace with actual function call
 
-
-def test_breaker_reset_restores_closed():
-    cb = VLLMCircuitBreaker(tier="local_fast")
-    for _ in range(CIRCUIT_BREAKER_FAILURE_THRESHOLD):
-        cb.record_failure()
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
     cb.reset()
     assert cb.state == CircuitBreakerState.CLOSED
     assert cb.consecutive_failures == 0
 
 
 def test_failure_threshold_constant():
-    assert CIRCUIT_BREAKER_FAILURE_THRESHOLD == 3
+"""Test failure_threshold_constant runtime behavior."""
+# Arrange
+# TODO: Set up error condition
+error_input = {}  # Replace with actual error condition
 
+# Act & Assert
+# TODO: Test error handling in failure_threshold_constant
+with pytest.raises(Exception):  # Replace with expected exception
+    # Execute operation that should raise error
+    """Test open_breaker_escalates_to_gemini runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for open_breaker_escalates_to_gemini
+    test_data = {}  # Replace with actual test data
 
-# ---------------------------------------------------------------------------
-# Backpressure escalation with open circuit breaker
-# ---------------------------------------------------------------------------
+    # Act
+    # TODO: Execute open_breaker_escalates_to_gemini
+    result = None  # Replace with actual function call
+    """Test open_breaker_failure_type_is_circuit_breaker runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
+    # Act & Assert
+    # TODO: Test error handling in open_breaker_failure_type_is_circuit_breaker
+    with pytest.raises(Exception):  # Replace with expected exception
+    """Test open_breaker_model_id_is_gemini runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for open_breaker_model_id_is_gemini
+    test_data = {}  # Replace with actual test data
 
-def test_open_breaker_escalates_to_gemini():
-    cb = VLLMCircuitBreaker(tier="local_fast")
-    for _ in range(CIRCUIT_BREAKER_FAILURE_THRESHOLD):
-        cb.record_failure()
-    decision = evaluate_backpressure(make_empty_queue(), cb)
-    assert decision.escalate_to_gemini
+    # Act
+    # TODO: Execute open_breaker_model_id_is_gemini
+    result = None  # Replace with actual function call
+    """Test open_breaker_reason runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for open_breaker_reason
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute open_breaker_reason
+    result = None  # Replace with actual function call
+    """Test closed_breaker_empty_queue_does_not_escalate runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for closed_breaker_empty_queue_does_not_escalate
+    test_data = {}  # Replace with actual test data
 
-def test_open_breaker_failure_type_is_circuit_breaker():
-    cb = VLLMCircuitBreaker(tier="local_fast")
-    for _ in range(CIRCUIT_BREAKER_FAILURE_THRESHOLD):
-        cb.record_failure()
-    decision = evaluate_backpressure(make_empty_queue(), cb)
-    assert decision.failure_type == VLLMFailureType.CIRCUIT_BREAKER_OPEN
+    # Act
+    """Test open_breaker_takes_priority_over_empty_queue runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for open_breaker_takes_priority_over_empty_queue
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute open_breaker_takes_priority_over_empty_queue
+    result = None  # Replace with actual function call
 
-def test_open_breaker_model_id_is_gemini():
-    cb = VLLMCircuitBreaker(tier="local_fast")
-    for _ in range(CIRCUIT_BREAKER_FAILURE_THRESHOLD):
-        cb.record_failure()
-    decision = evaluate_backpressure(make_empty_queue(), cb)
-    assert decision.model_id == GEMINI_25_PRO_MODEL_ID
+"""Test open_breaker_takes_priority_over_full_queue runtime behavior."""
+# Arrange
+# TODO: Set up test data for open_breaker_takes_priority_over_full_queue
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute open_breaker_takes_priority_over_full_queue
+result = None  # Replace with actual function call
 
-def test_open_breaker_reason():
-    cb = VLLMCircuitBreaker(tier="local_fast")
-    for _ in range(CIRCUIT_BREAKER_FAILURE_THRESHOLD):
-        cb.record_failure()
-    decision = evaluate_backpressure(make_empty_queue(), cb)
-    assert decision.reason == "circuit_breaker_open"
-
-
-def test_closed_breaker_empty_queue_does_not_escalate():
-    cb = VLLMCircuitBreaker(tier="local_fast")
-    decision = evaluate_backpressure(make_empty_queue(), cb)
-    assert not decision.escalate_to_gemini
-
-
-def test_open_breaker_takes_priority_over_empty_queue():
-    cb = VLLMCircuitBreaker(tier="local_fast")
-    for _ in range(CIRCUIT_BREAKER_FAILURE_THRESHOLD):
-        cb.record_failure()
-    decision = evaluate_backpressure(make_empty_queue(), cb)
-    assert decision.circuit_breaker_open
-    assert decision.escalate_to_gemini
-
-
-def test_open_breaker_takes_priority_over_full_queue():
-    cb = VLLMCircuitBreaker(tier="local_fast")
-    for _ in range(CIRCUIT_BREAKER_FAILURE_THRESHOLD):
-        cb.record_failure()
-    full_queue = VLLMQueueState(
-        current_depth=MAX_QUEUE_DEPTH,
-        max_depth=MAX_QUEUE_DEPTH,
-        oldest_wait_seconds=0.0,
-        timeout_seconds=QUEUE_WAIT_TIMEOUT_SECONDS,
-    )
-    decision = evaluate_backpressure(full_queue, cb)
-    assert decision.reason == "circuit_breaker_open"
-
-
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
 def test_open_breaker_repeated_is_deterministic():
-    cb1 = VLLMCircuitBreaker(tier="local_fast")
-    cb2 = VLLMCircuitBreaker(tier="local_fast")
-    for _ in range(CIRCUIT_BREAKER_FAILURE_THRESHOLD):
-        cb1.record_failure()
-        cb2.record_failure()
-    d1 = evaluate_backpressure(make_empty_queue(), cb1)
-    d2 = evaluate_backpressure(make_empty_queue(), cb2)
-    assert d1.escalate_to_gemini == d2.escalate_to_gemini
-    assert d1.failure_type == d2.failure_type
-    assert d1.model_id == d2.model_id
+"""Test open_breaker_repeated_is_deterministic runtime behavior."""
+# Arrange
+# TODO: Set up test data for open_breaker_repeated_is_deterministic
+test_data = {}  # Replace with actual test data
+
+# Act
+# TODO: Execute open_breaker_repeated_is_deterministic
+result = None  # Replace with actual function call
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions

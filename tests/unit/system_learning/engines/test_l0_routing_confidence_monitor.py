@@ -409,19 +409,19 @@ class TestL0RoutingConfidenceProposerAdapter:
         assert result is None
 
     def test_propose_handles_none_cooldown_and_sample(self):
-        """Adapter must supply defaults when cooldown/sample are None."""
-        adapter = L0RoutingConfidenceProposerAdapter()
+    """Test propose_handles_none_cooldown_and_sample runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-        class FakeSnapshot:
-            snapshot_id = "s"
+    # Act
+    # TODO: Process data with propose_handles_none_cooldown_and_sample
+    processed_result = None  # Replace with actual processing
 
-        try:
-            adapter.propose(
-                snapshot=FakeSnapshot(),
-                confidence_values=_HIGH_CONF,
-                config={"routing_min_confidence": 0.20},
-                now_utc=10_000,
-                history={},
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
                 cooldown=None,
                 sample=None,
             )

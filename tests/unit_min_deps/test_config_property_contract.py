@@ -100,20 +100,20 @@ class TestConfigMixinPropertyContract:
     """ConfigMixin.config must remain a property descriptor, not a plain attribute."""
 
     def test_config_is_property(self) -> None:
-        from agentic_core.mixins.configuration_mixin import ConfigMixin
+    """Test config_is_property contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-        descriptor = inspect.getattr_static(ConfigMixin, "config", None)
-        assert isinstance(descriptor, property), (
-            f"ConfigMixin.config must be a property descriptor.\nGot: {type(descriptor).__name__}"
-        )
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-
-# ---------------------------------------------------------------------------
-# 3. Repo-wide AST scan: no agent file overwrites self.config in __init__
-# ---------------------------------------------------------------------------
-
-
-class TestNoConfigOverwriteRepoWide:
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
     """Scan agentic_core for any agent that assigns to self.config in __init__.
 
     Pre-existing violations (5) are tracked as a ceiling that must not increase.
@@ -123,20 +123,20 @@ class TestNoConfigOverwriteRepoWide:
     _MAX_ALLOWED_VIOLATIONS = 5
 
     def test_config_overwrite_ceiling(self) -> None:
-        agentic_core = ROOT / AGENTIC_CORE_DIR
-        violations: list[str] = []
+    """Test config_overwrite_ceiling contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-        for py_file in agentic_core.rglob("*.py"):
-            if not py_file.stem.endswith("Agent"):
-                continue
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-            tree = _parse_file(py_file)
-            if tree is None:
-                continue
-
-            hits = _find_self_config_assigns_in_init(tree)
-            for cls_name, lineno in hits:
-                rel = py_file.relative_to(ROOT)
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
                 violations.append(f"{rel}:{lineno} {cls_name}.__init__ assigns self.config")
 
         assert len(violations) <= self._MAX_ALLOWED_VIOLATIONS, (

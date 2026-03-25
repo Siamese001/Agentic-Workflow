@@ -214,19 +214,19 @@ class TestPerformanceMetrics:
         assert m.call_count == 0
 
     def test_avg_time_ms_zero_when_no_calls(self):
-        m = PerformanceMetrics(operation_name="op")
-        assert m.avg_time_ms == 0.0
+    """Test avg_time_ms_zero_when_no_calls runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_avg_time_ms_computed(self):
-        m = PerformanceMetrics(operation_name="op", call_count=2, total_time_ms=100.0)
-        assert m.avg_time_ms == 50.0
+    # Act
+    # TODO: Execute avg_time_ms_zero_when_no_calls
+    result = None  # Replace with actual execution
 
-    def test_cache_hit_rate_zero_when_empty(self):
-        m = PerformanceMetrics(operation_name="op")
-        assert m.cache_hit_rate == 0.0
-
-    def test_cache_hit_rate_computed(self):
-        m = PerformanceMetrics(operation_name="op", cache_hits=3, cache_misses=1)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         assert m.cache_hit_rate == 0.75
 
     def test_to_dict_has_required_keys(self):

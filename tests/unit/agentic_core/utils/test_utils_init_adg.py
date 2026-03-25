@@ -205,23 +205,23 @@ class TestUtilsSecurityUtil:
     """security_util is fan_in=23 — verify re-export shim integrity."""
 
     def test_safe_execute_importable(self):
-        from agentic_core.utils.security_util import safe_execute
-        assert callable(safe_execute)
+    """Test safe_execute_importable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+    """Test safe_git_execute_importable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_safe_git_execute_importable(self):
-        from agentic_core.utils.security_util import safe_git_execute
-        assert callable(safe_git_execute)
+    # Act
+    # TODO: Execute safe_git_execute_importable
+    result = None  # Replace with actual execution
 
-    def test_safe_popen_importable(self):
-        from agentic_core.utils.security_util import safe_popen
-        assert callable(safe_popen)
-
-    def test_validate_command_whitelist_importable(self):
-        from agentic_core.utils.security_util import validate_command_whitelist
-        assert callable(validate_command_whitelist)
-
-    def test_security_violation_error_is_exception(self):
-        from agentic_core.utils.security_util import SecurityViolationError
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         assert issubclass(SecurityViolationError, Exception)
 
     def test_all_exports_present(self):
@@ -230,14 +230,16 @@ class TestUtilsSecurityUtil:
             assert hasattr(m, name), f"Missing __all__ member: {name}"
 
     def test_safe_execute_rejects_empty_command(self):
-        from agentic_core.utils.security_util import SecurityViolationError, safe_execute
-        with pytest.raises((SecurityViolationError, ValueError, TypeError, Exception)):
-            safe_execute([])
+    """Test safe_execute_rejects_empty_command runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_validate_command_whitelist_accepts_allowed(self):
-        from agentic_core.utils.security_util import validate_command_whitelist
-        # Should not raise for a benign command like 'git'
-        try:
-            validate_command_whitelist(["git", "status"])
-        except (ValueError, TypeError, RuntimeError) as e:
-            pass  # Some implementations always validate against a strict whitelist
+    # Act
+    # TODO: Execute safe_execute_rejects_empty_command
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions

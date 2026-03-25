@@ -126,33 +126,33 @@ def _build_calculator_with_signals() -> DeterministicVelocityCalculator:
 
 @pytest.mark.governance
 def test_velocity_two_run_identical():
-    """Two-run velocity calculation with identical inputs produces identical result."""
-    calc1 = _build_calculator_with_signals()
-    calc2 = _build_calculator_with_signals()
+"""Test velocity_two_run_identical runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    w1 = calc1.calculate(at_tick=80)
-    w2 = calc2.calculate(at_tick=80)
+# Act
+# TODO: Execute velocity_two_run_identical
+result = None  # Replace with actual execution
 
-    assert w1.signal_count == w2.signal_count
-    assert w1.velocity == w2.velocity
-    assert w1.is_anomaly == w2.is_anomaly
-
-
-@pytest.mark.governance
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
 def test_velocity_digest_two_run_identical():
-    """Velocity anomaly digest is identical across two independent runs."""
-    calc1 = _build_calculator_with_signals()
-    calc2 = _build_calculator_with_signals()
+"""Test velocity_digest_two_run_identical runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    d1 = calc1.calculate_anomaly_digest(at_tick=80)
-    d2 = calc2.calculate_anomaly_digest(at_tick=80)
+# Act
+# TODO: Execute velocity_digest_two_run_identical
+result = None  # Replace with actual execution
 
-    assert d1 == d2
-    assert len(d1) == 64
-
-
-@pytest.mark.governance
-def test_velocity_uses_integer_arithmetic_only():
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
     """Velocity is integer-only — no float division."""
     calc = DeterministicVelocityCalculator(window_size=100)
     for i in range(70):

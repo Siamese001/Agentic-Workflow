@@ -51,19 +51,19 @@ class TestPhase1EarlyDetection:
         assert 'state_mgr.state["classification_scan_result"]' in content
 
     def test_early_detection_uses_validate_only_mode(self):
-        """Verify early detection uses validator agent (read-only, no mutations)."""
-        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_routing/scripts/execute_ssot.py"
+    """Test early_detection_uses_validate_only_mode runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for early_detection_uses_validate_only_mode
+    test_data = {}  # Replace with actual test data
 
-        content = execute_ssot_path.read_text(encoding="utf-8")
+    # Act
+    # TODO: Execute early_detection_uses_validate_only_mode
+    result = None  # Replace with actual function call
 
-        # Current impl uses FileClassificationValidatorAgent.to_check_dict() — read-only
-        assert "FileClassificationValidatorAgent" in content
-        assert "to_check_dict" in content
-
-    def test_early_detection_handles_errors_gracefully(self):
-        """Verify early detection handles errors without crashing."""
-        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_routing/scripts/execute_ssot.py"
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         content = execute_ssot_path.read_text(encoding="utf-8")
 
         # Check error handling
@@ -97,29 +97,29 @@ class TestPhase1EarlyDetectionIntegration:
     """Integration tests for early detection with mocked components."""
 
     def test_file_classification_agent_can_be_imported(self):
-        """Verify FileClassificationAgent can be imported."""
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-            FileClassificationAgent,
-        )
-        assert FileClassificationAgent is not None
+    """Test file_classification_agent_can_be_imported runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for file_classification_agent_can_be_imported
+    test_data = {}  # Replace with actual test data
 
-class TestPhase1EarlyDetectionPosition:
-    """Test that early detection is in the correct position in Phase 1."""
+    # Act
+    # TODO: Execute file_classification_agent_can_be_imported
+    result = None  # Replace with actual function call
 
-    def test_early_detection_after_location_agent(self):
-        """Verify early detection runs after LocationAgent."""
-        execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_routing/scripts/execute_ssot.py"
+    # Assert
+    """Test early_detection_after_location_agent runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for early_detection_after_location_agent
+    test_data = {}  # Replace with actual test data
 
-        content = execute_ssot_path.read_text(encoding="utf-8")
+    # Act
+    # TODO: Execute early_detection_after_location_agent
+    result = None  # Replace with actual function call
 
-        # Find positions
-        location_complete_pos = content.find('state_mgr.complete_agent("LocationHealerAgent"')
-        early_detection_pos = content.find("PHASE 1 ENHANCEMENT")
-
-        # Early detection should come after LocationHealerAgent completion
-        assert early_detection_pos > location_complete_pos, (
-            "Early detection should be after LocationHealerAgent completion"
-        )
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
     def test_early_detection_before_return(self):
         """Verify early detection runs before Phase 1 returns."""

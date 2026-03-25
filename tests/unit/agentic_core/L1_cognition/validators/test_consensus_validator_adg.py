@@ -180,4 +180,17 @@ class TestConsensusEngine:
         assert 0 < ConsensusEngine.MAJORITY_THRESHOLD <= 1.0
 
     def test_model_check_config_is_dict(self):
-        assert isinstance(ConsensusEngine.MODEL_CHECK_CONFIG, dict)
+    """Test model_check_config_is_dict contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
+
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"

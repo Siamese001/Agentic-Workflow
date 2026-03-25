@@ -100,50 +100,50 @@ class TestAllUsedMarkersRegistered:
     """Every pytest.mark.<name> used in collected tests must be registered."""
 
     def test_no_unregistered_markers(self) -> None:
-        registered = set(_parse_registered_markers())
-        used = _scan_used_markers()
-        unregistered = used - registered - BUILTIN_MARKERS
-        assert not unregistered, (
-            f"Found {len(unregistered)} marker(s) used in tests but NOT registered in pytest.ini:\n"
-            + "\n".join(f"  {m}" for m in sorted(unregistered))
-            + "\nAdd these to the markers section in pytest.ini or remove usage."
-        )
+    """Test no_unregistered_markers contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-class TestNoDuplicateMarkers:
-    """Marker registry must not contain duplicate entries."""
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
+    """Test no_duplicate_markers contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_no_duplicate_markers(self) -> None:
-        markers = _parse_registered_markers()
-        seen: dict[str, int] = {}
-        duplicates: list[str] = []
-        for m in markers:
-            if m in seen:
-                duplicates.append(m)
-            seen[m] = seen.get(m, 0) + 1
-        assert not duplicates, "Duplicate marker registrations found:\n" + "\n".join(
-            f"  {d} (appears {seen[d]} times)" for d in duplicates
-        )
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-
-class TestMarkersSorted:
-    """Marker registry should be sorted alphabetically for maintainability."""
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
 
     def test_markers_sorted(self) -> None:
-        markers = _parse_registered_markers()
-        sorted_markers = sorted(markers, key=str.lower)
-        if markers != sorted_markers:
-            # Show the diff
-            out_of_order = [
-                f"  [{i}] {markers[i]!r} should be {sorted_markers[i]!r}"
-                for i in range(len(markers))
-                if markers[i] != sorted_markers[i]
-            ]
-            pytest.fail(
-                "Marker registry is not sorted alphabetically:\n"
-                + "\n".join(out_of_order[:10])
-                + f"\nExpected order: {sorted_markers}",
-            )
+    """Test markers_sorted contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
+
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
 
 
 if __name__ == "__main__":

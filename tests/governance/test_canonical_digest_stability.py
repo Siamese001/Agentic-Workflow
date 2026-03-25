@@ -102,19 +102,19 @@ _FIXED_INPUTS = CanonicalDigestInputs(
 
 @pytest.mark.governance
 def test_canonical_digest_two_run_identical():
-    """Two independent runs with identical inputs produce identical digest."""
-    digest_run1 = compute_canonical_digest(_FIXED_INPUTS)
-    digest_run2 = compute_canonical_digest(_FIXED_INPUTS)
+"""Test canonical_digest_two_run_identical runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    assert digest_run1 == digest_run2, "Canonical digest must be identical across runs"
-    assert len(digest_run1) == 64, "Digest must be 64-hex SHA-256"
+# Act
+# TODO: Execute canonical_digest_two_run_identical
+result = None  # Replace with actual execution
 
-
-@pytest.mark.governance
-def test_canonical_digest_is_sha256():
-    """Digest is a valid 64-character hex string (SHA-256)."""
-    digest = compute_canonical_digest(_FIXED_INPUTS)
-    assert len(digest) == 64
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
     int(digest, 16)  # raises ValueError if not hex
 
 

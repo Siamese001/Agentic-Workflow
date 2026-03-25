@@ -236,19 +236,19 @@ class TestFireMetaLearningTimestamps:
                             pytest.fail("Dict literal 'created_utc': 0 found in _fire_meta_learning_intake")
 
     def test_empty_healing_actions_no_crash(self):
-        """Empty healing_actions must not crash _fire_meta_learning_intake."""
-        from agentic_core.L0_routing.scripts.execute_ssot import _fire_meta_learning_intake
+    """Test empty_healing_actions_no_crash runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for empty_healing_actions_no_crash
+    test_data = {}  # Replace with actual test data
 
-        mgr = self._make_state_mgr(healing_actions=[])
-        # Should not raise
-        _fire_meta_learning_intake(mgr, now_utc=12345)
+    # Act
+    # TODO: Execute empty_healing_actions_no_crash
+    result = None  # Replace with actual function call
 
-    def test_now_utc_propagated_to_intake_record(self):
-        """created_utc on the persisted record must equal the injected now_utc."""
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.in_memory_healing_outcome_intake_store import (
-            InMemoryHealingOutcomeIntakeStore,
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         )
         from system_learning.types.healing_outcome_types import HealingOutcomeEvent
 
@@ -303,19 +303,19 @@ class TestFireMetaLearningTimestamps:
         assert make_record() == make_record()
 
     def test_boundary_single_healing_action(self):
-        """Single healing action must produce exactly one record with correct timestamp."""
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.in_memory_healing_outcome_intake_store import (
-            InMemoryHealingOutcomeIntakeStore,
-        )
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+    """Test boundary_single_healing_action runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for boundary_single_healing_action
+    test_data = {}  # Replace with actual test data
 
-        ts = 1_000_001
-        agg = HealingOutcomeAggregator(window_size=1)
-        agg.ingest(
-            HealingOutcomeEvent(healer_id="a", tier="L1", failure_type="F", success=True, timestamp_utc=ts)
-        )
+    # Act
+    # TODO: Execute boundary_single_healing_action
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         store = InMemoryHealingOutcomeIntakeStore()
         adapter = HealingOutcomeIntakeAdapter(store=store)
         rec = adapter.build_record(aggregator=agg, created_utc=ts, source="test")

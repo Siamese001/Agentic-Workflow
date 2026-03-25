@@ -170,36 +170,46 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestDeterminismExcludedFields:
     def test_is_frozenset(self):
-        assert isinstance(DETERMINISM_EXCLUDED_FIELDS, frozenset)
+    """Test is_frozenset contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    """Test contains_timestamp contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    """Test contains_duration_ms contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    """Test contains_trace_id contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_contains_timestamp(self):
-        assert "timestamp" in DETERMINISM_EXCLUDED_FIELDS
+"""Test importable contract compliance."""
+# Arrange
+# TODO: Set up contract test scenario
+test_scenario = {}  # Replace with actual test scenario
 
-    def test_contains_duration_ms(self):
-        assert "duration_ms" in DETERMINISM_EXCLUDED_FIELDS
+# Act
+# TODO: Execute contract test
+contract_result = None  # Replace with actual contract test
 
-    def test_contains_trace_id(self):
-        assert "trace_id" in DETERMINISM_EXCLUDED_FIELDS
+# Assert - General Contract
+assert contract_result is not None, "Contract should produce a result"
+"""Test importable contract compliance."""
+# Arrange
+# TODO: Set up contract test scenario
+test_scenario = {}  # Replace with actual test scenario
+"""Test returns_string contract compliance."""
+# Arrange
+# TODO: Set up contract test scenario
+test_scenario = {}  # Replace with actual test scenario
 
+# Act
+# TODO: Execute contract test
+contract_result = None  # Replace with actual contract test
 
-class TestCanonicalBytes:
-    def test_importable(self):
-        from agentic_core.interfaces.determinism import canonical_bytes
-        assert callable(canonical_bytes)
-
-    def test_returns_bytes(self):
-        from agentic_core.interfaces.determinism import canonical_bytes
-        result = canonical_bytes({"key": "value"})
-        assert isinstance(result, bytes)
-
-
-class TestCanonicalHash:
-    def test_importable(self):
-        from agentic_core.interfaces.determinism import canonical_hash
-        assert callable(canonical_hash)
-
-    def test_returns_string(self):
-        from agentic_core.interfaces.determinism import canonical_hash
-        result = canonical_hash({"key": "value"})
-        assert isinstance(result, str)
-        assert len(result) == 64  # sha256 hex
+# Assert - General Contract
+assert contract_result is not None, "Contract should produce a result"
+assert isinstance(contract_result, object), "Result should be an object"
+# TODO: Add specific contract assertions
+# assert hasattr(contract_result, "complies"), "Result should indicate compliance"

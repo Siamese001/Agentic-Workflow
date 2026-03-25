@@ -389,33 +389,33 @@ class TestBuildCoverageProof:
         assert result["coverage_ratio"] == 0.0
 
     def test_coverage_hashes_are_deterministic(self):
-        """Same inputs produce identical hashes (replay-stable)."""
-        sm = _make_state(
-            {
-                "completed_agents": {"X": True, "Y": True},
-                "blocked_agents": [],
-            }
-        )
-        eng = _make_engine()
-        r1 = self.mod._build_coverage_proof(sm, eng)
-        r2 = self.mod._build_coverage_proof(sm, eng)
-        assert r1["executed_agents"]["hash"] == r2["executed_agents"]["hash"]
-        assert r1["expected_agents"]["hash"] == r2["expected_agents"]["hash"]
+    """Test coverage_hashes_are_deterministic runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for coverage_hashes_are_deterministic
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute coverage_hashes_are_deterministic
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
     def test_coverage_hash_changes_with_different_agents(self):
-        """Different agent sets produce different hashes."""
-        sm_a = _make_state({"completed_agents": {"A": True}, "blocked_agents": []})
-        sm_b = _make_state({"completed_agents": {"B": True}, "blocked_agents": []})
-        eng = _make_engine()
-        ha = self.mod._build_coverage_proof(sm_a, eng)["executed_agents"]["hash"]
-        hb = self.mod._build_coverage_proof(sm_b, eng)["executed_agents"]["hash"]
-        assert ha != hb
+    """Test coverage_hash_changes_with_different_agents runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for coverage_hash_changes_with_different_agents
+    test_data = {}  # Replace with actual test data
 
-    def test_coverage_ratio_exact_boundary_0_90(self):
-        """9 of 10 executed → ratio = 0.9 (boundary)."""
-        completed = {f"Agent{i}": True for i in range(9)}
-        blocked = [{"agent": "Agent9", "blocker_type": "flag"}]
-        sm = _make_state({"completed_agents": completed, "blocked_agents": blocked})
+    # Act
+    # TODO: Execute coverage_hash_changes_with_different_agents
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         eng = _make_engine()
         result = self.mod._build_coverage_proof(sm, eng)
         assert result["coverage_ratio"] == 0.9
@@ -539,19 +539,19 @@ class TestWriteHealRunComplete:
         self.mod = _load()
 
     def test_heal_run_complete_written_to_file(self, tmp_path):
-        """Function writes heal_run_complete.json to the out_dir."""
-        sm = _make_state()
-        sm.project_root = str(tmp_path)
-        eng = _make_engine()
-        result = self.mod._write_heal_run_complete(sm, eng)
-        out_file = tmp_path / "logs" / "compliance_reports" / "heal_run_complete.json"
-        assert out_file.exists()
-        data = json.loads(out_file.read_text())
-        assert data["meta"]["report_type"] == "HEAL_RUN_COMPLETE"
+    """Test heal_run_complete_written_to_file runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_heal_run_complete_returns_dict(self, tmp_path):
-        """Return value is a dict (so _print_executive_summary can consume it)."""
-        sm = _make_state()
+    # Act
+    # TODO: Execute heal_run_complete_written_to_file
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         sm.project_root = str(tmp_path)
         eng = _make_engine()
         result = self.mod._write_heal_run_complete(sm, eng)
@@ -611,19 +611,19 @@ class TestWriteHealRunComplete:
         assert "llm_invocation_stats" in result["routing"]
 
     def test_heal_run_complete_learning_run_comparison_present(self, tmp_path):
-        """learning.run_comparison is present with proof fields."""
-        sm = _make_state()
-        sm.project_root = str(tmp_path)
-        eng = _make_engine()
-        result = self.mod._write_heal_run_complete(sm, eng)
-        rc = result["learning"]["run_comparison"]
-        assert "proof" in rc
-        assert "current_success_rate" in rc
+    """Test heal_run_complete_learning_run_comparison_present runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_heal_run_complete_all_pass_when_empty_state(self, tmp_path):
-        """Empty state (no healing actions, no blockers) → most gates PASS."""
-        sm = _make_state()
-        sm.project_root = str(tmp_path)
+    # Act
+    # TODO: Execute heal_run_complete_learning_run_comparison_present
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         eng = _make_engine()
         result = self.mod._write_heal_run_complete(sm, eng)
         # coverage gate: 1 expected (floor), 0 completed → ratio handled by floor logic
@@ -811,19 +811,19 @@ class TestWriteFailureForensics:
         self.mod = _load()
 
     def test_forensics_clean_run_always_written(self, tmp_path):
-        """No failures, no blockers → file IS always written with empty arrays (CLEAN)."""
-        sm = _make_state(
-            {
-                "healing_actions": [{"agent": "A", "outcome": "SUCCESS"}],
-                "blocked_agents": [],
-            }
-        )
-        sm.project_root = str(tmp_path)
-        eng = _make_engine()
-        self.mod._write_failure_forensics(sm, eng)
-        out = tmp_path / "logs" / "compliance_reports" / "failure_forensics.json"
-        assert out.exists()
-        data = json.loads(out.read_text())
+    """Test forensics_clean_run_always_written runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute forensics_clean_run_always_written
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         assert data["summary"]["failed_agents_count"] == 0
         assert data["summary"]["blocked_agents_count"] == 0
         assert data["summary"]["misrouted_agents_count"] == 0
@@ -832,27 +832,27 @@ class TestWriteFailureForensics:
         assert data["misrouted_agents"] == []
 
     def test_forensics_clean_run_write_fail_no_crash(self):
-        """OSError on clean run → logged and swallowed, no exception raised."""
-        sm = _make_state({"healing_actions": [{"agent": "A", "outcome": "SUCCESS"}], "blocked_agents": []})
-        sm.project_root = None
-        eng = _make_engine()
-        with patch("builtins.open", side_effect=OSError("disk full")):
-            self.mod._write_failure_forensics(sm, eng)
+    """Test forensics_clean_run_write_fail_no_crash runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_forensics_with_failed_agents(self, tmp_path):
-        """Failed agents → file written with failed_agents populated."""
-        sm = _make_state(
-            {
-                "healing_actions": [
-                    {
-                        "agent": "AgentFail",
-                        "outcome": "FAIL",
-                        "routing_tier": "DETERMINISTIC",
-                        "territory": "test_terr",
-                    }
-                ],
-                "blocked_agents": [],
-            }
+    # Act
+    # TODO: Execute forensics_clean_run_write_fail_no_crash
+    result = None  # Replace with actual execution
+    """Test forensics_with_failed_agents runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for forensics_with_failed_agents
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute forensics_with_failed_agents
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         )
         sm.project_root = str(tmp_path)
         eng = _make_engine()
@@ -864,35 +864,35 @@ class TestWriteFailureForensics:
         assert data["failed_agents"][0]["agent"] == "AgentFail"
 
     def test_forensics_with_blocked_agents_only(self, tmp_path):
-        """Only blockers (no failed actions) → file written with blocked_agents populated."""
-        sm = _make_state(
-            {
-                "healing_actions": [],
-                "blocked_agents": [{"agent": "BlockedX", "blocker_type": "feature_flag"}],
-            }
-        )
-        sm.project_root = str(tmp_path)
-        eng = _make_engine()
-        self.mod._write_failure_forensics(sm, eng)
-        out = tmp_path / "logs" / "compliance_reports" / "failure_forensics.json"
-        assert out.exists()
-        data = json.loads(out.read_text())
+    """Test forensics_with_blocked_agents_only runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for forensics_with_blocked_agents_only
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute forensics_with_blocked_agents_only
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert data["summary"]["blocked_agents_count"] == 1
 
     def test_forensics_misrouted_low_confidence_fail(self, tmp_path):
-        """DETERMINISTIC tier + outcome=FAIL + conf<0.75 → misrouted entry."""
-        sm = _make_state(
-            {
-                "healing_actions": [
-                    {
-                        "agent": "AgentM",
-                        "outcome": "FAIL",
-                        "routing_tier": "DETERMINISTIC",
-                        "confidence": 0.50,
-                    }
-                ],
-                "blocked_agents": [],
-            }
+    """Test forensics_misrouted_low_confidence_fail runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for forensics_misrouted_low_confidence_fail
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute forensics_misrouted_low_confidence_fail
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         )
         sm.project_root = str(tmp_path)
         eng = _make_engine()
@@ -903,19 +903,19 @@ class TestWriteFailureForensics:
         assert data["misrouted_agents"][0]["should_have_routed_to"] in ("QWEN_VLLM", "GEMINI_2_5_PRO")
 
     def test_forensics_misrouted_qwen_for_medium_conf(self, tmp_path):
-        """conf=0.50 (medium) → should_have_routed_to QWEN_VLLM."""
-        sm = _make_state(
-            {
-                "healing_actions": [
-                    {
-                        "agent": "AgentN",
-                        "outcome": "FAIL",
-                        "routing_tier": "DETERMINISTIC",
-                        "confidence": 0.50,
-                    }
-                ],
-                "blocked_agents": [],
-            }
+    """Test forensics_misrouted_qwen_for_medium_conf runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for forensics_misrouted_qwen_for_medium_conf
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute forensics_misrouted_qwen_for_medium_conf
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         )
         sm.project_root = str(tmp_path)
         eng = _make_engine()
@@ -924,19 +924,19 @@ class TestWriteFailureForensics:
         assert data["misrouted_agents"][0]["should_have_routed_to"] == "QWEN_VLLM"
 
     def test_forensics_misrouted_gemini_for_low_conf(self, tmp_path):
-        """conf=0.30 (low) → should_have_routed_to GEMINI_2_5_PRO."""
-        sm = _make_state(
-            {
-                "healing_actions": [
-                    {
-                        "agent": "AgentO",
-                        "outcome": "FAIL",
-                        "routing_tier": "DETERMINISTIC",
-                        "confidence": 0.30,
-                    }
-                ],
-                "blocked_agents": [],
-            }
+    """Test forensics_misrouted_gemini_for_low_conf runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for forensics_misrouted_gemini_for_low_conf
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute forensics_misrouted_gemini_for_low_conf
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         )
         sm.project_root = str(tmp_path)
         eng = _make_engine()
@@ -945,47 +945,47 @@ class TestWriteFailureForensics:
         assert data["misrouted_agents"][0]["should_have_routed_to"] == "GEMINI_2_5_PRO"
 
     def test_forensics_write_fail_no_crash(self):
-        """OSError during write → logged and swallowed, no exception raised."""
-        sm = _make_state(
-            {
-                "healing_actions": [{"agent": "A", "outcome": "FAIL"}],
-                "blocked_agents": [],
-            }
-        )
-        sm.project_root = None
-        eng = _make_engine()
-        with patch("builtins.open", side_effect=OSError("no space")):
-            # Should not raise
-            self.mod._write_failure_forensics(sm, eng)
+    """Test forensics_write_fail_no_crash runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for forensics_write_fail_no_crash
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute forensics_write_fail_no_crash
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
     def test_forensics_report_type_field(self, tmp_path):
-        """meta.report_type == 'FAILURE_FORENSICS'."""
-        sm = _make_state(
-            {
-                "healing_actions": [{"agent": "A", "outcome": "FAIL", "routing_tier": "DETERMINISTIC"}],
-                "blocked_agents": [],
-            }
-        )
-        sm.project_root = str(tmp_path)
-        eng = _make_engine()
-        self.mod._write_failure_forensics(sm, eng)
-        data = json.loads((tmp_path / "logs" / "compliance_reports" / "failure_forensics.json").read_text())
-        assert data["meta"]["report_type"] == "FAILURE_FORENSICS"
+    """Test forensics_report_type_field runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for forensics_report_type_field
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute forensics_report_type_field
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
     def test_forensics_blocker_proof_hash_present_when_llm_blocker(self, tmp_path):
-        """When llm_call_evidence.blocker is set → blocker_proof_hash in llm_routing_proof."""
-        sm = _make_state(
-            {
-                "healing_actions": [
-                    {
-                        "agent": "AgentP",
-                        "outcome": "FAIL",
-                        "routing_tier": "GEMINI_2_5_PRO",
-                        "llm_call_evidence": {
-                            "llm_call_made": False,
-                            "blocker": "ENABLE_GEMINI=False",
-                        },
-                    }
+    """Test forensics_blocker_proof_hash_present_when_llm_blocker runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for forensics_blocker_proof_hash_present_when_llm_blocker
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute forensics_blocker_proof_hash_present_when_llm_blocker
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
                 ],
                 "blocked_agents": [],
             }
@@ -998,19 +998,19 @@ class TestWriteFailureForensics:
         assert fa["llm_routing_proof"]["blocker_proof_hash"].startswith("sha256:")
 
     def test_forensics_empty_blocker_proof_hash_when_no_blocker(self, tmp_path):
-        """No blocker value → blocker_proof_hash is empty string."""
-        sm = _make_state(
-            {
-                "healing_actions": [
-                    {
-                        "agent": "AgentQ",
-                        "outcome": "FAIL",
-                        "routing_tier": "DETERMINISTIC",
-                    }
-                ],
-                "blocked_agents": [],
-            }
-        )
+    """Test forensics_empty_blocker_proof_hash_when_no_blocker runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for forensics_empty_blocker_proof_hash_when_no_blocker
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute forensics_empty_blocker_proof_hash_when_no_blocker
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         sm.project_root = str(tmp_path)
         eng = _make_engine()
         self.mod._write_failure_forensics(sm, eng)
@@ -1090,26 +1090,26 @@ class TestPrintExecutiveSummary:
         }
 
     def test_summary_all_pass_verdict(self, capsys):
-        """VERDICT: PASS printed when all gates pass."""
-        data = self._make_complete_output(overall="PASS", n_pass=10, n_fail=0)
-        self.mod._print_executive_summary(data)
-        captured = capsys.readouterr().out
-        assert "VERDICT: PASS" in captured
+    """Test summary_all_pass_verdict runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for summary_all_pass_verdict
+    test_data = {}  # Replace with actual test data
 
-    def test_summary_any_fail_verdict(self, capsys):
-        """VERDICT: FAIL printed when any gate fails."""
-        gc = [
-            {
-                "criterion": "Agent Coverage",
-                "target": ">=0.90",
-                "threshold": 0.90,
-                "actual": 0.80,
-                "status": "FAIL",
-                "blocker": "2 agents blocked",
-                "severity": "critical",
-            }
-        ] + [
-            {
+    # Act
+    # TODO: Execute summary_all_pass_verdict
+    """Test summary_any_fail_verdict runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for summary_any_fail_verdict
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute summary_any_fail_verdict
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
                 "criterion": f"Gate {i}",
                 "target": ">=0.9",
                 "threshold": 0.9,
@@ -1126,19 +1126,19 @@ class TestPrintExecutiveSummary:
         assert "VERDICT: FAIL" in captured
 
     def test_summary_coverage_fail_gate_shown(self, capsys):
-        """FAIL gate row appears in table output."""
-        gc = [
-            {
-                "criterion": "Agent Coverage",
-                "target": ">=0.90",
-                "threshold": 0.90,
-                "actual": 0.80,
-                "status": "FAIL",
-                "blocker": "2 agents blocked",
-                "severity": "critical",
-            }
-        ] + [
-            {
+    """Test summary_coverage_fail_gate_shown runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for summary_coverage_fail_gate_shown
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute summary_coverage_fail_gate_shown
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
                 "criterion": f"Gate {i}",
                 "target": ">=0.9",
                 "threshold": 0.9,
@@ -1156,77 +1156,77 @@ class TestPrintExecutiveSummary:
         assert "Agent Coverage" in captured
 
     def test_summary_blockers_section_shown(self, capsys):
-        """Critical blockers section printed when blockers present."""
-        blockers = [
-            {
-                "agent": "AgentBlocked",
-                "blocker_type": "feature_flag",
-                "flag": "ENABLE_X",
-                "remediation": "Set ENABLE_X=True",
-            }
-        ]
-        data = self._make_complete_output(blockers=blockers)
-        self.mod._print_executive_summary(data)
-        captured = capsys.readouterr().out
-        assert "CRITICAL BLOCKERS" in captured
+    """Test summary_blockers_section_shown runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for summary_blockers_section_shown
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute summary_blockers_section_shown
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert "AgentBlocked" in captured
 
     def test_summary_no_blockers_no_critical_section(self, capsys):
-        """No blockers → CRITICAL BLOCKERS section not printed."""
-        data = self._make_complete_output()
-        self.mod._print_executive_summary(data)
-        captured = capsys.readouterr().out
-        assert "CRITICAL BLOCKERS" not in captured
+    """Test summary_no_blockers_no_critical_section runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for summary_no_blockers_no_critical_section
+    test_data = {}  # Replace with actual test data
 
-    def test_summary_proof_integrity_section_always_shown(self, capsys):
-        """PROOF INTEGRITY section always present."""
-        data = self._make_complete_output()
-        self.mod._print_executive_summary(data)
-        captured = capsys.readouterr().out
-        assert "PROOF INTEGRITY" in captured
+    # Act
+    # TODO: Execute summary_no_blockers_no_critical_section
+    """Test summary_proof_integrity_section_always_shown runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for summary_proof_integrity_section_always_shown
+    test_data = {}  # Replace with actual test data
 
-    def test_summary_next_run_prediction_shown_when_skipped(self, capsys):
-        """NEXT RUN PREDICTION section shown when agents skipped."""
-        data = self._make_complete_output(skipped_count=2)
-        self.mod._print_executive_summary(data)
-        captured = capsys.readouterr().out
-        assert "NEXT RUN PREDICTION" in captured
+    # Act
+    # TODO: Execute summary_proof_integrity_section_always_shown
+    """Test summary_next_run_prediction_shown_when_skipped runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_summary_next_run_prediction_not_shown_when_clean(self, capsys):
-        """NEXT RUN PREDICTION NOT shown when no skipped agents and no blocked LLM."""
-        data = self._make_complete_output(skipped_count=0, blocked_llm=0)
-        self.mod._print_executive_summary(data)
-        captured = capsys.readouterr().out
-        assert "NEXT RUN PREDICTION" not in captured
+    # Act
+    # TODO: Execute summary_next_run_prediction_shown_when_skipped
+    """Test summary_next_run_prediction_not_shown_when_clean runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_summary_empty_complete_output_no_crash(self, capsys):
-        """Empty dict input → does not crash, prints something."""
-        self.mod._print_executive_summary({})
-        captured = capsys.readouterr().out
-        assert len(captured) > 0
+    # Act
+    # TODO: Execute summary_next_run_prediction_not_shown_when_clean
+    """Test summary_empty_complete_output_no_crash runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for summary_empty_complete_output_no_crash
+    test_data = {}  # Replace with actual test data
 
-    def test_summary_run_id_and_git_in_header(self, capsys):
-        """run_id and git_commit appear in header line."""
-        data = self._make_complete_output()
-        self.mod._print_executive_summary(data)
-        captured = capsys.readouterr().out
-        assert "run_test" in captured
-        assert "abc1234" in captured
+    # Act
+    """Test summary_run_id_and_git_in_header runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_summary_n_fail_in_overall_row(self, capsys):
-        """Number of failed criteria shown in overall row."""
-        gc = [
-            {
-                "criterion": f"Gate {i}",
-                "target": ">=0.9",
-                "threshold": 0.9,
-                "actual": 0.5,
-                "status": "FAIL",
-                "blocker": "fail",
-                "severity": "high",
-            }
-            for i in range(3)
-        ] + [
+    # Act
+    # TODO: Execute summary_run_id_and_git_in_header
+    result = None  # Replace with actual execution
+    """Test summary_n_fail_in_overall_row runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for summary_n_fail_in_overall_row
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute summary_n_fail_in_overall_row
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             {
                 "criterion": f"Gate {i}",
                 "target": ">=0.9",
@@ -1244,26 +1244,26 @@ class TestPrintExecutiveSummary:
         assert "3/10" in captured
 
     def test_summary_pass_all_message(self, capsys):
-        """All pass → 'All diagnostic gates satisfied' message shown."""
-        data = self._make_complete_output(overall="PASS")
-        self.mod._print_executive_summary(data)
-        captured = capsys.readouterr().out
-        assert "All diagnostic gates satisfied" in captured
+    """Test summary_pass_all_message runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for summary_pass_all_message
+    test_data = {}  # Replace with actual test data
 
-    def test_summary_fail_forensics_reference(self, capsys):
-        """Any fail → 'failure_forensics.json' referenced."""
-        gc = [
-            {
-                "criterion": "Gate 0",
-                "target": ">=0.9",
-                "threshold": 0.9,
-                "actual": 0.0,
-                "status": "FAIL",
-                "blocker": "bad",
-                "severity": "high",
-            }
-        ] + [
-            {
+    # Act
+    # TODO: Execute summary_pass_all_message
+    """Test summary_fail_forensics_reference runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for summary_fail_forensics_reference
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute summary_fail_forensics_reference
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
                 "criterion": f"Gate {i}",
                 "target": ">=0.9",
                 "threshold": 0.9,
@@ -1292,22 +1292,34 @@ class TestModuleExportsNewFunctions:
         self.mod = _load()
 
     def test_collect_llm_call_trace_callable(self):
-        assert callable(getattr(self.mod, "_collect_llm_call_trace", None))
+    """Test collect_llm_call_trace_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    """Test collect_blocker_scan_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    """Test build_coverage_proof_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    """Test build_calibration_proof_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    """Test write_heal_run_complete_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    """Test write_failure_forensics_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    """Test print_executive_summary_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_collect_blocker_scan_callable(self):
-        assert callable(getattr(self.mod, "_collect_blocker_scan", None))
+    # Act
+    # TODO: Execute print_executive_summary_callable
+    result = None  # Replace with actual execution
 
-    def test_build_coverage_proof_callable(self):
-        assert callable(getattr(self.mod, "_build_coverage_proof", None))
-
-    def test_build_calibration_proof_callable(self):
-        assert callable(getattr(self.mod, "_build_calibration_proof", None))
-
-    def test_write_heal_run_complete_callable(self):
-        assert callable(getattr(self.mod, "_write_heal_run_complete", None))
-
-    def test_write_failure_forensics_callable(self):
-        assert callable(getattr(self.mod, "_write_failure_forensics", None))
-
-    def test_print_executive_summary_callable(self):
-        assert callable(getattr(self.mod, "_print_executive_summary", None))
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions

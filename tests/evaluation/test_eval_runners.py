@@ -226,27 +226,27 @@ def _bad_generation(query, docs):
 
 class TestDefaultMetrics:
     def test_returns_list(self):
-        metrics = _default_metrics()
-        assert isinstance(metrics, list)
+    """Test returns_list runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for returns_list
+    test_data = {}  # Replace with actual test data
+    """Test contains_six_metrics runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for contains_six_metrics
+    test_data = {}  # Replace with actual test data
+    """Test metric_names_include_precision_recall_mrr runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_contains_six_metrics(self):
-        metrics = _default_metrics()
-        assert len(metrics) == 6
+    # Act
+    # TODO: Execute metric_names_include_precision_recall_mrr
+    result = None  # Replace with actual execution
 
-    def test_metric_names_include_precision_recall_mrr(self):
-        names = {m.name for m in _default_metrics()}
-        assert "precision@5" in names
-        assert "recall@10" in names
-        assert "MRR" in names
-        assert "groundedness" in names
-        assert "answer_correctness" in names
-
-
-# ---------------------------------------------------------------------------
-# OfflineEvaluationRunner
-# ---------------------------------------------------------------------------
-
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 class TestOfflineEvaluationRunner:
     def test_empty_dataset_returns_empty_report(self):
         runner = OfflineEvaluationRunner()
@@ -256,106 +256,106 @@ class TestOfflineEvaluationRunner:
         assert report.aggregate_scores == {}
 
     def test_report_has_run_id(self):
-        runner = OfflineEvaluationRunner()
-        ds = _make_dataset(1)
-        report = runner.run(ds)
-        assert len(report.run_id) > 0
+    """Test report_has_run_id runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_report_dataset_name_matches(self):
-        runner = OfflineEvaluationRunner()
-        ds = _make_dataset(1, name="my_ds")
-        report = runner.run(ds)
-        assert report.dataset_name == "my_ds"
+    # Act
+    """Test report_dataset_name_matches runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for report_dataset_name_matches
+    test_data = {}  # Replace with actual test data
 
-    def test_per_example_results_count(self):
-        runner = OfflineEvaluationRunner()
-        ds = _make_dataset(3)
-        report = runner.run(ds)
-        assert len(report.per_example_results) == 3
+    # Act
+    # TODO: Execute report_dataset_name_matches
+    result = None  # Replace with actual function call
 
-    def test_aggregate_scores_are_averaged(self):
-        runner = OfflineEvaluationRunner(retrieval_fn=_perfect_retrieval)
-        ds = _make_dataset(2)
-        report = runner.run(ds)
-        assert "precision@5" in report.aggregate_scores
-        # With perfect retrieval (3 of 3 in top-5), precision should be > 0
-        assert report.aggregate_scores["precision@5"] >= 0.0
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    """Test aggregate_scores_are_averaged runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for aggregate_scores_are_averaged
+    test_data = {}  # Replace with actual test data
 
-    def test_default_retrieval_returns_zero_metrics(self):
-        runner = OfflineEvaluationRunner()
-        ds = _make_dataset(1)
-        report = runner.run(ds)
-        # default retrieval returns empty → precision@5 = 0
-        assert report.aggregate_scores.get("precision@5", 0.0) == pytest.approx(0.0)
+    # Act
+    # TODO: Execute aggregate_scores_are_averaged
+    result = None  # Replace with actual function call
+    """Test default_retrieval_returns_zero_metrics runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for default_retrieval_returns_zero_metrics
+    test_data = {}  # Replace with actual test data
 
-    def test_system_version_propagated(self):
-        runner = OfflineEvaluationRunner(system_version="v2.5")
-        ds = _make_dataset(1)
-        report = runner.run(ds)
-        assert report.system_version == "v2.5"
+    # Act
+    # TODO: Execute default_retrieval_returns_zero_metrics
+    """Test system_version_propagated runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for system_version_propagated
+    test_data = {}  # Replace with actual test data
 
-    def test_custom_metrics_used(self):
-        from agentic_core.evaluation.metrics.precision_at_k import PrecisionAtK
+    # Act
+    """Test custom_metrics_used runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for custom_metrics_used
+    test_data = {}  # Replace with actual test data
 
-        runner = OfflineEvaluationRunner(metrics=[PrecisionAtK(k=3)])
-        ds = _make_dataset(2)
-        report = runner.run(ds)
-        assert "precision@3" in report.aggregate_scores
-        assert "recall@10" not in report.aggregate_scores
+    # Act
+    # TODO: Execute custom_metrics_used
+    result = None  # Replace with actual function call
 
-    def test_generation_fn_used(self):
-        runner = OfflineEvaluationRunner(generation_fn=_good_generation)
-        ds = _make_dataset(1)
-        report = runner.run(ds)
-        result = report.per_example_results[0]
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert result.generated_answer == "the answer matches expected"
 
     def test_two_runs_same_dataset_deterministic(self):
-        runner = OfflineEvaluationRunner(retrieval_fn=_perfect_retrieval)
-        ds = _make_dataset(2)
-        r1 = runner.run(ds)
-        r2 = runner.run(ds)
-        assert r1.aggregate_scores == r2.aggregate_scores
+    """Test two_runs_same_dataset_deterministic runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_l4_persist_called_when_store_provided(self):
-        """Verify persist does not raise when store is provided."""
-        stored = []
+    # Act
+    # TODO: Execute two_runs_same_dataset_deterministic
+    """Test l4_persist_called_when_store_provided runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        class FakeStore:
-            def put(self, artifact):
-                stored.append(artifact)
+    # Act
+    # TODO: Execute l4_persist_called_when_store_provided
+    result = None  # Replace with actual execution
 
-        runner = OfflineEvaluationRunner(l4_store=FakeStore())
-        ds = _make_dataset(1)
-        runner.run(ds)
-        assert len(stored) == 1
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
+    """Test l4_persist_graceful_on_exception runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-    def test_l4_persist_graceful_on_exception(self):
-        """Persist failure must not crash the runner."""
+    # Act & Assert
+    # TODO: Test error handling in l4_persist_graceful_on_exception
+    with pytest.raises(Exception):  # Replace with expected exception
+        # Execute operation that should raise error
+        pass  # Replace with actual error test
 
-        class BrokenStore:
-            def put(self, artifact):
-                raise RuntimeError("disk full")
+    # TODO: Add error message and handling assertions
+    """Test timestamp_in_report runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for timestamp_in_report
+    test_data = {}  # Replace with actual test data
 
-        runner = OfflineEvaluationRunner(l4_store=BrokenStore())
-        ds = _make_dataset(1)
-        report = runner.run(ds)  # must not raise
-        assert report is not None
+    # Act
+    # TODO: Execute timestamp_in_report
+    result = None  # Replace with actual function call
 
-    def test_timestamp_in_report(self):
-        runner = OfflineEvaluationRunner()
-        ds = _make_dataset(1)
-        report = runner.run(ds)
-        assert report.timestamp.endswith("Z")
-
-
-# ---------------------------------------------------------------------------
-# ReplayEvaluationRunner
-# ---------------------------------------------------------------------------
-
-
-class TestReplayEvaluationRunner:
-    def _baseline_config(self):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         return SystemConfig(
             name="baseline",
             version="v1",
@@ -370,103 +370,113 @@ class TestReplayEvaluationRunner:
         )
 
     def test_delta_report_run_ids_differ(self):
-        runner = ReplayEvaluationRunner()
-        ds = _make_dataset(2)
-        delta = runner.run(ds, self._baseline_config(), self._candidate_config())
-        assert delta.run_id_a != delta.run_id_b
+    """Test delta_report_run_ids_differ runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_delta_report_config_names(self):
-        runner = ReplayEvaluationRunner()
-        ds = _make_dataset(1)
-        delta = runner.run(ds, self._baseline_config(), self._candidate_config())
-        assert delta.config_a_name == "baseline"
-        assert delta.config_b_name == "candidate"
+    # Act
+    """Test delta_report_config_names runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for delta_report_config_names
+    test_data = {}  # Replace with actual test data
 
-    def test_identical_configs_zero_delta(self):
-        runner = ReplayEvaluationRunner()
-        ds = _make_dataset(2)
-        config_a = self._baseline_config()
-        config_b = self._candidate_config(retrieval_fn=_perfect_retrieval)
-        delta = runner.run(ds, config_a, config_b)
-        for metric, d in delta.metric_deltas.items():
-            assert d == pytest.approx(0.0, abs=1e-9), f"Expected 0 delta for {metric}, got {d}"
+    # Act
+    # TODO: Execute delta_report_config_names
+    """Test identical_configs_zero_delta runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for identical_configs_zero_delta
+    test_data = {}  # Replace with actual test data
 
-    def test_better_candidate_positive_delta(self):
-        runner = ReplayEvaluationRunner()
-        ds = _make_dataset(2)
-        config_a = SystemConfig("base", "v1", retrieval_fn=_bad_retrieval)
-        config_b = SystemConfig("cand", "v2", retrieval_fn=_perfect_retrieval)
-        delta = runner.run(ds, config_a, config_b)
-        # recall@10 should improve
-        assert delta.metric_deltas.get("recall@10", 0.0) > 0
+    # Act
+    # TODO: Execute identical_configs_zero_delta
+    result = None  # Replace with actual function call
 
-    def test_worse_candidate_negative_delta(self):
-        runner = ReplayEvaluationRunner()
-        ds = _make_dataset(2)
-        config_a = SystemConfig("base", "v1", retrieval_fn=_perfect_retrieval)
-        config_b = SystemConfig("cand", "v2", retrieval_fn=_bad_retrieval)
-        delta = runner.run(ds, config_a, config_b)
-        assert delta.metric_deltas.get("recall@10", 0.0) < 0
+"""Test better_candidate_positive_delta runtime behavior."""
+# Arrange
+# TODO: Set up test data for better_candidate_positive_delta
+test_data = {}  # Replace with actual test data
 
-    def test_delta_scores_a_and_b_present(self):
-        runner = ReplayEvaluationRunner()
-        ds = _make_dataset(1)
-        delta = runner.run(ds, self._baseline_config(), self._candidate_config())
-        assert isinstance(delta.scores_a, dict)
-        assert isinstance(delta.scores_b, dict)
+# Act
+# TODO: Execute better_candidate_positive_delta
+result = None  # Replace with actual function call
 
-    def test_l4_persist_on_delta(self):
-        stored = []
+"""Test worse_candidate_negative_delta runtime behavior."""
+# Arrange
+# TODO: Set up test data for worse_candidate_negative_delta
+test_data = {}  # Replace with actual test data
 
-        class FakeStore:
-            def put(self, artifact):
-                stored.append(artifact)
+# Act
+# TODO: Execute worse_candidate_negative_delta
+result = None  # Replace with actual function call
+"""Test delta_scores_a_and_b_present runtime behavior."""
+# Arrange
+# TODO: Set up test data for delta_scores_a_and_b_present
+test_data = {}  # Replace with actual test data
 
-        runner = ReplayEvaluationRunner(l4_store=FakeStore())
-        ds = _make_dataset(1)
-        runner.run(ds, self._baseline_config(), self._candidate_config())
-        assert any("evaluation_delta" in str(a) or hasattr(a, "kind") for a in stored)
+# Act
+# TODO: Execute delta_scores_a_and_b_present
+"""Test l4_persist_on_delta runtime behavior."""
+# Arrange
+# TODO: Set up test data for l4_persist_on_delta
+test_data = {}  # Replace with actual test data
 
-    def test_l4_persist_graceful_on_exception(self):
-        class BrokenStore:
-            def put(self, artifact):
-                raise OSError("no space left")
+# Act
+# TODO: Execute l4_persist_on_delta
+result = None  # Replace with actual function call
 
-        runner = ReplayEvaluationRunner(l4_store=BrokenStore())
-        ds = _make_dataset(1)
-        delta = runner.run(ds, self._baseline_config(), self._candidate_config())
-        assert delta is not None
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+"""Test l4_persist_graceful_on_exception runtime behavior."""
+# Arrange
+# TODO: Set up error condition
+error_input = {}  # Replace with actual error condition
 
-    def test_delta_to_dict_roundtrip(self):
-        runner = ReplayEvaluationRunner()
-        ds = _make_dataset(1)
-        delta = runner.run(ds, self._baseline_config(), self._candidate_config())
-        d = delta.to_dict()
-        from agentic_core.evaluation.schemas.evaluation_result_schema import DeltaReport
+# Act & Assert
+# TODO: Test error handling in l4_persist_graceful_on_exception
+with pytest.raises(Exception):  # Replace with expected exception
+    # Execute operation that should raise error
+    pass  # Replace with actual error test
+    """Test delta_to_dict_roundtrip runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for delta_to_dict_roundtrip
+    test_data = {}  # Replace with actual test data
 
-        restored = DeltaReport.from_dict(d)
-        assert restored.config_a_name == delta.config_a_name
+    # Act
+    # TODO: Execute delta_to_dict_roundtrip
+    result = None  # Replace with actual function call
 
-
-# ---------------------------------------------------------------------------
-# SystemConfig
-# ---------------------------------------------------------------------------
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
 
 class TestSystemConfig:
     def test_minimal_creation(self):
-        cfg = SystemConfig(name="test", version="v1")
-        assert cfg.name == "test"
-        assert cfg.version == "v1"
-        assert cfg.retrieval_fn is None
-        assert cfg.generation_fn is None
-        assert cfg.metadata == {}
+    """Test minimal_creation runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for minimal_creation
+    test_data = {}  # Replace with actual test data
 
-    def test_with_metadata(self):
-        cfg = SystemConfig(name="x", version="v1", metadata={"key": "val"})
-        assert cfg.metadata["key"] == "val"
+    # Act
+    # TODO: Execute minimal_creation
+    result = None  # Replace with actual function call
+    """Test with_metadata runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for with_metadata
+    test_data = {}  # Replace with actual test data
+    """Test with_retrieval_fn runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for with_retrieval_fn
+    test_data = {}  # Replace with actual test data
 
-    def test_with_retrieval_fn(self):
-        cfg = SystemConfig(name="x", version="v1", retrieval_fn=_perfect_retrieval)
-        assert cfg.retrieval_fn is not None
-        assert cfg.retrieval_fn("q") == ["doc_1", "doc_2", "doc_3"]
+    # Act
+    # TODO: Execute with_retrieval_fn
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions

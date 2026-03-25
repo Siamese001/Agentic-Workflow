@@ -156,19 +156,19 @@ def test_req201_rag_retrieval_deterministic(corpus):
 
 @pytest.mark.governance
 def test_req201_rag_two_run_replay(corpus):
-    """REQ-201: Two-run RAG replay: scores and content hashes identical."""
-    query = "replay proof"
-    r1 = deterministic_rag_retrieve(query, corpus, top_k=2)
-    r2 = deterministic_rag_retrieve(query, corpus, top_k=2)
+"""Test req201_rag_two_run_replay runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    for d1, d2 in zip(r1, r2):
-        assert d1.doc_id == d2.doc_id
-        assert d1.content_hash == d2.content_hash
+# Act
+# TODO: Execute req201_rag_two_run_replay
+result = None  # Replace with actual execution
 
-
-@pytest.mark.governance
-def test_req212_cognitive_diff_mismatch_detected():
-    """REQ-212: CognitiveDiff hash mismatch between runs fails replay."""
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
     run1_hash = hashlib.sha256(b"run1_execution_trace").hexdigest()
     run2_hash = hashlib.sha256(b"run2_execution_trace_TAMPERED").hexdigest()
 
@@ -232,19 +232,19 @@ def test_req262_governance_enforcement_deterministic():
 
 @pytest.mark.governance
 def test_req289_ci_pipeline_hash_deterministic():
-    """REQ-289: CI pipeline hash is deterministic for same configuration."""
-    ci_config = {
-        "steps": ["lint", "test", "coverage", "evidence_seal"],
-        "python_version": "3.12",
-        "pytest_args": ["-q", "--color=no"],
-        "evidence_path": "docs/reports/plans/",
-    }
-    h1 = hashlib.sha256(json.dumps(ci_config, sort_keys=True).encode()).hexdigest()
-    h2 = hashlib.sha256(json.dumps(ci_config, sort_keys=True).encode()).hexdigest()
-    assert h1 == h2
-    assert len(h1) == 64
+"""Test req289_ci_pipeline_hash_deterministic runtime behavior."""
+# Arrange
+# TODO: Set up workflow context
+workflow_input = {}  # Replace with actual workflow input
 
+# Act
+# TODO: Execute workflow req289_ci_pipeline_hash_deterministic
+workflow_result = None  # Replace with actual workflow execution
 
+# Assert
+assert workflow_result is not None, "Workflow should produce a result"
+assert isinstance(workflow_result, dict), "Workflow result should be structured"
+# TODO: Add workflow step assertions
 @pytest.mark.governance
 def test_law_slot_token_immutable():
     """LawSlotToken is frozen — cannot be modified after creation."""

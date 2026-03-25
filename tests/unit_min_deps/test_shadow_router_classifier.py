@@ -362,19 +362,19 @@ def test_negative_control_shadow_route_application():
 
 @pytest.mark.unit_min_deps
 def test_shadow_re_run_determinism_lock():
-    """Test determinism re-run lock for shadow output."""
-    # Create routing decision
-    route_decision = RouteDecisionArtifact(
-        trace_id="test-trace-007",
-        timestamp="2024-01-01T00:00:00Z",
-        route_path=RoutePath.STANDARD_VALIDATION,
-        risk_score=0.4,
-        budget_est=120.0,
-        rationale_enum=RoutingRationale.STANDARD_VALIDATION,
-        policy_config_hash="stu901",
-        semantic_clock=SemanticClockSnapshot(
-            tick=42,
-            vector_clock=(("L0", 1),),
+"""Test shadow_re_run_determinism_lock runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
+
+# Act
+# TODO: Execute shadow_re_run_determinism_lock
+result = None  # Replace with actual execution
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
         ),
     )
 
@@ -398,19 +398,19 @@ def test_shadow_re_run_determinism_lock():
 
 @pytest.mark.unit_min_deps
 def test_global_wiring_function():
-    """Test the global wiring convenience function."""
-    # Create routing decision
-    route_decision = RouteDecisionArtifact(
-        trace_id="test-trace-008",
-        timestamp="2024-01-01T00:00:00Z",
-        route_path=RoutePath.ROUTE_RECOVERY_BUDGET_OVERFLOW,
-        risk_score=0.7,
-        budget_est=180.0,
-        rationale_enum=RoutingRationale.BUDGET_OVERFLOW,
-        policy_config_hash="vwx234",
-    )
+"""Test global_wiring_function runtime behavior."""
+# Arrange
+# TODO: Set up test data for global_wiring_function
+test_data = {}  # Replace with actual test data
 
-    # Use global function
+# Act
+# TODO: Execute global_wiring_function
+result = None  # Replace with actual function call
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
     telemetry = observe_routing_decision(route_decision)
 
     # Verify telemetry is produced

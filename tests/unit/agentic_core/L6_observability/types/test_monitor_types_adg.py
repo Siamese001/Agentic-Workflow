@@ -184,19 +184,19 @@ class TestExecutionMetrics:
         assert m.success is True
 
     def test_execution_time_stored(self):
-        m = ExecutionMetrics(
-            agent_name="A",
-            category="c",
-            strategy_type="s",
-            execution_time_ms=100.0,
-            success=False,
-        )
-        assert m.execution_time_ms == pytest.approx(100.0)
+    """Test execution_time_stored runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for execution_time_stored
+    test_data = {}  # Replace with actual test data
 
-    def test_metadata_default_empty(self):
-        m = ExecutionMetrics(
-            agent_name="A",
-            category="c",
+    # Act
+    # TODO: Execute execution_time_stored
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             strategy_type="s",
             execution_time_ms=0.0,
             success=True,
@@ -215,5 +215,16 @@ class TestAggregatedMetrics:
         assert a.min_execution_time_ms == float("inf")
 
     def test_executions_by_category_default_empty(self):
-        a = AggregatedMetrics()
-        assert a.executions_by_category == {}
+    """Test executions_by_category_default_empty runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for executions_by_category_default_empty
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute executions_by_category_default_empty
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions

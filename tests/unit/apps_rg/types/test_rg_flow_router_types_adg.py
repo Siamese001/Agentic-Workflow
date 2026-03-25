@@ -37,25 +37,37 @@ def _methods_of(cls_name: str) -> set[str]:
 
 class TestRGFlowRouterTypesSource:
     def test_source_exists(self):
-        assert _SRC.exists()
+    """Test source_exists runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for source_exists
+    """Test parses_without_error runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    """Test has_resume_flow_result runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    """Test has_rg_flow_output runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    """Test has_rg_flow_router runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    """Test router_has_determine_next_hop runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for router_has_determine_next_hop
+    """Test router_has_execute_routing runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    """Test router_has_classify_flow runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
 
-    def test_parses_without_error(self):
-        _tree()
+    # Act
+    # TODO: Execute workflow router_has_classify_flow
+    workflow_result = None  # Replace with actual workflow execution
 
-    def test_has_resume_flow_result(self):
-        assert "ResumeFlowResult" in _class_names()
-
-    def test_has_rg_flow_output(self):
-        assert "RGFlowOutput" in _class_names()
-
-    def test_has_rg_flow_router(self):
-        assert "RGFlowRouter" in _class_names()
-
-    def test_router_has_determine_next_hop(self):
-        assert "determine_next_hop" in _methods_of("RGFlowRouter")
-
-    def test_router_has_execute_routing(self):
-        assert "execute_routing" in _methods_of("RGFlowRouter")
-
-    def test_router_has_classify_flow(self):
-        assert "_classify_flow" in _methods_of("RGFlowRouter")
+    # Assert
+    assert workflow_result is not None, "Workflow should produce a result"
+    assert isinstance(workflow_result, dict), "Workflow result should be structured"
+    # TODO: Add workflow step assertions

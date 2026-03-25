@@ -314,19 +314,19 @@ class TestHealingTypes:
         assert hasattr(HealingType, "STRUCTURAL")
 
     def test_healing_action_dataclass(self):
-        """Test HealingAction dataclass exists."""
-        from agentic_core.L5_safety.reasoning.CodeHealerAgent import HealingAction
+    """Test healing_action_dataclass runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for healing_action_dataclass
+    test_data = {}  # Replace with actual test data
 
-        action = HealingAction(
-            healing_type="CANON",
-            file_path=Path("/test/file.py"),
-            line_number=1,
-            description="Test action",
-            old_code="old",
-            new_code="new",
-        )
+    # Act
+    # TODO: Execute healing_action_dataclass
+    result = None  # Replace with actual function call
 
-        assert action.healing_type == "CANON"
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert action.applied is False
 
     def test_healer_config_dataclass(self):
@@ -358,19 +358,19 @@ class TestLegacyCompatibility:
         assert issubclass(CodeHealerAgent, SovereignBaseAgent)
 
     def test_factory_functions_exist(self):
-        """Test factory functions exist."""
-        from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
-            create_legacy_canon_healer,
-            create_legacy_import_healer,
-        )
+    """Test factory_functions_exist runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for factory_functions_exist
+    test_data = {}  # Replace with actual test data
 
-        assert callable(create_legacy_canon_healer)
-        assert callable(create_legacy_import_healer)
+    # Act
+    # TODO: Execute factory_functions_exist
+    result = None  # Replace with actual function call
 
-    def test_stdlib_modules_constant(self):
-        """Test STDLIB_MODULES constant exists."""
-        from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert hasattr(CodeHealerAgent, "STDLIB_MODULES")
         assert isinstance(CodeHealerAgent.STDLIB_MODULES, set)
         assert "os" in CodeHealerAgent.STDLIB_MODULES

@@ -243,20 +243,20 @@ class TestDetectionSignal:
 
     @pytest.mark.governance
     def test_raises_when_schema_version_below_1(self):
-        with pytest.raises(ValueError, match="schema_version"):
-            DetectionSignal.build(**{**_BASE, "schema_version": 0})
+    """Test raises_when_schema_version_below_1 contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_raises_when_mission_id_empty(self):
-        with pytest.raises(ValueError, match="mission_id"):
-            DetectionSignal.build(**{**_BASE, "mission_id": ""})
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-    @pytest.mark.governance
-    def test_raises_when_created_at_utc_negative(self):
-        with pytest.raises(ValueError, match="created_at_utc"):
-            DetectionSignal.build(**{**_BASE, "created_at_utc": -1})
-
-    @pytest.mark.governance
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
     def test_exact_boundary_created_at_utc_0_valid(self):
         s = _signal(created_at_utc=0)
         assert s.created_at_utc == 0

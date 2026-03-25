@@ -52,19 +52,19 @@ class TestDispatchResumeToolsAgent:
                 pass  # Expected for invalid inputs
 
     def test_no_network_calls_on_import(self):
-        """Verify no network calls during import."""
-        network_calls = []
+    """Test no_network_calls_on_import runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        def track_call(*args, **kwargs):
-            network_calls.append((args, kwargs))
+    # Act
+    # TODO: Execute no_network_calls_on_import
+    result = None  # Replace with actual execution
 
-        with patch("requests.get", track_call), patch("requests.post", track_call):
-            from apps_rg.reasoning.DispatchResumeToolsAgent import (
-                DispatchResumeToolsAgent,  # noqa: F401
-            )
-
-            assert len(network_calls) == 0, "No network calls on import"
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

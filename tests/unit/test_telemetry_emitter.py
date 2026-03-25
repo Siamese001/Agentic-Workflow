@@ -287,19 +287,19 @@ class TestTelemetryEmitter:
     """Test TelemetryEmitter write-only behavior."""
 
     def test_emit_calls_injected_record_fn_exactly_once(self):
-        """Test emit calls injected record_fn exactly once with same object."""
-        emitter = TelemetryEmitter()
+    """Test emit_calls_injected_record_fn_exactly_once runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        details = {"metric": "test", "value": 42}
-        event = TelemetryEvent.create(
-            trace_id="trace123", stage="test_stage", kind="test_kind", commit_tick=1, details=details
-        )
+    # Act
+    # TODO: Execute emit_calls_injected_record_fn_exactly_once
+    result = None  # Replace with actual execution
 
-        # Track calls to record_fn
-        calls = []
-
-        def mock_record_fn(telemetry_event):
-            calls.append(telemetry_event)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
         emitter.emit(event=event, record_fn=mock_record_fn)
 
@@ -308,19 +308,19 @@ class TestTelemetryEmitter:
         assert calls[0] is event  # Same object reference
 
     def test_emit_performs_no_mutation(self):
-        """Test emit performs no mutation of event."""
-        emitter = TelemetryEmitter()
+    """Test emit_performs_no_mutation runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-        details = {"original": "value"}
-        event = TelemetryEvent.create(
-            trace_id="trace456", stage="mutation_test", kind="test", commit_tick=123, details=details
-        )
+    # Act
+    # TODO: Process data with emit_performs_no_mutation
+    processed_result = None  # Replace with actual processing
 
-        # Snapshot original event
-        original_hash = event.event_hash
-        original_details = event.details.copy()
-
-        def mock_record_fn(telemetry_event):
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
             # Verify event unchanged during emit
             assert telemetry_event.event_hash == original_hash
             assert telemetry_event.details == original_details

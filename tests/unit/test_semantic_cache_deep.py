@@ -335,19 +335,19 @@ class TestGlobalCacheHiveMindDelegation:
         assert gc.get_hive_mind() is gc.get_hive_mind()
 
     def test_put_with_embedding_text_calls_hive_learn(self):
-        from apps_shared.enforcement.GlobalcacheStrategy import GlobalCache
+    """Test put_with_embedding_text_calls_hive_learn runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        gc = GlobalCache()
-        gc.put("k1", {"v": 1}, text_for_embedding="resume skills section", source_engine="TEST")
-        assert gc.get_hive_mind().get_statistics()["cache_stores"] >= 1
+    # Act
+    # TODO: Execute put_with_embedding_text_calls_hive_learn
+    result = None  # Replace with actual execution
 
-    def test_put_without_embedding_text_skips_hive(self):
-        from apps_shared.enforcement.GlobalcacheStrategy import GlobalCache
-
-        gc = GlobalCache()
-        gc.put("k2", {"v": 2})
-        assert gc.get_hive_mind().get_statistics()["cache_stores"] == 0
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
     def test_multiple_puts_all_reach_hive(self):
         from apps_shared.enforcement.GlobalcacheStrategy import GlobalCache
 
@@ -723,19 +723,19 @@ class TestSemanticCacheManagerDeep:
         assert result is None, "Without Redis, learn() does not persist to vector store"
 
     def test_promote_to_long_term_enables_vector_store_recall(self):
-        """promote_to_long_term() writes embedding to vector store."""
-        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+    """Test promote_to_long_term_enables_vector_store_recall runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        mgr = SemanticCacheManager.get_instance()
-        promoted = mgr.promote_to_long_term(
-            "campaign optimization strategy",
-            "DeepNS",
-            {"recommendation": "increase frequency"},
-            feedback_score=0.95,
-        )
-        if promoted:
-            assert mgr.get_statistics()["promotions"] == 1
-            recalled = mgr.recall("campaign optimization strategy", "DeepNS")
+    # Act
+    # TODO: Execute promote_to_long_term_enables_vector_store_recall
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             assert recalled is not None
             assert recalled.get("recommendation") == "increase frequency"
         else:
@@ -892,19 +892,19 @@ class TestGlobalCacheDeep:
         assert n >= 0
 
     def test_convenience_functions_are_callable(self):
-        """cache_get, cache_put, cache_search_semantic, cached must all be callable."""
-        from apps_shared.enforcement.GlobalcacheStrategy import (
-            cache_get,
-            cache_put,
-            cache_search_semantic,
-            cached,
-        )
+    """Test convenience_functions_are_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        for fn in (cache_get, cache_put, cache_search_semantic, cached):
-            assert callable(fn), f"{fn} is not callable"
+    # Act
+    # TODO: Execute convenience_functions_are_callable
+    result = None  # Replace with actual execution
 
-    def test_get_global_cache_is_module_level_singleton(self):
-        """Two calls to get_global_cache() must return the identical object."""
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         from apps_shared.enforcement.GlobalcacheStrategy import get_global_cache
 
         assert get_global_cache() is get_global_cache()

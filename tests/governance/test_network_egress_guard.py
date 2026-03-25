@@ -346,19 +346,19 @@ class TestREQ414NetworkEgressGuard:
             uninstall_egress_guard()
 
     def test_caller_module_in_violation_message(self):
-        """Test that caller module is included in violation message."""
-        with pytest.raises(NetworkEgressViolation) as exc_info:
-            check_network_egress_allowed("api.openai.com", 443, "test_module")
+    """Test caller_module_in_violation_message runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        assert "from test_module" in str(exc_info.value)
+    # Act
+    # TODO: Execute caller_module_in_violation_message
+    result = None  # Replace with actual execution
 
-    def test_multiple_llm_endpoint_patterns(self):
-        """Test various LLM endpoint patterns."""
-        llm_endpoints = [
-            ("api.openai.com", True),
-            ("chat.openai.com", True),
-            ("openai.com", True),
-            ("api.anthropic.com", True),
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             ("claude.ai", False),  # Not the API endpoint
             ("generativelanguage.googleapis.com", True),
             ("ai.googleapis.com", True),

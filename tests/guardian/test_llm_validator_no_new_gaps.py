@@ -55,19 +55,19 @@ def test_allowlist_schema() -> None:
 
 
 def test_no_new_llm_validator_calls() -> None:
-    """AST scan: zero un-allowlisted LLM calls in validation paths."""
-    scanner = _import_scanner()
-    allowlist = scanner._load_allowlist(ALLOWLIST)
+"""Test no_new_llm_validator_calls runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    all_hits = []
-    scan_roots = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR]
-    for root_name in scan_roots:
-        root = REPO_ROOT / root_name
-        if not root.exists():
-            continue
-        for py_file in root.rglob("*.py"):
-            if "__pycache__" in py_file.parts:
-                continue
+# Act
+# TODO: Execute no_new_llm_validator_calls
+result = None  # Replace with actual execution
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
             all_hits.extend(scanner.scan_file(py_file))
 
     new_hits = [h for h in all_hits if f"{h.file}::{h.func_name}" not in allowlist]

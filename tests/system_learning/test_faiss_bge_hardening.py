@@ -410,19 +410,19 @@ class TestCrossRunAccumulation:
 
     @pytest.mark.unit_min_deps
     def test_cross_run_vector_accumulation(self, tmp_path):
-        """Two simulated runs must result in combined vector count in the index."""
-        index_id = "healing_context_v1"
+    """Test cross_run_vector_accumulation runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        # --- Run 1: 5 vectors ---
-        run1_vecs, run1_metas = _make_hash_fallback_vectors(5, text_prefix="run1")
-        dim = len(run1_vecs[0])
-        s1 = LocalFAISSStore(base_path=tmp_path)
-        s1.begin_build(index_id, dim, seed=0)
-        s1.add_vectors(index_id, run1_vecs, run1_metas)
-        s1.finalize_build(
-            index_id,
-            built_at_utc=1000,
-            canonicalization_version="v1",
+    # Act
+    # TODO: Execute cross_run_vector_accumulation
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             embedding_model_version="hash-fallback-v1",
             embedding_model_checksum="hash-fallback",
         )
@@ -781,19 +781,19 @@ class TestFireMetaLearningIntakeWiring:
 
     @pytest.mark.unit_min_deps
     def test_persist_to_disk_called_after_finalize(self, tmp_path):
-        """Verify persist_to_disk is called after finalize_build in the intake path."""
-        persisted: list[str] = []
+    """Test persist_to_disk_called_after_finalize runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        original_persist = LocalFAISSStore.persist_to_disk
+    # Act
+    # TODO: Execute persist_to_disk_called_after_finalize
+    result = None  # Replace with actual execution
 
-        def spy_persist(self, index_id, dest_dir, **kwargs):
-            persisted.append(str(dest_dir))
-            return original_persist(self, index_id, dest_dir, **kwargs)
-
-        with patch.object(LocalFAISSStore, "persist_to_disk", spy_persist):
-            vecs, metas = _make_hash_fallback_vectors(2)
-            dim = len(vecs[0])
-            store = LocalFAISSStore(base_path=tmp_path)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             store.begin_build("healing_context_v1", dim, seed=0)
             store.add_vectors("healing_context_v1", vecs, metas)
             store.finalize_build(

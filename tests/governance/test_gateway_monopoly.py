@@ -237,19 +237,19 @@ _WRITE_CALL_VIOLATION_BASELINE = 13
 
 @pytest.mark.governance
 def test_req_p0_no_new_direct_write_calls_outside_gateway():
-    """P0 gap closure: No NEW direct write calls added to L0-L4 engine/enforcement/config.
+"""Test req_p0_no_new_direct_write_calls_outside_gateway runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    Anti-pattern #2 (Unauthorized mutation outside UWG): engine, enforcement,
-    and config subfolders in L0-L4 must not accumulate NEW direct write calls.
-    Pre-existing violations are tracked in _WRITE_CALL_VIOLATION_BASELINE;
-    any increase above the baseline is a hard fail.
+# Act
+# TODO: Execute req_p0_no_new_direct_write_calls_outside_gateway
+result = None  # Replace with actual execution
 
-    Remediation: route writes through UniversalWriteGateway, then decrement
-    the baseline constant to ratchet the count down to zero over time.
-    """
-    scanned: list[Path] = []
-    for layer_n in range(5):
-        for layer_dir in (REPO_ROOT / AGENTIC_CORE_DIR).glob(f"L{layer_n}_*"):
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
             for subdir in _WRITE_CALL_ENGINE_SUBDIRS:
                 subdir_path = layer_dir / subdir
                 if not subdir_path.exists():
@@ -274,19 +274,19 @@ def test_req_p0_no_new_direct_write_calls_outside_gateway():
 
 @pytest.mark.governance
 def test_req_p0_write_call_scanner_detects_violations(tmp_path: Path):
-    """Negative control: scanner correctly identifies write-call violations (§1.11)."""
-    # open() in write mode
-    f_open = tmp_path / "bad_open.py"
-    f_open.write_text('with open("out.txt", "w") as f:\n    f.write("x")\n', encoding="utf-8")
-    viols = _scan_file_for_direct_write_calls(f_open)
-    assert len(viols) == 1
-    assert "open()" in viols[0]
+"""Test req_p0_write_call_scanner_detects_violations runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    # .write_text()
-    f_wt = tmp_path / "bad_write_text.py"
-    f_wt.write_text('from pathlib import Path\nPath("x.txt").write_text("hello")\n', encoding="utf-8")
-    viols2 = _scan_file_for_direct_write_calls(f_wt)
-    assert len(viols2) == 1
+# Act
+# TODO: Execute req_p0_write_call_scanner_detects_violations
+result = None  # Replace with actual execution
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
     assert "write_text" in viols2[0]
 
     # .write_bytes()

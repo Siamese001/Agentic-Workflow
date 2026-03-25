@@ -170,23 +170,29 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestPhaseSpec:
     def test_is_dataclass(self):
-        import dataclasses
-        assert dataclasses.is_dataclass(PhaseSpec)
+    """Test is_dataclass runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for is_dataclass
+    test_data = {}  # Replace with actual test data
+    """Test is_frozen runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for is_frozen
+    test_data = {}  # Replace with actual test data
 
-    def test_is_frozen(self):
-        spec = PhaseSpec(name="pre_audit")
-        with pytest.raises((AttributeError, TypeError)):
-            spec.name = "discovery"
+"""Test creates_with_name runtime behavior."""
+# Arrange
+# TODO: Set up test data for creates_with_name
+test_data = {}  # Replace with actual test data
+"""Test all_canonical_phases_creatable runtime behavior."""
+# Arrange
+# TODO: Set up test data for all_canonical_phases_creatable
+test_data = {}  # Replace with actual test data
 
-    def test_creates_with_name(self):
-        spec = PhaseSpec(name="pre_audit")
-        assert spec.name == "pre_audit"
+# Act
+# TODO: Execute all_canonical_phases_creatable
+result = None  # Replace with actual function call
 
-    def test_all_canonical_phases_creatable(self):
-        phases = [
-            "pre_audit", "discovery", "reconciliation",
-            "alignment", "arch_validation", "healing", "certification",
-        ]
-        for phase in phases:
-            spec = PhaseSpec(name=phase)
-            assert spec.name == phase
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions

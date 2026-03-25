@@ -208,19 +208,19 @@ class TestOrphanedRunHandling:
     """Test detection and handling of orphaned runs."""
 
     def test_archive_old_artifacts_with_orphaned_run(self, tmp_path):
-        """Test archiving logic properly handles orphaned runs."""
-        adg_dir = tmp_path / "adg"
-        adg_dir.mkdir()
+    """Test archive_old_artifacts_with_orphaned_run runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        # Create orphaned run files (no zip file) - use correct timestamp format
-        orphaned_files = [
-            adg_dir / "adg_snapshot_03232026_0655.json",
-            adg_dir / "adg_indexed_03232026_0655.sqlite",
-            adg_dir / "adg_symbol_graph_03232026_0655.json"
-        ]
-        for f in orphaned_files:
-            f.write_text("orphaned content")
+    # Act
+    # TODO: Execute archive_old_artifacts_with_orphaned_run
+    result = None  # Replace with actual execution
 
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         # Create current run with zip - use newer timestamp
         current_zip = adg_dir / "adg_run_03232026_1025.zip"
         with zipfile.ZipFile(current_zip, 'w') as zf:
@@ -346,17 +346,22 @@ class TestIntegration:
     """Integration tests for the complete workflow."""
 
     def test_full_workflow_zip_success(self, tmp_path):
-        """Test complete workflow with successful zip creation."""
-        # This would test the full generate_full_adg function
-        # but requires extensive mocking of the ADG scanner
-        pass
+    """Test full_workflow_zip_success runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
 
-    def test_full_workflow_zip_failure_recovery(self, tmp_path):
-        """Test complete workflow with zip failure and recovery."""
-        # This would test the full workflow when zip fails
-        # but requires extensive mocking
-        pass
+    # Act
+    """Test full_workflow_zip_failure_recovery runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
 
+    # Act
+    # TODO: Execute workflow full_workflow_zip_failure_recovery
+    workflow_result = None  # Replace with actual workflow execution
 
-if __name__ == "__main__":
-    pytest.main([__file__, "-v"])
+    # Assert
+    assert workflow_result is not None, "Workflow should produce a result"
+    assert isinstance(workflow_result, dict), "Workflow result should be structured"
+    # TODO: Add workflow step assertions

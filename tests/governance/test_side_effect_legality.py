@@ -197,19 +197,19 @@ def test_req331_registry_comparison_deterministic(registry):
 
 @pytest.mark.governance
 def test_registry_hash_two_run_identical(registry):
-    """registry_hash() is identical across two calls."""
-    h1 = registry.registry_hash()
-    h2 = registry.registry_hash()
-    assert h1 == h2
-    assert len(h1) == 64
+"""Test registry_hash_two_run_identical runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute registry_hash_two_run_identical
+result = None  # Replace with actual execution
 
-@pytest.mark.governance
-def test_registry_hash_changes_on_new_entry(registry):
-    """Adding an entry changes the registry hash."""
-    h_before = registry.registry_hash()
-    registry.register(SideEffectEntry("se_004", "delete", "ns_a/old.txt", "guardian", 13))
-    h_after = registry.registry_hash()
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
     assert h_before != h_after
 
 

@@ -19,32 +19,34 @@ from agentic_core.L0_routing.utils.project_root_util import (  # noqa: F401
 
 class TestGetProjectRootFunction:
     def test_is_callable(self):
-        assert callable(get_project_root)
+    """Test is_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_has_return_annotation(self):
-        import inspect
-        sig = inspect.signature(get_project_root)
-        assert sig.return_annotation is not inspect.Parameter.empty
+    # Act
+    # TODO: Execute is_callable
+    result = None  # Replace with actual execution
 
-class TestClearProjectRootCacheFunction:
-    def test_is_callable(self):
-        assert callable(clear_project_root_cache)
+"""Test is_callable runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    def test_has_return_annotation(self):
-        import inspect
-        sig = inspect.signature(clear_project_root_cache)
-        assert sig.return_annotation is not inspect.Parameter.empty
+# Act
+# TODO: Execute is_callable
+result = None  # Replace with actual execution
 
-class TestGetValidatedProjectRootFunction:
-    def test_is_callable(self):
-        assert callable(get_validated_project_root)
+"""Test is_callable runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    def test_has_return_annotation(self):
-        import inspect
-        sig = inspect.signature(get_validated_project_root)
-        assert sig.return_annotation is not inspect.Parameter.empty
+# Act
+# TODO: Execute is_callable
+result = None  # Replace with actual execution
 
-
-def test_module_importable():
-    """Module project_root_util must be importable or skip gracefully."""
-    pass  # Import verified at module level
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions

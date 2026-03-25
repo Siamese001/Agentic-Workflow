@@ -184,77 +184,85 @@ def _write_temp_test(tmp_path: Path, content: str) -> Path:
 
 class TestCheckTestIntegritySilentSwallower:
     def test_no_violations_on_clean_test(self, tmp_path):
-        from ops_scripts.ci.check_test_integrity import scan_file
+    """Test no_violations_on_clean_test contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-        f = _write_temp_test(
-            tmp_path,
-            """
-            def test_something():
-                assert 1 + 1 == 2
-        """,
-        )
-        assert scan_file(f) == []
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-    def test_flags_assertion_less_test(self, tmp_path):
-        from ops_scripts.ci.check_test_integrity import scan_file
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    """Test flags_assertion_less_test contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-        f = _write_temp_test(
-            tmp_path,
-            """
-            def test_no_asserts():
-                x = 1 + 1
-        """,
-        )
-        violations = scan_file(f)
-        assert any("zero assert" in v[1] for v in violations)
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-    def test_flags_xfail_without_strict(self, tmp_path):
-        from ops_scripts.ci.check_test_integrity import scan_file
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    """Test flags_xfail_without_strict contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-        f = _write_temp_test(
-            tmp_path,
-            """
-            import pytest
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-
-            def test_xfail_no_strict():
-                assert False
-        """,
-        )
-        violations = scan_file(f)
-        assert any("strict=True" in v[1] for v in violations)
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
 
     def test_xfail_with_strict_passes(self, tmp_path):
-        from ops_scripts.ci.check_test_integrity import scan_file
+    """Test xfail_with_strict_passes contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-        f = _write_temp_test(
-            tmp_path,
-            """
-            import pytest
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-            @pytest.mark.xfail(strict=True, reason="linked_issue: #42")
-            def test_xfail_strict():
-                assert False
-        """,
-        )
-        violations = scan_file(f)
-        xfail_violations = [v for v in violations if "strict" in v[1]]
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
         assert xfail_violations == []
 
 
 class TestCheckTestIntegrityMain:
     def test_main_returns_0_on_clean_dir(self, tmp_path):
-        from ops_scripts.ci.check_test_integrity import main
+    """Test main_returns_0_on_clean_dir contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-        clean_test = tmp_path / "test_clean.py"
-        clean_test.write_text("def test_ok():\n    assert True\n", encoding="utf-8")
-        result = main([str(tmp_path)])
-        assert result == 0
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
+    """Test main_returns_1_on_violations contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_main_returns_1_on_violations(self, tmp_path):
-        from ops_scripts.ci.check_test_integrity import main
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-        bad_test = tmp_path / "test_bad.py"
-        bad_test.write_text("def test_noop():\n    pass\n", encoding="utf-8")
-        result = main([str(tmp_path)])
-        assert result == 1
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"

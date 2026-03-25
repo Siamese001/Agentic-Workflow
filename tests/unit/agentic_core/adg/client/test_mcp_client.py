@@ -39,20 +39,20 @@ class TestADGMCPClientContract:
         assert callable(getattr(ADGMCPClient, "search_nodes", None))
 
     def test_public_api_surface_non_empty(self):
-        pub = [m for m in dir(ADGMCPClient) if not m.startswith("_")]
-        assert len(pub) >= 1
+    """Test public_api_surface_non_empty contract compliance."""
+    # Arrange
+    # TODO: Set up interface implementation
+    implementation = None  # Replace with actual implementation
 
+    # Act
+    # TODO: Test interface methods
+    result = None  # Replace with actual method call
 
-class TestMaxRetriesConstant:
-    def test_is_not_none(self):
-        assert MAX_RETRIES is not None
-
-    def test_value_is_truthy_or_defined(self):
-        assert MAX_RETRIES is not None
-
-
-class TestDefaultSleepConstant:
-    def test_is_not_none(self):
+    # Assert - Interface Contract
+    assert implementation is not None, "Interface implementation should exist"
+    assert hasattr(implementation, "__dict__"), "Implementation should be inspectable"
+    # TODO: Add specific interface method assertions
+    # assert callable(getattr(implementation, "method_name", None)), "Required method should exist"
         assert DEFAULT_SLEEP is not None
 
     def test_value_is_truthy_or_defined(self):

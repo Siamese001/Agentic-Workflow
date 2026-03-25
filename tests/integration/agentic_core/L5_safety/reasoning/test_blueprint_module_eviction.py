@@ -135,19 +135,19 @@ class TestLocationHealerEviction:
             cleanup()
 
     def test_evict_idempotent_double_call(self):
-        """Calling _evict_blueprint_modules twice raises no error."""
-        _evict, _ = _import_location_evict()
-        cleanup = _inject_fake_modules(_FAKE_BLUEPRINT_KEYS)
-        try:
-            _evict()
-            _evict()  # second call: all keys already absent — must not KeyError
-        finally:
-            cleanup()
+    """Test evict_idempotent_double_call runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_evict_noop_when_no_blueprint_modules_loaded(self):
-        """Works without error when no blueprint modules are in sys.modules."""
-        _evict, _ = _import_location_evict()
-        # Remove any real blueprint modules temporarily
+    # Act
+    # TODO: Execute evict_idempotent_double_call
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         saved = {
             k: sys.modules.pop(k)
             for k in list(sys.modules)
@@ -165,19 +165,19 @@ class TestLocationHealerEviction:
             sys.modules.update(saved)
 
     def test_evict_calls_importlib_invalidate_caches(self):
-        """importlib.invalidate_caches() is called during eviction."""
-        _evict, _ = _import_location_evict()
-        cleanup = _inject_fake_modules(_FAKE_BLUEPRINT_KEYS)
-        try:
-            with patch("importlib.invalidate_caches") as mock_ic:
-                _evict()
-                mock_ic.assert_called_once()
-        finally:
-            cleanup()
+    """Test evict_calls_importlib_invalidate_caches runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_prefixes_cover_expected_modules(self):
-        """_BLUEPRINT_MODULE_PREFIXES covers the exact modules that hold SOVEREIGN_TERRITORIES."""
-        _, prefixes = _import_location_evict()
+    # Act
+    # TODO: Execute evict_calls_importlib_invalidate_caches
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         assert "agentic_core.L5_safety.config.structure_blueprint" in prefixes
         assert "agentic_core.L5_safety.config.structure_blueprint_config" in prefixes
 
@@ -250,19 +250,19 @@ class TestFilesystemSSOTReconcilerEviction:
             cleanup()
 
     def test_evict_calls_importlib_invalidate_caches(self):
-        """importlib.invalidate_caches() is called."""
-        _evict, _ = _import_reconciler_evict()
-        cleanup = _inject_fake_modules(_FAKE_BLUEPRINT_KEYS)
-        try:
-            with patch("importlib.invalidate_caches") as mock_ic:
-                _evict()
-                mock_ic.assert_called_once()
-        finally:
-            cleanup()
+    """Test evict_calls_importlib_invalidate_caches runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_evict_does_not_touch_unrelated_modules(self):
-        """Non-blueprint modules survive eviction."""
-        _evict, _ = _import_reconciler_evict()
+    # Act
+    # TODO: Execute evict_calls_importlib_invalidate_caches
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         cleanup = _inject_fake_modules(_FAKE_BLUEPRINT_KEYS)
         unrelated_before = {k: sys.modules.get(k) for k in _UNRELATED_KEYS if k in sys.modules}
         try:

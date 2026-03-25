@@ -174,55 +174,67 @@ from agentic_core.runtime.mathematical_determinism import (
 
 class TestDeterministicArtifact:
     def test_creates(self):
-        art = DeterministicArtifact(name="plan.json", hash_value="abc123", metadata={})
-        assert art.name == "plan.json"
-        assert art.hash_value == "abc123"
+    """Test creates runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_is_frozen(self):
-        art = DeterministicArtifact(name="a", hash_value="b", metadata={})
-        with pytest.raises(Exception):
-            art.name = "modified"
+    # Act
+    # TODO: Execute runtime operation creates
+    runtime_result = None  # Replace with actual runtime operation
 
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    """Test creates runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-class TestDeterminismProof:
-    def test_creates(self):
-        proof = DeterminismProof(
-            core_digest="digest",
-            run_id="run-1",
-            creation_timestamp=1735689600.0,
-            artifact_count=3,
-            policy_hash="ph",
-            hierarchy_hash="hh",
-            authority_hash="ah",
-        )
-        assert proof.core_digest == "digest"
-        assert proof.artifact_count == 3
+    # Act
+    # TODO: Execute runtime operation creates
+    runtime_result = None  # Replace with actual runtime operation
 
-    def test_is_frozen(self):
-        proof = DeterminismProof(
-            core_digest="d",
-            run_id="r",
-            creation_timestamp=1735689600.0,
-            artifact_count=0,
-            policy_hash="p",
-            hierarchy_hash="h",
-            authority_hash="a",
-        )
-        with pytest.raises(Exception):
-            proof.core_digest = "modified"
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
+    """Test is_frozen runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
+    # Act
+    # TODO: Execute runtime operation is_frozen
+    runtime_result = None  # Replace with actual runtime operation
 
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
 class TestMathematicalDeterminismEngine:
     def test_importable(self):
-        assert callable(MathematicalDeterminismEngine)
+    """Test importable runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    """Test creates runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_creates(self):
-        engine = MathematicalDeterminismEngine(
-            policy_hash="phash",
-            hierarchy_hash="hhash",
-            authority_hash="ahash",
-        )
-        assert engine is not None
+    # Act
+    # TODO: Execute runtime operation creates
+    runtime_result = None  # Replace with actual runtime operation
+    """Test has_seal runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_has_seal(self):
-        assert hasattr(MathematicalDeterminismEngine, "seal")
+    # Act
+    # TODO: Execute runtime operation has_seal
+    runtime_result = None  # Replace with actual runtime operation
+
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions

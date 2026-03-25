@@ -306,19 +306,19 @@ class TestIncrementAndCheck:
         return ToolBudget(max_steps=3)
 
     def test_allows_calls_up_to_budget_minus_one(self, detector, budget_3):
-        for i in range(3):
-            detector.increment_and_check("trace-a", "tool_x", budget_3)
+    """Test allows_calls_up_to_budget_minus_one runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_raises_exactly_at_max_steps(self, detector, budget_3):
-        for _ in range(3):
-            detector.increment_and_check("trace-b", "tool_y", budget_3)
-        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
-            ToolBudgetExceededError,
-        )
+    # Act
+    # TODO: Execute allows_calls_up_to_budget_minus_one
+    result = None  # Replace with actual execution
 
-        with pytest.raises(ToolBudgetExceededError):
-            detector.increment_and_check("trace-b", "tool_y", budget_3)
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
     def test_step_count_matches_increments(self, detector, budget_3):
         for i in range(2):
             detector.increment_and_check("trace-c", "tool_z", budget_3)

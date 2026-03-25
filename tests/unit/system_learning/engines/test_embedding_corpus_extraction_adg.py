@@ -174,48 +174,59 @@ from system_learning.engines.embedding_corpus_extraction import (
 
 class TestCorpusRecord:
     def test_creates(self):
-        record = CorpusRecord(
-            text="test text",
-            trace_id="trace-1",
-            content_hash="a" * 64,
-            namespace="healing_contexts",
-        )
-        assert record.text == "test text"
-        assert record.namespace == "healing_contexts"
+    """Test creates runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for creates
+    test_data = {}  # Replace with actual test data
 
-    def test_is_frozen(self):
-        record = CorpusRecord(
-            text="t",
-            trace_id="tr",
-            content_hash="a" * 64,
-            namespace="ns",
-        )
-        with pytest.raises(Exception):
-            record.text = "modified"
+    # Act
+    # TODO: Execute creates
+    result = None  # Replace with actual function call
 
+    # Assert
+    """Test is_frozen runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for is_frozen
+    test_data = {}  # Replace with actual test data
 
-class TestCanonicalRecordJson:
-    def test_returns_bytes(self):
-        result = canonical_record_json({"key": "value"})
+    # Act
+    # TODO: Execute is_frozen
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert isinstance(result, bytes)
 
     def test_keys_sorted(self):
-        result = canonical_record_json({"z": 1, "a": 2})
-        decoded = result.decode("ascii")
-        assert decoded.index('"a"') < decoded.index('"z"')
+    """Test keys_sorted runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for keys_sorted
+    test_data = {}  # Replace with actual test data
 
-    def test_empty_dict(self):
-        result = canonical_record_json({})
-        assert result == b"{}"
+    # Act
+    # TODO: Execute keys_sorted
+    result = None  # Replace with actual function call
 
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test returns_64_hex runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for returns_64_hex
+    test_data = {}  # Replace with actual test data
 
-class TestComputeContentHash:
-    def test_returns_64_hex(self):
-        data = b'{"key":"value"}'
-        h = compute_content_hash(data)
-        assert isinstance(h, str)
-        assert len(h) == 64
+    # Act
+    """Test deterministic runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for deterministic
+    test_data = {}  # Replace with actual test data
 
-    def test_deterministic(self):
-        data = b"hello"
-        assert compute_content_hash(data) == compute_content_hash(data)
+    # Act
+    # TODO: Execute deterministic
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions

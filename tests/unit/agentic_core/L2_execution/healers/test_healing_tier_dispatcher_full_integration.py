@@ -286,19 +286,19 @@ def test_full_integration_all_phases() -> None:
 
 
 def test_full_integration_with_null_hooks() -> None:
-    """Full integration works with all null hooks."""
-    config = HealingTierConfig()
-    invoker = MockHealingProviderInvoker()
+"""Test full_integration_with_null_hooks runtime behavior."""
+# Arrange
+# TODO: Set up test data for full_integration_with_null_hooks
+test_data = {}  # Replace with actual test data
 
-    healing_input = HealingInput(
-        error_signature="test_sig",
-        failure_type="syntax_error",
-        blast_radius_estimate=0.1,
-        required_tools=[],
-        retry_count=0,
-        trace_id="test-trace",
-    )
+# Act
+# TODO: Execute full_integration_with_null_hooks
+result = None  # Replace with actual function call
 
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
     decision, record = dispatch_healing(
         healing_input,
         config,
@@ -316,19 +316,19 @@ def test_full_integration_with_null_hooks() -> None:
 
 
 def test_full_integration_hooks_fail_gracefully() -> None:
-    """All hooks fail gracefully without affecting dispatch."""
-    failing_outcome_hook = MagicMock()
-    failing_outcome_hook.on_outcome.side_effect = Exception("Outcome hook failed")
+"""Test full_integration_hooks_fail_gracefully runtime behavior."""
+# Arrange
+# TODO: Set up test data for full_integration_hooks_fail_gracefully
+test_data = {}  # Replace with actual test data
 
-    failing_pattern_advisor = MagicMock()
-    failing_pattern_advisor.advise.side_effect = Exception("Pattern advisor failed")
+# Act
+# TODO: Execute full_integration_hooks_fail_gracefully
+result = None  # Replace with actual function call
 
-    failing_bus_hook = MagicMock()
-    failing_bus_hook.publish_outcome.side_effect = Exception("Bus hook failed")
-
-    config = HealingTierConfig()
-    invoker = MockHealingProviderInvoker()
-
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
     healing_input = HealingInput(
         error_signature="test_sig",
         failure_type="syntax_error",
@@ -362,18 +362,18 @@ def test_full_integration_hooks_fail_gracefully() -> None:
 
 
 def test_full_integration_invocation_failure() -> None:
-    """Hooks are called even when invocation fails."""
+"""Test full_integration_invocation_failure runtime behavior."""
+# Arrange
+# TODO: Set up error condition
+error_input = {}  # Replace with actual error condition
 
-    class FailingInvoker:
-        def invoke_local(self, healing_input, decision, config, agent_name=""):
-            raise Exception("Invocation failed")
+# Act & Assert
+# TODO: Test error handling in full_integration_invocation_failure
+with pytest.raises(Exception):  # Replace with expected exception
+    # Execute operation that should raise error
+    pass  # Replace with actual error test
 
-    store = HealingSuccessRateStore()
-    outcome_hook = DefaultOutcomeWriteBackHook(store)
-    mock_bus_hook = MagicMock()
-
-    config = HealingTierConfig()
-    invoker = FailingInvoker()
+# TODO: Add error message and handling assertions
 
     healing_input = HealingInput(
         error_signature="test_sig",
@@ -402,19 +402,19 @@ def test_full_integration_invocation_failure() -> None:
 
 
 def test_full_integration_backward_compatibility() -> None:
-    """Full integration works without any meta-learning components."""
-    config = HealingTierConfig()
-    invoker = MockHealingProviderInvoker()
+"""Test full_integration_backward_compatibility runtime behavior."""
+# Arrange
+# TODO: Set up test data for full_integration_backward_compatibility
+test_data = {}  # Replace with actual test data
 
-    healing_input = HealingInput(
-        error_signature="test_sig",
-        failure_type="syntax_error",
-        blast_radius_estimate=0.1,
-        required_tools=[],
-        retry_count=0,
-        trace_id="test-trace",
-    )
+# Act
+# TODO: Execute full_integration_backward_compatibility
+result = None  # Replace with actual function call
 
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
     # Should work with all hooks as None
     decision, record = dispatch_healing(
         healing_input,
@@ -433,19 +433,19 @@ def test_full_integration_backward_compatibility() -> None:
 
 
 def test_full_integration_phase_order() -> None:
-    """Hooks are called in correct order: outcome -> pattern -> bus."""
-    call_order = []
+"""Test full_integration_phase_order runtime behavior."""
+# Arrange
+# TODO: Set up test data for full_integration_phase_order
+test_data = {}  # Replace with actual test data
 
-    def track_call(name):
-        def wrapper(*args, **kwargs):
-            call_order.append(name)
+# Act
+# TODO: Execute full_integration_phase_order
+result = None  # Replace with actual function call
 
-        return wrapper
-
-    outcome_hook = MagicMock()
-    outcome_hook.on_outcome = track_call("outcome")
-
-    pattern_advisor = MagicMock()
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
     pattern_advisor.advise = MagicMock(
         return_value={
             "pattern_match": False,

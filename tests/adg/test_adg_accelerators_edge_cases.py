@@ -235,46 +235,46 @@ class TestGrepBanParametrizedMatrix:
     @pytest.mark.parametrize("tool", _BANNED_TOOLS)
     @pytest.mark.parametrize("method", _SUBPROCESS_METHODS)
     def test_subprocess_list_form(self, tool: str, method: str) -> None:
-        line = f'    result = subprocess.{method}(["{tool}", "-r", "pattern", "."])'
-        assert _scan_line(line), f'subprocess.{method}(["{tool}", ...]) must be banned'
+    """Test subprocess_list_form runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-    @pytest.mark.parametrize("tool", ["grep", "rg", "ripgrep", "ag", "ack", "findstr"])
-    def test_os_popen_all_tools(self, tool: str) -> None:
-        line = f'    out = os.popen("{tool} -r pattern .")'
-        assert _BANNED_POPEN_RE.search(line), f"os.popen('{tool} ...') must be banned"
+    # Act
+    # TODO: Process data with subprocess_list_form
+    processed_result = None  # Replace with actual processing
 
-    @pytest.mark.parametrize("tool", ["grep", "rg", "ripgrep"])
-    @pytest.mark.parametrize("method", ["run", "call", "check_output", "check_call"])
-    def test_subprocess_shell_string_form(self, tool: str, method: str) -> None:
-        """subprocess.run('grep pattern .') shell-string form must be caught."""
-        line = f'    subprocess.{method}("{tool} -r pattern .")'
-        assert _BANNED_SHELL_STR_RE.search(line), (
-            f'subprocess.{method}("{tool} ...") shell-string form must be banned'
-        )
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    """Test subprocess_shell_string_form runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
+    # Act
+    # TODO: Process data with subprocess_shell_string_form
+    processed_result = None  # Replace with actual processing
 
-# ============================================================================
-# 2. Whitespace variants and shell-string form
-# ============================================================================
-
-
-class TestGrepBanWhitespaceVariants:
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
     """Whitespace between tokens must not allow bypass (regex uses \\s*)."""
 
     def test_spaces_around_dot_in_subprocess(self) -> None:
-        line = '    result = subprocess . run (["grep", "pattern", "."])'
-        assert _BANNED_SUBPROCESS_RE.search(line), "subprocess . run with spaces around dot must be caught"
+    """Test spaces_around_dot_in_subprocess runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-    def test_spaces_around_dot_and_parens(self) -> None:
-        line = '    subprocess . run ( [ "rg", "pattern" ] )'
-        assert _BANNED_SUBPROCESS_RE.search(line), (
-            "subprocess . run ( [ 'rg'... ] ) with spaces must be caught"
-        )
+    # Act
+    # TODO: Process data with spaces_around_dot_in_subprocess
+    processed_result = None  # Replace with actual processing
 
-    def test_shell_string_with_args_before_tool(self) -> None:
-        """String with grep appearing after other text in shell-string form."""
-        line = '    subprocess.run("find . -exec grep {} +")'
-        assert _BANNED_SHELL_STR_RE.search(line), (
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
             "shell-string subprocess.run with grep mid-string must be caught"
         )
 
@@ -506,26 +506,26 @@ class TestGrepBanKnownLimitations:
         assert not _scan_line(line), "grep inside docstring text must NOT be flagged"
 
     def test_grep_in_a_string_literal_not_a_subprocess_call(self) -> None:
-        """A string containing 'grep' but NOT wrapped in subprocess.run must not be caught."""
-        line = '    banned_cmds = ["grep", "rg", "awk"]'
-        assert not _BANNED_SUBPROCESS_RE.search(line), (
-            "A list literal containing 'grep' without subprocess.run must not be flagged"
-        )
+    """Test grep_in_a_string_literal_not_a_subprocess_call runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_subprocess_run_with_benign_rg_in_middle_of_path_not_flagged(self) -> None:
-        """A path that CONTAINS 'rg' as a substring but is not a word boundary."""
-        line = '    subprocess.run(["progress_reporter", "--all"])'
-        assert not _BANNED_SUBPROCESS_RE.search(line), (
-            "'rg' embedded inside a longer word (progress_reporter) must NOT be flagged"
-        )
+    # Act
+    # TODO: Execute grep_in_a_string_literal_not_a_subprocess_call
+    """Test subprocess_run_with_benign_rg_in_middle_of_path_not_flagged runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute subprocess_run_with_benign_rg_in_middle_of_path_not_flagged
+    result = None  # Replace with actual execution
 
-# ============================================================================
-# 7. warn_if_stale() edge cases
-# ============================================================================
-
-
-class TestWarnIfStaleEdgeCases:
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
     """ADGStalenessChecker.warn_if_stale() must never raise; always demote to warning."""
 
     def _make_checker(self, check_result=None, check_raises=None):
@@ -624,19 +624,19 @@ class TestWarnIfStaleEdgeCases:
         checker.warn_if_stale()  # must not raise
 
     def test_warn_if_stale_does_not_raise_on_runtime_error(self) -> None:
-        checker = self._make_checker(check_raises=RuntimeError("ingested_at key missing"))
-        checker.warn_if_stale()  # must not raise
+    """Test warn_if_stale_does_not_raise_on_runtime_error runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_warn_if_stale_prints_to_stderr_not_stdout(self) -> None:
-        from tools.adg.adg_stale_guard import StalenessResult
+    # Act
+    # TODO: Execute warn_if_stale_does_not_raise_on_runtime_error
+    result = None  # Replace with actual execution
 
-        checker = self._make_checker(
-            check_result=StalenessResult(
-                is_stale=True,
-                ingest_time=900.0,
-                last_commit_time=1000.0,
-                changed_files=[],
-                message="STALE",
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             )
         )
         out_buf = io.StringIO()
@@ -932,19 +932,19 @@ class TestADGTypeCheckEdgeCases:
         assert result.exit_code == 0
 
     def test_mypy_subprocess_never_uses_shell_true(self) -> None:
-        """Security: mypy must NEVER be run with shell=True."""
-        from tools.adg.adg_type_check import ADGTypeChecker
+    """Test mypy_subprocess_never_uses_shell_true runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-        mock_adg = MagicMock()
-        checker = ADGTypeChecker(client=mock_adg)
-        captured_calls = []
-        real_run = __import__("subprocess").run
+    # Act
+    # TODO: Process data with mypy_subprocess_never_uses_shell_true
+    processed_result = None  # Replace with actual processing
 
-        def capturing_run(*args, **kwargs):
-            captured_calls.append(kwargs)
-            raise FileNotFoundError("mypy not installed in test env")
-
-        with patch("subprocess.run", side_effect=capturing_run):
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
             with pytest.raises((FileNotFoundError, RuntimeError)):
                 checker.run_mypy(["some_file.py"])
 

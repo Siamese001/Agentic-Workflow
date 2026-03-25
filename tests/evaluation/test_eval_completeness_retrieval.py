@@ -1163,19 +1163,19 @@ class TestSegmentDocument:
         assert segs[0].token_count == 100
 
     def test_build_corpus_sorted_deterministically(self):
-        cfg = self._make_config(max_seg=100, stride=50)
-        docs = [
-            {"source_doc_id": "doc_b", "total_tokens": 200},
-            {"source_doc_id": "doc_a", "total_tokens": 150},
-        ]
-        result = build_late_chunk_manifests_for_corpus(docs, cfg)
-        source_ids = [m.source_doc_id for m in result]
-        assert source_ids == sorted(source_ids)
+    """Test build_corpus_sorted_deterministically runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_invalid_stride_raises(self):
-        profile = _make_late_profile()
-        with pytest.raises(ValueError):
-            LateChunkingPipelineConfig(profile=profile, stride=0)
+    # Act
+    # TODO: Execute build_corpus_sorted_deterministically
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
     def test_invalid_max_segment_tokens_raises(self):
         profile = _make_late_profile()

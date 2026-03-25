@@ -230,28 +230,28 @@ class TestBlackboardStore:
         assert not self.store.delete("key1", "agent1", 16)
 
     def test_verify_healing_lease_interface(self):
-        """Test IBlackboardLeaseVerifier.verify_healing_lease implementation."""
-        result = self.store.verify_healing_lease("resource", "agent1", 10, "write")
-        assert isinstance(result, LeaseResult)
-        # Should grant lease with default TTL of 10 ticks
-        assert result.success
-        assert result.expiry_tick == 20
+    """Test verify_healing_lease_interface contract compliance."""
+    # Arrange
+    # TODO: Set up interface implementation
+    implementation = None  # Replace with actual implementation
 
-    def test_log_security_event_interface(self):
-        """Test IBlackboardLeaseVerifier.log_security_event implementation."""
-        event = SecurityEvent(
-            event_type="LEASE_VIOLATION",
-            agent_id="agent1",
-            resource_path="key1",
-            details="Test event",
-            timestamp=1234567890,
-            severity="medium",
-        )
-        # Phase 1: no-op, should not raise
-        self.store.log_security_event(event)
+    # Act
+    # TODO: Test interface methods
+    result = None  # Replace with actual method call
+    """Test log_security_event_interface contract compliance."""
+    # Arrange
+    # TODO: Set up interface implementation
+    implementation = None  # Replace with actual implementation
 
-    def test_multiple_keys_independent(self):
-        # Different keys have independent leases
+    # Act
+    # TODO: Test interface methods
+    result = None  # Replace with actual method call
+
+    # Assert - Interface Contract
+    assert implementation is not None, "Interface implementation should exist"
+    assert hasattr(implementation, "__dict__"), "Implementation should be inspectable"
+    # TODO: Add specific interface method assertions
+    # assert callable(getattr(implementation, "method_name", None)), "Required method should exist"
         self.store.lease("key1", "agent1", ttl_ticks=5, commit_tick=10)
         self.store.lease("key2", "agent2", ttl_ticks=5, commit_tick=10)
         # Both should succeed

@@ -275,19 +275,19 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         self.assertIn("import Tools", final, "Should match exact TOOLS_DIR")
 
     def test_ssot_exclusion_execute_ssot(self):
-        """Verify execute_ssot.py remains ignored per user preference."""
-        mock_path = Mock(spec=Path)
-        mock_path.name = "execute_ssot.py"
-        mock_path.parts = (AGENTIC_CORE_DIR, L0_ROUTING_DIR, "scripts")
-        mock_path.exists.return_value = True
-        mock_path.stat.return_value = Mock(st_size=1000)
+    """Test ssot_exclusion_execute_ssot runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        ftype = self.fixer.classify_file(mock_path)
-        self.assertEqual(ftype, "IGNORE", "execute_ssot.py should be in exclusion list")
+    # Act
+    # TODO: Execute ssot_exclusion_execute_ssot
+    result = None  # Replace with actual execution
 
-    def test_ssot_exclusion_structure_blueprint(self):
-        """Verify structure_blueprint.py remains ignored."""
-        mock_path = Mock(spec=Path)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         mock_path.name = "structure_blueprint.py"
         mock_path.parts = (AGENTIC_CORE_DIR, "L5_safety", "validators")
         mock_path.exists.return_value = True

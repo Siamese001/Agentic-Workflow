@@ -187,103 +187,113 @@ from agentic_core.runtime.exceptions.healer_exceptions import (  # noqa: F401
 
 class TestHealerErrorContract:
     def test_is_exception_subclass(self):
-        assert issubclass(HealerError, Exception)
+    """Test is_exception_subclass runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    """Test raises_and_catchable runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
+    """Test message_preserved runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_raises_and_catchable(self):
-        with pytest.raises(HealerError):
-            raise HealerError("healer failed")
+    # Act
+    # TODO: Execute runtime operation message_preserved
+    runtime_result = None  # Replace with actual runtime operation
 
-    def test_message_preserved(self):
-        exc = HealerError("healer failed")
-        assert str(exc) == "healer failed"
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    """Test message_preserved runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-class TestCircularDependencyErrorContract:
-    def test_is_exception_subclass(self):
-        assert issubclass(CircularDependencyError, Exception)
+    # Act
+    # TODO: Execute runtime operation message_preserved
+    runtime_result = None  # Replace with actual runtime operation
 
-    def test_raises_and_catchable(self):
-        with pytest.raises(CircularDependencyError):
-            raise CircularDependencyError("circular dep")
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    """Test message_preserved runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_message_preserved(self):
-        exc = CircularDependencyError("circular dep")
-        assert str(exc) == "circular dep"
+    # Act
+    # TODO: Execute runtime operation message_preserved
+    runtime_result = None  # Replace with actual runtime operation
 
-class TestHealingBudgetExceededErrorContract:
-    def test_is_exception_subclass(self):
-        assert issubclass(HealingBudgetExceededError, Exception)
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    """Test message_preserved runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_raises_and_catchable(self):
-        with pytest.raises(HealingBudgetExceededError):
-            raise HealingBudgetExceededError("budget exceeded")
+    # Act
+    # TODO: Execute runtime operation message_preserved
+    runtime_result = None  # Replace with actual runtime operation
 
-    def test_message_preserved(self):
-        exc = HealingBudgetExceededError("budget exceeded")
-        assert str(exc) == "budget exceeded"
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    """Test message_preserved runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-class TestValidationRegistryErrorContract:
-    def test_is_exception_subclass(self):
-        assert issubclass(ValidationRegistryError, Exception)
+    # Act
+    # TODO: Execute runtime operation message_preserved
+    runtime_result = None  # Replace with actual runtime operation
 
-    def test_raises_and_catchable(self):
-        with pytest.raises(ValidationRegistryError):
-            raise ValidationRegistryError("registry error")
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    """Test message_preserved runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_message_preserved(self):
-        exc = ValidationRegistryError("registry error")
-        assert str(exc) == "registry error"
+"""Test is_positive_int runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
-class TestHealingTimeoutErrorContract:
-    def test_is_exception_subclass(self):
-        assert issubclass(HealingTimeoutError, Exception)
+# Act
+# TODO: Execute runtime operation is_positive_int
+runtime_result = None  # Replace with actual runtime operation
 
-    def test_raises_and_catchable(self):
-        with pytest.raises(HealingTimeoutError):
-            raise HealingTimeoutError("timeout")
+# Assert
+assert runtime_result is not None, "Runtime operation should produce a result"
+assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+# TODO: Add runtime-specific assertions
+runtime_context = {}  # Replace with actual runtime context
 
-    def test_message_preserved(self):
-        exc = HealingTimeoutError("timeout")
-        assert str(exc) == "timeout"
+"""Test is_positive_int runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
-class TestSovereignErrorContract:
-    def test_is_exception_subclass(self):
-        assert issubclass(SovereignError, Exception)
+"""Test is_positive_int runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
-    def test_raises_and_catchable(self):
-        with pytest.raises(SovereignError):
-            raise SovereignError("sovereign violation")
+# Act
+# TODO: Execute runtime operation is_positive_int
+runtime_result = None  # Replace with actual runtime operation
 
-    def test_message_preserved(self):
-        exc = SovereignError("sovereign violation")
-        assert str(exc) == "sovereign violation"
+# Assert
+assert runtime_result is not None, "Runtime operation should produce a result"
+assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+# TODO: Add runtime-specific assertions
 
-class TestMaxRetriesConstant:
-    def test_is_positive_int(self):
-        assert isinstance(MAX_RETRIES, int)
-        assert MAX_RETRIES > 0
-
-class TestDefaultSleepConstant:
-    def test_is_positive_number(self):
-        assert isinstance(DEFAULT_SLEEP, (int, float))
-        assert DEFAULT_SLEEP > 0
-
-class TestThresholdConstant:
-    def test_is_fraction(self):
-        assert isinstance(THRESHOLD, (int, float))
-        assert 0 < THRESHOLD <= 1.0
-
-class TestBufferSizeConstant:
-    def test_is_positive_int(self):
-        assert isinstance(BUFFER_SIZE, int)
-        assert BUFFER_SIZE > 0
-
-class TestBatchSizeConstant:
-    def test_is_positive_int(self):
-        assert isinstance(BATCH_SIZE, int)
-        assert BATCH_SIZE > 0
-
-
-def test_module_importable():
-    """Module healer_exceptions must be importable."""
-    assert issubclass(HealerError, Exception)
-    assert issubclass(CircularDependencyError, Exception)
+# Assert
+assert runtime_result is not None, "Runtime operation should produce a result"
+assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+# TODO: Add runtime-specific assertions

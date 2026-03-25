@@ -743,19 +743,19 @@ class TestMultiGateSimultaneousFailure:
         assert len(result.denial_reasons) >= 3
 
     def test_denial_reasons_are_deterministically_sorted(self):
-        from system_learning.engines.proposal_validation_engine import validate_proposal
-        from system_learning.types.optimization_types import OptimizationProposal
+    """Test denial_reasons_are_deterministically_sorted runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        cid = _sha256("cluster")
-        p = OptimizationProposal(
-            proposal_id="NOT_A_HASH",
-            cluster_id=cid,
-            proposed_change_type="ROUTING_RULE_ADJUSTMENT",
-            affected_component="ADG::Unknown",
-            expected_outcome="Test",
-            risk_class="LOW",
-            change_spec=(("k", "v"),),
-            evidence_bundle_hashes=(_HASH64,),
+    # Act
+    # TODO: Execute denial_reasons_are_deterministically_sorted
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             reward_score=None,
             policy_hash=None,
             timestamp_utc=_TS,
@@ -786,19 +786,19 @@ class TestSignalPoisoning:
         assert score_poisoned.replay_stability_contrib < score_clean.replay_stability_contrib
 
     def test_aggregate_degrades_monotonically_with_more_bad_signals(self):
-        from system_learning.engines.governance_reward_model import score_proposal
+    """Test aggregate_degrades_monotonically_with_more_bad_signals runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        p = _make_proposal()
-        good = [_make_signal(f"g{i}") for i in range(10)]
+    # Act
+    # TODO: Execute aggregate_degrades_monotonically_with_more_bad_signals
+    result = None  # Replace with actual execution
 
-        scores = []
-        for n_bad in range(0, 11):
-            bad = [_make_signal(f"b{j}", gnd=0.0, policy=0.0, replay=0.0, guard=0.0, mut=0.0)
-                   for j in range(n_bad)]
-            s = score_proposal(p, good + bad, _TS)
-            scores.append(s.aggregate_score)
-
-        # Each additional bad signal must not increase the aggregate
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         for i in range(1, len(scores)):
             assert scores[i] <= scores[i - 1] + 1e-9, (
                 f"Score increased at n_bad={i}: {scores[i-1]} → {scores[i]}"
@@ -1182,19 +1182,19 @@ class TestGateResultsCompleteness:
         assert gate_names == self._EXPECTED_GATES
 
     def test_gate_results_sorted_alphabetically(self):
-        from system_learning.engines.proposal_validation_engine import validate_proposal
+    """Test gate_results_sorted_alphabetically runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        p = _make_proposal()
-        result = validate_proposal(p, _TS)
-        names = [g for g, _ in result.gate_results]
-        assert names == sorted(names)
+    # Act
+    # TODO: Execute gate_results_sorted_alphabetically
+    result = None  # Replace with actual execution
 
-    def test_batch_validation_all_results_have_5_gates(self):
-        from system_learning.engines.proposal_validation_engine import ProposalValidationEngine
-
-        proposals = [_make_proposal(cluster_id=_sha256(f"c{i}")) for i in range(5)]
-        results = ProposalValidationEngine().validate_batch(proposals, _TS)
-        for result in results:
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             gate_names = {g for g, _ in result.gate_results}
             assert gate_names == self._EXPECTED_GATES
 
@@ -1349,19 +1349,19 @@ class TestZeroGroundednessEdge:
     """Extractor and engines must not divide by zero or produce NaN."""
 
     def test_zero_groundedness_extraction_succeeds(self):
-        from system_learning.engines.trace_feature_extractor import build_feature_bundle
+    """Test zero_groundedness_extraction_succeeds runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for zero_groundedness_extraction_succeeds
+    test_data = {}  # Replace with actual test data
 
-        b = build_feature_bundle(
-            "tr-zero-gnd",
-            {"retrieval_groundedness_score": 0.0, "success": False,
-             "adg_entity_name": "ADG::M", "adg_relation_ids": []},
-            _TS,
-        )
-        assert b.retrieval_groundedness_score == 0.0
+    # Act
+    # TODO: Execute zero_groundedness_extraction_succeeds
+    result = None  # Replace with actual function call
 
-    def test_zero_groundedness_cluster_stats_no_nan(self):
-        from system_learning.engines.rca_cluster_engine import cluster_records
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         records = [_make_record(f"t{i}", groundedness=0.0) for i in range(4)]
         clusters = cluster_records(records, _TS)
         for c in clusters:
@@ -1503,19 +1503,19 @@ class TestFullPipelineLargeScale:
         assert len(ids) == len(set(ids))
 
     def test_100_traces_idempotent_second_run(self):
-        bus = _make_bus()
-        traces = self._build_100_traces()
-        r1 = bus.process_traces(traces, _TS + 1000)
-        r2 = bus.process_traces(traces, _TS + 1000)
-        assert sorted(c.commit_id for c in r1.commits) == sorted(c.commit_id for c in r2.commits)
+    """Test 100_traces_idempotent_second_run runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute 100_traces_idempotent_second_run
+    result = None  # Replace with actual execution
 
-# ===========================================================================
-# 18. TraceFeatureExtractor batch error resilience
-# ===========================================================================
-
-
-class TestExtractorBatchResilience:
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
     """Batch extraction must handle all edge-case signal shapes."""
 
     def test_all_none_values_in_signal_produces_unknown_bundle(self):

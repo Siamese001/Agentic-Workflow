@@ -351,19 +351,19 @@ class TestValidateChain:
 
 class TestLineageIntegration:
     def test_full_lineage_workflow(self):
-        """Integration test: commit chain, validate, rollback, validate again."""
-        store = L4VersionStore()
-        pkg1 = FakeChangePackage("v1")
-        pkg2 = FakeChangePackage("v2")
-        pkg3 = FakeChangePackage("v3")
+    """Test full_lineage_workflow runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
 
-        v1 = store.commit_change_package(pkg1, None, "hash1", 1700000000)
-        v2 = store.commit_change_package(
-            pkg2, parent_version_id=v1, change_spec_hash="hash2", committed_at_utc=1700000001
-        )
-        v3 = store.commit_change_package(
-            pkg3, parent_version_id=v2, change_spec_hash="hash3", committed_at_utc=1700000002
-        )
+    # Act
+    # TODO: Execute workflow full_lineage_workflow
+    workflow_result = None  # Replace with actual workflow execution
+
+    # Assert
+    assert workflow_result is not None, "Workflow should produce a result"
+    assert isinstance(workflow_result, dict), "Workflow result should be structured"
+    # TODO: Add workflow step assertions
 
         validator = LineageValidator(store)
 

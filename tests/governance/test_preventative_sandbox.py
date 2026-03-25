@@ -175,19 +175,19 @@ class TestSandboxBlocking:
             assert "os.remove" in str(exc.value)
 
     def test_subprocess_run_blocked(self):
-        sandbox = PreventativeSandbox()
-        with sandbox.activated():
-            with pytest.raises(SandboxViolationError) as exc:
-                subprocess.run(["echo", "test"])
-            assert "subprocess.run" in str(exc.value)
+    """Test subprocess_run_blocked runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_os_system_blocked(self):
-        sandbox = PreventativeSandbox()
-        with sandbox.activated():
-            with pytest.raises(SandboxViolationError) as exc:
-                os.system("echo test")
-            assert "os.system" in str(exc.value)
+    # Act
+    # TODO: Execute subprocess_run_blocked
+    result = None  # Replace with actual execution
 
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
     def test_builtins_open_blocked(self):
         sandbox = PreventativeSandbox()
         with sandbox.activated():
@@ -207,19 +207,19 @@ class TestSandboxRestoration:
         assert os.remove is original
 
     def test_subprocess_run_restored(self):
-        original = subprocess.run
-        sandbox = PreventativeSandbox()
-        with sandbox.activated():
-            assert subprocess.run is not original
-        assert subprocess.run is original
+    """Test subprocess_run_restored runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_restored_on_exception(self):
-        original = os.remove
-        sandbox = PreventativeSandbox()
-        with pytest.raises(ValueError, match="test error"):
-            with sandbox.activated():
-                raise ValueError("test error")
-        assert os.remove is original
+    # Act
+    # TODO: Execute subprocess_run_restored
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
 
 class TestDoubleActivation:

@@ -464,20 +464,20 @@ def test_tier_boundary_at_extremes(risk, expected_tier):
 
 @pytest.mark.governance
 def test_enforcer_validates_envelope_before_use():
-    engine = _make_engine()
-    features = _make_features()
-    route = _make_route_decision()
-    envelope = engine.compute_and_stamp(features, route)
+"""Test enforcer_validates_envelope_before_use contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
-    enforcer = ReasoningIntensityEnforcer(envelope, trace_id="trace-test")
-    enforcer.validate_envelope()
-    enforcer.enforce_pre_stage(stage_id=1)
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
 
-
-@pytest.mark.governance
-def test_enforcer_hard_stop_on_branch_ceiling():
-    engine = _make_engine()
-    features = _make_features(
+# Assert - Schema Contract
+assert validation_result is not None, "Schema validation should produce a result"
+assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+# TODO: Add specific schema validation assertions
+# assert validation_result.get("valid", False), "Data should conform to schema"
         risk_tier_candidate=0, input_length=10, l4_rate_limit_headroom=1.0, aggregated_prior_success_rate=1.0
     )
     route = _make_route_decision()

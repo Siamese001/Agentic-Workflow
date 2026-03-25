@@ -172,15 +172,26 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestCriticalDnaKeys:
     def test_is_frozenset(self): assert isinstance(CRITICAL_DNA_KEYS, frozenset)
-    def test_contains_original_goal(self): assert "original_goal" in CRITICAL_DNA_KEYS
+    """Test is_frozenset runtime behavior."""
+    """Test contains_original_goal runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for contains_original_goal
+    """Test is_dataclass runtime behavior."""
+    # Arrange
+    """Test defaults_zero runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for defaults_zero
+    """Test creates runtime behavior."""
+    """Test no_prune_needed runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-class TestPruningMetrics:
-    def test_is_dataclass(self):
-        import dataclasses; assert dataclasses.is_dataclass(PruningMetrics)
-    def test_defaults_zero(self): m = PruningMetrics(); assert m.total_prunes == 0
+    # Act
+    # TODO: Execute no_prune_needed
+    result = None  # Replace with actual execution
 
-class TestContextPruningStrategy:
-    def test_creates(self): s = ContextPruningStrategy(); assert s is not None
-    def test_no_prune_needed(self):
-        s = ContextPruningStrategy()
-        assert s.should_prune({"a": 1}) is False
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions

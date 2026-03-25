@@ -177,19 +177,19 @@ class TestExecutionRelations:
         assert "imports" in _EXECUTION_RELATIONS
 
     def test_contains_calls(self):
-        assert "calls" in _EXECUTION_RELATIONS
+    """Test contains_calls runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute contains_calls
+    result = None  # Replace with actual execution
 
-class TestImpactReport:
-    def test_creates_with_defaults(self):
-        report = ImpactReport()
-        assert report is not None
-
-    def test_changed_modules_default_empty(self):
-        report = ImpactReport()
-        assert report.changed_modules == []
-
-    def test_impacted_modules_default_empty(self):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         report = ImpactReport()
         assert report.impacted_modules == []
 

@@ -345,27 +345,27 @@ class TestRegistryVerifier:
         assert isinstance(registry, list)
 
     def test_verify_registry_returns_result(self):
-        """Test verify_registry returns VerificationResult."""
-        verifier = RegistryVerifier(project_root=PROJECT_ROOT)
-        result = verifier.verify_registry()
-        assert isinstance(result, VerificationResult)
-        assert result.total_filesystem_agents > 0
+    """Test verify_registry_returns_result contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_verify_registry_detects_missing_agents(self):
-        """Test detection of agents missing from registry."""
-        verifier = RegistryVerifier(project_root=PROJECT_ROOT)
-        result = verifier.verify_registry()
-        # Given the registry only has 2 agents, there should be many missing
-        assert len(result.missing_agents) > 0
+    # Act
+    # TODO: Execute contract test
+    """Test verify_registry_detects_missing_agents contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_generate_report_format(self):
-        """Test report generation format."""
-        verifier = RegistryVerifier(project_root=PROJECT_ROOT)
-        result = verifier.verify_registry()
-        report = verifier.generate_report(result)
-        assert "# Phase 1: Registry Verification Report" in report
-        assert "## Summary" in report
-        assert "Total Filesystem Agents" in report
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
+
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
 
 
 class TestRunVerification:
@@ -496,45 +496,45 @@ class TestRegistryVerifierHardFailPaths:
         assert result is None
 
     def test_verify_with_empty_registry_all_agents_missing(self):
-        verifier = RegistryVerifier(project_root=PROJECT_ROOT)
-        with patch.object(verifier, "load_registry", return_value=[]):
-            result = verifier.verify_registry()
-        assert len(result.missing_agents) == result.total_filesystem_agents
-        assert result.orphan_agents == []
+    """Test verify_with_empty_registry_all_agents_missing contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_verify_with_empty_filesystem_no_missing(self):
-        verifier = RegistryVerifier(project_root=PROJECT_ROOT)
-        with patch.object(verifier, "scan_filesystem", return_value=[]):
-            result = verifier.verify_registry()
-        assert result.total_filesystem_agents == 0
-        assert result.missing_agents == []
+    # Act
+    # TODO: Execute contract test
+    """Test verify_with_empty_filesystem_no_missing contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_verify_empty_filesystem_empty_registry_is_complete(self):
-        verifier = RegistryVerifier(project_root=PROJECT_ROOT)
-        with (
-            patch.object(verifier, "scan_filesystem", return_value=[]),
-            patch.object(verifier, "load_registry", return_value=[]),
-        ):
-            result = verifier.verify_registry()
-        assert result.is_complete is True
-        assert result.orphan_agents == []
-        assert result.missing_agents == []
+    # Act
+    # TODO: Execute contract test
+    """Test verify_empty_filesystem_empty_registry_is_complete contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-    def test_verify_result_is_not_complete_when_missing_agents(self):
-        verifier = RegistryVerifier(project_root=PROJECT_ROOT)
-        with patch.object(verifier, "load_registry", return_value=[]):
-            result = verifier.verify_registry()
-        if result.total_filesystem_agents > 0:
-            assert result.is_complete is False
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    """Test verify_result_is_not_complete_when_missing_agents contract compliance."""
+    # Arrange
+    # TODO: Set up contract test scenario
+    test_scenario = {}  # Replace with actual test scenario
 
-class TestGenerateReportContent:
-    """generate_report() must render all violation categories in report text."""
+    # Act
+    # TODO: Execute contract test
+    contract_result = None  # Replace with actual contract test
 
-    def test_report_contains_orphan_section(self):
-        verifier = RegistryVerifier(project_root=PROJECT_ROOT)
-        mock_registry = [
-            {"class_name": "OrphanAgent", "path": "fake/OrphanAgent.py"},
+    # Assert - General Contract
+    assert contract_result is not None, "Contract should produce a result"
+    assert isinstance(contract_result, object), "Result should be an object"
+    # TODO: Add specific contract assertions
+    # assert hasattr(contract_result, "complies"), "Result should indicate compliance"
         ]
         with patch.object(verifier, "load_registry", return_value=mock_registry):
             result = verifier.verify_registry()

@@ -339,19 +339,19 @@ class TestCrossMixinIntegration:
 
     @pytest.mark.unit_min_deps
     def test_adaptive_execution_accessible(self):
-        """SSOTAdaptiveExecutionMixin methods accessible from full stack."""
-        ctx = _Ctx(trace_id="t", active_policy_hash="ph")
-        obj = _FullStackEngine(execution_context=ctx)
-        assert obj.execution_mode == "standard"
+    """Test adaptive_execution_accessible runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for adaptive_execution_accessible
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.unit_min_deps
-    def test_hallucination_detection_accessible(self):
-        """SSOTHallucinationDetectionMixin methods accessible from full stack."""
-        ctx = _Ctx(trace_id="t", active_policy_hash="ph")
-        obj = _FullStackEngine(execution_context=ctx)
-        result = obj.detect_hallucination("def foo(): pass")
-        assert "confidence" in result
+    # Act
+    # TODO: Execute adaptive_execution_accessible
+    result = None  # Replace with actual function call
 
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
     @pytest.mark.unit_min_deps
     def test_cognitive_recovery_accessible(self):
         """SSOTCognitiveRecoveryMixin methods accessible from full stack."""

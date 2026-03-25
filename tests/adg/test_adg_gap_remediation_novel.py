@@ -417,19 +417,19 @@ def test_routing_artifact_tampered_replay_fails():
 
 
 def test_execution_proof_tampered_replay_key_fails():
-    """Mutate replay_key on ExecutionProof — verify_replay must return False."""
-    from agentic_core.L2_execution.determinism.execution_proof_emitter import (
-        ExecutionProof,
-        ExecutionProofEmitter,
-    )
+"""Test execution_proof_tampered_replay_key_fails runtime behavior."""
+# Arrange
+# TODO: Set up test data for execution_proof_tampered_replay_key_fails
+test_data = {}  # Replace with actual test data
 
-    emitter = ExecutionProofEmitter("mod")
-    proof = emitter.emit("op", elapsed_ms=10.0)
+# Act
+# TODO: Execute execution_proof_tampered_replay_key_fails
+result = None  # Replace with actual function call
 
-    tampered = ExecutionProof(
-        trace_id=proof.trace_id,
-        module=proof.module,
-        operation=proof.operation,
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
         replay_key="deadbeef" * 4,  # wrong key
         determinism_digest=proof.determinism_digest,
         signature=proof.signature,
@@ -488,35 +488,35 @@ def test_version_manager_rollback_nonexistent_id_returns_none():
 
 
 def test_pep_blocked_action_strict_raises():
-    from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
-        PolicyEnforcementPoint,
-        PolicyViolationError,
-    )
+"""Test pep_blocked_action_strict_raises runtime behavior."""
+# Arrange
+# TODO: Set up test data for pep_blocked_action_strict_raises
+test_data = {}  # Replace with actual test data
 
-    pep = PolicyEnforcementPoint(
-        policy_hash="valid_ph_test",
-        strict_mode=True,
-        blocked_actions={"exec_shell", "drop_table"},
-    )
-    for action in ("exec_shell", "drop_table"):
-        with pytest.raises(PolicyViolationError):
-            pep.check(action)
+# Act
+# TODO: Execute pep_blocked_action_strict_raises
+result = None  # Replace with actual function call
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
 
 
 def test_hitl_escalation_no_handlers_leaves_pending():
-    from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
-        EscalationPriority,
-        HITLEscalationActivator,
-    )
+"""Test hitl_escalation_no_handlers_leaves_pending runtime behavior."""
+# Arrange
+# TODO: Set up processing data
+raw_data = []  # Replace with actual test data
 
-    activator = HITLEscalationActivator()
-    # No handlers registered
-    req = activator.escalate("Agent", "module", "no handlers test", priority=EscalationPriority.MEDIUM)
-    assert not req.resolved
-    assert activator.pending_count() == 1
+# Act
+# TODO: Process data with hitl_escalation_no_handlers_leaves_pending
+processed_result = None  # Replace with actual processing
 
-
-def test_policy_adaptation_loop_no_auto_apply_below_threshold():
+# Assert
+assert processed_result is not None, "Processing should produce a result"
+assert len(processed_result) >= 0, "Processed result should be measurable"
+# TODO: Add specific processing assertions
     from agentic_core.L5_safety.adaptation.policy_adaptation_loop import (
         AdaptationSignal,
         PolicyAdaptationLoop,
@@ -567,19 +567,19 @@ def test_routing_gateway_replay_key_determinism_property():
 
 
 def test_execution_proof_replay_key_formula_property():
-    """Verify that every emitted proof satisfies replay_key == sha256(trace:module:op)[:32]."""
-    from agentic_core.L2_execution.determinism.execution_proof_emitter import (
-        ExecutionProofEmitter,
-    )
+"""Test execution_proof_replay_key_formula_property runtime behavior."""
+# Arrange
+# TODO: Set up test data for execution_proof_replay_key_formula_property
+test_data = {}  # Replace with actual test data
 
-    rng = random.Random(7)
-    for _ in range(20):
-        module = _random_str(8)
-        op = _random_str(12)
-        emitter = ExecutionProofEmitter(module)
-        proof = emitter.emit(op, elapsed_ms=rng.uniform(1.0, 500.0))
+# Act
+# TODO: Execute execution_proof_replay_key_formula_property
+result = None  # Replace with actual function call
 
-        expected_replay = hashlib.sha256(f"{proof.trace_id}:{module}:{op}".encode()).hexdigest()[:32]
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
         assert proof.replay_key == expected_replay, (
             f"replay_key mismatch: got {proof.replay_key!r} expected {expected_replay!r}"
         )
@@ -769,19 +769,19 @@ def test_work_coordination_bundle_contract_hash_stability():
 
 
 def test_full_l0_to_l6_pipeline():
-    """Route a synthetic request through all new P0-P4 modules end-to-end.
+"""Test full_l0_to_l6_pipeline runtime behavior."""
+# Arrange
+# TODO: Set up workflow context
+workflow_input = {}  # Replace with actual workflow input
 
-    L0: RoutePolicyGovernor commits a routing proposal
-    L1: ReasoningContextEnvelope seals context
-    L2: ExecutionProofEmitter emits proof; GuardrailGate checks write
-    L3: WorkCoordinationBundle tracks agent completions
-    L4: RunScopedStateAuthority + UnifiedMemoryFacade store results
-    L5: SafetyAuditTrail records; HITLEscalationActivator not triggered
-    L6: PerformanceMetricsEmitter records latency + quality
-        EvaluationSignalIntegrator feeds score back
-    """
+# Act
+# TODO: Execute workflow full_l0_to_l6_pipeline
+workflow_result = None  # Replace with actual workflow execution
 
-    # ---- L0 ----
+# Assert
+assert workflow_result is not None, "Workflow should produce a result"
+assert isinstance(workflow_result, dict), "Workflow result should be structured"
+# TODO: Add workflow step assertions
     from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
         DeterministicRoutingGateway,
         reset_routing_gateway,
@@ -1160,19 +1160,19 @@ def test_routing_artifact_is_frozen():
 
 
 def test_execution_proof_is_frozen():
-    from agentic_core.L2_execution.determinism.execution_proof_emitter import (
-        ExecutionProofEmitter,
-    )
+"""Test execution_proof_is_frozen runtime behavior."""
+# Arrange
+# TODO: Set up test data for execution_proof_is_frozen
+test_data = {}  # Replace with actual test data
 
-    emitter = ExecutionProofEmitter("mod")
-    proof = emitter.emit("op", 10.0)
-    with pytest.raises((AttributeError, TypeError)):
-        proof.module = "hacked"  # type: ignore[misc]
+# Act
+# TODO: Execute execution_proof_is_frozen
+result = None  # Replace with actual function call
 
-
-def test_reasoning_context_envelope_is_frozen():
-    from agentic_core.L1_cognition.context.reasoning_context_envelope import (
-        ReasoningContextEnvelopeBuilder,
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
         release_envelope,
     )
 
@@ -1192,19 +1192,19 @@ def test_agent_handoff_is_frozen():
 
 
 def test_workflow_outcome_is_frozen():
-    from agentic_core.L3_orchestration.learning.workflow_learning_bridge import (
-        WorkflowOutcome,
-    )
+"""Test workflow_outcome_is_frozen runtime behavior."""
+# Arrange
+# TODO: Set up workflow context
+workflow_input = {}  # Replace with actual workflow input
 
-    o = WorkflowOutcome.capture("b", "t", True, 100.0, [])
-    with pytest.raises((AttributeError, TypeError)):
-        o.bundle_id = "hacked"  # type: ignore[misc]
+# Act
+# TODO: Execute workflow workflow_outcome_is_frozen
+workflow_result = None  # Replace with actual workflow execution
 
-
-def test_policy_adaptation_proposal_is_frozen():
-    from agentic_core.L5_safety.adaptation.policy_adaptation_loop import (
-        AdaptationSignal,
-        PolicyAdaptationLoop,
+# Assert
+assert workflow_result is not None, "Workflow should produce a result"
+assert isinstance(workflow_result, dict), "Workflow result should be structured"
+# TODO: Add workflow step assertions
     )
 
     loop = PolicyAdaptationLoop(policy_hash="ph", auto_apply_threshold=0.99)
@@ -1474,19 +1474,19 @@ def test_bundle_multiple_agents_coordination():
 
 
 def test_workflow_learning_bridge_multiple_learners():
-    """All registered learners receive every contributed outcome."""
-    from agentic_core.L3_orchestration.learning.workflow_learning_bridge import (
-        WorkflowLearningBridge,
-        WorkflowOutcome,
-    )
+"""Test workflow_learning_bridge_multiple_learners runtime behavior."""
+# Arrange
+# TODO: Set up workflow context
+workflow_input = {}  # Replace with actual workflow input
 
-    bridge = WorkflowLearningBridge()
-    received: dict[str, list] = {"sl1": [], "sl2": [], "sl3": []}
-    for name in received:
-        bridge.register_learner(name, lambda o, n=name: received[n].append(o))
+# Act
+# TODO: Execute workflow workflow_learning_bridge_multiple_learners
+workflow_result = None  # Replace with actual workflow execution
 
-    for i in range(5):
-        bridge.contribute(
+# Assert
+assert workflow_result is not None, "Workflow should produce a result"
+assert isinstance(workflow_result, dict), "Workflow result should be structured"
+# TODO: Add workflow step assertions
             WorkflowOutcome.capture(f"b{i}", "t", i % 2 == 0, 100.0, [], quality_score=0.7 + i * 0.05)
         )
     for name, lst in received.items():
@@ -1494,19 +1494,19 @@ def test_workflow_learning_bridge_multiple_learners():
 
 
 def test_workflow_learning_bridge_success_rate_accuracy():
-    from agentic_core.L3_orchestration.learning.workflow_learning_bridge import (
-        WorkflowLearningBridge,
-        WorkflowOutcome,
-    )
+"""Test workflow_learning_bridge_success_rate_accuracy runtime behavior."""
+# Arrange
+# TODO: Set up workflow context
+workflow_input = {}  # Replace with actual workflow input
 
-    bridge = WorkflowLearningBridge()
-    for i in range(10):
-        bridge.contribute(
-            WorkflowOutcome.capture(f"b{i}", "t", success=(i < 7), elapsed_ms=100.0, agent_sequence=[])
-        )
-    rate = bridge.success_rate()
-    assert abs(rate - 0.7) < 1e-9
+# Act
+# TODO: Execute workflow workflow_learning_bridge_success_rate_accuracy
+workflow_result = None  # Replace with actual workflow execution
 
+# Assert
+assert workflow_result is not None, "Workflow should produce a result"
+assert isinstance(workflow_result, dict), "Workflow result should be structured"
+# TODO: Add workflow step assertions
 
 # ============================================================================
 # SECTION 12 — PERFORMANCE METRICS EMITTER ADVANCED

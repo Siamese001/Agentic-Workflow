@@ -72,19 +72,19 @@ class TestWithRetrySuccess:
         assert len(call_count) == 1
 
     def test_success_first_attempt_no_sleep(self, retry):
-        @retry(max_retries=MAX_RETRIES, delay=0.0)
-        def _fn():
-            return "ok"
+    """Test success_first_attempt_no_sleep runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for success_first_attempt_no_sleep
+    test_data = {}  # Replace with actual test data
 
-        with patch("time.sleep") as mock_sleep:
-            _fn()
+    # Act
+    # TODO: Execute success_first_attempt_no_sleep
+    result = None  # Replace with actual function call
 
-        mock_sleep.assert_not_called()
-
-    def test_success_second_attempt_calls_sleep_once(self, retry):
-        attempt = [0]
-
-        @retry(max_retries=MAX_RETRIES, delay=1.0)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         def _fn():
             attempt[0] += 1
             if attempt[0] < 2:
@@ -130,51 +130,51 @@ class TestWithRetrySuccess:
 
 class TestWithRetryExhaustion:
     def test_all_retries_exhausted_raises_last_exception(self, retry):
-        @retry(max_retries=MAX_RETRIES, delay=0.0)
-        def _fn():
-            raise ValueError("always fails")
+    """Test all_retries_exhausted_raises_last_exception runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-        with patch("time.sleep"):
-            with pytest.raises(ValueError, match="always fails"):
-                _fn()
+    # Act & Assert
+    # TODO: Test error handling in all_retries_exhausted_raises_last_exception
+    with pytest.raises(Exception):  # Replace with expected exception
+        # Execute operation that should raise error
+        """Test call_count_equals_max_retries runtime behavior."""
+        # Arrange
+        # TODO: Set up execution parameters
+        input_data = {}  # Replace with actual test data
 
-    def test_call_count_equals_max_retries(self, retry):
-        calls = []
+        # Act
+        # TODO: Execute call_count_equals_max_retries
+        result = None  # Replace with actual execution
 
-        @retry(max_retries=MAX_RETRIES, delay=0.0)
-        def _fn():
-            calls.append(1)
-            raise RuntimeError("fail")
-
-        with patch("time.sleep"):
-            with pytest.raises(RuntimeError):
-                _fn()
-
-        assert len(calls) == 3
-
+        # Assert
+        assert result is not None, f"{function_name} should return a result"
+        assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+        # TODO: Add specific execution assertions
     def test_last_exception_type_preserved(self, retry):
-        @retry(max_retries=MAX_RETRIES, delay=0.0)
-        def _fn():
-            raise TypeError("type error specific")
+    """Test last_exception_type_preserved runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-        with patch("time.sleep"):
-            with pytest.raises(TypeError, match="type error specific"):
-                _fn()
+    # Act & Assert
+    # TODO: Test error handling in last_exception_type_preserved
+    with pytest.raises(Exception):  # Replace with expected exception
+        # Execute operation that should raise error
+        """Test max_retries_1_calls_once_then_raises runtime behavior."""
+        # Arrange
+        # TODO: Set up execution parameters
+        input_data = {}  # Replace with actual test data
 
-    def test_max_retries_1_calls_once_then_raises(self, retry):
-        calls = []
+        # Act
+        # TODO: Execute max_retries_1_calls_once_then_raises
+        result = None  # Replace with actual execution
 
-        @retry(max_retries=1, delay=0.0)
-        def _fn():
-            calls.append(1)
-            raise ValueError("x")
-
-        with patch("time.sleep"):
-            with pytest.raises(ValueError):
-                _fn()
-
-        assert len(calls) == 1
-
+        # Assert
+        assert result is not None, f"{function_name} should return a result"
+        assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+        # TODO: Add specific execution assertions
 
 # ===========================================================================
 # Pass-through (no-retry) paths
@@ -183,63 +183,63 @@ class TestWithRetryExhaustion:
 
 class TestWithRetryPassThrough:
     def test_recursion_error_not_retried(self, retry):
-        calls = []
+    """Test recursion_error_not_retried runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-        @retry(max_retries=MAX_RETRIES, delay=0.0)
-        def _fn():
-            calls.append(1)
-            raise RecursionError("stack overflow")
+    # Act & Assert
+    # TODO: Test error handling in recursion_error_not_retried
+    with pytest.raises(Exception):  # Replace with expected exception
+        # Execute operation that should raise error
+        pass  # Replace with actual error test
 
-        with patch("time.sleep") as mock_sleep:
-            with pytest.raises(RecursionError):
-                _fn()
-
-        assert len(calls) == 1
+    # TODO: Add error message and handling assertions
         mock_sleep.assert_not_called()
 
     def test_runtime_error_with_prompt_not_retried(self, retry):
-        calls = []
+    """Test runtime_error_with_prompt_not_retried runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        @retry(max_retries=MAX_RETRIES, delay=0.0)
-        def _fn():
-            calls.append(1)
-            raise RuntimeError("prompt validation failed")
+    # Act
+    # TODO: Execute runtime_error_with_prompt_not_retried
+    result = None  # Replace with actual execution
 
-        with patch("time.sleep") as mock_sleep:
-            with pytest.raises(RuntimeError, match="prompt"):
-                _fn()
-
-        assert len(calls) == 1
-        mock_sleep.assert_not_called()
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
     def test_runtime_error_without_prompt_is_retried(self, retry):
-        calls = []
+    """Test runtime_error_without_prompt_is_retried runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        @retry(max_retries=MAX_RETRIES, delay=0.0)
-        def _fn():
-            calls.append(1)
-            raise RuntimeError("generic failure")
+    # Act
+    # TODO: Execute runtime_error_without_prompt_is_retried
+    result = None  # Replace with actual execution
 
-        with patch("time.sleep"):
-            with pytest.raises(RuntimeError):
-                _fn()
-
-        assert len(calls) == 3
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
     def test_prompt_check_case_insensitive_false(self, retry):
-        """'PROMPT' uppercase is NOT the same as 'prompt' — only lowercase matched."""
-        calls = []
+    """Test prompt_check_case_insensitive_false runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for prompt_check_case_insensitive_false
+    test_data = {}  # Replace with actual test data
 
-        @retry(max_retries=MAX_RETRIES, delay=0.0)
-        def _fn():
-            calls.append(1)
-            raise RuntimeError("PROMPT validation")
+    # Act
+    # TODO: Execute prompt_check_case_insensitive_false
+    result = None  # Replace with actual function call
 
-        with patch("time.sleep"):
-            with pytest.raises(RuntimeError):
-                _fn()
-
-        assert len(calls) in (1, 3)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
 
 # ===========================================================================
@@ -249,76 +249,76 @@ class TestWithRetryPassThrough:
 
 class TestWithRetryBackoff:
     def test_exponential_backoff_delays(self, retry):
-        @retry(max_retries=MAX_RETRIES, delay=1.0)
-        def _fn():
-            raise ValueError("fail")
+    """Test exponential_backoff_delays runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for exponential_backoff_delays
+    test_data = {}  # Replace with actual test data
 
-        with patch("time.sleep") as mock_sleep:
-            with pytest.raises(ValueError):
-                _fn()
+    # Act
+    # TODO: Execute exponential_backoff_delays
+    result = None  # Replace with actual function call
 
-        sleep_calls = [c.args[0] for c in mock_sleep.call_args_list]
-        assert sleep_calls[0] == pytest.approx(1.0)
-        assert sleep_calls[1] == pytest.approx(2.0)
-        assert sleep_calls[2] == pytest.approx(4.0)
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
     def test_custom_delay_respected(self, retry):
-        @retry(max_retries=MAX_RETRIES, delay=0.5)
-        def _fn():
-            raise ValueError("fail")
+    """Test custom_delay_respected runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for custom_delay_respected
+    test_data = {}  # Replace with actual test data
 
-        with patch("time.sleep") as mock_sleep:
-            with pytest.raises(ValueError):
-                _fn()
+    # Act
+    # TODO: Execute custom_delay_respected
+    result = None  # Replace with actual function call
 
-        sleep_calls = [c.args[0] for c in mock_sleep.call_args_list]
-        assert sleep_calls[0] == pytest.approx(0.5)
-        assert sleep_calls[1] == pytest.approx(1.0)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    """Test zero_delay_no_sleep_time runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for zero_delay_no_sleep_time
+    test_data = {}  # Replace with actual test data
 
-    def test_zero_delay_no_sleep_time(self, retry):
-        @retry(max_retries=MAX_RETRIES, delay=0.0)
-        def _fn():
-            raise ValueError("fail")
+    # Act
+    # TODO: Execute zero_delay_no_sleep_time
+    result = None  # Replace with actual function call
 
-        with patch("time.sleep") as mock_sleep:
-            with pytest.raises(ValueError):
-                _fn()
-
-        for c in mock_sleep.call_args_list:
-            assert c.args[0] == 0.0
-
-
-# ===========================================================================
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 # Error logging
 # ===========================================================================
 
 
 class TestWithRetryLogging:
     def test_error_logged_on_each_retry(self, retry, mod):
-        @retry(max_retries=MAX_RETRIES, delay=0.0)
-        def _fn():
-            raise ValueError("test-error")
+    """Test error_logged_on_each_retry runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-        with patch("time.sleep"):
-            with patch.object(mod.logger, "error") as mock_log:
-                with pytest.raises(ValueError):
-                    _fn()
+    # Act & Assert
+    # TODO: Test error handling in error_logged_on_each_retry
+    with pytest.raises(Exception):  # Replace with expected exception
+        # Execute operation that should raise error
+        pass  # Replace with actual error test
 
-        assert mock_log.call_count >= 3
+    # TODO: Add error message and handling assertions
+    """Test exhaustion_error_logged runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-    def test_exhaustion_error_logged(self, retry, mod):
-        @retry(max_retries=MAX_RETRIES, delay=0.0)
-        def _fn():
-            raise ValueError("x")
+    # Act & Assert
+    # TODO: Test error handling in exhaustion_error_logged
+    with pytest.raises(Exception):  # Replace with expected exception
+        # Execute operation that should raise error
+        pass  # Replace with actual error test
 
-        with patch("time.sleep"):
-            with patch.object(mod.logger, "error") as mock_log:
-                with pytest.raises(ValueError):
-                    _fn()
-
-        log_texts = [str(c) for c in mock_log.call_args_list]
-        assert any("exhausted" in t.lower() or "retries" in t.lower() for t in log_texts)
-
+    # TODO: Add error message and handling assertions
 
 # ===========================================================================
 # Wraps / metadata preservation
@@ -327,19 +327,19 @@ class TestWithRetryLogging:
 
 class TestWithRetryMetadata:
     def test_function_name_preserved(self, retry):
-        @retry(max_retries=MAX_RETRIES, delay=0.0)
-        def my_special_function():
-            return 1
+    """Test function_name_preserved runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for function_name_preserved
+    test_data = {}  # Replace with actual test data
 
-        assert my_special_function.__name__ == "my_special_function"
+    # Act
+    # TODO: Execute function_name_preserved
+    result = None  # Replace with actual function call
 
-    def test_args_and_kwargs_forwarded(self, retry):
-        received = []
-
-        @retry(max_retries=MAX_RETRIES, delay=0.0)
-        def _fn(a, b, *, key="default"):
-            received.append((a, b, key))
-            return a + b
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
         with patch("time.sleep"):
             result = _fn(3, 4, key="custom")

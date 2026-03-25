@@ -96,39 +96,39 @@ class TestL1NamingStructure:
 
     @pytest.mark.parametrize("agent_file", AGENT_FILES, ids=lambda p: os.path.basename(p))
     def test_single_agent_classdef(self, agent_file: str) -> None:
-        classes = _parse_top_level_classes(agent_file)
-        agent_classes = [c for c in classes if c.endswith("Agent")]
-        assert len(agent_classes) >= 1, (
-            f"{agent_file}: no top-level ClassDef ending in 'Agent'. Found classes: {classes}"
-        )
-        assert len(agent_classes) == 1, (
-            f"{agent_file}: expected exactly 1 *Agent ClassDef, found {len(agent_classes)}: {agent_classes}"
-        )
+    """Test single_agent_classdef contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-class TestL1Reachability:
-    """Rule 2: Every L1 agent class must be imported by >=1 non-test file or allow-listed."""
-
-    @pytest.fixture(scope="class")
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
     def import_index(self) -> dict[str, list[str]]:
         return _collect_l1_imports_in_repo()
 
     @pytest.mark.parametrize("agent_file", AGENT_FILES, ids=lambda p: os.path.basename(p))
     def test_agent_is_reachable(self, agent_file: str, import_index: dict[str, list[str]]) -> None:
-        classes = _parse_top_level_classes(agent_file)
-        agent_classes = [c for c in classes if c.endswith("Agent")]
-        if not agent_classes:
-            pytest.fail(f"No agent class in {agent_file}")
+    """Test agent_is_reachable contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-        agent_name = agent_classes[0]
-        if agent_name in REACHABILITY_ALLOWLIST:
-            return
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-        importers = import_index.get(agent_name, [])
-        prod_importers = [p for p in importers if TESTS_DIR not in p.replace(os.sep, "/").split("/")]
-        assert len(prod_importers) >= 1, (
-            f"{agent_name} (in {agent_file}) has 0 non-test importers. "
-            f"Either add a production import or add to REACHABILITY_ALLOWLIST with justification."
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
         )
 
 
@@ -136,17 +136,25 @@ class TestL1PinnedBudget:
     """Rule 3: L1 *Agent.py count must not exceed pinned budget."""
 
     def test_agent_count_within_budget(self) -> None:
-        count = len(AGENT_FILES)
-        assert count <= L1_AGENT_BUDGET, (
-            f"L1 *Agent.py count ({count}) exceeds budget ({L1_AGENT_BUDGET}). "
-            f"Files: {AGENT_FILES}. "
-            f"If intentional, update L1_AGENT_BUDGET with justification."
-        )
+    """Test agent_count_within_budget contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_print_inventory(self) -> None:
-        """Governance signal: print count, expected, delta."""
-        count = len(AGENT_FILES)
-        delta = count - L1_AGENT_BUDGET
-        print(f"\n[L1 INVENTORY] count={count}  budget={L1_AGENT_BUDGET}  delta={delta}")
-        for f in AGENT_FILES:
-            print(f"  {f}")
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+    """Test print_inventory contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
+
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"

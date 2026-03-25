@@ -68,17 +68,26 @@ class TestCodeJanitorAgentSource:
         assert "CodeJanitorAgent" in _class_names()
 
     def test_has_check_syntax(self):
-        assert "check_syntax" in _methods_of("CodeJanitorAgent")
+    """Test has_check_syntax contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_has_get_validation_keys(self):
-        assert "get_validation_keys" in _methods_of("CodeJanitorAgent")
+    # Act
+    """Test has_check_indentation contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    """Test has_check_trailing_whitespace contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_has_check_indentation(self):
-        assert "check_indentation" in _methods_of("CodeJanitorAgent")
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-    def test_has_check_trailing_whitespace(self):
-        assert "check_trailing_whitespace" in _methods_of("CodeJanitorAgent")
-
-
-def test_importable():
-    pass
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"

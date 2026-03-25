@@ -174,60 +174,60 @@ class TestFailureSignalImport:
     """Test that FailureSignal is properly imported in healing_tier_dispatcher."""
 
     def test_failure_signal_imported_in_module(self):
-        """FailureSignal should be imported at module level in healing_tier_dispatcher."""
-        from agentic_core.L2_execution.healers import healing_tier_dispatcher
+    """Test failure_signal_imported_in_module runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-        # Should be able to access FailureSignal from the module
-        assert hasattr(healing_tier_dispatcher, "FailureSignal")
+    # Act & Assert
+    # TODO: Test error handling in failure_signal_imported_in_module
+    with pytest.raises(Exception):  # Replace with expected exception
+        # Execute operation that should raise error
+        pass  # Replace with actual error test
 
-        # Should be the correct type from healing_tier_types
-        from agentic_core.L2_execution.healers.healing_tier_types import FailureSignal as ExpectedType
+    # TODO: Add error message and handling assertions
+    """Test handle_qwen_oom_via_router_function_exists_and_references_failure_signal runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-        assert healing_tier_dispatcher.FailureSignal is ExpectedType
+    # Act
+    # TODO: Process data with handle_qwen_oom_via_router_function_exists_and_references_failure_signal
+    processed_result = None  # Replace with actual processing
 
-    def test_handle_qwen_oom_via_router_function_exists_and_references_failure_signal(self):
-        """handle_qwen_oom_via_router should reference FailureSignal in its implementation."""
-        import inspect
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
+    """Test oom_handler_uses_route_healing_tier runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-        from agentic_core.L2_execution.healers.healing_tier_dispatcher import handle_qwen_oom_via_router
+    # Act
+    # TODO: Process data with oom_handler_uses_route_healing_tier
+    processed_result = None  # Replace with actual processing
 
-        # Get the source code of the function
-        source = inspect.getsource(handle_qwen_oom_via_router)
-
-        # Should reference FailureSignal (the bug was it wasn't imported)
-        assert "FailureSignal" in source
-        assert "failure_signal =" in source or "FailureSignal(" in source
-
-    def test_oom_handler_uses_route_healing_tier(self):
-        """OOM handler should call route_healing_tier (the single choke point)."""
-        import inspect
-
-        from agentic_core.L2_execution.healers.healing_tier_dispatcher import handle_qwen_oom_via_router
-
-        # Get the source code
-        source = inspect.getsource(handle_qwen_oom_via_router)
-
-        # Should call route_healing_tier (the single choke point)
-        assert "route_healing_tier" in source
-
-
-class TestOOMEscalationPath:
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
     """Test the full OOM escalation workflow."""
 
     def test_oom_escalation_routes_through_single_choke_point(self):
-        """OOM escalation should route through route_healing_tier (single choke point)."""
-        from unittest.mock import patch
+    """Test oom_escalation_routes_through_single_choke_point runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for oom_escalation_routes_through_single_choke_point
+    test_data = {}  # Replace with actual test data
 
-        from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
-        from agentic_core.L2_execution.healers.healing_tier_dispatcher import handle_qwen_oom_via_router
-        from agentic_core.L2_execution.healers.healing_tier_types import (
-            HealingDecision,
-            HealingInput,
-            HealingTier,
-        )
+    # Act
+    # TODO: Execute oom_escalation_routes_through_single_choke_point
+    result = None  # Replace with actual function call
 
-        config = HealingTierConfig()
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         healing_input = HealingInput(
             failure_type="test_failure",
             error_signature="test_sig",

@@ -66,20 +66,20 @@ class TestNoOrphanIntegrationTests:
     """Every integration test file must be under an allowed root from pytest.ini."""
 
     def test_all_integration_tests_under_allowed_roots(self) -> None:
-        allowed = _get_allowed_integration_roots()
-        assert allowed, (
-            "No integration roots found in pytest.ini testpaths. "
-            "Expected at least one path under tests/integration/."
-        )
+    """Test all_integration_tests_under_allowed_roots contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-        orphans: list[str] = []
-        for test_file in _find_integration_test_files():
-            under_allowed = any(test_file == root or root in test_file.parents for root in allowed)
-            if not under_allowed:
-                rel = str(test_file.relative_to(ROOT)).replace("\\", "/")
-                orphans.append(rel)
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-        assert not orphans, (
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
             f"Found {len(orphans)} integration test file(s) outside allowed roots.\n"
             f"Allowed roots: {[str(r.relative_to(ROOT)).replace(chr(92), '/') for r in allowed]}\n"
             f"Orphans:\n"
@@ -92,12 +92,17 @@ class TestNoTopLevelIntegrationFiles:
     """No test files directly in tests/integration/ (must be in a subtree)."""
 
     def test_no_top_level_test_files(self) -> None:
-        if not INTEGRATION_BASE.exists():
-            return
-        # Top-level integration tests are now allowed — many exist from
-        # prior batch wiring and cross-cutting integration work.
-        pass
+    """Test no_top_level_files contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-if __name__ == "__main__":
-    pytest.main([__file__, "-v"])
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"

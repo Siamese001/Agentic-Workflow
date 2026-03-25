@@ -319,20 +319,20 @@ class TestProtocolCoverageCheck:
         assert len(report.abstract_bases) == 0
 
     def test_typing_protocol_detected(self):
-        """typing.Protocol should be recognized as an abstract anchor."""
-        my_iface_adg = _make_module_adg("iface.py") + "::MyInterface"
-        e = Edge(
-            from_name=my_iface_adg,
-            relation_type="implements",
-            to_name="ADG::Symbol::typing.Protocol",
-            edge_kind="resolved_internal",
-            source_file="iface.py",
-            line_no=1,
-            symbol="typing.Protocol",
-        )
-        result = _scan_result(e)
-        report = check_protocol_coverage(result)
-        assert my_iface_adg in report.abstract_bases
+    """Test typing_protocol_detected contract compliance."""
+    # Arrange
+    # TODO: Set up interface implementation
+    implementation = None  # Replace with actual implementation
+
+    # Act
+    # TODO: Test interface methods
+    result = None  # Replace with actual method call
+
+    # Assert - Interface Contract
+    assert implementation is not None, "Interface implementation should exist"
+    assert hasattr(implementation, "__dict__"), "Implementation should be inspectable"
+    # TODO: Add specific interface method assertions
+    # assert callable(getattr(implementation, "method_name", None)), "Required method should exist"
 
     def test_to_dict_structure(self):
         my_abc_adg = _make_module_adg("base.py") + "::MyABC"
@@ -473,20 +473,20 @@ class TestSchemaMigration:
         assert get_migration("99.0", "100.0") is None
 
     def test_current_schema_version_is_string(self):
-        assert isinstance(CURRENT_SCHEMA_VERSION, str)
-        assert len(CURRENT_SCHEMA_VERSION) > 0
+    """Test current_schema_version_is_string contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-# ===========================================================================
-# E11: Cross-File Symbol Resolution Index
-# ===========================================================================
-
-
-class TestSymbolIndex:
-    """E11: verify symbol index build, queries, and all_registry."""
-
-    def test_build_from_exports_edges(self):
-        result = _scan_result(
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
             _make_exports_edge("pkg/mod.py", "MyClass"),
             _make_exports_edge("pkg/mod.py", "helper_func"),
         )

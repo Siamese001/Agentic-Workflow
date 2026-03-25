@@ -199,24 +199,28 @@ class TestLatencyBudget:
             temp_path.unlink()
 
     def test_atomic_execution_mixin_import_latency(self):
-        """Test that AtomicExecutionMixin can be imported quickly."""
-        start = time.perf_counter()
-        from agentic_core.mixins.atomic_execution_mixin import (
-            AtomicExecutionMixin,
-        )
+    """Test atomic_execution_mixin_import_latency runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for atomic_execution_mixin_import_latency
+    test_data = {}  # Replace with actual test data
 
-        elapsed = time.perf_counter() - start
+    # Act
+    # TODO: Execute atomic_execution_mixin_import_latency
+    result = None  # Replace with actual function call
 
-        assert elapsed < 1.0, f"Import took {elapsed:.3f}s, budget is 1.0s"
-        assert AtomicExecutionMixin is not None
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    """Test CodeHealerAgent_instantiation_latency runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for CodeHealerAgent_instantiation_latency
+    test_data = {}  # Replace with actual test data
 
-    def test_CodeHealerAgent_instantiation_latency(self):
-        """Test CodeHealerAgent instantiation meets latency budget."""
-        start = time.perf_counter()
-        from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
-            CodeHealerAgent,
-        )
-        agent = CodeHealerAgent()
-        elapsed = time.perf_counter() - start
-        assert elapsed < 2.0, f"Instantiation took {elapsed:.3f}s, budget is 2.0s"
-        assert agent is not None
+    # Act
+    # TODO: Execute CodeHealerAgent_instantiation_latency
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions

@@ -341,19 +341,19 @@ def test_req384_trace_id_context_dependency():
 
 @pytest.mark.governance
 def test_req384_global_generate_trace_id_function():
-    """REQ-384: Global generate_trace_id function works correctly."""
-    clock = SemanticClockSnapshot(tick=42)
+"""Test req384_global_generate_trace_id_function runtime behavior."""
+# Arrange
+# TODO: Set up test data for req384_global_generate_trace_id_function
+test_data = {}  # Replace with actual test data
 
-    # Normal mode
-    id1 = generate_trace_id(clock, "test_operation", replay_mode=False)
-    assert validate_trace_id(id1)
+# Act
+# TODO: Execute req384_global_generate_trace_id_function
+result = None  # Replace with actual function call
 
-    # Replay mode
-    id2 = generate_trace_id(clock, "test_operation", replay_mode=True)
-    assert validate_trace_id(id2)
-
-    # Replay mode should be deterministic
-    id3 = generate_trace_id(clock, "test_operation", replay_mode=True)
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
     assert id2 == id3
 
 

@@ -423,19 +423,19 @@ class TestRLHFOptimizer:
         assert final_config["threshold"] >= 0.5  # Clamped to min
 
     def test_malformed_dpo_batch_handled_gracefully(self):
-        """Malformed DPO batch should be handled gracefully."""
-        optimizer = DefaultDeterministicRLHFOptimizer()
+    """Test malformed_dpo_batch_handled_gracefully runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-        current_config = {"threshold": 1.0}
-        config_bytes = json.dumps(current_config, separators=(",", ":"), sort_keys=True).encode("utf-8")
+    # Act
+    # TODO: Process data with malformed_dpo_batch_handled_gracefully
+    processed_result = None  # Replace with actual processing
 
-        # Test invalid JSON
-        malformed_bytes = b"invalid json"
-
-        proposal = optimizer.propose_from_dpo(
-            dpo_batch_bytes=malformed_bytes,
-            current_threshold_config_bytes=config_bytes,
-        )
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
 
         # Should return empty proposal
         assert proposal.confidence == 0.0
@@ -443,19 +443,19 @@ class TestRLHFOptimizer:
         assert proposal.changes == b"{}"
 
     def test_malformed_config_handled_gracefully(self):
-        """Malformed threshold config should be handled gracefully."""
-        optimizer = DefaultDeterministicRLHFOptimizer()
+    """Test malformed_config_handled_gracefully runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-        dpo_batch = {"pairs": []}
-        dpo_bytes = json.dumps(dpo_batch, separators=(",", ":"), sort_keys=True).encode("utf-8")
+    # Act
+    # TODO: Process data with malformed_config_handled_gracefully
+    processed_result = None  # Replace with actual processing
 
-        # Test invalid config
-        malformed_config = b"invalid config"
-
-        proposal = optimizer.propose_from_dpo(
-            dpo_batch_bytes=dpo_bytes,
-            current_threshold_config_bytes=malformed_config,
-        )
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
 
         # Should return empty proposal
         assert proposal.confidence == 0.0

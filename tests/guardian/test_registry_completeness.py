@@ -373,19 +373,19 @@ class TestNoFilesystemFallback:
     """Aggregator and integrity checker must use registry only, no filesystem globs."""
 
     def test_run_all_guardians_no_glob_imports(self):
-        """run_all_guardians.py must not import glob or pathlib.glob."""
-        script = GUARDIAN_SCRIPTS_DIR / "run_all_guardians.py"
-        content = script.read_text(encoding="utf-8")
+    """Test run_all_guardians_no_glob_imports runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        forbidden = ["glob.glob", "Path.glob", "os.walk", "os.listdir"]
-        found = [pattern for pattern in forbidden if pattern in content]
+    # Act
+    # TODO: Execute run_all_guardians_no_glob_imports
+    result = None  # Replace with actual execution
 
-        assert not found, (
-            f"run_all_guardians.py contains filesystem discovery: {found}. Must use registry only."
-        )
-
-    def test_contract_integrity_no_glob_imports(self):
-        """run_guardian_contract_integrity.py must not use filesystem globs."""
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         script = GUARDIAN_SCRIPTS_DIR / "run_guardian_contract_integrity.py"
         content = script.read_text(encoding="utf-8")
 

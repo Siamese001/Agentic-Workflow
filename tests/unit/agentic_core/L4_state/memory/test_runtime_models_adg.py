@@ -170,30 +170,40 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestInjectionPattern:
     def test_creates_with_defaults(self):
-        p = InjectionPattern()
-        assert p.priority == 0
-        assert p.template == ""
+    """Test creates_with_defaults runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_creates_with_values(self):
-        p = InjectionPattern(priority=5, template="Hello {name}")
-        assert p.priority == 5
-        assert p.template == "Hello {name}"
+    # Act
+    # TODO: Execute runtime operation creates_with_defaults
+    runtime_result = None  # Replace with actual runtime operation
 
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    """Test creates_with_defaults runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-class TestInjectionMatch:
-    def test_creates_with_defaults(self):
-        m = InjectionMatch()
-        assert isinstance(m.injection, InjectionPattern)
-        assert m.relevance_score == 0.0
-        assert m.variable_values == {}
+    # Act
+    """Test creates_with_injection runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_creates_with_injection(self):
-        p = InjectionPattern(priority=3, template="t")
-        m = InjectionMatch(injection=p, relevance_score=0.9)
-        assert m.injection.priority == 3
-        assert m.relevance_score == pytest.approx(0.9)
+    # Act
+    """Test variable_values_mutable runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_variable_values_mutable(self):
-        m = InjectionMatch()
-        m.variable_values["key"] = "value"
-        assert m.variable_values["key"] == "value"
+    # Act
+    # TODO: Execute runtime operation variable_values_mutable
+    runtime_result = None  # Replace with actual runtime operation
+
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions

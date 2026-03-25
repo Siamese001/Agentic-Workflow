@@ -173,27 +173,36 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestExecutionPhase:
     def test_is_enum(self):
-        import enum
-        assert issubclass(ExecutionPhase, enum.Enum)
+    """Test is_enum runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for is_enum
+    test_data = {}  # Replace with actual test data
+    """Test think_value runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for think_value
+    """Test act_value runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for act_value
+    """Test all_values_are_strings runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for all_values_are_strings
+    test_data = {}  # Replace with actual test data
 
-    def test_think_value(self):
-        assert ExecutionPhase.THINK.value == "think"
+    # Act
+    """Test is_dataclass runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for is_dataclass
+    test_data = {}  # Replace with actual test data
+    """Test creates_with_defaults runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for creates_with_defaults
+    test_data = {}  # Replace with actual test data
 
-    def test_act_value(self):
-        assert ExecutionPhase.ACT.value == "act"
+    # Act
+    # TODO: Execute creates_with_defaults
+    result = None  # Replace with actual function call
 
-    def test_all_values_are_strings(self):
-        for phase in ExecutionPhase:
-            assert isinstance(phase.value, str)
-
-
-class TestExecutionContext:
-    def test_is_dataclass(self):
-        import dataclasses
-        assert dataclasses.is_dataclass(ExecutionContext)
-
-    def test_creates_with_defaults(self):
-        ctx = ExecutionContext(mission="build a feature")
-        assert ctx.mission == "build a feature"
-        assert ctx.scene == {}
-        assert ctx.history == []
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions

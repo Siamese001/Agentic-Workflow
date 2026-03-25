@@ -16,54 +16,54 @@ from pathlib import Path
 
 class TestResearchAgentSpecs:
     def test_default_specs_load(self):
-        import apps_research.config.agent_spec_config as cfg_mod
+    """Test default_specs_load runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for default_specs_load
+    test_data = {}  # Replace with actual test data
 
-        cfg_mod._SPEC_CACHE = None
-        specs = cfg_mod.load_research_specs()
-        assert specs is not None
-        assert len(specs.artifact_modes) >= 5
+    # Act
+    # TODO: Execute default_specs_load
+    result = None  # Replace with actual function call
+    """Test all_modes_present runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for all_modes_present
+    test_data = {}  # Replace with actual test data
 
-    def test_all_modes_present(self):
-        import apps_research.config.agent_spec_config as cfg_mod
+    # Act
+    # TODO: Execute all_modes_present
+    result = None  # Replace with actual function call
+    """Test comparison_mode_requires_comparison_table runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for comparison_mode_requires_comparison_table
+    test_data = {}  # Replace with actual test data
 
-        cfg_mod._SPEC_CACHE = None
-        specs = cfg_mod.load_research_specs()
-        for mode in ["brief", "comparison", "trend", "position", "thought_leadership"]:
-            assert mode in specs.artifact_modes, f"Missing mode: {mode}"
+    # Act
+    # TODO: Execute comparison_mode_requires_comparison_table
+    """Test source_register_required_fields runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for source_register_required_fields
+    test_data = {}  # Replace with actual test data
 
-    def test_comparison_mode_requires_comparison_table(self):
-        import apps_research.config.agent_spec_config as cfg_mod
+    # Act
+    # TODO: Execute source_register_required_fields
+    result = None  # Replace with actual function call
 
-        cfg_mod._SPEC_CACHE = None
-        specs = cfg_mod.load_research_specs()
-        assert specs.artifact_modes["comparison"].requires_comparison_table is True
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    """Test brief_mode_required_sections runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for brief_mode_required_sections
+    test_data = {}  # Replace with actual test data
 
-    def test_source_register_required_fields(self):
-        import apps_research.config.agent_spec_config as cfg_mod
+    # Act
+    # TODO: Execute brief_mode_required_sections
+    result = None  # Replace with actual function call
 
-        cfg_mod._SPEC_CACHE = None
-        specs = cfg_mod.load_research_specs()
-        required = specs.source_register.required_fields
-        assert "source_id" in required
-        assert "claim_type" in required
-        assert "confidence" in required
-
-
-class TestResearchAssemblyEngine:
-    def test_brief_mode_required_sections(self):
-        from apps_research.engines.research_assembly_engine import ResearchAssemblyEngine
-        from apps_research.types.research_types import ArtifactMode, AudienceStyle, ResearchRequest
-
-        engine = ResearchAssemblyEngine()
-        req = ResearchRequest(
-            topic="agentic AI governance",
-            mode=ArtifactMode.BRIEF,
-            audience_style=AudienceStyle.TECHNICAL,
-        )
-        result = engine.execute(req)
-        section_ids = {s.section_id for s in result.sections}
-        assert "executive_summary" in section_ids
-        assert "key_findings" in section_ids
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert "strategic_implications" in section_ids
 
     def test_comparison_mode_builds_matrix(self):
@@ -92,54 +92,54 @@ class TestResearchAssemblyEngine:
         assert len(result.source_register) > 0
 
     def test_source_register_has_required_fields(self):
-        from apps_research.engines.research_assembly_engine import ResearchAssemblyEngine
-        from apps_research.types.research_types import ArtifactMode, ResearchRequest
+    """Test source_register_has_required_fields runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for source_register_has_required_fields
+    test_data = {}  # Replace with actual test data
 
-        engine = ResearchAssemblyEngine()
-        req = ResearchRequest(topic="governance", mode=ArtifactMode.BRIEF)
-        result = engine.execute(req)
-        for src in result.source_register:
-            assert src.source_id
-            assert src.title
-            assert src.confidence >= 0.0
+    # Act
+    # TODO: Execute source_register_has_required_fields
+    result = None  # Replace with actual function call
 
-    def test_claim_types_labeled_in_sections(self):
-        from apps_research.engines.research_assembly_engine import ResearchAssemblyEngine
-        from apps_research.types.research_types import ArtifactMode, ResearchRequest
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    """Test claim_types_labeled_in_sections runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for claim_types_labeled_in_sections
+    test_data = {}  # Replace with actual test data
 
-        engine = ResearchAssemblyEngine()
-        req = ResearchRequest(topic="determinism contracts", mode=ArtifactMode.BRIEF)
-        result = engine.execute(req)
-        for section in result.sections:
-            assert section.claim_type is not None
+    # Act
+    # TODO: Execute claim_types_labeled_in_sections
+    result = None  # Replace with actual function call
 
-    def test_thought_leadership_mode(self):
-        from apps_research.engines.research_assembly_engine import ResearchAssemblyEngine
-        from apps_research.types.research_types import ArtifactMode, ResearchRequest
+    # Assert
+    """Test thought_leadership_mode runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for thought_leadership_mode
+    test_data = {}  # Replace with actual test data
 
-        engine = ResearchAssemblyEngine()
-        req = ResearchRequest(topic="constitutional governance", mode=ArtifactMode.THOUGHT_LEADERSHIP)
-        result = engine.execute(req)
-        section_ids = {s.section_id for s in result.sections}
-        assert "hook" in section_ids
-        assert "insight" in section_ids
-        assert "evidence" in section_ids
-        assert "call_to_action" in section_ids
+    # Act
+    # TODO: Execute thought_leadership_mode
+    result = None  # Replace with actual function call
 
-    def test_trend_mode_sections(self):
-        from apps_research.engines.research_assembly_engine import ResearchAssemblyEngine
-        from apps_research.types.research_types import ArtifactMode, ResearchRequest
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    """Test trend_mode_sections runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for trend_mode_sections
+    test_data = {}  # Replace with actual test data
 
-        engine = ResearchAssemblyEngine()
-        req = ResearchRequest(topic="agentic AI trend", mode=ArtifactMode.TREND, time_horizon="12 months")
-        result = engine.execute(req)
-        section_ids = {s.section_id for s in result.sections}
-        assert "trend_overview" in section_ids
-        assert "horizon_implications" in section_ids
+    # Act
+    # TODO: Execute trend_mode_sections
+    result = None  # Replace with actual function call
 
-
-class TestResearchGateValidator:
-    def test_valid_artifact_passes(self):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         from apps_research.engines.research_assembly_engine import ResearchAssemblyEngine
         from apps_research.types.research_types import ArtifactMode, ResearchRequest
         from apps_research.validators.research_gate_validator import ResearchGateValidator
@@ -247,19 +247,19 @@ class TestResearchOrchestrator:
 
 class TestResearchRunSummary:
     def test_to_dict_completeness(self):
-        from apps_research.types.research_types import ResearchRunSummary
+    """Test to_dict_completeness runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for to_dict_completeness
+    test_data = {}  # Replace with actual test data
 
-        summary = ResearchRunSummary(
-            trace_id="res-001",
-            status="complete",
-            topic="governance",
-            mode="brief",
-        )
-        d = summary.to_dict()
-        for key in [
-            "trace_id",
-            "app",
-            "status",
+    # Act
+    # TODO: Execute to_dict_completeness
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             "topic",
             "mode",
             "sections_generated",

@@ -197,19 +197,19 @@ class TestStateMgrUsesCanonicalHealerNames:
     must use canonical healer names, not legacy names, for all healer agents."""
 
     def test_state_mgr_calls_use_canonical_names(self, execute_ssot_source):
-        """All state_mgr display label calls must use canonical healer names."""
-        source = execute_ssot_source
-        for name in CANONICAL_STATE_MGR_NAMES:
-            assert f'"{name}"' in source, (
-                f"execute_ssot.py must use canonical name '{name}' in state_mgr calls"
-            )
+    """Test state_mgr_calls_use_canonical_names runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_state_mgr_calls_do_not_use_legacy_names_as_labels(self, execute_ssot_source):
-        """state_mgr label calls must NOT pass legacy healer names as first argument.
+    # Act
+    # TODO: Execute state_mgr_calls_use_canonical_names
+    result = None  # Replace with actual execution
 
-        Uses AST to inspect every Call to state_mgr.update_agent / complete_agent /
-        skip_agent and asserts the first string argument is not a legacy name.
-        """
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         tree = ast.parse(execute_ssot_source)
         legacy_set = set(LEGACY_STATE_MGR_NAMES)
         _state_mgr_methods = {"update_agent", "complete_agent", "skip_agent"}

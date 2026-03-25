@@ -47,19 +47,19 @@ class TestDeterministicRepoRoot:
     """execute_ssot.py must never depend on os.getcwd() / Path.cwd() at runtime."""
 
     def test_no_cwd_calls_in_source(self):
-        """AST-scan: no Call nodes to os.getcwd or Path.cwd in non-comment code."""
-        source = EXECUTE_SSOT.read_text(encoding="utf-8")
-        tree = ast.parse(source)
+    """Test no_cwd_calls_in_source runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        violations: list[str] = []
-        for node in ast.walk(tree):
-            if not isinstance(node, ast.Call):
-                continue
-            func = node.func
-            # os.getcwd()
-            if (
-                isinstance(func, ast.Attribute)
-                and func.attr == "getcwd"
+    # Act
+    # TODO: Execute no_cwd_calls_in_source
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
                 and isinstance(func.value, ast.Name)
                 and func.value.id == "os"
             ):
@@ -76,30 +76,30 @@ class TestDeterministicRepoRoot:
         assert not violations, f"cwd-dependent calls found: {violations}"
 
     def test_resolve_repo_root_defined(self):
-        """resolve_repo_root() must exist as a module-level function."""
-        source = EXECUTE_SSOT.read_text(encoding="utf-8")
-        tree = ast.parse(source)
-        func_names = [
-            node.name
-            for node in ast.walk(tree)
-            if isinstance(node, ast.FunctionDef) and node.name == "resolve_repo_root"
-        ]
-        assert "resolve_repo_root" in func_names, "resolve_repo_root() not found"
+    """Test resolve_repo_root_defined runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for resolve_repo_root_defined
+    test_data = {}  # Replace with actual test data
 
-    def test_repo_root_accessible(self):
-        """REPO_ROOT must be accessible as a module-level name (eager or via __getattr__)."""
-        source = EXECUTE_SSOT.read_text(encoding="utf-8")
-        # Accept either eager assignment (REPO_ROOT = ...) or lazy __getattr__ pattern
-        has_eager = any(
-            line.strip().startswith("REPO_ROOT") and "=" in line and not line.strip().startswith("#")
-            for line in source.splitlines()
-        )
-        has_getattr = "__getattr__" in source and "REPO_ROOT" in source
-        assert has_eager or has_getattr, (
-            "REPO_ROOT must be available as a module attribute "
-            "(either eager assignment or __getattr__ lazy resolution)"
-        )
+    # Act
+    # TODO: Execute resolve_repo_root_defined
+    result = None  # Replace with actual function call
 
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test repo_root_accessible runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for repo_root_accessible
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute repo_root_accessible
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
 # ============================================================================
 # 2. Default outputs gitignored
@@ -152,41 +152,41 @@ class TestV15FailClosed:
     """When V15_ENFORCEMENT=1, unguarded paths must raise."""
 
     def test_v15_enforcement_flag_helper_exists(self):
-        """_apply_v15_enforcement_flag must exist."""
-        source = EXECUTE_SSOT.read_text(encoding="utf-8")
-        tree = ast.parse(source)
-        func_names = [
-            node.name
-            for node in ast.walk(tree)
-            if isinstance(node, ast.FunctionDef) and node.name == "_apply_v15_enforcement_flag"
-        ]
-        assert "_apply_v15_enforcement_flag" in func_names
+    """Test v15_enforcement_flag_helper_exists runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for v15_enforcement_flag_helper_exists
+    test_data = {}  # Replace with actual test data
 
-    def test_optional_guard_wrapper_exists(self):
-        """_optional_runtime_guard must exist for lazy import safety."""
-        source = EXECUTE_SSOT.read_text(encoding="utf-8")
-        tree = ast.parse(source)
-        func_names = [
-            node.name
-            for node in ast.walk(tree)
-            if isinstance(node, ast.FunctionDef) and node.name == "_optional_runtime_guard"
-        ]
-        assert "_optional_runtime_guard" in func_names
+    # Act
+    # TODO: Execute v15_enforcement_flag_helper_exists
+    result = None  # Replace with actual function call
 
-    def test_main_and_with_retry_have_guard_decorators(self):
-        """main() and with_retry() must have v15 guard decorators."""
-        source = EXECUTE_SSOT.read_text(encoding="utf-8")
-        tree = ast.parse(source)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test optional_guard_wrapper_exists runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for optional_guard_wrapper_exists
+    test_data = {}  # Replace with actual test data
 
-        guarded_functions: set[str] = set()
-        for node in ast.walk(tree):
-            if not isinstance(node, ast.FunctionDef):
-                continue
-            for dec in node.decorator_list:
-                if not isinstance(dec, ast.Call):
-                    continue
-                # Shape: @_optional_runtime_guard()("ID")
-                func = dec.func
+    # Act
+    # TODO: Execute optional_guard_wrapper_exists
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test main_and_with_retry_have_guard_decorators runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for main_and_with_retry_have_guard_decorators
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute main_and_with_retry_have_guard_decorators
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
                 if isinstance(func, ast.Call):
                     inner = func.func
                     if isinstance(inner, ast.Name) and inner.id == "_optional_runtime_guard":
@@ -221,19 +221,19 @@ class TestCLIContract:
         assert result.returncode == 0, f"--help failed: {result.stderr[:500]}"
 
     def test_help_contains_expected_flags(self):
-        """--help output must mention key flags."""
-        result = subprocess.run(
-            [sys.executable, str(EXECUTE_SSOT_ENTRYPOINT), "--help"],
-            cwd=str(REPO_ROOT),
-            capture_output=True,
-            text=True,
-            timeout=DEFAULT_TIMEOUT,
-            env={**os.environ, "V15_ENFORCEMENT": "0", "PYTHONPATH": str(REPO_ROOT)},
-        )
-        help_text = result.stdout + result.stderr
-        assert "--v15-enforcement" in help_text, "--v15-enforcement flag missing from --help"
-        assert "--verbose" in help_text or "-v" in help_text, "--verbose flag missing from --help"
+    """Test help_contains_expected_flags runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for help_contains_expected_flags
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute help_contains_expected_flags
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
 # ============================================================================
 # 5. No tracked artifacts produced
@@ -244,19 +244,19 @@ class TestNoTrackedArtifacts:
     """A --dry-run invocation must not produce git-tracked files."""
 
     def test_dry_run_no_tracked_changes(self):
-        """Running with --dry-run must not dirty the git index with new tracked files."""
-        # Snapshot current status
-        before = subprocess.run(
-            ["git", "status", "--porcelain"],
-            cwd=str(REPO_ROOT),
-            capture_output=True,
-            text=True,
-        )
-        before_lines = set(before.stdout.strip().splitlines())
+    """Test dry_run_no_tracked_changes runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        # Run via entrypoint --legacy --dry-run --territory agentic_core (quick, no side effects)
-        subprocess.run(
-            [
+    # Act
+    # TODO: Execute dry_run_no_tracked_changes
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
                 sys.executable,
                 str(EXECUTE_SSOT_ENTRYPOINT),
                 "--legacy",

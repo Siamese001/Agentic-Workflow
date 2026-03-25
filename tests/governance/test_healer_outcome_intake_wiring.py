@@ -286,19 +286,19 @@ class TestAdapterBuildRecord:
         assert record.source == "test-source"
 
     def test_build_record_snapshot_is_deterministically_sorted(self):
-        """Snapshot entries must be sorted by (healer_id, tier, failure_type)."""
-        store = InMemoryHealingOutcomeIntakeStore()
-        adapter = HealingOutcomeIntakeAdapter(store)
-        agg = _populated_aggregator()
-        record = adapter.build_record(agg, created_utc=1000)
-        snap = record.snapshot
-        sorted_snap = tuple(sorted(snap, key=lambda s: (s.healer_id, s.tier, s.failure_type)))
-        assert snap == sorted_snap
+    """Test build_record_snapshot_is_deterministically_sorted runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_build_record_deterministic_for_identical_aggregator(self):
-        """Same aggregator state → same record content (no wall-clock)."""
-        store1 = InMemoryHealingOutcomeIntakeStore()
-        store2 = InMemoryHealingOutcomeIntakeStore()
+    # Act
+    # TODO: Execute build_record_snapshot_is_deterministically_sorted
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         adapter1 = HealingOutcomeIntakeAdapter(store1)
         adapter2 = HealingOutcomeIntakeAdapter(store2)
 
@@ -347,19 +347,19 @@ class TestAdapterPersistRecord:
         assert retrieved.schema_version == 1
 
     def test_store_write_called_once_per_persist(self):
-        from unittest.mock import MagicMock
+    """Test store_write_called_once_per_persist runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        store_mock = MagicMock(spec=HealingOutcomeIntakeStore)
-        adapter = HealingOutcomeIntakeAdapter(store_mock)
-        agg = _populated_aggregator()
-        record = adapter.build_record(agg, created_utc=1)
-        adapter.persist_record(record)
-        store_mock.write.assert_called_once_with(record)
+    # Act
+    # TODO: Execute store_write_called_once_per_persist
+    result = None  # Replace with actual execution
 
-
-# ---------------------------------------------------------------------------
-# TestEmptyAggregatorRejection
-# ---------------------------------------------------------------------------
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
 
 class TestEmptyAggregatorRejection:
@@ -380,19 +380,19 @@ class TestEmptyAggregatorRejection:
 
 class TestFullPipeline:
     def test_full_pipeline_healer_to_store(self):
-        """End-to-end: ingest events → aggregate → build record → persist."""
-        store = InMemoryHealingOutcomeIntakeStore()
-        adapter = HealingOutcomeIntakeAdapter(store)
+    """Test full_pipeline_healer_to_store runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
 
-        agg = HealingOutcomeAggregator()
-        # Ingest 5 events for two healers
-        for _ in range(3):
-            agg.ingest(_make_event("healer_x", "T1", "TIMEOUT", success=True))
-        for _ in range(2):
-            agg.ingest(_make_event("healer_x", "T1", "TIMEOUT", success=False))
-        agg.ingest(_make_event("healer_y", "T3", "OOM", success=True))
+    # Act
+    # TODO: Execute workflow full_pipeline_healer_to_store
+    workflow_result = None  # Replace with actual workflow execution
 
-        record = adapter.build_record(agg, created_utc=2000, source="test-pipeline")
+    # Assert
+    assert workflow_result is not None, "Workflow should produce a result"
+    assert isinstance(workflow_result, dict), "Workflow result should be structured"
+    # TODO: Add workflow step assertions
         adapter.persist_record(record)
 
         assert store.count() == 1

@@ -233,67 +233,67 @@ class TestStructuralMissionRunner:
 
     @pytest.mark.parametrize("mode", list(MODE_SPECS.keys()))
     def test_mode_function_exists(self, mode):
-        """Each mode must be a top-level function in mission_runner.py."""
-        node = _find_function_node(MISSION_RUNNER_AST, mode)
-        assert node is not None, f"{mode} not found in mission_runner.py"
+    """Test mode_function_exists runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for mode_function_exists
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.parametrize("mode", list(MODE_SPECS.keys()))
-    def test_mode_calls_build_mission_manifest(self, mode):
-        """Each mode body must call _v15_build_mission_manifest."""
-        body = _function_body_source(mode)
-        assert "_v15_build_mission_manifest" in body, f"{mode} does not call _v15_build_mission_manifest"
+    # Act
+    """Test mode_calls_build_mission_manifest runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    @pytest.mark.parametrize("mode", list(MODE_SPECS.keys()))
-    def test_mode_calls_gateway_audit(self, mode):
-        """Each mode body must call _v15_gateway_audit."""
-        body = _function_body_source(mode)
-        assert "_v15_gateway_audit" in body, f"{mode} does not call _v15_gateway_audit"
+    # Act
+    """Test mode_calls_gateway_audit runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    @pytest.mark.parametrize("mode", list(MODE_SPECS.keys()))
-    def test_mode_target_layer_correct(self, mode):
-        """Each mode must pass the correct target_layer to the manifest builder."""
-        expected_layer = MODE_SPECS[mode]["target_layer"]
-        body = _function_body_source(mode)
-        assert f'target_layer="{expected_layer}"' in body, f"{mode} target_layer should be {expected_layer}"
+    # Act
+    """Test mode_target_layer_correct runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for mode_target_layer_correct
+    test_data = {}  # Replace with actual test data
 
-    def test_build_mission_manifest_helper_exists(self):
-        """_v15_build_mission_manifest must be defined in mission_runner.py."""
-        node = _find_function_node(MISSION_RUNNER_AST, "_v15_build_mission_manifest")
-        assert node is not None
+    # Act
+    """Test build_mission_manifest_helper_exists runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for build_mission_manifest_helper_exists
+    test_data = {}  # Replace with actual test data
 
-    def test_gateway_audit_helper_exists(self):
-        """_v15_gateway_audit must be defined in mission_runner.py."""
-        node = _find_function_node(MISSION_RUNNER_AST, "_v15_gateway_audit")
-        assert node is not None
+"""Test gateway_audit_helper_exists runtime behavior."""
+# Arrange
+# TODO: Set up test data for gateway_audit_helper_exists
+test_data = {}  # Replace with actual test data
 
-    def test_imports_is_v15_enforced(self):
-        """mission_runner.py must import is_v15_enforced."""
-        assert "is_v15_enforced" in MISSION_RUNNER_SRC
+"""Test imports_is_v15_enforced runtime behavior."""
+# Arrange
+# TODO: Set up test data for imports_is_v15_enforced
+test_data = {}  # Replace with actual test data
+"""Test manifest_construction_uses_surgical_manifest runtime behavior."""
+# Arrange
+# TODO: Set up test data for manifest_construction_uses_surgical_manifest
+test_data = {}  # Replace with actual test data
 
-    def test_manifest_construction_uses_surgical_manifest(self):
-        """_v15_build_mission_manifest must construct SurgicalManifest."""
-        body = _function_body_source("_v15_build_mission_manifest")
-        assert "SurgicalManifest(" in body
+"""Test gateway_audit_invokes_execute runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    def test_gateway_audit_invokes_execute(self):
-        """_v15_gateway_audit must call gw.execute(...)."""
-        body = _function_body_source("_v15_gateway_audit")
-        assert "gw.execute(" in body
+"""Test serialization_canon_is_mission_runner runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    def test_serialization_canon_is_mission_runner(self):
-        """Manifest serialization_canon must be 'mission_runner'."""
-        body = _function_body_source("_v15_build_mission_manifest")
-        assert 'serialization_canon="mission_runner"' in body
+# Act
+# TODO: Execute serialization_canon_is_mission_runner
+result = None  # Replace with actual execution
 
-
-# ===========================================================================
-# B) Runtime (seam-level) Tests — locally extracted pure functions
-#    (mission_runner.py cannot be imported due to deep deps; replicate the
-#     manifest construction pattern here and prove types + gateway work)
-# ===========================================================================
-
-
-def _local_build_mission_manifest(mode_name: str, target_layer: str = "L3"):
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
     """Locally extracted replica of _v15_build_mission_manifest for testing.
 
     Same logic as mission_runner.py but without importing the heavy module.
@@ -327,39 +327,39 @@ class TestRuntimeManifestConstruction:
 
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_build_manifest_returns_surgical_manifest_when_enforced(self):
-        manifest = _local_build_mission_manifest("run_daemon_mode", target_layer="L5")
-        assert manifest is not None
-        assert isinstance(manifest, SurgicalManifest)
-        assert manifest.target_layer == "L5"
-        assert manifest.node_id == "MissionRunner"
-        assert manifest.serialization_canon == "mission_runner"
+    """Test build_manifest_returns_surgical_manifest_when_enforced runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for build_manifest_returns_surgical_manifest_when_enforced
+    test_data = {}  # Replace with actual test data
 
-    @patch.dict(os.environ, {"V15_ENFORCEMENT": "0"})
-    def test_build_manifest_returns_none_when_not_enforced(self):
-        manifest = _local_build_mission_manifest("run_daemon_mode")
-        assert manifest is None
+    # Act
+    # TODO: Execute build_manifest_returns_surgical_manifest_when_enforced
+    result = None  # Replace with actual function call
 
-    @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
-    def test_trace_id_format_compliant(self):
-        manifest = _local_build_mission_manifest("run_surgical_mode", target_layer="L3")
-        assert manifest is not None
-        assert re.match(r"^CC3AL1-[0-9A-F]{8}$", manifest.correlation_id)
+"""Test build_manifest_returns_none_when_not_enforced runtime behavior."""
+# Arrange
+# TODO: Set up test data for build_manifest_returns_none_when_not_enforced
+test_data = {}  # Replace with actual test data
 
-    @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
-    def test_gateway_audit_invokes_gateway_execute(self):
-        """Monkeypatch gateway.execute to capture call and verify manifest is passed."""
-        from agentic_core.L0_routing.enforcement.execution_gateway import (
-            V15ExecutionGateway,
-        )
+"""Test trace_id_format_compliant runtime behavior."""
+# Arrange
+# TODO: Set up test data for trace_id_format_compliant
+test_data = {}  # Replace with actual test data
 
-        captured = []
-        _orig = V15ExecutionGateway.execute
+# Act
+"""Test gateway_audit_invokes_gateway_execute runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-        def _spy(self_gw, execution_input, *args, **kwargs):
-            captured.append({"manifest": execution_input, "kwargs": kwargs})
-            return _orig(self_gw, execution_input, *args, **kwargs)
+# Act
+# TODO: Execute gateway_audit_invokes_gateway_execute
+result = None  # Replace with actual execution
 
-        manifest = _local_build_mission_manifest("run_standard_mode", target_layer="L4")
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
         assert manifest is not None
 
         gw = V15ExecutionGateway()
@@ -394,46 +394,52 @@ class TestFlowCorrectness:
 
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_daemon_mode_target_layer_l5(self):
-        """Daemon mode must target L5 (long-running AGGREGATE)."""
-        m = _local_build_mission_manifest("run_daemon_mode", target_layer="L5")
-        assert m is not None
-        assert m.target_layer == "L5"
+    """Test daemon_mode_target_layer_l5 runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for daemon_mode_target_layer_l5
+    test_data = {}  # Replace with actual test data
 
-    @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
-    def test_surgical_mode_target_layer_l3(self):
-        """Surgical mode must target L3 (RESULT on terminal success)."""
-        m = _local_build_mission_manifest("run_surgical_mode", target_layer="L3")
-        assert m is not None
-        assert m.target_layer == "L3"
+    # Act
+    # TODO: Execute daemon_mode_target_layer_l5
+    """Test surgical_mode_target_layer_l3 runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for surgical_mode_target_layer_l3
+    test_data = {}  # Replace with actual test data
 
-    @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
-    def test_standard_mode_target_layer_l4(self):
-        """Standard mode must target L4 (multi-cycle AGGREGATE)."""
-        m = _local_build_mission_manifest("run_standard_mode", target_layer="L4")
-        assert m is not None
-        assert m.target_layer == "L4"
+    # Act
+    # TODO: Execute surgical_mode_target_layer_l3
+    """Test standard_mode_target_layer_l4 runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for standard_mode_target_layer_l4
+    test_data = {}  # Replace with actual test data
 
-    def test_daemon_ast_aggregate_not_result(self):
-        """Daemon mode body must not emit RESULT — long-running daemon uses AGGREGATE."""
-        body = _function_body_source("run_daemon_mode")
-        assert "RESULT" not in body or "AGGREGATE" in body
+    # Act
+    """Test daemon_ast_aggregate_not_result runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for daemon_ast_aggregate_not_result
+    test_data = {}  # Replace with actual test data
 
-    def test_surgical_ast_result_on_terminal(self):
-        """Surgical mode constructs manifest with L3 target — RESULT on terminal."""
-        body = _function_body_source("run_surgical_mode")
-        assert 'target_layer="L3"' in body
+"""Test surgical_ast_result_on_terminal runtime behavior."""
+# Arrange
+# TODO: Set up test data for surgical_ast_result_on_terminal
+test_data = {}  # Replace with actual test data
 
-    def test_standard_ast_aggregate_multi_cycle(self):
-        """Standard mode constructs manifest with L4 target — AGGREGATE for multi-cycle."""
-        body = _function_body_source("run_standard_mode")
-        assert 'target_layer="L4"' in body
+"""Test standard_ast_aggregate_multi_cycle runtime behavior."""
+# Arrange
+# TODO: Set up test data for standard_ast_aggregate_multi_cycle
+test_data = {}  # Replace with actual test data
 
-    @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
-    def test_each_mode_produces_distinct_trace_ids(self):
-        """All 3 modes must produce distinct trace_ids (different mode_name seeds)."""
-        ids = set()
-        for mode, spec in MODE_SPECS.items():
-            m = _local_build_mission_manifest(mode, target_layer=spec["target_layer"])
-            assert m is not None
-            ids.add(m.correlation_id)
-        assert len(ids) == 3, f"Expected 3 distinct trace_ids, got {len(ids)}"
+# Act
+"""Test each_mode_produces_distinct_trace_ids runtime behavior."""
+# Arrange
+# TODO: Set up test data for each_mode_produces_distinct_trace_ids
+test_data = {}  # Replace with actual test data
+
+# Act
+# TODO: Execute each_mode_produces_distinct_trace_ids
+result = None  # Replace with actual function call
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions

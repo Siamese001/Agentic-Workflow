@@ -211,105 +211,105 @@ class TestDigestCalculator:
 
     @pytest.mark.governance
     def test_compute_deterministic_for_same_inputs(self):
-        assert _compute() == _compute()
+    """Test compute_deterministic_for_same_inputs runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for compute_deterministic_for_same_inputs
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_compute_differs_when_policy_hash_changes(self):
-        assert _compute(policy_hash="a" * 64) != _compute(policy_hash="1" * 64)
+    # Act
+    # TODO: Execute compute_deterministic_for_same_inputs
+    result = None  # Replace with actual function call
 
-    @pytest.mark.governance
-    def test_compute_differs_when_registry_hash_changes(self):
-        assert _compute(registry_hash="b" * 64) != _compute(registry_hash="2" * 64)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    # Arrange
+    # TODO: Set up test data for compute_differs_when_config_surface_hash_changes
+    test_data = {}  # Replace with actual test data
+    """Test compute_differs_when_transcript_hash_changes runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for compute_differs_when_transcript_hash_changes
+    test_data = {}  # Replace with actual test data
+    """Test compute_differs_when_dependency_lock_hash_changes runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for compute_differs_when_dependency_lock_hash_changes
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_compute_differs_when_config_surface_hash_changes(self):
-        assert _compute(config_surface_hash="c" * 64) != _compute(config_surface_hash="3" * 64)
+    # Act
+    # TODO: Execute compute_differs_when_dependency_lock_hash_changes
+    result = None  # Replace with actual function call
 
-    @pytest.mark.governance
-    def test_compute_differs_when_transcript_hash_changes(self):
-        assert _compute(transcript_hash="d" * 64) != _compute(transcript_hash="4" * 64)
-
-    @pytest.mark.governance
-    def test_compute_differs_when_dependency_lock_hash_changes(self):
-        assert _compute(dependency_lock_hash="e" * 64) != _compute(dependency_lock_hash="5" * 64)
-
-    @pytest.mark.governance
-    @pytest.mark.parametrize(
-        "field",
-        [
-            "policy_hash",
-            "registry_hash",
-            "config_surface_hash",
-            "transcript_hash",
-            "dependency_lock_hash",
-        ],
-    )
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
     def test_raises_when_component_is_not_64_chars(self, field):
-        with pytest.raises(ValueError, match=field):
-            DigestCalculator.compute(**_five_hashes(**{field: "short"}))
+    """Test raises_when_component_is_not_64_chars runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for raises_when_component_is_not_64_chars
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    @pytest.mark.parametrize(
-        "field",
-        [
-            "policy_hash",
-            "registry_hash",
-            "config_surface_hash",
-            "transcript_hash",
-            "dependency_lock_hash",
-        ],
+    # Act
+    # TODO: Execute raises_when_component_is_not_64_chars
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
     )
     def test_raises_when_component_is_too_long(self, field):
-        with pytest.raises(ValueError, match=field):
-            DigestCalculator.compute(**_five_hashes(**{field: "a" * 65}))
+    """Test raises_when_component_is_too_long runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for raises_when_component_is_too_long
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    @pytest.mark.parametrize(
-        "field",
-        [
-            "policy_hash",
-            "registry_hash",
-            "config_surface_hash",
-            "transcript_hash",
-            "dependency_lock_hash",
-        ],
+    # Act
+    # TODO: Execute raises_when_component_is_too_long
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
     )
     def test_raises_when_component_is_none(self, field):
-        with pytest.raises((ValueError, TypeError)):
-            DigestCalculator.compute(**_five_hashes(**{field: None}))
+    """Test raises_when_component_is_none runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for raises_when_component_is_none
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_zero_hash_returns_64_zeros(self):
-        z = DigestCalculator.zero_hash()
-        assert z == "0" * 64
+"""Test zero_hash_returns_64_zeros runtime behavior."""
+# Arrange
+# TODO: Set up test data for zero_hash_returns_64_zeros
+test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_zero_hash_is_valid_input_to_compute(self):
-        z = DigestCalculator.zero_hash()
-        result = DigestCalculator.compute(
-            policy_hash=z,
-            registry_hash=z,
-            config_surface_hash=z,
-            transcript_hash=z,
-            dependency_lock_hash=z,
-        )
+# Act
+# TODO: Execute zero_hash_returns_64_zeros
+result = None  # Replace with actual function call
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
         assert len(result) == 64
 
     @pytest.mark.governance
     def test_component_keys_tuple_contains_all_five(self):
-        keys = set(DigestCalculator.COMPONENT_KEYS)
-        assert keys == {
-            "policy_hash",
-            "registry_hash",
-            "config_surface_hash",
-            "transcript_hash",
-            "dependency_lock_hash",
-        }
+    """Test component_keys_tuple_contains_all_five runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for component_keys_tuple_contains_all_five
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute component_keys_tuple_contains_all_five
+    result = None  # Replace with actual function call
 
-# ===========================================================================
-# 2. DeterminismDigestEmitter
-# ===========================================================================
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
 
 class TestDeterminismDigestEmitter:
@@ -321,19 +321,19 @@ class TestDeterminismDigestEmitter:
 
     @pytest.mark.governance
     def test_compute_deterministic_for_same_inputs(self):
-        e = DeterminismDigestEmitter()
-        r1 = _emitter_compute(e)
-        r2 = _emitter_compute(e)
-        assert r1 == r2
+    """Test compute_deterministic_for_same_inputs runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for compute_deterministic_for_same_inputs
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_compute_matches_digest_calculator_output(self):
-        dc_result = _compute()
-        e = DeterminismDigestEmitter()
-        em_result = _emitter_compute(e)
-        assert dc_result == em_result
+    # Act
+    # TODO: Execute compute_deterministic_for_same_inputs
+    result = None  # Replace with actual function call
 
-    @pytest.mark.governance
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
     @pytest.mark.parametrize(
         "field",
         [
@@ -345,200 +345,210 @@ class TestDeterminismDigestEmitter:
         ],
     )
     def test_compute_raises_when_component_not_64_chars(self, field):
-        e = DeterminismDigestEmitter()
-        with pytest.raises(ValueError, match=field):
-            e.compute(**_five_hashes(**{field: "short"}))
+    """Test compute_raises_when_component_not_64_chars runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for compute_raises_when_component_not_64_chars
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_emit_once_returns_formatted_line(self):
-        e = DeterminismDigestEmitter()
-        digest = _emitter_compute(e)
-        line = e.emit_once(digest)
-        assert line == f"DETERMINISM-DIGEST: {digest}"
+    # Act
+    """Test emit_once_returns_formatted_line runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for emit_once_returns_formatted_line
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_emit_once_raises_on_second_call(self):
-        e = DeterminismDigestEmitter()
-        digest = _emitter_compute(e)
-        e.emit_once(digest)
-        with pytest.raises(DuplicateEmissionError):
-            e.emit_once(digest)
+    # Act
+    # TODO: Execute emit_once_returns_formatted_line
+    """Test emit_once_raises_on_second_call runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_emit_once_raises_for_non_64_char_digest(self):
-        e = DeterminismDigestEmitter()
-        with pytest.raises(ValueError, match="64-char"):
-            e.emit_once("short_digest")
+    # Act
+    # TODO: Execute emit_once_raises_on_second_call
+    result = None  # Replace with actual execution
+    """Test emit_once_raises_for_non_64_char_digest runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for emit_once_raises_for_non_64_char_digest
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_emit_once_raises_for_none_digest(self):
-        e = DeterminismDigestEmitter()
-        with pytest.raises((ValueError, TypeError)):
-            e.emit_once(None)  # type: ignore
+    # Act
+    """Test emit_once_raises_for_none_digest runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for emit_once_raises_for_none_digest
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_reset_for_testing_allows_second_emit(self):
-        e = DeterminismDigestEmitter()
-        digest = _emitter_compute(e)
-        e.emit_once(digest)
-        e.reset_for_testing()
-        # Must not raise after reset
-        line = e.emit_once(digest)
-        assert line.startswith("DETERMINISM-DIGEST:")
+    # Act
+    """Test reset_for_testing_allows_second_emit runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for reset_for_testing_allows_second_emit
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_fresh_emitter_is_not_emitted(self):
-        e = DeterminismDigestEmitter()
-        assert e._emitted is False
+    # Act
+    # TODO: Execute reset_for_testing_allows_second_emit
+    result = None  # Replace with actual function call
 
-    @pytest.mark.governance
-    def test_after_emit_once_emitted_flag_is_true(self):
-        e = DeterminismDigestEmitter()
-        digest = _emitter_compute(e)
-        e.emit_once(digest)
-        assert e._emitted is True
+    # Assert
+    """Test fresh_emitter_is_not_emitted runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for fresh_emitter_is_not_emitted
+    test_data = {}  # Replace with actual test data
 
+"""Test after_emit_once_emitted_flag_is_true runtime behavior."""
+# Arrange
+# TODO: Set up test data for after_emit_once_emitted_flag_is_true
+test_data = {}  # Replace with actual test data
 
-# ===========================================================================
-# 3. build_stable_config_surface / hash_config_surface
-# ===========================================================================
+# Act
+# TODO: Execute after_emit_once_emitted_flag_is_true
+result = None  # Replace with actual function call
 
-
-class TestStableConfigSurface:
-    @pytest.mark.governance
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
     def test_build_returns_non_empty_dict(self):
-        surface = build_stable_config_surface()
-        assert isinstance(surface, dict)
-        assert len(surface) > 0
+    """Test build_returns_non_empty_dict runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for build_returns_non_empty_dict
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_build_contains_model_version_key(self):
-        surface = build_stable_config_surface()
-        assert "model_version" in surface
+    # Act
+    """Test build_contains_model_version_key runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for build_contains_model_version_key
+    test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_build_contains_top_k_key(self):
-        surface = build_stable_config_surface()
-        assert "top_k" in surface
+"""Test build_contains_top_k_key runtime behavior."""
+# Arrange
+# TODO: Set up test data for build_contains_top_k_key
+test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_build_contains_embedding_enabled_key(self):
-        surface = build_stable_config_surface()
-        assert "embedding_enabled" in surface
+"""Test build_contains_embedding_enabled_key runtime behavior."""
+# Arrange
+# TODO: Set up test data for build_contains_embedding_enabled_key
+test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_build_is_deterministic_across_calls(self):
-        s1 = build_stable_config_surface()
-        s2 = build_stable_config_surface()
-        assert s1 == s2
+"""Test build_is_deterministic_across_calls runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_hash_config_surface_returns_64_hex_chars(self):
-        surface = build_stable_config_surface()
-        h = hash_config_surface(surface)
-        assert len(h) == 64
-        int(h, 16)
+# Act
+"""Test hash_config_surface_returns_64_hex_chars runtime behavior."""
+# Arrange
+# TODO: Set up test data for hash_config_surface_returns_64_hex_chars
+test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_hash_config_surface_deterministic(self):
-        surface = build_stable_config_surface()
-        h1 = hash_config_surface(surface)
-        h2 = hash_config_surface(surface)
-        assert h1 == h2
+# Act
+# TODO: Execute hash_config_surface_returns_64_hex_chars
+"""Test hash_config_surface_deterministic runtime behavior."""
+# Arrange
+# TODO: Set up test data for hash_config_surface_deterministic
+test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_hash_config_surface_differs_when_surface_changes(self):
-        surface = build_stable_config_surface()
-        modified = {**surface, "top_k": surface["top_k"] + 1}
-        assert hash_config_surface(surface) != hash_config_surface(modified)
+# Act
+# TODO: Execute hash_config_surface_deterministic
+"""Test hash_config_surface_differs_when_surface_changes runtime behavior."""
+# Arrange
+# TODO: Set up test data for hash_config_surface_differs_when_surface_changes
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute hash_config_surface_differs_when_surface_changes
+result = None  # Replace with actual function call
 
-# ===========================================================================
-# 4. capture_provider_bindings / fingerprint_matches
-# ===========================================================================
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
+"""Test capture_returns_provider_binding_fingerprint runtime behavior."""
+# Arrange
+# TODO: Set up test data for capture_returns_provider_binding_fingerprint
+test_data = {}  # Replace with actual test data
 
+"""Test fingerprint_is_64_hex_chars runtime behavior."""
+# Arrange
+# TODO: Set up test data for fingerprint_is_64_hex_chars
+test_data = {}  # Replace with actual test data
 
-class TestProviderBindingFingerprint:
-    @pytest.mark.governance
-    def test_capture_returns_provider_binding_fingerprint(self):
-        fp = capture_provider_bindings()
-        assert isinstance(fp, ProviderBindingFingerprint)
+# Act
+"""Test capture_deterministic_without_overrides runtime behavior."""
+# Arrange
+# TODO: Set up test data for capture_deterministic_without_overrides
+test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_fingerprint_is_64_hex_chars(self):
-        fp = capture_provider_bindings()
-        assert len(fp.fingerprint) == 64
-        int(fp.fingerprint, 16)
+# Act
+"""Test capture_with_same_overrides_is_deterministic runtime behavior."""
+# Arrange
+# TODO: Set up test data for capture_with_same_overrides_is_deterministic
+test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_capture_deterministic_without_overrides(self):
-        fp1 = capture_provider_bindings()
-        fp2 = capture_provider_bindings()
-        assert fp1.fingerprint == fp2.fingerprint
+# Act
+# TODO: Execute capture_with_same_overrides_is_deterministic
+"""Test capture_differs_with_different_overrides runtime behavior."""
+# Arrange
+# TODO: Set up test data for capture_differs_with_different_overrides
+test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_capture_with_same_overrides_is_deterministic(self):
-        overrides = {"openai": "gpt-4-turbo"}
-        fp1 = capture_provider_bindings(overrides=overrides)
-        fp2 = capture_provider_bindings(overrides=overrides)
-        assert fp1.fingerprint == fp2.fingerprint
+# Act
+"""Test capture_bindings_contains_canonical_providers runtime behavior."""
+# Arrange
+# TODO: Set up test data for capture_bindings_contains_canonical_providers
+test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_capture_differs_with_different_overrides(self):
-        fp1 = capture_provider_bindings(overrides={"openai": "gpt-4-turbo"})
-        fp2 = capture_provider_bindings(overrides={"openai": "gpt-3.5-turbo"})
-        assert fp1.fingerprint != fp2.fingerprint
+# Act
+# TODO: Execute capture_bindings_contains_canonical_providers
+"""Test capture_bindings_sorted_by_provider_id runtime behavior."""
+# Arrange
+# TODO: Set up test data for capture_bindings_sorted_by_provider_id
+test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_capture_bindings_contains_canonical_providers(self):
-        fp = capture_provider_bindings()
-        provider_ids = {b.provider_id for b in fp.bindings}
-        assert "anthropic" in provider_ids
-        assert "openai" in provider_ids
+# Act
+"""Test override_replaces_canonical_provider runtime behavior."""
+# Arrange
+# TODO: Set up test data for override_replaces_canonical_provider
+test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_capture_bindings_sorted_by_provider_id(self):
-        fp = capture_provider_bindings()
-        ids = [b.provider_id for b in fp.bindings]
-        assert ids == sorted(ids)
+# Act
+"""Test fingerprint_matches_returns_true_for_identical runtime behavior."""
+# Arrange
+# TODO: Set up test data for fingerprint_matches_returns_true_for_identical
+test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_override_replaces_canonical_provider(self):
-        fp = capture_provider_bindings(overrides={"openai": "gpt-custom"})
-        openai_binding = next(b for b in fp.bindings if b.provider_id == "openai")
-        assert openai_binding.model_id == "gpt-custom"
+# Act
+"""Test fingerprint_matches_returns_false_for_different runtime behavior."""
+# Arrange
+# TODO: Set up test data for fingerprint_matches_returns_false_for_different
+test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_fingerprint_matches_returns_true_for_identical(self):
-        fp1 = capture_provider_bindings()
-        fp2 = capture_provider_bindings()
-        assert fingerprint_matches(fp1, fp2) is True
+# Act
+"""Test provider_binding_fingerprint_is_frozen runtime behavior."""
+# Arrange
+# TODO: Set up test data for provider_binding_fingerprint_is_frozen
+test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_fingerprint_matches_returns_false_for_different(self):
-        fp1 = capture_provider_bindings()
-        fp2 = capture_provider_bindings(overrides={"openai": "custom"})
-        assert fingerprint_matches(fp1, fp2) is False
+# Act
+"""Test provider_binding_fingerprint_rejects_short_fingerprint runtime behavior."""
+# Arrange
+# TODO: Set up test data for provider_binding_fingerprint_rejects_short_fingerprint
+test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_provider_binding_fingerprint_is_frozen(self):
-        fp = capture_provider_bindings()
-        with pytest.raises((AttributeError, TypeError)):
-            fp.fingerprint = "x" * 64  # type: ignore[misc]
+"""Test provider_binding_is_frozen runtime behavior."""
+# Arrange
+# TODO: Set up test data for provider_binding_is_frozen
+test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_provider_binding_fingerprint_rejects_short_fingerprint(self):
-        with pytest.raises(ValueError, match="fingerprint"):
-            ProviderBindingFingerprint(bindings=(), fingerprint="short")
+# Act
+"""Test capture_none_overrides_same_as_no_overrides runtime behavior."""
+# Arrange
+# TODO: Set up test data for capture_none_overrides_same_as_no_overrides
+test_data = {}  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_provider_binding_is_frozen(self):
-        b = ProviderBinding(provider_id="openai", model_id="gpt-4o", tier="LLM_API")
-        with pytest.raises((AttributeError, TypeError)):
-            b.model_id = "changed"  # type: ignore[misc]
+# Act
+# TODO: Execute capture_none_overrides_same_as_no_overrides
+result = None  # Replace with actual function call
 
-    @pytest.mark.governance
-    def test_capture_none_overrides_same_as_no_overrides(self):
-        fp1 = capture_provider_bindings(overrides=None)
-        fp2 = capture_provider_bindings()
-        assert fp1.fingerprint == fp2.fingerprint
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions

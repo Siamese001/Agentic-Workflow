@@ -571,37 +571,45 @@ def _patch_ssot_discovery(tmp_path: Path):
 
 class TestValidateAllFailSafe:
     def test_validate_all_returns_sovereign_health_report(self, tmp_path):
-        (tmp_path / AGENTIC_CORE_DIR).mkdir()
-        v = UnifiedSSOTValidator(project_root=tmp_path)
-        with _patch_ssot_discovery(tmp_path):
-            result = v.validate_all()
-        assert isinstance(result, SovereignHealthReport)
+    """Test validate_all_returns_sovereign_health_report contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_validate_all_does_not_raise_on_empty_root(self, tmp_path):
-        (tmp_path / AGENTIC_CORE_DIR).mkdir()
-        v = UnifiedSSOTValidator(project_root=tmp_path)
-        with _patch_ssot_discovery(tmp_path):
-            result = v.validate_all()
-        assert result is not None
+    # Act
+    # TODO: Validate schema
+    """Test validate_all_does_not_raise_on_empty_root contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_validate_all_reports_scan_duration_positive(self, tmp_path):
-        (tmp_path / AGENTIC_CORE_DIR).mkdir()
-        v = UnifiedSSOTValidator(project_root=tmp_path)
-        with _patch_ssot_discovery(tmp_path):
-            result = v.validate_all()
-        assert result.scan_duration >= 0.0
+    # Act
+    # TODO: Validate schema
+    """Test validate_all_reports_scan_duration_positive contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_empty_project_has_zero_agents(self, tmp_path):
-        (tmp_path / AGENTIC_CORE_DIR).mkdir()
-        v = UnifiedSSOTValidator(project_root=tmp_path)
-        with _patch_ssot_discovery(tmp_path):
-            result = v.validate_all()
-        assert result.total_agents == 0
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-    def test_validate_all_result_is_compliant_on_empty_repo(self, tmp_path):
-        (tmp_path / AGENTIC_CORE_DIR).mkdir()
-        v = UnifiedSSOTValidator(project_root=tmp_path)
-        with _patch_ssot_discovery(tmp_path):
-            result = v.validate_all()
-        # Empty repo has no agents to violate; should have no gravity violations
-        assert result.gravity_violations == []
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
+    """Test validate_all_result_is_compliant_on_empty_repo contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
+
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"

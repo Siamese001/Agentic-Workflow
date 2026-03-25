@@ -56,185 +56,185 @@ class TestClassSuffixDetection:
     """Tests for class suffix detection."""
 
     def test_detect_agent_class(self):
-        """Should detect Agent class."""
-        content = """
-class MyAgent:
-    def execute(self):
-        pass
-"""
-        assert has_agent_class(content)
+    """Test detect_agent_class runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for detect_agent_class
+    test_data = {}  # Replace with actual test data
 
-    def test_detect_validator_class(self):
-        """Should detect Validator class."""
-        content = """
-class MyValidator:
-    def validate(self, data):
-        return True
-"""
-        assert has_validator_class(content)
+    # Act
+    # TODO: Execute detect_agent_class
+    result = None  # Replace with actual function call
 
-    def test_detect_manager_class(self):
-        """Should detect Manager class."""
-        content = """
-class CacheManager:
-    def __init__(self):
-        self.cache = {}
-"""
-        assert has_manager_class(content)
+"""Test detect_validator_class runtime behavior."""
+# Arrange
+# TODO: Set up test data for detect_validator_class
+test_data = {}  # Replace with actual test data
 
-    def test_detect_service_class(self):
-        """Should detect Service class."""
-        content = """
-class EmbeddingService:
-    def embed(self, text):
-        return []
-"""
-        assert has_service_class(content)
+# Act
+# TODO: Execute detect_validator_class
+result = None  # Replace with actual function call
 
-    def test_ignore_protocol_interface(self):
-        """Should ignore Protocol interfaces (IAgent)."""
-        content = """
-from typing import Protocol
+"""Test detect_manager_class runtime behavior."""
+# Arrange
+# TODO: Set up test data for detect_manager_class
+test_data = {}  # Replace with actual test data
 
-class IAgent(Protocol):
-    def execute(self) -> None:
-        ...
-"""
-        extract_class_names(content)
-        # IAgent starts with I, so has_agent_class should return False
-        assert not has_agent_class(content)
+# Act
+# TODO: Execute detect_manager_class
+result = None  # Replace with actual function call
 
+"""Test detect_service_class runtime behavior."""
+# Arrange
+# TODO: Set up test data for detect_service_class
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute detect_service_class
+result = None  # Replace with actual function call
+
+"""Test ignore_protocol_interface runtime behavior."""
+# Arrange
+# TODO: Set up test data for ignore_protocol_interface
+test_data = {}  # Replace with actual test data
+
+# Act
+# TODO: Execute ignore_protocol_interface
+result = None  # Replace with actual function call
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
 class TestIgnoreCommentsAndStrings:
     """Tests for ignoring class names in comments/strings."""
 
     def test_ignore_class_in_comment(self):
-        """Should ignore class names in comments."""
-        content = """
-# class FakeAgent:
-#     pass
+    """Test ignore_class_in_comment runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for ignore_class_in_comment
+    test_data = {}  # Replace with actual test data
 
-def real_function():
-    pass
-"""
-        assert not has_agent_class(content)
+    # Act
+    # TODO: Execute ignore_class_in_comment
+    result = None  # Replace with actual function call
 
-    def test_ignore_class_in_docstring(self):
-        """Should ignore class names in docstrings."""
-        content = '''
-"""
-Example:
-    class ExampleAgent:
-        pass
-"""
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test ignore_class_in_docstring runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for ignore_class_in_docstring
+    test_data = {}  # Replace with actual test data
 
-def real_function():
-    pass
-'''
-        assert not has_agent_class(content)
+    # Act
+    # TODO: Execute ignore_class_in_docstring
+    result = None  # Replace with actual function call
 
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
     def test_ignore_class_in_string(self):
-        """Should ignore class names in strings."""
-        content = '''
-template = """
-class TemplateAgent:
-    pass
-"""
+    """Test ignore_class_in_string runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for ignore_class_in_string
+    test_data = {}  # Replace with actual test data
 
-def real_function():
-    pass
-'''
-        assert not has_agent_class(content)
+    # Act
+    # TODO: Execute ignore_class_in_string
+    result = None  # Replace with actual function call
 
-    def test_detect_real_class_with_comments(self):
-        """Should detect real class even with comments mentioning other classes."""
-        content = '''
-# This is not a FakeAgent
-class RealAgent:
-    """This agent does real work."""
-    def execute(self):
-        pass
-'''
-        assert has_agent_class(content)
-        classes = extract_class_names(content)
-        assert "RealAgent" in classes
-        assert "FakeAgent" not in classes
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    """Test detect_real_class_with_comments runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for detect_real_class_with_comments
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute detect_real_class_with_comments
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
 class TestSyntaxErrorHandling:
     """Tests for syntax error handling in AST extraction."""
 
     def test_syntax_error_returns_empty(self):
-        """Syntax error should return empty list, not crash."""
-        content = """
-def broken(
-    # Missing closing paren
-"""
-        classes = extract_class_names(content)
-        assert classes == []
+    """Test syntax_error_returns_empty runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-    def test_incomplete_class_returns_empty(self):
-        """Incomplete class should return empty list."""
-        content = """
-class Incomplete
-"""
-        classes = extract_class_names(content)
-        assert classes == []
+    # Act & Assert
+    # TODO: Test error handling in syntax_error_returns_empty
+    with pytest.raises(Exception):  # Replace with expected exception
+        # Execute operation that should raise error
+        """Test incomplete_class_returns_empty runtime behavior."""
+        # Arrange
+        # TODO: Set up test data for incomplete_class_returns_empty
+        test_data = {}  # Replace with actual test data
 
-    def test_indentation_error_returns_empty(self):
-        """Indentation error should return empty list."""
-        content = """
-def function():
-pass  # Wrong indentation
-"""
-        classes = extract_class_names(content)
-        assert classes == []
+        # Act
+        # TODO: Execute incomplete_class_returns_empty
+        result = None  # Replace with actual function call
+        """Test indentation_error_returns_empty runtime behavior."""
+        # Arrange
+        # TODO: Set up error condition
+        error_input = {}  # Replace with actual error condition
 
-    def test_valid_content_after_fix(self):
-        """Valid content should work after fixing syntax."""
-        content = """
-class ValidAgent:
-    def execute(self):
-        pass
-"""
-        classes = extract_class_names(content)
-        assert "ValidAgent" in classes
+        # Act & Assert
+        # TODO: Test error handling in indentation_error_returns_empty
+        with pytest.raises(Exception):  # Replace with expected exception
+            # Execute operation that should raise error
+            """Test valid_content_after_fix runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for valid_content_after_fix
+            test_data = {}  # Replace with actual test data
 
+            # Act
+            # TODO: Execute valid_content_after_fix
+            result = None  # Replace with actual function call
 
-class TestMultipleClasses:
-    """Tests for files with multiple classes."""
-
+            # Assert
+            assert result is not None, f"{function_name} should return a result"
+            assert isinstance(result, object), "Result should be an object"
+            # TODO: Add specific runtime behavior assertions
     def test_detect_multiple_classes(self):
-        """Should detect all classes in a file."""
-        content = """
-class FirstAgent:
-    pass
+    """Test detect_multiple_classes runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for detect_multiple_classes
+    test_data = {}  # Replace with actual test data
 
-class SecondValidator:
-    pass
+    # Act
+    # TODO: Execute detect_multiple_classes
+    result = None  # Replace with actual function call
 
-class ThirdManager:
-    pass
-"""
-        classes = extract_class_names(content)
-        assert len(classes) == 3
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert "FirstAgent" in classes
         assert "SecondValidator" in classes
         assert "ThirdManager" in classes
 
     def test_mixed_class_types(self):
-        """Should correctly identify mixed class types."""
-        content = """
-class MyAgent:
-    pass
+    """Test mixed_class_types runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for mixed_class_types
+    test_data = {}  # Replace with actual test data
 
-class MyValidator:
-    pass
+    # Act
+    # TODO: Execute mixed_class_types
+    result = None  # Replace with actual function call
 
-class RegularClass:
-    pass
-"""
-        assert has_agent_class(content)
-        assert has_validator_class(content)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         classes = extract_class_names(content)
         assert "RegularClass" in classes

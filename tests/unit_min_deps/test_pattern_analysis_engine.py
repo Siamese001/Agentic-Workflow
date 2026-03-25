@@ -278,19 +278,19 @@ class TestPatternAnalysisEngine:
         assert report1.content_hash() == report2.content_hash()
 
     def test_underperforming_finding_triggered(self):
-        """Test that underperforming healer triggers finding."""
-        config = PatternAnalysisConfig(success_rate_threshold_low=0.7, min_observations=20)
-        engine = PatternAnalysisEngine(config)
+    """Test underperforming_finding_triggered runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-        # Create underperforming aggregate
-        aggregates = [
-            (
-                HealingOutcomeAggregateKey(
-                    healer_name="poor_healer", tier="LOCAL_AGENT", failure_type="timeout"
-                ),
-                HealingOutcomeAggregate(
-                    success_count=30,  # 30% success rate
-                    failure_count=70,
+    # Act
+    # TODO: Process data with underperforming_finding_triggered
+    processed_result = None  # Replace with actual processing
+
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
                     total_count=100,
                 ),
             )

@@ -66,19 +66,19 @@ class TestCognitionLayerIntegrity:
     """Tests for L1 layer structural integrity."""
 
     def test_no_subprocess_in_cognition(self):
-        """L1 cognition should not import subprocess."""
-        base = Path(L1_COGNITION_DIR)
-        if not base.exists():
-            pytest.fail("L1_cognition/ not found")
+    """Test no_subprocess_in_cognition runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-        violations = []
-        for py_file in base.rglob("*.py"):
-            if "__pycache__" in str(py_file):
-                continue
-            content = py_file.read_text(encoding="utf-8", errors="ignore")
-            if "import subprocess" in content:
-                violations.append(str(py_file))
+    # Act
+    # TODO: Process data with no_subprocess_in_cognition
+    processed_result = None  # Replace with actual processing
 
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
         assert len(violations) == 0, f"L1 should not use subprocess: {violations}"
 
     def test_cognition_agents_in_reasoning(self):

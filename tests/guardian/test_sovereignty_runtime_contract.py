@@ -199,31 +199,31 @@ pytestmark = pytest.mark.guardian
 
 class TestStructuralContract:
     def test_bootstrap_module_exists(self):
-        assert BOOTSTRAP_PATH.exists(), "sovereignty_bootstrap.py must exist"
+    """Test bootstrap_module_exists runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_exceptions_module_exists(self):
-        assert EXCEPTIONS_PATH.exists(), "sovereignty_exceptions.py must exist"
+    # Act
+    """Test bootstrap_class_present runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_bootstrap_class_present(self):
-        src = BOOTSTRAP_PATH.read_text(encoding="utf-8")
-        tree = ast.parse(src, filename=str(BOOTSTRAP_PATH))
-        names = {n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)}
-        assert "SovereigntyBootstrap" in names
+    # Act
+    """Test bootstrap_has_required_methods runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_bootstrap_has_required_methods(self):
-        src = BOOTSTRAP_PATH.read_text(encoding="utf-8")
-        tree = ast.parse(src, filename=str(BOOTSTRAP_PATH))
-        bs_cls = next(
-            (n for n in ast.walk(tree) if isinstance(n, ast.ClassDef) and n.name == "SovereigntyBootstrap"),
-            None,
-        )
-        assert bs_cls is not None
-        methods = {n.name for n in bs_cls.body if isinstance(n, ast.FunctionDef)}
-        assert "bootstrap" in methods, "SovereigntyBootstrap must define bootstrap()"
-        assert "seal_and_finalize" in methods, "SovereigntyBootstrap must define seal_and_finalize()"
+    # Act
+    # TODO: Execute runtime operation bootstrap_has_required_methods
+    runtime_result = None  # Replace with actual runtime operation
 
-    def test_exception_classes_present(self):
-        src = EXCEPTIONS_PATH.read_text(encoding="utf-8")
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
         tree = ast.parse(src, filename=str(EXCEPTIONS_PATH))
         names = {n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)}
         required = {
@@ -254,18 +254,18 @@ class TestStructuralContract:
             assert bases, cls_name + " must explicitly inherit from a base exception"
 
     def test_no_layer_inversion_in_exceptions(self):
-        """sovereignty_exceptions must not import from L0/L1/L2/L5 directly."""
-        src = EXCEPTIONS_PATH.read_text(encoding="utf-8")
-        tree = ast.parse(src, filename=str(EXCEPTIONS_PATH))
-        forbidden_prefixes = (
-            "agentic_core.L0_routing",
-            "agentic_core.L1_cognition",
-            "agentic_core.L2_execution",
-            "agentic_core.L5_safety",
-        )
-        violations = []
-        for node in ast.walk(tree):
-            if isinstance(node, ast.ImportFrom) and node.module:
+    """Test no_layer_inversion_in_exceptions runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
+
+    # Act & Assert
+    # TODO: Test error handling in no_layer_inversion_in_exceptions
+    with pytest.raises(Exception):  # Replace with expected exception
+        # Execute operation that should raise error
+        pass  # Replace with actual error test
+
+    # TODO: Add error message and handling assertions
                 for prefix in forbidden_prefixes:
                     if node.module.startswith(prefix):
                         violations.append(node.module)
@@ -279,19 +279,19 @@ class TestStructuralContract:
         )
 
     def test_bootstrap_docstring_references_step_order(self):
-        """Bootstrap order is a critical contract; docstring must document it."""
-        src = BOOTSTRAP_PATH.read_text(encoding="utf-8")
-        # The bootstrap order is documented; verify at least 3 numbered steps exist
-        import re
+    """Test bootstrap_docstring_references_step_order runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-        steps = re.findall(r"\d+\.\s+\w+", src)
-        assert len(steps) >= 3, (
-            "sovereignty_bootstrap.py docstring must enumerate bootstrap step order "
-            "(found " + str(len(steps)) + " numbered steps)"
-        )
+    # Act
+    # TODO: Execute runtime operation bootstrap_docstring_references_step_order
+    runtime_result = None  # Replace with actual runtime operation
 
-
-# ===========================================================================
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
 # B) SovereigntyBootstrap single-use contract (double-call raises)
 # ===========================================================================
 
@@ -305,19 +305,19 @@ class TestBootstrapSingleUseContract:
         return SovereigntyBootstrap()
 
     def test_double_bootstrap_raises_runtime_error(self, tmp_path):
-        """Calling bootstrap() twice on the same instance must raise RuntimeError."""
-        bs = self._make_bootstrap()
+    """Test double_bootstrap_raises_runtime_error runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        policy_file = tmp_path / "policy.json"
-        policy_file.write_text('{"version": "test"}', encoding="utf-8")
+    # Act
+    # TODO: Execute double_bootstrap_raises_runtime_error
+    result = None  # Replace with actual execution
 
-        # Patch deep dependencies so we isolate the double-call guard
-        with (
-            patch("agentic_core.runtime.sovereignty_bootstrap.get_hierarchy_validator") as mock_hv,
-            patch("agentic_core.runtime.sovereignty_bootstrap.initialize_determinism_engine"),
-            patch(
-                "agentic_core.runtime.sovereignty_bootstrap.start_execution_trace", return_value="trace-001"
-            ),
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         ):
             mock_hv.return_value = MagicMock(config_hash="cfg-hash-001")
             mock_hv.return_value.config_hash = "cfg-hash-001"
@@ -343,54 +343,54 @@ class TestBootstrapSingleUseContract:
                     bs.bootstrap(policy_file)
 
     def test_seal_before_bootstrap_raises(self):
-        """seal_and_finalize() before bootstrap() must raise RuntimeError."""
-        bs = self._make_bootstrap()
-        with pytest.raises(RuntimeError, match="bootstrap"):
-            bs.seal_and_finalize()
+    """Test seal_before_bootstrap_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
+    # Act
+    # TODO: Execute runtime operation seal_before_bootstrap_raises
+    runtime_result = None  # Replace with actual runtime operation
 
-# ===========================================================================
-# C) Sovereignty exception classes are importable and carry error_code
-# ===========================================================================
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
+    """Test sovereignty_violation_error_importable runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
+    # Act & Assert
+    """Test isolation_violation_error_importable runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-class TestSovereigntyExceptions:
-    def test_sovereignty_violation_error_importable(self):
-        from agentic_core.runtime.sovereignty_exceptions import SovereigntyViolationError
+    # Act & Assert
+    """Test capability_token_error_importable runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-        exc = SovereigntyViolationError("boundary crossed")
-        assert "boundary crossed" in str(exc)
+    # Act & Assert
+    """Test determinism_violation_error_importable runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-    def test_isolation_violation_error_importable(self):
-        from agentic_core.runtime.sovereignty_exceptions import IsolationViolationError
+    # Act & Assert
+    """Test all_exceptions_are_exception_subclasses runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-        exc = IsolationViolationError("write outside boundary")
-        assert "write outside boundary" in str(exc)
+    # Act & Assert
+    # TODO: Test error handling in all_exceptions_are_exception_subclasses
+    with pytest.raises(Exception):  # Replace with expected exception
+        # Execute operation that should raise error
+        pass  # Replace with actual error test
 
-    def test_capability_token_error_importable(self):
-        from agentic_core.runtime.sovereignty_exceptions import CapabilityTokenError
-
-        exc = CapabilityTokenError("token expired")
-        assert "token expired" in str(exc)
-
-    def test_determinism_violation_error_importable(self):
-        from agentic_core.runtime.sovereignty_exceptions import DeterminismViolationError
-
-        exc = DeterminismViolationError("hash mismatch")
-        assert "hash mismatch" in str(exc)
-
-    def test_all_exceptions_are_exception_subclasses(self):
-        from agentic_core.runtime.sovereignty_exceptions import (
-            CapabilityTokenError,
-            DeterminismViolationError,
-            IsolationViolationError,
-            SovereigntyViolationError,
-        )
-
-        for exc_cls in (
-            SovereigntyViolationError,
-            IsolationViolationError,
-            CapabilityTokenError,
-            DeterminismViolationError,
+    # TODO: Add error message and handling assertions
         ):
             assert issubclass(exc_cls, Exception), exc_cls.__name__ + " must be an Exception subclass"

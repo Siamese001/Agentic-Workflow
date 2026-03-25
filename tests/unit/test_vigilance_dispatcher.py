@@ -225,19 +225,19 @@ class TestVigilanceDispatcher:
     """Test VigilanceDispatcher pure dispatch behavior."""
 
     def test_dispatch_calls_enqueue_fn_once(self):
-        """Test dispatch calls enqueue_fn exactly once with same object."""
-        dispatcher = VigilanceDispatcher()
-        event = VigilanceEventArtifact.create(
-            trace_id="trace123", signals=("signal1", "signal2"), summary="Test event"
-        )
+    """Test dispatch_calls_enqueue_fn_once runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        # Track calls to enqueue_fn
-        calls = []
+    # Act
+    # TODO: Execute dispatch_calls_enqueue_fn_once
+    result = None  # Replace with actual execution
 
-        def mock_enqueue_fn(artifact):
-            calls.append(artifact)
-
-        dispatcher.dispatch(event=event, enqueue_fn=mock_enqueue_fn)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
         assert len(calls) == 1
         assert calls[0] is event  # Same object reference

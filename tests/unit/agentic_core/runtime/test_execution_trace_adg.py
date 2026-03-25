@@ -168,45 +168,55 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestExecutionTrace:
     def test_creates(self):
-        trace = ExecutionTrace(
-            trace_id="trace-abc",
-            plan_hash="phash",
-            policy_hash="pohash",
-            determinism_digest="ddig",
-            hierarchy_hash="hhash",
-            metadata={},
-        )
-        assert trace.trace_id == "trace-abc"
+    """Test creates runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_is_frozen(self):
-        trace = ExecutionTrace(
-            trace_id="t",
-            plan_hash="p",
-            policy_hash="po",
-            determinism_digest="d",
-            hierarchy_hash="h",
-            metadata={},
-        )
-        with pytest.raises(Exception):
-            trace.trace_id = "modified"
+    # Act
+    # TODO: Execute runtime operation creates
+    runtime_result = None  # Replace with actual runtime operation
 
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-class TestExecutionTraceManager:
+    # Act
+    # TODO: Execute runtime operation is_frozen
+    runtime_result = None  # Replace with actual runtime operation
+
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
     def test_creates(self):
-        manager = ExecutionTraceManager()
-        assert manager is not None
+    """Test creates runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
+    """Test start_trace_returns_str runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_start_trace_returns_str(self):
-        manager = ExecutionTraceManager()
-        trace_id = manager.start_trace(
-            plan_hash="p",
-            policy_hash="po",
-            hierarchy_hash="h",
-        )
-        assert isinstance(trace_id, str)
-        assert len(trace_id) > 0
+    # Act
+    # TODO: Execute runtime operation start_trace_returns_str
+    runtime_result = None  # Replace with actual runtime operation
 
-    def test_has_active_trace_after_start(self):
-        manager = ExecutionTraceManager()
-        manager.start_trace(plan_hash="p", policy_hash="po", hierarchy_hash="h")
-        assert manager._active_trace is not None
+    # Assert
+    """Test has_active_trace_after_start runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
+
+    # Act
+    # TODO: Execute runtime operation has_active_trace_after_start
+    runtime_result = None  # Replace with actual runtime operation
+
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions

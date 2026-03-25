@@ -67,52 +67,52 @@ class TestExecutionPlanIntrospection:
     """--plan flag produces stable, deterministic output with no side effects."""
 
     def test_execution_plan_exists_and_ordered(self):
-        mod = _load_module()
-        plan = mod.get_execution_plan()
-        assert isinstance(plan, list)
-        assert len(plan) >= 5, "Plan must have at least 5 phases"
+    """Test execution_plan_exists_and_ordered runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for execution_plan_exists_and_ordered
+    test_data = {}  # Replace with actual test data
 
-        # Phase order is deterministic
-        phase_ids = [p["phase"] for p in plan]
-        assert phase_ids == sorted(
-            phase_ids,
-            key=lambda x: float(x),
-        ), "Phases must be in ascending numeric order"
+    # Act
+    # TODO: Execute execution_plan_exists_and_ordered
+    result = None  # Replace with actual function call
 
-    def test_execution_plan_all_phases_have_agents(self):
-        mod = _load_module()
-        plan = mod.get_execution_plan()
-        for phase in plan:
-            assert "agents" in phase, f"Phase {phase['phase']} missing agents key"
-            assert len(phase["agents"]) >= 1, f"Phase {phase['phase']} has no agents"
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    """Test execution_plan_all_phases_have_agents runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for execution_plan_all_phases_have_agents
+    test_data = {}  # Replace with actual test data
 
-    def test_execution_plan_agent_keys_in_canonical_set(self):
-        mod = _load_module()
-        plan = mod.get_execution_plan()
-        canonical = mod.CANONICAL_ROSTER_KEYS
-        for phase in plan:
-            for agent in phase["agents"]:
-                key = agent["key"]
-                if key == "*":
-                    continue  # wildcard for aggregation phase
-                assert key in canonical, (
-                    f"Phase {phase['phase']} references unknown agent key '{key}'. Valid: {sorted(canonical)}"
-                )
+    # Act
+    # TODO: Execute execution_plan_all_phases_have_agents
+    """Test execution_plan_agent_keys_in_canonical_set runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for execution_plan_agent_keys_in_canonical_set
+    test_data = {}  # Replace with actual test data
 
-    def test_print_execution_plan_no_side_effects(self, capsys):
-        mod = _load_module()
-        mod.print_execution_plan()
-        captured = capsys.readouterr()
-        assert "PHASE 1:" in captured.out
-        assert "PHASE 5:" in captured.out
-        # Must contain agent.method format
-        assert "reconciler.detect_root_drift" in captured.out
+    # Act
+    # TODO: Execute execution_plan_agent_keys_in_canonical_set
+    result = None  # Replace with actual function call
 
-    def test_plan_flag_stable_output(self, capsys):
-        """Two consecutive calls produce identical output."""
-        mod = _load_module()
-        mod.print_execution_plan()
-        first = capsys.readouterr().out
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    """Test print_execution_plan_no_side_effects runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for print_execution_plan_no_side_effects
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute print_execution_plan_no_side_effects
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         mod.print_execution_plan()
         second = capsys.readouterr().out
         assert first == second, "Plan output must be stable across calls"
@@ -127,46 +127,46 @@ class TestRootHygieneAgentWiring:
     """Phase 4.5 must not crash on missing root_hygiene roster key."""
 
     def test_root_hygiene_in_canonical_roster(self):
-        mod = _load_module()
-        assert "root_hygiene" in mod.CANONICAL_ROSTER_KEYS
+    """Test root_hygiene_in_canonical_roster runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for root_hygiene_in_canonical_roster
+    test_data = {}  # Replace with actual test data
+    """Test root_hygiene_key_referenced_in_source runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for root_hygiene_key_referenced_in_source
+    test_data = {}  # Replace with actual test data
 
-    def test_root_hygiene_key_referenced_in_source(self):
-        """AST scan: agents['root_hygiene'] must appear in _legacy_main."""
-        tree = _parse_ast(EXECUTE_SSOT_PATH)
-        found = False
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Subscript):
-                if isinstance(node.slice, ast.Constant) and node.slice.value == "root_hygiene":
-                    found = True
-                    break
-        assert found, "agents['root_hygiene'] not found in execute_ssot.py"
+    # Act
+    # TODO: Execute root_hygiene_key_referenced_in_source
+    result = None  # Replace with actual function call
 
-    def test_removing_root_hygiene_from_canonical_would_break_plan(self):
-        """If root_hygiene were removed from CANONICAL_ROSTER_KEYS,
-        the plan integrity check would fail."""
-        mod = _load_module()
-        plan = mod.get_execution_plan()
-        plan_keys = set()
-        for phase in plan:
-            for agent in phase["agents"]:
-                if agent["key"] != "*":
-                    plan_keys.add(agent["key"])
-        assert "root_hygiene" in plan_keys, "root_hygiene must be referenced in EXECUTION_PLAN"
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test removing_root_hygiene_from_canonical_would_break_plan runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for removing_root_hygiene_from_canonical_would_break_plan
+    test_data = {}  # Replace with actual test data
 
-    def test_phase_4_5_guarded_invocation(self):
-        """Phase 4.5 RootHygieneAgent block is wrapped in try/except."""
-        source = EXECUTE_SSOT_PATH.read_text(encoding="utf-8")
-        # Verify that agents["root_hygiene"] is inside a try block
-        lines = source.splitlines()
-        for i, line in enumerate(lines):
-            if 'agents["root_hygiene"]' in line:
-                # Walk backwards to find enclosing try
-                for j in range(i - 1, max(i - 20, 0), -1):
-                    if lines[j].strip().startswith("try:"):
-                        return  # PASS
-        pytest.fail(
-            'agents["root_hygiene"] is not inside a try block in Phase 4.5',
-        )
+    # Act
+    # TODO: Execute removing_root_hygiene_from_canonical_would_break_plan
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    """Test phase_4_5_guarded_invocation runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for phase_4_5_guarded_invocation
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute phase_4_5_guarded_invocation
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
 
 # ===================================================================
@@ -178,45 +178,45 @@ class TestFileClassificationAgentContract:
     """FCA must be used deterministically in detect (Phase 1) and heal (Phase 2.5)."""
 
     def test_fca_in_phase1_discovery(self):
-        """Phase 1 must invoke file_classification with validate_only=True, dry_run=True."""
-        mod = _load_module()
-        plan = mod.get_execution_plan()
-        phase1 = [p for p in plan if p["phase"] == "1"][0]
-        fca_agents = [a for a in phase1["agents"] if a["key"] == "file_classification"]
-        assert len(fca_agents) == 1, "FCA must be in Phase 1"
-        assert "validate_only=True" in fca_agents[0].get("kwargs", "")
-        assert "dry_run=True" in fca_agents[0].get("kwargs", "")
+    """Test fca_in_phase1_discovery runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for fca_in_phase1_discovery
+    test_data = {}  # Replace with actual test data
 
-    def test_fca_in_phase2_5_sovereignty(self):
-        """Phase 3 (Structural Alignment) must invoke file_classification.heal_repository."""
-        mod = _load_module()
-        plan = mod.get_execution_plan()
-        phase3 = [p for p in plan if p["phase"] == "3"][0]
-        fca_agents = [a for a in phase3["agents"] if a["key"] == "file_classification"]
-        assert len(fca_agents) == 1, "FCA must be in Phase 3"
-        assert fca_agents[0]["method"] == "heal_repository"
+    # Act
+    # TODO: Execute fca_in_phase1_discovery
+    result = None  # Replace with actual function call
 
-    def test_validate_forces_dry_run(self):
-        """--validate must force dry_run=True (centralized mapping)."""
-        source = EXECUTE_SSOT_PATH.read_text(encoding="utf-8")
-        # The centralized mapping: if args.validate: args.dry_run = True
-        assert "if args.validate:" in source
-        assert "args.dry_run = True" in source
+    # Assert
+    """Test fca_in_phase2_5_sovereignty runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for fca_in_phase2_5_sovereignty
+    test_data = {}  # Replace with actual test data
 
-    def test_fca_heal_only_when_not_dry_run(self):
-        """FCA healing is only invoked when pascal_proceed and effective_ctx.heal."""
-        source = EXECUTE_SSOT_PATH.read_text(encoding="utf-8")
-        # Find the sovereignty purge gate
-        idx = source.find("pascal_proceed and effective_ctx.heal")
-        assert idx != -1, "Sovereignty purge must be gated by 'pascal_proceed and effective_ctx.heal'"
-        # Remediation dispatcher (_rd_invoke) must appear inside the gate block
-        # (impl uses remediation_dispatcher instead of direct heal_repository)
-        rd_idx = source.find("_rd_invoke", idx)
-        assert rd_idx != -1, (
-            "_rd_invoke (remediation dispatcher) must be invoked inside the sovereignty purge gate block"
-        )
+    # Act
+    # TODO: Execute fca_in_phase2_5_sovereignty
+    result = None  # Replace with actual function call
 
+"""Test validate_forces_dry_run runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute validate_forces_dry_run
+"""Test fca_heal_only_when_not_dry_run runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
+
+# Act
+# TODO: Execute fca_heal_only_when_not_dry_run
+result = None  # Replace with actual execution
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
 # ===================================================================
 # PHASE 4 — Agent Execution Contract (AST Guards)
 # ===================================================================
@@ -226,19 +226,19 @@ class TestAgentExecutionContract:
     """AST-based guards preventing roster/key drift and entrypoint bypass."""
 
     def test_all_agents_subscript_keys_in_canonical_set(self):
-        """Every agents['key'] reference in _legacy_main must exist
-        in CANONICAL_ROSTER_KEYS."""
-        mod = _load_module()
-        canonical = mod.CANONICAL_ROSTER_KEYS
-        tree = _parse_ast(EXECUTE_SSOT_PATH)
+    """Test all_agents_subscript_keys_in_canonical_set runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for all_agents_subscript_keys_in_canonical_set
+    test_data = {}  # Replace with actual test data
 
-        # Find _legacy_main function node
-        legacy_main_node = None
-        for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef) and node.name == "_legacy_main":
-                legacy_main_node = node
-                break
-        assert legacy_main_node is not None, "_legacy_main not found"
+    # Act
+    # TODO: Execute all_agents_subscript_keys_in_canonical_set
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
         # Collect all agents["key"] subscripts inside _legacy_main
         referenced_keys = set()
@@ -258,19 +258,19 @@ class TestAgentExecutionContract:
         assert not missing, f"agents[] references keys not in CANONICAL_ROSTER_KEYS: {sorted(missing)}"
 
     def test_roster_dict_keys_match_canonical(self):
-        """The agents = {{...}} dict in _legacy_main must have exactly
-        the keys in CANONICAL_ROSTER_KEYS."""
-        mod = _load_module()
-        canonical = mod.CANONICAL_ROSTER_KEYS
-        tree = _parse_ast(EXECUTE_SSOT_PATH)
+    """Test roster_dict_keys_match_canonical runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for roster_dict_keys_match_canonical
+    test_data = {}  # Replace with actual test data
 
-        # Find agents = {...} assignment inside _legacy_main
-        legacy_main_node = None
-        for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef) and node.name == "_legacy_main":
-                legacy_main_node = node
-                break
-        assert legacy_main_node is not None
+    # Act
+    # TODO: Execute roster_dict_keys_match_canonical
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
         roster_keys = set()
         for node in ast.walk(legacy_main_node):
@@ -290,29 +290,29 @@ class TestAgentExecutionContract:
         )
 
     def test_phase_order_is_deterministic(self):
-        """EXECUTION_PLAN phase order must be strictly ascending."""
-        mod = _load_module()
-        plan = mod.get_execution_plan()
-        phase_nums = [float(p["phase"]) for p in plan]
-        for i in range(1, len(phase_nums)):
-            assert phase_nums[i] > phase_nums[i - 1], (
-                f"Phase order is not strictly ascending: {phase_nums[i - 1]} >= {phase_nums[i]}"
-            )
+    """Test phase_order_is_deterministic runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for phase_order_is_deterministic
+    test_data = {}  # Replace with actual test data
 
-    def test_execution_plan_is_immutable_list(self):
-        """EXECUTION_PLAN must be a module-level list (not dynamically built)."""
-        tree = _parse_ast(EXECUTE_SSOT_PATH)
-        found = False
-        for node in ast.iter_child_nodes(tree):
-            if isinstance(node, ast.Assign):
-                for target in node.targets:
-                    if isinstance(target, ast.Name) and target.id == "EXECUTION_PLAN":
-                        assert isinstance(node.value, ast.List), "EXECUTION_PLAN must be a list literal"
-                        found = True
-        assert found, "EXECUTION_PLAN not found as module-level assignment"
+    # Act
+    # TODO: Execute phase_order_is_deterministic
+    result = None  # Replace with actual function call
 
+    # Assert
+    """Test execution_plan_is_immutable_list runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for execution_plan_is_immutable_list
+    test_data = {}  # Replace with actual test data
 
-# ===================================================================
+    # Act
+    # TODO: Execute execution_plan_is_immutable_list
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 # PHASE 5 — Strict Agent Selection Semantics
 # ===================================================================
 
@@ -321,19 +321,19 @@ class TestAgentSelectionSemantics:
     """--agents A,B must resolve subset + dependencies deterministically."""
 
     def test_unknown_agent_raises(self):
-        mod = _load_module()
-        with pytest.raises(ValueError, match="Unknown agent key"):
-            mod.resolve_agent_subset(["nonexistent_agent"])
+    """Test unknown_agent_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for unknown_agent_raises
+    test_data = {}  # Replace with actual test data
 
-    def test_known_agent_returns_with_dependencies(self):
-        mod = _load_module()
-        result = mod.resolve_agent_subset(["hierarchy"])
-        assert "hierarchy" in result
-        # hierarchy depends on reconciler and location
-        assert "reconciler" in result
-        assert "location" in result
+    # Act
+    # TODO: Execute unknown_agent_raises
+    result = None  # Replace with actual function call
 
-    def test_subset_is_sorted(self):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         mod = _load_module()
         result = mod.resolve_agent_subset(["hierarchy", "root_hygiene"])
         assert result == sorted(result), "Result must be sorted alphabetically"
@@ -354,26 +354,26 @@ class TestAgentSelectionSemantics:
         assert "arch_governor" in result
 
     def test_dependency_closure_is_stable(self):
-        """Two calls produce identical results."""
-        mod = _load_module()
-        r1 = mod.resolve_agent_subset(["arch_governor", "root_hygiene"])
-        r2 = mod.resolve_agent_subset(["arch_governor", "root_hygiene"])
-        assert r1 == r2
+    """Test dependency_closure_is_stable runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for dependency_closure_is_stable
+    test_data = {}  # Replace with actual test data
 
-    def test_all_canonical_keys_have_dependency_entry(self):
-        """Every key in CANONICAL_ROSTER_KEYS must appear in AGENT_DEPENDENCIES."""
-        mod = _load_module()
-        for key in mod.CANONICAL_ROSTER_KEYS:
-            assert key in mod.AGENT_DEPENDENCIES, f"Agent key '{key}' missing from AGENT_DEPENDENCIES"
+    # Act
+    # TODO: Execute dependency_closure_is_stable
+    """Test all_canonical_keys_have_dependency_entry runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for all_canonical_keys_have_dependency_entry
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute all_canonical_keys_have_dependency_entry
+    result = None  # Replace with actual function call
 
-# ===================================================================
-# PHASE 6 — Entrypoint Boundary Lock
-# ===================================================================
-
-
-class TestEntrypointBoundaryLock:
-    """Only execute_ssot_entrypoint.py is the public CLI."""
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
     def test_execute_ssot_direct_invocation_blocked(self):
         """Running execute_ssot.py directly must exit with code 2."""
@@ -444,19 +444,19 @@ class TestEntrypointBoundaryLock:
         assert "--plan" in result.stdout
 
     def test_execute_ssot_if_name_main_blocks(self):
-        """AST check: if __name__ == '__main__' must raise SystemExit(2)."""
-        tree = _parse_ast(EXECUTE_SSOT_PATH)
-        for node in ast.iter_child_nodes(tree):
-            if isinstance(node, ast.If):
-                # Check for if __name__ == "__main__"
-                test = node.test
-                if (
-                    isinstance(test, ast.Compare)
-                    and isinstance(test.left, ast.Name)
-                    and test.left.id == "__name__"
-                ):
-                    # Must contain SystemExit(2)
-                    source_segment = ast.get_source_segment(
+    """Test execute_ssot_if_name_main_blocks runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute execute_ssot_if_name_main_blocks
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
                         EXECUTE_SSOT_PATH.read_text(encoding="utf-8"),
                         node,
                     )

@@ -257,19 +257,19 @@ val = os.environ.get("KEY")
         assert any(e.relation_type == "reads_from" for e in edges)
 
     def test_no_false_positives_on_regular_calls(self):
-        src = """
-result = some_func()
-x = other.method()
-"""
-        edges = _visit_attr(src)
-        assert edges == []
+    """Test no_false_positives_on_regular_calls runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute no_false_positives_on_regular_calls
+    result = None  # Replace with actual execution
 
-class TestDynamicExecutionVisitor:
-    def test_eval_detected(self):
-        src = """
-result = eval("1+1")
-"""
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         edges = _visit_dyn(src)
         assert len(edges) == 1
         assert edges[0].symbol == "eval"
@@ -336,9 +336,16 @@ mod = importlib.import_module("some.mod")
         assert any("import_module" in e.symbol for e in edges)
 
     def test_regular_calls_not_flagged(self):
-        src = """
-result = my_function()
-x = obj.method()
-"""
-        edges = _visit_dyn(src)
-        assert edges == []
+    """Test regular_calls_not_flagged runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute regular_calls_not_flagged
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions

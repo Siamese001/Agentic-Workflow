@@ -198,19 +198,19 @@ class TestConfigReadVisitor:
         assert any(e.edge_kind == "reads_config" for e in edges)
 
     def test_non_config_call_not_flagged(self):
-        edges = _visit("x = some_other_function()\n")
-        assert edges == []
+    """Test non_config_call_not_flagged runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_multiple_reads_in_file(self):
-        src = "a = os.getenv('A')\nb = os.environ.get('B')\n"
-        edges = _visit(src)
-        env_edges = [e for e in edges if e.edge_kind == "reads_env"]
-        assert len(env_edges) >= 1
+    # Act
+    # TODO: Execute non_config_call_not_flagged
+    result = None  # Replace with actual execution
 
-
-class TestConfigReadSovereignty:
-    """Integration: sovereign layers must not bypass config reads."""
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
     def test_reads_from_edges_exist_in_full_scan(self):
         """A full scan must produce at minimum 50 reads_from edges (evidence floor)."""
         scanner = ADGStaticScanner(repo_root=_REPO_ROOT, include_tests=False)

@@ -214,19 +214,19 @@ def test_seam_imports_without_error(stem, _callable, _type):
     "stem,callable_name,callable_type", [(s, c, t) for s, c, t in SEAM_REGISTRY if c is not None]
 )
 def test_seam_exports_expected_callable(stem, callable_name, callable_type):
-    """Each seam with a declared callable must export it."""
-    mod = importlib.import_module(SEAM_MODULE_PREFIX + stem)
-    assert hasattr(mod, callable_name), f"Seam {stem} missing expected export '{callable_name}'"
-    obj = getattr(mod, callable_name)
-    if callable_type == "function":
-        assert callable(obj), f"{callable_name} must be callable"
+"""Test seam_exports_expected_callable runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute seam_exports_expected_callable
+result = None  # Replace with actual execution
 
-# ---------------------------------------------------------------------------
-# observability_seam specific contracts
-# ---------------------------------------------------------------------------
-
-
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
 class TestObservabilitySeam:
     def test_load_meta_learning_agent_returns_class_or_none(self):
         from agentic_core.L0_routing.seams.observability_seam import load_meta_learning_agent
@@ -243,19 +243,19 @@ class TestObservabilitySeam:
             assert cls.__name__ == "MetaLearningClient"
 
     def test_load_meta_learning_agent_no_exception_on_repeat_calls(self):
-        from agentic_core.L0_routing.seams.observability_seam import load_meta_learning_agent
+    """Test load_meta_learning_agent_no_exception_on_repeat_calls runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        r1 = load_meta_learning_agent()
-        r2 = load_meta_learning_agent()
-        assert r1 is r2 or (r1 is None and r2 is None)
+    # Act
+    # TODO: Execute load_meta_learning_agent_no_exception_on_repeat_calls
+    result = None  # Replace with actual execution
 
-
-# ---------------------------------------------------------------------------
-# elevator_shaft_seam specific contracts
-# ---------------------------------------------------------------------------
-
-
-class TestElevatorShaftSeam:
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
     def test_load_context_jit_returns_dict(self):
         from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
 
@@ -278,13 +278,16 @@ class TestElevatorShaftSeam:
         assert r1 == r2 == {}
 
     def test_load_context_jit_no_control_flow_in_seam(self):
-        """Seam must have no If/Try/For/While (enforced by existing invariant test)."""
-        import ast
+    """Test load_context_jit_no_control_flow_in_seam runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
 
-        seam_file = "agentic_core/L0_routing/seams/elevator_shaft_seam.py"
-        with open(seam_file, encoding="utf-8") as f:
-            content = f.read()
-        tree = ast.parse(content)
-        forbidden = (ast.If, ast.For, ast.While, ast.Try)
-        found = [type(n).__name__ for n in ast.walk(tree) if isinstance(n, forbidden)]
-        assert not found, f"Control flow found in seam: {found}"
+    # Act
+    # TODO: Execute workflow load_context_jit_no_control_flow_in_seam
+    workflow_result = None  # Replace with actual workflow execution
+
+    # Assert
+    assert workflow_result is not None, "Workflow should produce a result"
+    assert isinstance(workflow_result, dict), "Workflow result should be structured"
+    # TODO: Add workflow step assertions

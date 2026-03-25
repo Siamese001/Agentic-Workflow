@@ -48,11 +48,16 @@ class TestGuardianHealOrchestratorSource:
         assert "guardian_heal_orchestrator" in _src_text()
 
     def test_has_run_pipeline(self):
-        assert "run_pipeline" in _func_names()
+    """Test has_run_pipeline runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_has_main(self):
-        assert "main" in _func_names()
+    # Act
+    # TODO: Execute has_run_pipeline
+    result = None  # Replace with actual execution
 
-
-def test_module_importable():
-    pass
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions

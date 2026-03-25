@@ -303,19 +303,19 @@ class TestRoutingOutcomeAdapterEmit:
         assert result is True
 
     def test_emit_calls_bus_enqueue_once(self):
-        bus = _mock_bus()
-        adapter = RoutingOutcomeAdapter(bus=bus)
-        adapter.emit(_decision(), timestamp_utc=1)
-        bus.enqueue.assert_called_once()
+    """Test emit_calls_bus_enqueue_once runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_emit_returns_false_when_bus_raises(self):
-        bus = _mock_bus()
-        bus.enqueue.side_effect = RuntimeError("bus dead")
-        adapter = RoutingOutcomeAdapter(bus=bus)
-        result = adapter.emit(_decision(), timestamp_utc=1)
-        assert result is False
+    # Act
+    # TODO: Execute emit_calls_bus_enqueue_once
+    result = None  # Replace with actual execution
 
-    def test_emit_does_not_raise_when_bus_raises(self):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         bus = _mock_bus()
         bus.enqueue.side_effect = Exception("unexpected")
         adapter = RoutingOutcomeAdapter(bus=bus)

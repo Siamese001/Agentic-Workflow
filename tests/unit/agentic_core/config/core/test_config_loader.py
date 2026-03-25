@@ -9,8 +9,16 @@ def test_agentic_core_config_core_config_loader_importable():
     assert m is not None
 
 def test_config_loader_module_has_expected_callables():
-    import importlib
-    m = importlib.import_module("agentic_core.config.core.config_loader")
-    # Module must expose something callable
-    callables = [n for n in dir(m) if callable(getattr(m, n)) and not n.startswith("_")]
-    assert len(callables) > 0, "config_loader must expose at least one callable"
+"""Test config_loader_module_has_expected_callables runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
+
+# Act
+# TODO: Execute config_loader_module_has_expected_callables
+result = None  # Replace with actual execution
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions

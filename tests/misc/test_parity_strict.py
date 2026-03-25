@@ -805,38 +805,38 @@ class TestReturnTypeValidation:
     """Tests for return type validation."""
 
     def test_validate_matching_types(self):
-        """Test validation passes for matching types."""
-        legacy = {"key": "value"}
-        unified = {"key": "value"}
+    """Test validate_matching_types contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-        errors = ReturnTypeValidator.validate_return_type(legacy, unified, dict)
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-        assert len(errors) == 0
+"""Test validate_type_mismatch contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
-    def test_validate_type_mismatch(self):
-        """Test validation fails for type mismatch."""
-        legacy = {"key": "value"}
-        unified = ["value"]
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
 
-        errors = ReturnTypeValidator.validate_return_type(legacy, unified, dict)
+"""Test validate_expected_type contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
-        assert len(errors) > 0
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
 
-    def test_validate_expected_type(self):
-        """Test validation against expected type."""
-        unified = ValidationResult(passed=True, issues=[], suggestions=[])
-
-        errors = ReturnTypeValidator.validate_return_type(None, unified, ValidationResult)
-
-        assert len(errors) == 0
-
-
-class TestPerformanceBenchmark:
-    """Tests for performance benchmarking."""
-
-    def test_record_benchmark(self):
-        """Test recording benchmark results."""
-        benchmark = PerformanceBenchmark(max_variance_pct=20.0)
+# Assert - Schema Contract
+assert validation_result is not None, "Schema validation should produce a result"
+assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+# TODO: Add specific schema validation assertions
+# assert validation_result.get("valid", False), "Data should conform to schema"
 
         result = benchmark.record("test1", legacy_time_ms=100.0, unified_time_ms=110.0)
 

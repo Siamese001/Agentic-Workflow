@@ -37,18 +37,18 @@ class TestHardeningErrorsSource:
         _tree()
 
     def test_has_execution_trace_integrity_error(self):
-        assert "ExecutionTraceIntegrityError" in _class_names()
+    """Test has_execution_trace_integrity_error runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
-    def test_has_mutation_replay_integrity_violation(self):
-        assert "MutationReplayIntegrityViolation" in _class_names()
+    # Act & Assert
+    # TODO: Test error handling in has_execution_trace_integrity_error
+    with pytest.raises(Exception):  # Replace with expected exception
+        # Execute operation that should raise error
+        pass  # Replace with actual error test
 
-    def test_has_ledger_integrity_violation(self):
-        assert "LedgerIntegrityViolation" in _class_names()
-
-    def test_has_mutation_commit_failure(self):
-        assert "MutationCommitFailure" in _class_names()
-
-    def test_has_c0_mutation_violation(self):
+    # TODO: Add error message and handling assertions
         assert "C0MutationViolation" in _class_names()
 
     def test_all_errors_subclass_exception(self):

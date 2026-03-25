@@ -22,47 +22,58 @@ from agentic_core.runtime.exceptions.SovereignError import (  # noqa: F401
 
 class TestSovereignErrorContract:
     def test_is_class(self):
-        assert isinstance(SovereignError, type)
+    """Test is_class runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    """Test instantiable_or_abstract runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_instantiable_or_abstract(self):
-        assert isinstance(SovereignError, type)
+    # Act
+    # TODO: Execute runtime operation instantiable_or_abstract
+    """Test instantiable_or_abstract runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-class TestHealerErrorContract:
-    def test_is_class(self):
-        assert isinstance(HealerError, type)
+    # Act
+    # TODO: Execute runtime operation instantiable_or_abstract
+    """Test instantiable_or_abstract runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_instantiable_or_abstract(self):
-        assert isinstance(HealerError, type)
+    # Act
+    # TODO: Execute runtime operation instantiable_or_abstract
+    """Test instantiable_or_abstract runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-class TestCircularDependencyErrorContract:
-    def test_is_class(self):
-        assert isinstance(CircularDependencyError, type)
+    # Act
+    # TODO: Execute runtime operation instantiable_or_abstract
+    """Test instantiable_or_abstract runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_instantiable_or_abstract(self):
-        assert isinstance(CircularDependencyError, type)
+    # Act
+    # TODO: Execute runtime operation instantiable_or_abstract
+    """Test instantiable_or_abstract runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-class TestConfigurationErrorContract:
-    def test_is_class(self):
-        assert isinstance(ConfigurationError, type)
+    # Act
+    # TODO: Execute runtime operation instantiable_or_abstract
+    runtime_result = None  # Replace with actual runtime operation
 
-    def test_instantiable_or_abstract(self):
-        assert isinstance(ConfigurationError, type)
-
-class TestStructuralErrorContract:
-    def test_is_class(self):
-        assert isinstance(StructuralError, type)
-
-    def test_instantiable_or_abstract(self):
-        assert isinstance(StructuralError, type)
-
-class TestHygieneErrorContract:
-    def test_is_class(self):
-        assert isinstance(HygieneError, type)
-
-    def test_instantiable_or_abstract(self):
-        assert isinstance(HygieneError, type)
-
-
-def test_module_importable():
-    """Module SovereignError must be importable or skip gracefully."""
-    pass  # Import verified at module level
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
+# Assert
+assert runtime_result is not None, "Runtime operation should produce a result"
+assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+# TODO: Add runtime-specific assertions

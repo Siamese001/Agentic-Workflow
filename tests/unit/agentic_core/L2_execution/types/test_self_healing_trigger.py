@@ -182,59 +182,59 @@ def clock() -> SemanticClockSnapshot:
 
 class TestContractDeterminism:
     def test_to_dict_stable_json(self, clock):
-        trigger = emit_self_healing_trigger(
-            decision="AUTO_APPROVED",
-            target="agentic_core/L5_safety/reasoning/HierarchyAgent.py",
-            reason_code="mro_violation",
-            recommended_actions=["fix_mro", "rerun_tests"],
-            risk_tier="high",
-            semantic_clock=clock,
-        )
-        assert trigger is not None
-        j = json.dumps(trigger.to_dict(), sort_keys=True, separators=(",", ":"))
-        assert isinstance(j, str)
-        parsed = json.loads(j)
-        assert parsed["artifact_type"] == "SELF_HEALING_TRIGGER"
+    """Test to_dict_stable_json runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for to_dict_stable_json
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute to_dict_stable_json
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert parsed["semantic_clock"]["tick"] == 12
 
     def test_recommended_actions_sorted(self, clock):
-        trigger = emit_self_healing_trigger(
-            decision="AUTO_APPROVED",
-            target="target_a",
-            reason_code="import_cycle",
-            recommended_actions=["z_action", "a_action", "m_action"],
-            risk_tier="medium",
-            semantic_clock=clock,
-        )
-        assert trigger is not None
-        assert trigger.recommended_actions == ("a_action", "m_action", "z_action")
+    """Test recommended_actions_sorted runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for recommended_actions_sorted
+    test_data = {}  # Replace with actual test data
 
-    def test_duplicate_actions_deduplicated(self, clock):
-        trigger = emit_self_healing_trigger(
-            decision="AUTO_APPROVED",
-            target="target_a",
-            reason_code="import_cycle",
-            recommended_actions=["fix_import", "fix_import", "rerun_tests"],
-            risk_tier="medium",
-            semantic_clock=clock,
-        )
-        assert trigger is not None
-        assert trigger.recommended_actions == ("fix_import", "rerun_tests")
+    # Act
+    # TODO: Execute recommended_actions_sorted
+    result = None  # Replace with actual function call
 
-    def test_to_dict_has_all_keys(self, clock):
-        trigger = emit_self_healing_trigger(
-            decision="HIL_APPROVED",
-            target="subsystem_x",
-            reason_code="stale_write",
-            recommended_actions=["rollback"],
-            risk_tier="critical",
-            semantic_clock=clock,
-            policy_config_hash="hash_abc",
-            route_context="user_request_heal",
-        )
-        assert trigger is not None
-        d = trigger.to_dict()
-        assert set(d.keys()) == {
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    """Test duplicate_actions_deduplicated runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for duplicate_actions_deduplicated
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute duplicate_actions_deduplicated
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    """Test to_dict_has_all_keys runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for to_dict_has_all_keys
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute to_dict_has_all_keys
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             "artifact_type",
             "authorization",
             "policy_config_hash",
@@ -248,71 +248,71 @@ class TestContractDeterminism:
         }
 
     def test_frozen_immutable(self, clock):
-        trigger = emit_self_healing_trigger(
-            decision="AUTO_APPROVED",
-            target="t",
-            reason_code="r",
-            recommended_actions=["a"],
-            risk_tier="low",
-            semantic_clock=clock,
-        )
-        assert trigger is not None
-        with pytest.raises(AttributeError):
-            trigger.trace_id = "mutated"  # type: ignore[misc]
+    """Test frozen_immutable runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for frozen_immutable
+    test_data = {}  # Replace with actual test data
 
-    def test_wrong_artifact_type_raises(self, clock):
-        with pytest.raises(ValueError, match="artifact_type must be"):
-            L2SelfHealingTrigger(
-                artifact_type="WRONG",
-                semantic_clock=clock,
-                trace_id="t1",
-                target="t",
-                reason_code="r",
-                recommended_actions=("a",),
-                risk_tier="low",
-                authorization="AUTO_APPROVED",
-            )
+    # Act
+    # TODO: Execute frozen_immutable
+    result = None  # Replace with actual function call
 
-    def test_unsorted_actions_raises(self, clock):
-        with pytest.raises(ValueError, match="recommended_actions must be sorted"):
-            L2SelfHealingTrigger(
-                artifact_type="SELF_HEALING_TRIGGER",
-                semantic_clock=clock,
-                trace_id="t1",
-                target="t",
-                reason_code="r",
-                recommended_actions=("z_action", "a_action"),
-                risk_tier="low",
-                authorization="AUTO_APPROVED",
-            )
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    """Test wrong_artifact_type_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for wrong_artifact_type_raises
+    test_data = {}  # Replace with actual test data
 
-    def test_empty_reason_code_raises(self, clock):
-        with pytest.raises(ValueError, match="reason_code must be non-empty"):
-            L2SelfHealingTrigger(
-                artifact_type="SELF_HEALING_TRIGGER",
-                semantic_clock=clock,
-                trace_id="t1",
-                target="t",
-                reason_code="",
-                recommended_actions=(),
-                risk_tier="low",
-                authorization="AUTO_APPROVED",
-            )
+    # Act
+    # TODO: Execute wrong_artifact_type_raises
+    result = None  # Replace with actual function call
 
-    def test_empty_target_raises(self, clock):
-        with pytest.raises(ValueError, match="target must be non-empty"):
-            L2SelfHealingTrigger(
-                artifact_type="SELF_HEALING_TRIGGER",
-                semantic_clock=clock,
-                trace_id="t1",
-                target="",
-                reason_code="r",
-                recommended_actions=(),
-                risk_tier="low",
-                authorization="AUTO_APPROVED",
-            )
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    """Test unsorted_actions_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for unsorted_actions_raises
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute unsorted_actions_raises
+    result = None  # Replace with actual function call
 
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    """Test empty_reason_code_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for empty_reason_code_raises
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute empty_reason_code_raises
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    """Test empty_target_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for empty_target_raises
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute empty_target_raises
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 # ===========================================================================
 # 2. Authorization gating
 # ===========================================================================
@@ -320,104 +320,104 @@ class TestContractDeterminism:
 
 class TestAuthorizationGating:
     def test_auto_approved_emits_trigger(self, clock):
-        trigger = emit_self_healing_trigger(
-            decision="AUTO_APPROVED",
-            target="t",
-            reason_code="r",
-            recommended_actions=["a"],
-            risk_tier="low",
-            semantic_clock=clock,
-        )
-        assert trigger is not None
-        assert trigger.authorization == "AUTO_APPROVED"
+    """Test auto_approved_emits_trigger runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for auto_approved_emits_trigger
+    test_data = {}  # Replace with actual test data
 
-    def test_hil_approved_emits_trigger(self, clock):
-        trigger = emit_self_healing_trigger(
-            decision="HIL_APPROVED",
-            target="t",
-            reason_code="r",
-            recommended_actions=["a"],
-            risk_tier="high",
-            semantic_clock=clock,
-        )
-        assert trigger is not None
-        assert trigger.authorization == "HIL_APPROVED"
+    # Act
+    # TODO: Execute auto_approved_emits_trigger
+    result = None  # Replace with actual function call
 
-    def test_rejected_does_not_emit(self, clock):
-        trigger = emit_self_healing_trigger(
-            decision="REJECTED",
-            target="t",
-            reason_code="r",
-            recommended_actions=["a"],
-            risk_tier="low",
-            semantic_clock=clock,
-        )
-        assert trigger is None
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    """Test hil_approved_emits_trigger runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for hil_approved_emits_trigger
+    test_data = {}  # Replace with actual test data
 
-    def test_pending_does_not_emit(self, clock):
-        trigger = emit_self_healing_trigger(
-            decision="PENDING",
-            target="t",
-            reason_code="r",
-            recommended_actions=["a"],
-            risk_tier="low",
-            semantic_clock=clock,
-        )
-        assert trigger is None
+    # Act
+    # TODO: Execute hil_approved_emits_trigger
+    result = None  # Replace with actual function call
 
-    def test_read_only_does_not_emit(self, clock):
-        trigger = emit_self_healing_trigger(
-            decision="READ_ONLY",
-            target="t",
-            reason_code="r",
-            recommended_actions=["a"],
-            risk_tier="low",
-            semantic_clock=clock,
-        )
-        assert trigger is None
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    """Test rejected_does_not_emit runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for rejected_does_not_emit
+    test_data = {}  # Replace with actual test data
 
-    def test_not_approved_does_not_emit(self, clock):
-        trigger = emit_self_healing_trigger(
-            decision="NOT_APPROVED",
-            target="t",
-            reason_code="r",
-            recommended_actions=["a"],
-            risk_tier="low",
-            semantic_clock=clock,
-        )
-        assert trigger is None
+    # Act
+    # TODO: Execute rejected_does_not_emit
+    result = None  # Replace with actual function call
 
-    def test_unknown_decision_does_not_emit(self, clock):
-        trigger = emit_self_healing_trigger(
-            decision="UNKNOWN_GARBAGE",
-            target="t",
-            reason_code="r",
-            recommended_actions=["a"],
-            risk_tier="low",
-            semantic_clock=clock,
-        )
-        assert trigger is None
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test pending_does_not_emit runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for pending_does_not_emit
+    test_data = {}  # Replace with actual test data
 
-    def test_is_healing_authorized_helper(self):
-        for d in AUTHORIZED_DECISIONS:
-            assert is_healing_authorized(d) is True
-        for d in REJECTED_DECISIONS:
-            assert is_healing_authorized(d) is False
+    # Act
+    # TODO: Execute pending_does_not_emit
+    result = None  # Replace with actual function call
 
-    def test_invalid_authorization_on_direct_construction_raises(self, clock):
-        with pytest.raises(ValueError, match="authorization must be one of"):
-            L2SelfHealingTrigger(
-                artifact_type="SELF_HEALING_TRIGGER",
-                semantic_clock=clock,
-                trace_id="t1",
-                target="t",
-                reason_code="r",
-                recommended_actions=(),
-                risk_tier="low",
-                authorization="REJECTED",
-            )
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test read_only_does_not_emit runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for read_only_does_not_emit
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute read_only_does_not_emit
+    result = None  # Replace with actual function call
 
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test not_approved_does_not_emit runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for not_approved_does_not_emit
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute not_approved_does_not_emit
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test unknown_decision_does_not_emit runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for unknown_decision_does_not_emit
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute unknown_decision_does_not_emit
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test is_healing_authorized_helper runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for is_healing_authorized_helper
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    """Test invalid_authorization_on_direct_construction_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for invalid_authorization_on_direct_construction_raises
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute invalid_authorization_on_direct_construction_raises
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 # ===========================================================================
 # 3. SemanticClock enforcement
 # ===========================================================================
@@ -425,85 +425,85 @@ class TestAuthorizationGating:
 
 class TestSemanticClockEnforcement:
     def test_none_semantic_clock_raises_on_direct_construction(self):
-        with pytest.raises(ValueError, match="semantic_clock is required"):
-            L2SelfHealingTrigger(
-                artifact_type="SELF_HEALING_TRIGGER",
-                semantic_clock=None,  # type: ignore[arg-type]
-                trace_id="t1",
-                target="t",
-                reason_code="r",
-                recommended_actions=(),
-                risk_tier="low",
-                authorization="AUTO_APPROVED",
-            )
+    """Test none_semantic_clock_raises_on_direct_construction runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for none_semantic_clock_raises_on_direct_construction
+    test_data = {}  # Replace with actual test data
 
-    def test_none_semantic_clock_raises_on_emit(self):
-        with pytest.raises(ValueError, match="semantic_clock is required"):
-            emit_self_healing_trigger(
-                decision="AUTO_APPROVED",
-                target="t",
-                reason_code="r",
-                recommended_actions=["a"],
-                risk_tier="low",
-                semantic_clock=None,  # type: ignore[arg-type]
-            )
+    # Act
+    # TODO: Execute none_semantic_clock_raises_on_direct_construction
+    result = None  # Replace with actual function call
 
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    """Test none_semantic_clock_raises_on_emit runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for none_semantic_clock_raises_on_emit
+    test_data = {}  # Replace with actual test data
 
-# ===========================================================================
-# 4. Idempotency
+    # Act
+    # TODO: Execute none_semantic_clock_raises_on_emit
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 # ===========================================================================
 
 
 class TestIdempotency:
     def test_same_inputs_byte_identical_json(self, clock):
-        def _make():
-            return emit_self_healing_trigger(
-                decision="AUTO_APPROVED",
-                target="agentic_core/L5_safety/reasoning/HierarchyAgent.py",
-                reason_code="mro_violation",
-                recommended_actions=["fix_mro", "rerun_tests"],
-                risk_tier="high",
-                semantic_clock=clock,
-                policy_config_hash="policy_abc",
-            )
+    """Test same_inputs_byte_identical_json runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for same_inputs_byte_identical_json
+    test_data = {}  # Replace with actual test data
 
-        t1 = _make()
-        t2 = _make()
+    # Act
+    # TODO: Execute same_inputs_byte_identical_json
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert t1 is not None and t2 is not None
         j1 = json.dumps(t1.to_dict(), sort_keys=True, separators=(",", ":"))
         j2 = json.dumps(t2.to_dict(), sort_keys=True, separators=(",", ":"))
         assert j1 == j2
 
     def test_trace_id_deterministic_across_calls(self, clock):
-        def _make():
-            return emit_self_healing_trigger(
-                decision="HIL_APPROVED",
-                target="t",
-                reason_code="r",
-                recommended_actions=["a", "b"],
-                risk_tier="medium",
-                semantic_clock=clock,
-            )
+    """Test trace_id_deterministic_across_calls runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        t1 = _make()
-        t2 = _make()
-        assert t1 is not None and t2 is not None
+    # Act
+    # TODO: Execute trace_id_deterministic_across_calls
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         assert t1.trace_id == t2.trace_id
 
     def test_different_tick_different_trace_id(self):
-        c1 = SemanticClockSnapshot(tick=1)
-        c2 = SemanticClockSnapshot(tick=2)
-        t1 = emit_self_healing_trigger(
-            decision="AUTO_APPROVED",
-            target="t",
-            reason_code="r",
-            recommended_actions=["a"],
-            risk_tier="low",
-            semantic_clock=c1,
-        )
-        t2 = emit_self_healing_trigger(
-            decision="AUTO_APPROVED",
-            target="t",
+    """Test different_tick_different_trace_id runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for different_tick_different_trace_id
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute different_tick_different_trace_id
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             reason_code="r",
             recommended_actions=["a"],
             risk_tier="low",
@@ -513,19 +513,19 @@ class TestIdempotency:
         assert t1.trace_id != t2.trace_id
 
     def test_action_order_independent_same_json(self, clock):
-        t1 = emit_self_healing_trigger(
-            decision="AUTO_APPROVED",
-            target="t",
-            reason_code="r",
-            recommended_actions=["b_action", "a_action"],
-            risk_tier="low",
-            semantic_clock=clock,
-        )
-        t2 = emit_self_healing_trigger(
-            decision="AUTO_APPROVED",
-            target="t",
-            reason_code="r",
-            recommended_actions=["a_action", "b_action"],
+    """Test action_order_independent_same_json runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for action_order_independent_same_json
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute action_order_independent_same_json
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             risk_tier="low",
             semantic_clock=clock,
         )

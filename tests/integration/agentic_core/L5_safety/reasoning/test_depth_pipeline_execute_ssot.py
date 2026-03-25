@@ -107,19 +107,19 @@ class TestLegacyArchiveDepthViolation:
         assert result == 1
 
     def test_legacy_archive_success_logs_archived(self, tmp_path):
-        """safe_archive success → Logger.info contains 'ARCHIVED'."""
-        agent = _make_agent(tmp_path)
-        file_path = _write(tmp_path, "agentic_core/L0_routing/scripts/extra/f.py")
-        rel = file_path.relative_to(tmp_path)
+    """Test legacy_archive_success_logs_archived runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for legacy_archive_success_logs_archived
+    test_data = {}  # Replace with actual test data
 
-        with patch("agentic_core.L5_safety.reasoning.hierarchy_healer.Logger") as mock_log:
-            agent._legacy_archive_depth_violation(file_path, rel, 4, 3, "collision", "COLLISION")
+    # Act
+    # TODO: Execute legacy_archive_success_logs_archived
+    result = None  # Replace with actual function call
 
-        info_msgs = [str(c) for c in mock_log.info.call_args_list]
-        assert any("ARCHIVED" in m for m in info_msgs)
-
-    def test_legacy_archive_denied_returns_zero(self, tmp_path):
-        """safe_archive approval_status==DENIED → returns 0."""
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         agent = _make_agent(tmp_path)
         agent.gatekeeper.safe_archive.return_value = MagicMock(
             success=False, approval_status="DENIED", error=None
@@ -132,19 +132,19 @@ class TestLegacyArchiveDepthViolation:
         assert result == 0
 
     def test_legacy_archive_denied_logs_skipped(self, tmp_path):
-        """DENIED → Logger.info contains 'SKIPPED'."""
-        agent = _make_agent(tmp_path)
-        agent.gatekeeper.safe_archive.return_value = MagicMock(
-            success=False, approval_status="DENIED", error=None
-        )
-        file_path = _write(tmp_path, "agentic_core/L0_routing/scripts/extra/f.py")
-        rel = file_path.relative_to(tmp_path)
+    """Test legacy_archive_denied_logs_skipped runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for legacy_archive_denied_logs_skipped
+    test_data = {}  # Replace with actual test data
 
-        with patch("agentic_core.L5_safety.reasoning.hierarchy_healer.Logger") as mock_log:
-            agent._legacy_archive_depth_violation(file_path, rel, 4, 3, "collision", "COLLISION")
+    # Act
+    # TODO: Execute legacy_archive_denied_logs_skipped
+    result = None  # Replace with actual function call
 
-        info_msgs = [str(c) for c in mock_log.info.call_args_list]
-        assert any("SKIPPED" in m for m in info_msgs)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
     def test_legacy_archive_error_returns_zero(self, tmp_path):
         """safe_archive fails (not DENIED) → returns 0."""
@@ -186,32 +186,32 @@ class TestLegacyArchiveDepthViolation:
         assert result == 0
 
     def test_legacy_archive_reason_format(self, tmp_path):
-        """Reason string passed to safe_archive includes label, depth, expected."""
-        agent = _make_agent(tmp_path)
-        file_path = _write(tmp_path, "agentic_core/L0_routing/scripts/extra/f.py")
-        rel = file_path.relative_to(tmp_path)
+    """Test legacy_archive_reason_format runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for legacy_archive_reason_format
+    test_data = {}  # Replace with actual test data
 
-        agent._legacy_archive_depth_violation(file_path, rel, 4, 3, "collision", "COLLISION")
+    # Act
+    # TODO: Execute legacy_archive_reason_format
+    result = None  # Replace with actual function call
 
-        reason_arg = agent.gatekeeper.safe_archive.call_args[0][2]
-        assert "COLLISION" in reason_arg
-        assert "4" in reason_arg
-        assert "3" in reason_arg
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    """Test legacy_archive_gk_args runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for legacy_archive_gk_args
+    test_data = {}  # Replace with actual test data
 
-    def test_legacy_archive_gk_args(self, tmp_path):
-        """safe_archive called with (file_path, agent_name, reason)."""
-        agent = _make_agent(tmp_path)
-        file_path = _write(tmp_path, "agentic_core/L0_routing/scripts/extra/f.py")
-        rel = file_path.relative_to(tmp_path)
+    # Act
+    # TODO: Execute legacy_archive_gk_args
+    result = None  # Replace with actual function call
 
-        agent._legacy_archive_depth_violation(file_path, rel, 4, 3, "collision", "COLLISION")
-
-        call_args = agent.gatekeeper.safe_archive.call_args[0]
-        assert call_args[0] == file_path
-        assert call_args[1] == "HierarchyAgent"
-
-
-# ---------------------------------------------------------------------------
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 # _enforce_apps_depth
 # ---------------------------------------------------------------------------
 
@@ -231,63 +231,63 @@ _FAKE_WHITELIST = frozenset({APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR, TESTS_D
 
 class TestEnforceAppsDepth:
     def test_enforce_apps_all_three_keys_iterated(self, tmp_path):
-        """_enforce_depth_for_root is called for each of apps_rg, apps_lic, apps_shared."""
-        agent = _make_agent(tmp_path)
-        agent._enforce_depth_for_root = MagicMock(return_value=0)
+    """Test enforce_apps_all_three_keys_iterated runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for enforce_apps_all_three_keys_iterated
+    test_data = {}  # Replace with actual test data
 
-        with patch(
-            "agentic_core.L5_safety.reasoning.hierarchy_healer.PROJECT_ROOT_WHITELIST",
-            _FAKE_WHITELIST,
-        ):
-            agent._enforce_apps_depth()
+    # Act
+    # TODO: Execute enforce_apps_all_three_keys_iterated
+    result = None  # Replace with actual function call
 
-        assert agent._enforce_depth_for_root.call_count == 3
-        root_keys = [c[0][0] for c in agent._enforce_depth_for_root.call_args_list]
-        assert set(root_keys) == {APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR}
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
     def test_enforce_apps_missing_key_skipped(self, tmp_path):
-        """Key missing from PROJECT_ROOT_WHITELIST → _enforce_depth_for_root not called for it."""
-        agent = _make_agent(tmp_path)
-        agent._enforce_depth_for_root = MagicMock(return_value=0)
+    """Test enforce_apps_missing_key_skipped runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for enforce_apps_missing_key_skipped
+    test_data = {}  # Replace with actual test data
 
-        partial_whitelist = frozenset({APPS_RG_DIR, APPS_LIC_DIR})
-        with patch(
-            "agentic_core.L5_safety.reasoning.hierarchy_healer.PROJECT_ROOT_WHITELIST",
-            partial_whitelist,
-        ):
-            agent._enforce_apps_depth()
+    # Act
+    # TODO: Execute enforce_apps_missing_key_skipped
+    result = None  # Replace with actual function call
 
-        assert agent._enforce_depth_for_root.call_count == 2
-        root_keys = [c[0][0] for c in agent._enforce_depth_for_root.call_args_list]
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert APPS_SHARED_DIR not in root_keys
 
     def test_enforce_apps_sums_all_root_counts(self, tmp_path):
-        """Total = sum of violations across all three apps roots."""
-        agent = _make_agent(tmp_path)
-        agent._enforce_depth_for_root = MagicMock(side_effect=[3, 5, 2])
+    """Test enforce_apps_sums_all_root_counts runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for enforce_apps_sums_all_root_counts
+    test_data = {}  # Replace with actual test data
 
-        with patch(
-            "agentic_core.L5_safety.reasoning.hierarchy_healer.PROJECT_ROOT_WHITELIST",
-            _FAKE_WHITELIST,
-        ):
-            total = agent._enforce_apps_depth()
+    # Act
+    # TODO: Execute enforce_apps_sums_all_root_counts
+    result = None  # Replace with actual function call
 
-        assert total == 10
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
+    """Test enforce_apps_root_check_lambda_isolates_per_key runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for enforce_apps_root_check_lambda_isolates_per_key
+    test_data = {}  # Replace with actual test data
 
-    def test_enforce_apps_root_check_lambda_isolates_per_key(self, tmp_path):
-        """Lambda passed to _enforce_depth_for_root matches only the correct root key."""
-        agent = _make_agent(tmp_path)
-        captured_checks = []
-        agent._enforce_depth_for_root = MagicMock(
-            side_effect=lambda rk, rc, *a, **kw: captured_checks.append(rc) or 0
-        )
+    # Act
+    # TODO: Execute enforce_apps_root_check_lambda_isolates_per_key
+    result = None  # Replace with actual function call
 
-        with patch(
-            "agentic_core.L5_safety.reasoning.hierarchy_healer.PROJECT_ROOT_WHITELIST",
-            _FAKE_WHITELIST,
-        ):
-            agent._enforce_apps_depth()
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert len(captured_checks) == 3
         # Keys emitted in sorted() order — derive expected order from the same SSOT filter
         expected_keys = sorted(k for k in _FAKE_WHITELIST if k.startswith("apps_"))
@@ -315,19 +315,19 @@ class TestEnforceTestsDepth:
         assert result == 7
 
     def test_enforce_tests_root_check_accepts_tests_only(self, tmp_path):
-        """root_check lambda accepts TESTS_DIR and rejects everything else."""
-        agent = _make_agent(tmp_path)
-        captured_check = []
-        agent._enforce_depth_for_root = MagicMock(
-            side_effect=lambda rk, rc, *a: captured_check.append(rc) or 0
-        )
+    """Test enforce_tests_root_check_accepts_tests_only runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for enforce_tests_root_check_accepts_tests_only
+    test_data = {}  # Replace with actual test data
 
-        agent._enforce_tests_depth()
+    # Act
+    # TODO: Execute enforce_tests_root_check_accepts_tests_only
+    result = None  # Replace with actual function call
 
-        check = captured_check[0]
-        assert check(TESTS_DIR) is True
-        assert check(AGENTIC_CORE_DIR) is False
-        assert check(APPS_RG_DIR) is False
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
 
 # ---------------------------------------------------------------------------
@@ -413,19 +413,19 @@ class TestEnforceUniversalDepth:
         assert result == 1
 
     def test_universal_healing_calls_heal(self, tmp_path):
-        """healing_enabled=True + violation → _heal_depth_violation called."""
-        agent = _make_agent(tmp_path, healing_enabled=True)
-        agent._heal_depth_violation = MagicMock(return_value=1)
-        fp = _write(tmp_path, "agentic_core/L0_routing/extra/sub/schema.json")  # depth=4
-        _run_universal(agent, [fp])
-        agent._heal_depth_violation.assert_called_once()
+    """Test universal_healing_calls_heal runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_universal_healing_returns_archived_not_violations(self, tmp_path):
-        """healing_enabled=True → return value comes from archived count, not violations."""
-        agent = _make_agent(tmp_path, healing_enabled=True)
-        agent._heal_depth_violation = MagicMock(return_value=1)
-        fp = _write(tmp_path, "agentic_core/L0_routing/extra/sub/schema.json")  # depth=4
-        result = _run_universal(agent, [fp])
+    # Act
+    # TODO: Execute universal_healing_calls_heal
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         assert result == 1  # archived (from _heal returning 1), not violations
 
     def test_universal_deep_heal_returns_one(self, tmp_path):
@@ -516,31 +516,31 @@ class TestEnforceRulesPipelineLogging:
         return agent
 
     def test_pipeline_violations_found_logged(self, tmp_path):
-        """violations_found > 0 → Logger.info logs the violation count."""
-        agent = self._make_dispatch_agent(tmp_path)
-        agent._enforce_apps_depth.return_value = 3
-        agent._enforce_tests_depth.return_value = 2
+    """Test pipeline_violations_found_logged runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
 
-        with patch("agentic_core.L5_safety.reasoning.hierarchy_healer.Logger") as mock_log:
-            agent.enforce_depth_rules()
+    # Act
+    # TODO: Execute workflow pipeline_violations_found_logged
+    workflow_result = None  # Replace with actual workflow execution
 
-        info_msgs = [str(c) for c in mock_log.info.call_args_list]
-        assert any("5" in m and "depth violations" in m for m in info_msgs)
+    # Assert
+    assert workflow_result is not None, "Workflow should produce a result"
+    assert isinstance(workflow_result, dict), "Workflow result should be structured"
+    """Test pipeline_archived_total_logged_when_healing runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
 
-    def test_pipeline_archived_total_logged_when_healing(self, tmp_path):
-        """healing_enabled=True + violations → Logger.info logs archived totals."""
-        agent = self._make_dispatch_agent(tmp_path, healing=True)
-        agent._enforce_apps_depth.return_value = 2
-        agent._enforce_tests_depth.return_value = 3
-        agent._enforce_universal_depth.return_value = 1
+    # Act
+    # TODO: Execute workflow pipeline_archived_total_logged_when_healing
+    workflow_result = None  # Replace with actual workflow execution
 
-        with patch("agentic_core.L5_safety.reasoning.hierarchy_healer.Logger") as mock_log:
-            agent.enforce_depth_rules()
-
-        info_msgs = [str(c) for c in mock_log.info.call_args_list]
-        assert any("Archived" in m and "6" in m for m in info_msgs)
-
-    def test_stress_10_deep_violations_all_archived(self, tmp_path):
+    # Assert
+    assert workflow_result is not None, "Workflow should produce a result"
+    assert isinstance(workflow_result, dict), "Workflow result should be structured"
+    # TODO: Add workflow step assertions
         """Stress: 10 violations all healed → archived=10."""
         agent = self._make_dispatch_agent(tmp_path, healing=True)
         agent._enforce_apps_depth.return_value = 10

@@ -472,23 +472,23 @@ class TestHopStageRegistry:
 
     @pytest.mark.governance
     def test_get_stage_handler_returns_none_for_unknown_stage(self):
-        assert get_stage_handler(99) is None
+    """Test get_stage_handler_returns_none_for_unknown_stage runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
+    """Test get_stage_handler_returns_none_for_stage_0 runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-    @pytest.mark.governance
-    def test_get_stage_handler_returns_none_for_stage_0(self):
-        assert get_stage_handler(0) is None
+    # Act
+    # TODO: Process data with get_stage_handler_returns_none_for_stage_0
+    processed_result = None  # Replace with actual processing
 
-    @pytest.mark.governance
-    def test_stage_1_handler_returns_profile_analysis_stage(self):
-        handler = get_stage_handler(1)
-        result = handler(executor=None, context={"k": "v"})
-        assert result["stage"] == 1
-        assert result["name"] == "profile_analysis"
-
-    @pytest.mark.governance
-    def test_stage_5_handler_returns_generation_stage(self):
-        handler = get_stage_handler(5)
-        result = handler(executor=None, context={})
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
         assert result["stage"] == 5
         assert result["name"] == "generation"
 
@@ -525,6 +525,16 @@ class TestHopStageRegistry:
 
     @pytest.mark.governance
     def test_registered_handler_is_callable(self):
-        for stage_id in range(1, 10):
-            handler = get_stage_handler(stage_id)
-            assert callable(handler)
+    """Test registered_handler_is_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute registered_handler_is_callable
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions

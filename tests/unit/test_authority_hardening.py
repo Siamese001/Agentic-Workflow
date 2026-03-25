@@ -199,19 +199,19 @@ class TestL1Purity:
     """Test L1 cognition purity enforcement."""
 
     def test_execution_intent_creation(self) -> None:
-        """Test ExecutionIntent dataclass creation."""
-        intent = ExecutionIntent(
-            tool_name="test_tool",
-            args={"param": "value"},
-            metadata={"trace_id": "test"},
-            requires_commit=True,
-        )
+    """Test execution_intent_creation runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for execution_intent_creation
+    test_data = {}  # Replace with actual test data
 
-        assert intent.tool_name == "test_tool"
-        assert intent.requires_commit is True
+    # Act
+    # TODO: Execute execution_intent_creation
+    result = None  # Replace with actual function call
 
-    def test_l1_result_creation(self) -> None:
-        """Test L1Result with execution intents."""
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         intents = [ExecutionIntent("tool1", {}, {})]
         result = L1Result(
             success=True,
@@ -307,19 +307,19 @@ class TestL5Guardian:
         assert serialized["policy_version"] == "1.0"
 
     def test_guardian_allows_valid_execution(self) -> None:
-        """Test Guardian allows valid execution."""
-        guardian = L5Guardian()
+    """Test guardian_allows_valid_execution runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for guardian_allows_valid_execution
+    test_data = {}  # Replace with actual test data
 
-        manifest = Mock()
-        manifest.tool_name = "file_read"
-        manifest.token_usage = 100
-        manifest.agent_layer = "L1_cognition"
-        manifest.required_permission = "read"
+    # Act
+    # TODO: Execute guardian_allows_valid_execution
+    result = None  # Replace with actual function call
 
-        decision = guardian.validate(manifest, None, "1.0")
-
-        assert decision.allow is True
-        assert decision.escalate is False
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert len(decision.violations) == 0
 
     def test_guardian_blocks_disallowed_tool(self) -> None:

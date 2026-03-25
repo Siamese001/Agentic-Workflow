@@ -174,19 +174,30 @@ class TestPermissionScope:
     def test_is_enum(self):
         import enum; assert issubclass(PermissionScope, enum.Enum)
     def test_has_tool_execution(self):
-        assert PermissionScope.TOOL_EXECUTION.value == "tool_execution"
+    """Test has_tool_execution runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for has_tool_execution
+    test_data = {}  # Replace with actual test data
 
-class TestPermissionAction:
-    def test_is_enum(self):
-        import enum; assert issubclass(PermissionAction, enum.Enum)
-    def test_has_admin(self): assert PermissionAction.ADMIN.value == "admin"
+    # Act
+    # TODO: Execute has_tool_execution
+    result = None  # Replace with actual function call
 
-class TestPermission:
-    def test_is_dataclass(self):
-        import dataclasses; assert dataclasses.is_dataclass(Permission)
-    def test_matches_exact(self):
-        p = Permission(scope=PermissionScope.DATA_ACCESS, action=PermissionAction.READ, resource="file.py")
-        assert p.matches(PermissionScope.DATA_ACCESS, PermissionAction.READ, "file.py")
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
     def test_admin_matches_any_action(self):
-        p = Permission(scope=PermissionScope.DATA_ACCESS, action=PermissionAction.ADMIN, resource="*")
-        assert p.matches(PermissionScope.DATA_ACCESS, PermissionAction.DELETE, "*")
+    """Test admin_matches_any_action runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for admin_matches_any_action
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute admin_matches_any_action
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions

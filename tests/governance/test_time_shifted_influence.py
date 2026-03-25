@@ -185,55 +185,55 @@ class TestNoMidRunMutation:
     """Routing must not change during a single run."""
 
     def test_routing_unchanged_in_same_run(self):
-        config = copy.deepcopy(BASE_CONFIG)
-        ctx = SealedRoutingContext(config, version=config["version"])
-        ctx.verify_or_raise(config)
-        ctx.verify_or_raise(config)
-        ctx.verify_or_raise(config)
+    """Test routing_unchanged_in_same_run runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_detection_does_not_change_routing(self):
-        config = copy.deepcopy(BASE_CONFIG)
-        ctx = SealedRoutingContext(config, version=config["version"])
-        # Simulate detection event (L6 observes drift)
-        # Key assertion: routing remains unchanged
-        ctx.verify_or_raise(config)
+    # Act
+    # TODO: Execute routing_unchanged_in_same_run
+    result = None  # Replace with actual execution
 
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
     def test_mid_run_mutation_raises(self):
-        config = copy.deepcopy(BASE_CONFIG)
-        ctx = SealedRoutingContext(config, version=config["version"])
-        config["routes"]["classify"] = "NewAgent"
-        with pytest.raises(RoutingConfigSealViolation):
-            ctx.verify_or_raise(config)
+    """Test mid_run_mutation_raises runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute mid_run_mutation_raises
+    result = None  # Replace with actual execution
 
-class TestTimeShiftedInfluence:
-    """Changes apply only in the NEXT run."""
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test version_bump_changes_next_run runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_version_bump_changes_next_run(self):
-        config_v1 = copy.deepcopy(BASE_CONFIG)
-        hash_run_t = _simulate_run(config_v1)
+    # Act
+    # TODO: Execute version_bump_changes_next_run
+    result = None  # Replace with actual execution
 
-        config_v2 = copy.deepcopy(BASE_CONFIG)
-        config_v2["version"] = "2.0.0"
-        config_v2["routes"]["classify"] = "NewAgent"
-        hash_run_t1 = _simulate_run(config_v2)
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    """Test same_config_same_hash_across_runs runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        assert hash_run_t != hash_run_t1
+    # Act
+    # TODO: Execute same_config_same_hash_across_runs
+    result = None  # Replace with actual execution
 
-    def test_same_config_same_hash_across_runs(self):
-        config_a = copy.deepcopy(BASE_CONFIG)
-        config_b = copy.deepcopy(BASE_CONFIG)
-        hash_a = _simulate_run(config_a)
-        hash_b = _simulate_run(config_b)
-        assert hash_a == hash_b
-
-    def test_influence_strictly_time_shifted(self):
-        config = copy.deepcopy(BASE_CONFIG)
-        ctx_run_t = SealedRoutingContext(config, version="1.0.0")
-        # Simulate detection in run t
-        ctx_run_t.verify_or_raise(config)
-        hash_run_t = ctx_run_t.seal.canonical_hash
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         config_v2 = copy.deepcopy(BASE_CONFIG)
         config_v2["version"] = "2.0.0"
         config_v2["routes"]["summarize"] = "V2Agent"

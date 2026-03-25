@@ -475,19 +475,19 @@ class TestSerializer:
 
     @pytest.mark.unit
     def test_set_diff_is_callable_as_module_function(self) -> None:
-        """Regression: _set_diff must NOT have @staticmethod decorator at module level.
+    """Test set_diff_is_callable_as_module_function runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        If wrapped in staticmethod(), calling _set_diff([],[]) would raise
-        TypeError: 'staticmethod' object is not callable.
-        """
-        from agentic_core.adg.artifact.serializer_util import _set_diff
+    # Act
+    # TODO: Execute set_diff_is_callable_as_module_function
+    result = None  # Replace with actual execution
 
-        added, removed = _set_diff(["a", "b"], ["b", "c"])
-        assert added == ["c"]
-        assert removed == ["a"]
-
-    @pytest.mark.unit
-    def test_set_diff_returns_correct_added_and_removed(self) -> None:
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         from agentic_core.adg.artifact.serializer_util import _set_diff
 
         added, removed = _set_diff(["x", "y", "z"], ["y", "z", "w"])

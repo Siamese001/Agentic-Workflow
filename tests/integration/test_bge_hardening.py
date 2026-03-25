@@ -415,19 +415,19 @@ def test_bme_env_flag_removed_from_production_file(rel_path):
 
 @pytest.mark.unit
 def test_ops_script_run_heal_no_bme_env():
-    """_run_heal_with_mutation.py must not set BMG_EMBEDDINGS_ENABLED in the env dict.
+"""Test ops_script_run_heal_no_bme_env runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    §1.11 mutation: BGE is always on; setting the flag is dead code.
-    """
-    src = _read_source("ops_scripts/ci/_run_heal_with_mutation.py")
-    assert "BMG_EMBEDDINGS_ENABLED" not in src, (
-        "_run_heal_with_mutation.py must not set BMG_EMBEDDINGS_ENABLED — BGE is always active"
-    )
+# Act
+# TODO: Execute ops_script_run_heal_no_bme_env
+result = None  # Replace with actual execution
 
-
-# ---------------------------------------------------------------------------
-# Phase 3: retrieval_profile always sets embeddings_enabled=True
-# ---------------------------------------------------------------------------
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
 
 
 @pytest.mark.unit

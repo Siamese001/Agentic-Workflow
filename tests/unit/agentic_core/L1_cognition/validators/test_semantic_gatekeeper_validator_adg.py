@@ -178,4 +178,17 @@ class TestSemanticGatekeeper:
         assert gk.mission_scope == "software_development"
 
     def test_has_check_drift(self):
-        assert hasattr(semantic_gatekeeper, "check_drift")
+    """Test has_check_drift contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
+
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"

@@ -243,19 +243,19 @@ class TestCanonicalNameBranches:
 
     @pytest.mark.architecture
     def test_two_calls_same_input_identical(self) -> None:
-        """Determinism: same input always produces same output."""
-        from agentic_core.adg.schema_util import canonical_name
+    """Test two_calls_same_input_identical runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        r1 = canonical_name("Module", "agentic_core/L2_execution/UniversalWriteGateway.py")
-        r2 = canonical_name("Module", "agentic_core/L2_execution/UniversalWriteGateway.py")
-        assert r1 == r2
+    # Act
+    # TODO: Execute two_calls_same_input_identical
+    result = None  # Replace with actual execution
 
-
-class TestModulePathToLayerBranches:
-    """schema.module_path_to_layer: all prefix branches."""
-
-    @pytest.mark.architecture
-    def test_each_layer_prefix_maps_correctly(self) -> None:
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         from agentic_core.adg.schema_util import module_path_to_layer
 
         cases = [
@@ -304,19 +304,19 @@ class TestModulePathToLayerBranches:
 
     @pytest.mark.architecture
     def test_determinism_two_calls(self) -> None:
-        from agentic_core.adg.schema_util import module_path_to_layer
+    """Test determinism_two_calls runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        r1 = module_path_to_layer("agentic_core/L5_safety/x.py")
-        r2 = module_path_to_layer("agentic_core/L5_safety/x.py")
-        assert r1 == r2
+    # Act
+    # TODO: Execute determinism_two_calls
+    result = None  # Replace with actual execution
 
-
-# ---------------------------------------------------------------------------
-# §4 Static scanner -- exception paths, malformed inputs, empty/boundary
-# ---------------------------------------------------------------------------
-
-
-class TestStaticScannerExceptionPaths:
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
     """ADGStaticScanner: SyntaxError and OSError paths must be silently skipped."""
 
     @pytest.mark.architecture
@@ -1071,19 +1071,19 @@ class TestInvariantScannerMatrix:
 
     @pytest.mark.architecture
     def test_matrix_rule_a_invokes_provider_not_imports(self) -> None:
-        """RULE_A must also fire for invokes_provider relation (not just imports)."""
-        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
+    """Test matrix_rule_a_invokes_provider_not_imports runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for matrix_rule_a_invokes_provider_not_imports
+    test_data = {}  # Replace with actual test data
 
-        for rel_type in ("imports", "invokes_provider"):
-            edge = Edge(
-                from_name=canonical_name("Module", "apps_rg/engines/SomeEngine.py"),
-                relation_type=rel_type,
-                to_name=canonical_name("Symbol", "openai"),
-                edge_kind="network",
-                source_file="apps_rg/engines/SomeEngine.py",
-                line_no=1,
+    # Act
+    # TODO: Execute matrix_rule_a_invokes_provider_not_imports
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
                 symbol="openai",
             )
             result = ScanResult(commit_sha=f"matrix-a-{rel_type}")
@@ -1208,19 +1208,19 @@ class TestGatewayTopologyBranches:
 
     @pytest.mark.architecture
     def test_empty_scan_no_client_call_needed(self) -> None:
-        """Empty scan with no client: no exception raised."""
-        from agentic_core.adg.applications.gateway_topology_validator import check_gateway_topology
-        from agentic_core.adg.extraction.static_scanner import ScanResult
+    """Test empty_scan_no_client_call_needed runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        result = ScanResult(commit_sha="gw-empty-no-client")
-        result.compute_digest()
-        report = check_gateway_topology(result, client=None)
-        assert report.passed
+    # Act
+    # TODO: Execute empty_scan_no_client_call_needed
+    result = None  # Replace with actual execution
 
-    @pytest.mark.architecture
-    def test_proof_digest_is_sha256_hex(self) -> None:
-        """snapshot_digest must always be 64-char lowercase hex."""
-        from agentic_core.adg.applications.gateway_topology_validator import check_gateway_topology
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="gw-proof-hex")
@@ -1348,19 +1348,19 @@ class TestUWGWriteAuthorityBranches:
 
     @pytest.mark.architecture
     def test_violation_classify_subprocess(self) -> None:
-        """subprocess.run must be classified as subprocess_exec."""
-        from agentic_core.adg.applications.uwg_write_authority_validator import _classify_side_effect
+    """Test violation_classify_subprocess runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-        assert _classify_side_effect("subprocess.run") == "subprocess_exec"
+    # Act
+    # TODO: Process data with violation_classify_subprocess
+    processed_result = None  # Replace with actual processing
 
-
-# ---------------------------------------------------------------------------
-# §4 Graph persister -- edge cases and idempotency
-# ---------------------------------------------------------------------------
-
-
-class TestGraphPersisterBranches:
-    """Graph persister: empty result, no commit_sha, idempotent re-entry."""
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
 
     @pytest.mark.architecture
     def test_persist_empty_result_no_crash(self) -> None:

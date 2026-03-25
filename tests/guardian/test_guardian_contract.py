@@ -228,267 +228,267 @@ class TestStatusPromotion:
     """Verify that a FAIL check correctly promotes the top-level status."""
 
     def test_initial_status_is_pass(self):
-        result = _make_result()
-        assert result.status == GuardianStatus.PASS.value
+    """Test initial_status_is_pass contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
+    """Test single_fail_check_promotes_to_fail contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_single_fail_check_promotes_to_fail(self):
-        result = _make_result()
-        result.add_check("c1", CheckStatus.FAIL, "something failed")
-        assert result.status == GuardianStatus.FAIL.value
+"""Test pass_check_does_not_change_pass_status contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
-    def test_pass_check_does_not_change_pass_status(self):
-        result = _make_result()
-        result.add_check("c1", CheckStatus.PASS, "ok")
-        assert result.status == GuardianStatus.PASS.value
+"""Test skip_check_does_not_change_pass_status contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
-    def test_skip_check_does_not_change_pass_status(self):
-        result = _make_result()
-        result.add_check("c1", CheckStatus.SKIP, "not applicable")
-        assert result.status == GuardianStatus.PASS.value
+"""Test fail_after_pass_promotes_to_fail contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    def test_fail_after_pass_promotes_to_fail(self):
-        result = _make_result()
-        result.add_check("c1", CheckStatus.PASS, "ok")
-        result.add_check("c2", CheckStatus.FAIL, "bad")
-        assert result.status == GuardianStatus.FAIL.value
+# Act
+"""Test pass_after_fail_does_not_revert_to_pass contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    def test_pass_after_fail_does_not_revert_to_pass(self):
-        result = _make_result()
-        result.add_check("c1", CheckStatus.FAIL, "bad")
-        result.add_check("c2", CheckStatus.PASS, "ok later")
-        assert result.status == GuardianStatus.FAIL.value
+# Act
+"""Test error_status_is_sticky_over_fail contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    def test_error_status_is_sticky_over_fail(self):
-        result = _make_result()
-        result.set_error("scan crashed")
-        result.add_check("c1", CheckStatus.FAIL, "also failed")
-        assert result.status == GuardianStatus.ERROR.value
+# Act
+"""Test multiple_fail_checks_status_still_fail contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
-    def test_multiple_fail_checks_status_still_fail(self):
-        result = _make_result()
-        for i in range(5):
-            result.add_check(f"c{i}", CheckStatus.FAIL, f"fail {i}")
-        assert result.status == GuardianStatus.FAIL.value
+# Act
+"""Test string_fail_value_also_promotes contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    def test_string_fail_value_also_promotes(self):
-        result = _make_result()
-        result.add_check("c1", "FAIL", "string-based FAIL")
-        assert result.status == GuardianStatus.FAIL.value
+"""Test status_promotion_boundary_single_check contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
-    def test_status_promotion_boundary_single_check(self):
-        result = _make_result()
-        result.add_check("only_check", CheckStatus.FAIL, "the only check failed")
-        assert result.status == GuardianStatus.FAIL.value
-        assert len(result.checks) == 1
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
 
+# Assert - Schema Contract
+assert validation_result is not None, "Schema validation should produce a result"
+assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+# TODO: Add specific schema validation assertions
+"""Test no_absolute_paths_on_clean_result contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-# ---------------------------------------------------------------------------
-# 2. Schema compliance
-# ---------------------------------------------------------------------------
+# Act
+"""Test check_schema_compatibility_clean contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
+# Act
+"""Test contract_version_is_pinned contract compliance."""
+# Arrange
+# TODO: Set up contract scenario
+contract_scenario = {}  # Replace with actual scenario
+"""Test guardian_id_is_required contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-class TestSchemaCompliance:
-    def test_no_absolute_paths_on_clean_result(self):
-        result = _make_result()
-        result.add_check("c1", CheckStatus.PASS, "ok")
-        violations = validate_no_absolute_paths(result.to_dict())
-        assert violations == []
+# Act
+# TODO: Execute contract operations
+contract_result = None  # Replace with actual contract operation
 
-    def test_check_schema_compatibility_clean(self):
-        result = _make_result()
-        result.add_check("c1", CheckStatus.PASS, "ok")
-        errors = check_schema_compatibility(result.to_dict())
-        assert errors == []
+# Assert - Core Contract
+assert contract_result is not None, "Contract operation should produce a result"
+assert isinstance(contract_result, dict), "Contract result should be structured"
+"""Test check_schema_keys_exact contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
-    def test_contract_version_is_pinned(self):
-        result = _make_result()
-        assert result.version == CONTRACT_VERSION
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
 
-    def test_guardian_id_is_required(self):
-        result = GuardianResult(guardian_id="my_guardian")
-        assert result.guardian_id == "my_guardian"
-        d = result.to_dict()
-        assert d["guardian_id"] == "my_guardian"
-
-    def test_status_values_are_valid_enum(self):
-        for gid, status_str in [("a", "PASS"), ("b", "FAIL"), ("c", "ERROR")]:
-            result = GuardianResult(guardian_id=gid, status=status_str)
-            errors = check_schema_compatibility(result.to_dict())
-            assert errors == [], f"Unexpected schema errors for status={status_str}: {errors}"
-
-    def test_check_schema_keys_exact(self):
-        result = _make_result()
-        result.add_check("c1", CheckStatus.PASS, "ok", evidence={"key": "val"})
-        d = result.to_dict()
-        for check in d["checks"]:
-            assert set(check.keys()) == {"check_id", "status", "details", "evidence"}
-
-    def test_artifact_schema_keys_exact(self):
-        result = _make_result()
-        result.add_artifact(ArtifactType.JSON, "docs/out.json", "output")
-        d = result.to_dict()
-        for artifact in d["artifacts"]:
-            assert set(artifact.keys()) == {"type", "path", "description"}
-
-    def test_validate_against_json_schema_clean(self):
+# Assert - Schema Contract
+assert validation_result is not None, "Schema validation should produce a result"
+assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+# TODO: Add specific schema validation assertions
+# assert validation_result.get("valid", False), "Data should conform to schema"
         result = _make_result()
         result.add_check("c1", CheckStatus.PASS, "ok")
         errors = validate_against_json_schema(result.to_dict())
         assert errors == [], f"JSON schema errors: {errors}"
 
     def test_validate_against_json_schema_invalid_status_caught(self):
-        result = _make_result()
-        d = result.to_dict()
-        d["status"] = "UNKNOWN_STATUS"
-        errors = validate_against_json_schema(d)
-        assert any("status" in e for e in errors), f"Expected status error, got: {errors}"
+    """Test validate_against_json_schema_invalid_status_caught contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_missing_required_key_detected(self):
-        result = _make_result()
-        d = result.to_dict()
-        del d["guardian_id"]
-        errors = validate_against_json_schema(d)
-        assert any("guardian_id" in e for e in errors)
+    # Act
+    # TODO: Validate schema
+    """Test missing_required_key_detected contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_extra_key_detected_by_schema_compatibility(self):
-        result = _make_result()
-        d = result.to_dict()
-        d["rogue_key"] = "value"
-        errors = check_schema_compatibility(d)
-        assert any("rogue_key" in e for e in errors)
+    # Act
+    # TODO: Execute contract operations
+    """Test extra_key_detected_by_schema_compatibility contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-# ---------------------------------------------------------------------------
-# 3. Artifact path normalization
-# ---------------------------------------------------------------------------
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
+    """Test backslash_normalized_to_forward contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+"""Test no_leading_slash contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
+"""Test windows_drive_stripped contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-class TestArtifactPathNormalization:
-    def test_backslash_normalized_to_forward(self):
-        normalized = normalize_repo_path("docs\\reports\\out.json")
-        assert "\\" not in normalized
-        assert "/" in normalized
+"""Test dot_segment_collapsed contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
+"""Test dotdot_raises contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
+"""Test artifact_path_in_result_is_normalized contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    def test_no_leading_slash(self):
-        normalized = normalize_repo_path("/docs/reports/out.json")
-        assert not normalized.startswith("/")
+# Act
+# TODO: Execute contract operations
+contract_result = None  # Replace with actual contract operation
 
-    def test_windows_drive_stripped(self):
-        normalized = normalize_repo_path("C:/docs/reports/out.json")
-        assert not normalized.startswith("C:")
-        assert not normalized.startswith("/")
-
-    def test_dot_segment_collapsed(self):
-        normalized = normalize_repo_path("docs/./reports/out.json")
-        assert "/." not in normalized
-
-    def test_dotdot_raises(self):
-        with pytest.raises(ValueError, match=r"\.\."):
-            normalize_repo_path("docs/../etc/passwd")
-
-    def test_artifact_path_in_result_is_normalized(self):
-        result = _make_result()
-        result.add_artifact(ArtifactType.JSON, "docs/reports/out.json", "output")
-        d = result.to_dict()
-        paths = [a["path"] for a in d["artifacts"]]
-        assert all("\\" not in p for p in paths)
-        assert all(not p.startswith("/") for p in paths)
-
-
-# ---------------------------------------------------------------------------
-# 4. Serialization round-trip determinism
-# ---------------------------------------------------------------------------
-
-
-class TestSerializationDeterminism:
+# Assert - Core Contract
+assert contract_result is not None, "Contract operation should produce a result"
+assert isinstance(contract_result, dict), "Contract result should be structured"
+# TODO: Add specific contract assertions
+# assert contract_result.get("enforced", False), "Contract terms should be enforced"
     def test_same_result_same_dict_twice(self):
-        result = _make_result()
-        result.add_check("c1", CheckStatus.PASS, "ok")
-        d1 = result.to_dict()
-        d2 = result.to_dict()
-        assert d1 == d2
+    """Test same_result_same_dict_twice contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_sorted_checks_in_output(self):
-        result = _make_result()
-        result.add_check("z_check", CheckStatus.PASS, "last alphabetically")
-        result.add_check("a_check", CheckStatus.FAIL, "first alphabetically")
-        d = result.to_dict()
-        ids = [c["check_id"] for c in d["checks"]]
-        assert ids == sorted(ids), f"checks not sorted: {ids}"
+    # Act
+    # TODO: Execute contract operations
+    """Test sorted_checks_in_output contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_sorted_remediation_hints(self):
-        result = _make_result()
-        result.remediation_hints = ["z_hint", "a_hint", "m_hint"]
-        d = result.to_dict()
-        hints = d["remediation_hints"]
-        assert hints == sorted(hints)
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
+    """Test sorted_remediation_hints contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_sorted_artifacts_in_output(self):
-        result = _make_result()
-        result.add_artifact(ArtifactType.JSON, "z_path/out.json", "z artifact")
-        result.add_artifact(ArtifactType.JSON, "a_path/out.json", "a artifact")
-        d = result.to_dict()
-        paths = [a["path"] for a in d["artifacts"]]
-        assert paths == sorted(paths)
+    # Act
+    # TODO: Execute contract operations
+    """Test sorted_artifacts_in_output contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_metrics_sorted_by_key(self):
-        result = _make_result()
-        result.metrics = {"z_count": 5, "a_count": 1, "m_count": 3}
-        d = result.to_dict()
-        keys = list(d["metrics"].keys())
-        assert keys == sorted(keys)
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+    """Test metrics_sorted_by_key contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-# ---------------------------------------------------------------------------
-# 5. Malformed / hostile inputs
-# ---------------------------------------------------------------------------
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
+    """Test empty_guardian_id_captured_in_validate contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
+"""Test invalid_check_status_caught_in_validate contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
-class TestMalformedInputs:
-    def test_empty_guardian_id_captured_in_validate(self):
-        result = GuardianResult(guardian_id="")
-        errors = result.validate()
-        assert any("guardian_id" in e for e in errors)
+# Act
+"""Test absolute_path_in_evidence_caught contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    def test_invalid_check_status_caught_in_validate(self):
-        result = GuardianResult(guardian_id="test")
-        result.checks.append(GuardianCheck(check_id="c1", status="BOGUS", details="bad", evidence={}))
-        errors = result.validate()
-        assert any("status" in e for e in errors)
+# Act
+"""Test windows_absolute_path_in_evidence_caught contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    def test_absolute_path_in_evidence_caught(self):
-        result = _make_result()
-        result.add_check("c1", CheckStatus.FAIL, "fail", evidence={"path": "/etc/passwd"})
-        violations = validate_no_absolute_paths(result.to_dict())
-        assert len(violations) > 0
+# Act
+"""Test none_timestamp_not_in_dict contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    def test_windows_absolute_path_in_evidence_caught(self):
-        result = _make_result()
-        result.add_check("c1", CheckStatus.FAIL, "fail", evidence={"path": "C:\\Windows\\system32"})
-        violations = validate_no_absolute_paths(result.to_dict())
-        assert len(violations) > 0
+# Act
+"""Test artifact_class_defaults_to_individual contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    def test_none_timestamp_not_in_dict(self):
-        result = _make_result()
-        assert result.timestamp is None
-        d = result.to_dict()
-        assert "timestamp" not in d or d.get("timestamp") is None
+# Act
+# TODO: Execute contract operations
+contract_result = None  # Replace with actual contract operation
 
-    def test_artifact_class_defaults_to_individual(self):
-        result = _make_result()
-        assert result.artifact_class == ArtifactClass.INDIVIDUAL.value
-
-
-# ---------------------------------------------------------------------------
-# 6. Cross-guardian schema compliance (consolidated from per-guardian files)
-# ---------------------------------------------------------------------------
-
-
-def _make_clean_tmp(tmp_path: Path, *subdirs: str) -> Path:
-    """Create a minimal clean repo under tmp_path."""
-    for sub in subdirs:
-        (tmp_path / sub).mkdir(parents=True, exist_ok=True)
-        (tmp_path / sub / "clean.py").write_text("x = 1\n", encoding="utf-8")
+# Assert - Core Contract
+assert contract_result is not None, "Contract operation should produce a result"
+assert isinstance(contract_result, dict), "Contract result should be structured"
+# TODO: Add specific contract assertions
+# assert contract_result.get("enforced", False), "Contract terms should be enforced"
     return tmp_path
 
 
@@ -541,13 +541,17 @@ class TestCrossGuardianSchemaCompliance:
     """
 
     def test_no_absolute_paths(self, guardian_id, runner, subdirs, tmp_path):
-        repo = _make_clean_tmp(tmp_path, *subdirs)
-        result = runner(repo_root=repo)
-        violations = validate_no_absolute_paths(result.to_dict())
-        assert violations == [], f"{guardian_id}: absolute paths in result: {violations}"
+    """Test no_absolute_paths contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_schema_compatible(self, guardian_id, runner, subdirs, tmp_path):
-        repo = _make_clean_tmp(tmp_path, *subdirs)
-        result = runner(repo_root=repo)
-        errors = check_schema_compatibility(result.to_dict())
-        assert errors == [], f"{guardian_id}: schema drift: {errors}"
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"

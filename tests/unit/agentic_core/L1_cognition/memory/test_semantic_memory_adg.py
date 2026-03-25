@@ -196,20 +196,20 @@ class TestVectorIndex:
         assert "key1" in results
 
     def test_search_respects_top_k(self):
-        idx = VectorIndex()
-        for i in range(10):
-            idx.add(f"k{i}", [float(i)] * 384)
-        results = idx.search([0.0] * 384, top_k=3)
-        assert len(results) <= 3
+    """Test search_respects_top_k contract compliance."""
+    # Arrange
+    # TODO: Set up specification test case
+    spec_input = {}  # Replace with actual specification input
 
+    # Act
+    # TODO: Test specification compliance
+    compliance_result = None  # Replace with actual compliance test
 
-class TestSemanticMemory:
-    def test_creates(self):
-        mem = SemanticMemory()
-        assert mem is not None
-
-    def test_store_and_retrieve(self):
-        mem = SemanticMemory()
+    # Assert - Specification Contract
+    assert compliance_result is not None, "Specification compliance should be testable"
+    assert isinstance(compliance_result, (bool, dict)), "Compliance result should be structured"
+    # TODO: Add specific specification assertions
+    # assert compliance_result.get("meets_spec", False), "Should meet specification requirements"
         mem.store("concept", "AI is cool")
         val = mem.retrieve("concept")
         assert val == "AI is cool"

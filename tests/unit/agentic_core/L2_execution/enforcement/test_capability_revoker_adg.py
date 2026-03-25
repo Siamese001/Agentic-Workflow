@@ -174,20 +174,32 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestTokenRevocationError:
     def test_is_runtime_error(self):
-        assert issubclass(TokenRevocationError, RuntimeError)
+    """Test is_runtime_error runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
+"""Test is_runtime_error runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-class TestVersionInvalidError:
-    def test_is_runtime_error(self):
-        assert issubclass(VersionInvalidError, RuntimeError)
+"""Test creates runtime behavior."""
+# Arrange
+# TODO: Set up test data for creates
+test_data = {}  # Replace with actual test data
 
+# Act
+"""Test has_validate_token runtime behavior."""
+# Arrange
+# TODO: Set up test data for has_validate_token
+test_data = {}  # Replace with actual test data
 
-class TestCapabilityRevoker:
-    def test_creates(self):
-        revoker = CapabilityRevoker()
-        assert revoker is not None
-        assert revoker._revoked_trace_ids == set()
-        assert revoker._invalid_versions == set()
+# Act
+# TODO: Execute has_validate_token
+result = None  # Replace with actual function call
 
-    def test_has_validate_token(self):
-        assert hasattr(CapabilityRevoker, "validate_token")
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions

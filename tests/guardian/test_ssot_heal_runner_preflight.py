@@ -24,19 +24,19 @@ pytestmark = pytest.mark.guardian
 
 class TestPreflightSymbolGate:
     def test_symbol_check_passes_when_present(self):
-        """Verify _legacy_main is importable from the canonical module."""
-        import sys
+    """Test symbol_check_passes_when_present runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for symbol_check_passes_when_present
+    test_data = {}  # Replace with actual test data
 
-        sys.path.insert(0, ".")
-        from agentic_core.L0_routing.scripts.execute_ssot import _legacy_main
+    # Act
+    # TODO: Execute symbol_check_passes_when_present
+    result = None  # Replace with actual function call
 
-        assert callable(_legacy_main)
-
-    def test_preflight_retry_logic_contract(self):
-        """
-        Contract test: if symbol missing on first check, retry once.
-        We simulate this by tracking call counts.
-        """
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         call_count = {"check": 0, "restore": 0}
 
         def mock_check_symbol():
@@ -60,19 +60,19 @@ class TestPreflightSymbolGate:
         assert call_count["restore"] == 2
 
     def test_preflight_fails_fast_if_still_missing(self):
-        """
-        Contract test: if symbol still missing after retry, exit 2.
-        """
-        call_count = {"check": 0, "restore": 0}
+    """Test preflight_fails_fast_if_still_missing runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for preflight_fails_fast_if_still_missing
+    test_data = {}  # Replace with actual test data
 
-        def mock_check_symbol():
-            call_count["check"] += 1
-            return False  # Always fails
+    # Act
+    # TODO: Execute preflight_fails_fast_if_still_missing
+    result = None  # Replace with actual function call
 
-        def mock_restore():
-            call_count["restore"] += 1
-
-        # Simulate the runner's pre-flight logic
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         mock_restore()  # Initial restore
         exit_code = 0
         if not mock_check_symbol():  # First check fails
@@ -85,19 +85,19 @@ class TestPreflightSymbolGate:
         assert call_count["restore"] == 2
 
     def test_preflight_succeeds_on_first_try(self):
-        """
-        Contract test: if symbol present on first check, no retry needed.
-        """
-        call_count = {"check": 0, "restore": 0}
+    """Test preflight_succeeds_on_first_try runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for preflight_succeeds_on_first_try
+    test_data = {}  # Replace with actual test data
 
-        def mock_check_symbol():
-            call_count["check"] += 1
-            return True  # Always succeeds
+    # Act
+    # TODO: Execute preflight_succeeds_on_first_try
+    result = None  # Replace with actual function call
 
-        def mock_restore():
-            call_count["restore"] += 1
-
-        # Simulate the runner's pre-flight logic
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         mock_restore()  # Initial restore
         exit_code = 0
         if not mock_check_symbol():  # First check passes

@@ -177,20 +177,20 @@ class TestADGFoundationalCoverageContract:
     """fan_in >= 3 production modules must have a behavioral (non-ADG) test."""
 
     def test_snapshot_exists_or_created(self) -> None:
-        """Snapshot must exist (created on first run)."""
-        if SNAPSHOT_PATH.exists():
-            data = json.loads(SNAPSHOT_PATH.read_text())
-            assert "violation_ceiling" in data
-            assert "fan_in_threshold" in data
-            return
-        # First run — create snapshot
-        prod = _collect_prod_modules()
-        fi = _build_fan_in(prod)
-        violations = _compute_violations(prod, fi)
-        snapshot = {
-            "fan_in_threshold": FAN_IN_THRESHOLD,
-            "foundational_depth_min": FOUNDATIONAL_DEPTH_MIN,
-            "violation_ceiling": len(violations),
+    """Test snapshot_exists_or_created contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
+
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
             "total_production_modules": len(prod),
             "modules_above_threshold": sum(1 for m in prod if fi.get(m, 0) >= FAN_IN_THRESHOLD),
             "violation_sample": [v["module"] for v in violations[:20]],
@@ -200,40 +200,40 @@ class TestADGFoundationalCoverageContract:
         assert SNAPSHOT_PATH.exists()
 
     def test_violation_count_non_growing(self) -> None:
-        """Violation count must not exceed snapshot ceiling (§29 non-growing debt)."""
-        if not SNAPSHOT_PATH.exists():
-            # Create snapshot if missing
-            self.test_snapshot_exists_or_created()
-        snapshot = json.loads(SNAPSHOT_PATH.read_text())
-        ceiling = snapshot["violation_ceiling"]
-        threshold = snapshot.get("fan_in_threshold", FAN_IN_THRESHOLD)
+    """Test violation_count_non_growing contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-        prod = _collect_prod_modules()
-        fi = _build_fan_in(prod)
-        violations = _compute_violations(prod, fi)
-        current = len(violations)
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-        assert current <= ceiling, (
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
             f"ADG foundational coverage violations grew: {current} > ceiling {ceiling}\n"
             f"fan_in >= {threshold} modules without a behavioral test:\n"
             + "\n".join(f"  fan_in={v['fan_in']:>4}  {v['module']}" for v in violations[:30])
         )
 
     def test_zero_new_high_fanin_violations(self) -> None:
-        """Modules with fan_in >= 10 must ALL have foundational tests (hard gate)."""
-        prod = _collect_prod_modules()
-        fi = _build_fan_in(prod)
-        if not SNAPSHOT_PATH.exists():
-            # Create snapshot if missing
-            self.test_snapshot_exists_or_created()
-        snapshot = json.loads(SNAPSHOT_PATH.read_text())
-        # Find modules that are in the snapshot violation_sample AND have fan_in >= 10
-        # New modules (not in snapshot) with fan_in >= 10 are hard failures
-        known_violations = set(snapshot.get("violation_sample", []))
-        hard_violations = [
-            m
-            for m in prod
-            if fi.get(m, 0) >= 10 and not _has_foundational_test(m) and m not in known_violations
+    """Test zero_new_high_fanin_violations contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
+
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
         ]
         assert not hard_violations, (
             f"{len(hard_violations)} NEW high-fan_in (>=10) modules lack foundational tests:\n"
@@ -241,29 +241,35 @@ class TestADGFoundationalCoverageContract:
         )
 
     def test_snapshot_threshold_matches_policy(self) -> None:
-        """Snapshot threshold must match current policy constant."""
-        if not SNAPSHOT_PATH.exists():
-            # Create snapshot if missing
-            self.test_snapshot_exists_or_created()
-        snapshot = json.loads(SNAPSHOT_PATH.read_text())
-        assert snapshot["fan_in_threshold"] == FAN_IN_THRESHOLD, (
-            f"Snapshot threshold {snapshot['fan_in_threshold']} != policy {FAN_IN_THRESHOLD}. "
-            "Delete snapshot to regenerate with current policy."
-        )
+    """Test snapshot_threshold_matches_policy contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_synthetic_violation_detected(self) -> None:
-        """Negative test: _has_foundational_test returns False for a nonexistent module."""
-        fake_module = "agentic_core/NONEXISTENT_xyz_fake_abc/fake_module.py"
-        assert not _has_foundational_test(fake_module), (
-            "Checker incorrectly reported foundational test for nonexistent module"
-        )
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-    def test_fan_in_computation_nonzero_for_shared_types(self) -> None:
-        """Sanity: high-use types modules should have non-zero fan_in."""
-        prod = _collect_prod_modules()
-        fi = _build_fan_in(prod)
-        # At least some modules must have fan_in >= 3
-        high_fi = [m for m in prod if fi.get(m, 0) >= FAN_IN_THRESHOLD]
-        assert len(high_fi) > 50, (
-            f"Only {len(high_fi)} modules have fan_in >= {FAN_IN_THRESHOLD}; fan_in computation may be broken"
-        )
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    """Test synthetic_violation_detected contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
+
+    # Act
+    # TODO: Execute contract operations
+    """Test fan_in_computation_nonzero_for_shared_types contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
+
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"

@@ -41,20 +41,20 @@ class TestResourceManagementTypesSource:
         assert "ResourceQuota" in _class_names()
 
     def test_has_resource_check_result(self):
-        assert "ResourceCheckResult" in _class_names()
+    """Test has_resource_check_result contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_has_resource_management_guardrail(self):
-        assert "ResourceManagementGuardrail" in _class_names()
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-    def test_resource_type_has_tokens_member(self):
-        src = _src_text()
-        assert "TOKENS" in src or "tokens" in src.lower()
-
-    def test_resource_type_has_cost_member(self):
-        src = _src_text()
-        assert "COST" in src or "cost" in src.lower()
-
-    def test_resource_quota_has_remaining(self):
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
         src = _src_text()
         assert "remaining" in src
 

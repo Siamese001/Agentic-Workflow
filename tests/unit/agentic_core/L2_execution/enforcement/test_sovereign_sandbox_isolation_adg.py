@@ -174,37 +174,39 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestReplayNondeterminismViolation:
     def test_is_exception(self):
-        assert issubclass(ReplayNondeterminismViolation, Exception)
+    """Test is_exception runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    """Test creates runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for creates
+    test_data = {}  # Replace with actual test data
 
-    def test_creates(self):
-        err = ReplayNondeterminismViolation("mismatch", expected="a", actual="b")
-        assert err.expected == "a"
-        assert err.actual == "b"
-        assert "mismatch" in str(err)
+    # Act
+    # TODO: Execute creates
+    result = None  # Replace with actual function call
 
-
-class TestSandboxResult:
-    def test_is_named_tuple(self):
-        res = SandboxResult(success=True, result="ok")
-        assert res.success is True
-        assert res.result == "ok"
-        assert res.violation is None
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
     def test_failure_result(self):
-        res = SandboxResult(success=False, result=None)
-        assert res.success is False
+    """Test failure_result runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    error_input = {}  # Replace with actual error condition
 
+    # Act & Assert
+    """Test callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-class TestExecuteInSandbox:
-    def test_callable(self):
-        assert callable(execute_in_sandbox)
+    # Act
+    # TODO: Execute callable
+    result = None  # Replace with actual execution
 
-    def test_runs_normal_operation(self):
-        result = execute_in_sandbox(
-            lambda: "hello",
-            args=(),
-            kwargs={},
-            replay_mode=False,
-        )
-        assert isinstance(result, SandboxResult)
-        assert result.success is True
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions

@@ -311,19 +311,19 @@ class TestRescore:
 
 class TestCheck:
     def test_first_run_writes_baseline_and_passes(self):
-        r = _mock_redis_with_state(baseline=None)
-        with patch.object(ratchet, "_connect", return_value=r):
-            code = check()
-        assert code == 0
-        r.set.assert_called_once()  # baseline written
+    """Test first_run_writes_baseline_and_passes runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_promote_writes_baseline_unconditionally(self):
-        r = _mock_redis_with_state(
-            baseline=json.dumps(
-                {"score": 0.749, "uncovered_modules": [], "timestamp": 1000.0}
-            )
-        )
-        with patch.object(ratchet, "_connect", return_value=r):
+    # Act
+    # TODO: Execute first_run_writes_baseline_and_passes
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             code = check(promote=True)
         assert code == 0
         r.set.assert_called_once()

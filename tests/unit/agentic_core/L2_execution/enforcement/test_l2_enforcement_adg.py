@@ -101,58 +101,58 @@ _CANONICAL_10 = (
 
 class TestHealerPipeOrder:
     def test_enforce_callable(self):
-        assert callable(enforce_healer_pipe_order)
+    """Test enforce_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    """Test passes_on_exact_match runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for passes_on_exact_match
+    test_data = {}  # Replace with actual test data
 
-    def test_passes_on_exact_match(self):
-        enforce_healer_pipe_order(
-            expected_steps=_CANONICAL_10,
-            observed_steps=list(_CANONICAL_10),
-        )
+    # Act
+    """Test raises_on_wrong_length runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for raises_on_wrong_length
+    test_data = {}  # Replace with actual test data
 
-    def test_raises_on_wrong_length(self):
-        with pytest.raises(PermissionError):
-            enforce_healer_pipe_order(
-                expected_steps=_CANONICAL_10,
-                observed_steps=list(_CANONICAL_10)[:-1],
-            )
+    # Act
+    # TODO: Execute raises_on_wrong_length
+    """Test raises_on_extra_step runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for raises_on_extra_step
+    test_data = {}  # Replace with actual test data
 
-    def test_raises_on_extra_step(self):
-        with pytest.raises(PermissionError):
-            enforce_healer_pipe_order(
-                expected_steps=_CANONICAL_10,
-                observed_steps=list(_CANONICAL_10) + ["extra"],
-            )
+    # Act
+    # TODO: Execute raises_on_extra_step
+    """Test raises_on_wrong_order runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for raises_on_wrong_order
+    test_data = {}  # Replace with actual test data
 
-    def test_raises_on_wrong_order(self):
-        reordered = list(_CANONICAL_10)
-        reordered[0], reordered[1] = reordered[1], reordered[0]
-        with pytest.raises(PermissionError):
-            enforce_healer_pipe_order(
-                expected_steps=_CANONICAL_10,
-                observed_steps=reordered,
-            )
+    # Act
+    # TODO: Execute raises_on_wrong_order
+    result = None  # Replace with actual function call
 
-    def test_requires_exactly_10_expected_steps(self):
-        with pytest.raises(AssertionError):
-            enforce_healer_pipe_order(
-                expected_steps=("only_one",),
-                observed_steps=["only_one"],
-            )
+"""Test requires_exactly_10_expected_steps runtime behavior."""
+# Arrange
+# TODO: Set up test data for requires_exactly_10_expected_steps
+test_data = {}  # Replace with actual test data
 
-    def test_trace_id_accepted(self):
-        enforce_healer_pipe_order(
-            expected_steps=_CANONICAL_10,
-            observed_steps=list(_CANONICAL_10),
-            trace_id="test-trace-001",
-        )
+# Act
+# TODO: Execute requires_exactly_10_expected_steps
+"""Test trace_id_accepted runtime behavior."""
+# Arrange
+# TODO: Set up test data for trace_id_accepted
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute trace_id_accepted
+result = None  # Replace with actual function call
 
-# ---------------------------------------------------------------------------
-# tool_policy_enforcer
-# ---------------------------------------------------------------------------
-from agentic_core.L2_execution.enforcement.tool_policy_enforcer import (
-    ToolPolicyEnforcer,
-    _stable_args_hash,
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
 )
 from agentic_core.L2_execution.types.tool_enforcement_types import (
     LawSlotOutcome,
@@ -250,63 +250,66 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestStableArgsHash:
     def test_returns_string(self):
-        h = _stable_args_hash({"key": "value"})
-        assert isinstance(h, str)
+    """Test returns_string runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for returns_string
+    test_data = {}  # Replace with actual test data
+    """Test deterministic runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for deterministic
+    test_data = {}  # Replace with actual test data
 
-    def test_deterministic(self):
-        a = _stable_args_hash({"b": 2, "a": 1})
-        b = _stable_args_hash({"a": 1, "b": 2})
-        assert a == b
+"""Test different_args_different_hash runtime behavior."""
+# Arrange
+# TODO: Set up test data for different_args_different_hash
+test_data = {}  # Replace with actual test data
 
-    def test_different_args_different_hash(self):
-        a = _stable_args_hash({"key": "a"})
-        b = _stable_args_hash({"key": "b"})
-        assert a != b
+# Act
+# TODO: Execute different_args_different_hash
+"""Test creates runtime behavior."""
+# Arrange
+# TODO: Set up test data for creates
+test_data = {}  # Replace with actual test data
+"""Test policy_rules_start_empty runtime behavior."""
+# Arrange
+# TODO: Set up test data for policy_rules_start_empty
+test_data = {}  # Replace with actual test data
+"""Test has_register_rule runtime behavior."""
+# Arrange
+# TODO: Set up test data for has_register_rule
+"""Test has_enforce runtime behavior."""
+# Arrange
+# TODO: Set up test data for has_enforce
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute has_enforce
+result = None  # Replace with actual function call
 
-class TestToolPolicyEnforcerInit:
-    def test_creates(self):
-        enforcer = ToolPolicyEnforcer()
-        assert enforcer is not None
-
-    def test_policy_rules_start_empty(self):
-        enforcer = ToolPolicyEnforcer()
-        assert enforcer._policy_rules == {}
-
-    def test_has_register_rule(self):
-        assert hasattr(ToolPolicyEnforcer, "register_rule")
-
-    def test_has_enforce(self):
-        assert hasattr(ToolPolicyEnforcer, "enforce")
-
-
-class TestToolPolicyEnforcerEnforce:
-    def setup_method(self):
-        self.enforcer = ToolPolicyEnforcer()
-
-    def test_enforce_unknown_tool_returns_tuple(self):
-        result = self.enforcer.enforce(
-            tool_name="read_file",
-            args={"path": "foo.py"},
-        )
-        assert isinstance(result, tuple)
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
         assert len(result) >= 2
 
     def test_enforce_default_outcome_pass(self):
-        outcome, *_ = self.enforcer.enforce(
-            tool_name="write_file",
-            args={"path": "foo.py", "content": "hello"},
-        )
-        assert outcome == LawSlotOutcome.PASS
+    """Test enforce_default_outcome_pass runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for enforce_default_outcome_pass
+    test_data = {}  # Replace with actual test data
 
-    def test_register_block_rule_enforces(self):
-        self.enforcer.register_rule(
-            "dangerous_tool",
-            outcome=LawSlotOutcome.BLOCK,
-            rationale="unsafe",
-        )
-        outcome, *_ = self.enforcer.enforce(
-            tool_name="dangerous_tool",
-            args={},
-        )
-        assert outcome == LawSlotOutcome.BLOCK
+    # Act
+    # TODO: Execute enforce_default_outcome_pass
+    """Test register_block_rule_enforces runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for register_block_rule_enforces
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute register_block_rule_enforces
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions

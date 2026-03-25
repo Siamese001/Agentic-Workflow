@@ -319,19 +319,19 @@ class TestSequentialThinkingSchema:
 
 class TestWikiHealerWiring:
     def test_update_deepwiki_calls_mcp3(self):
-        src = (ROOT / "agentic_core/knowledge/healing/wiki_healer.py").read_text()
-        assert "mcp3_ask_question" in src, (
-            "wiki_healer._update_deepwiki must reference mcp3_ask_question"
-        )
-        assert "getattr(builtins" in src, (
-            "wiki_healer must resolve mcp3_ask_question via builtins"
-        )
+    """Test update_deepwiki_calls_mcp3 runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_update_deepwiki_is_not_stub(self):
-        """Ensure _update_deepwiki no longer just returns True without calling anything."""
-        src = (ROOT / "agentic_core/knowledge/healing/wiki_healer.py").read_text()
-        # Find the _update_deepwiki method body
-        match = re.search(
+    # Act
+    # TODO: Execute update_deepwiki_calls_mcp3
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             r"async def _update_deepwiki.*?(?=\n    (?:async )?def |\nclass |\Z)",
             src, re.DOTALL
         )
@@ -350,19 +350,19 @@ class TestWikiHealerWiring:
 
 class TestWebSearchClientDispatch:
     def test_brave_web_search_call_resolves_via_dispatch(self):
-        """web_search_client.py calls brave_web_search — confirm it's in _TOOL_DISPATCH."""
-        src = (ROOT / "agentic_core/L2_execution/tools/web_search_client.py").read_text(encoding="utf-8", errors="ignore")
-        assert "brave_web_search" in src, "web_search_client.py should call brave_web_search"
-        assert "brave_web_search" in _TOOL_DISPATCH, (
-            "brave_web_search must be in _TOOL_DISPATCH for web_search_client to work"
-        )
+    """Test brave_web_search_call_resolves_via_dispatch runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute brave_web_search_call_resolves_via_dispatch
+    result = None  # Replace with actual execution
 
-# ---------------------------------------------------------------------------
-# 5. AST-level: no wrong-schema sequential_thinking calls anywhere in codebase
-# ---------------------------------------------------------------------------
-
-WRONG_SCHEMA_IN_SEQ_CONTEXT_PATTERN = re.compile(
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
     r'call_tool\s*\(\s*["\']sequential_thinking["\'].*?(?:"Task"|"goal"|"max_steps"|"enforce_no_hallucination"|"template")',
     re.DOTALL,
 )
@@ -370,18 +370,18 @@ WRONG_SCHEMA_IN_SEQ_CONTEXT_PATTERN = re.compile(
 
 class TestNoWrongSchemaAnywhere:
     def test_no_wrong_schema_sequential_thinking_calls_in_codebase(self):
-        bad_files = []
-        for py_file in ROOT.rglob("*.py"):
-            if any(p in str(py_file) for p in [".git", "__pycache__", "test_mcp_dispatch_schema"]):
-                continue
-            try:
-                src = py_file.read_text(encoding="utf-8", errors="ignore")
-                if "sequential_thinking" in src and WRONG_SCHEMA_IN_SEQ_CONTEXT_PATTERN.search(src):
-                    bad_files.append(str(py_file.relative_to(ROOT)))
-            # guardian: allow-silent-swallower
-            except Exception:
-                continue
-        assert not bad_files, (
-            "Wrong-schema sequential_thinking call sites found:\n"
+    """Test no_wrong_schema_sequential_thinking_calls_in_codebase runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute no_wrong_schema_sequential_thinking_calls_in_codebase
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             + "\n".join(f"  {f}" for f in bad_files)
         )

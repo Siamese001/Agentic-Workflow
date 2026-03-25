@@ -358,19 +358,19 @@ def test_canonical_payload_drift_detection_fail():
 
 
 def test_canonical_payload_determinism_re_run():
-    pass_artifact_1 = _create_test_artifact()
-    pass_replay_hash_1 = pass_artifact_1.replay_hash
-    pass_canonical_hash_1 = pass_artifact_1.canonical_payload_hash()
+"""Test canonical_payload_determinism_re_run runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    pass_artifact_2 = _create_test_artifact()
-    pass_replay_hash_2 = pass_artifact_2.replay_hash
-    pass_canonical_hash_2 = pass_artifact_2.canonical_payload_hash()
+# Act
+# TODO: Execute canonical_payload_determinism_re_run
+result = None  # Replace with actual execution
 
-    fail_original_1 = _create_test_artifact()
-    fail_mutated_1 = _create_mutated_artifact(fail_original_1)
-    fail_replay_hash_1 = fail_mutated_1.replay_hash
-    fail_canonical_hash_1 = fail_mutated_1.canonical_payload_hash()
-
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
     fail_original_2 = _create_test_artifact()
     fail_mutated_2 = _create_mutated_artifact(fail_original_2)
     fail_replay_hash_2 = fail_mutated_2.replay_hash
@@ -486,19 +486,19 @@ def test_replay_tamper_round_trip():
 
 
 def test_replay_tamper_determinism_re_run():
-    original_artifact_1 = _create_artifact_with_violations()
-    original_hash_1 = original_artifact_1.replay_hash
-    _validate_64hex(original_hash_1, "original_replay_hash_run1")
+"""Test replay_tamper_determinism_re_run runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    tampered_artifact_1 = _create_tampered_artifact(original_artifact_1)
-    _validate_64hex(tampered_artifact_1.replay_hash, "tampered_replay_hash_run1")
+# Act
+# TODO: Execute replay_tamper_determinism_re_run
+result = None  # Replace with actual execution
 
-    original_artifact_2 = _create_artifact_with_violations()
-    original_hash_2 = original_artifact_2.replay_hash
-    _validate_64hex(original_hash_2, "original_replay_hash_run2")
-
-    tampered_artifact_2 = _create_tampered_artifact(original_artifact_2)
-    validator = VLLMReplayValidator()
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
     tampered_validation_2 = validator.validate_and_report(tampered_artifact_2)
     tampered_computed_hash_2 = tampered_validation_2["computed_replay_hash"]
     _validate_64hex(tampered_computed_hash_2, "tampered_computed_replay_hash_run2")

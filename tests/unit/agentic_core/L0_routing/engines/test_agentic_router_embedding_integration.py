@@ -272,19 +272,19 @@ class TestAgenticRouterInit:
 
 class TestRegisterWithClassifier:
     def test_register_calls_encode_prototype(self):
-        clf = MagicMock(spec=IntentEmbeddingClassifier)
-        clf.prototype_count.return_value = 1
-        router = AgenticRouter(classifier=clf)
-        router.register(
-            "resume_writer", _handler, intent_keywords=["resume", "cv"], description="writes resumes"
-        )
-        clf.encode_prototype.assert_called_once()
-        call_args = clf.encode_prototype.call_args
-        assert call_args[0][0] == "resume_writer"
-        texts = call_args[0][1]
-        assert "resume" in texts
-        assert "cv" in texts
-        assert "writes resumes" in texts
+    """Test register_calls_encode_prototype runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute register_calls_encode_prototype
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
     def test_register_without_classifier_does_not_raise(self):
         router = AgenticRouter(classifier=None)

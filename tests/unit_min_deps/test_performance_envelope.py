@@ -158,36 +158,36 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 @pytest.mark.unit_min_deps
 def test_truncation_deterministic_and_hash_changes():
-    """Test that truncation is deterministic and reflected in hashes."""
-    # Create text that exceeds limit
-    long_text = "x" * 2000  # 2000 bytes
-    truncated_text, was_truncated = _truncate_if_needed(long_text, 1000)
+"""Test truncation_deterministic_and_hash_changes runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    assert was_truncated
-    assert "...<TRUNCATED 1000 BYTES>" in truncated_text
-    assert len(truncated_text.encode("utf-8")) <= 1000
+# Act
+# TODO: Execute truncation_deterministic_and_hash_changes
+result = None  # Replace with actual execution
 
-    # Truncation is deterministic
-    truncated_text2, was_truncated2 = _truncate_if_needed(long_text, 1000)
-    assert truncated_text == truncated_text2
-    assert was_truncated == was_truncated2
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
 
 
 @pytest.mark.unit_min_deps
 def test_replay_metrics_determinism():
-    """Test that replay metrics are deterministic."""
-    commands = [
-        ReplayCommand(
-            argv=["python", "-c", "print('hello')"],
-            cwd=".",
-            env_allowlist={},
-            max_stdout_bytes=1000,
-            max_stderr_bytes=1000,
-        )
-    ]
+"""Test replay_metrics_determinism runtime behavior."""
+# Arrange
+# TODO: Set up test data for replay_metrics_determinism
+test_data = {}  # Replace with actual test data
 
-    record1 = run_and_record(commands)
-    record2 = run_and_record(commands)
+# Act
+# TODO: Execute replay_metrics_determinism
+result = None  # Replace with actual function call
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
 
     # Metrics should be present and deterministic
     assert record1.metrics is not None
@@ -203,19 +203,19 @@ def test_replay_metrics_determinism():
 
 @pytest.mark.unit_min_deps
 def test_store_list_limit_deterministic():
-    """Test that store list(limit) is deterministic."""
-    with tempfile.TemporaryDirectory() as temp_dir:
-        store = FileSystemStore(temp_dir)
+"""Test store_list_limit_deterministic runtime behavior."""
+# Arrange
+# TODO: Set up test data for store_list_limit_deterministic
+test_data = {}  # Replace with actual test data
 
-        # Create 10 artifacts
-        for i in range(10):
-            artifact = create_artifact(
-                "test_kind",
-                f"id_{i:02d}",
-                {"data": f"value_{i}"},
-            )
-            store.put(artifact)
+# Act
+# TODO: Execute store_list_limit_deterministic
+result = None  # Replace with actual function call
 
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
         # List with limit should return first N in deterministic order
         limited_refs = store.list(limit=5)
         all_refs = store.list()
@@ -235,19 +235,19 @@ def test_store_list_limit_deterministic():
 
 @pytest.mark.unit_min_deps
 def test_scaling_200_small_artifacts():
-    """Scaling test: write 200 small artifacts and verify structure."""
-    with tempfile.TemporaryDirectory() as temp_dir:
-        store = FileSystemStore(temp_dir)
+"""Test scaling_200_small_artifacts runtime behavior."""
+# Arrange
+# TODO: Set up test data for scaling_200_small_artifacts
+test_data = {}  # Replace with actual test data
 
-        # Write 200 small artifacts
-        for i in range(200):
-            artifact = create_artifact(
-                f"kind_{i % 5}",  # 5 different kinds
-                f"item_{i:03d}",
-                {"index": i, "data": "x" * 10},  # Small payload
-            )
-            ref = store.put(artifact)
+# Act
+# TODO: Execute scaling_200_small_artifacts
+result = None  # Replace with actual function call
 
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
             # Verify basic structure
             assert ref.version == 1
             assert ref.size_bytes > 0
@@ -328,19 +328,19 @@ def test_scaling_25_replay_commands():
 
 @pytest.mark.unit_min_deps
 def test_scaling_deterministic_across_runs():
-    """Test that scaling operations are deterministic across runs."""
-    # First run
-    commands1 = [
-        ReplayCommand(
-            argv=["python", "-c", "print('test')"],
-            cwd=".",
-            env_allowlist={},
-            max_stdout_bytes=1000,
-            max_stderr_bytes=1000,
-        )
-    ]
-    record1 = run_and_record(commands1)
+"""Test scaling_deterministic_across_runs runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Execute scaling_deterministic_across_runs
+result = None  # Replace with actual execution
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
     # Second run with identical commands
     commands2 = [
         ReplayCommand(

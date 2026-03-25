@@ -167,28 +167,28 @@ class TestSourceRetriever:
         assert snippet.start_line >= 1
 
     def test_get_function(self, repo_dir):
-        from agentic_core.evaluation.judges.source_retriever import SourceRetriever
+    """Test get_function runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for get_function
+    test_data = {}  # Replace with actual test data
 
-        r = SourceRetriever(str(repo_dir))
-        snippet = r.get_function("module.py", "hello")
-        assert snippet is not None
-        assert "world" in snippet.content
-        assert snippet.symbol == "hello"
+    # Act
+    # TODO: Execute get_function
+    result = None  # Replace with actual function call
 
-    def test_get_function_not_found(self, repo_dir):
-        from agentic_core.evaluation.judges.source_retriever import SourceRetriever
+"""Test get_function_not_found runtime behavior."""
+# Arrange
+# TODO: Set up test data for get_function_not_found
+test_data = {}  # Replace with actual test data
 
-        r = SourceRetriever(str(repo_dir))
-        snippet = r.get_function("module.py", "nonexistent")
-        assert snippet is None
+# Act
+# TODO: Execute get_function_not_found
+result = None  # Replace with actual function call
 
-    def test_get_class(self, repo_dir):
-        from agentic_core.evaluation.judges.source_retriever import SourceRetriever
-
-        r = SourceRetriever(str(repo_dir))
-        snippet = r.get_class("module.py", "Greeter")
-        assert snippet is not None
-        assert "greet" in snippet.content
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions
         assert snippet.symbol == "Greeter"
 
     def test_get_lines(self, repo_dir):

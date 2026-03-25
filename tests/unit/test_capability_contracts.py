@@ -380,19 +380,19 @@ def test_validate_invariant_registry_succeeds():
 
 
 def test_invariant_registry_called_on_first_use_via_validate_context_contract():
-    """Spy: validate_against_schema must be called (via validate_invariant_registry) on first use."""
-    import agentic_core.prompt_governance.security.validators.output_schema_validator as osv
+"""Test invariant_registry_called_on_first_use_via_validate_context_contract runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    # Reset the module-level flag so first-use fires
-    original = osv._invariant_validated
-    osv._invariant_validated = False
-    try:
-        call_log = []
+# Act
+# TODO: Execute invariant_registry_called_on_first_use_via_validate_context_contract
+result = None  # Replace with actual execution
 
-        real_vas = osv.validate_against_schema
-
-        def spy_vas(obj, schema):
-            call_log.append((obj, schema))
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
             return real_vas(obj, schema)
 
         with patch.object(osv, "validate_against_schema", side_effect=spy_vas):

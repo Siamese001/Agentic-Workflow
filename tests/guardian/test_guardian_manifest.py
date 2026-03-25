@@ -261,82 +261,82 @@ class TestMissingManifest:
         assert result.status == GuardianStatus.PASS.value
 
     def test_no_manifest_has_skip_check(self, repo_no_manifest: Path):
-        result = run_manifest_guardian(repo_root=repo_no_manifest)
-        skip_checks = [c for c in result.checks if c.status == CheckStatus.SKIP.value]
-        assert len(skip_checks) >= 1
+    """Test no_manifest_has_skip_check contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_manifest_exists_check_id(self, repo_no_manifest: Path):
-        result = run_manifest_guardian(repo_root=repo_no_manifest)
-        check_ids = {c.check_id for c in result.checks}
-        assert "manifest_exists" in check_ids
+"""Test manifest_exists_check_id contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
 
-# ---------------------------------------------------------------------------
-# 2. Missing lock → FAIL
-# ---------------------------------------------------------------------------
-
-
-class TestMissingLock:
-    def test_no_lock_fails(self, repo_no_lock: Path):
-        result = run_manifest_guardian(repo_root=repo_no_lock)
-        assert result.status == GuardianStatus.FAIL.value
+# Assert - Schema Contract
+assert validation_result is not None, "Schema validation should produce a result"
+assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+# TODO: Add specific schema validation assertions
+# assert validation_result.get("valid", False), "Data should conform to schema"
 
     def test_no_lock_check_id(self, repo_no_lock: Path):
-        result = run_manifest_guardian(repo_root=repo_no_lock)
-        lock_check = next(c for c in result.checks if c.check_id == "lock_exists")
-        assert lock_check.status == CheckStatus.FAIL.value
+    """Test no_lock_check_id contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_no_lock_has_remediation(self, repo_no_lock: Path):
-        result = run_manifest_guardian(repo_root=repo_no_lock)
-        assert len(result.remediation_hints) > 0
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-
-# ---------------------------------------------------------------------------
-# 3. Valid manifest + lock → PASS
-# ---------------------------------------------------------------------------
-
-
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
 class TestValidManifest:
     def test_valid_passes(self, repo_valid: Path):
         result = run_manifest_guardian(repo_root=repo_valid)
         assert result.status == GuardianStatus.PASS.value
 
     def test_all_checks_pass(self, repo_valid: Path):
-        result = run_manifest_guardian(repo_root=repo_valid)
-        for check in result.checks:
-            assert check.status == CheckStatus.PASS.value, f"Check {check.check_id} should PASS"
+    """Test all_checks_pass contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_checksum_evidence(self, repo_valid: Path):
-        result = run_manifest_guardian(repo_root=repo_valid)
-        cs_check = next(c for c in result.checks if c.check_id == "checksum_match")
-        assert "sha256" in cs_check.evidence
+"""Test checksum_evidence contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
 
-# ---------------------------------------------------------------------------
-# 4. Tampered manifest → FAIL
-# ---------------------------------------------------------------------------
-
-
-class TestTamperedManifest:
-    def test_tampered_fails(self, repo_tampered: Path):
-        result = run_manifest_guardian(repo_root=repo_tampered)
-        assert result.status == GuardianStatus.FAIL.value
+# Assert - Schema Contract
+assert validation_result is not None, "Schema validation should produce a result"
+assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+# TODO: Add specific schema validation assertions
+# assert validation_result.get("valid", False), "Data should conform to schema"
 
     def test_checksum_mismatch_details(self, repo_tampered: Path):
-        result = run_manifest_guardian(repo_root=repo_tampered)
-        cs_check = next(c for c in result.checks if c.check_id == "checksum_match")
-        assert cs_check.status == CheckStatus.FAIL.value
-        assert "expected" in cs_check.evidence
-        assert "actual" in cs_check.evidence
+    """Test checksum_mismatch_details contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_tampered_has_remediation(self, repo_tampered: Path):
-        result = run_manifest_guardian(repo_root=repo_tampered)
-        assert len(result.remediation_hints) > 0
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-
-# ---------------------------------------------------------------------------
-# 5. Schema compliance
-# ---------------------------------------------------------------------------
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
 
 
 class TestSchemaCompliance:

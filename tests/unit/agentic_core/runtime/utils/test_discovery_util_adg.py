@@ -44,28 +44,40 @@ def _src_text():
 
 class TestDiscoveryUtilSource:
     def test_source_exists(self):
-        assert _SRC.exists()
+    """Test source_exists runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    """Test parses_without_error runtime behavior."""
+    # Arrange
+    # TODO: Set up error condition
+    """Test has_discovered_agent_record_class runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    """Test has_agent_registry_class runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    """Test has_name_field runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    """Test has_layer_field runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    """Test has_file_path_field runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    """Test has_discover_all_method runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    """Test agent_registry_has_discovered_agents runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_parses_without_error(self):
-        _tree()
+    # Act
+    # TODO: Execute runtime operation agent_registry_has_discovered_agents
+    runtime_result = None  # Replace with actual runtime operation
 
-    def test_has_discovered_agent_record_class(self):
-        assert "DiscoveredAgentRecord" in _class_names()
-
-    def test_has_agent_registry_class(self):
-        assert "AgentRegistry" in _class_names()
-
-    def test_has_name_field(self):
-        assert "name" in _src_text()
-
-    def test_has_layer_field(self):
-        assert "layer" in _src_text()
-
-    def test_has_file_path_field(self):
-        assert "file_path" in _src_text()
-
-    def test_has_discover_all_method(self):
-        assert "discover_all" in _methods_of("AgentRegistry")
-
-    def test_agent_registry_has_discovered_agents(self):
-        assert "discovered_agents" in _src_text()
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions

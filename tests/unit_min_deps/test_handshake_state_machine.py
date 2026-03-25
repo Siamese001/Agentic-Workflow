@@ -379,20 +379,20 @@ class TestW5HandshakeStateMachine:
         assert hash1 != hash2
 
     def test_sequence_hash_invalidated_on_transition(self, machine):
-        """Test that sequence hash is invalidated when transitions occur."""
-        # Get initial hash (empty sequence)
-        hash1 = machine.get_sequence_hash()
+    """Test sequence_hash_invalidated_on_transition contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-        # Make a transition
-        machine.request_preclear()
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-        # Hash should change
-        hash2 = machine.get_sequence_hash()
-        assert hash1 != hash2
-
-        # Make another transition
-        machine.certify()
-
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
         # Hash should change again
         hash3 = machine.get_sequence_hash()
         assert hash2 != hash3

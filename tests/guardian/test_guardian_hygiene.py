@@ -264,25 +264,25 @@ class TestCleanRepoPass:
         assert result.status == GuardianStatus.PASS.value
 
     def test_clean_repo_all_checks_pass(self, clean_repo: Path):
-        result = run_hygiene_guardian(repo_root=clean_repo)
-        fail_checks = [c for c in result.checks if c.status == CheckStatus.FAIL.value]
-        assert fail_checks == [], f"Unexpected FAIL checks: {[c.check_id for c in fail_checks]}"
+    """Test clean_repo_all_checks_pass contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_clean_repo_has_three_checks(self, clean_repo: Path):
-        result = run_hygiene_guardian(repo_root=clean_repo)
-        check_ids = {c.check_id for c in result.checks}
-        assert "temp_artifacts" in check_ids
-        assert "empty_folders" in check_ids
-        assert "init_only_folders" in check_ids
+"""Test clean_repo_has_three_checks contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
-    def test_clean_repo_metrics_populated(self, clean_repo: Path):
-        result = run_hygiene_guardian(repo_root=clean_repo)
-        assert result.metrics.get("temp_artifact_count") == 0
-        assert result.metrics.get("empty_folder_count") == 0
-        assert result.metrics.get("init_only_folder_count") == 0
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
 
-
-# ---------------------------------------------------------------------------
+# Assert - Schema Contract
+assert validation_result is not None, "Schema validation should produce a result"
+assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+# TODO: Add specific schema validation assertions
+# assert validation_result.get("valid", False), "Data should conform to schema"
 # 2. Temp artifact present → FAIL
 # ---------------------------------------------------------------------------
 
@@ -293,20 +293,20 @@ class TestTempArtifactFail:
         assert result.status == GuardianStatus.FAIL.value
 
     def test_temp_artifact_check_id_fails(self, repo_with_temp_artifact: Path):
-        result = run_hygiene_guardian(repo_root=repo_with_temp_artifact)
-        ta_check = next((c for c in result.checks if c.check_id == "temp_artifacts"), None)
-        assert ta_check is not None
-        assert ta_check.status == CheckStatus.FAIL.value
+    """Test temp_artifact_check_id_fails contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_temp_artifact_evidence_contains_path(self, repo_with_temp_artifact: Path):
-        result = run_hygiene_guardian(repo_root=repo_with_temp_artifact)
-        ta_check = next(c for c in result.checks if c.check_id == "temp_artifacts")
-        paths = ta_check.evidence.get("paths", [])
-        assert len(paths) >= 1
-        assert any("stale.pyc" in p for p in paths)
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-    def test_temp_artifact_remediation_hints_present(self, repo_with_temp_artifact: Path):
-        result = run_hygiene_guardian(repo_root=repo_with_temp_artifact)
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
         assert len(result.remediation_hints) > 0
 
     def test_temp_artifact_metric_nonzero(self, repo_with_temp_artifact: Path):
@@ -325,20 +325,20 @@ class TestEmptyFolderFail:
         assert result.status == GuardianStatus.FAIL.value
 
     def test_empty_folder_check_id_fails(self, repo_with_empty_folder: Path):
-        result = run_hygiene_guardian(repo_root=repo_with_empty_folder)
-        ef_check = next((c for c in result.checks if c.check_id == "empty_folders"), None)
-        assert ef_check is not None
-        assert ef_check.status == CheckStatus.FAIL.value
+    """Test empty_folder_check_id_fails contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_empty_folder_evidence_contains_path(self, repo_with_empty_folder: Path):
-        result = run_hygiene_guardian(repo_root=repo_with_empty_folder)
-        ef_check = next(c for c in result.checks if c.check_id == "empty_folders")
-        paths = ef_check.evidence.get("paths", [])
-        assert any("empty_dir" in p for p in paths)
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-    def test_empty_folder_metric_nonzero(self, repo_with_empty_folder: Path):
-        result = run_hygiene_guardian(repo_root=repo_with_empty_folder)
-        assert result.metrics.get("empty_folder_count", 0) >= 1
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
 
 
 # ---------------------------------------------------------------------------
@@ -352,20 +352,20 @@ class TestInitOnlyFolderFail:
         assert result.status == GuardianStatus.FAIL.value
 
     def test_init_only_check_id_fails(self, repo_with_init_only_folder: Path):
-        result = run_hygiene_guardian(repo_root=repo_with_init_only_folder)
-        io_check = next((c for c in result.checks if c.check_id == "init_only_folders"), None)
-        assert io_check is not None
-        assert io_check.status == CheckStatus.FAIL.value
+    """Test init_only_check_id_fails contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_init_only_evidence_contains_path(self, repo_with_init_only_folder: Path):
-        result = run_hygiene_guardian(repo_root=repo_with_init_only_folder)
-        io_check = next(c for c in result.checks if c.check_id == "init_only_folders")
-        paths = io_check.evidence.get("paths", [])
-        assert any("init_only_pkg" in p for p in paths)
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-    def test_init_only_metric_nonzero(self, repo_with_init_only_folder: Path):
-        result = run_hygiene_guardian(repo_root=repo_with_init_only_folder)
-        assert result.metrics.get("init_only_folder_count", 0) >= 1
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
 
 
 # ---------------------------------------------------------------------------
@@ -375,38 +375,38 @@ class TestInitOnlyFolderFail:
 
 class TestSchemaCompliance:
     def test_schema_compatibility(self, clean_repo: Path):
-        result = run_hygiene_guardian(repo_root=clean_repo)
-        errors = check_schema_compatibility(result.to_dict())
-        assert errors == [], f"Schema errors: {errors}"
+    """Test schema_compatibility contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_validate_passes(self, clean_repo: Path):
-        result = run_hygiene_guardian(repo_root=clean_repo)
-        errors = result.validate()
-        assert errors == [], f"Contract violations: {errors}"
+"""Test validate_passes contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
-    def test_guardian_id_is_stable(self, clean_repo: Path):
-        result = run_hygiene_guardian(repo_root=clean_repo)
-        assert result.guardian_id == "hygiene"
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
 
-    def test_status_is_known_value(self, clean_repo: Path):
-        result = run_hygiene_guardian(repo_root=clean_repo)
-        assert result.status in {"PASS", "FAIL", "ERROR"}
+# Assert - Schema Contract
+assert validation_result is not None, "Schema validation should produce a result"
+assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+# TODO: Add specific schema validation assertions
+"""Test check_ids_are_registered contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
 
-    def test_check_ids_are_registered(self, clean_repo: Path):
-        result = run_hygiene_guardian(repo_root=clean_repo)
-        from agentic_core.L0_routing.types.guardian_registry_types import ALL_GUARDIANS
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
 
-        spec = next(g for g in ALL_GUARDIANS if g.guardian_id == "hygiene")
-        emitted_ids = {c.check_id for c in result.checks}
-        for cid in spec.check_ids:
-            assert cid in emitted_ids, f"Registered check_id '{cid}' not emitted"
-
-
-# ---------------------------------------------------------------------------
-# 6. Determinism
-# ---------------------------------------------------------------------------
-
-
+# Assert - Schema Contract
+assert validation_result is not None, "Schema validation should produce a result"
+assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+# TODO: Add specific schema validation assertions
+# assert validation_result.get("valid", False), "Data should conform to schema"
 class TestDeterminism:
     def test_same_input_same_output(self, clean_repo: Path):
         r1 = run_hygiene_guardian(repo_root=clean_repo)

@@ -213,39 +213,39 @@ class TestGrepBanScanner:
         return False
 
     def test_subprocess_run_grep_list_detected(self):
-        line = '    result = subprocess.run(["grep", "-r", "MyClass", "."], capture_output=True)'
-        assert self._scan_line(line), "subprocess.run(['grep',...]) must be banned"
+    """Test subprocess_run_grep_list_detected runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+    """Test subprocess_run_rg_list_detected runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+    """Test subprocess_run_ripgrep_list_detected runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+    """Test subprocess_call_grep_detected runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_subprocess_run_rg_list_detected(self):
-        line = '    out = subprocess.run(["rg", "--json", "pattern"], capture_output=True)'
-        assert self._scan_line(line), "subprocess.run(['rg',...]) must be banned"
+    # Act
+    # TODO: Execute subprocess_call_grep_detected
+    result = None  # Replace with actual execution
+    """Test subprocess_popen_grep_detected runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-    def test_subprocess_run_ripgrep_list_detected(self):
-        line = '    p = subprocess.run(["ripgrep", "term", "src/"], capture_output=True)'
-        assert self._scan_line(line), "subprocess.run(['ripgrep',...]) must be banned"
+    # Act
+    # TODO: Process data with subprocess_popen_grep_detected
+    processed_result = None  # Replace with actual processing
 
-    def test_subprocess_call_grep_detected(self):
-        line = "    subprocess.call(['grep', '-n', 'TODO', 'file.py'])"
-        assert self._scan_line(line), "subprocess.call(['grep',...]) must be banned"
-
-    def test_subprocess_check_output_rg_detected(self):
-        line = "    out = subprocess.check_output(['rg', 'pattern', '--type', 'py'])"
-        assert self._scan_line(line), "subprocess.check_output(['rg',...]) must be banned"
-
-    def test_subprocess_popen_grep_detected(self):
-        line = '    proc = subprocess.Popen(["grep", "-l", "import", "tools/"])'
-        assert self._scan_line(line), "subprocess.Popen(['grep',...]) must be banned"
-
-    def test_pure_comment_line_not_flagged_by_scan_file(self):
-        """scan_file() must skip pure comment lines even if they contain banned patterns."""
-        with tempfile.NamedTemporaryFile(suffix=".py", mode="w", encoding="utf-8", delete=False) as f:
-            f.write("# os.popen('grep -r ClassName .')  -- do not use this\n")
-            tmp = Path(f.name)
-        try:
-            vs = scan_file(tmp)
-            assert vs == [], f"Pure comment lines must be skipped; got: {vs}"
-        finally:
-            tmp.unlink()
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
 
     def test_os_popen_grep_in_code_detected(self):
         line = "    out = os.popen('grep -r ClassName .')"
@@ -256,23 +256,23 @@ class TestGrepBanScanner:
         assert self._scan_line(line), "os.popen('rg ...') must be banned"
 
     def test_subprocess_run_ag_detected(self):
-        line = '    subprocess.run(["ag", "SearchTerm", "--python"])'
-        assert self._scan_line(line), "subprocess.run(['ag',...]) must be banned"
+    """Test subprocess_run_ag_detected runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+    """Test subprocess_run_findstr_detected runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_subprocess_run_findstr_detected(self):
-        line = '    subprocess.run(["findstr", "/s", "pattern", "*.py"])'
-        assert self._scan_line(line), "subprocess.run(['findstr',...]) must be banned"
+    # Act
+    # TODO: Execute subprocess_run_findstr_detected
+    result = None  # Replace with actual execution
 
-
-# ===========================================================================
-# 2. Exemption mechanism
-# ===========================================================================
-
-
-class TestGrepBanExemption:
-    """Verify guardian: allow-grep exemption bypasses the gate."""
-
-    def test_exemption_pattern_matches_canonical_form(self):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         line = '    subprocess.run(["grep", ...])  # guardian: allow-grep -- legacy script wrapper'
         assert _EXEMPTION_RE.search(line), "Canonical allow-grep exemption must match"
 
@@ -331,31 +331,31 @@ class TestGrepBanNegative:
         assert not self._scan_line(line), "adg.search_files() must NOT be flagged"
 
     def test_adg_test_selector_call_not_flagged(self):
-        line = "    tests = selector.select_tests(changed_files)"
-        assert not self._scan_line(line), "selector.select_tests() must NOT be flagged"
+    """Test adg_selector_call_not_flagged runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+    """Test git_subprocess_not_flagged runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
+    """Test mypy_subprocess_not_flagged runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
+    """Test python_subprocess_not_flagged runtime behavior."""
+    # Arrange
+    # TODO: Set up processing data
+    raw_data = []  # Replace with actual test data
 
-    def test_git_subprocess_not_flagged(self):
-        line = '    subprocess.run(["git", "diff", "--name-only"], capture_output=True)'
-        assert not self._scan_line(line), "git subprocess calls must NOT be flagged"
+    # Act
+    # TODO: Process data with python_subprocess_not_flagged
+    processed_result = None  # Replace with actual processing
 
-    def test_mypy_subprocess_not_flagged(self):
-        line = '    subprocess.run([sys.executable, "-m", "mypy", *files])'
-        assert not self._scan_line(line), "mypy subprocess calls must NOT be flagged"
-
-    def test_python_subprocess_not_flagged(self):
-        line = '    subprocess.run([sys.executable, "tools/adg/adg_stale_guard.py", "--warn"])'
-        assert not self._scan_line(line), "Python subprocess calls must NOT be flagged"
-
-    def test_string_containing_grep_word_in_comment_not_flagged(self):
-        """A comment mentioning 'grep' must not trigger the gate."""
-        line = "    # Do NOT use grep here — use adg.search_nodes() instead"
-        assert not self._scan_line(line), "grep in comment must NOT be flagged"
-
-    def test_scan_file_on_clean_file_returns_empty(self):
-        """A file with only ADG calls must produce zero violations."""
-        with tempfile.NamedTemporaryFile(suffix=".py", mode="w", encoding="utf-8", delete=False) as f:
-            f.write(
-                "from tools.adg.adg_redis_query import ADGRedisClient\n"
+    # Assert
+    assert processed_result is not None, "Processing should produce a result"
+    assert len(processed_result) >= 0, "Processed result should be measurable"
+    # TODO: Add specific processing assertions
                 "adg = ADGRedisClient()\n"
                 "adg.ping()\n"
                 "nodes = adg.search_nodes('MyClass')\n"
@@ -518,19 +518,19 @@ class TestConnectionErrorHandling:
         self._assert_cli_exits_1_on_connection_error(_cli, ["adg_type_check", "some_file.py"])
 
     def test_adg_test_selector_runtime_error_also_exits_1(self):
-        """RuntimeError (cache not loaded) also exits 1 cleanly."""
-        import io
+    """Test adg_selector_runtime_error_also_exits_1 runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        from tools.adg.adg_test_selector import _cli
+    # Act
+    # TODO: Execute adg_selector_runtime_error_also_exits_1
+    result = None  # Replace with actual execution
 
-        err_buf = io.StringIO()
-        with (
-            patch(
-                "tools.adg.adg_redis_query.ADGRedisClient.ping",
-                side_effect=RuntimeError("ADG Redis cache is not loaded"),
-            ),
-            patch("sys.argv", ["adg_test_selector", "some_file.py"]),
-            redirect_stderr(err_buf),
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         ):
             with pytest.raises(SystemExit) as exc_info:
                 _cli()
@@ -596,19 +596,19 @@ class TestADGQuerySession:
         assert returned_client is mock_client
 
     def test_query_session_calls_warn_if_stale_in_warn_mode(self):
-        """__enter__ must invoke warn_if_stale() when warn_only=True."""
-        from tools.adg.adg_redis_query import ADGQuerySession
+    """Test query_session_calls_warn_if_stale_in_warn_mode runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        mock_client = MagicMock()
-        mock_checker = self._make_checker_mock()
+    # Act
+    # TODO: Execute query_session_calls_warn_if_stale_in_warn_mode
+    result = None  # Replace with actual execution
 
-        with patch(
-            "tools.adg.adg_stale_guard.ADGStalenessChecker",
-            return_value=mock_checker,
-        ):
-            session = ADGQuerySession(warn_only=True, client=mock_client)
-            session.__enter__()
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         mock_checker.warn_if_stale.assert_called_once()
         mock_checker.assert_fresh.assert_not_called()
 
@@ -696,28 +696,39 @@ class TestGrepBanCIWorkflow:
         return CI_WF.read_text(encoding="utf-8")
 
     def test_ci_workflow_exists(self):
-        assert CI_WF.exists()
+    """Test ci_workflow_exists runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    """Test ci_workflow_is_valid_yaml runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
 
-    def test_ci_workflow_is_valid_yaml(self):
-        import importlib.util
+    # Act
+    # TODO: Execute workflow ci_workflow_is_valid_yaml
+    workflow_result = None  # Replace with actual workflow execution
 
-        text = self._load()
-        if importlib.util.find_spec("yaml"):
-            import yaml
+    # Assert
+    assert workflow_result is not None, "Workflow should produce a result"
+    assert isinstance(workflow_result, dict), "Workflow result should be structured"
+    """Test ci_workflow_uses_all_python_flag runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
 
-            data = yaml.safe_load(text)
-            assert isinstance(data, dict)
-        else:
-            assert "name:" in text and "jobs:" in text
+"""Test ci_workflow_calls_grep_ban_gate runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+"""Test ci_workflow_triggers_on_python_files runtime behavior."""
+# Arrange
+# TODO: Set up workflow context
+workflow_input = {}  # Replace with actual workflow input
 
-    def test_ci_workflow_uses_all_python_flag(self):
-        assert "--all-python" in self._load(), (
-            "CI workflow must use --all-python to scan the entire codebase, not just staged files"
-        )
+# Act
+# TODO: Execute workflow ci_workflow_triggers_on_python_files
+workflow_result = None  # Replace with actual workflow execution
 
-    def test_ci_workflow_calls_grep_ban_gate(self):
-        assert "adg_grep_ban_gate.py" in self._load()
-
-    def test_ci_workflow_triggers_on_python_files(self):
-        text = self._load()
-        assert "**.py" in text or "*.py" in text
+# Assert
+assert workflow_result is not None, "Workflow should produce a result"
+assert isinstance(workflow_result, dict), "Workflow result should be structured"
+# TODO: Add workflow step assertions

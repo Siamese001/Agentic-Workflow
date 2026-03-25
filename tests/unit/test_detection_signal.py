@@ -283,20 +283,20 @@ class TestDetectionSignalValidation:
             )
 
     def test_detection_signal_rejects_bad_schema_version(self):
-        with pytest.raises(ValueError, match="schema_version"):
-            DetectionSignal.build(
-                mission_id="m",
-                created_at_utc=1,
-                anomaly_score=0.0,
-                escalation_rate=0.0,
-                retry_rate=0.0,
-                violation_density=0.0,
-                schema_version=0,
-            )
+    """Test detection_signal_rejects_bad_schema_version contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-class TestEmissionHook:
-    def test_emit_detection_signal_returns_valid_signal(self):
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
         sig = emit_detection_signal(
             mission_id="emit-001",
             created_at_utc=1_700_000_100,

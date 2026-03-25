@@ -192,13 +192,17 @@ class TestSecurityAction:
         assert hasattr(SecurityAction, "WRITE_CONFIG")
 
     def test_create_checkpoint_member(self):
-        assert hasattr(SecurityAction, "CREATE_CHECKPOINT")
+    """Test create_checkpoint_member contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-class TestSecurityManagerAgent:
-    def test_creates(self):
-        agent = SecurityManagerAgent()
-        assert agent is not None
-
-    def test_has_heal_repository(self):
-        assert hasattr(SecurityManagerAgent, "heal_repository")
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"

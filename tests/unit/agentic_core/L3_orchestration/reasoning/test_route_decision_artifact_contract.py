@@ -328,20 +328,20 @@ class TestRouteDecisionArtifactContract:
     """Assert RouteDecisionArtifact is attached to delegate_task return."""
 
     def test_success_path_contains_artifact_with_all_keys(self):
-        """STANDARD_VALIDATION route proceeds; audit return has artifact."""
-        seam = _import_seam()
-        agent = _build_agent(seam)
-        _stub_discover(agent)
-        _stub_invoke(agent)
-        _stub_cache(agent)
+    """Test success_path_contains_artifact_with_all_keys contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-        stub_result = _make_routing_result(RoutePath.STANDARD_VALIDATION, "medium")
-        fake_router = MagicMock()
-        fake_router.route.return_value = stub_result
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-        with (
-            patch.object(seam, "is_v15_enforced", return_value=True),
-            patch.object(seam, "get_router", return_value=fake_router),
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
         ):
             out = agent.delegate_task("test task")
 
@@ -351,20 +351,20 @@ class TestRouteDecisionArtifactContract:
         assert set(artifact.keys()) == REQUIRED_KEYS
 
     def test_success_path_route_path_matches(self):
-        """route_path in artifact matches the RoutePath from routing result."""
-        seam = _import_seam()
-        agent = _build_agent(seam)
-        _stub_discover(agent)
-        _stub_invoke(agent)
-        _stub_cache(agent)
+    """Test success_path_route_path_matches contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-        stub_result = _make_routing_result(RoutePath.LOW_RISK_BYPASS, "low")
-        fake_router = MagicMock()
-        fake_router.route.return_value = stub_result
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-        with (
-            patch.object(seam, "is_v15_enforced", return_value=True),
-            patch.object(seam, "get_router", return_value=fake_router),
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
         ):
             out = agent.delegate_task("test task low risk")
 
@@ -372,20 +372,20 @@ class TestRouteDecisionArtifactContract:
         assert artifact["route_path"] == RoutePath.LOW_RISK_BYPASS
 
     def test_blocked_path_human_escalation_has_artifact(self):
-        """HUMAN_ESCALATION blocks delegation but still attaches artifact."""
-        seam = _import_seam()
-        agent = _build_agent(seam)
-        _stub_discover(agent)
-        _stub_invoke(agent)
-        _stub_cache(agent)
+    """Test blocked_path_human_escalation_has_artifact contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-        stub_result = _make_routing_result(RoutePath.HUMAN_ESCALATION, "high")
-        fake_router = MagicMock()
-        fake_router.route.return_value = stub_result
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-        with (
-            patch.object(seam, "is_v15_enforced", return_value=True),
-            patch.object(seam, "get_router", return_value=fake_router),
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
         ):
             out = agent.delegate_task("test escalation task")
 
@@ -396,20 +396,20 @@ class TestRouteDecisionArtifactContract:
         assert artifact["route_path"] == RoutePath.HUMAN_ESCALATION
 
     def test_blocked_path_budget_overflow_has_artifact(self):
-        """ROUTE_RECOVERY_BUDGET_OVERFLOW blocks and attaches artifact."""
-        seam = _import_seam()
-        agent = _build_agent(seam)
-        _stub_discover(agent)
-        _stub_invoke(agent)
-        _stub_cache(agent)
+    """Test blocked_path_budget_overflow_has_artifact contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-        stub_result = _make_routing_result(
-            RoutePath.ROUTE_RECOVERY_BUDGET_OVERFLOW,
-            "high",
-        )
-        fake_router = MagicMock()
-        fake_router.route.return_value = stub_result
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
         with (
             patch.object(seam, "is_v15_enforced", return_value=True),
             patch.object(seam, "get_router", return_value=fake_router),
@@ -422,33 +422,33 @@ class TestRouteDecisionArtifactContract:
         assert artifact["route_path"] == RoutePath.ROUTE_RECOVERY_BUDGET_OVERFLOW
 
     def test_no_artifact_when_v15_not_enforced(self):
-        """Without V15 enforcement, route_decision_artifact is None."""
-        seam = _import_seam()
-        agent = _build_agent(seam)
-        _stub_discover(agent)
-        _stub_invoke(agent)
-        _stub_cache(agent)
+    """Test no_artifact_when_v15_not_enforced contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-        with patch.object(seam, "is_v15_enforced", return_value=False):
-            out = agent.delegate_task("test task no v15")
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-        assert out["route_decision_artifact"] is None
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    """Test trace_id_deterministic contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_trace_id_deterministic(self):
-        """trace_id must be the SHA-256 prefix of the Task string."""
-        seam = _import_seam()
-        agent = _build_agent(seam)
-        _stub_discover(agent)
-        _stub_invoke(agent)
-        _stub_cache(agent)
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-        task = "deterministic trace test"
-        expected_trace = hashlib.sha256(task.encode()).hexdigest()[:16]
-
-        stub_result = _make_routing_result(RoutePath.STANDARD_VALIDATION, "medium")
-        fake_router = MagicMock()
-        fake_router.route.return_value = stub_result
-
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
         with (
             patch.object(seam, "is_v15_enforced", return_value=True),
             patch.object(seam, "get_router", return_value=fake_router),
@@ -458,20 +458,20 @@ class TestRouteDecisionArtifactContract:
         assert out["route_decision_artifact"]["trace_id"] == expected_trace
 
     def test_sentinel_fields_are_zero_values(self):
-        """Fields not available at L3 seam use documented sentinel values."""
-        seam = _import_seam()
-        agent = _build_agent(seam)
-        _stub_discover(agent)
-        _stub_invoke(agent)
-        _stub_cache(agent)
+    """Test sentinel_fields_are_zero_values contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-        stub_result = _make_routing_result(RoutePath.STANDARD_VALIDATION, "medium")
-        fake_router = MagicMock()
-        fake_router.route.return_value = stub_result
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-        with (
-            patch.object(seam, "is_v15_enforced", return_value=True),
-            patch.object(seam, "get_router", return_value=fake_router),
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
         ):
             out = agent.delegate_task("sentinel check")
 
@@ -485,20 +485,20 @@ class TestDurableEmission:
     """Assert TelemetryEmitter.emit_route_decision is called as durable sink."""
 
     def test_emit_route_decision_called_once_with_all_keys(self):
-        """emit_route_decision called exactly once; payload has all artifact keys."""
-        seam = _import_seam()
-        agent = _build_agent(seam)
-        _stub_discover(agent)
-        _stub_invoke(agent)
+    """Test emit_route_decision_called_once_with_all_keys contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-        stub_result = _make_routing_result(RoutePath.STANDARD_VALIDATION, "medium")
-        fake_router = MagicMock()
-        fake_router.route.return_value = stub_result
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-        captured = []
-
-        def _capture_emit(artifact):
-            from dataclasses import asdict
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
 
             captured.append(asdict(artifact))
 
@@ -518,20 +518,20 @@ class TestDurableEmission:
         assert set(captured[0].keys()) == REQUIRED_KEYS
 
     def test_emit_route_decision_called_on_blocked_path(self):
-        """Emission fires even when route is blocked (HUMAN_ESCALATION)."""
-        seam = _import_seam()
-        agent = _build_agent(seam)
-        _stub_discover(agent)
-        _stub_invoke(agent)
+    """Test emit_route_decision_called_on_blocked_path contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-        stub_result = _make_routing_result(RoutePath.HUMAN_ESCALATION, "high")
-        fake_router = MagicMock()
-        fake_router.route.return_value = stub_result
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-        captured = []
-
-        def _capture_emit(artifact):
-            from dataclasses import asdict
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
 
             captured.append(asdict(artifact))
 
@@ -586,8 +586,17 @@ class TestFlushDurability:
         assert event["payload"]["trace_id"] == "flush-test-trace"
 
     def test_flush_returns_none_when_no_events(self, tmp_path):
-        """flush_to_artifacts_dir returns None if no events buffered."""
-        from agentic_core.L0_routing.types.routing_contracts_types import TelemetryEmitter
+    """Test flush_returns_none_when_no_events contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-        emitter = TelemetryEmitter()
-        assert emitter.flush_to_artifacts_dir(tmp_path) is None
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"

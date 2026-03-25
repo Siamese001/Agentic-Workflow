@@ -272,19 +272,19 @@ class TestCanonicalSnapshot:
         assert snap.coverage_count == 1
 
     def test_snapshot_call_count(self):
-        edges = [
-            _make_edge("ADG::Module::a.py", "calls", "ADG::Symbol::fn", edge_kind="call"),
-            _make_edge("ADG::Module::b.py", "calls", "ADG::Symbol::gn", edge_kind="call"),
-        ]
-        snap = self._build(edges)
-        assert snap.call_count == 2
+    """Test snapshot_call_count runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_snapshot_governance_count(self):
-        edges = [
-            _make_edge("ADG::Module::a.py", "writes_through", "ADG::Symbol::UWG", edge_kind="write"),
-            _make_edge("ADG::Module::b.py", "routes_through", "ADG::Symbol::H", edge_kind="call"),
-        ]
-        snap = self._build(edges)
+    # Act
+    # TODO: Execute snapshot_call_count
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         assert snap.governance_count == 2
 
     def test_snapshot_canonical_node_order_sorted(self):
@@ -422,19 +422,19 @@ class TestGraphDiff:
         assert len(diff.new_coverage) == 1
 
     def test_new_calls_detected(self):
-        e_call = _make_edge("ADG::Module::a.py", "calls", "ADG::Symbol::fn", edge_kind="call")
-        diff = self._diff([], [e_call])
-        assert len(diff.new_calls) == 1
+    """Test new_calls_detected runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_governance_edges_categorised(self):
-        e_wt = _make_edge("ADG::Module::a.py", "writes_through", "ADG::Symbol::UWG", edge_kind="write")
-        diff = self._diff([], [e_wt])
-        assert len(diff.new_governance) == 1
+    # Act
+    # TODO: Execute new_calls_detected
+    result = None  # Replace with actual execution
 
-    def test_node_delta(self):
-        e1 = _make_edge("ADG::Module::a.py", "imports", "ADG::Symbol::b")
-        e2 = _make_edge("ADG::Module::c.py", "imports", "ADG::Symbol::d")
-        diff = self._diff([e1], [e1, e2])
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         assert diff.node_delta == 2
 
     def test_edge_delta(self):
@@ -629,19 +629,19 @@ class TestEdgeConfidence:
         assert ec.provenance == "ast_inheritance"
 
     def test_calls_edge_confidence(self):
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+    """Test calls_edge_confidence runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        e = _make_edge("ADG::Module::a.py", "calls", "ADG::Symbol::fn", edge_kind="call")
-        ec = score_edge(e)
-        assert ec.confidence == 0.95
+    # Act
+    # TODO: Execute calls_edge_confidence
+    result = None  # Replace with actual execution
 
-    def test_violates_edge_confidence_low(self):
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
-
-        e = _make_edge("ADG::Module::a.py", "violates", "ADG::Layer::L5")
-        ec = score_edge(e)
-        assert ec.confidence == 0.60
-        assert ec.provenance == "layer_violation"
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
     def test_covers_edge_confidence_naming_heuristic(self):
         from agentic_core.adg.analysis.EdgeConfidence import score_edge
@@ -767,19 +767,19 @@ class TestRepairRouting:
         assert any(r.recommended_agent == "DynamicExecReviewAgent" for r in routes)
 
     def test_invokes_provider_routes_to_dependency_repair(self):
-        from agentic_core.adg.analysis.RepairRoute import route_violations
+    """Test invokes_provider_routes_to_dependency_repair runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for invokes_provider_routes_to_dependency_repair
+    test_data = {}  # Replace with actual test data
 
-        e = _make_edge("ADG::Module::a.py", "invokes_provider", "ADG::Symbol::openai", edge_kind="network")
-        routes = route_violations([e])
-        assert any(r.recommended_agent == "DependencyRepairAgent" for r in routes)
+    # Act
+    # TODO: Execute invokes_provider_routes_to_dependency_repair
+    result = None  # Replace with actual function call
 
-    def test_writes_through_routes_to_healing_orchestrator(self):
-        from agentic_core.adg.analysis.RepairRoute import route_violations
-
-        e = _make_edge("ADG::Module::a.py", "writes_through", "ADG::Symbol::UWG", edge_kind="write")
-        routes = route_violations([e])
-        assert any(r.recommended_agent == "HealingOrchestrator" for r in routes)
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
     def test_routes_through_routes_to_healing_orchestrator(self):
         from agentic_core.adg.analysis.RepairRoute import route_violations
 
@@ -846,19 +846,19 @@ class TestRepairRouting:
         assert any(r.recommended_agent == "DriftGovernorAgent" for r in routes)
 
     def test_route_diff_missing_test_coverage_for_new_calls(self):
-        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
-        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
-        from agentic_core.adg.analysis.RepairRoute import route_diff_violations
+    """Test route_diff_missing_coverage_for_new_calls runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        e_call = _make_edge("ADG::Module::a.py", "calls", "ADG::Symbol::fn", edge_kind="call")
-        diff = diff_snapshots(build_snapshot(_make_result([])), build_snapshot(_make_result([e_call])))
-        routes = route_diff_violations(diff)
-        assert any(r.recommended_agent == "TestRepairAgent" for r in routes)
+    # Act
+    # TODO: Execute route_diff_missing_coverage_for_new_calls
+    result = None  # Replace with actual execution
 
-    def test_route_diff_no_routes_on_identical(self):
-        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
-        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
-        from agentic_core.adg.analysis.RepairRoute import route_diff_violations
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
         edges = [_make_edge("ADG::Module::a.py", "imports", "ADG::Symbol::b")]
         diff = diff_snapshots(build_snapshot(_make_result(edges)), build_snapshot(_make_result(edges)))

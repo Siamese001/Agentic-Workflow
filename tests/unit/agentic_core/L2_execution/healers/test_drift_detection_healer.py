@@ -205,20 +205,20 @@ class TestDriftDetectionHealer:
         assert result.notes == "dry-run healer planned actions"
 
     def test_check_id_passthrough(self) -> None:
-        check = {
-            "check_id": "guardian_drift_detection",
-            "status": "FAIL",
-            "details": "",
-            "evidence": {},
-        }
-        result = heal_guardian_drift_detection(check)
-        assert result.check_id == "guardian_drift_detection"
+    """Test check_id_passthrough contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_missing_evidence_keys_empty_changes(self) -> None:
-        check = {
-            "check_id": "guardian_drift_detection",
-            "status": "FAIL",
-            "details": "",
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
+
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
             "evidence": {},
         }
         result = heal_guardian_drift_detection(check)

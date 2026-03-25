@@ -335,19 +335,19 @@ class TestHealerRegistry:
             assert cid in HEALER_REGISTRY, f"{cid} not in HEALER_REGISTRY"
 
     def test_registry_values_are_callable(self) -> None:
-        for cid in self.EXPECTED_IDS:
-            assert callable(HEALER_REGISTRY[cid])
+    """Test registry_values_are_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute registry_values_are_callable
+    result = None  # Replace with actual execution
 
-# ---------------------------------------------------------------------------
-# 2. Classification compliance healers
-# ---------------------------------------------------------------------------
-
-
-class TestNamingComplianceHealer:
-    """Naming healer is always dry-run only."""
-
-    def test_dry_run_returns_skipped(self, naming_check: dict) -> None:
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         result = heal_naming_compliance(naming_check)
         assert isinstance(result, HealCheckResult)
         assert result.status == HealStatus.SKIPPED

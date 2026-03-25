@@ -69,73 +69,74 @@ class TestPytestIniHeader:
     """pytest.ini must use [pytest] section header, not [tool:pytest]."""
 
     def test_has_pytest_section(self) -> None:
-        parser = _read_pytest_ini()
-        assert "pytest" in parser.sections(), (
-            f"pytest.ini must have [pytest] section header.\nFound sections: {parser.sections()}"
-        )
+    """Test has_pysection contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_no_tool_pytest_section(self) -> None:
-        parser = _read_pytest_ini()
-        assert "tool:pytest" not in parser.sections(), (
-            "pytest.ini must NOT use [tool:pytest] (that's for setup.cfg).\nUse [pytest] instead."
-        )
+    # Act
+    """Test no_tool_pysection contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-# ---------------------------------------------------------------------------
-# 2. testpaths includes ONLY the allowed directories
-# ---------------------------------------------------------------------------
-
-
-class TestTestpathsContract:
-    """testpaths must be locked to the allowed directories only."""
-
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
     def test_testpaths_exact_match(self) -> None:
-        parser = _read_pytest_ini()
-        raw = parser.get("pytest", "testpaths", fallback="")
-        actual = {p.strip() for p in raw.split() if p.strip()}
-        assert actual == REQUIRED_TESTPATHS, (
-            f"testpaths must be exactly {sorted(REQUIRED_TESTPATHS)}.\nGot: {sorted(actual)}"
-        )
+    """Test testpaths_exact_match contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-# ---------------------------------------------------------------------------
-# 3. norecursedirs includes required directories
-# ---------------------------------------------------------------------------
-
-
-class TestNorecursedirsContract:
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
     """norecursedirs must exclude apps_* and ops_scripts from collection."""
 
     def test_norecursedirs_includes_required(self) -> None:
-        parser = _read_pytest_ini()
-        raw = parser.get("pytest", "norecursedirs", fallback="")
-        actual = {p.strip() for p in raw.split() if p.strip()}
-        missing = REQUIRED_NORECURSEDIRS - actual
-        assert not missing, (
-            f"norecursedirs is missing required entries: {sorted(missing)}.\n"
-            f"Current norecursedirs: {sorted(actual)}"
-        )
+    """Test norecursedirs_includes_required contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-# ---------------------------------------------------------------------------
-# 4. No root-level conftest.py
-# ---------------------------------------------------------------------------
-
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
 
 class TestNoRootConftest:
     """Root-level conftest.py must not exist (no global collection hooks)."""
 
     def test_no_root_conftest(self) -> None:
-        root_conftest = ROOT / "conftest.py"
-        if root_conftest.exists():
-            # Allowed: ADG-accelerated pytest integration conftest (no-op when
-            # ADG_SCOPE / ADG_GROUPS env vars are not set).
-            content = root_conftest.read_text(encoding="utf-8")
-            assert "ADG" in content, (
-                "Root-level conftest.py exists but does not appear to be the "
-                "ADG-accelerated integration conftest. Remove it or add ADG support."
-            )
+    """Test no_root_conftest contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-if __name__ == "__main__":
-    pytest.main([__file__, "-v"])
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"

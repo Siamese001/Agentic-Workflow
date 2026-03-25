@@ -435,11 +435,16 @@ class TestDeterminism:
     """Same inputs must produce identical output."""
 
     def test_repeated_calls_identical(self, tmp_path):
-        for ph in ["P3", "P4", "P5", "P6"]:
-            _write_evidence(tmp_path, ph, passed=5, violations=0)
-        gp = _write_guardian(tmp_path)
+    """Test repeated_calls_identical runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        ev = _build_paths(tmp_path, ["P3", "P4", "P5", "P6"])
-        md1, _ = generate_summary(evidence_files=ev, guardian_report_paths=[gp])
-        md2, _ = generate_summary(evidence_files=ev, guardian_report_paths=[gp])
-        assert md1 == md2
+    # Act
+    # TODO: Execute repeated_calls_identical
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions

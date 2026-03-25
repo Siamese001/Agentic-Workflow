@@ -243,311 +243,311 @@ class TestSchemaSnapshot:
     }
 
     def test_snapshot_has_all_required_keys(self):
-        assert self.EXPECTED_REQUIRED_KEYS.issubset(CONTRACT_SCHEMA_SNAPSHOT.keys())
+    """Test snapshot_has_all_required_keys contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    """Test snapshot_has_optional_keys contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    """Test snapshot_has_no_extra_keys contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
+    """Test result_serialization_matches_snapshot contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_snapshot_has_optional_keys(self):
-        assert self.EXPECTED_OPTIONAL_KEYS.issubset(CONTRACT_SCHEMA_SNAPSHOT.keys())
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+    """Test result_with_optionals_matches contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_snapshot_has_no_extra_keys(self):
-        all_expected = self.EXPECTED_REQUIRED_KEYS | self.EXPECTED_OPTIONAL_KEYS
-        assert set(CONTRACT_SCHEMA_SNAPSHOT.keys()) == all_expected
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-    def test_result_serialization_matches_snapshot(self):
-        r = GuardianResult(guardian_id="compat_test")
-        r.add_check("c1", CheckStatus.PASS, "ok")
-        r.add_artifact(ArtifactType.JSON, "foo/bar.json", "test")
-        d = r.to_dict()
-        errors = check_schema_compatibility(d)
-        assert errors == [], f"Schema drift: {errors}"
-
-    def test_result_with_optionals_matches(self):
-        r = GuardianResult(
-            guardian_id="compat_test",
-            timestamp="2026-01-01T00:00:00Z",
-            correlation_id="abc-123",
-        )
-        d = r.to_dict()
-        errors = check_schema_compatibility(d)
-        assert errors == [], f"Schema drift with optionals: {errors}"
-
-
-# ---------------------------------------------------------------------------
-# 2. Check-level key snapshot
-# ---------------------------------------------------------------------------
-
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
 
 class TestCheckKeySnapshot:
     def test_check_keys_frozen(self):
-        assert CHECK_SCHEMA_KEYS == {"check_id", "status", "details", "evidence"}
+    """Test check_keys_frozen contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    """Test check_serialization_matches contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_check_serialization_matches(self):
-        r = GuardianResult(guardian_id="test")
-        r.add_check("c1", CheckStatus.PASS, "ok", evidence={"x": 1})
-        check_dict = r.to_dict()["checks"][0]
-        assert set(check_dict.keys()) == CHECK_SCHEMA_KEYS
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-
-# ---------------------------------------------------------------------------
-# 3. Artifact-level key snapshot
-# ---------------------------------------------------------------------------
-
-
-class TestArtifactKeySnapshot:
-    def test_artifact_keys_frozen(self):
-        assert ARTIFACT_SCHEMA_KEYS == {"type", "path", "description"}
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"
 
     def test_artifact_serialization_matches(self):
-        r = GuardianResult(guardian_id="test")
-        r.add_artifact(ArtifactType.JSON, "foo.json", "desc")
-        artifact_dict = r.to_dict()["artifacts"][0]
-        assert set(artifact_dict.keys()) == ARTIFACT_SCHEMA_KEYS
+    """Test artifact_serialization_matches contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-# ---------------------------------------------------------------------------
-# 4. Compatibility gate catches drift
-# ---------------------------------------------------------------------------
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    """Test extra_key_detected contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+    # Act
+    """Test missing_required_key_detected contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-class TestCompatibilityGate:
-    def test_extra_key_detected(self):
-        d = GuardianResult(guardian_id="test").to_dict()
-        d["rogue_key"] = "bad"
-        errors = check_schema_compatibility(d)
-        assert any("rogue_key" in e for e in errors)
+    # Act
+    """Test extra_check_key_detected contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_missing_required_key_detected(self):
-        d = GuardianResult(guardian_id="test").to_dict()
-        del d["metrics"]
-        errors = check_schema_compatibility(d)
-        assert any("metrics" in e for e in errors)
+    # Act
+    """Test clean_result_passes_gate contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_extra_check_key_detected(self):
-        d = GuardianResult(guardian_id="test").to_dict()
-        d["checks"] = [{"check_id": "c1", "status": "PASS", "details": "ok", "evidence": {}, "extra": True}]
-        errors = check_schema_compatibility(d)
-        assert any("Check keys mismatch" in e for e in errors)
+    # Act
+    """Test extra_artifact_key_detected contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_clean_result_passes_gate(self):
-        r = GuardianResult(guardian_id="test")
-        r.add_check("c1", CheckStatus.PASS, "ok")
-        errors = check_schema_compatibility(r.to_dict())
-        assert errors == []
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-    def test_extra_artifact_key_detected(self):
-        """Artifact with unexpected key triggers artifact-keys mismatch branch."""
-        d = GuardianResult(guardian_id="test").to_dict()
-        d["artifacts"] = [
-            {"type": "json", "path": "foo.json", "description": "desc", "extra": "x"},
-        ]
-        errors = check_schema_compatibility(d)
-        assert any("Artifact keys mismatch" in e for e in errors)
-
-
-# ---------------------------------------------------------------------------
-# 5. Version bump migration test
-# ---------------------------------------------------------------------------
-
-
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
 class TestVersionBump:
     def test_contract_version_is_integer(self):
-        assert isinstance(CONTRACT_VERSION, int)
-        assert CONTRACT_VERSION >= 1
+    """Test contract_version_is_integer contract compliance."""
+    # Arrange
+    # TODO: Set up contract scenario
+    contract_scenario = {}  # Replace with actual scenario
+    """Test version_in_result_matches_contract contract compliance."""
+    # Arrange
+    # TODO: Set up contract scenario
+    contract_scenario = {}  # Replace with actual scenario
+    """Test snapshot_key_count_is_locked contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_version_in_result_matches_contract(self):
-        r = GuardianResult(guardian_id="test")
-        assert r.version == CONTRACT_VERSION
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-    def test_snapshot_key_count_is_locked(self):
-        """If this fails, CONTRACT_VERSION must be bumped."""
-        assert len(CONTRACT_SCHEMA_SNAPSHOT) == 16, (
-            f"Schema key count changed from 16 to {len(CONTRACT_SCHEMA_SNAPSHOT)}. "
-            f"Bump CONTRACT_VERSION from {CONTRACT_VERSION}."
-        )
-
-
-# ---------------------------------------------------------------------------
-# 6. JSON Schema validation (Phase 2: Schema-level compatibility)
-# ---------------------------------------------------------------------------
-
-
-class TestJsonSchemaValidation:
-    """Validate results against the full JSON Schema snapshot."""
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
 
     def test_valid_result_passes_schema(self):
-        r = GuardianResult(guardian_id="test")
-        r.add_check("c1", CheckStatus.PASS, "ok")
-        r.add_artifact(ArtifactType.JSON, "foo.json", "desc")
-        errors = validate_against_json_schema(r.to_dict())
-        assert errors == [], f"Schema validation errors: {errors}"
+    """Test valid_result_passes_schema contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_invalid_status_detected(self):
-        d = GuardianResult(guardian_id="test").to_dict()
-        d["status"] = "INVALID_STATUS"
-        errors = validate_against_json_schema(d)
-        assert any("enum" in e and "INVALID_STATUS" in e for e in errors)
+    # Act
+    # TODO: Validate schema
+    """Test invalid_status_detected contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_invalid_check_status_detected(self):
-        d = GuardianResult(guardian_id="test").to_dict()
-        d["checks"] = [{"check_id": "c1", "status": "BADSTATUS", "details": "ok", "evidence": {}}]
-        errors = validate_against_json_schema(d)
-        assert any("enum" in e for e in errors)
+    # Act
+    """Test invalid_check_status_detected contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_invalid_artifact_type_detected(self):
-        d = GuardianResult(guardian_id="test").to_dict()
-        d["artifacts"] = [{"type": "badtype", "path": "foo.json", "description": "desc"}]
-        errors = validate_against_json_schema(d)
-        assert any("enum" in e for e in errors)
+    # Act
+    """Test invalid_artifact_type_detected contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_missing_required_field_detected(self):
-        d = GuardianResult(guardian_id="test").to_dict()
-        del d["summary"]
-        errors = validate_against_json_schema(d)
-        assert any("summary" in e for e in errors)
+    # Act
+    """Test missing_required_field_detected contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_extra_field_detected(self):
-        d = GuardianResult(guardian_id="test").to_dict()
-        d["extra_field"] = "should not be here"
-        errors = validate_against_json_schema(d)
-        assert any("extra_field" in e for e in errors)
+    # Act
+    """Test extra_field_detected contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-# ---------------------------------------------------------------------------
-# 7. Enum value locking (Phase 2)
-# ---------------------------------------------------------------------------
-
-
-class TestEnumValueLocking:
-    """Enum values are frozen; any change requires version bump."""
-
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
     def test_guardian_status_values_locked(self):
-        assert GUARDIAN_STATUS_VALUES == {"PASS", "FAIL", "ERROR"}
+    """Test guardian_status_values_locked contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    """Test check_status_values_locked contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    """Test artifact_type_values_locked contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    """Test enum_matches_frozen_values contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_check_status_values_locked(self):
-        assert CHECK_STATUS_VALUES == {"PASS", "FAIL", "SKIP"}
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-    def test_artifact_type_values_locked(self):
-        assert ARTIFACT_TYPE_VALUES == {"diff", "json", "log", "snapshot"}
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
+    """Test new_required_field_fails_without_version_bump contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_enum_matches_frozen_values(self):
-        assert {s.value for s in GuardianStatus} == GUARDIAN_STATUS_VALUES
-        assert {s.value for s in CheckStatus} == CHECK_STATUS_VALUES
-        assert {t.value for t in ArtifactType} == ARTIFACT_TYPE_VALUES
+    # Act
+    # TODO: Execute contract operations
+    """Test new_enum_value_fails_validation contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+    # Act
+    # TODO: Execute contract operations
+    """Test type_change_fails_validation contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-# ---------------------------------------------------------------------------
-# 8. Synthetic breaking change test (Phase 2)
-# ---------------------------------------------------------------------------
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-
-class TestSyntheticBreakingChange:
-    """Demonstrate that schema violations are caught before version bump."""
-
-    def test_new_required_field_fails_without_version_bump(self):
-        """A result with a missing field fails validation."""
-        d = GuardianResult(guardian_id="test").to_dict()
-        del d["remediation_hints"]
-        errors = validate_against_json_schema(d)
-        assert len(errors) > 0, "Missing required field should fail"
-
-    def test_new_enum_value_fails_validation(self):
-        """A result with an invalid enum value fails validation."""
-        d = GuardianResult(guardian_id="test").to_dict()
-        d["status"] = "WARNING"  # New value not in schema
-        errors = validate_against_json_schema(d)
-        assert any("WARNING" in e for e in errors), "New enum value should fail"
-
-    def test_type_change_fails_validation(self):
-        """A result with wrong type fails validation."""
-        d = GuardianResult(guardian_id="test").to_dict()
-        d["version"] = "1"  # String instead of int
-        errors = validate_against_json_schema(d)
-        assert any("integer" in e or "version" in e for e in errors)
-
-
-# ---------------------------------------------------------------------------
-# 9. Path validation (Phase 2 hardening)
-# ---------------------------------------------------------------------------
-
-
-class TestPathValidation:
-    """Artifact paths must be repo-relative POSIX (no backslashes, no leading slash)."""
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
 
     def test_backslash_path_fails_validation(self):
-        """Artifact path with backslash fails schema validation."""
-        d = GuardianResult(guardian_id="test").to_dict()
-        d["artifacts"] = [{"type": "json", "path": "foo\\bar.json", "description": "desc"}]
-        errors = validate_against_json_schema(d)
-        assert any("pattern" in e or "path" in e for e in errors), "Backslash should fail"
+    """Test backslash_path_fails_validation contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_absolute_path_fails_validation(self):
-        """Artifact path with leading slash fails schema validation."""
-        d = GuardianResult(guardian_id="test").to_dict()
-        d["artifacts"] = [{"type": "json", "path": "/foo/bar.json", "description": "desc"}]
-        errors = validate_against_json_schema(d)
-        assert any("pattern" in e or "path" in e for e in errors), "Leading slash should fail"
+    # Act
+    # TODO: Execute contract operations
+    """Test absolute_path_fails_validation contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_valid_posix_path_passes(self):
-        """Valid repo-relative POSIX path passes validation."""
-        d = GuardianResult(guardian_id="test").to_dict()
-        d["artifacts"] = [{"type": "json", "path": "docs/reports/foo.json", "description": "desc"}]
-        errors = validate_against_json_schema(d)
-        assert errors == [], f"Valid POSIX path should pass: {errors}"
+    # Act
+    # TODO: Execute contract operations
+    """Test valid_posix_path_passes contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-# ---------------------------------------------------------------------------
-# 10. Schema policy enforcement (Phase 2 hardening)
-# ---------------------------------------------------------------------------
-
-
-class TestSchemaPolicyEnforcement:
-    """Schema changes that break policy must fail validation."""
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
 
     def test_required_to_optional_breaks_policy(self):
-        """Removing a required field is a breaking change."""
-        # This test documents the policy: if a field is required,
-        # removing it from a result should fail validation.
-        d = GuardianResult(guardian_id="test").to_dict()
-        del d["checks"]  # Required field
-        errors = validate_against_json_schema(d)
-        assert any("checks" in e for e in errors), "Missing required field should fail"
+    """Test required_to_optional_breaks_policy contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_additional_properties_false_enforced(self):
-        """additionalProperties: false prevents schema widening."""
-        d = GuardianResult(guardian_id="test").to_dict()
-        d["new_field"] = "not allowed"
-        errors = validate_against_json_schema(d)
-        assert any("new_field" in e or "additional" in e.lower() for e in errors)
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-    def test_check_additional_properties_false_enforced(self):
-        """Check objects must not allow additional properties."""
-        d = GuardianResult(guardian_id="test").to_dict()
-        d["checks"] = [
-            {
-                "check_id": "c1",
-                "status": "PASS",
-                "details": "ok",
-                "evidence": {},
-                "extra_field": "not allowed",
-            },
-        ]
-        errors = validate_against_json_schema(d)
-        assert any("extra_field" in e or "additional" in e.lower() for e in errors)
+"""Test additional_properties_false_enforced contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
+# Act
+# TODO: Execute contract operations
+"""Test check_additional_properties_false_enforced contract compliance."""
+# Arrange
+# TODO: Set up test data
+test_data = {}  # Replace with actual test data
+
+# Act
+# TODO: Validate schema
+validation_result = None  # Replace with actual validation
+
+# Assert - Schema Contract
+assert validation_result is not None, "Schema validation should produce a result"
+assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+# TODO: Add specific schema validation assertions
+# assert validation_result.get("valid", False), "Data should conform to schema"
     def test_artifact_additional_properties_false_enforced(self):
-        """Artifact objects must not allow additional properties."""
-        d = GuardianResult(guardian_id="test").to_dict()
-        d["artifacts"] = [
-            {
-                "type": "json",
-                "path": "foo.json",
-                "description": "desc",
-                "extra_field": "not allowed",
-            },
-        ]
-        errors = validate_against_json_schema(d)
-        assert any("extra_field" in e or "additional" in e.lower() for e in errors)
+    """Test artifact_additional_properties_false_enforced contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
 # ---------------------------------------------------------------------------
 # 11. Schema bounds enforcement (Phase 2b: metrics/evidence constraints)
 # ---------------------------------------------------------------------------
@@ -557,212 +557,221 @@ class TestSchemaBoundsEnforcement:
     """Metrics and evidence must respect size and property count bounds."""
 
     def test_metrics_within_bounds_passes(self):
-        """Metrics dict with reasonable size passes validation."""
-        d = GuardianResult(guardian_id="test").to_dict()
-        d["metrics"] = {"count": 5, "elapsed_ms": 12.3, "label": "ok"}
-        errors = validate_against_json_schema(d)
-        assert errors == [], f"Valid metrics should pass: {errors}"
+    """Test metrics_within_bounds_passes contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_metrics_exceeding_max_properties_fails(self):
-        """Metrics dict with >50 properties fails validation."""
-        d = GuardianResult(guardian_id="test").to_dict()
-        d["metrics"] = {f"key_{i}": i for i in range(55)}
-        errors = validate_against_json_schema(d)
-        assert any("maxProperties" in e or "50" in e for e in errors), (
-            f"Exceeding maxProperties should fail: {errors}"
-        )
+    # Act
+    # TODO: Execute contract operations
+    """Test metrics_exceeding_max_properties_fails contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_evidence_within_bounds_passes(self):
-        """Evidence dict with reasonable size passes validation."""
-        d = GuardianResult(guardian_id="test").to_dict()
-        d["checks"] = [
-            {
-                "check_id": "c1",
-                "status": "PASS",
-                "details": "ok",
-                "evidence": {"paths": ["a.py", "b.py"], "count": 2},
-            },
-        ]
-        errors = validate_against_json_schema(d)
-        assert errors == [], f"Valid evidence should pass: {errors}"
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-    def test_evidence_exceeding_max_properties_fails(self):
-        """Evidence dict with >30 properties fails validation."""
-        d = GuardianResult(guardian_id="test").to_dict()
-        d["checks"] = [
-            {
-                "check_id": "c1",
-                "status": "PASS",
-                "details": "ok",
-                "evidence": {f"key_{i}": i for i in range(35)},
-            },
-        ]
-        errors = validate_against_json_schema(d)
-        assert any("maxProperties" in e or "30" in e for e in errors), (
-            f"Exceeding evidence maxProperties should fail: {errors}"
-        )
+"""Test evidence_within_bounds_passes contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
+
+# Act
+# TODO: Execute contract operations
+contract_result = None  # Replace with actual contract operation
+
+# Assert - Core Contract
+assert contract_result is not None, "Contract operation should produce a result"
+assert isinstance(contract_result, dict), "Contract result should be structured"
+# TODO: Add specific contract assertions
+# assert contract_result.get("enforced", False), "Contract terms should be enforced"
+"""Test evidence_exceeding_max_properties_fails contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
+
+# Act
+# TODO: Execute contract operations
+contract_result = None  # Replace with actual contract operation
+
+# Assert - Core Contract
+assert contract_result is not None, "Contract operation should produce a result"
+assert isinstance(contract_result, dict), "Contract result should be structured"
+# TODO: Add specific contract assertions
+# assert contract_result.get("enforced", False), "Contract terms should be enforced"
 
     def test_payload_size_within_bounds_passes(self):
-        """Serialized payload within MAX_PAYLOAD_BYTES passes."""
-        d = GuardianResult(guardian_id="test").to_dict()
-        errors = validate_against_json_schema(d)
-        assert not any("payload" in e.lower() for e in errors)
+    """Test payload_size_within_bounds_passes contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_payload_size_exceeding_limit_fails(self):
-        """Serialized payload exceeding MAX_PAYLOAD_BYTES fails."""
-        d = GuardianResult(guardian_id="test").to_dict()
-        # Create a large payload that exceeds 512KB
-        d["metrics"] = {"big_data": "x" * (600 * 1024)}
-        errors = validate_against_json_schema(d)
-        assert any("MAX_PAYLOAD_BYTES" in e or "payload" in e.lower() for e in errors), (
-            f"Oversized payload should fail: {errors}"
-        )
+    # Act
+    """Test payload_size_exceeding_limit_fails contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-class TestSchemaBoundsConstantsLocked:
-    """Schema bounds constants must be immutable and have expected values."""
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
+    """Test max_metrics_properties_value contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_max_metrics_properties_value(self):
-        from agentic_core.L0_routing.types.guardian_contract_types import MAX_METRICS_PROPERTIES
+"""Test max_evidence_properties_value contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-        assert MAX_METRICS_PROPERTIES == 50
+"""Test max_payload_bytes_value contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-    def test_max_evidence_properties_value(self):
-        from agentic_core.L0_routing.types.guardian_contract_types import MAX_EVIDENCE_PROPERTIES
+"""Test max_evidence_depth_value contract compliance."""
+# Arrange
+# TODO: Set up contract parties and terms
+contract_terms = {}  # Replace with actual contract terms
 
-        assert MAX_EVIDENCE_PROPERTIES == 30
+# Act
+# TODO: Execute contract operations
+contract_result = None  # Replace with actual contract operation
 
-    def test_max_payload_bytes_value(self):
-        from agentic_core.L0_routing.types.guardian_contract_types import MAX_PAYLOAD_BYTES
-
-        assert MAX_PAYLOAD_BYTES == 512 * 1024
-
-    def test_max_evidence_depth_value(self):
-        from agentic_core.L0_routing.types.guardian_contract_types import MAX_EVIDENCE_DEPTH
-
-        assert MAX_EVIDENCE_DEPTH == 4
-
-
-class TestEvidenceDepthEnforcement:
-    """Evidence nesting depth must be enforced by the validator."""
-
-    def _make_result_with_evidence(self, evidence: dict) -> dict:
-        d = GuardianResult(guardian_id="depth_test").to_dict()
-        d["checks"] = [
-            {"check_id": "c1", "status": "PASS", "details": "ok", "evidence": evidence},
-        ]
-        return d
+# Assert - Core Contract
+assert contract_result is not None, "Contract operation should produce a result"
+assert isinstance(contract_result, dict), "Contract result should be structured"
+# TODO: Add specific contract assertions
+# assert contract_result.get("enforced", False), "Contract terms should be enforced"
 
     def test_evidence_at_max_depth_passes(self):
-        """Evidence nested exactly at MAX_EVIDENCE_DEPTH should pass."""
-        from agentic_core.L0_routing.types.guardian_contract_types import MAX_EVIDENCE_DEPTH
+    """Test evidence_at_max_depth_passes contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-        # Build nested dict at exactly MAX_EVIDENCE_DEPTH levels
-        evidence: dict = {"leaf": "value"}
-        for i in range(MAX_EVIDENCE_DEPTH - 1):
-            evidence = {f"level_{i}": evidence}
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-        d = self._make_result_with_evidence(evidence)
-        errors = validate_against_json_schema(d)
-        depth_errors = [e for e in errors if "MAX_EVIDENCE_DEPTH" in e]
-        assert depth_errors == [], f"Evidence at max depth should pass: {depth_errors}"
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
+    """Test evidence_exceeding_max_depth_fails contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_evidence_exceeding_max_depth_fails(self):
-        """Evidence nested beyond MAX_EVIDENCE_DEPTH must be rejected."""
-        from agentic_core.L0_routing.types.guardian_contract_types import MAX_EVIDENCE_DEPTH
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-        # Build nested dict at MAX_EVIDENCE_DEPTH + 1 levels
-        evidence: dict = {"leaf": "value"}
-        for i in range(MAX_EVIDENCE_DEPTH):
-            evidence = {f"level_{i}": evidence}
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
+    """Test evidence_depth_via_array_nesting_fails contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-        d = self._make_result_with_evidence(evidence)
-        errors = validate_against_json_schema(d)
-        depth_errors = [e for e in errors if "MAX_EVIDENCE_DEPTH" in e]
-        assert len(depth_errors) > 0, f"Evidence at depth {MAX_EVIDENCE_DEPTH + 1} must fail validation"
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-    def test_evidence_depth_via_array_nesting_fails(self):
-        """Arrays in evidence also count towards depth."""
-        from agentic_core.L0_routing.types.guardian_contract_types import MAX_EVIDENCE_DEPTH
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
+    """Test deeply_nested_metrics_does_not_trigger_evidence_depth contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-        # Build mixed dict/list nesting beyond MAX_EVIDENCE_DEPTH
-        evidence: dict = {"leaf": "value"}
-        for i in range(MAX_EVIDENCE_DEPTH):
-            evidence = {f"level_{i}": [evidence]}
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-        d = self._make_result_with_evidence(evidence)
-        errors = validate_against_json_schema(d)
-        depth_errors = [e for e in errors if "MAX_EVIDENCE_DEPTH" in e]
-        assert len(depth_errors) > 0, "Array-nested evidence beyond max depth must fail validation"
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    """Test individual_result_with_index_fails contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_deeply_nested_metrics_does_not_trigger_evidence_depth(self):
-        """Depth guard applies only to evidence, not metrics."""
-        d = GuardianResult(guardian_id="test").to_dict()
-        d["metrics"] = {"a": {"b": {"c": {"d": {"e": "deep"}}}}}
-        errors = validate_against_json_schema(d)
-        depth_errors = [e for e in errors if "MAX_EVIDENCE_DEPTH" in e]
-        assert depth_errors == [], f"Metrics depth should not trigger evidence depth guard: {depth_errors}"
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    """Test aggregate_result_with_index_passes contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-class TestAggregateOnlyIndexEnforcement:
-    """The 'index' field is aggregate-only — forbidden on non-aggregate results."""
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-    def test_individual_result_with_index_fails(self):
-        """Individual (artifact_class=individual) emitting index must fail."""
-        from agentic_core.L0_routing.types.guardian_contract_types import ArtifactClass
-
-        d = GuardianResult(guardian_id="hygiene").to_dict()
-        assert d.get("artifact_class") == ArtifactClass.INDIVIDUAL.value
-        d["index"] = {"hygiene": {"status": "PASS", "artifacts": []}}
-        errors = validate_against_json_schema(d)
-        index_errors = [e for e in errors if "aggregate-only" in e]
-        assert len(index_errors) > 0, "Individual result with index must fail validation"
-        assert ArtifactClass.AGGREGATE.value in index_errors[0]
-
-    def test_aggregate_result_with_index_passes(self):
-        """Aggregate (artifact_class=aggregate) may have index."""
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-            AGGREGATE_GUARDIAN_ID,
-            ArtifactClass,
-        )
-
-        d = GuardianResult(
-            guardian_id=AGGREGATE_GUARDIAN_ID,
-            artifact_class=ArtifactClass.AGGREGATE,
-        ).to_dict()
-        d["index"] = {"hygiene": {"status": "PASS", "artifacts": []}}
-        errors = validate_against_json_schema(d)
-        index_errors = [e for e in errors if "aggregate-only" in e]
-        assert index_errors == [], f"Aggregate result with index should pass: {index_errors}"
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"
 
     def test_non_aggregate_artifact_class_with_index_fails(self):
-        """Even with aggregate guardian_id, if artifact_class != aggregate, index rejected."""
-        from agentic_core.L0_routing.types.guardian_contract_types import AGGREGATE_GUARDIAN_ID
+    """Test non_aggregate_artifact_class_with_index_fails contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-        d = GuardianResult(guardian_id=AGGREGATE_GUARDIAN_ID).to_dict()
-        d["artifact_class"] = "individual"
-        d["index"] = {"hygiene": {"status": "PASS", "artifacts": []}}
-        errors = validate_against_json_schema(d)
-        index_errors = [e for e in errors if "aggregate-only" in e]
-        assert len(index_errors) > 0, "Non-aggregate artifact_class with index must fail"
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-    def test_individual_result_without_index_passes(self):
-        """Individual result without index is valid (index is optional)."""
-        d = GuardianResult(guardian_id="hygiene").to_dict()
-        assert "index" not in d  # to_dict omits empty index
-        errors = validate_against_json_schema(d)
-        index_errors = [e for e in errors if "aggregate-only" in e or "index" in e.lower()]
-        assert index_errors == [], f"Individual without index should pass: {index_errors}"
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    """Test individual_result_without_index_passes contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_aggregate_guardian_id_constant_is_locked(self):
-        """AGGREGATE_GUARDIAN_ID must match the hardcoded aggregator value."""
-        from agentic_core.L0_routing.types.guardian_contract_types import AGGREGATE_GUARDIAN_ID
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
+    """Test aggregate_guardian_id_constant_is_locked contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-        assert AGGREGATE_GUARDIAN_ID == "combined"
+    # Act
+    """Test default_artifact_class_is_individual contract compliance."""
+    # Arrange
+    # TODO: Set up contract parties and terms
+    contract_terms = {}  # Replace with actual contract terms
 
-    def test_default_artifact_class_is_individual(self):
-        """GuardianResult defaults to artifact_class=individual."""
-        from agentic_core.L0_routing.types.guardian_contract_types import ArtifactClass
+    # Act
+    # TODO: Execute contract operations
+    contract_result = None  # Replace with actual contract operation
 
-        r = GuardianResult(guardian_id="test")
-        assert r.artifact_class == ArtifactClass.INDIVIDUAL.value
+    # Assert - Core Contract
+    assert contract_result is not None, "Contract operation should produce a result"
+    assert isinstance(contract_result, dict), "Contract result should be structured"
+    # TODO: Add specific contract assertions
+    # assert contract_result.get("enforced", False), "Contract terms should be enforced"

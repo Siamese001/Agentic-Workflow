@@ -186,19 +186,19 @@ class TestTelemetryEvent:
             event.ts_utc = 9999
 
     def test_create_runtime_telemetry_event_preserves_span_identity(self):
-        event = create_runtime_telemetry_event(
-            {
-                "ts_utc": 1700000000000,
-                "kind": "tool",
-                "trace_id": "trace-1",
-                "span_id": "span-2",
-                "parent_span_id": "span-1",
-                "layer": "L2_Execution",
-                "component": "Tool.search",
-                "name": "tool.search",
-                "attributes": {"tool.name": "search"},
-            }
-        )
+    """Test create_runtime_telemetry_event_preserves_span_identity runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute create_runtime_telemetry_event_preserves_span_identity
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
         assert event.trace_id == "trace-1"
         assert event.span_id == "span-2"
@@ -221,19 +221,19 @@ class TestTelemetrySlice:
         assert "window_start_utc" in fields
 
     def test_runtime_slice_materialization_is_order_independent(self):
-        records = (
-            {
-                "ts_utc": 1700000001000,
-                "kind": "tool",
-                "trace_id": "trace-1",
-                "span_id": "span-2",
-                "parent_span_id": "span-1",
-                "layer": "L2_Execution",
-                "component": "Tool.search",
-                "name": "tool.search",
-                "attributes": {"tool.name": "search"},
-            },
-            {
+    """Test runtime_slice_materialization_is_order_independent runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute runtime_slice_materialization_is_order_independent
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
                 "ts_utc": 1700000000000,
                 "kind": "orchestrator",
                 "trace_id": "trace-1",

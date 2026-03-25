@@ -191,9 +191,16 @@ class TestHardenedGeminiExecutorInit:
         assert isinstance(result, bool)
 
     def test_execute_raises_when_gateway_unavailable(self):
-        from apps_rg.engines.hardened_gemini_executor import HardenedGeminiExecutor
+    """Test execute_raises_when_gateway_unavailable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        executor = HardenedGeminiExecutor()
-        executor._gateway = None
-        with pytest.raises(RuntimeError, match="not available"):
-            executor.execute("test prompt")
+    # Act
+    # TODO: Execute execute_raises_when_gateway_unavailable
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions

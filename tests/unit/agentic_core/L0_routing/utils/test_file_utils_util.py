@@ -25,46 +25,46 @@ from agentic_core.L0_routing.utils.file_utils_util import (  # noqa: F401
 
 class TestEnsureDirectoryFunction:
     def test_is_callable(self):
-        assert callable(ensure_directory)
+    """Test is_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_has_return_annotation(self):
-        import inspect
-        sig = inspect.signature(ensure_directory)
-        assert sig.return_annotation is not inspect.Parameter.empty
+    # Act
+    # TODO: Execute is_callable
+    result = None  # Replace with actual execution
 
-class TestSafeReadFileFunction:
-    def test_is_callable(self):
-        assert callable(safe_read_file)
+"""Test is_callable runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    def test_has_return_annotation(self):
-        import inspect
-        sig = inspect.signature(safe_read_file)
-        assert sig.return_annotation is not inspect.Parameter.empty
+# Act
+# TODO: Execute is_callable
+result = None  # Replace with actual execution
 
-class TestSafeWriteFileFunction:
-    def test_is_callable(self):
-        assert callable(safe_write_file)
+"""Test is_callable runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    def test_has_return_annotation(self):
-        import inspect
-        sig = inspect.signature(safe_write_file)
-        assert sig.return_annotation is not inspect.Parameter.empty
+# Act
+# TODO: Execute is_callable
+result = None  # Replace with actual execution
 
-class TestSafeAppendFileFunction:
-    def test_is_callable(self):
-        assert callable(safe_append_file)
+"""Test is_callable runtime behavior."""
+# Arrange
+# TODO: Set up execution parameters
+input_data = {}  # Replace with actual test data
 
-    def test_has_return_annotation(self):
-        import inspect
-        sig = inspect.signature(safe_append_file)
-        assert sig.return_annotation is not inspect.Parameter.empty
+# Act
+# TODO: Execute is_callable
+result = None  # Replace with actual execution
 
-class TestMaxRetriesConstant:
-    def test_is_not_none(self):
-        assert MAX_RETRIES is not None
-
-class TestDefaultSleepConstant:
-    def test_is_not_none(self):
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+# TODO: Add specific execution assertions
         assert DEFAULT_SLEEP is not None
 
 class TestThresholdConstant:

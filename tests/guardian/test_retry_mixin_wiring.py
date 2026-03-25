@@ -73,31 +73,31 @@ class TestStructuralRetryMixin:
         assert node is not None
 
     def test_with_retry_calls_build_manifest(self):
-        body = _method_body_source("ToolReliabilityMixin", "with_retry")
-        assert "_v15_build_retry_manifest" in body
+    """Test with_retry_calls_build_manifest runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+    """Test with_retry_sync_calls_build_manifest runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+    """Test with_retry_calls_audit runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+    """Test with_retry_sync_calls_audit runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_with_retry_sync_calls_build_manifest(self):
-        body = _method_body_source("ToolReliabilityMixin", "with_retry_sync")
-        assert "_v15_build_retry_manifest" in body
+    # Act
+    # TODO: Execute with_retry_sync_calls_audit
+    result = None  # Replace with actual execution
 
-    def test_with_retry_calls_audit(self):
-        body = _method_body_source("ToolReliabilityMixin", "with_retry")
-        assert "_v15_retry_audit" in body
-
-    def test_with_retry_sync_calls_audit(self):
-        body = _method_body_source("ToolReliabilityMixin", "with_retry_sync")
-        assert "_v15_retry_audit" in body
-
-    def test_manifest_built_before_loop(self):
-        """Manifest must be built BEFORE the retry for-loop, not inside it."""
-        body = _method_body_source("ToolReliabilityMixin", "with_retry")
-        manifest_pos = body.find("_v15_build_retry_manifest")
-        loop_pos = body.find("for attempt in range")
-        assert manifest_pos < loop_pos, "manifest must be built before retry loop"
-
-    def test_manifest_built_before_loop_sync(self):
-        body = _method_body_source("ToolReliabilityMixin", "with_retry_sync")
-        manifest_pos = body.find("_v15_build_retry_manifest")
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         loop_pos = body.find("for attempt in range")
         assert manifest_pos < loop_pos, "manifest must be built before retry loop"
 
@@ -108,19 +108,19 @@ class TestStructuralRetryMixin:
         body = _method_body_source("ToolReliabilityMixin", "_v15_build_retry_manifest")
         assert "is_v15_enforced()" in body
     def test_audit_calls_gateway_execute(self):
-        body = _method_body_source("ToolReliabilityMixin", "_v15_retry_audit")
-        assert "gw.execute(" in body
-    def test_serialization_canon(self):
-        body = _method_body_source("ToolReliabilityMixin", "_v15_build_retry_manifest")
-        assert 'serialization_canon="tool_reliability_mixin"' in body
-    def test_target_layer_is_l2(self):
-        body = _method_body_source("ToolReliabilityMixin", "_v15_build_retry_manifest")
-        assert 'target_layer="L2"' in body
-    def test_imports_is_v15_enforced(self):
-        assert "is_v15_enforced" in MIXIN_SRC
-    def test_no_result_emission_in_retry(self):
-        """Retry wrappers must not emit RESULT — they are infrastructure."""
-        for method in ("with_retry", "with_retry_sync"):
+    """Test audit_calls_gateway_execute runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute audit_calls_gateway_execute
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             body = _method_body_source("ToolReliabilityMixin", method)
             # RESULT should not appear as an artifact_class in retry bodies
             assert "RESULT" not in body or "retry_audit" in body

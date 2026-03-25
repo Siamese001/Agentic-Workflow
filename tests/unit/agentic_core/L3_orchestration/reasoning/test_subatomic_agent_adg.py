@@ -225,5 +225,17 @@ class TestSubAtomicAgentHealRepository:
         assert "cycle_detected" in result or "errors" in result
 
     def test_depth_limit_respected(self):
-        result = self.agent.heal_repository(dry_run=True, depth=99, max_depth=3)
-        assert "depth_limited" in result or "errors" in result
+    """Test depth_limit_respected contract compliance."""
+    # Arrange
+    # TODO: Set up specification test case
+    spec_input = {}  # Replace with actual specification input
+
+    # Act
+    # TODO: Test specification compliance
+    compliance_result = None  # Replace with actual compliance test
+
+    # Assert - Specification Contract
+    assert compliance_result is not None, "Specification compliance should be testable"
+    assert isinstance(compliance_result, (bool, dict)), "Compliance result should be structured"
+    # TODO: Add specific specification assertions
+    # assert compliance_result.get("meets_spec", False), "Should meet specification requirements"

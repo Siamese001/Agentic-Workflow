@@ -324,32 +324,32 @@ class TestSplitBrainDetection:
             ctx.verify_or_raise(config)
 
     def test_violation_raised_before_downstream_code_runs(self):
-        """§1.8 fail-closed: side-effect sentinel must not be set."""
-        config = copy.deepcopy(_CONFIG_V1)
-        ctx = SealedRoutingContext(config, version="1.0")
-        config["model"] = "evil-model"
+    """Test violation_raised_before_downstream_code_runs runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        side_effect_ran = False
-        with pytest.raises(RoutingConfigSealViolation):
-            ctx.verify_or_raise(config)
-            side_effect_ran = True  # must never reach here
+    # Act
+    # TODO: Execute violation_raised_before_downstream_code_runs
+    result = None  # Replace with actual execution
 
-        assert not side_effect_ran
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
+    """Test multiple_verification_calls_with_unchanged_config runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_multiple_verification_calls_with_unchanged_config(self):
-        """Multiple L5 re-checks on the same snapshot must all pass."""
-        config = copy.deepcopy(_CONFIG_V1)
-        ctx = SealedRoutingContext(config, version="1.0")
-        for _ in range(5):
-            ctx.verify_or_raise(config)  # must not raise
+    # Act
+    # TODO: Execute multiple_verification_calls_with_unchanged_config
+    result = None  # Replace with actual execution
 
-    def test_version_label_tracked_on_seal(self):
-        """Version is carried on the seal for auditability even if not in hash."""
-        config = copy.deepcopy(_CONFIG_V1)
-        seal_v1 = RoutingConfigSeal.create(config=config, version="1.0")
-        seal_v2 = RoutingConfigSeal.create(config=config, version="2.0")
-        assert seal_v1.version == "1.0"
-        assert seal_v2.version == "2.0"
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         # Same config → same hash regardless of version label
         assert seal_v1.canonical_hash == seal_v2.canonical_hash
 

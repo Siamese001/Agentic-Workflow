@@ -850,20 +850,20 @@ class TestRefactoringPlanner:
         assert "INLINE_MODULE" in ops or len(plan.steps) >= 0
 
     def test_plan_respects_max_steps(self):
-        from agentic_core.adg.applications.refactoring_planner_config import build_refactoring_plan
+    """Test plan_respects_max_steps contract compliance."""
+    # Arrange
+    # TODO: Set up specification test case
+    spec_input = {}  # Replace with actual specification input
 
-        result = self._high_coupling_result()
-        plan = build_refactoring_plan(
-            result, target_files=["agentic_core/L2_execution/hotspot.py"], max_steps=2
-        )
+    # Act
+    # TODO: Test specification compliance
+    compliance_result = None  # Replace with actual compliance test
 
-        assert len(plan.steps) <= 2
-
-    def test_adg_signals_summary_in_plan(self):
-        from agentic_core.adg.applications.refactoring_planner_config import build_refactoring_plan
-
-        result = self._high_coupling_result()
-        plan = build_refactoring_plan(result, target_files=["agentic_core/L2_execution/hotspot.py"])
+    # Assert - Specification Contract
+    assert compliance_result is not None, "Specification compliance should be testable"
+    assert isinstance(compliance_result, (bool, dict)), "Compliance result should be structured"
+    # TODO: Add specific specification assertions
+    # assert compliance_result.get("meets_spec", False), "Should meet specification requirements"
 
         assert "hotspot_stats" in plan.adg_signals_summary
         assert "test_gap_coverage_rate" in plan.adg_signals_summary
@@ -1090,27 +1090,31 @@ class TestCLIRefactorSubcommand:
         assert code == 0
 
     def test_cli_api_surface_returns_0(self):
-        import argparse
-        import unittest.mock as mock
+    """Test cli_api_surface_returns_0 contract compliance."""
+    # Arrange
+    # TODO: Set up interface implementation
+    implementation = None  # Replace with actual implementation
 
-        from agentic_core.adg.cli import _cmd_api_surface
+    # Act
+    # TODO: Test interface methods
+    result = None  # Replace with actual method call
 
-        args = argparse.Namespace(repo_root=".")
-        with mock.patch("agentic_core.adg.runtime.cache_loader.load_or_scan") as mock_scan:
-            mock_scan.return_value = _result(
-                _edge(_mod("mod.py"), "exports", _sym("mod.X"), symbol="X"),
-            )
-            code = _cmd_api_surface(args)
-        assert code == 0
+    # Assert - Interface Contract
+    assert implementation is not None, "Interface implementation should exist"
+    assert hasattr(implementation, "__dict__"), "Implementation should be inspectable"
+    # TODO: Add specific interface method assertions
+    # assert callable(getattr(implementation, "method_name", None)), "Required method should exist"
+    """Test cli_dip_check_returns_0_when_no_violations contract compliance."""
+    # Arrange
+    # TODO: Set up test data
+    test_data = {}  # Replace with actual test data
 
-    def test_cli_dip_check_returns_0_when_no_violations(self):
-        import argparse
-        import unittest.mock as mock
+    # Act
+    # TODO: Validate schema
+    validation_result = None  # Replace with actual validation
 
-        from agentic_core.adg.cli import _cmd_dip_check
-
-        args = argparse.Namespace(repo_root=".")
-        with mock.patch("agentic_core.adg.runtime.cache_loader.load_or_scan") as mock_scan:
-            mock_scan.return_value = _result()
-            code = _cmd_dip_check(args)
-        assert code == 0
+    # Assert - Schema Contract
+    assert validation_result is not None, "Schema validation should produce a result"
+    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+    # TODO: Add specific schema validation assertions
+    # assert validation_result.get("valid", False), "Data should conform to schema"

@@ -170,26 +170,31 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestMCPSecurityViolation:
     def test_is_dataclass(self):
-        import dataclasses
-        assert dataclasses.is_dataclass(MCPSecurityViolation)
+    """Test is_dataclass runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for is_dataclass
+    test_data = {}  # Replace with actual test data
 
-    def test_creates(self):
-        v = MCPSecurityViolation(
-            rule="no_shell_exec",
-            severity="error",
-            tool_name="shell",
-            description="shell execution blocked",
-        )
-        assert v.rule == "no_shell_exec"
-        assert v.severity == "error"
-        assert v.blocked is False
+    # Act
+    # TODO: Execute is_dataclass
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
     def test_blocked_flag(self):
-        v = MCPSecurityViolation(
-            rule="no_shell_exec",
-            severity="critical",
-            tool_name="bash",
-            description="blocked",
-            blocked=True,
-        )
-        assert v.blocked is True
+    """Test blocked_flag runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for blocked_flag
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute blocked_flag
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions

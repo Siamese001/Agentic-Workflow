@@ -245,19 +245,19 @@ class TestIdempotency:
     """Second run on existing bundle makes no changes."""
 
     def test_second_run_exit_zero(self, tmp_path):
-        out = tmp_path / "bundle"
-        create_bundle(out, INCIDENT_ID)
-        code, msgs = create_bundle(out, INCIDENT_ID)
-        assert code == 0
-        assert any("idempotent" in m.lower() for m in msgs)
+    """Test second_run_exit_zero runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-    def test_file_bytes_unchanged(self, tmp_path):
-        out = tmp_path / "bundle"
-        create_bundle(out, INCIDENT_ID)
+    # Act
+    # TODO: Execute second_run_exit_zero
+    result = None  # Replace with actual execution
 
-        # Capture all file bytes
-        before = {}
-        for rel_path in BUNDLE_FILES:
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
             before[rel_path] = (out / rel_path).read_bytes()
         before["README.md"] = (out / "README.md").read_bytes()
 

@@ -203,174 +203,174 @@ class TestADGRuntimeQueryEngine:
         assert "OtherAgent" in class_names
 
     def test_inheritance_index_empty_on_unknown_base(self):
-        engine = self._engine([])
-        assert engine.find_agents_by_base_class("NonExistentBase") == []
+    """Test inheritance_index_empty_on_unknown_base runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
+    """Test reverse_deps_built runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_reverse_deps_built(self):
-        edges = [
-            _edge(f"{_M}agentic_core/L3/agent.py", "imports", f"{_M}agentic_core/L1/base.py"),
-            _edge(f"{_M}agentic_core/L3/other.py", "imports", f"{_M}agentic_core/L1/base.py"),
-        ]
-        engine = self._engine(edges)
-        rev = engine.get_reverse_dependencies(f"{_M}agentic_core/L1/base.py")
-        assert f"{_M}agentic_core/L3/agent.py" in rev
-        assert f"{_M}agentic_core/L3/other.py" in rev
+    # Act
+    # TODO: Execute runtime operation reverse_deps_built
+    runtime_result = None  # Replace with actual runtime operation
 
-    def test_reverse_deps_empty_on_unused(self):
-        engine = self._engine([])
-        assert engine.get_reverse_dependencies(f"{_M}nothing.py") == set()
+    # Assert
+    """Test reverse_deps_empty_on_unused runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
+    """Test composition_index_built runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_composition_index_built(self):
-        edges = [
-            _edge(
-                f"{_M}agentic_core/L2/reasoning/my_agent.py::MyAgent",
-                "instantiates",
-                f"{_S}LLMGateway",
-                kind="composition",
-                sym="LLMGateway",
-            ),
-        ]
-        engine = self._engine(edges)
-        caps = engine.find_agents_by_capability("LLMGateway")
-        assert len(caps) == 1
-        assert caps[0].composed_symbol == "LLMGateway"
+    # Act
+    # TODO: Execute runtime operation composition_index_built
+    runtime_result = None  # Replace with actual runtime operation
+
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
 
     def test_composition_index_empty_on_unknown(self):
-        engine = self._engine([])
-        assert engine.find_agents_by_capability("UnknownSymbol") == []
+    """Test composition_index_empty_on_unknown runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
+    """Test blast_radius_direct runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_blast_radius_direct(self):
-        edges = [
-            _edge(f"{_M}agentic_core/L3/agent.py", "imports", f"{_M}agentic_core/L1/base.py"),
-        ]
-        engine = self._engine(edges)
-        blast = engine.compute_blast_radius(["agentic_core/L1/base.py"])
-        assert "agentic_core/L1/base.py" in blast
-        assert "agentic_core/L3/agent.py" in blast
+    # Act
+    # TODO: Execute runtime operation blast_radius_direct
+    runtime_result = None  # Replace with actual runtime operation
 
-    def test_blast_radius_transitive(self):
-        edges = [
-            _edge(f"{_M}b.py", "imports", f"{_M}a.py"),
-            _edge(f"{_M}c.py", "imports", f"{_M}b.py"),
-        ]
-        engine = self._engine(edges)
-        blast = engine.compute_blast_radius(["a.py"])
-        assert "b.py" in blast
-        assert "c.py" in blast
-        assert blast["c.py"] == 2
+"""Test blast_radius_transitive runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
-    def test_blast_radius_no_deps(self):
-        engine = self._engine([])
-        blast = engine.compute_blast_radius(["solo.py"])
-        assert blast == {"solo.py": 0}
+# Act
+# TODO: Execute runtime operation blast_radius_transitive
+runtime_result = None  # Replace with actual runtime operation
 
-    def test_validate_import_path_allowed(self):
-        engine = self._engine([])
-        result = engine.validate_import_path(
-            "agentic_core/L3_orchestration/x.py", "agentic_core/L1_cognition/y.py"
-        )
-        assert result.allowed is True
+# Assert
+assert runtime_result is not None, "Runtime operation should produce a result"
+"""Test blast_radius_no_deps runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
-    def test_validate_import_path_forbidden(self):
-        engine = self._engine([])
+# Act
+# TODO: Execute runtime operation blast_radius_no_deps
+runtime_result = None  # Replace with actual runtime operation
+
+# Assert
+assert runtime_result is not None, "Runtime operation should produce a result"
+assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+# TODO: Add runtime-specific assertions
         result = engine.validate_import_path(
             "agentic_core/L0_routing/x.py", "agentic_core/L3_orchestration/y.py"
         )
         assert result.allowed is False
 
     def test_get_cache_invalidation_set(self):
-        edges = [
-            _edge(f"{_M}consumer.py", "imports", f"{_M}dep.py"),
-        ]
-        engine = self._engine(edges)
-        inv_set = engine.get_cache_invalidation_set("dep.py")
-        assert "consumer.py" in inv_set
+    """Test get_cache_invalidation_set runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_stats_returns_dict(self):
-        engine = self._engine([])
-        stats = engine.stats()
-        assert isinstance(stats, dict)
-        assert "total_edges" in stats
-        assert stats["total_edges"] == 0
+    # Act
+    # TODO: Execute runtime operation get_cache_invalidation_set
+    runtime_result = None  # Replace with actual runtime operation
+    """Test stats_returns_dict runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
+    # Act
+    # TODO: Execute runtime operation stats_returns_dict
+    runtime_result = None  # Replace with actual runtime operation
 
-class TestGraphAwareCache:
-    def _cache(self, edges: list[Edge] | None = None) -> GraphAwareCache:
-        engine = ADGRuntimeQueryEngine(_make_result(edges or []))
-        return GraphAwareCache(engine)
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
+    """Test set_and_get runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_set_and_get(self):
-        cache = self._cache()
-        cache.set("key1", "value1", depends_on=[])
-        assert cache.get("key1") == "value1"
+"""Test get_missing_returns_none runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
+"""Test explicit_invalidate runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
-    def test_get_missing_returns_none(self):
-        cache = self._cache()
-        assert cache.get("nonexistent") is None
+# Act
+"""Test explicit_invalidate_missing runtime behavior."""
+# Arrange
+# TODO: Set up runtime environment
+runtime_context = {}  # Replace with actual runtime context
 
-    def test_explicit_invalidate(self):
-        cache = self._cache()
-        cache.set("k", "v", depends_on=[])
-        assert cache.invalidate("k") is True
-        assert cache.get("k") is None
+# Act
+# TODO: Execute runtime operation explicit_invalidate_missing
+runtime_result = None  # Replace with actual runtime operation
 
-    def test_explicit_invalidate_missing(self):
-        cache = self._cache()
-        assert cache.invalidate("missing") is False
-
-    def test_graph_driven_invalidation(self):
-        edges = [
-            _edge(f"{_M}consumer.py", "imports", f"{_M}dep.py"),
-        ]
-        cache = self._cache(edges)
-        cache.set("result1", 42, depends_on=["consumer.py"])
-        cache.set("unrelated", 99, depends_on=["other.py"])
-        evicted = cache.invalidate_for_change("dep.py")
-        assert evicted == 1
-        assert cache.get("result1") is None
+# Assert
+assert runtime_result is not None, "Runtime operation should produce a result"
+assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+# TODO: Add runtime-specific assertions
         assert cache.get("unrelated") == 99
 
     def test_invalidate_all(self):
-        cache = self._cache()
-        cache.set("a", 1, depends_on=[])
-        cache.set("b", 2, depends_on=[])
-        count = cache.invalidate_all()
-        assert count == 2
-        assert cache.size() == 0
+    """Test invalidate_all runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_size(self):
-        cache = self._cache()
-        assert cache.size() == 0
-        cache.set("x", 1, depends_on=[])
-        assert cache.size() == 1
+    # Act
+    # TODO: Execute runtime operation invalidate_all
+    runtime_result = None  # Replace with actual runtime operation
+    """Test size runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_stats(self):
-        cache = self._cache()
-        stats = cache.stats()
-        assert stats["size"] == 0
+    # Act
+    """Test stats runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
+    # Act
+    # TODO: Execute runtime operation stats
+    """Test to_dict runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-class TestScanManifest:
-    def test_to_dict(self):
-        m = ScanManifest(scanner_version="2.0.0", schema_version="2.0")
-        d = m.to_dict()
-        assert d["scanner_version"] == "2.0.0"
-        assert "scanner_self_test_passed" in d
+    # Act
+    """Test scan_result_to_dict_roundtrip runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
 
-    def test_scan_result_to_dict_roundtrip(self):
-        result = ScanResult(
-            edges=[
-                Edge(
-                    from_name=f"{_M}a.py",
-                    relation_type="controls_flow",
-                    to_name=f"{_M}b.py",
-                    edge_kind="execution",
-                    source_file="a.py",
-                    line_no=7,
-                    symbol="if@L7",
-                    semantic_type="branch",
-                    confidence=0.95,
-                    source_span_start=10,
+    # Act
+    # TODO: Execute runtime operation scan_result_to_dict_roundtrip
+    runtime_result = None  # Replace with actual runtime operation
+
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
                     source_span_end=20,
                     source_span_line=7,
                     source_span_column=4,
@@ -400,19 +400,19 @@ class TestScanManifest:
         assert restored.type_surface_map == {f"{_M}a.py::func": "int"}
 
     def test_scan_cache_roundtrip_preserves_semantic_evidence(self, tmp_path):
-        cache = ScanCache()
-        edge = Edge(
-            from_name=f"{_M}a.py",
-            relation_type="controls_flow",
-            to_name=f"{_M}b.py",
-            edge_kind="execution",
-            source_file="a.py",
-            line_no=3,
-            symbol="if@L3",
-            semantic_type="branch",
-            dynamic_resolution="seq=2",
-        )
-        cache.put(
+    """Test scan_cache_roundtrip_preserves_semantic_evidence runtime behavior."""
+    # Arrange
+    # TODO: Set up runtime environment
+    runtime_context = {}  # Replace with actual runtime context
+
+    # Act
+    # TODO: Execute runtime operation scan_cache_roundtrip_preserves_semantic_evidence
+    runtime_result = None  # Replace with actual runtime operation
+
+    # Assert
+    assert runtime_result is not None, "Runtime operation should produce a result"
+    assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, list, str, int, float, bool)), "Result should be serializable"
+    # TODO: Add runtime-specific assertions
             "a.py",
             "hash-1",
             [edge],

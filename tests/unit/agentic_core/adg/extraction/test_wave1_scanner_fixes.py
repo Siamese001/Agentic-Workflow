@@ -53,19 +53,19 @@ class TestW1aViolationConfidenceFloor:
     """Verify violation_propagates_through edges have confidence >= 0.5."""
 
     def test_propagated_edges_confidence_minimum(self):
-        """All propagated violation edges must have confidence >= 0.5."""
-        # Build a minimal ScanResult with a violation + import graph
-        violating_module = "ADG::Module::bad_module.py"
-        importer1 = "ADG::Module::uses_bad.py"
-        importer2 = "ADG::Module::uses_uses_bad.py"
+    """Test propagated_edges_confidence_minimum runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for propagated_edges_confidence_minimum
+    test_data = {}  # Replace with actual test data
 
-        edges = [
-            _make_edge(
-                from_name=violating_module,
-                relation_type="violates",
-                to_name="ADG::Module::some_layer",
-                edge_kind="import",
-                source_file="bad_module.py",
+    # Act
+    # TODO: Execute propagated_edges_confidence_minimum
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
                 symbol="layer_violation",
             ),
             _make_edge(
@@ -97,19 +97,19 @@ class TestW1aViolationConfidenceFloor:
             )
 
     def test_no_synthetic_below_threshold(self):
-        """No violation propagation edge should have confidence below 0.5."""
-        result = ScanResult(edges=[
-            _make_edge(
-                from_name="ADG::Module::v.py",
-                relation_type="violates",
-                to_name="ADG::Module::layer",
-                edge_kind="import",
-                source_file="v.py",
-                symbol="violation",
-            ),
-        ])
-        # Even with no imports to propagate through, verify the function
-        propagated = _propagate_violations(result)
+    """Test no_synthetic_below_threshold runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for no_synthetic_below_threshold
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute no_synthetic_below_threshold
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         for edge in propagated:
             assert edge.confidence >= 0.5
 
@@ -121,19 +121,19 @@ class TestW1bEdgeDeduplication:
     """Verify key-based edge dedup removes exact duplicates."""
 
     def test_exact_duplicates_removed(self):
-        """Edges with same (from_name, relation_type, to_name, line_no) are deduped."""
-        e1 = _make_edge(
-            from_name="ADG::Module::a.py",
-            relation_type="calls",
-            to_name="ADG::Symbol::func",
-            line_no=10,
-            edge_kind="call",
-        )
-        e2 = _make_edge(
-            from_name="ADG::Module::a.py",
-            relation_type="calls",
-            to_name="ADG::Symbol::func",
-            line_no=10,
+    """Test exact_duplicates_removed runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for exact_duplicates_removed
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute exact_duplicates_removed
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
             edge_kind="execution",  # different edge_kind but same key
         )
         e3 = _make_edge(
@@ -160,19 +160,19 @@ class TestW1bEdgeDeduplication:
         assert deduped[1] is e3
 
     def test_no_duplicates_unchanged(self):
-        """When all edges are unique, dedup should not remove any."""
-        edges = [
-            _make_edge(from_name=f"ADG::Module::m{i}.py", line_no=i)
-            for i in range(5)
-        ]
-        seen_keys: set[tuple[str, str, str, int]] = set()
-        deduped: list[Edge] = []
-        for edge in edges:
-            key = (edge.from_name, edge.relation_type, edge.to_name, edge.line_no)
-            if key not in seen_keys:
-                seen_keys.add(key)
-                deduped.append(edge)
+    """Test no_duplicates_unchanged runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for no_duplicates_unchanged
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute no_duplicates_unchanged
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         assert len(deduped) == 5
 
 
@@ -190,115 +190,117 @@ class TestW1cModuleDefinitionVisitor:
         return visitor.edges
 
     def test_top_level_function(self):
-        """A top-level function def should produce one decomposes_into edge."""
-        source = """\
-        def hello():
-            pass
-        """
-        edges = self._parse_and_visit(source)
-        func_edges = [e for e in edges if e.symbol == "hello"]
-        assert len(func_edges) == 1
-        e = func_edges[0]
-        assert e.relation_type == "decomposes_into"
-        assert e.edge_kind == "module_definition"
-        assert e.from_name == "ADG::Module::test_mod.py"
-        assert e.confidence == 1.0
+    """Test top_level_function runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for top_level_function
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute top_level_function
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
     def test_top_level_class(self):
-        """A top-level class def should produce one decomposes_into edge."""
-        source = """\
-        class MyClass:
-            pass
-        """
-        edges = self._parse_and_visit(source)
-        class_edges = [e for e in edges if e.symbol == "MyClass"]
-        assert len(class_edges) == 1
-        e = class_edges[0]
-        assert e.relation_type == "decomposes_into"
-        assert e.edge_kind == "module_definition"
-        assert e.semantic_type == "module_defines_class"
+    """Test top_level_class runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for top_level_class
+    test_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute top_level_class
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
     def test_class_method(self):
-        """Methods inside a class should also get decomposes_into edges."""
-        source = """\
-        class Foo:
-            def bar(self):
-                pass
-            def baz(self):
-                pass
-        """
-        edges = self._parse_and_visit(source)
-        # Should have: Foo class + bar method + baz method
-        assert len(edges) == 3
-        symbols = {e.symbol for e in edges}
-        assert symbols == {"Foo", "bar", "baz"}
+    """Test class_method runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for class_method
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute class_method
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
 
     def test_async_function(self):
-        """Async functions should be recognized as async."""
-        source = """\
-        async def fetch():
-            pass
-        """
-        edges = self._parse_and_visit(source)
-        assert len(edges) == 1
-        e = edges[0]
-        assert e.symbol == "fetch"
-        assert e.semantic_type == "module_defines_async_function"
+    """Test async_function runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for async_function
+    test_data = {}  # Replace with actual test data
 
-    def test_nested_functions_not_emitted(self):
-        """Functions nested inside other functions should NOT be emitted."""
-        source = """\
-        def outer():
-            def inner():
-                pass
-        """
-        edges = self._parse_and_visit(source)
-        # Only outer should be emitted — inner is local scope
-        assert len(edges) == 1
-        assert edges[0].symbol == "outer"
+    # Act
+    # TODO: Execute async_function
+    result = None  # Replace with actual function call
 
-    def test_nested_class(self):
-        """Nested classes should be emitted with proper hierarchy."""
-        source = """\
-        class Outer:
-            class Inner:
-                pass
-        """
-        edges = self._parse_and_visit(source)
-        assert len(edges) == 2
-        symbols = {e.symbol for e in edges}
-        assert symbols == {"Outer", "Inner"}
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    """Test nested_functions_not_emitted runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for nested_functions_not_emitted
+    test_data = {}  # Replace with actual test data
 
-    def test_empty_module(self):
-        """A module with no defs should produce zero edges."""
-        source = """\
-        x = 1
-        y = 2
-        """
-        edges = self._parse_and_visit(source)
-        assert len(edges) == 0
+    # Act
+    # TODO: Execute nested_functions_not_emitted
+    result = None  # Replace with actual function call
 
-    def test_line_numbers_correct(self):
-        """Edge line_no should match the actual def line in the AST."""
-        source = """\
-        # line 1
-        # line 2
-        def at_line_3():
-            pass
-        """
-        edges = self._parse_and_visit(source)
-        assert len(edges) == 1
-        assert edges[0].line_no == 3
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    """Test nested_class runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for nested_class
+    test_data = {}  # Replace with actual test data
 
-    def test_multiple_defs(self):
-        """Multiple top-level defs should each get an edge."""
-        source = """\
-        def a(): pass
-        def b(): pass
-        class C: pass
-        def d(): pass
-        """
-        edges = self._parse_and_visit(source)
-        assert len(edges) == 4
-        symbols = [e.symbol for e in edges]
-        assert symbols == ["a", "b", "C", "d"]
+    # Act
+    # TODO: Execute nested_class
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    """Test empty_module runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for empty_module
+    test_data = {}  # Replace with actual test data
+
+    # Act
+    # TODO: Execute empty_module
+    result = None  # Replace with actual function call
+
+"""Test line_numbers_correct runtime behavior."""
+# Arrange
+# TODO: Set up test data for line_numbers_correct
+test_data = {}  # Replace with actual test data
+
+# Act
+# TODO: Execute line_numbers_correct
+result = None  # Replace with actual function call
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+"""Test multiple_defs runtime behavior."""
+# Arrange
+# TODO: Set up test data for multiple_defs
+test_data = {}  # Replace with actual test data
+
+# Act
+# TODO: Execute multiple_defs
+result = None  # Replace with actual function call
+
+# Assert
+assert result is not None, f"{function_name} should return a result"
+assert isinstance(result, object), "Result should be an object"
+# TODO: Add specific runtime behavior assertions

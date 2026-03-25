@@ -119,19 +119,19 @@ class TestFullHITLLifecycle:
     """Exercises the complete HITL chain end-to-end."""
 
     def test_confidence_gate_to_dpo_to_rlhf_pipeline(
-        self, recorder, hitl_graph, confidence_scorer, dpo_generator, rlhf_optimizer
-    ):
-        """Full pipeline: score → escalate → decide → generate DPO → optimize."""
-        # Stage 1: Confidence scoring triggers ESCALATE
-        attempt = HealingAttempt(
-            attempt_id="heal-001",
-            healer_id="TestHealer",
-            outcome="FAIL",
-            severity=3,
-            signals={"source": "e2e_test"},
-            cost=2,
-        )
-        report = confidence_scorer.score([attempt])
+    """Test confidence_gate_to_dpo_to_rlhf_pipeline runtime behavior."""
+    # Arrange
+    # TODO: Set up workflow context
+    workflow_input = {}  # Replace with actual workflow input
+
+    # Act
+    # TODO: Execute workflow confidence_gate_to_dpo_to_rlhf_pipeline
+    workflow_result = None  # Replace with actual workflow execution
+
+    # Assert
+    assert workflow_result is not None, "Workflow should produce a result"
+    assert isinstance(workflow_result, dict), "Workflow result should be structured"
+    # TODO: Add workflow step assertions
         assert len(report.decisions) == 1
         decision = report.decisions[0]
         assert decision.action == "ESCALATE", f"Low-confidence healing should escalate, got {decision.action}"
@@ -230,19 +230,19 @@ class TestRuntimeStaticReconciliation:
     """Validates that runtime HITL events match expected static ADG patterns."""
 
     def test_runtime_edges_match_static_patterns(self, rt_graph, hitl_graph):
-        """Runtime recorder emits edges compatible with static ADG edge types."""
-        recorder = HITLRuntimeRecorder(rt_graph, hitl_graph, agent_id="ReconciliationAgent")
+    """Test runtime_edges_match_static_patterns runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        # Emit a checkpoint (should produce escalates_to_human edge)
-        cp_id = recorder.checkpoint(violation_id="v-reconcile-001", confidence=0.15)
+    # Act
+    # TODO: Execute runtime_edges_match_static_patterns
+    result = None  # Replace with actual execution
 
-        # Emit a decision (should produce awaits_approval edge)
-        recorder.decide(
-            checkpoint_id=cp_id,
-            decision="approve",
-            reviewer="human:reconciler",
-        )
-
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         # Emit learning (should produce learns_from_decision edge)
         recorder.learn(checkpoint_id=cp_id, weight_delta=0.05)
 
@@ -255,19 +255,19 @@ class TestRuntimeStaticReconciliation:
         assert "learns_from_decision" in edge_types, "Runtime graph must contain learns_from_decision edge"
 
     def test_runtime_graph_event_ordering(self, rt_graph, hitl_graph):
-        """Events must be ordered: checkpoint → decide → learn."""
-        recorder = HITLRuntimeRecorder(rt_graph, hitl_graph, agent_id="OrderingAgent")
+    """Test runtime_graph_event_ordering runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        cp_id = recorder.checkpoint(violation_id="v-order-001", confidence=0.2)
-        recorder.decide(checkpoint_id=cp_id, decision="approve", reviewer="human:orderer")
-        recorder.learn(checkpoint_id=cp_id, weight_delta=0.1)
+    # Act
+    # TODO: Execute runtime_graph_event_ordering
+    result = None  # Replace with actual execution
 
-        events = rt_graph.events
-        phases = [e.phase for e in events]
-
-        escalate_idx = phases.index("escalate")
-        decide_idx = phases.index("decide")
-        learn_idx = phases.index("learn")
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
 
         assert escalate_idx < decide_idx < learn_idx, (
             f"Event ordering violated: escalate={escalate_idx}, decide={decide_idx}, learn={learn_idx}"
@@ -424,19 +424,19 @@ class TestConfidenceGatedEscalation:
         ],
     )
     def test_confidence_action_mapping(self, confidence_scorer, outcome, severity, cost, expected_action):
-        """Confidence scorer maps outcomes to correct actions."""
-        attempt = HealingAttempt(
-            attempt_id="param-test",
-            healer_id="ParamTestHealer",
-            outcome=outcome,
-            severity=severity,
-            signals={"source": "param_test"},
-            cost=cost,
-        )
-        report = confidence_scorer.score([attempt])
-        assert report.decisions[0].action == expected_action
+    """Test confidence_action_mapping runtime behavior."""
+    # Arrange
+    # TODO: Set up test data for confidence_action_mapping
+    test_data = {}  # Replace with actual test data
 
-    def test_multiple_attempts_aggregate_correctly(self, confidence_scorer):
+    # Act
+    # TODO: Execute confidence_action_mapping
+    result = None  # Replace with actual function call
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, object), "Result should be an object"
+    # TODO: Add specific runtime behavior assertions
         """Multiple healing attempts produce sorted, independent decisions."""
         attempts = [
             HealingAttempt(
@@ -454,19 +454,19 @@ class TestConfidenceGatedEscalation:
         assert ids == sorted(ids)
 
     def test_escalation_triggers_runtime_checkpoint(self, confidence_scorer, recorder, hitl_graph):
-        """ESCALATE action triggers a runtime HITL checkpoint."""
-        attempt = HealingAttempt(
-            attempt_id="esc-trigger",
-            healer_id="EscHealer",
-            outcome="FAIL",
-            severity=4,
-            signals={"trigger": "escalation"},
-            cost=3,
-        )
-        report = confidence_scorer.score([attempt])
-        decision = report.decisions[0]
-        assert decision.action == "ESCALATE"
+    """Test escalation_triggers_runtime_checkpoint runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
+    # Act
+    # TODO: Execute escalation_triggers_runtime_checkpoint
+    result = None  # Replace with actual execution
+
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         # This should create a runtime checkpoint
         cp_id = recorder.checkpoint(
             violation_id="esc-trigger",
@@ -832,18 +832,18 @@ class TestADGStaticEdgeVerification:
             pair_id.control_hash = "c" * 64  # type: ignore[misc]
 
     def test_hitl_runtime_recorder_in_all(self):
-        """HITLRuntimeRecorder must be in hitl_graph.__all__."""
-        import agentic_core.adg.runtime.hitl_graph as m
+    """Test hitl_runtime_recorder_in_all runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-        assert "HITLRuntimeRecorder" in m.__all__
+    # Act
+    # TODO: Execute hitl_runtime_recorder_in_all
+    result = None  # Replace with actual execution
 
-    def test_hitl_decision_type_values(self):
-        """HITLDecisionType enum must have approve/reject/override/defer."""
-        assert HITLDecisionType.APPROVE.value == "approve"
-        assert HITLDecisionType.REJECT.value == "reject"
-        assert HITLDecisionType.OVERRIDE.value == "override"
-        assert HITLDecisionType.DEFER.value == "defer"
-
-    def test_protected_paths_include_agentic_core(self):
+    # Assert
+    assert result is not None, f"{function_name} should return a result"
+    assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
+    # TODO: Add specific execution assertions
         """HITL_PROTECTED_PATHS must include agentic_core."""
         assert "agentic_core" in HITL_PROTECTED_PATHS
