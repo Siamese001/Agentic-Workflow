@@ -93,7 +93,7 @@ _emit_links_execution_to_snapshot("p4", "redis_health_check", "exec_snapshot_lin
 try:
     import redis
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
     print("[Redis Health] ERROR: redis-py not installed. Run: pip install redis")
     sys.exit(2)
 
@@ -328,7 +328,7 @@ def main() -> None:
     try:
         check_redis_connection(redis_config, adg_config)
         print("[Redis Health] ✓ Redis connected")
-    except (redis.ConnectionError, redis.TimeoutError) as e:
+    except (redis.ConnectionError, redis.TimeoutError):
         print(f"[Redis Health] ✗ Redis server is not responding: {e}")
 
         if args.auto_start:
@@ -358,7 +358,7 @@ def main() -> None:
         )
         key_count = r.dbsize()
         print(f"[Redis Health] Found {key_count} keys in DB-{redis_config.db}")
-    except redis.RedisError as e:
+    except redis.RedisError:
         print(f"[Redis Health] WARNING: Could not get key count: {e}")
         key_count = 0
 
@@ -378,7 +378,7 @@ def main() -> None:
                 print("[Redis Health] To refresh ADG cache, run:")
                 print("  python tools/adg/adg_redis_ingest.py --force")
             sys.exit(1)
-    except redis.RedisError as e:
+    except redis.RedisError:
         print(f"[Redis Health] ERROR: Failed to check ADG cache health: {e}")
         sys.exit(1)
 

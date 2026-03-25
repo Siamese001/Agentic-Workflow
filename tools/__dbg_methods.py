@@ -30,5 +30,5 @@ for m in methods:
         out = (r.stdout + r.stderr).strip().split("\n")
         summary = [l for l in out if "passed" in l or "failed" in l or "error" in l]
         print(f"  {m}: {summary[-1] if summary else 'no summary'}")
-                except (ValueError, TypeError, RuntimeError) as e:
+    except (ValueError, TypeError, RuntimeError):
         print(f"  {m}: TIMEOUT (HANGS)")

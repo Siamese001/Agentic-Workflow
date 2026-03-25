@@ -200,7 +200,7 @@ def sqlite_vs_json():
                 )
             else:
                 print(f"  Table '{t}': no path col found | cols={cols}")
-                except (ValueError, TypeError, RuntimeError) as e:
+        except (ValueError, TypeError, RuntimeError) as e:
             print(f"  Table '{t}': ERROR {e}")
     conn.close()
 

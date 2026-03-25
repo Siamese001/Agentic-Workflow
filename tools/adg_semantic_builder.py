@@ -605,13 +605,13 @@ def iter_python_files(repo_root: Path):
                 rel = py_file.relative_to(repo_root).as_posix()
                 yield rel, py_file
             except ValueError as e:
-        # TODO: Add proper input validation
-        logger.warning(f"Invalid input: {e}")
+                # TODO: Add proper input validation
+                logger.warning(f"Invalid input: {e}")
                 continue
 
 
 def build_semantic_graph(repo_root: Path) -> dict:
-    """Full semantic graph build. Returns the graph dict."""
+    """Build the complete semantic graph for the repository."""
     all_nodes: list[SemanticNode] = []
     all_edges: list[SemanticEdge] = []
 
@@ -624,51 +624,6 @@ def build_semantic_graph(repo_root: Path) -> dict:
         # guardian: allow-silent-swallow
         except Exception:
             error_count += 1
-            continue
-        file_nodes, file_edges = extract_file(rel_path, source)
-        all_nodes.extend(file_nodes)
-        all_edges.extend(file_edges)
-        file_count += 1
-        if file_count % 200 == 0:
-            logger.info("Scanned %d files, %d nodes, %d edges...", file_count, len(all_nodes), len(all_edges))
-
-    logger.info("Scan complete: %d files, %d nodes, %d edges, %d errors", file_count, len(all_nodes), len(all_edges), error_count)
-
-    # Split by type
-    symbols = [n for n in all_nodes if n.node_type in ("FunctionNode", "ClassNode")]
-    tests = [n for n in all_nodes if n.node_type in ("TestFunctionNode", "ParametrizedTestNode")]
-    fixtures = [n for n in all_nodes if n.node_type == "FixtureNode"]
-
-    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    digest = hashlib.sha256(
-        json.dumps([e.to_dict() for e in all_edges], sort_keys=True).encode()
-    ).hexdigest()
-
-    return {
-        "schema_version": "semantic-1.0.0",
-        "timestamp": ts,
-        "digest": digest,
-        "file_count": file_count,
-        "entities": [n.to_dict() for n in all_nodes],
-        "relations": [e.to_dict() for e in all_edges],
-        "symbols": [n.to_dict() for n in symbols],
-        "tests": [n.to_dict() for n in tests],
-        "fixtures": [n.to_dict() for n in fixtures],
-        "counts": {
-            "total_nodes": len(all_nodes),
-            "total_edges": len(all_edges),
-            "module_nodes": sum(1 for n in all_nodes if n.node_type == "ModuleNode"),
-            "class_nodes": sum(1 for n in all_nodes if n.node_type == "ClassNode"),
-            "function_nodes": sum(1 for n in all_nodes if n.node_type == "FunctionNode"),
-            "test_functions": len(tests),
-            "fixtures": len(fixtures),
-            "parametrized": sum(1 for n in all_nodes if n.node_type == "ParametrizedTestNode"),
-        },
-    }
-
-
-# ---------------------------------------------------------------------------
-# Phase 2: Test surface map
 # ---------------------------------------------------------------------------
 
 def build_test_surface_map(graph: dict) -> dict:

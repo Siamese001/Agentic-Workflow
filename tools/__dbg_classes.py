@@ -53,5 +53,5 @@ for fname, classes in files_classes:
                 l for l in out if "passed" in l or "failed" in l or "error" in l or "no tests" in l.lower()
             ]
             print(f"  {cls}: {summary[-1] if summary else 'no summary'}")
-                except (ValueError, TypeError, RuntimeError) as e:
+        except (TimeoutError, ValueError, TypeError, RuntimeError):
             print(f"  {cls}: TIMEOUT (HANGS)")

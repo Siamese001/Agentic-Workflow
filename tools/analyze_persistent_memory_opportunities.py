@@ -23,7 +23,7 @@ print(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
 class PersistentMemoryAnalyzer:
     """Analyzes repository for persistent memory opportunities."""
-    
+
     def __init__(self, root_path: Path):
         self.root = root_path
         self.analysis = {
@@ -37,43 +37,43 @@ class PersistentMemoryAnalyzer:
             "system_logs": {},
             "recommendations": []
         }
-        
+
     def scan_repository(self) -> Dict:
         """Scan entire repository for persistent memory opportunities."""
         print("\n" + "=" * 80)
         print("SCANNING REPOSITORY FOR PERSISTENT MEMORY OPPORTUNITIES")
         print("=" * 80)
-        
+
         # 1. Learning artifacts
         self._scan_learning_artifacts()
-        
+
         # 2. State and configuration data
         self._scan_state_data()
-        
+
         # 3. Performance and metrics data
         self._scan_performance_data()
-        
+
         # 4. Knowledge graphs and embeddings
         self._scan_knowledge_graphs()
-        
+
         # 5. Training and model data
         self._scan_training_data()
-        
+
         # 6. User interaction data
         self._scan_user_interactions()
-        
+
         # 7. System logs and telemetry
         self._scan_system_logs()
-        
+
         # 8. Generate recommendations
         self._generate_recommendations()
-        
+
         return self.analysis
-    
+
     def _scan_learning_artifacts(self):
         """Scan for learning artifacts that should be persisted."""
         print("\n🧠 SCANNING LEARNING ARTIFACTS...")
-        
+
         learning_patterns = [
             r"learning_.*\.py",
             r".*_learning\.py",
@@ -86,7 +86,7 @@ class PersistentMemoryAnalyzer:
             r"training.*",
             r"inference.*"
         ]
-        
+
         learning_dirs = [
             "system_learning",
             "models",
@@ -96,15 +96,15 @@ class PersistentMemoryAnalyzer:
             "ml",
             "ai"
         ]
-        
+
         learning_files = []
-        
+
         # Scan for learning-related files
         for pattern in learning_patterns:
             for file_path in self.root.rglob(pattern):
                 if file_path.is_file() and not self._is_ignored(file_path):
                     learning_files.append(file_path)
-        
+
         # Scan learning directories
         for dir_name in learning_dirs:
             dir_path = self.root / dir_name
@@ -112,12 +112,12 @@ class PersistentMemoryAnalyzer:
                 for file_path in dir_path.rglob("*"):
                     if file_path.is_file() and not self._is_ignored(file_path):
                         learning_files.append(file_path)
-        
+
         # Analyze learning files
         for file_path in learning_files[:20]:  # Limit to first 20 for analysis
             try:
                 content = file_path.read_text(encoding='utf-8', errors='ignore')
-                
+
                 # Look for learning-related patterns
                 learning_indicators = {
                     "has_model_save": "save" in content and ("model" in content or "checkpoint" in content),
@@ -127,19 +127,18 @@ class PersistentMemoryAnalyzer:
                     "has_metrics": "metric" in content or "accuracy" in content or "loss" in content,
                     "file_size_kb": file_path.stat().st_size / 1024
                 }
-                
+
                 self.analysis["learning_artifacts"][str(file_path.relative_to(self.root))] = learning_indicators
-                
-            except (ValueError, TypeError, RuntimeError) as e:
+            except (ValueError, TypeError, RuntimeError):
                 continue
-        
+
         print(f"  Found {len(learning_files)} learning-related files")
         print(f"  Analyzed {min(20, len(learning_files))} files for patterns")
-    
+
     def _scan_state_data(self):
         """Scan for state and configuration data."""
         print("\n💾 SCANNING STATE & CONFIGURATION DATA...")
-        
+
         state_patterns = [
             "state*.json",
             "config*.json",
@@ -150,13 +149,13 @@ class PersistentMemoryAnalyzer:
             "*.yml",
             "*.toml"
         ]
-        
+
         state_files = []
         for pattern in state_patterns:
             for file_path in self.root.rglob(pattern):
                 if file_path.is_file() and not self._is_ignored(file_path):
                     state_files.append(file_path)
-        
+
         # Look for stateful Python files
         stateful_patterns = [
             "cache",
@@ -166,38 +165,38 @@ class PersistentMemoryAnalyzer:
             "persist",
             "checkpoint"
         ]
-        
+
         python_files = list(self.root.rglob("*.py"))
         for file_path in python_files[:50]:  # Limit analysis
             if self._is_ignored(file_path):
                 continue
-                
+
             try:
                 content = file_path.read_text(encoding='utf-8', errors='ignore')
-                
+
                 # Check for stateful patterns
                 stateful_score = 0
                 for pattern in stateful_patterns:
                     if pattern in content.lower():
                         stateful_score += 1
-                
+
                 if stateful_score > 0:
                     self.analysis["state_data"][str(file_path.relative_to(self.root))] = {
                         "stateful_score": stateful_score,
                         "file_size_kb": file_path.stat().st_size / 1024,
                         "patterns_found": [p for p in stateful_patterns if p in content.lower()]
                     }
-                    
-            except (ValueError, TypeError, RuntimeError) as e:
+
+            except (ValueError, TypeError, RuntimeError):
                 continue
-        
+
         print(f"  Found {len(state_files)} state/configuration files")
         print(f"  Found {len(self.analysis['state_data'])} stateful Python files")
-    
+
     def _scan_performance_data(self):
         """Scan for performance and metrics data."""
         print("\n📊 SCANNING PERFORMANCE & METRICS DATA...")
-        
+
         performance_patterns = [
             "metrics*.json",
             "performance*.json",
@@ -209,18 +208,18 @@ class PersistentMemoryAnalyzer:
             "*.stats",
             "*.benchmark"
         ]
-        
+
         perf_files = []
         for pattern in performance_patterns:
             for file_path in self.root.rglob(pattern):
                 if file_path.is_file() and not self._is_ignored(file_path):
                     perf_files.append(file_path)
-        
+
         # Analyze performance files
         for file_path in perf_files:
             try:
                 content = file_path.read_text(encoding='utf-8', errors='ignore')
-                
+
                 # Try to parse as JSON to analyze structure
                 try:
                     data = json.loads(content)
@@ -238,21 +237,23 @@ class PersistentMemoryAnalyzer:
                             "data_type": type(data).__name__,
                             "is_json": True
                         }
-            except (ValueError, TypeError, RuntimeError) as e:
+                except (ValueError, TypeError, RuntimeError):
                     self.analysis["performance_data"][str(file_path.relative_to(self.root))] = {
                         "file_size_kb": file_path.stat().st_size / 1024,
                         "is_json": False
                     }
-                    
-            except (ValueError, TypeError, RuntimeError) as e:
+
+                except (ValueError, TypeError, RuntimeError):
+                    continue
+
+            except (ValueError, TypeError, RuntimeError):
                 continue
-        
         print(f"  Found {len(perf_files)} performance-related files")
-    
+
     def _scan_knowledge_graphs(self):
         """Scan for knowledge graphs and embeddings."""
         print("\n🕸️ SCANNING KNOWLEDGE GRAPHS & EMBEDDINGS...")
-        
+
         # Already have ADG graphs - look for others
         kg_patterns = [
             "graph*.json",
@@ -263,27 +264,27 @@ class PersistentMemoryAnalyzer:
             "ontology*.json",
             "taxonomy*.json"
         ]
-        
+
         kg_files = []
         for pattern in kg_patterns:
             for file_path in self.root.rglob(pattern):
                 if file_path.is_file() and not self._is_ignored(file_path):
                     kg_files.append(file_path)
-        
+
         # Exclude ADG files we already know about
         kg_files = [f for f in kg_files if "adg" not in str(f).lower()]
-        
+
         for file_path in kg_files:
             try:
                 content = file_path.read_text(encoding='utf-8', errors='ignore')
-                
+
                 # Analyze structure
                 try:
                     data = json.loads(content)
                     if isinstance(data, dict):
                         node_count = len(data.get("nodes", [])) if "nodes" in data else 0
                         edge_count = len(data.get("edges", [])) if "edges" in data else 0
-                        
+
                         self.analysis["knowledge_graphs"][str(file_path.relative_to(self.root))] = {
                             "file_size_kb": file_path.stat().st_size / 1024,
                             "has_nodes": "nodes" in data,
@@ -297,22 +298,24 @@ class PersistentMemoryAnalyzer:
                             "file_size_kb": file_path.stat().st_size / 1024,
                             "is_graph": False
                         }
-            except (ValueError, TypeError, RuntimeError) as e:
+                except (ValueError, TypeError, RuntimeError):
                     self.analysis["knowledge_graphs"][str(file_path.relative_to(self.root))] = {
                         "file_size_kb": file_path.stat().st_size / 1024,
                         "is_graph": False,
                         "parse_error": True
                     }
-                    
-            except (ValueError, TypeError, RuntimeError) as e:
+
+                except (ValueError, TypeError, RuntimeError):
+                    continue
+
+            except (ValueError, TypeError, RuntimeError):
                 continue
-        
         print(f"  Found {len(kg_files)} knowledge graph files")
-    
+
     def _scan_training_data(self):
         """Scan for training data and models."""
         print("\n🎓 SCANNING TRAINING DATA & MODELS...")
-        
+
         training_patterns = [
             "train*.json",
             "model*.json",
@@ -324,13 +327,13 @@ class PersistentMemoryAnalyzer:
             "*.ckpt",
             "*.pth"
         ]
-        
+
         training_files = []
         for pattern in training_patterns:
             for file_path in self.root.rglob(pattern):
                 if file_path.is_file() and not self._is_ignored(file_path):
                     training_files.append(file_path)
-        
+
         for file_path in training_files:
             try:
                 if file_path.suffix == '.json':
@@ -342,7 +345,8 @@ class PersistentMemoryAnalyzer:
                             "data_type": "json",
                             "keys": list(data.keys())[:5] if isinstance(data, dict) else None
                         }
-            except (ValueError, TypeError, RuntimeError) as e:
+                    except (ValueError, TypeError, RuntimeError):
+                        continue
                         self.analysis["training_data"][str(file_path.relative_to(self.root))] = {
                             "file_size_kb": file_path.stat().st_size / 1024,
                             "data_type": "json",
@@ -355,16 +359,16 @@ class PersistentMemoryAnalyzer:
                         "data_type": "binary",
                         "extension": file_path.suffix
                     }
-                    
-            except (ValueError, TypeError, RuntimeError) as e:
+
+
+            except (ValueError, TypeError, RuntimeError):
                 continue
-        
         print(f"  Found {len(training_files)} training data files")
-    
+
     def _scan_user_interactions(self):
         """Scan for user interaction data."""
         print("\n👤 SCANNING USER INTERACTION DATA...")
-        
+
         interaction_patterns = [
             "user*.json",
             "chat*.json",
@@ -374,13 +378,13 @@ class PersistentMemoryAnalyzer:
             "history*.json",
             "session*.json"
         ]
-        
+
         interaction_files = []
         for pattern in interaction_patterns:
             for file_path in self.root.rglob(pattern):
                 if file_path.is_file() and not self._is_ignored(file_path):
                     interaction_files.append(file_path)
-        
+
         for file_path in interaction_files:
             try:
                 content = file_path.read_text(encoding='utf-8', errors='ignore')
@@ -391,21 +395,23 @@ class PersistentMemoryAnalyzer:
                         "record_count": len(data) if isinstance(data, list) else 1,
                         "keys": list(data.keys())[:5] if isinstance(data, dict) else None
                     }
-            except (ValueError, TypeError, RuntimeError) as e:
+                except (ValueError, TypeError, RuntimeError):
                     self.analysis["user_interactions"][str(file_path.relative_to(self.root))] = {
                         "file_size_kb": file_path.stat().st_size / 1024,
                         "parse_error": True
                     }
-                    
-            except (ValueError, TypeError, RuntimeError) as e:
+
+                except (ValueError, TypeError, RuntimeError):
+                    continue
+
+            except (ValueError, TypeError, RuntimeError):
                 continue
-        
         print(f"  Found {len(interaction_files)} user interaction files")
-    
+
     def _scan_system_logs(self):
         """Scan for system logs and telemetry."""
         print("\n📝 SCANNING SYSTEM LOGS & TELEMETRY...")
-        
+
         log_patterns = [
             "*.log",
             "log*.json",
@@ -414,13 +420,13 @@ class PersistentMemoryAnalyzer:
             "audit*.json",
             "event*.json"
         ]
-        
+
         log_files = []
         for pattern in log_patterns:
             for file_path in self.root.rglob(pattern):
                 if file_path.is_file() and not self._is_ignored(file_path):
                     log_files.append(file_path)
-        
+
         for file_path in log_files:
             try:
                 if file_path.suffix == '.json':
@@ -433,7 +439,7 @@ class PersistentMemoryAnalyzer:
                             "entry_count": entry_count,
                             "is_structured": True
                         }
-            except (ValueError, TypeError, RuntimeError) as e:
+                    except (ValueError, TypeError, RuntimeError):
                         self.analysis["system_logs"][str(file_path.relative_to(self.root))] = {
                             "file_size_kb": file_path.stat().st_size / 1024,
                             "is_structured": False
@@ -447,18 +453,18 @@ class PersistentMemoryAnalyzer:
                         "line_count": line_count,
                         "is_structured": False
                     }
-                    
-            except (ValueError, TypeError, RuntimeError) as e:
+
+
+            except (ValueError, TypeError, RuntimeError):
                 continue
-        
         print(f"  Found {len(log_files)} log files")
-    
+
     def _generate_recommendations(self):
         """Generate recommendations for persistent memory implementation."""
         print("\n💡 GENERATING RECOMMENDATIONS...")
-        
+
         recommendations = []
-        
+
         # Learning artifacts recommendations
         if self.analysis["learning_artifacts"]:
             recommendations.append({
@@ -469,18 +475,18 @@ class PersistentMemoryAnalyzer:
                 "implementation": "SQLite tables: models, embeddings, training_sessions, checkpoints",
                 "benefits": "Resume training, model versioning, incremental learning"
             })
-        
+
         # State data recommendations
         if self.analysis["state_data"]:
             recommendations.append({
                 "category": "State Management",
-                "priority": "HIGH", 
+                "priority": "HIGH",
                 "description": "Centralize application state in persistent storage",
                 "files_count": len(self.analysis["state_data"]),
                 "implementation": "SQLite tables: application_state, user_sessions, cache_entries",
                 "benefits": "State recovery, session management, cache persistence"
             })
-        
+
         # Performance data recommendations
         if self.analysis["performance_data"]:
             recommendations.append({
@@ -491,7 +497,7 @@ class PersistentMemoryAnalyzer:
                 "implementation": "SQLite tables: metrics, benchmarks, performance_trends",
                 "benefits": "Performance tracking, regression detection, optimization insights"
             })
-        
+
         # Knowledge graphs recommendations
         if self.analysis["knowledge_graphs"]:
             recommendations.append({
@@ -502,7 +508,7 @@ class PersistentMemoryAnalyzer:
                 "implementation": "SQLite tables: knowledge_graphs, embeddings, semantic_index",
                 "benefits": "Knowledge retention, semantic search, relationship mining"
             })
-        
+
         # Training data recommendations
         if self.analysis["training_data"]:
             recommendations.append({
@@ -513,7 +519,7 @@ class PersistentMemoryAnalyzer:
                 "implementation": "SQLite tables: datasets, model_versions, training_runs",
                 "benefits": "Data lineage, model versioning, experiment tracking"
             })
-        
+
         # User interaction recommendations
         if self.analysis["user_interactions"]:
             recommendations.append({
@@ -524,7 +530,7 @@ class PersistentMemoryAnalyzer:
                 "implementation": "SQLite tables: user_interactions, preferences, feedback",
                 "benefits": "Personalization, user insights, interaction patterns"
             })
-        
+
         # System logs recommendations
         if self.analysis["system_logs"]:
             recommendations.append({
@@ -535,7 +541,7 @@ class PersistentMemoryAnalyzer:
                 "implementation": "SQLite tables: system_logs, events, telemetry",
                 "benefits": "Centralized logging, queryable logs, system insights"
             })
-        
+
         # Cross-cutting recommendations
         recommendations.extend([
             {
@@ -560,9 +566,9 @@ class PersistentMemoryAnalyzer:
                 "benefits": "Continuous improvement, adaptive behavior, knowledge accumulation"
             }
         ])
-        
+
         self.analysis["recommendations"] = recommendations
-    
+
     def _is_ignored(self, file_path: Path) -> bool:
         """Check if file should be ignored."""
         ignore_patterns = [
@@ -576,9 +582,9 @@ class PersistentMemoryAnalyzer:
             ".venv",
             "venv"
         ]
-        
+
         return any(pattern in str(file_path) for pattern in ignore_patterns)
-    
+
     def generate_schema_design(self) -> str:
         """Generate a comprehensive SQLite schema design."""
         schema = """
@@ -859,19 +865,19 @@ CREATE INDEX IF NOT EXISTS idx_adaptation_rules_priority ON adaptation_rules(pri
 -- ============================================================================
 
 -- Update timestamps
-CREATE TRIGGER IF NOT EXISTS update_models_timestamp 
+CREATE TRIGGER IF NOT EXISTS update_models_timestamp
     AFTER UPDATE ON models
     BEGIN
         UPDATE models SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
     END;
 
-CREATE TRIGGER IF NOT EXISTS update_knowledge_graphs_timestamp 
+CREATE TRIGGER IF NOT EXISTS update_knowledge_graphs_timestamp
     AFTER UPDATE ON knowledge_graphs
     BEGIN
         UPDATE knowledge_graphs SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
     END;
 
-CREATE TRIGGER IF NOT EXISTS update_application_state_timestamp 
+CREATE TRIGGER IF NOT EXISTS update_application_state_timestamp
     AFTER UPDATE ON application_state
     BEGIN
         UPDATE application_state SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
@@ -892,13 +898,13 @@ CREATE TRIGGER IF NOT EXISTS cleanup_expired_sessions
     END;
 """
         return schema
-    
+
     def print_summary(self):
         """Print analysis summary."""
         print("\n" + "=" * 80)
         print("PERSISTENT MEMORY OPPORTUNITIES SUMMARY")
         print("=" * 80)
-        
+
         categories = [
             ("Learning Artifacts", "learning_artifacts"),
             ("State Data", "state_data"),
@@ -908,21 +914,21 @@ CREATE TRIGGER IF NOT EXISTS cleanup_expired_sessions
             ("User Interactions", "user_interactions"),
             ("System Logs", "system_logs")
         ]
-        
+
         for category_name, category_key in categories:
             count = len(self.analysis[category_key])
             status = "🔴" if count == 0 else "🟡" if count < 5 else "🟢"
             print(f"{status} {category_name}: {count} files")
-        
+
         print(f"\n📋 RECOMMENDATIONS: {len(self.analysis['recommendations'])}")
-        
+
         high_priority = [r for r in self.analysis["recommendations"] if r["priority"] in ["CRITICAL", "HIGH"]]
         print(f"🚨 HIGH PRIORITY: {len(high_priority)}")
-        
+
         print("\n" + "=" * 80)
         print("TOP RECOMMENDATIONS")
         print("=" * 80)
-        
+
         for i, rec in enumerate(high_priority[:5], 1):
             print(f"{i}. {rec['category']} ({rec['priority']})")
             print(f"   {rec['description']}")
@@ -936,27 +942,27 @@ def main():
     analyzer = PersistentMemoryAnalyzer(ROOT)
     analysis = analyzer.scan_repository()
     analyzer.print_summary()
-    
+
     # Save analysis results
     results_dir = ROOT / "artifacts" / "analysis"
     results_dir.mkdir(exist_ok=True)
-    
+
     timestamp = datetime.now().strftime("%Y%m%d_%H%M")
-    
+
     # Save analysis
     analysis_file = results_dir / f"persistent_memory_analysis_{timestamp}.json"
     with open(analysis_file, 'w') as f:
         json.dump(analysis, f, indent=2, default=str)
-    
+
     print(f"📊 Analysis saved: {analysis_file.name}")
-    
+
     # Save schema design
     schema_file = results_dir / f"unified_memory_schema_{timestamp}.sql"
     with open(schema_file, 'w') as f:
         f.write(analyzer.generate_schema_design())
-    
+
     print(f"🗄️ Schema design saved: {schema_file.name}")
-    
+
     print(f"\n🎯 NEXT STEPS:")
     print(f"1. Review the analysis results in {analysis_file.name}")
     print(f"2. Implement the unified schema from {schema_file.name}")

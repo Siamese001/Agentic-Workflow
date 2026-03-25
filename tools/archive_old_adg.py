@@ -280,8 +280,8 @@ def cleanup_old_archives(archive_months: int, dry_run: bool) -> dict:
         try:
             dir_date = datetime.strptime(month_dir.name, "%Y-%m")
         except ValueError as e:
-        # TODO: Add proper input validation
-        logger.warning(f"Invalid input: {e}")
+            # TODO: Add proper input validation
+            logger.warning(f"Invalid input: {e}")
             continue
 
         if dir_date < cutoff_date:

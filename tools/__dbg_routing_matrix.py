@@ -31,5 +31,5 @@ for cls in sorted(classes):
         out = (r2.stdout + r2.stderr).strip().split("\n")
         summary = [l for l in out if "passed" in l or "failed" in l or "error" in l]
         print(f"  {cls}: {summary[-1] if summary else 'no summary'}")
-                except (ValueError, TypeError, RuntimeError) as e:
+    except (TimeoutError, ValueError, TypeError, RuntimeError):
         print(f"  {cls}: TIMEOUT (HANGS)")
