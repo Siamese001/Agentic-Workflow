@@ -15,6 +15,7 @@ Ceiling behaviour (§29-style):
   - Subsequent runs enforce count <= ceiling (no new violations allowed).
   - Ceiling can only be reduced, never increased, by editing the snapshot.
 """
+
 from __future__ import annotations
 
 import ast
@@ -22,13 +23,11 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-import pytest
-
 ROOT = Path(__file__).resolve().parents[2]
 SNAPSHOT_PATH = ROOT / "artifacts" / "structure" / "adg_foundational_coverage_snapshot.json"
 
-FAN_IN_THRESHOLD = 3          # minimum fan_in to require foundational test
-FOUNDATIONAL_DEPTH_MIN = 1    # at least 1 assert/raises in the foundational test
+FAN_IN_THRESHOLD = 3  # minimum fan_in to require foundational test
+FOUNDATIONAL_DEPTH_MIN = 1  # at least 1 assert/raises in the foundational test
 
 
 # ---------------------------------------------------------------------------
@@ -36,8 +35,12 @@ FOUNDATIONAL_DEPTH_MIN = 1    # at least 1 assert/raises in the foundational tes
 # ---------------------------------------------------------------------------
 
 _INTERNAL_PREFIXES = (
-    "agentic_core", "apps_rg", "apps_lic", "apps_shared",
-    "system_learning", "ops_scripts",
+    "agentic_core",
+    "apps_rg",
+    "apps_lic",
+    "apps_shared",
+    "system_learning",
+    "ops_scripts",
 )
 
 
@@ -169,6 +172,7 @@ def _compute_violations(
 # Contract tests
 # ---------------------------------------------------------------------------
 
+
 class TestADGFoundationalCoverageContract:
     """fan_in >= 3 production modules must have a behavioral (non-ADG) test."""
 
@@ -198,7 +202,8 @@ class TestADGFoundationalCoverageContract:
     def test_violation_count_non_growing(self) -> None:
         """Violation count must not exceed snapshot ceiling (§29 non-growing debt)."""
         if not SNAPSHOT_PATH.exists():
-            pytest.skip("Snapshot not yet created — run test_snapshot_exists_or_created first")
+            # Create snapshot if missing
+            self.test_snapshot_exists_or_created()
         snapshot = json.loads(SNAPSHOT_PATH.read_text())
         ceiling = snapshot["violation_ceiling"]
         threshold = snapshot.get("fan_in_threshold", FAN_IN_THRESHOLD)
@@ -219,26 +224,27 @@ class TestADGFoundationalCoverageContract:
         prod = _collect_prod_modules()
         fi = _build_fan_in(prod)
         if not SNAPSHOT_PATH.exists():
-            pytest.skip("Snapshot not yet created")
+            # Create snapshot if missing
+            self.test_snapshot_exists_or_created()
         snapshot = json.loads(SNAPSHOT_PATH.read_text())
         # Find modules that are in the snapshot violation_sample AND have fan_in >= 10
         # New modules (not in snapshot) with fan_in >= 10 are hard failures
         known_violations = set(snapshot.get("violation_sample", []))
         hard_violations = [
-            m for m in prod
-            if fi.get(m, 0) >= 10
-            and not _has_foundational_test(m)
-            and m not in known_violations
+            m
+            for m in prod
+            if fi.get(m, 0) >= 10 and not _has_foundational_test(m) and m not in known_violations
         ]
         assert not hard_violations, (
             f"{len(hard_violations)} NEW high-fan_in (>=10) modules lack foundational tests:\n"
-            + "\n".join(f"  fan_in={fi.get(m,0):>4}  {m}" for m in hard_violations[:20])
+            + "\n".join(f"  fan_in={fi.get(m, 0):>4}  {m}" for m in hard_violations[:20])
         )
 
     def test_snapshot_threshold_matches_policy(self) -> None:
         """Snapshot threshold must match current policy constant."""
         if not SNAPSHOT_PATH.exists():
-            pytest.skip("Snapshot not yet created")
+            # Create snapshot if missing
+            self.test_snapshot_exists_or_created()
         snapshot = json.loads(SNAPSHOT_PATH.read_text())
         assert snapshot["fan_in_threshold"] == FAN_IN_THRESHOLD, (
             f"Snapshot threshold {snapshot['fan_in_threshold']} != policy {FAN_IN_THRESHOLD}. "
@@ -259,6 +265,5 @@ class TestADGFoundationalCoverageContract:
         # At least some modules must have fan_in >= 3
         high_fi = [m for m in prod if fi.get(m, 0) >= FAN_IN_THRESHOLD]
         assert len(high_fi) > 50, (
-            f"Only {len(high_fi)} modules have fan_in >= {FAN_IN_THRESHOLD}; "
-            "fan_in computation may be broken"
+            f"Only {len(high_fi)} modules have fan_in >= {FAN_IN_THRESHOLD}; fan_in computation may be broken"
         )

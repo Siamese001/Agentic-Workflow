@@ -32,34 +32,34 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
     def sample_violations(self):
         """Create sample violation data for testing."""
         return {
-            'scan_timestamp': '2026-03-24T19:30:00Z',
-            'total_violations': 5,
-            'violations': [
+            "scan_timestamp": "2026-03-24T19:30:00Z",
+            "total_violations": 5,
+            "violations": [
                 {
-                    'file_path': 'test_file1.py',
-                    'line_number': 10,
-                    'exception_type': 'ImportError',
-                    'handler_body': ['pass'],
-                    'context': 'import optional_dependency',
-                    'severity': 'HIGH'
+                    "file_path": "test_file1.py",
+                    "line_number": 10,
+                    "exception_type": "ImportError",
+                    "handler_body": ["pass"],
+                    "context": "import optional_dependency",
+                    "severity": "HIGH",
                 },
                 {
-                    'file_path': 'test_file2.py',
-                    'line_number': 20,
-                    'exception_type': 'ImportError',
-                    'handler_body': ['pass'],
-                    'context': 'import missing_module',
-                    'severity': 'HIGH'
+                    "file_path": "test_file2.py",
+                    "line_number": 20,
+                    "exception_type": "ImportError",
+                    "handler_body": ["pass"],
+                    "context": "import missing_module",
+                    "severity": "HIGH",
                 },
                 {
-                    'file_path': 'test_file3.py',
-                    'line_number': 30,
-                    'exception_type': 'ImportError',
-                    'handler_body': ['pass'],
-                    'context': 'dynamic import',
-                    'severity': 'HIGH'
-                }
-            ]
+                    "file_path": "test_file3.py",
+                    "line_number": 30,
+                    "exception_type": "ImportError",
+                    "handler_body": ["pass"],
+                    "context": "dynamic import",
+                    "severity": "HIGH",
+                },
+            ],
         }
 
     def _create_violations_file(self, temp_workspace, violations_data):
@@ -67,7 +67,7 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
         tools_dir = temp_workspace / "tools"
         tools_dir.mkdir()
         violations_file = tools_dir / "silent_swallower_report.json"
-        with open(violations_file, 'w') as f:
+        with open(violations_file, "w") as f:
             json.dump(violations_data, f)
         return violations_file
 
@@ -78,11 +78,11 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
         tools_dir = temp_workspace / "tools"
         tools_dir.mkdir()
         violations_file = tools_dir / "silent_swallower_report.json"
-        with open(violations_file, 'w') as f:
+        with open(violations_file, "w") as f:
             json.dump(sample_violations, f)
 
         # Patch the report file path
-        with patch('fix_high_severity_silent_swallowers.PROJECT_ROOT', temp_workspace):
+        with patch("fix_high_severity_silent_swallowers.PROJECT_ROOT", temp_workspace):
             fixer = HighSeveritySilentSwallowerFixer()
             yield fixer
 
@@ -93,10 +93,10 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
         tools_dir = temp_workspace / "tools"
         tools_dir.mkdir()
         violations_file = tools_dir / "silent_swallower_report.json"
-        with open(violations_file, 'w') as f:
-            json.dump({'violations': []}, f)
+        with open(violations_file, "w") as f:
+            json.dump({"violations": []}, f)
 
-        with patch('fix_high_severity_silent_swallowers.PROJECT_ROOT', temp_workspace):
+        with patch("fix_high_severity_silent_swallowers.PROJECT_ROOT", temp_workspace):
             fixer = HighSeveritySilentSwallowerFixer()
 
             # Should handle empty list gracefully
@@ -110,10 +110,10 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
         tools_dir = temp_workspace / "tools"
         tools_dir.mkdir()
         violations_file = tools_dir / "silent_swallower_report.json"
-        with open(violations_file, 'w') as f:
-            json.dump({'invalid': 'data'}, f)
+        with open(violations_file, "w") as f:
+            json.dump({"invalid": "data"}, f)
 
-        with patch('fix_high_severity_silent_swallowers.PROJECT_ROOT', temp_workspace):
+        with patch("fix_high_severity_silent_swallowers.PROJECT_ROOT", temp_workspace):
             # Should handle malformed data gracefully
             with pytest.raises(KeyError):
                 HighSeveritySilentSwallowerFixer()
@@ -122,19 +122,21 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
     def test_missing_file_paths(self, temp_workspace, sample_violations):
         """Test handling of violations with missing file paths."""
         # Add violation with missing file path
-        sample_violations['violations'].append({
-            'line_number': 40,
-            'exception_type': 'ImportError',
-            'handler_body': ['pass'],
-            'severity': 'HIGH'
-            # Missing file_path
-        })
+        sample_violations["violations"].append(
+            {
+                "line_number": 40,
+                "exception_type": "ImportError",
+                "handler_body": ["pass"],
+                "severity": "HIGH",
+                # Missing file_path
+            }
+        )
 
         violations_file = temp_workspace / "test_violations.json"
-        with open(violations_file, 'w') as f:
+        with open(violations_file, "w") as f:
             json.dump(sample_violations, f)
 
-        with patch('fix_high_severity_silent_swallowers.PROJECT_ROOT', temp_workspace):
+        with patch("fix_high_severity_silent_swallowers.PROJECT_ROOT", temp_workspace):
             fixer = HighSeveritySilentSwallowerFixer()
 
             # Should skip violations with missing file paths
@@ -153,16 +155,16 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
 
         try:
             violations_file = temp_workspace / "test_violations.json"
-            sample_violations['violations'][0]['file_path'] = str(restricted_file)
-            with open(violations_file, 'w') as f:
+            sample_violations["violations"][0]["file_path"] = str(restricted_file)
+            with open(violations_file, "w") as f:
                 json.dump(sample_violations, f)
 
-            with patch('fix_high_severity_silent_swallowers.PROJECT_ROOT', temp_workspace):
+            with patch("fix_high_severity_silent_swallowers.PROJECT_ROOT", temp_workspace):
                 fixer = HighSeveritySilentSwallowerFixer()
 
                 # Should handle permission errors gracefully
                 result = fixer.fix_import_error_violations()
-                assert result['errors'] > 0  # Should record permission errors
+                assert result["errors"] > 0  # Should record permission errors
         finally:
             # Restore permissions for cleanup
             restricted_file.chmod(original_mode)
@@ -174,11 +176,11 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
         unicode_file.write_text("except ImportError:\n    pass\n")
 
         violations_file = temp_workspace / "test_violations.json"
-        sample_violations['violations'][0]['file_path'] = str(unicode_file)
-        with open(violations_file, 'w') as f:
+        sample_violations["violations"][0]["file_path"] = str(unicode_file)
+        with open(violations_file, "w") as f:
             json.dump(sample_violations, f)
 
-        with patch('fix_high_severity_silent_swallowers.PROJECT_ROOT', temp_workspace):
+        with patch("fix_high_severity_silent_swallowers.PROJECT_ROOT", temp_workspace):
             fixer = HighSeveritySilentSwallowerFixer()
 
             # Should handle Unicode file names
@@ -193,8 +195,8 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
         result2 = fixer.fix_import_error_violations()
 
         # Results should be identical
-        assert result1['fixes_applied'] == result2['fixes_applied']
-        assert result1['errors'] == result2['errors']
+        assert result1["fixes_applied"] == result2["fixes_applied"]
+        assert result1["errors"] == result2["errors"]
 
     # Test §1.7: Determinism - Same violation set → same fixes
     def test_deterministic_violation_processing(self, fixer):
@@ -203,82 +205,84 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
         result = fixer.fix_import_error_violations()
 
         # Check that fixes are deterministic
-        if result['fixes_applied'] > 0:
+        if result["fixes_applied"] > 0:
             # Should have consistent fix patterns
-            assert result['fixes_applied'] > 0
-            assert 'fixes_applied' in result
-            assert 'errors' in result
+            assert result["fixes_applied"] > 0
+            assert "fixes_applied" in result
+            assert "errors" in result
 
     # Test §1.8: Fail-closed - Invalid file paths block operation
     def test_invalid_file_paths_blocked(self, temp_workspace, sample_violations):
         """Test that invalid file paths are blocked."""
         # Add violation with invalid file path
-        sample_violations['violations'].append({
-            'file_path': '/invalid/nonexistent/path.py',
-            'line_number': 50,
-            'exception_type': 'ImportError',
-            'handler_body': ['pass'],
-            'severity': 'HIGH'
-        })
+        sample_violations["violations"].append(
+            {
+                "file_path": "/invalid/nonexistent/path.py",
+                "line_number": 50,
+                "exception_type": "ImportError",
+                "handler_body": ["pass"],
+                "severity": "HIGH",
+            }
+        )
 
         violations_file = temp_workspace / "test_violations.json"
-        with open(violations_file, 'w') as f:
+        with open(violations_file, "w") as f:
             json.dump(sample_violations, f)
 
-        with patch('fix_high_severity_silent_swallowers.PROJECT_ROOT', temp_workspace):
+        with patch("fix_high_severity_silent_swallowers.PROJECT_ROOT", temp_workspace):
             fixer = HighSeveritySilentSwallowerFixer()
 
             # Should handle invalid paths without crashing
             result = fixer.fix_import_error_violations()
-            assert 'errors' in result
+            assert "errors" in result
             # Invalid path should be skipped, not crash
 
     # Test §1.8: Fail-closed - Permission errors handled gracefully
     def test_permission_errors_handled_gracefully(self, fixer):
         """Test that permission errors are handled gracefully."""
         # Mock file operations to raise permission error
-        with patch('pathlib.Path.read_text', side_effect=PermissionError("Permission denied")):
+        with patch("pathlib.Path.read_text", side_effect=PermissionError("Permission denied")):
             result = fixer.fix_import_error_violations()
 
             # Should handle permission errors gracefully
-            assert 'errors' in result
-            assert result['errors'] >= 0
+            assert "errors" in result
+            assert result["errors"] >= 0
 
     # Test §1.8: Fail-closed - No partial modifications on error
     def test_no_partial_modifications_on_error(self, fixer):
         """Test that no partial modifications occur on error."""
         # Mock write operation to fail
-        with patch('pathlib.Path.write_text', side_effect=OSError("Write failed")):
+        with patch("pathlib.Path.write_text", side_effect=OSError("Write failed")):
             result = fixer.fix_import_error_violations()
 
             # Should record error but not claim success
-            assert 'errors' in result
+            assert "errors" in result
             # Fix count should be accurate despite write failures
 
     # Test systematic application function
     def test_apply_fixes_to_all_remaining_violations(self, fixer):
         """Test the new systematic application function."""
         # This tests the new Phase 2.1 functionality
-        if hasattr(fixer, 'apply_fixes_to_all_remaining_violations'):
-            result = fixer.apply_fixes_to_all_remaining_violations()
-            assert isinstance(result, dict)
-            assert 'fixes_applied' in result
-            assert 'errors' in result
-        else:
-            pytest.skip("apply_fixes_to_all_remaining_violations not yet implemented")
+        assert hasattr(fixer, "apply_fixes_to_all_remaining_violations"), (
+            "apply_fixes_to_all_remaining_violations not yet implemented"
+        )
+        result = fixer.apply_fixes_to_all_remaining_violations()
+        assert isinstance(result, dict)
+        assert "fixes_applied" in result
+        assert "errors" in result
 
     # Test enhanced reporting function
     def test_generate_systematic_fix_report(self, fixer):
         """Test the enhanced reporting function."""
         # This tests the new Phase 2.1 reporting functionality
-        if hasattr(fixer, 'generate_systematic_fix_report'):
-            report = fixer.generate_systematic_fix_report()
-            assert isinstance(report, dict)
-            assert 'phase' in report
-            assert 'fix_timestamp' in report
-            assert 'total_violations' in report
-        else:
-            pytest.skip("generate_systematic_fix_report not yet implemented")
+        assert hasattr(fixer, "generate_systematic_fix_report"), (
+            "generate_systematic_fix_report not yet implemented"
+        )
+        report = fixer.generate_systematic_fix_report()
+        assert isinstance(report, dict)
+        assert "phase" in report
+        assert "fix_timestamp" in report
+        assert "total_violations" in report
 
 
 class TestPhase21Integration:
@@ -292,24 +296,33 @@ class TestPhase21Integration:
 
             # Create sample Python files with ImportError violations
             test_files = [
-                ("file1.py", """
+                (
+                    "file1.py",
+                    """
 try:
     import missing_dependency
 except ImportError:
     pass
-"""),
-                ("file2.py", """
+""",
+                ),
+                (
+                    "file2.py",
+                    """
 try:
     from optional_module import something
 except ImportError:
     pass
-"""),
-                ("tests/test_file.py", """
+""",
+                ),
+                (
+                    "tests/test_file.py",
+                    """
 try:
     import test_dependency
 except ImportError:
     pass
-""")
+""",
+                ),
             ]
 
             for filename, content in test_files:
@@ -322,41 +335,41 @@ except ImportError:
         """Test end-to-end Phase 2.1 fix process."""
         # Create violations report
         violations = {
-            'scan_timestamp': '2026-03-24T19:30:00Z',
-            'total_violations': 3,
-            'violations': [
+            "scan_timestamp": "2026-03-24T19:30:00Z",
+            "total_violations": 3,
+            "violations": [
                 {
-                    'file_path': str(integration_workspace / 'file1.py'),
-                    'line_number': 3,
-                    'exception_type': 'ImportError',
-                    'handler_body': ['pass'],
-                    'context': 'import missing_dependency',
-                    'severity': 'HIGH'
+                    "file_path": str(integration_workspace / "file1.py"),
+                    "line_number": 3,
+                    "exception_type": "ImportError",
+                    "handler_body": ["pass"],
+                    "context": "import missing_dependency",
+                    "severity": "HIGH",
                 },
                 {
-                    'file_path': str(integration_workspace / 'file2.py'),
-                    'line_number': 3,
-                    'exception_type': 'ImportError',
-                    'handler_body': ['pass'],
-                    'context': 'import optional_module',
-                    'severity': 'HIGH'
+                    "file_path": str(integration_workspace / "file2.py"),
+                    "line_number": 3,
+                    "exception_type": "ImportError",
+                    "handler_body": ["pass"],
+                    "context": "import optional_module",
+                    "severity": "HIGH",
                 },
                 {
-                    'file_path': str(integration_workspace / 'tests/test_file.py'),
-                    'line_number': 3,
-                    'exception_type': 'ImportError',
-                    'handler_body': ['pass'],
-                    'context': 'import test_dependency',
-                    'severity': 'HIGH'
-                }
-            ]
+                    "file_path": str(integration_workspace / "tests/test_file.py"),
+                    "line_number": 3,
+                    "exception_type": "ImportError",
+                    "handler_body": ["pass"],
+                    "context": "import test_dependency",
+                    "severity": "HIGH",
+                },
+            ],
         }
 
         violations_file = integration_workspace / "violations.json"
-        with open(violations_file, 'w') as f:
+        with open(violations_file, "w") as f:
             json.dump(violations, f)
 
-        with patch('fix_high_severity_silent_swallowers.PROJECT_ROOT', integration_workspace):
+        with patch("fix_high_severity_silent_swallowers.PROJECT_ROOT", integration_workspace):
             fixer = HighSeveritySilentSwallowerFixer()
 
             # Apply fixes
@@ -364,18 +377,18 @@ except ImportError:
 
             # Verify results
             assert isinstance(result, dict)
-            assert 'fixes_applied' in result
-            assert 'errors' in result
+            assert "fixes_applied" in result
+            assert "errors" in result
 
             # Check that files were modified appropriately
-            file1_content = (integration_workspace / 'file1.py').read_text()
-            file2_content = (integration_workspace / 'file2.py').read_text()
-            test_content = (integration_workspace / 'tests/test_file.py').read_text()
+            file1_content = (integration_workspace / "file1.py").read_text()
+            file2_content = (integration_workspace / "file2.py").read_text()
+            test_content = (integration_workspace / "tests/test_file.py").read_text()
 
             # Test files should use pytest.importorskip
-            assert 'pytest.importorskip' in test_content
+            assert "pytest.importorskip" in test_content
             # Regular files should have guardian comments
-            assert '# guardian:' in file1_content or 'missing_dependency' in file1_content
+            assert "# guardian:" in file1_content or "missing_dependency" in file1_content
 
 
 if __name__ == "__main__":
