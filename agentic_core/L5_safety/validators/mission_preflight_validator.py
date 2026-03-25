@@ -437,4 +437,5 @@ class MissionPreflight:
             print("[SUCCESS] All structural laws satisfied. Neural Link established.")
         else:
             print(f"   [SOVEREIGN OVERRIDE] Forcing mutation for convergence ({total_violations} violations)")
-        print("=" * 70 + "\n")
+        print("=" * 70 + "\n")                except Exception as e:
+                    pass

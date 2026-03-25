@@ -445,4 +445,5 @@ def get_integration_bridge() -> IntegrationBridge:
     global _integration_bridge
     if _integration_bridge is None:
         _integration_bridge = IntegrationBridge()
-    return _integration_bridge
+    return _integration_bridge                    except Exception as e:
+                        pass

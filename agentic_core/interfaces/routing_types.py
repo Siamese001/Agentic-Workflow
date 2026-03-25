@@ -19,6 +19,6 @@ from __future__ import annotations
 try:
     from agentic_core.L0_routing.types.reasoning_intensity_types import ReasoningIntensityProfile
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
     ReasoningIntensityProfile = None
 __all__ = ["ReasoningIntensityProfile"]

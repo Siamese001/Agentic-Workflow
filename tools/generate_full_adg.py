@@ -414,10 +414,6 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
         enable_determinism_probe=os.environ.get("ADG_ENABLE_DETERMINISM_PROBE", "1").strip().lower()
         not in ("0", "false", "no"),
     )
-    if closure_report is not None and not closure_report["summary"]["all_gaps_passed"]:
-        failed_caps = [row["capability"] for row in closure_report["closure_rows"] if not row["passed"]]
-        raise RuntimeError(f"ADG closure validation failed: {failed_caps}")
-
     # --- Create zip archive of all 6 artifacts + 4 Wave 6 reports ---
     artifact_files = [
         paths.snapshot,
@@ -457,17 +453,20 @@ def generate_full_adg(adg_artifacts_dir: Path, ts: str, archive_old: bool = True
         print("[ADG] Individual files will be archived using legacy path")
         zip_created = False
 
-    # --- Archive old artifacts ---
+    # --- Archive old artifacts (moved before validation check) ---
     if archive_old:
         _archive_old_artifacts(adg_artifacts_dir, ts, keep_runs=1)
 
-    # --- Auto-ingest to Redis hot cache ---
+    # --- Closure validation check (moved after zip creation and archiving) ---
+    if closure_report is not None and not closure_report["summary"]["all_gaps_passed"]:
+        failed_caps = [row["capability"] for row in closure_report["closure_rows"] if not row["passed"]]
+        raise RuntimeError(f"ADG closure validation failed: {failed_caps}")
     if os.environ.get("ADG_SKIP_REDIS", "").strip().lower() not in ("1", "true", "yes"):
         _auto_ingest_to_redis(adg_artifacts_dir, paths.sqlite)
 
     # --- Auto-commit artifacts to git ---
     if os.environ.get("ADG_SKIP_GIT", "").strip().lower() not in ("1", "true", "yes"):
-        _auto_commit_artifacts(adg_artifacts_dir, ts, len(result.modules), len(result.edges))
+        _auto_commit_artifacts(adg_dir=adg_artifacts_dir, ts=ts, node_count=len(result.modules), edge_count=len(result.edges))
 
 
 def _auto_ingest_to_redis(adg_dir: Path, sqlite_path: Path) -> None:

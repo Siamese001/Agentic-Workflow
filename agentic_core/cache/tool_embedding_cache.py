@@ -225,10 +225,9 @@ class ToolEmbeddingCache:
                     logger.debug("[Tool embedding cache] HIT")
                     return (cached["embeddings"], cached["tool_names"])
             except ValueError as e:
-        # TODO: Add proper input validation
-        logger.warning(f"Invalid input: {e}")
+                # TODO: Add proper input validation
+                logger.warning(f"Invalid input: {e}")
                 raise
-            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.warning(f"[Tool embedding cache] Cache read failed: {e}")
         logger.debug("[Tool embedding cache] MISS — computing embeddings")

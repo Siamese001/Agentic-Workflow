@@ -351,4 +351,5 @@ def get_detection_emitter() -> DetectionSignalProtocol | None:
 
 def get_meta_learning_service() -> MetaLearningProtocol | None:
     """Get meta-learning service instance."""
-    return ComponentFactory.get_meta_learning_service()
+    return ComponentFactory.get_meta_learning_service()                except Exception as e:
+                    pass

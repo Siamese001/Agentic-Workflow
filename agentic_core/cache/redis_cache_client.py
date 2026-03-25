@@ -652,7 +652,7 @@ def check_redis_health_via_mcp() -> dict[str, object]:
         logger.info("MCP Redis health probe: healthy=%s", healthy)
         return {"healthy": healthy, "method": "mcp11", "error": None}
     # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+    except ImportError:
         return {"healthy": False, "method": "mcp11", "error": "mcp11 tools not available"}
     # guardian: allow-silent-swallow
     except Exception as exc:

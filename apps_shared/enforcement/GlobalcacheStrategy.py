@@ -462,7 +462,7 @@ class SimpleEmbedder:
         """
         self.model_name = model_name
         self._model = None
-        self._embedding_dim = 1024
+        self._embedding_dim = 512  # Changed from 1024 to 512
         logger.debug(f"Initialized SimpleEmbedder with model: {model_name}")
 
     def _load_model(self) -> None:
@@ -474,7 +474,7 @@ class SimpleEmbedder:
                 self._model = SentenceTransformer(self.model_name)
                 logger.info(f"Loaded embedding model: {self.model_name}")
             # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+            except ImportError:
                 logger.warning("sentence_transformers not available, using dummy embeddings")
                 self._model = "dummy"
 

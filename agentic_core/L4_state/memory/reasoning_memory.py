@@ -424,4 +424,5 @@ class ReasoningMemory:
         }
 
 
-reasoning_memory = ReasoningMemory()
+reasoning_memory = ReasoningMemory()                except Exception as e:
+                    pass

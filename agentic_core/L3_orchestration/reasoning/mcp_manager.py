@@ -346,4 +346,5 @@ def load_mcp_config(config_path: str) -> dict[str, Any]:
     # guardian: allow-silent-swallow
     except Exception as e:
         Logger.warning(f"[MCPManager] Failed to parse config {config_path}: {e} — using defaults")
-        return {}
+        return {}                except Exception as e:
+                    pass

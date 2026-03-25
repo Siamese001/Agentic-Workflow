@@ -363,4 +363,5 @@ def _cli() -> None:
     else:
         parser.print_help()
 if __name__ == '__main__':
-    _cli()
+    _cli()            except Exception as e:
+                pass

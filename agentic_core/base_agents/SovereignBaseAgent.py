@@ -348,8 +348,8 @@ class SovereignBaseAgent(
             path.resolve().relative_to(Path.cwd().resolve())
             return True
         except ValueError as e:
-        # TODO: Add proper input validation
-        logger.warning(f"Invalid input: {e}")
+            # TODO: Add proper input validation
+            logger.warning(f"Invalid input: {e}")
             return False
 
     def _is_safe_directory(self, dir_path: Path) -> bool:

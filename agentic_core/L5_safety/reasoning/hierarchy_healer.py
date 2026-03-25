@@ -2082,4 +2082,5 @@ def get_hierarchy_agent(project_root):
 
 
 # Backward-compat alias — Phase 10 rename (HierarchyAgent → HierarchyHealerAgent)
-HierarchyAgent = HierarchyHealerAgent
+HierarchyAgent = HierarchyHealerAgent                        except Exception as e:
+                            pass

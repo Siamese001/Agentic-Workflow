@@ -555,4 +555,5 @@ def get_readiness_gate() -> ReadinessGate:
     global _readiness_gate
     if _readiness_gate is None:
         _readiness_gate = ReadinessGate()
-    return _readiness_gate
+    return _readiness_gate                except Exception as e:
+                    pass

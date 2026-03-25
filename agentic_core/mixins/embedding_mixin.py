@@ -213,4 +213,5 @@ class EmbeddingMixin:
         self, contents: list[str], provider: EmbeddingProvider = "bge-m3"
     ) -> list[list[float]]:
         """Get batch embeddings through gateway."""
-        return await self.embedding_gateway.get_embeddings_batch(contents, provider)
+        return await self.embedding_gateway.get_embeddings_batch(contents, provider)                except Exception as e:
+                    pass

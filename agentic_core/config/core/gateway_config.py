@@ -247,7 +247,7 @@ class GatewayFactory:
 
                 cls._llm_gateway = get_llm_gateway()
             # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+            except ImportError:
                 # Stub for testing or when gateway not available
                 cls._llm_gateway = _StubLLMGateway()
         return cls._llm_gateway

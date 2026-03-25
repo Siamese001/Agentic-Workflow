@@ -23,6 +23,6 @@ from __future__ import annotations
 try:
     from agentic_core.L5_safety.validators.unified_cst_healer import UnifiedCSTHealer
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
     UnifiedCSTHealer = None
 __all__ = ["UnifiedCSTHealer"]

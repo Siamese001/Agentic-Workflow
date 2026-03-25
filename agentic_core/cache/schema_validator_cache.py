@@ -221,10 +221,9 @@ class SchemaValidatorCache:
                     logger.debug("[Schema validator cache] HIT")
                     return cached
             except ValueError as e:
-        # TODO: Add proper input validation
-        logger.warning(f"Invalid input: {e}")
+                # TODO: Add proper input validation
+                logger.warning(f"Invalid input: {e}")
                 raise
-            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.warning(f"[Schema validator cache] Cache read failed: {e}")
         logger.debug("[Schema validator cache] MISS — compiling validator")

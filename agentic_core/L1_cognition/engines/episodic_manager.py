@@ -422,4 +422,5 @@ class EpisodicMemory:
         }
 
 
-episodic_memory = EpisodicMemory()
+episodic_memory = EpisodicMemory()                except Exception as e:
+                    pass

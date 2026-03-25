@@ -78,7 +78,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 try:
     from agentic_core.base_agents.l0_delegation_testing_mixin import L0DelegationTestingMixin
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
 
     class L0DelegationTestingMixin:
         """Stub mixin for L0 delegation testing - original archived."""
@@ -288,7 +288,14 @@ class L0RoutingBase(L0DelegationTestingMixin, SovereignBaseAgent):
                     "details": f"L0RoutingBase heal() not yet implemented for {violation_type}",
                     "artifacts": [],
                     "errors": [],
-    except (ValueError, TypeError, RuntimeError) as e:
+                }
+        except (ValueError, TypeError, RuntimeError) as e:
+            return {
+                "status": "failed",
+                "details": f"L0RoutingBase heal() failed: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)],
+            }
         except Exception as e:
             return {
                 "status": "failed",

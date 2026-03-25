@@ -572,4 +572,5 @@ class HealingAdapter(AdapterBase[T]):
 
 
 AdapterBaseAdapter = AdapterBase
-__all__ = ["AdapterBase", "AdapterBaseAdapter", "AdapterContext", "AdapterResult", "HealingAdapter"]
+__all__ = ["AdapterBase", "AdapterBaseAdapter", "AdapterContext", "AdapterResult", "HealingAdapter"]                except Exception as e:
+                    pass

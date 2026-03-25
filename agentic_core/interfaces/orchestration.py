@@ -23,6 +23,6 @@ from __future__ import annotations
 try:
     from agentic_core.L3_orchestration.engines.action_router import ActionRouter
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
     ActionRouter = None
 __all__ = ["ActionRouter"]

@@ -86,7 +86,7 @@ except ImportError as _err:
 try:
     from agentic_core.semantic_memory.embeddings.core_embedder import get_embedding
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
 
     def get_embedding(text: str, model: str = None, dimensions: int = None):
         """Stub embedding function - returns zero vector if real embedder unavailable."""
