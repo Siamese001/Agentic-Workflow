@@ -59,21 +59,21 @@ def sample_test_data():
 
 class TestDataFactory:
     """Factory for creating test data."""
-    
+
     @staticmethod
     def create_test_file(path: Path, content: str = "test content"):
         """Create a test file with given content."""
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content)
         return path
-    
+
     @staticmethod
     def create_json_file(path: Path, data: Dict[Any, Any]):
         """Create a JSON test file."""
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(data, indent=2))
         return path
-    
+
     @staticmethod
     def create_mock_response(status: str = "success", data: Dict = None):
         """Create a mock response object."""
@@ -82,7 +82,7 @@ class TestDataFactory:
         response.json.return_value = data or {"status": status}
         response.text = json.dumps(data or {"status": status})
         return response
-    
+
     @staticmethod
     def create_test_agent(name: str = "TestAgent", capabilities: List[str] = None):
         """Create a test agent with specified capabilities."""
