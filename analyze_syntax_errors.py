@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 """Analyze syntax errors in the codebase to categorize them for fixing."""
 
-import os
-import sys
-from pathlib import Path
 import ast
 import json
+import os
+from pathlib import Path
+
 
 def analyze_syntax_errors():
     repo_root = Path(__file__).parent
     syntax_errors = []
-    
+
     # Collect detailed syntax error information
-    scan_roots = ['agentic_core', 'apps_eval', 'apps_exec', 'apps_lic', 
+    scan_roots = ['agentic_core', 'apps_eval', 'apps_exec', 'apps_lic',
                  'apps_research', 'apps_rfp', 'apps_rg', 'apps_shared',
                  'system_learning', 'tools', 'tests', 'ops_scripts']
-    
+
     for root in scan_roots:
         root_path = repo_root / root
         if not root_path.exists():
@@ -30,7 +30,7 @@ def analyze_syntax_errors():
                     fp = Path(dirpath) / fname
                     rel_path = str(fp.relative_to(repo_root))
                     try:
-                        with open(fp, 'r', encoding='utf-8') as f:
+                        with open(fp, encoding='utf-8') as f:
                             content = f.read()
                         ast.parse(content, filename=str(fp))
                     except SyntaxError as e:
@@ -51,7 +51,7 @@ def analyze_syntax_errors():
                             'category': rel_path.split('/')[0] if '/' in rel_path else 'root',
                             'size': fp.stat().st_size
                         })
-    
+
     # Categorize by directory
     categories = {}
     for err in syntax_errors:
@@ -59,7 +59,7 @@ def analyze_syntax_errors():
         if cat not in categories:
             categories[cat] = []
         categories[cat].append(err)
-    
+
     print('=== SYNTAX ERROR CATEGORIZATION ===')
     print(f'Total syntax errors: {len(syntax_errors)}')
     print()
@@ -71,7 +71,7 @@ def analyze_syntax_errors():
             msg = example['message'][:80] + '...' if len(example['message']) > 80 else example['message']
             print(f'  Example: {example["file"]}:{example["line"]} - {msg}')
         print()
-    
+
     # Save detailed report
     with open('syntax_error_report.json', 'w') as f:
         json.dump({
@@ -79,7 +79,7 @@ def analyze_syntax_errors():
             'categories': {k: len(v) for k, v in categories.items()},
             'details': syntax_errors
         }, f, indent=2)
-    
+
     print('Detailed report saved to: syntax_error_report.json')
     return syntax_errors, categories
 

@@ -194,8 +194,8 @@ class SafetyAnalysisMixin:
             else:
                 return 0
         except ValueError as e:
-        # TODO: Add proper input validation
-        logger.warning(f"Invalid input: {e}")
+            # TODO: Add proper input validation
+            logger.warning(f"Invalid input: {e}")
             return (level1 > level2) - (level1 < level2)
 
     @staticmethod

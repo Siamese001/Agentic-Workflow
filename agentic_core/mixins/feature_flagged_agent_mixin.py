@@ -351,8 +351,7 @@ class FeatureFlaggedAgentMixin:
             # Try protocol-based call first
             return gate.verify_action(request)
         except TypeError as e:
-        # TODO: Fix programming error - TypeError should not occur
-        raise e  # Re-raise to surface the issue
+            # TODO: Fix programming error - TypeError should not occur
             # Fall back to legacy signature if protocol call fails
             try:
                 result = gate.verify_action(file_path, action_type, target_node)

@@ -223,7 +223,7 @@ def _try_load_text(file_path: Path) -> str | None:
         text: str = soup.get_text(separator=" ", strip=True)
         return _RE_WHITESPACE.sub(" ", text).strip()
     # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+    except ImportError:
         pass
     # guardian: allow-silent-swallow
     except Exception as exc:

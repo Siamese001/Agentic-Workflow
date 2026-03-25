@@ -3,7 +3,7 @@
 
 import json
 
-with open('C:/Git/Agentic-Workflow/artifacts/adg/closure_validation_report_03252026_0345.json', 'r') as f:
+with open('C:/Git/Agentic-Workflow/artifacts/adg/closure_validation_report_03252026_0345.json') as f:
     report = json.load(f)
 
 print('=== STRUCTURAL COVERAGE STATUS ===')
@@ -17,7 +17,7 @@ for cap in report['capabilities']:
         print(f'Denominator (discovered): {cap["denominator"]}')
         missing = cap["denominator"] - cap["numerator"]
         print(f'Missing: {missing} modules')
-        
+
         # Check if we made progress
         if missing <= 12:
             print(f'\nPROGRESS: Only {missing} modules left to fix!')

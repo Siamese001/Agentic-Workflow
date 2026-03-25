@@ -38,7 +38,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_updates_meta_learning_state,
     _emit_validates_agent_capability,
     _emit_validates_capability,
-    _emit_verifies_boundary,
     _emit_verifies_policy,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
@@ -87,7 +86,6 @@ except (ImportError, AttributeError):
         pass
 
 
-from agentic_core.runtime.config.anomaly_report_config import AnomalyReport, AnomalySeverity
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
@@ -120,12 +118,12 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_updates_routing_strategy,
     _emit_validated_by_safety_plane,
     _emit_validates_agent_capability,
-    _emit_verifies_boundary,
     _emit_verifies_policy,
     _emit_writes_learning_snapshot,
     _emit_writes_observability_log,
     _emit_writes_through,
 )
+from agentic_core.runtime.config.anomaly_report_config import AnomalyReport, AnomalySeverity
 
 _emit_emits_metric_event("subatomic_testing_mixin", "p4obs", "metric_1")
 _emit_emits_metric_event("subatomic_testing_mixin", "p4obs", "metric_2")
@@ -173,21 +171,25 @@ _emit_agent_executes_agent("p1", "subatomic_testing_mixin", "sub_agent")
 _emit_routes_to_agent("p1", "subatomic_testing_mixin", "target_agent")
 _emit_verifies_policy("p1", "subatomic_testing_mixin", "policy_check")
 _emit_observes_runtime_state("p1", "subatomic_testing_mixin", "runtime_state")
-_emit_verifies_boundary("p1", "subatomic_testing_mixin", "boundary_check")
 _emit_transcripts_response("p1", "subatomic_testing_mixin", "transcript")
 _emit_hard_fails_untranscripted("p1", "subatomic_testing_mixin")
 _emit_gated_by_confidence("p1", "subatomic_testing_mixin", "confidence_gate")
 
 try:
-    from agentic_core.mixins.instructional_injection_mixin import InstructionalInjectionMixin
+    from agentic_core.mixins.instructional_injection_mixin import (
+        InstructionalInjectionMixin,
+        InstructionalInjectionMixin2,
+    )
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
 
     class InstructionalInjectionMixin:
         """Stub for healing resilience."""
 
         pass
 
+    class InstructionalInjectionMixin2:
+        """Stub for healing resilience."""
 
 Logger = logging.getLogger(__name__)
 

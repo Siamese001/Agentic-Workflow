@@ -36,8 +36,6 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.ssot_discovery_validator import get_agent_paths
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import get_routing_gateway
 from agentic_core.L0_routing.config import (
@@ -50,6 +48,7 @@ from agentic_core.L0_routing.config import (
 from agentic_core.L0_routing.config.path_constants import DEFAULT_TIMEOUT
 from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+from agentic_core.L0_routing.utils.ssot_discovery_util import get_agent_paths
 from agentic_core.L2_execution.determinism.execution_proof_emitter import ExecutionProofEmitter
 from agentic_core.L3_orchestration.contracts.orchestration_handoff_contract import emit_agent_executes_agent
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
@@ -223,6 +222,15 @@ _emit_invokes_eval("p1", "orchestrator_engine", "eval_call")
 _emit_proposal_commits_routing("p1", "orchestrator_engine", "routing_commit")
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
 
+# Runtime ADG imports
+try:
+    from apps_shared.utils.open_telemetry_tracing_adapter_util import get_tracer
+    from system_learning.runtime_adg.materializer import RuntimeADGMaterializer
+    from system_learning.runtime_adg.store import FileBackedRuntimeADGStore
+    RUNTIME_ADG_AVAILABLE = True
+except ImportError:
+    RUNTIME_ADG_AVAILABLE = False
+
 emit_determinism_digest("trace_orchestrator_engine", "orchestrator_engine_dispatch_entry")
 emit_determinism_digest("trace_orchestrator_engine", "orchestrator_engine_dispatch_exit")
 emit_determinism_digest("trace_orchestrator_engine", "orchestrator_engine_tool_invoke")
@@ -284,32 +292,117 @@ class L3OrchestrationStrategy(OrchestrationStrategy):
         _emit_records_execution_trace(
             str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, f"orchestrator_engine.execute:{self.mode}"
         )
+
+        # Initialize runtime ADG tracing if available
+        tracer = None
+        mission_id = kwargs.get("mission", f"orchestrator-{self.mode}-{uuid.uuid4()}")
+
+        if RUNTIME_ADG_AVAILABLE:
+            tracer = get_tracer(service_name="agentic-workflow")
+
         with get_trace_context().run_frame(
             layer="L3",
             module="orchestrator_engine",
             operation="execute",
         ):
-            agent.log_info(f"Executing L3 orchestration in {self.mode} mode...")
+            # Start runtime ADG tracing
+            if tracer:
+                with tracer.trace_orchestrator(mission=mission_id, metadata={"mode": self.mode}):
+                    return await self._execute_with_tracing(agent, tracer, mission_id, **kwargs)
+            else:
+                return await self._execute_without_tracing(agent, **kwargs)
+
+    async def _execute_with_tracing(self, agent: UnifiedAgent, tracer, mission_id: str, **kwargs: Any) -> OrchestrationResult:
+        """Execute with runtime ADG tracing enabled."""
+        try:
+            agent.log_info(f"Executing L3 orchestration in {self.mode} mode with runtime ADG tracing...")
             workflow_steps = self.workflow_steps
             completed_steps: list[str] = []
             signals: list[str] = []
             current_stage = "not_started"
+
             for step in workflow_steps:
                 step_name = step.get("name", "unnamed")
                 step_type = step.get("type", "unknown")
                 current_stage = step_name
                 completed_steps.append(step_name)
-                if step_type == "validation":
-                    signals.append("validation_completed")
-                elif step_type == "agent_call":
-                    signals.append(f"{step_name}_completed")
-            return OrchestrationResult(
+
+                # Trace each step
+                with tracer.trace_dag_node(
+                    task_id=step_name,
+                    task_type=step_type,
+                    metadata={"mode": self.mode, "step": step_name}
+                ):
+                    if step_type == "validation":
+                        signals.append("validation_completed")
+                    elif step_type == "agent_call":
+                        signals.append(f"{step_name}_completed")
+
+            result = OrchestrationResult(
                 completed=True,
                 stage=current_stage if workflow_steps else "not_started",
                 next_actions=[],
                 signals=signals,
                 metadata={"mode": self.mode, "completed_steps": completed_steps, "agent": "Orchestrator"},
             )
+
+            # Persist runtime ADG snapshot
+            await self._persist_runtime_adg(tracer, mission_id)
+            return result
+
+        except Exception as e:
+            agent.log_error(f"Runtime ADG tracing failed: {e}")
+            # Fallback to non-traced execution
+            return await self._execute_without_tracing(agent, **kwargs)
+
+    async def _execute_without_tracing(self, agent: UnifiedAgent, **kwargs: Any) -> OrchestrationResult:
+        """Execute without runtime ADG tracing (fallback)."""
+        agent.log_info(f"Executing L3 orchestration in {self.mode} mode (no runtime ADG)...")
+        workflow_steps = self.workflow_steps
+        completed_steps: list[str] = []
+        signals: list[str] = []
+        current_stage = "not_started"
+
+        for step in workflow_steps:
+            step_name = step.get("name", "unnamed")
+            step_type = step.get("type", "unknown")
+            current_stage = step_name
+            completed_steps.append(step_name)
+            if step_type == "validation":
+                signals.append("validation_completed")
+            elif step_type == "agent_call":
+                signals.append(f"{step_name}_completed")
+
+        return OrchestrationResult(
+            completed=True,
+            stage=current_stage if workflow_steps else "not_started",
+            next_actions=[],
+            signals=signals,
+            metadata={"mode": self.mode, "completed_steps": completed_steps, "agent": "Orchestrator"},
+        )
+
+    async def _persist_runtime_adg(self, tracer, mission_id: str) -> None:
+        """Persist runtime ADG snapshot after execution."""
+        try:
+            # Drain completed spans
+            spans = tracer.drain_completed_spans()
+            if not spans:
+                return
+
+            # Materialize snapshot
+            materializer = RuntimeADGMaterializer()
+            snapshot = materializer.materialize(spans, mission=mission_id)
+
+            # Store snapshot
+            runtime_adg_dir = self.project_root / "artifacts" / "runtime_adg"
+            runtime_adg_dir.mkdir(parents=True, exist_ok=True)
+            store = FileBackedRuntimeADGStore(base_dir=runtime_adg_dir)
+            version_id = store.persist(snapshot)
+
+            self.log_info(f"Runtime ADG snapshot persisted: {version_id} ({len(spans)} spans)")
+
+        except Exception as e:
+            self.log_error(f"Failed to persist runtime ADG: {e}")
 
     def get_available_agents(self) -> list[str]:
         """Get list of agents this orchestrator can coordinate."""

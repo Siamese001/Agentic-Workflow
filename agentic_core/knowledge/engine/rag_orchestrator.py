@@ -85,7 +85,7 @@ try:
     from agentic_core.knowledge.static_index.action_verbs_types import ACTION_VERBS, STRONG_VERBS
     from agentic_core.knowledge.static_index.skill_taxonomy_types import ALL_SKILLS, SKILL_TAXONOMY
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
     ACTION_VERBS, STRONG_VERBS = ({}, [])
     SKILL_TAXONOMY, ALL_SKILLS = ({}, [])
     TextDocumentLoader = None

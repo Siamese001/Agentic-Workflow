@@ -95,7 +95,7 @@ try:
 
     HAS_PANDAS = True
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
     HAS_PANDAS = False
     pd = None
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (

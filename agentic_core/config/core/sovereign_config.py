@@ -248,9 +248,9 @@ class SovereignConfigManager:
         try:
             return int(val)
         except ValueError as e:
-        # TODO: Add proper input validation
-        logger.warning(f"Invalid input: {e}")
-            Logger.warning(f"Config key {key} expected int, got {val}. Using default {default}.")
+            # TODO: Add proper input validation
+            logger.warning(f"Config key {key} expected int, got {val}. Using default {default}.")
+            return default
             return default
 
     def get_bool(self, key: str, default: bool = False) -> bool:

@@ -99,7 +99,7 @@ try:
 
     OTEL_AVAILABLE = True
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
     OTEL_AVAILABLE = False
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,

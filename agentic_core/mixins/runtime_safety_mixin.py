@@ -92,7 +92,6 @@ def _get_process_guardrail():
 
     return ProcessGuard, SecurityViolation
 
-
 try:
     from agentic_core.L5_safety.enforcement.safe_subprocess_handler_enforcer import (
         safe_communicate,
@@ -100,7 +99,7 @@ try:
         safe_run,
     )
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
 
     def safe_communicate(*args, **kwargs):
         return None

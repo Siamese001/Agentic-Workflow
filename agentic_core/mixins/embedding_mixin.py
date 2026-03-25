@@ -197,7 +197,7 @@ class EmbeddingMixin:
 
                 self._embedding_gateway = get_embedding_gateway()
             # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+            except ImportError:
                 raise NotImplementedError(
                     "EmbeddingMixin: Embedding gateway is not available. Install the required dependencies or configure agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent."
                 )
@@ -213,5 +213,7 @@ class EmbeddingMixin:
         self, contents: list[str], provider: EmbeddingProvider = "bge-m3"
     ) -> list[list[float]]:
         """Get batch embeddings through gateway."""
-        return await self.embedding_gateway.get_embeddings_batch(contents, provider)                except Exception as e:
-                    pass
+        try:
+            return await self.embedding_gateway.get_embeddings_batch(contents, provider)
+        except Exception as e:
+            pass

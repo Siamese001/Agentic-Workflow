@@ -92,9 +92,9 @@ DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
 BUFFER_SIZE = 8192
 BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
+MAX_DEPTH = 10
+MAX_FILES = 2000
+DEFAULT_TIMEOUT = 600  # 10 minutes
 # Configuration constants
 
 try:
@@ -102,7 +102,7 @@ try:
 
     YAML_AVAILABLE = True
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
     YAML_AVAILABLE = False
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
