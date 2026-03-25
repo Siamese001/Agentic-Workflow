@@ -131,8 +131,7 @@ try:
     )
 
     COLORS_AVAILABLE = True
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
     COLORS_AVAILABLE = False
 
     def phase_header(*args, **kwargs):

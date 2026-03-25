@@ -226,8 +226,7 @@ class ComponentFactory:
                 instance = adapter_mod.VerificationGateAdapter()
                 cls._instances[cache_key] = instance
                 return instance
-            # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+            except ImportError:  # guardian: allow-silent-swallow
                 logger.warning("ComponentFactory: Could not load adapter")
         instance = DynamicLoader.create_instance("verification")
         if instance:
@@ -351,5 +350,4 @@ def get_detection_emitter() -> DetectionSignalProtocol | None:
 
 def get_meta_learning_service() -> MetaLearningProtocol | None:
     """Get meta-learning service instance."""
-    return ComponentFactory.get_meta_learning_service()                except Exception as e:
-                    pass
+    return ComponentFactory.get_meta_learning_service()

@@ -430,8 +430,7 @@ class MetaLearningClient:
                 self._update_domain_stats(domain, "pattern_stores")
                 Logger.info(f"[MetaLearningClient] Stored pattern: {pattern_id}")
                 return pattern_id
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 raise
                 Logger.warning(f"[MetaLearningClient] Vector store failed: {e}")
         cache_key = f"pattern:{error_signature}"
@@ -463,8 +462,7 @@ class MetaLearningClient:
             embedding = self._generate_embedding(violation)
             if not embedding:
                 return []
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.warning(f"[MetaLearningClient] Failed to generate embedding: {e}")
             return []
         effective_threshold = min_similarity or self.domain_thresholds.get(
@@ -491,8 +489,7 @@ class MetaLearningClient:
                     for i, idx in enumerate(indices_arr[0])
                     if idx >= 0
                 ]
-            # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+            except ImportError:  # guardian: allow-silent-swallow
                 import math
 
                 q_mag = math.sqrt(sum(x * x for x in embedding))

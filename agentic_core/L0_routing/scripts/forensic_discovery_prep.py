@@ -230,8 +230,7 @@ try:
     from agentic_core.L0_routing.utils.path_util import validate_path_within_project
     from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
     from agentic_core.L0_routing.utils.ssot_discovery_util import load_agent_discovery
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
     print("CRITICAL: SSOT imports failed. Ensure PYTHONPATH includes project root.", file=sys.stderr)
     sys.exit(1)
 logging.basicConfig(level=logging.ERROR, format="%(message)s")
@@ -325,8 +324,7 @@ def build_class_bases_map(project_root: Path) -> dict[str, list[str]]:
                             else:
                                 resolved.append(b)
                         class_map[node.name] = resolved
-            # guardian: allow-silent-swallow
-            except (SyntaxError, Exception):
+            except (SyntaxError, Exception):  # guardian: allow-silent-swallow
                 continue
     return class_map
 
@@ -387,8 +385,7 @@ def forensic_inspect(name: str, layer: str, file_path: Path) -> ForensicAgentRec
             return record
         try:
             tree = ast.parse(content)
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except SyntaxError as e:
+        except SyntaxError as e:  # guardian: allow-silent-swallow
             record.status = "SYNTAX_ERROR"
             record.parse_error = f"SyntaxError: {e}"
             return record
@@ -425,7 +422,6 @@ def forensic_inspect(name: str, layer: str, file_path: Path) -> ForensicAgentRec
                 if isinstance(item, ast.FunctionDef | ast.AsyncFunctionDef):
                     record.methods_detected.append(item.name)
             record.has_heal = "heal" in record.methods_detected
-    # guardian: allow-silent-swallow
     except Exception as e:
         record.status = f"ERROR: {str(e)}"
         record.parse_error = str(e)
@@ -438,8 +434,7 @@ def get_git_commit(root: Path) -> str:
             ["git", "-C", str(root), "rev-parse", "HEAD"], allow_protected_root_mutation=True
         )
         return out.decode("utf-8").strip()
-    # guardian: allow-silent-swallow
-    except Exception:
+    except Exception:  # guardian: allow-silent-swallow
         return ""
 
 
@@ -548,8 +543,7 @@ def run_forensic_discovery(out_path: Path | None = None, *, legacy_schema: bool 
         full_path = project_root / rel_path
         try:
             validate_path_within_project(project_root, full_path)
-        # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow
             raise
             record = ForensicAgentRecord(
                 agent_name=name,
@@ -609,7 +603,6 @@ if __name__ == "__main__":
         outp = Path(args.out) if args.out else None
         rc = run_forensic_discovery(outp, legacy_schema=args.legacy_schema)
         sys.exit(rc)
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         print(json.dumps({"fatal_error": str(e)}))
         sys.exit(1)

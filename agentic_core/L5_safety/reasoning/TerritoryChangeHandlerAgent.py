@@ -99,8 +99,7 @@ _emit_links_execution_to_snapshot("p4", "TerritoryChangeHandlerAgent", "exec_sna
 try:
     from watchdog.events import FileSystemEventHandler  # noqa: F401
     from watchdog.observers import Observer  # noqa: F401
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
     Observer = object
     FileSystemEventHandler = object
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent

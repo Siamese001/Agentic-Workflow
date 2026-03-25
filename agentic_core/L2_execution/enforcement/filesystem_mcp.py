@@ -163,8 +163,7 @@ _emit_proposal_commits_routing("p1", "filesystem_mcp", "routing_commit")
 
 try:
     from .filesystem_mcp import FilesystemMCP
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
 
     class FilesystemMCP:
         def __init__(self, *args, **kwargs):

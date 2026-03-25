@@ -339,12 +339,10 @@ def load_mcp_config(config_path: str) -> dict[str, Any]:
                 import yaml  # type: ignore[import]
 
                 return yaml.safe_load(text) or {}
-            # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+            except ImportError:  # guardian: allow-silent-swallow
                 Logger.warning("[MCPManager] PyYAML not installed — falling back to JSON parse")
         return json.loads(text)
     # guardian: allow-silent-swallow
     except Exception as e:
         Logger.warning(f"[MCPManager] Failed to parse config {config_path}: {e} — using defaults")
-        return {}                except Exception as e:
-                    pass
+        return {}

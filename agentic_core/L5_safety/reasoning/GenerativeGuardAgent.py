@@ -106,8 +106,7 @@ _mod = importlib.import_module("agentic_core.L5_safety.enforcement.mcp_hardened_
 MCPHardenedMixin = _mod.MCPHardenedMixin
 try:
     from agentic_core.base_agents.canon_base_agent_interface import CanonBaseAgentInterface
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
 
     class CanonBaseAgentInterface:
         pass
@@ -387,7 +386,6 @@ class GenerativeGuardAgent(SovereignBaseAgent, HealerMixin, CanonBaseAgentInterf
                 if os.path.exists(path):
                     _wg.remove_file(path)
                     return {"violations_fixed": 1, "violations_found": 1, "errors": 0, "skipped": 0}
-            # guardian: allow-silent-swallow
-            except Exception:
+            except Exception:  # guardian: allow-silent-swallow
                 return {"violations_fixed": 0, "violations_found": 1, "errors": 1, "skipped": 0}
         return {"violations_fixed": 0, "violations_found": 1, "errors": 0, "skipped": 1}

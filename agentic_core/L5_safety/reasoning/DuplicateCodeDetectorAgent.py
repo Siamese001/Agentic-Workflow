@@ -182,8 +182,7 @@ _emit_proposal_commits_routing("p1", "DuplicateCodeDetectorAgent", "routing_comm
 
 try:
     TREE_SITTER_AVAILABLE = True
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
     TREE_SITTER_AVAILABLE = False
     Parser = None
     Language = None
@@ -205,26 +204,34 @@ class DuplicateFile:
 try:
     from agentic_core.utils.timeout_util import timeout
 except ImportError:
+
     def timeout(seconds=30):
         def decorator(func):
             return func
+
         return decorator
+
 
 try:
     from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 except ImportError:
+
     class SubatomicTestingMixin:  # type: ignore[no-redef]
         pass
+
 
 try:
     from agentic_core.mixins.healer_mixin import HealerMixin
 except ImportError:
+
     class HealerMixin:  # type: ignore[no-redef]
         pass
+
 
 try:
     from agentic_core.interfaces.mixins import MCPHardenedMixin
 except (ImportError, NameError):
+
     class MCPHardenedMixin:  # type: ignore[no-redef]
         pass
 

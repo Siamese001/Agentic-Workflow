@@ -85,8 +85,7 @@ try:
     from agentic_core.L5_safety.config.structure_blueprint import GLOBAL_EXCLUDED_DIRS
 
     _SSOT_EXCLUSIONS_AVAILABLE = True
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
     _SSOT_EXCLUSIONS_AVAILABLE = False
     GLOBAL_EXCLUDED_DIRS = None
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
@@ -302,6 +301,7 @@ class SovereignIndex:
             agent_files = index.get_files("*Agent.py")
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "SovereignIndex.get_files")
 

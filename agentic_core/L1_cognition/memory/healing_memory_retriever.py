@@ -385,12 +385,10 @@ def build_retriever(
         if disk_dir.exists():
             try:
                 store.load_from_disk(index_id, disk_dir)
-            # guardian: allow-silent-swallow
             except (ManifestIntegrityError, Exception):
                 pass
         return HealingMemoryRetriever(store=store, profile=profile, index_id=index_id)
-    # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+    except ImportError:  # guardian: allow-silent-swallow
         return NullHealingMemoryRetriever()
 
 

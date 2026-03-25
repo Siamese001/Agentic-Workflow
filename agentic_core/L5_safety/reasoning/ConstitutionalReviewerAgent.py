@@ -4,11 +4,14 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 try:
     from agentic_core.L5_safety.base import L5SafetyBase
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
+
     class L5SafetyBase:  # type: ignore[no-redef]
         """Stub L5SafetyBase."""
+
         pass
+
+
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,

@@ -178,8 +178,7 @@ if TYPE_CHECKING:
     from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin  # noqa: F401
 try:
     from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin  # noqa: F401
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
 
     class SubatomicTestingMixin:
         pass
@@ -888,6 +887,7 @@ class StrategyCoordinatorAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [str(e)],
             }
+
 
 _emit_reads_through("l4", "DomainPlannerAgent", "urg_read_1")
 _emit_reads_through("l4", "DomainPlannerAgent", "urg_read_2")

@@ -92,8 +92,7 @@ try:
     from sklearn.metrics.pairwise import cosine_similarity
 
     SKLEARN_AVAILABLE: Any = True
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
     TfidfVectorizer = None
     SKLEARN_AVAILABLE: Any = False
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (

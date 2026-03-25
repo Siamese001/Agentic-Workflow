@@ -102,8 +102,7 @@ try:
     from agentic_core.base_agents.NamingAgent import get_naming_agent
 
     NAMING_AGENT_AVAILABLE = True
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
     NAMING_AGENT_AVAILABLE = False
     warnings.warn(
         "NamingAgent not available — falling back to heuristic uniqueness resolution",

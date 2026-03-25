@@ -194,8 +194,7 @@ try:
     from agentic_core.L3_orchestration.reasoning.subatomic_testing_mixin import (
         L3SubatomicTestingMixin,
     )
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
 
     class L3SubatomicTestingMixin:
         pass
@@ -203,11 +202,11 @@ try:
 
 class SecurityLevel(Enum):
     """
-    Security check levels for scanning.
+        Security check levels for scanning.
 
-    Defines the intensity and thoroughness of security checks,
-    from basic validation to paranoid-level scrutiny.
-import uuid
+        Defines the intensity and thoroughness of security checks,
+        from basic validation to paranoid-level scrutiny.
+    import uuid
     """
 
     BASIC = "basic"
@@ -363,7 +362,9 @@ class SecurityHardener:
             List of security issues found
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L5_POLICY, f"SecurityScanner.scan_content:{file_path}")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L5_POLICY, f"SecurityScanner.scan_content:{file_path}"
+        )
         issues = []
         self._scans_performed += 1
 
@@ -922,20 +923,25 @@ class OmniContext:
         }
 
 
-
 class MCPHardenedMixin:
     """Stub mixin for MCP hardened agents."""
+
     pass
+
 
 try:
     from agentic_core.mixins.healer_mixin import HealerMixin
 except ImportError:
+
     class HealerMixin:  # type: ignore[no-redef]
         pass
 
+
 class L3SubatomicTestingMixin:
     """Stub mixin for L3 subatomic testing."""
+
     pass
+
 
 class Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
     """
@@ -1059,8 +1065,7 @@ class Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
                 else:
                     agent_func()
                 agents_executed.append(agent_name)
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 # TODO: Handle specific exception properly
                 raise  # Re-raise after logging/handling
                 errors.append(f"{agent_name}: {str(e)}")
@@ -1169,11 +1174,11 @@ class Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
                 )
                 if gw_result.success:
                     return gw_result.healing_output
-            # guardian: allow-silent-swallow
-            except Exception:
+            except Exception:  # guardian: allow-silent-swallow
                 pass
 
         return super().heal_repository()
+
 
 _emit_reads_through("l4", "security_level_config", "urg_read_1")
 _emit_reads_through("l4", "security_level_config", "urg_read_2")

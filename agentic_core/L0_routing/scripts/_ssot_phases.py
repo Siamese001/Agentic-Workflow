@@ -253,8 +253,7 @@ def assert_no_persistent_write(layer: str, operation: str) -> None:
 # tqdm stub — replaced by real tqdm if available
 try:
     from tqdm import tqdm
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
 
     class tqdm:  # type: ignore[no-redef]
         def __init__(self, *a, total=0, desc="", unit="", ncols=0, **kw):
@@ -414,8 +413,7 @@ class RuntimeStateManager:
                 temp_name = tf.name
             os.chmod(temp_name, stat.S_IRUSR | stat.S_IWUSR)
             os.replace(temp_name, state_path)
-        # guardian: allow-silent-swallow - acceptable exception handling
-        except PermissionError as e:
+        except PermissionError as e:  # guardian: allow-silent-swallow
             err_str = str(e)
             if "MUTATION_PROHIBITED" in err_str:
                 self._persistence_disabled = True
@@ -626,7 +624,9 @@ def execute_phase1_discovery_impl(
     repo_root_resolved = REPO_ROOT.resolve()
     territory_path = (repo_root_resolved / territory).resolve()
     # Canonicalize L-layer territories: L0_routing → agentic_core/L0_routing
-    if not territory_path.exists() and territory.startswith(("L0_", "L1_", "L2_", "L3_", "L4_", "L5_", "L6_")):
+    if not territory_path.exists() and territory.startswith(
+        ("L0_", "L1_", "L2_", "L3_", "L4_", "L5_", "L6_")
+    ):
         territory_path = (repo_root_resolved / AGENTIC_CORE_DIR / territory).resolve()
     if not territory_path.is_relative_to(repo_root_resolved):
         logger.critical(f"SECURITY ALERT: Path traversal attempt detected for territory '{territory}'")
@@ -802,8 +802,7 @@ def execute_phase1_discovery_impl(
         state_mgr.state["classification_check_dict"] = _fc_check
         state_mgr.state["classification_file_registry"] = _fc_evidence.get("file_registry", [])
         logger.info(f"FileClassificationHealerAgent early detection: {classification_count} issues found")
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         logger.error(f"FileClassificationHealerAgent early detection FAILED: {e}\n{traceback.format_exc()}")
         state_mgr.complete_agent("FileClassificationHealerAgent", False, f"Early detection error: {e}")
         _record_healing_action(

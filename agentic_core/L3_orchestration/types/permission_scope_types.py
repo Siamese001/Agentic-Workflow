@@ -86,8 +86,7 @@ from typing import Any
 
 try:
     from agentic_core.L1_cognition.identity.spiffe_manager_types import AgentIdentity
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
     AgentIdentity = type("AgentIdentity", (), {})
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,

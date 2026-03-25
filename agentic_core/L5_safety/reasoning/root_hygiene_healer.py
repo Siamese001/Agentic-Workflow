@@ -205,8 +205,7 @@ try:
     from agentic_core.utils.decorators_compat_util import standard_heal
 
     HAS_SOVEREIGN_BASE = True
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
     HAS_SOVEREIGN_BASE = False
     SovereignBaseAgent = object
 
@@ -304,8 +303,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
 
             return 0  # Success
 
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             print(f"[ERROR] Root hygiene enforcement failed: {e}")
             self.stats["errors"] += 1
             return 1
@@ -353,8 +351,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                     _wg.remove_file(dup)
                     removed += 1
                     print(f"  [REMOVED] {rel_dup}")
-                # guardian: allow-silent-swallow
-                except Exception as e:
+                except Exception as e:  # guardian: allow-silent-swallow
                     print(f"  [ERROR] Could not remove {rel_dup}: {e}")
                     self.stats["errors"] += 1
             else:
@@ -410,8 +407,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                         _wg.remove_tree(entry)
                         deleted += 1
                         print(f"  [DELETED] {name}/")
-                    # guardian: allow-silent-swallow
-                    except Exception as e:
+                    except Exception as e:  # guardian: allow-silent-swallow
                         print(f"  [ERROR] Could not delete {name}/: {e}")
                         self.stats["errors"] += 1
                 else:
@@ -462,8 +458,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                             _wg.move_path(str(item), str(target))
                         self.stats["dirs_evacuated"] += 1
 
-                # guardian: allow-silent-swallow
-                except Exception as e:
+                except Exception as e:  # guardian: allow-silent-swallow
                     print(f"  [ERROR] Could not move {item.name}: {e}")
                     self.stats["errors"] += 1
 
@@ -851,8 +846,7 @@ class RootHygieneHealerAgent(SovereignBaseAgent):
                 "skipped": 0,
             }
 
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             print(f"[ERROR] RootHygieneAgent healing failed: {e}")
             return {"violations_found": 0, "violations_fixed": 0, "errors": 1, "skipped": 0}
         finally:

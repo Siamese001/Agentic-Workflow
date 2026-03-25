@@ -232,8 +232,7 @@ class ReasoningMemory:
                 from .SemanticMemory import semantic_memory
 
                 self._semantic_memory = semantic_memory
-            # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+            except ImportError:  # guardian: allow-silent-swallow
                 self._semantic_memory = None
         return self._semantic_memory
 
@@ -424,5 +423,4 @@ class ReasoningMemory:
         }
 
 
-reasoning_memory = ReasoningMemory()                except Exception as e:
-                    pass
+reasoning_memory = ReasoningMemory()

@@ -102,8 +102,7 @@ try:
     import resource
 
     _HAS_RESOURCE = True
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
     resource = None
     _HAS_RESOURCE = False
 _HAS_SIGALRM = hasattr(signal, "SIGALRM")

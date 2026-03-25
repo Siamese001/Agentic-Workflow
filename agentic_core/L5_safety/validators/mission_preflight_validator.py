@@ -198,8 +198,7 @@ class MissionPreflight:
                 from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
 
                 self._location_agent = LocationValidatorAgent(self.project_root)
-            # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+            except ImportError:  # guardian: allow-silent-swallow
                 pass
         return self._location_agent
 
@@ -437,5 +436,4 @@ class MissionPreflight:
             print("[SUCCESS] All structural laws satisfied. Neural Link established.")
         else:
             print(f"   [SOVEREIGN OVERRIDE] Forcing mutation for convergence ({total_violations} violations)")
-        print("=" * 70 + "\n")                except Exception as e:
-                    pass
+        print("=" * 70 + "\n")

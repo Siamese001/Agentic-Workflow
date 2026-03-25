@@ -189,8 +189,11 @@ class _NullAuthority:
 
     def record_breach(self, error_msg: str) -> Any:
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "_NullAuthority.record_breach")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "_NullAuthority.record_breach"
+        )
 
         import logging
 
@@ -212,8 +215,7 @@ def get_mcp_authority() -> MCPAuthorityProtocol:
         )
 
         return mcp_authority  # type: ignore[return-value]
-    # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+    except ImportError:  # guardian: allow-silent-swallow
         return _NullAuthority()
 
 

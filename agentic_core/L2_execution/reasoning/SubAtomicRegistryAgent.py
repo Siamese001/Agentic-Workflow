@@ -136,12 +136,16 @@ from agentic_core.utils.decorators_compat_util import standard_heal
 
 try:
     from agentic_core.utils.decorators_compat_util import timeout
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
+
     def timeout(seconds):  # type: ignore[misc]
         """Stub timeout decorator."""
-        def wrapper(f): return f
+
+        def wrapper(f):
+            return f
+
         return wrapper
+
 
 _emit_emits_metric_event("SubAtomicRegistryAgent", "p4obs", "metric_1")
 _emit_emits_metric_event("SubAtomicRegistryAgent", "p4obs", "metric_2")

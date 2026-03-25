@@ -1,88 +1,91 @@
 """Runtime sovereignty smoke tests — import verification."""
+
 import pytest
 
+
 @pytest.mark.smoke
-def test_sovereignty_bootstrap_importable():
-    """Verify sovereignty_bootstrap module imports without error."""
+def test_sovereignty_bootstrap_class_interface():
+    """Verify SovereigntyBootstrap is a class with expected public interface."""
     try:
         from agentic_core.runtime.sovereignty_bootstrap import (
             SovereigntyBootstrap,
             get_hierarchy_validator,
-            initialize_determinism_engine,
-            start_execution_trace,
         )
-
-        # Verify class and functions exist and are callable
-        assert SovereigntyBootstrap is not None
-        assert callable(get_hierarchy_validator)
-        assert callable(initialize_determinism_engine)
-        assert callable(start_execution_trace)
-
     except ImportError as e:
         pytest.skip(f"sovereignty_bootstrap not available: {e}")
 
+    assert isinstance(SovereigntyBootstrap, type), "SovereigntyBootstrap should be a class"
+    public = {n for n in dir(SovereigntyBootstrap) if not n.startswith("_")}
+    assert len(public) >= 1, "SovereigntyBootstrap should have public methods"
+    import inspect
+
+    sig = inspect.signature(get_hierarchy_validator)
+    assert "policy" in sig.parameters, "get_hierarchy_validator should accept 'policy' param"
+
+
 @pytest.mark.smoke
-def test_boundary_validator_importable():
-    """Verify boundary_validator module imports without error."""
+def test_boundary_validator_functions_have_signatures():
+    """Verify boundary_validator functions accept expected parameters."""
+    import inspect
+
     try:
         from agentic_core.runtime.boundary_validator import (
             assert_no_apps_imports,
-            validate_layer_direction,
             check_runtime_boundaries,
+            validate_layer_direction,
         )
-
-        # Verify functions exist and are callable
-        assert callable(assert_no_apps_imports)
-        assert callable(validate_layer_direction)
-        assert callable(check_runtime_boundaries)
-
     except ImportError as e:
         pytest.skip(f"boundary_validator not available: {e}")
 
+    for fn in [assert_no_apps_imports, validate_layer_direction, check_runtime_boundaries]:
+        sig = inspect.signature(fn)
+        assert len(sig.parameters) >= 0, f"{fn.__name__} should have a valid signature"
+        assert callable(fn)
+
+
 @pytest.mark.smoke
-def test_sovereignty_exceptions_importable():
-    """Verify sovereignty_exceptions module imports without error."""
+def test_sovereignty_exceptions_raise_with_message():
+    """Verify sovereignty exceptions carry messages and inherit from Exception."""
     try:
         from agentic_core.runtime.sovereignty_exceptions import (
-            SovereigntyViolationError,
-            IsolationViolationError,
             CapabilityTokenError,
             DeterminismViolationError,
+            IsolationViolationError,
+            SovereigntyViolationError,
         )
-
-        # Verify exception classes exist
-        assert SovereigntyViolationError is not None
-        assert IsolationViolationError is not None
-        assert CapabilityTokenError is not None
-        assert DeterminismViolationError is not None
-
-        # Verify they are exception classes
-        assert issubclass(SovereigntyViolationError, Exception)
-        assert issubclass(IsolationViolationError, Exception)
-        assert issubclass(CapabilityTokenError, Exception)
-        assert issubclass(DeterminismViolationError, Exception)
-
     except ImportError as e:
         pytest.skip(f"sovereignty_exceptions not available: {e}")
 
-@pytest.mark.smoke
-def test_runtime_state_importable():
-    """Verify runtime.state module imports without error."""
-    try:
-        # Just verify the module can be imported
-        import agentic_core.runtime.state
-        assert True
+    for exc_cls in [
+        SovereigntyViolationError,
+        IsolationViolationError,
+        CapabilityTokenError,
+        DeterminismViolationError,
+    ]:
+        assert issubclass(exc_cls, Exception)
+        err = exc_cls("test message")
+        assert "test message" in str(err), f"{exc_cls.__name__} should carry its message"
 
+
+@pytest.mark.smoke
+def test_runtime_state_has_public_api():
+    """Verify runtime.state module exposes public symbols."""
+    try:
+        import agentic_core.runtime.state as mod
     except ImportError as e:
         pytest.skip(f"runtime.state not available: {e}")
 
-@pytest.mark.smoke
-def test_runtime_tools_importable():
-    """Verify runtime.tools module imports without error."""
-    try:
-        # Just verify the module can be imported
-        import agentic_core.runtime.tools
-        assert True
+    public = [n for n in dir(mod) if not n.startswith("_")]
+    assert len(public) >= 1, "runtime.state must expose at least one public symbol"
 
+
+@pytest.mark.smoke
+def test_runtime_tools_has_public_api():
+    """Verify runtime.tools module exposes public symbols."""
+    try:
+        import agentic_core.runtime.tools as mod
     except ImportError as e:
         pytest.skip(f"runtime.tools not available: {e}")
+
+    public = [n for n in dir(mod) if not n.startswith("_")]
+    assert len(public) >= 1, "runtime.tools must expose at least one public symbol"

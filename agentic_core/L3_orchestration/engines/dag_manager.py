@@ -6,18 +6,23 @@ from typing import Any
 
 try:
     from agentic_core.mixins.healer_mixin import HealerMixin
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
+
     class HealerMixin:  # type: ignore[no-redef]
         """Stub."""
+
         pass
+
 
 try:
     from agentic_core.interfaces.mixins import MCPHardenedMixin
 except (ImportError, NameError):
+
     class MCPHardenedMixin:  # type: ignore[no-redef]
         """Stub."""
+
         pass
+
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
@@ -186,8 +191,10 @@ _emit_proposal_commits_routing("p1", "dag_manager", "routing_commit")
 try:
     from agentic_core.mixins.subatomic_testing_mixin import L3SubatomicTestingMixin
 except (ImportError, AttributeError):
+
     class L3SubatomicTestingMixin:  # type: ignore[no-redef]
         pass
+
 
 class DAGManager(
     HealerMixin, MCPHardenedMixin, L3SubatomicTestingMixin, RedisCacheMixin, PineconeVectorMixin
@@ -241,7 +248,6 @@ class DAGManager(
             function: The function to register
         """
         import uuid as _uuid  # noqa: PLC0415
-
 
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(

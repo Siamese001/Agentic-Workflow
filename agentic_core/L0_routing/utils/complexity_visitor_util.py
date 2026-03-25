@@ -118,8 +118,7 @@ try:
     from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     SSOT_AVAILABLE = True
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
     SSOT_AVAILABLE = False
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent))
@@ -1126,8 +1125,7 @@ def main():
             except OSError as e:
                 log.error(f"[INCREMENTAL] Failed to read JSON ({e}) → falling back to full scan")
                 incremental_mode = False
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 log.error(f"[INCREMENTAL] Unexpected error loading JSON ({e}) → falling back to full scan")
                 incremental_mode = False
         else:
@@ -1156,8 +1154,7 @@ def main():
                 log.warning(f"[INCREMENTAL] Manifest validation failed ({e}) → falling back to full scan")
                 incremental_mode = False
                 old_hashes = {}
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 log.warning(f"[INCREMENTAL] Manifest error ({e}) → falling back to full scan")
                 incremental_mode = False
                 old_hashes = {}
@@ -1179,8 +1176,7 @@ def main():
                     assert_no_persistent_write("L0", "os.mutate")
                     os.remove(stale_path)
                     log.info(f"[FRESH] Deleted stale {stale_path.name}")
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 log.warning(f"Could not delete {stale_path.name}: {e}")
     agents = []
     parse_errors = []
@@ -1205,8 +1201,7 @@ def main():
                 log.debug(f"[HASH ERROR] {rel_path}: {e}")
                 changed_rel_paths.add(rel_path)
                 hash_compute_errors += 1
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 log.debug(f"[HASH ERROR] {rel_path}: {e}")
                 changed_rel_paths.add(rel_path)
                 hash_compute_errors += 1
@@ -1248,8 +1243,7 @@ def main():
             if tree:
                 build_inheritance_map(tree)
                 parsed_files[py_file] = (source, tree)
-        # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow
             continue
     log.info(f"   Built map with {len(CLASS_INHERITANCE_MAP)} classes")
     target_py_files = (
@@ -1433,8 +1427,7 @@ def main():
         rel_path = str(py_file.relative_to(PROJECT_ROOT)).replace("\\", "/")
         try:
             file_hashes[rel_path] = hashlib.md5(py_file.read_bytes()).hexdigest()
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             hash_errors += 1
             log.warning(f"   [HASH ERROR] {rel_path}: {e}")
     log.info(f"[MANIFEST] Hashed {len(file_hashes)} files ({hash_errors} errors)")
@@ -1448,8 +1441,7 @@ def main():
             raise ValueError("Written JSON agent count mismatch")
         tmp_json.replace(OUTPUT_JSON)
         log.info(f"[SAVED] {OUTPUT_JSON} ({len(agents)} agents)")
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         log.error(f"Failed to save/verify JSON: {e}")
         sys.exit(1)
     manifest = generate_manifest(agents, scan_duration, parse_errors)
@@ -1464,8 +1456,7 @@ def main():
         json.loads(manifest_text)
         tmp_manifest.replace(MANIFEST_JSON)
         log.info(f"[SAVED] {MANIFEST_JSON}")
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         log.warning(f"Manifest save failed ({e}) - continuing (JSON is primary)")
     layers = defaultdict(int)
     top_dirs = defaultdict(int)

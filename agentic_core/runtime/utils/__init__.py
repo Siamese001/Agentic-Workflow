@@ -1,4 +1,5 @@
 """Runtime Utils - Utility functions for runtime operations."""
+
 from agentic_core.L0_routing.config.path_constants import (
     BATCH_SIZE,
     BUFFER_SIZE,
@@ -14,7 +15,6 @@ from .main_util import main
 
 try:
     from .runtime_bootstrapper import *
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
     pass
-__all__ = ['main']
+__all__ = ["main"]

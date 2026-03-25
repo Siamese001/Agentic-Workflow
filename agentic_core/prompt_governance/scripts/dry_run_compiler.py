@@ -10,8 +10,7 @@ from pathlib import Path
 
 try:
     from jinja2 import Environment, FileSystemLoader, TemplateError, TemplateSyntaxError
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
     print("ERROR: Jinja2 not installed. Run: pip install jinja2")
     sys.exit(1)
 
@@ -21,8 +20,7 @@ def initialize_jinja_environment(template_dir: Path):
     try:
         env = Environment(loader=FileSystemLoader(str(template_dir)), trim_blocks=True, lstrip_blocks=True)
         return env
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         print(f"ERROR: Failed to initialize Jinja2 environment: {e}")
         sys.exit(1)
 
@@ -61,8 +59,7 @@ def compile_template(env: Environment, template_path: Path, relative_to: Path) -
             "error": f"Template error: {str(e)}",
             "error_type": "TEMPLATE_ERROR",
         }
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         return {
             "status": "FAIL",
             "template_path": relative_path,

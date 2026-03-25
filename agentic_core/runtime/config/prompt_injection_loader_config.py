@@ -100,8 +100,7 @@ try:
         InjectionType,
         MicroStage,
     )
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
     # Fallback classes
     @dataclass
     class InjectionConfig:
@@ -364,8 +363,11 @@ class PromptInjectionLoader:
     def save_injection(self, injection_id: str, injection: InjectionPattern) -> None:
         """Save an injection pattern to file."""
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "PromptInjectionLoader.save_injection")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "PromptInjectionLoader.save_injection"
+        )
 
         file_path = self.config.injection_dir / f"{injection_id}.json"
         with open(file_path, "w", encoding="utf-8") as f:
@@ -496,6 +498,7 @@ def get_injection_loader(config: InjectionConfig | None = None) -> PromptInjecti
         Configured PromptInjectionLoader instance
     """
     return PromptInjectionLoader(config)
+
 
 _emit_reads_through("l4", "prompt_injection_loader_config", "urg_read_1")
 _emit_reads_through("l4", "prompt_injection_loader_config", "urg_read_2")

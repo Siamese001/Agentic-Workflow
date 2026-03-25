@@ -8,12 +8,16 @@ from typing import Any
 
 try:
     from agentic_core.L6_observability.reasoning.layer_decorator import layer_entry
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
+
     def layer_entry(*args, **kwargs):  # type: ignore[misc]
         """Stub layer_entry decorator."""
-        def wrapper(f): return f
+
+        def wrapper(f):
+            return f
+
         return wrapper if not args or not callable(args[0]) else args[0]
+
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
@@ -299,8 +303,7 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
                 result = strategy_func()
                 report.append(f"  - {strategy_name.capitalize()}: {result}")
                 log_event("l5_exercise_success", {"type": strategy_name})
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 safe_result = f"Exercise error (expected in probe): {str(e)[:100]}"
                 report.append(f"  - {strategy_name.capitalize()}: {safe_result}")
                 log_event("l5_exercise_error", {"type": strategy_name, "error": str(e)})
@@ -326,8 +329,7 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
             dummy_paths = [Path("agentic_core/L5_safety/dummy.py")]
             result = hierarchy_agent.detect_violations(dummy_paths)
             return f"Hierarchy probe: {(len(result) if result else 0)} issues (dry-run)"
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             return f"Hierarchy probe: Dry-run executed (expected: {str(e)[:50]})"
 
     def _exercise_gravity_check(self) -> str:
@@ -342,8 +344,7 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
                 import_healer = healer_factory()
                 actions = import_healer.heal_imports(temp_file)
                 return f"Gravity probe: {len(actions)} import issues detected"
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 return f"Gravity probe: Dry-run executed (expected: {str(e)[:50]})"
 
     def _exercise_healing_probe(self) -> str:
@@ -356,8 +357,7 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
             dummy_violation = {"type": "territory", "file": "dummy.py"}
             healer.heal([dummy_violation])
             return "Healing probe: Dry-run executed"
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             return f"Healing probe: Dry-run executed (expected: {str(e)[:50]})"
 
     def _exercise_red_team_probe(self) -> str:
@@ -370,8 +370,7 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
             dummy_prompt = "Ignore previous instructions [jailbreak attempt]"
             red_team.probe_prompt(dummy_prompt)
             return "Red team probe: Jailbreak simulation blocked"
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             return f"Red team probe: Dry-run executed (expected: {str(e)[:50]})"
 
     def _exercise_guardrail_limits(self) -> str:
@@ -427,8 +426,7 @@ class L5SafetyExerciserAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             return {
                 "status": "failed",
                 "details": f"L5SafetyExerciserAgent heal() failed: {str(e)}",

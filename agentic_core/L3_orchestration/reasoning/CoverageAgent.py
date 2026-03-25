@@ -6,12 +6,16 @@ from typing import Any
 
 try:
     from agentic_core.L6_observability.reasoning.layer_decorator import layer_entry
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
+
     def layer_entry(*args, **kwargs):  # type: ignore[misc]
         """Stub layer_entry decorator."""
-        def wrapper(f): return f
+
+        def wrapper(f):
+            return f
+
         return wrapper if not args or not callable(args[0]) else args[0]
+
 
 from agentic_core.L0_routing.config.path_constants import (
     APPS_LIC_DIR,
@@ -301,8 +305,7 @@ class CoverageAgent(SovereignBaseAgent):
             response.raise_for_status()
             data = response.json()
             return data.get("layer_counts", {})
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             print(f"[{self.name}] Metrics fetch failed: {e}")
             return None
 
@@ -443,8 +446,7 @@ class CoverageAgent(SovereignBaseAgent):
                 metrics["violations_found"] += 1
             if metrics["violations_found"] == 0:
                 metrics["violations_fixed"] = 1
-        # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow
             metrics["errors"] += 1
         finally:
             _call_path.discard(agent_name)
@@ -476,8 +478,7 @@ class CoverageAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             return {
                 "status": "failed",
                 "details": f"CoverageAgent heal() failed: {str(e)}",

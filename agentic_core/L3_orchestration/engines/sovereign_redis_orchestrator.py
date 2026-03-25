@@ -96,8 +96,7 @@ from agentic_core.utils.timeout_decorator_util import timeout
 
 try:
     from agentic_core.L3_orchestration.reasoning.mcp_manager import MCPConnectionManager as _MCPManager
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
     _MCPManager = None
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,

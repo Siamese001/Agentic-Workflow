@@ -232,8 +232,7 @@ class EpisodicMemory:
                 from .semantic_manager import semantic_memory
 
                 self._semantic_memory = semantic_memory
-            # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+            except ImportError:  # guardian: allow-silent-swallow
                 self._semantic_memory = None
         return self._semantic_memory
 
@@ -422,5 +421,4 @@ class EpisodicMemory:
         }
 
 
-episodic_memory = EpisodicMemory()                except Exception as e:
-                    pass
+episodic_memory = EpisodicMemory()

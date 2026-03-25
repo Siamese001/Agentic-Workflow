@@ -95,17 +95,16 @@ from typing import Any
 
 try:
     from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
 
     class MCPHardenedMixin:
         pass
 
 
 from agentic_core.base_agents.L0RoutingBase import L0RoutingBase as L0RoutingBaseAgent
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.mixins.autonomy_mixin import AutonomyMixin
 from agentic_core.mixins.self_diagnosis_mixin import SelfDiagnosisMixin
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import LayerSegment, _emit_records_execution_trace
 from agentic_core.utils.timeout_decorator_util import timeout
 
 try:
@@ -322,8 +321,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                 "artifacts": [],
                 "errors": [],
             }
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             return {
                 "status": "failed",
                 "details": "Exception during healing",
@@ -453,8 +451,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                 results = self._apply_filesystem_alignment(proposals)
                 Logger.info("Filesystem alignment complete")
                 return self._create_applied_result(proposals, results)
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 Logger.error(f"Alignment failed: {e}")
                 raise
         Logger.info("Dry-run mode - proposals generated but not applied")
@@ -527,8 +524,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                             Logger.debug(f"Extracted signal '{name_lower}' from {class_name}")
                 Logger.info(f"[SSOT] Loaded {len(self.actual_agents)} agents from discovery JSON")
                 return
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 raise
                 Logger.warning(f"[SSOT] Failed to load discovery JSON: {e}")
         agentic_core = self.project_root / AGENTIC_CORE_DIR
@@ -548,8 +544,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                             if name_lower:
                                 self.actual_signals.add(name_lower)
                                 Logger.debug(f"Extracted signal '{name_lower}' from {node.name}")
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 raise
                 Logger.debug(f"Failed to parse {py_file}: {e}")
         Logger.info(
@@ -1094,8 +1089,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                     f"Blueprint partially synchronized - {len(remaining_drift)} drift items remain"
                 )
             Logger.info(f"[FilesystemSSOTReconcilerAgent] {report['message']}")
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             report["post_heal_status"] = "ERROR"
             report["message"] = f"Post-heal validation error: {e}"
             Logger.error(f"[FilesystemSSOTReconcilerAgent] Post-heal validation failed: {e}")
@@ -1146,8 +1140,7 @@ class FilesystemSSOTReconcilerAgent(AutonomyMixin, SelfDiagnosisMixin, L0Routing
                         "PREVIEW: Would update signals in blueprint" if dry_run else "Signals updated"
                     )
                     action["applied"] = not dry_run
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 raise
                 action["error"] = str(e)
                 Logger.error(f"[FilesystemSSOTReconcilerAgent] Cleanup error: {e}")

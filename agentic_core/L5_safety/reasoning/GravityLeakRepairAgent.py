@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
-from agentic_core.mixins.prompt_rendering_mixin import PromptRenderingMixin
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
@@ -43,6 +42,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+from agentic_core.mixins.prompt_rendering_mixin import PromptRenderingMixin
 
 emit_replay_key("p0", "GravityLeakRepairAgent")
 emit_determinism_digest("p0", "GravityLeakRepairAgent")
@@ -557,8 +557,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                         self.logger.info(f"[DEFERRED] {fix.file_path.name}: moved import into function scope")
                         return {"status": "fixed", "fix_type": "DEFERRED"}
                     return {"status": "no_change", "fix_type": "DEFERRED"}
-                # guardian: allow-silent-swallow -- deferred import fix failure is logged; falls through to plan-only
-                except Exception as deferred_err:
+                except Exception as deferred_err:  # guardian: allow-silent-swallow
                     self.logger.warning(f"[DEFERRED] Failed for {fix.file_path.name}: {deferred_err}")
                     return self._emit_plan_only(fix)
             if fix.fix_type in ("ABSTRACT", "RELOCATE"):
@@ -573,8 +572,7 @@ class GravityLeakRepairAgent(PromptRenderingMixin, SovereignBaseAgent):
                         return self._emit_plan_only(fix)
                 except GravityRepairProhibitedError:
                     return self._emit_plan_only(fix)
-                # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+                except ImportError:  # guardian: allow-silent-swallow
                     pass
             temp_fd, temp_path = tempfile.mkstemp(dir=fix.file_path.parent, text=True)
             try:

@@ -282,8 +282,7 @@ class AdapterBase(ABC, Generic[T]):
                 from agentic_core.L5_safety.enforcement.verification_gate import VerificationGate
 
                 self._verification_gate = VerificationGate()
-            # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+            except ImportError:  # guardian: allow-silent-swallow
                 logger.warning("VerificationGate not available")
         return self._verification_gate
 
@@ -572,5 +571,4 @@ class HealingAdapter(AdapterBase[T]):
 
 
 AdapterBaseAdapter = AdapterBase
-__all__ = ["AdapterBase", "AdapterBaseAdapter", "AdapterContext", "AdapterResult", "HealingAdapter"]                except Exception as e:
-                    pass
+__all__ = ["AdapterBase", "AdapterBaseAdapter", "AdapterContext", "AdapterResult", "HealingAdapter"]

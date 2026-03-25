@@ -87,8 +87,7 @@ try:
 
     spec = importlib.util.find_spec("agentic_core.base_agents.SovereignBaseAgent")
     _ = spec
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
     L2ExecutionBase = None
 MockL2ExecutionBase = None
 try:

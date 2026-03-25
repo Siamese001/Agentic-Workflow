@@ -100,8 +100,7 @@ _emit_links_execution_to_snapshot("p4", "collision_resolver", "exec_snapshot_lin
 
 try:
     from agentic_core.utils.ssot_discovery_validator import get_python_files
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
 
     def get_python_files(root: Path):
         return list(root.rglob("*.py"))
@@ -199,8 +198,7 @@ class CollisionResolver:
         try:
             content = path.read_text(encoding="utf-8")
             tree = ast.parse(content)
-        # guardian: allow-silent-swallow
-        except:
+        except:  # guardian: allow-silent-swallow
             return None
         classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
         if not classes:
@@ -275,8 +273,7 @@ class CollisionResolver:
                     tree = ast.parse(content)
                     classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
                     class_info = f"[Classes: {', '.join(classes[:3])}]" if classes else "[No classes]"
-                # guardian: allow-silent-swallow
-                except:
+                except:  # guardian: allow-silent-swallow
                     size = 0
                     class_info = "[Parse error]"
                 marker = "✓ EXISTS" if src.name == target_path.name else "→ WANTS"

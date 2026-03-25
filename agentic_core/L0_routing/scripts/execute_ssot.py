@@ -125,8 +125,7 @@ _emit_links_execution_to_snapshot("p4", "execute_ssot", "exec_snapshot_link")
 
 try:
     from tqdm import tqdm
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
 
     class tqdm:
         def __init__(self, iterable=None, total=None, desc=None, **kwargs):
@@ -818,7 +817,7 @@ def _maybe_force_utf8_console() -> None:
                 stderr=DEVNULL,
                 check=False,
                 allow_protected_root_mutation=True,
-            # guardian: allow-silent-swallow - optional file resource
+                # guardian: allow-silent-swallow - optional file resource
             )
         except FileNotFoundError:
             pass
@@ -3102,7 +3101,9 @@ def execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr,
     repo_root_resolved = REPO_ROOT.resolve()
     territory_path = (repo_root_resolved / territory).resolve()
     # Canonicalize L-layer territories: L0_routing → agentic_core/L0_routing
-    if not territory_path.exists() and territory.startswith(("L0_", "L1_", "L2_", "L3_", "L4_", "L5_", "L6_")):
+    if not territory_path.exists() and territory.startswith(
+        ("L0_", "L1_", "L2_", "L3_", "L4_", "L5_", "L6_")
+    ):
         territory_path = (repo_root_resolved / AGENTIC_CORE_DIR / territory).resolve()
     if not territory_path.is_relative_to(repo_root_resolved):
         logger.critical(f"SECURITY ALERT: Path traversal attempt detected for territory '{territory}'")
@@ -7226,7 +7227,7 @@ def _legacy_main(
                                 confidence=0.0,
                                 fix_summary=f"CognitiveDispositionAgent error in {territory}: {str(e)[:120]}",
                                 outcome="FAILED",
-                            # guardian: allow-silent-swallow - acceptable exception handling
+                                # guardian: allow-silent-swallow - acceptable exception handling
                             )
                         cert = execute_phase7_final(agents, territory, state_mgr, decision_engine)
                         results.append(cert)

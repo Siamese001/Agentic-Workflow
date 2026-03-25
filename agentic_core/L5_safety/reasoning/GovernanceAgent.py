@@ -114,8 +114,7 @@ _proof_emitter = ExecutionProofEmitter("L5.GovernanceAgent")
 
 try:
     from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
 
     class MCPHardenedMixin:
         pass
@@ -262,8 +261,7 @@ def heal(violation: dict[str, Any]) -> dict[str, Any]:
                 "artifacts": [],
                 "errors": [],
             }
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         return {
             "status": "failed",
             "details": "Exception during healing",
@@ -339,8 +337,7 @@ class DependencyGraph:
                 self.module_map[module_name] = file_path
             except SyntaxError as e:
                 LOGGER.warning(f"Syntax error in {file_path}: {e}")
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 raise
                 LOGGER.error(f"Error parsing {file_path}: {e}")
         self._build_reverse_index()
@@ -687,8 +684,7 @@ class GovernanceAgent(SovereignBaseAgent):
                 else:
                     LOGGER.error(f"Failed to move {file_path}: {result.error}")
                     return "FAILED to move"
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 LOGGER.error(f"Failed to move {file_path}: {e}")
                 return "FAILED to move"
 
@@ -735,8 +731,7 @@ class GovernanceAgent(SovereignBaseAgent):
             if line_count > self.MAX_FILE_LINES:
                 return f"Violation: {file_path} has {line_count} lines (max allowed: {self.MAX_FILE_LINES}) - SPLIT required"
             return None
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             LOGGER.error(f"Error checking file density for {file_path}: {e}")
             return f"Error: Could not check {file_path}"
 
@@ -816,8 +811,7 @@ class GovernanceAgent(SovereignBaseAgent):
                                 "message": f"Line {line_num}: Excessive nesting ({spaces} spaces > {self.MAX_NESTING_SPACES})",
                             }
                         )
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             LOGGER.error(f"Error checking nesting depth in {file_path}: {e}")
         return violations
 
@@ -864,8 +858,7 @@ class GovernanceAgent(SovereignBaseAgent):
                         )
         except SyntaxError as e:
             violations.append({"type": "syntax", "message": f"Syntax error in {file_path}: {e}"})
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             raise
             LOGGER.error(f"Error checking complexity in {file_path}: {e}")
         nesting_violations: Any = self._check_nesting_depth(file_path)
@@ -976,8 +969,7 @@ class GovernanceAgent(SovereignBaseAgent):
             else:
                 report["hierarchy_status"] = "PARTIAL"
                 report["message"] = f"{len(relevant)} hierarchy issues found"
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             report["hierarchy_status"] = "ERROR"
             report["message"] = f"Hierarchy validation error: {e}"
         return report
@@ -999,8 +991,7 @@ class GovernanceAgent(SovereignBaseAgent):
             else:
                 report["import_status"] = "PARTIAL"
                 report["message"] = f"{len(violations)} import issues found"
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             report["import_status"] = "ERROR"
             report["message"] = f"Import validation error: {e}"
         return report
@@ -1141,8 +1132,7 @@ class GovernanceAgent(SovereignBaseAgent):
             _call_path = set()
             try:
                 super().heal_repository(dry_run=dry_run)
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 Logger.warning(f"[HEAL_REPOSITORY] Parent chain warning: {e}")
         agent_name = self.__class__.__name__
         if agent_name in _call_path:
@@ -1179,8 +1169,7 @@ class GovernanceAgent(SovereignBaseAgent):
                         sanitized = self.check_root_hygiene(auto_sanitize=True)
                         if sanitized:
                             violations_fixed += len(root_violations) - len(sanitized)
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 self.logger.error(f"  Error checking root hygiene: {e}")
                 errors += 1
             try:
@@ -1188,8 +1177,7 @@ class GovernanceAgent(SovereignBaseAgent):
                 if depth_violations:
                     self.logger.warning(f"  Depth law violations: {len(depth_violations)}")
                     violations_found += len(depth_violations)
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 self.logger.error(f"  Error checking depth law: {e}")
                 errors += 1
             try:
@@ -1197,8 +1185,7 @@ class GovernanceAgent(SovereignBaseAgent):
                 if atomicity_violations:
                     self.logger.warning(f"  Atomicity violations: {len(atomicity_violations)}")
                     violations_found += len(atomicity_violations)
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 self.logger.error(f"  Error checking atomicity law: {e}")
                 errors += 1
             self.logger.info(
@@ -1242,8 +1229,7 @@ class GovernanceAgent(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             return {
                 "status": "failed",
                 "details": f"GovernanceAgent heal() failed: {str(e)}",

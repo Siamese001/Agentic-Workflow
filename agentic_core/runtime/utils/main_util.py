@@ -176,8 +176,7 @@ try:
     from dotenv import load_dotenv
 
     load_dotenv()
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
     pass
 
 
@@ -202,8 +201,7 @@ async def main() -> Any:
         print("\n🚀 [SYSTEM ONLINE] - Executing Sovereign Hop...\n")
         final_output: Any = await hop.run(mission)
         print(f"\n✅ [MISSION COMPLETE]\nOutput: {final_output}")
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         print(f"\n❌ [CRITICAL FAILURE]: {e}")
 
 

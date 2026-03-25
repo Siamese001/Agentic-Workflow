@@ -21,7 +21,12 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.evaluation.retrieval.interfaces import Document
+# Configuration constants
+BATCH_SIZE = 1000
+BUFFER_SIZE = 8192
+DEFAULT_SLEEP = 0.1
+MAX_RETRIES = 3
+THRESHOLD = 0.95
 
 
 @dataclass(frozen=True)
@@ -100,12 +105,17 @@ class ContextCompletenessScore:
 
 
 @dataclass
-class GroundedDocument(Document):
+class GroundedDocument:
     """A Document augmented with parent-section reconstruction and completeness score.
 
     Extends Document to carry parent context and completeness metadata.
     C0 RULE: Informational only.
     """
+
+    # Document interface fields
+    doc_id: str
+    content: str
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     parent_section_id: str = ""
     parent_content: str = ""
@@ -115,18 +125,17 @@ class GroundedDocument(Document):
     expanded: bool = False
 
     def to_dict(self) -> dict[str, Any]:
-        base = super().to_dict()
-        base.update(
-            {
-                "parent_section_id": self.parent_section_id,
-                "parent_content": self.parent_content,
-                "sibling_ids": list(self.sibling_ids),
-                "heading_path": list(self.heading_path),
-                "completeness": self.completeness_score.to_dict() if self.completeness_score else None,
-                "expanded": self.expanded,
-            }
-        )
-        return base
+        return {
+            "doc_id": self.doc_id,
+            "content": self.content,
+            "metadata": self.metadata,
+            "parent_section_id": self.parent_section_id,
+            "parent_content": self.parent_content,
+            "sibling_ids": list(self.sibling_ids),
+            "heading_path": list(self.heading_path),
+            "completeness": self.completeness_score.to_dict() if self.completeness_score else None,
+            "expanded": self.expanded,
+        }
 
 
 class IParentChildExpander(ABC):
@@ -281,4 +290,10 @@ __all__ = [
     "IContextCompletenessScorer",
     "IAnswerSupportValidator",
     "SupportedAnswerCheck",
+    # Configuration constants
+    "BATCH_SIZE",
+    "BUFFER_SIZE",
+    "DEFAULT_SLEEP",
+    "MAX_RETRIES",
+    "THRESHOLD",
 ]

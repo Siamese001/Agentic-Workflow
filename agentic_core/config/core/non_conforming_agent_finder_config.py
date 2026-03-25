@@ -109,8 +109,7 @@ try:
         AGENTIC_CORE_DIR,
         ARCHIVES_DIR,
     )
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
     AGENTIC_CORE_DIR = AGENTIC_CORE_DIR
     ARCHIVES_DIR = ".sovereign_healing_backup"
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
@@ -238,8 +237,11 @@ class NonConformingAgentFinder(ast.NodeVisitor):
 
     def visit_ClassDef(self, node: ast.ClassDef):
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
-        _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "NonConformingAgentFinder.visit_ClassDef")
+        _emit_records_execution_trace(
+            _trace_id, LayerSegment.L3_ORCHESTRATION, "NonConformingAgentFinder.visit_ClassDef"
+        )
 
         class_name = node.name
 
@@ -301,8 +303,7 @@ def main():
         try:
             source = py_file.read_text(encoding="utf-8")
             tree = ast.parse(source)
-        # guardian: allow-silent-swallow
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow
             # TODO: Handle specific exception properly
             raise  # Re-raise after logging/handling
             continue  # Skip unparseable files

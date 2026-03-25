@@ -209,12 +209,10 @@ def read_text(path: str | Path, encoding: str = "utf-8") -> str:
 
         result: Any = mcp6_read_text_file(path=str(p))
         return result
-    # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+    except ImportError:  # guardian: allow-silent-swallow
         Logger.debug("[ReadGateway] mcp6_read_text_file unavailable, using direct I/O")
         return p.read_text(encoding=encoding)
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         Logger.warning(f"[ReadGateway] mcp6 read failed for {p}, falling back: {e}")
         return p.read_text(encoding=encoding)
 
@@ -277,8 +275,7 @@ def list_directory(path: str | Path) -> list[str]:
     except ImportError:
         Logger.debug("[ReadGateway] mcp6_list_directory unavailable, using direct I/O")
         return [entry.name for entry in p.iterdir()]
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         Logger.warning(f"[ReadGateway] mcp6 list failed for {p}, falling back: {e}")
         return [entry.name for entry in p.iterdir()]
 
@@ -317,8 +314,7 @@ def get_file_info(path: str | Path) -> dict[str, Any]:
         return result if isinstance(result, dict) else {"raw": result}
     except ImportError:
         Logger.debug("[ReadGateway] mcp6_get_file_info unavailable, using direct stat")
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallow
         Logger.warning(f"[ReadGateway] mcp6 file_info failed for {p}, falling back: {e}")
     stat = p.stat()
     return {

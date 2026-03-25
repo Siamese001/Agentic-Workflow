@@ -89,8 +89,7 @@ try:
     from agentic_core.L3_orchestration.engines.sub_atomic_engine_impl import (
         SubAtomicEngineImpl as SubAtomicEngine,
     )
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
 
     class SubAtomicEngine:
         """Stub: SubAtomicEngine not installed."""
@@ -252,8 +251,7 @@ class query_planner:
             queries: Any = result.get("queries", [])[:8]
             if original_query not in queries:
                 queries.insert(0, original_query)
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             print(f"   [!] Multi-query parse failure: {e}")
             queries: Any = [original_query]
         self.cache.set(cache_key, {"queries": queries})
@@ -276,8 +274,7 @@ class query_planner:
             sub_queries: Any = list(dict.fromkeys([q.strip() for q in sub_queries if q.strip()]))
             if not sub_queries:
                 sub_queries: Any = [query]
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             print(f"   [!] Decomposition parse error: {e}")
             sub_queries: Any = [query]
         self.cache.set(cache_key, {"sub_queries": sub_queries})
@@ -294,8 +291,7 @@ class query_planner:
         try:
             result: Any = json.loads(self._clean_json_response(response))
             expanded: Any = result.get("queries", [])[:8]
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.error(f"L1 Decomposition failure: {e}")
             expanded: Any = [query]
         return expanded
@@ -311,8 +307,7 @@ class query_planner:
         try:
             result: Any = json.loads(self._clean_json_response(response))
             return result.get("passages", [])[:3]
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             Logger.error(f"L1 HyDE failure: {e}")
             return []
 

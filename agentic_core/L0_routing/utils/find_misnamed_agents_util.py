@@ -181,8 +181,7 @@ try:
         APPS_SHARED_DIR,
         get_python_files,
     )
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
     AGENTIC_CORE_DIR = Path(AGENTIC_CORE_DIR)
     APPS_LIC_DIR = Path(APPS_LIC_DIR)
     APPS_RG_DIR = Path(APPS_RG_DIR)
@@ -229,8 +228,7 @@ def has_agent_class(path: Path) -> list:
     _emit_records_execution_trace(_trace_id, LayerSegment.L0_ROUTING, "has_agent_class")
     try:
         tree = ast.parse(path.read_text(encoding="utf-8", errors="ignore"))
-    # guardian: allow-silent-swallow
-    except:
+    except:  # guardian: allow-silent-swallow
         return []
     agents = []
     for node in ast.walk(tree):

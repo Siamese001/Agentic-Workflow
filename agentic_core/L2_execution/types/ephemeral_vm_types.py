@@ -94,8 +94,7 @@ from agentic_core.L2_execution.providers import get_clock
 
 try:
     from agentic_core.L2_execution.enforcement.vm.firecracker_manager import FirecrackerManager
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
     FirecrackerManager = None
 try:
     from agentic_core.L2_execution.types.firecracker_manager_types import VMConfig
@@ -301,8 +300,7 @@ class EphemeralVm:
             return VmInstance
         except asyncio.TimeoutError:
             return self._handle_timeout(vm_id, timeout, start_time)
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             return self._handle_execution_error(vm_id, e, start_time)
         finally:
             await self._teardown_vm(VmInstance, vm_id)
@@ -375,8 +373,7 @@ class EphemeralVm:
                 await self.vm_manager.terminate_vm(vm_id)
                 if self.enable_logging:
                     LOGGER.debug("vm_torn_down", extra={"vm_id": vm_id})
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow
                 raise
                 if self.enable_logging:
                     LOGGER.error("vm_teardown_failed", extra={"vm_id": vm_id, "error": str(e)})
@@ -429,8 +426,7 @@ class EphemeralVm:
             )
         except asyncio.TimeoutError:
             raise
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             return ExecutionResult(success=False, output="", error=str(e), exit_code=1)
 
     async def _execute_javascript(self, code: str, timeout: int) -> ExecutionResult:
@@ -459,8 +455,7 @@ class EphemeralVm:
             )
         except asyncio.TimeoutError:
             raise
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow
             return ExecutionResult(success=False, output="", error=str(e), exit_code=1)
 
 

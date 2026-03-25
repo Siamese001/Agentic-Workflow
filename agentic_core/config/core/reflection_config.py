@@ -191,8 +191,7 @@ try:
         CircuitBreakerFactory,
         CircuitOpenError,
     )
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:  # guardian: allow-silent-swallow
     # Fallback implementations
     @dataclass
     class CircuitBreakerConfig:
@@ -332,7 +331,9 @@ class ReflectionEngine:
         # Initialize circuit breaker for LLM calls
         self.circuit_breaker = CircuitBreakerFactory.get(
             "reflection_engine",
-            CircuitBreakerConfig(failure_threshold=THRESHOLD, recovery_timeout=DEFAULT_TIMEOUT, timeout=self.config.timeout),
+            CircuitBreakerConfig(
+                failure_threshold=THRESHOLD, recovery_timeout=DEFAULT_TIMEOUT, timeout=self.config.timeout
+            ),
         )
 
         logger.info(f"Initialized ReflectionEngine with model: {self.config.llm_model}")
@@ -354,7 +355,9 @@ class ReflectionEngine:
             CritiqueResult with evaluation details
         """
 
-        _emit_records_execution_trace(str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SelfCritiqueEvaluator.evaluate")
+        _emit_records_execution_trace(
+            str(uuid.uuid4()), LayerSegment.L3_ORCHESTRATION, "SelfCritiqueEvaluator.evaluate"
+        )
         start_time = time.time()
         self.stats["total_critiques"] += 1
 
@@ -384,7 +387,7 @@ class ReflectionEngine:
                     context,
                 )
                 self.stats["llm_critiques"] += 1
-# guardian: allow-silent-swallow - acceptable exception handling
+        # guardian: allow-silent-swallow - acceptable exception handling
 
         except CircuitOpenError:
             # GAP-02 FIX: fail-closed for required criteria, fail-open only for optional
@@ -400,8 +403,7 @@ class ReflectionEngine:
                 validation_type="circuit_breaker_fallback",
             )
 
-        # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-silent-swallower
+        except Exception as e:  # guardian: allow-silent-swallower  # guardian: allow-silent-swallow
             # GAP-02 FIX: fail-closed on unexpected errors when required criteria present
             has_required = any(getattr(c, "is_required", True) for c in normalized_criteria)
             logger.error(f"Reflection evaluation failed: {e}")
@@ -468,8 +470,7 @@ class ReflectionEngine:
 
                 total_weight += criterion.weight
 
-            # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-silent-swallower
+            except Exception as e:  # guardian: allow-silent-swallower  # guardian: allow-silent-swallow
                 logger.error(f"Validation error for {criterion.name}: {e}")
                 results.append(f"Error: {criterion.name} - {str(e)}")
 
@@ -538,8 +539,7 @@ Respond in JSON format:
                 validation_type="llm",
             )
 
-        # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-silent-swallower
+        except Exception as e:  # guardian: allow-silent-swallower  # guardian: allow-silent-swallow
             logger.error(f"LLM evaluation failed: {e}")
             # Fallback to conservative result
             return CritiqueResult(

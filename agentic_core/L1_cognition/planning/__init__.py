@@ -11,10 +11,8 @@ from agentic_core.L1_cognition.planning.plan_creator import (
     create_reasoning_plan,
     enforce_plan_checkpoint,
     execute_plan_step,
-    get_plan_registry,
     query_reasoning_plans,
     record_plan_revision,
-    reset_plan_registry,
 )
 from agentic_core.L1_cognition.planning.reasoning_plan import (
     CheckpointResult,
@@ -25,6 +23,8 @@ from agentic_core.L1_cognition.planning.reasoning_plan import (
     ReasoningPlan,
     ReasoningPlanError,
     StepStatus,
+    get_plan_registry,
+    reset_plan_registry,
 )
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
