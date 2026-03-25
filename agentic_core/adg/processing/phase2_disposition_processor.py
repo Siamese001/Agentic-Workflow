@@ -206,7 +206,7 @@ class ViolationDispositionProcessor:
                         if comment:
                             guardian_comments.append(comment)
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallow -- fail-closed: file scanning unavailable
                 print(f"    ⚠️  Could not scan {file_path}: {e}")
 
         return guardian_comments

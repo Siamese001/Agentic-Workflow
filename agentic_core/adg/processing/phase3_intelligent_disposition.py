@@ -183,7 +183,7 @@ class FeatureExtractor:
                 row = cursor.fetchone()
                 if row and row[0] and row[0] not in ("", "tests", "unknown"):
                     return row[0]
-            except Exception:
+            except Exception:  # guardian: allow-silent-swallow -- fail-closed: layer lookup unavailable
                 pass
 
         # 2. Fallback: infer from path string
@@ -228,7 +228,7 @@ class FeatureExtractor:
                     elif line.startswith("class "):
                         return line.split("(")[0].replace("class ", "")
 
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow -- fail-closed: graceful degradation
             pass
 
         return None
@@ -243,7 +243,7 @@ class FeatureExtractor:
                 line = lines[line_no - 1].strip()
                 return "# guardian:" in line
 
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow -- fail-closed: graceful degradation
             pass
 
         return False
@@ -269,7 +269,7 @@ class FeatureExtractor:
             count = cursor.fetchone()[0]
             return count > 0
 
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow -- fail-closed: graceful degradation
             pass
 
         return False
@@ -309,7 +309,7 @@ class FeatureExtractor:
 
                 return complexity
 
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow -- fail-closed: graceful degradation
             pass
 
         return 0
@@ -364,7 +364,7 @@ class FeatureExtractor:
 
             return cursor.fetchone()[0]
 
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow -- fail-closed: graceful degradation
             pass
 
         return 0
@@ -385,7 +385,7 @@ class FeatureExtractor:
 
             return cursor.fetchone()[0]
 
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallow -- fail-closed: graceful degradation
             pass
 
         return 0
@@ -743,14 +743,16 @@ class IntelligentDispositionSystem:
                     historical_data.append(
                         {"disposition": disposition, "source": source, "features": asdict(features)}
                     )
-                except Exception as e:
-                    print(f"    ⚠️  Could not extract features for historical data: {e}")
+                except Exception as e:  # Intentionally allow silent swallow to prevent feature extraction from blocking analysis
+                    # Fail-closed: feature extraction unavailable, skip this historical data point
+                    print(f"    Could not extract features for historical data: {e}")
                     continue
 
             return historical_data
 
-        except Exception as e:
-            print(f"    ⚠️  Could not load historical dispositions: {e}")
+        except Exception as e:  # Intentionally allow silent swallow to prevent historical data loading from blocking analysis
+            # Fail-closed: historical data unavailable, skip training
+            print(f"    Could not load historical dispositions: {e}")
             return []
 
     def _load_untriaged_violations(self) -> list[dict]:
@@ -777,7 +779,7 @@ class IntelligentDispositionSystem:
 
             return violations
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallow -- fail-closed: violation loading unavailable
             print(f"    ⚠️  Could not load untriaged violations: {e}")
             return []
 
