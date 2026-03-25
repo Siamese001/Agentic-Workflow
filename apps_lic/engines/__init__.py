@@ -13,8 +13,8 @@ try:
         get_exec_shadow_audit,
         get_exec_strategy_roadmap,
     )
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+    # guardian: allow-silent-swallow - optional dependency
+except ImportError:
     ExecutiveStrategyAgent = None  # type: ignore[assignment,misc]
     get_exec_interviewer_profile = None  # type: ignore[assignment]
     get_exec_shadow_audit = None  # type: ignore[assignment]

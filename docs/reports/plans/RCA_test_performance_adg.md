@@ -133,15 +133,7 @@ Tests use **97 distinct relation types** — the same full set used for producti
 
 # Implementation Plan: Phases and Waves
 
-## Phase 0: Immediate Performance Recovery (1-2 days) ✅ READY
-
-**Implementation Guide**: See `docs/reports/plans/Phase0_Implementation_Guide.md`
-
-**Files Created**:
-- `tools/strip_test_emitters.py` - Bootstrap emitter cleanup tool
-- `tests/conftest_adg_phase0.py` - Session-scoped ADG fixtures
-- `tests/unit/test_phase0_adg_performance.py` - Comprehensive test suite
-- `tools/verify_phase0.py` - Automated verification script
+## Phase 0: Immediate Performance Recovery (1-2 days)
 
 ### Wave 0.1: Bootstrap Emitter Cleanup (Day 1)
 **Target**: 30 test files with 76–77 emitter imports each
@@ -232,7 +224,7 @@ pytest_plugins = ["tests.conftest"]
 def adg_scan_mode():
     return "structural_only"
 
-# tests/full_suite/conftest.py  
+# tests/full_suite/conftest.py
 pytest_plugins = ["tests.conftest"]
 @pytest.fixture(scope="session")
 def adg_scan_mode():
@@ -268,11 +260,11 @@ def update_test_adg(changed_files: list[Path]) -> None:
     test_files = [f for f in changed_files if f.is_relative_to("tests/")]
     if not test_files:
         return
-    
+
     # Rescan only changed test files
     scanner = ADGStaticScanner(scan_mode="structural_only")
     new_edges = scanner.scan_files(test_files)
-    
+
     # Update cache incrementally
     cache = ScanCache.load("tests/.adg_cache.json")
     for f in test_files:
