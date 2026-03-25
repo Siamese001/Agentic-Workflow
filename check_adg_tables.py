@@ -6,7 +6,7 @@ tables = [row[0] for row in cursor.fetchall()]
 print('Tables in ADG:')
 for table in tables:
     print(f'  {table}')
-    
+
 # Check if violations table exists
 if 'violations' in tables:
     cursor = conn.execute("SELECT COUNT(*) FROM violations WHERE category='antipattern'")

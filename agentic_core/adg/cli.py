@@ -593,11 +593,11 @@ def _cmd_build_artifacts(args: argparse.Namespace) -> int:
     # Phase 2: Auto-disposition violations based on test coverage and guardian comments
     print(" Phase 2: Auto-dispositioning violations...")
     disposition_results = run_phase2_disposition_processing(paths.sqlite)
-        
+
     # Phase 3: Auto-remediation analysis
     print(" Phase 3: Analyzing violations for auto-remediation...")
     remediation_actions = run_phase3_remediation_analysis(paths.sqlite)
-        
+
     # Build final report
     report = {
         "snapshot": str(paths.snapshot),

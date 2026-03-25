@@ -22,11 +22,11 @@
 class ExceptionTypeInference:
     # Analyzes code patterns and imports to infer exception types
     # 13 built-in exception patterns with confidence scoring
-    
+
 class AutoRemediationEngine:
     # Main engine for analyzing violations and generating actions
     # Risk-based prioritization and safe transformation
-    
+
 class RemediationAction:
     # Single remediation action with strategy, confidence, and risk score
 ```
@@ -84,7 +84,7 @@ remediation_actions = run_phase3_remediation_analysis(paths.sqlite)
 1. **narrow_to_specific**: `except Exception as exc:` → `except KeyError as exc:`
    - File: `agentic_core/L5_safety/reasoning/file_classification_validator.py:224`
    - Confidence: 0.90, Risk: 0.97
-   
+
 2. **narrow_to_specific**: `except Exception as e:` → `except KeyError as e:`
    - File: `agentic_core/L5_safety/types/security_validation_types.py:286`
    - Confidence: 0.90, Risk: 0.97
@@ -99,7 +99,7 @@ remediation_actions = run_phase3_remediation_analysis(paths.sqlite)
 **Action**: `except Exception:` → `except ValueError:`
 **Safety**: Preserves variable names and code structure
 
-### 2. add_logging  
+### 2. add_logging
 **When**: Medium confidence or ambiguous context
 **Action**: Add `# Auto-logging: Exception caught` before handler
 **Safety**: Non-invasive, improves observability
