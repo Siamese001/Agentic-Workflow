@@ -26,7 +26,7 @@ def is_truly_import_only(source):
     test_funcs = [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef)) and n.name.startswith('test_')]
     if not test_funcs:
         return False
-    
+
     # Check if tests have actual assertions or just pass
     for func in test_funcs:
         for node in ast.walk(func):
@@ -36,7 +36,7 @@ def is_truly_import_only(source):
                 return False  # Has skips
             if isinstance(node, ast.Pass):
                 continue  # pass statements are OK for import-only
-    
+
     return True
 
 # Comprehensive audit
@@ -51,7 +51,7 @@ for p in Path('tests').rglob('test_*.py'):
         source = p.read_text(encoding='utf-8')
         lines = len(source.splitlines())
         module_path = extract_module_from_source(source)
-        
+
         if module_path and is_truly_import_only(source):
             import_only += 1
             if lines <= 15:
