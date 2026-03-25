@@ -440,7 +440,7 @@ class TestNoMutations:
 # ---------------------------------------------------------------------------
 
 
-# FIXED FIXTURE PATTERN: @pytest.mark.skip(reason="ADG fixture real_result_adg not yet implemented")
+# FIXED FIXTURE PATTERN: # FIXED FIXTURE PATTERN: @pytest.mark.skip(reason="ADG fixture real_result_adg not yet implemented")
 class TestSchemaValidityADG:
     """Verify ADG-accelerated guardian result conforms to contract schema."""
 
@@ -472,7 +472,7 @@ class TestSchemaValidityADG:
                 assert check.evidence["acceleration"] == "ADG_G3_inheritance_index"
 
 
-# FIXED FIXTURE PATTERN: @pytest.mark.skip(reason="ADG fixture real_result_adg not yet implemented")
+# FIXED FIXTURE PATTERN: # FIXED FIXTURE PATTERN: @pytest.mark.skip(reason="ADG fixture real_result_adg not yet implemented")
 class TestDeterministicEvidenceADG:
     """Verify ADG-accelerated evidence is deterministically ordered."""
 

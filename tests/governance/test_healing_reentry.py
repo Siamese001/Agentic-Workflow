@@ -81,7 +81,7 @@ class TestApprovalViaSeamStaticProof:
     input_data = {}  # Replace with actual test data
 
     # Act
-    # TODO: Execute load_activation_gate_called_in_smart_fix
+# TODO: Address this issue - # TODO: Execute load_activation_gate_called_in_smart_fix
     result = None  # Replace with actual execution
 
     # Assert
@@ -125,7 +125,7 @@ class TestDirectL2WritesStaticProof:
     input_data = {}  # Replace with actual test data
 
     # Act
-    # TODO: Execute get_file_io_called_in_smart_fix
+# TODO: Address this issue - # TODO: Execute get_file_io_called_in_smart_fix
     result = None  # Replace with actual execution
 
     # Assert

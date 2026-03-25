@@ -59,4 +59,4 @@ def test_negative_control_integrity():
 #    W4_NEGCTRL_TAMPER=1 pytest tests/governance/test_negative_control_exit0_tamper.py
 #    (exit code 0)
 #
-# REVIEW: Potential hidden failure - # 3. If the test were broken and passed in tamper mode, it would be marked as FAILED.
+# REVIEW: Potential hidden failure - # REVIEW: Potential hidden failure - # 3. If the test were broken and passed in tamper mode, it would be marked as FAILED.

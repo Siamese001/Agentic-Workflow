@@ -100,7 +100,7 @@ class TestDagRuntimeInspectorStructuralContract:
     runtime_context = {}  # Replace with actual runtime context
 
     # Act
-    # TODO: Execute runtime operation sets_inspection_log_prefix
+# TODO: Address this issue - # TODO: Execute runtime operation sets_inspection_log_prefix
     runtime_result = None  # Replace with actual runtime operation
 
     # Assert

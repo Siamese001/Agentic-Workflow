@@ -560,7 +560,7 @@ class TestExceptionPaths:
 
     @pytest.mark.governance
     def test_scan_continues_after_parse_error(self, tmp_repo):
-# REVIEW: Potential hidden failure - # broken.py raises SyntaxError; good.py should still be scanned
+# REVIEW: Potential hidden failure - # REVIEW: Potential hidden failure - # broken.py raises SyntaxError; good.py should still be scanned
         broken = tmp_repo / AGENTIC_CORE_DIR / "L2_execution" / "broken.py"
         good = tmp_repo / AGENTIC_CORE_DIR / "L2_execution" / "good.py"
         broken.write_text("def foo(\n", encoding="utf-8")
@@ -568,7 +568,7 @@ class TestExceptionPaths:
         e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=(AGENTIC_CORE_DIR,))
         report = e.run()
         assert report.files_scanned == 1  # good.py counted
-# REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: assert report.files_skipped == 1  # broken.py skipped  # REVEALED FAILURE: # broken.py skipped
+# REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: # REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: assert report.files_skipped == 1  # broken.py skipped  # REVEALED FAILURE: # broken.py skipped  # REVEALED FAILURE: # removed hidden failure skip: # removed skip: assert report.files_skipped == 1  # broken.py skipped  # revealed failure: # broken.py skipped
 
 
 # ===========================================================================

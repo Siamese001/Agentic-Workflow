@@ -256,7 +256,7 @@ class TestDuplicateStringConstantDetection:
     def test_syntax_error_file_skipped_gracefully(self, tmp_path):
         (tmp_path / "broken.py").write_text("def f(\n", encoding="utf-8")
         (tmp_path / "good.py").write_text('K = "v"\n', encoding="utf-8")
-# REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: # Should not raise; broken file is skipped  # REVEALED FAILURE: # should not raise; broken file is skipped
+# REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: # REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: # Should not raise; broken file is skipped  # REVEALED FAILURE: # should not raise; broken file is skipped  # REVEALED FAILURE: # removed hidden failure skip: # removed skip: # should not raise; broken file is skipped  # revealed failure: # should not raise; broken file is skipped
         viols = find_duplicate_string_constants(tmp_path)
         assert viols == []
 
@@ -410,7 +410,7 @@ class TestDuplicateSingletonClassDetectionADG:
         assert len(adg_viols) >= len(standard_viols)
 
 
-# FIXED FIXTURE PATTERN: @pytest.mark.skip(reason="ADG-accelerated functions not yet implemented: adg_query_engine/adg_scan_result fixtures missing")
+# FIXED FIXTURE PATTERN: # FIXED FIXTURE PATTERN: @pytest.mark.skip(reason="ADG-accelerated functions not yet implemented: adg_query_engine/adg_scan_result fixtures missing")
 class TestADGPerformanceValidation:
     """Validate ADG acceleration performance and correctness."""
 

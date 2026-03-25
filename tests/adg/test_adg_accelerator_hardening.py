@@ -474,7 +474,7 @@ class TestSkipFileRatchet:
                     returncode=0,
                 ),
             ):
-# REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: pass  # Would need git ls-files to return this file — skip mock complexity
+# REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: # REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: pass  # Would need git ls-files to return this file — skip mock complexity
             # Just verify the ratchet script itself exists and has the right logic
             src = (ROOT / "ops_scripts" / "ci" / "adg_skip_file_ratchet.py").read_text(encoding="utf-8")
             assert "lines[:10]" in src or "lines[:5]" in src, (

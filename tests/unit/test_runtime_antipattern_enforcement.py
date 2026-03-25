@@ -274,7 +274,7 @@ assert hasattr(runtime_result, "__dict__") or isinstance(runtime_result, (dict, 
     runtime_context = {}  # Replace with actual runtime context
 
     # Act
-    # TODO: Execute runtime operation fixture_clears_registry_after_yield
+# TODO: Address this issue - # TODO: Execute runtime operation fixture_clears_registry_after_yield
     runtime_result = None  # Replace with actual runtime operation
 
     # Assert

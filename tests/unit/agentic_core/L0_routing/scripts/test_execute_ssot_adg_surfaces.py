@@ -200,7 +200,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[5]
 # ---------------------------------------------------------------------------
 # Pre-seed the missing agentic_core.adg.runtime.execution_proof stub so that
 # importing agentic_core.adg.runtime.behavioral_index / cache_loader doesn't
-# REVIEW: Potential hidden failure - # fail when the broken __init__.py tries to import it.
+# REVIEW: Potential hidden failure - # REVIEW: Potential hidden failure - # fail when the broken __init__.py tries to import it.
 # ---------------------------------------------------------------------------
 if "agentic_core.adg.runtime.execution_proof" not in sys.modules:
     _ep_mock = MagicMock()

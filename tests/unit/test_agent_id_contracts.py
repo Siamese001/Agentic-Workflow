@@ -58,7 +58,7 @@ def _collect_execute_calls() -> tuple[list[str], list[str]]:
                     else:
                         missing.append(f"{rel}:{node.lineno}  kwargs={kws}")
             except (OSError, UnicodeDecodeError, SyntaxError) as e:
-# REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: # Skip files with parse errors - not relevant to agent_id check  # REVEALED FAILURE: # skip files with parse errors - not relevant to agent_id check
+# REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: # REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: # Skip files with parse errors - not relevant to agent_id check  # REVEALED FAILURE: # skip files with parse errors - not relevant to agent_id check  # REVEALED FAILURE: # removed hidden failure skip: # removed skip: # skip files with parse errors - not relevant to agent_id check  # revealed failure: # skip files with parse errors - not relevant to agent_id check
                 continue
     return missing, present
 

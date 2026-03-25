@@ -46,7 +46,7 @@ class MCPTestResult:
     PASS = "PASS"
     FAIL = "FAIL"
     WARN = "WARN"  # tool absent / server not running — not a code bug
-# REVIEW: Potential hidden failure - HANG = "HANG"  # timed out — definitively broken
+# REVIEW: Potential hidden failure - # REVIEW: Potential hidden failure - HANG = "HANG"  # timed out — definitively broken
 
 
 class MCPTestCase:
