@@ -4101,6 +4101,80 @@ class _ExecutionSemanticVisitor(ast.NodeVisitor):
 
 
 # ---------------------------------------------------------------------------
+# W1c: Module Definition Visitor — closes function_ratio denominator gap
+# Emits decomposes_into edges from module → every top-level function/class def.
+# This ensures the ADG has nodes for ALL definitions, not just complex ones.
+# Uses existing decomposes_into relation_type (no new edge types).
+# ---------------------------------------------------------------------------
+
+
+class _ModuleDefinitionVisitor(ast.NodeVisitor):
+    """W1c: Emit module→function/class decomposes_into for ALL definitions.
+
+    Unlike _BlockDecompositionVisitor (which only decomposes complex functions
+    into blocks), this visitor creates edges from the MODULE to every top-level
+    function and class definition. This ensures function_ratio ≈ 1.0.
+    """
+
+    def __init__(self, module_adg: str, source_file: str) -> None:
+        self.module_adg = module_adg
+        self.source_file = source_file
+        self.edges: list[Edge] = []
+        self._class_stack: list[str] = []
+
+    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+        # Emit module → class definition edge
+        parts = [self.source_file.replace("/", ".").replace("\\", ".").removesuffix(".py")]
+        parts.extend(self._class_stack)
+        parts.append(node.name)
+        class_symbol = canonical_name("Symbol", "::".join(parts))
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg,
+                relation_type="decomposes_into",
+                to_name=class_symbol,
+                edge_kind="module_definition",
+                source_file=self.source_file,
+                line_no=node.lineno,
+                symbol=node.name,
+                semantic_type="module_defines_class",
+                confidence=1.0,
+                source_span_line=node.lineno,
+                source_span_end=getattr(node, "end_lineno", node.lineno) or node.lineno,
+            )
+        )
+        # Recurse into class body for nested classes and methods
+        self._class_stack.append(node.name)
+        self.generic_visit(node)
+        self._class_stack.pop()
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+        parts = [self.source_file.replace("/", ".").replace("\\", ".").removesuffix(".py")]
+        parts.extend(self._class_stack)
+        parts.append(node.name)
+        func_symbol = canonical_name("Symbol", "::".join(parts))
+        kind = "module_defines_async_function" if isinstance(node, ast.AsyncFunctionDef) else "module_defines_function"
+        self.edges.append(
+            Edge(
+                from_name=self.module_adg,
+                relation_type="decomposes_into",
+                to_name=func_symbol,
+                edge_kind="module_definition",
+                source_file=self.source_file,
+                line_no=node.lineno,
+                symbol=node.name,
+                semantic_type=kind,
+                confidence=1.0,
+                source_span_line=node.lineno,
+                source_span_end=getattr(node, "end_lineno", node.lineno) or node.lineno,
+            )
+        )
+        # Do NOT recurse into function body — nested functions are local scope
+
+    visit_AsyncFunctionDef = visit_FunctionDef
+
+
+# ---------------------------------------------------------------------------
 # Phase 3a: Block Decomposition Visitor — closes Node Granularity gap
 # Creates block-level nodes (code_block, control_branch) with decomposes_into
 # edges. Block nodes are auto-created by the builder when they appear as edge
@@ -5689,6 +5763,11 @@ def _scan_file(
     learning_prov_visitor.visit(tree)
     edges.extend(learning_prov_visitor.edges)
 
+    # W1c: Module definition visitor — emit module→func/class decomposes_into
+    mod_def_visitor = _ModuleDefinitionVisitor(module_adg, rel)
+    mod_def_visitor.visit(tree)
+    edges.extend(mod_def_visitor.edges)
+
     # Phase 3a: Block decomposition — node granularity
     block_visitor = _BlockDecompositionVisitor(module_adg, rel)
     block_visitor.visit(tree)
@@ -5876,7 +5955,8 @@ _SEMANTIC_TYPE_MAP: dict[tuple[str, str], str] = {
     # last 2 unmapped combos
     ("layer_membership", "belongs_to_layer"): "layer_membership",
     ("import", "violates"): "layer_violation",
-    # Phase 3 edge types
+    # Phase 3 edge types + W1c module definition edges
+    ("module_definition", "decomposes_into"): "module_definition",
     ("decomposition", "decomposes_into"): "block_decomposition",
     ("test_linkage", "tests_execution_of"): "test_execution_linkage",
     ("violation_propagation", "violation_propagates_through"): "violation_trace",

@@ -1,0 +1,44 @@
+{
+  "metrics": {
+    "semantic_accuracy": 0.9870486656200942,
+    "symbol_alignment_rate": 1.0,
+    "file_ratio": 0.8931149361465852,
+    "function_ratio": 0.03541916123405325,
+    "signal_ratio": 0.8668,
+    "consistency_rate": 0.9966351386224152,
+    "synthetic_edge_count": 7112,
+    "duplicate_edge_ratio": 0.003364861377584795
+  },
+  "gates": {
+    "semantic_accuracy >= 0.99": false,
+    "symbol_alignment_rate >= 0.995": true,
+    "file_ratio in [0.95, 1.05]": false,
+    "function_ratio in [0.95, 1.05]": false,
+    "signal_ratio >= 0.90": false,
+    "consistency_rate >= 0.99": true,
+    "synthetic_edge_count == 0": false,
+    "duplicate_edge_ratio == 0": false
+  },
+  "verdict": "STRUCTURAL COVERAGE COMPLETE \u2014 SEMANTIC GAPS REMAIN",
+  "denominator_details": {
+    "ast_files": 10806,
+    "ast_functions": 67647,
+    "ast_classes": 16364,
+    "adg_unique_files": 9651,
+    "adg_function_nodes": 2396,
+    "file_ratio": 0.8931149361465852,
+    "function_ratio": 0.03541916123405325,
+    "file_pass": false,
+    "func_pass": false
+  },
+  "consistency_details": {
+    "total_edges": 891270,
+    "duplicate_groups": 2866,
+    "duplicate_edge_count": 2999,
+    "duplicate_ratio": 0.003364861377584795,
+    "orphan_edges": 0,
+    "low_confidence": 7112,
+    "consistency_rate": 0.9966351386224152
+  },
+  "elapsed_seconds": 12.667797088623047
+}
