@@ -216,7 +216,7 @@ class TestCheckTestIntegritySilentSwallower:
             """
             import pytest
 
-            @pytest.mark.xfail
+
             def test_xfail_no_strict():
                 assert False
         """,

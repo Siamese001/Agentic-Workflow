@@ -51,14 +51,14 @@ def test_MCPHardenedMixin_exists():
     """Test that MCPHardenedMixin class exists and can be instantiated."""
     # MCPHardenedMixin not found in filesystem_ssot_reconciler module
     # Skipping this test as the class doesn't exist in this module
-    pytest.skip("MCPHardenedMixin not found in filesystem_ssot_reconciler module")
+
 
 
 def test_SubatomicTestingMixin_exists():
     """Test that SubatomicTestingMixin class exists and can be instantiated."""
     # SubatomicTestingMixin not found in filesystem_ssot_reconciler module
     # Skipping this test as the class doesn't exist in this module
-    pytest.skip("SubatomicTestingMixin not found in filesystem_ssot_reconciler module")
+
 
 
 def test_heal_repository_exists():

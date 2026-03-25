@@ -641,7 +641,7 @@ class TestP5_26_HashMismatchEscalation:
             record_hash_mismatch(tracker)
         assert tracker.escalated is True
 
-    @pytest.mark.skip(
+@pytest.mark.skip(
         reason="Escalation triggers earlier than expected at THRESHOLD=0.95 — needs logic review"
     )
     def test_custom_threshold(self):

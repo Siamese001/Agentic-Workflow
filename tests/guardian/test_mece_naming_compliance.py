@@ -122,13 +122,13 @@ class TestAcronymProtection:
 
             for test_file in test_dir.rglob("test_*.py"):
                 filename = test_file.stem
-                # Check for broken acronym patterns
+# REVIEW: Potential hidden failure - # Check for broken acronym patterns
                 for acronym in PROTECTED_ACRONYMS:
                     broken_pattern = "_".join(acronym.lower())
-                    # Only flag if the broken pattern is a standalone segment
-                    # e.g., "a_t_s" is broken, but "r_g" in "grounding" is not
+# REVIEW: Potential hidden failure - # Only flag if the broken pattern is a standalone segment
+# REVIEW: Potential hidden failure - # e.g., "a_t_s" is broken, but "r_g" in "grounding" is not
                     if len(acronym) > 2 and broken_pattern in filename:
-                        # Verify it's actually a broken acronym, not part of another word
+# REVIEW: Potential hidden failure - # Verify it's actually a broken acronym, not part of another word
                         pattern_with_bounds = f"_{broken_pattern}_|^{broken_pattern}_|_{broken_pattern}$"
                         import re as regex
 

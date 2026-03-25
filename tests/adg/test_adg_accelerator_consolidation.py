@@ -714,7 +714,7 @@ class TestProductionSkipFileProtection:
         """Skip-file IS permitted in tests/ — test fixtures contain banned patterns as strings."""
         test_file = ROOT / "tests" / "adg" / "test_adg_grep_ban_gate.py"
         if not test_file.exists():
-            pytest.skip("test_adg_grep_ban_gate.py not found")
+
         content = test_file.read_text(encoding="utf-8")
         assert "adg-grep-ban: skip-file" in content, (
             "test_adg_grep_ban_gate.py should have skip-file directive "

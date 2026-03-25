@@ -75,7 +75,7 @@ def test_agent_no_redundant_subatomic_base(module_path: str) -> None:
             None,
         )
     if cls is None:
-        pytest.skip(f"No agent class found in {module_path} (package-level module)")
+
     mro_names = {c.__name__ for c in cls.__mro__}
     # Positive: SubatomicTestingMixin must be reachable via base agent MRO
     assert "SubatomicTestingMixin" in mro_names, (
@@ -102,7 +102,7 @@ def _resolve_source_path(module_path: str) -> Path:
         return pkg_init
     # Namespace package (directory exists but no __init__.py) — skip
     if candidate.is_dir():
-        pytest.skip(f"{module_path} is a namespace package (no __init__.py)")
+
     pytest.fail(f"Cannot resolve source for {module_path}: tried {py_file} and {pkg_init}")
 
 

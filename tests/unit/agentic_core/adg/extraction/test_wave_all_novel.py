@@ -60,7 +60,7 @@ _LATEST_DB = _SQLITE_CANDIDATES[0] if _SQLITE_CANDIDATES else None
 def _get_conn():
     """Return a read-only SQLite connection to the latest ADG."""
     if _LATEST_DB is None:
-        pytest.skip("No ADG SQLite found")
+
     return sqlite3.connect(f"file:{_LATEST_DB}?mode=ro", uri=True)
 
 
@@ -842,7 +842,7 @@ class TestT4EndToEnd:
         """Meta-test: run the full validation and check all 8 gates pass."""
         report_path = PROJECT_ROOT / "docs" / "reports" / "plans" / "adg_static_validation_report.json"
         if not report_path.exists():
-            pytest.skip("Validation report not found — run adg_static_validation_real.py first")
+
 
         import json
 

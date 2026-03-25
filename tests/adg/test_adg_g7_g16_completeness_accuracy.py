@@ -2036,7 +2036,7 @@ class TestA4ADGRoundTrip:
         """Scanning the runtime module itself through all G7-G16 visitors yields edges."""
         expected = _EXPECTED_SELF_EDGES[module_name]
         if expected is None:
-            pytest.skip(f"{module_name}: pure data module, no detectable call-site patterns")
+
         source = path.read_text(encoding="utf-8")
         edges = _scan_src(source)
         assert len(edges) >= expected, (

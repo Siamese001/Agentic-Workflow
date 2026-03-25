@@ -206,7 +206,7 @@ def _latest(pattern: str) -> Path | None:
 def _require(pattern: str, label: str) -> Path:
     p = _latest(pattern)
     if p is None:
-        pytest.skip(f"No {label} found in {ADG_DIR} — run generate_full_adg.py first")
+
     return p
 
 
@@ -952,7 +952,7 @@ class TestBackwardCompatibility:
         """Running multi-writer must leave the scan_result_cache.json intact."""
         cache_path = ROOT / "artifacts" / "adg" / "scan_result_cache.json"
         if not cache_path.exists():
-            pytest.skip("No scan cache present")
+
         mtime_before = cache_path.stat().st_mtime
 
         from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts

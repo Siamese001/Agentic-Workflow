@@ -260,7 +260,7 @@ class TestPhase22Comprehensive:
             # Should handle invalid paths without crashing
             result = fixer.apply_fixes_to_all_remaining_violations()
             assert 'errors' in result
-            # Invalid path should be skipped, not crash
+# REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: # Invalid path should be skipped, not crash  # REVEALED FAILURE: # invalid path should be skipped, not crash
         finally:
             os.chdir(original_cwd)
 

@@ -39,7 +39,7 @@ def test_path_constants_importable():
         assert 0 <= THRESHOLD <= 1, "THRESHOLD should be between 0 and 1"
 
     except ImportError as e:
-        pytest.skip(f"path_constants not available: {e}")
+
 
 
 @pytest.mark.smoke
@@ -102,7 +102,7 @@ def test_ssot_tier_constants_importable():
         assert len(QWEN_14B_MODEL_ID) > 0, "QWEN_14B_MODEL_ID should not be empty"
 
     except ImportError as e:
-        pytest.skip(f"ssot_tier_constants not available: {e}")
+
 
 
 @pytest.mark.smoke

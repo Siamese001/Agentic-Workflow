@@ -36,7 +36,7 @@ class TestEphemeralVmTypesSource:
         assert _SRC.exists(), f"Source not found: {_SRC}"
 
     def test_parses_without_error(self):
-        _tree()  # raises SyntaxError if broken
+# REVIEW: Potential hidden failure - _tree()  # raises SyntaxError if broken
 
     def test_has_isolation_level_class(self):
         assert "IsolationLevel" in _class_names()

@@ -308,7 +308,7 @@ class TestG9SeamEntityType:
         from agentic_core.adg.schema_util import SEAM_MODULE_PATTERNS
 
         if not SEAM_MODULE_PATTERNS:
-            pytest.skip("No SEAM_MODULE_PATTERNS defined")
+
         seam_path = SEAM_MODULE_PATTERNS[0] + "some_seam.py"
         edges = [
             _make_edge(

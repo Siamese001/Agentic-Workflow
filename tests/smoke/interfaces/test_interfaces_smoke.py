@@ -9,7 +9,7 @@ def test_interfaces_package_exposes_public_api():
     try:
         import agentic_core.interfaces as mod
     except ImportError as e:
-        pytest.skip(f"interfaces not available: {e}")
+
 
     public = [n for n in dir(mod) if not n.startswith("_")]
     assert len(public) >= 1, "interfaces package must expose public API"
@@ -21,7 +21,7 @@ def test_determinism_canonical_hash_is_deterministic():
     try:
         from agentic_core.interfaces.determinism import canonical_hash
     except ImportError as e:
-        pytest.skip(f"determinism functions not available: {e}")
+
 
     result1 = canonical_hash({"key": "value", "num": 42})
     result2 = canonical_hash({"key": "value", "num": 42})
@@ -36,7 +36,7 @@ def test_determinism_strip_nondeterministic_removes_timestamps():
     try:
         from agentic_core.interfaces.determinism import strip_nondeterministic
     except ImportError as e:
-        pytest.skip(f"determinism functions not available: {e}")
+
 
     data = {"key": "value", "timestamp": "2026-03-25T18:00:00Z"}
     result = strip_nondeterministic(data)
@@ -49,7 +49,7 @@ def test_embeddings_interface_similarity_result_is_type():
     try:
         from agentic_core.interfaces.embeddings import SimilarityResult
     except ImportError as e:
-        pytest.skip(f"embeddings interface not available: {e}")
+
 
     assert isinstance(SimilarityResult, type), "SimilarityResult should be a class"
 
@@ -63,7 +63,7 @@ def test_gateway_classes_are_types():
             SovereignLLMGateway,
         )
     except ImportError as e:
-        pytest.skip(f"gateway not available: {e}")
+
 
     assert isinstance(SovereignLLMGateway, type)
     assert isinstance(GenerationRequest, type)
@@ -78,7 +78,7 @@ def test_protocols_are_abstract_types():
         from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
         from agentic_core.interfaces.IValidatorProtocol import ValidatorProtocol
     except ImportError as e:
-        pytest.skip(f"protocols not available: {e}")
+
 
     for proto in [ValidatorProtocol, IHealerProtocol, IOrchestratorProtocol, IMemoryStoreProtocol]:
         assert isinstance(proto, type), f"{proto.__name__} should be a type"
@@ -90,7 +90,7 @@ def test_mixins_are_instantiable_protocol_stubs():
     try:
         from agentic_core.interfaces.mixins import HealerMixin, MetaLearningMixin
     except ImportError as e:
-        pytest.skip(f"mixins not available: {e}")
+
 
     for mixin in [HealerMixin, MetaLearningMixin]:
         assert isinstance(mixin, type), f"{mixin.__name__} should be a type"
@@ -104,7 +104,7 @@ def test_validators_rule_failure_is_instantiable():
     try:
         from agentic_core.interfaces.validators import RuleFailure
     except ImportError as e:
-        pytest.skip(f"validators not available: {e}")
+
 
     assert isinstance(RuleFailure, type)
     instance = RuleFailure()
@@ -118,7 +118,7 @@ def test_write_gateway_compute_replay_key_returns_string():
     try:
         from agentic_core.interfaces.write_gateway import compute_replay_key
     except ImportError as e:
-        pytest.skip(f"write gateway not available: {e}")
+
 
     result = compute_replay_key(
         plan_hash="abc123",

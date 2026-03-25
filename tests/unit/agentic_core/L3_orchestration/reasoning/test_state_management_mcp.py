@@ -12,7 +12,7 @@ def test_mcp8_add_observations_exposes_callable():
     try:
         import mcp8_add_observations as mod
     except ImportError as e:
-        pytest.skip(f"mcp8_add_observations not available: {e}")
+
 
     public = [n for n in dir(mod) if not n.startswith("_") and callable(getattr(mod, n, None))]
     assert len(public) >= 1, "mcp8_add_observations must expose at least one callable"
@@ -25,6 +25,6 @@ def test_mcp8_add_observations_no_side_effects_on_import():
 
         mod = importlib.import_module("mcp8_add_observations")
     except ImportError as e:
-        pytest.skip(f"mcp8_add_observations not available: {e}")
+
 
     assert mod.__name__ == "mcp8_add_observations"

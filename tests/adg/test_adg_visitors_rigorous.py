@@ -788,7 +788,7 @@ class TestPromptSlotVisitor:
         from agentic_core.adg.schema_util import PROMPT_FIELD_TO_SLOT
 
         if not PROMPT_FIELD_TO_SLOT:
-            pytest.skip("PROMPT_FIELD_TO_SLOT is empty")
+
         field_name = next(iter(PROMPT_FIELD_TO_SLOT))
         src = f"GovernedPayload({field_name}='content')\n"
         edges = _scan_src(src)
@@ -816,7 +816,7 @@ class TestPromptSlotVisitor:
         from agentic_core.adg.schema_util import PROMPT_FIELD_TO_SLOT
 
         if not PROMPT_FIELD_TO_SLOT:
-            pytest.skip("PROMPT_FIELD_TO_SLOT is empty")
+
         field_name = next(iter(PROMPT_FIELD_TO_SLOT))
         src = f"assembler.assemble({field_name}='v')\n"
         edges = _scan_src(src)

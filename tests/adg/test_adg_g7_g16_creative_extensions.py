@@ -603,7 +603,7 @@ class TestD5SchemaAllCoverage:
         import agentic_core.adg.schema_util as sch
 
         if not hasattr(sch, "__all__"):
-            pytest.skip("schema.py does not define __all__")
+
         missing = [n for n in self._G7_G16_CONSTANT_NAMES if n not in sch.__all__]
         assert not missing, f"G7-G16 constants missing from schema.__all__: {missing}"
 

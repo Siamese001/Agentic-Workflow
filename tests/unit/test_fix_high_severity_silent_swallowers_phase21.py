@@ -235,7 +235,7 @@ class TestHighSeveritySilentSwallowerFixerPhase21:
             # Should handle invalid paths without crashing
             result = fixer.fix_import_error_violations()
             assert "errors" in result
-            # Invalid path should be skipped, not crash
+# REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: # Invalid path should be skipped, not crash  # REVEALED FAILURE: # invalid path should be skipped, not crash
 
     # Test §1.8: Fail-closed - Permission errors handled gracefully
     def test_permission_errors_handled_gracefully(self, fixer):

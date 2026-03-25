@@ -143,7 +143,7 @@ class TestL6AgentReachability:
     def test_all_agents_reachable_or_allowlisted(self) -> None:
         agents = _collect_l6_agent_classes()
         # When budget=0 and no agents exist, the empty-unreachable assertion
-        # passes deterministically (vacuous truth).  No skip branch.
+# REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: # passes deterministically (vacuous truth).  No skip branch.
 
         # Collect all L6 symbols imported by entrypoints
         reachable: set[str] = set()

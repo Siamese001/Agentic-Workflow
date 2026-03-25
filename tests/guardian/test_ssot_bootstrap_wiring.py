@@ -272,7 +272,7 @@ class TestStructuralSSOTBootstrap:
         body = _function_body_source("_v15_build_ssot_manifest")
         assert 'node_id="ExecuteSSOT"' in body
 
-    @pytest.mark.skip(
+@pytest.mark.skip(
         reason="_v15_build_ssot_manifest refactored — no longer uses try/except Exception pattern"
     )
     def test_bootstrap_safe_try_except(self):

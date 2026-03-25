@@ -813,7 +813,7 @@ class TestEmitLayerViolationAllowed:
         from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES
 
         if not ALLOWED_LAYER_EDGES:
-            pytest.skip("No allowed layer edges defined")
+
 
         # Find a concrete (from_layer, to_layer) pair that is allowed
         fl, tl = next(iter(ALLOWED_LAYER_EDGES))
@@ -829,7 +829,7 @@ class TestEmitLayerViolationAllowed:
             "L6": "agentic_core/L6_telemetry/g.py",
         }
         if fl not in layer_to_path or tl not in layer_to_path:
-            pytest.skip(f"No path mapping for {fl}->{tl}")
+
 
         from_path = layer_to_path[fl]
         to_path = layer_to_path[tl]
@@ -875,7 +875,7 @@ class TestCheckCardinalityHighViolation:
         from agentic_core.adg.extraction.static_scanner import _CARDINALITY_RANGES, _check_cardinality
 
         if "implements" not in _CARDINALITY_RANGES:
-            pytest.skip("No implements range")
+
         _, upper = _CARDINALITY_RANGES["implements"]
         result = self._make_result_with_counts("implements", upper + 1)
         violations = _check_cardinality(result)
@@ -886,10 +886,10 @@ class TestCheckCardinalityHighViolation:
         from agentic_core.adg.extraction.static_scanner import _CARDINALITY_RANGES, _check_cardinality
 
         if "implements" not in _CARDINALITY_RANGES:
-            pytest.skip("No implements range")
+
         lower, _ = _CARDINALITY_RANGES["implements"]
         if lower == 0:
-            pytest.skip("lower bound is 0")
+
         # Zero edges for implements -> below lower bound
         result = ScanResult(edges=[], modules=[])
         violations = _check_cardinality(result)

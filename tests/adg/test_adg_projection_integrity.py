@@ -117,7 +117,7 @@ _FIXTURE_SNAPSHOT = {
 def fixture_env():
     """Create a test ADG directory with fixture SQLite + snapshot, run ingest."""
     if not _REDIS_OK:
-        pytest.skip(_SKIP_REASON)
+
 
     # Use a fixed test directory to avoid Windows temp-dir file lock issues
     test_dir = Path(__file__).resolve().parent.parent.parent / "artifacts" / "adg_test_projection"

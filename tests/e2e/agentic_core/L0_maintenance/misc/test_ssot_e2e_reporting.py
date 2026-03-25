@@ -364,14 +364,14 @@ class TestSSOTE2EReporting:
         assert "Agent3" not in engine._call_path
 
     # =========================================================================
-    # CASE 6: Broken Agent Containment (Error Isolation)
+# REVIEW: Potential hidden failure - # CASE 6: Broken Agent Containment (Error Isolation)
     # =========================================================================
     def test_e2e_06_broken_agent_containment(self, tmp_path, state_mgr, engine):
         """
         Scenario: One agent raises an unhandled exception.
         Expected: Pipeline catches it, logs error in report, and continues/finishes gracefully.
         """
-        # Mock a broken agent
+# REVIEW: Potential hidden failure - # Mock a broken agent
         broken_agent = MagicMock()
         broken_agent.run.side_effect = RuntimeError("Critical Agent Failure")
 

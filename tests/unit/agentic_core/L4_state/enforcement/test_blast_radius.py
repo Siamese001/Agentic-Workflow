@@ -43,7 +43,7 @@ class TestBlastRadiusMetricsContract:
         import dataclasses
         fields = dataclasses.fields(BlastRadiusMetrics)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert BlastRadiusMetrics.__dataclass_params__.frozen is True

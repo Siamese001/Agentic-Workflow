@@ -638,7 +638,7 @@ class TestProductionRegression:
     def _resolve_production_db(self):
         candidates = sorted(REAL_ADG_DIR.glob("adg_indexed_*.sqlite"), key=lambda p: p.stat().st_mtime, reverse=True) if REAL_ADG_DIR.exists() else []
         if not candidates:
-            pytest.skip(f"Production DB not found in {REAL_ADG_DIR}")
+
         self.db = candidates[0]
 
     def test_node_count_above_baseline(self):

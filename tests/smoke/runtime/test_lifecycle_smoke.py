@@ -76,7 +76,7 @@ def test_emitter_functions_callable():
             assert inspect.signature(emitter), f"Emitter {emitter.__name__} has no signature"
 
     except ImportError as e:
-        pytest.skip(f"emitter functions not available: {e}")
+
 
 @pytest.mark.smoke
 def test_all_exports_present():
@@ -169,4 +169,4 @@ def test_p2_p3_p4_emitters_present():
             assert callable(emitter), f"Emitter {emitter.__name__} is not callable"
 
     except ImportError as e:
-        pytest.skip(f"P2/P3/P4 emitter functions not available: {e}")
+

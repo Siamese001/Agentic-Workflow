@@ -41,7 +41,7 @@ class TestPromotionPointerUpdateContract:
         import dataclasses
         fields = dataclasses.fields(PromotionPointerUpdate)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert PromotionPointerUpdate.__dataclass_params__.frozen is True

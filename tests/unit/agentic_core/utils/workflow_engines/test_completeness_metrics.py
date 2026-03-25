@@ -42,7 +42,7 @@ class TestEvaluationMetricResultContract:
         import dataclasses
         fields = dataclasses.fields(EvaluationMetricResult)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert EvaluationMetricResult.__dataclass_params__.frozen is True
@@ -64,7 +64,7 @@ class TestEvaluationReportContract:
         import dataclasses
         fields = dataclasses.fields(EvaluationReport)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert EvaluationReport.__dataclass_params__.frozen is True
@@ -86,7 +86,7 @@ class TestEvaluationDeltaReportContract:
         import dataclasses
         fields = dataclasses.fields(EvaluationDeltaReport)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert EvaluationDeltaReport.__dataclass_params__.frozen is True
@@ -108,7 +108,7 @@ class TestRetrievalExperimentReportContract:
         import dataclasses
         fields = dataclasses.fields(RetrievalExperimentReport)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert RetrievalExperimentReport.__dataclass_params__.frozen is True
@@ -130,7 +130,7 @@ class TestChunkStrategyReportContract:
         import dataclasses
         fields = dataclasses.fields(ChunkStrategyReport)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert ChunkStrategyReport.__dataclass_params__.frozen is True
@@ -152,7 +152,7 @@ class TestCompletenessExperimentReportContract:
         import dataclasses
         fields = dataclasses.fields(CompletenessExperimentReport)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert CompletenessExperimentReport.__dataclass_params__.frozen is True

@@ -369,7 +369,7 @@ class TestLayerRankUpwardMutations:
         from agentic_core.adg.applications.guardian_prioritizer import _LAYER_RANK
 
         # L_UNKNOWN has rank -1 (should NOT be treated as higher than any real layer)
-        # but string 'L_UNKNOWN' > 'L6' -> True (broken: treats unknown as high layer)
+# REVIEW: Potential hidden failure - # but string 'L_UNKNOWN' > 'L6' -> True (broken: treats unknown as high layer)
         assert "L_UNKNOWN" > "L6"  # string compare is wrong for this case
         assert _LAYER_RANK["L_UNKNOWN"] < _LAYER_RANK["L0"]  # rank compare is correct
 

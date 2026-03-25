@@ -402,7 +402,7 @@ class TestCanonicalManifest:
     def test_manifest_on_real_adg_dir(self):
         """Manifest generation against real ADG dir should produce artifacts."""
         if not REAL_ADG_DIR.exists():
-            pytest.skip("Production ADG dir not found")
+
         mod = importlib.import_module("scripts.emit_canonical_artifact_manifest")
         if hasattr(mod, "ADGCanonicalManifestGenerator"):
             gen = mod.ADGCanonicalManifestGenerator(REAL_ADG_DIR)
@@ -413,7 +413,7 @@ class TestCanonicalManifest:
     def test_manifest_deterministic(self):
         """Running manifest twice on same dir must produce same digest."""
         if not REAL_ADG_DIR.exists():
-            pytest.skip("Production ADG dir not found")
+
         mod = importlib.import_module("scripts.emit_canonical_artifact_manifest")
         if hasattr(mod, "ADGCanonicalManifestGenerator"):
             gen1 = mod.ADGCanonicalManifestGenerator(REAL_ADG_DIR)
@@ -658,7 +658,7 @@ class TestProductionDeep:
     def _resolve_production(self):
         candidates = sorted(REAL_ADG_DIR.glob("adg_indexed_*.sqlite"), key=lambda p: p.stat().st_mtime, reverse=True) if REAL_ADG_DIR.exists() else []
         if not candidates:
-            pytest.skip("Production DB not found")
+
         self.db = candidates[0]
         self.adg_dir = REAL_ADG_DIR
 

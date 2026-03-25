@@ -516,7 +516,7 @@ class TestHealRepository:
     {
         "violations_found": int,
         "violations_fixed": int,
-        "status": str,  # 'PASS', 'FAIL', 'ERROR', 'SKIPPED'
+# REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: "status": str,  # 'PASS', 'FAIL', 'ERROR', 'SKIPPED'  # REVEALED FAILURE: # 'pass', 'fail', 'error', 'skipped
         "errors": int,
         "skipped": int,
         "execution_time_ms": float,

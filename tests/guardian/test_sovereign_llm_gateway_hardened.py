@@ -581,7 +581,7 @@ class TestProviderDegradedMode:
         gw._update_provider_health("openai", success=True)
         assert gw.get_provider_health("openai").consecutive_failures == 0
 
-    @pytest.mark.skip(
+@pytest.mark.skip(
         reason="Gateway raises RuntimeError not SovereigntyViolation — needs production code refactor"
     )
     def test_all_providers_failed_raises_sovereignty_violation(self):

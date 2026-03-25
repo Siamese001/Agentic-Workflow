@@ -434,7 +434,7 @@ class TestPhase2HealLoop:
         try:
             return importlib.import_module("agentic_core.L0_routing.scripts.execute_ssot")
         except ImportError as e:
-            pytest.skip(f"execute_ssot unavailable: {e}")
+
 
     def _make_ctx(self, heal=True):
         ctx = MagicMock()
@@ -593,7 +593,7 @@ class TestPhase3HierarchyHealerE2E:
         try:
             return importlib.import_module("agentic_core.L0_routing.scripts.execute_ssot")
         except ImportError as e:
-            pytest.skip(f"execute_ssot unavailable: {e}")
+
 
     def _make_de(self, mod, allow=True):
         de = MagicMock(spec=mod.SovereignDecisionEngine)
@@ -786,7 +786,7 @@ class TestRootHygieneHealerE2E:
         try:
             mod = importlib.import_module("agentic_core.L0_routing.scripts.execute_ssot")
         except ImportError as e:
-            pytest.skip(f"execute_ssot unavailable: {e}")
+
 
         bridge = _mock_bridge()
         sm = _fake_state()

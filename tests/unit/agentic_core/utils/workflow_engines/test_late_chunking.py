@@ -41,7 +41,7 @@ class TestLateChunkingProfileContract:
         import dataclasses
         fields = dataclasses.fields(LateChunkingProfile)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert LateChunkingProfile.__dataclass_params__.frozen is True
@@ -63,7 +63,7 @@ class TestLateChunkManifestContract:
         import dataclasses
         fields = dataclasses.fields(LateChunkManifest)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert LateChunkManifest.__dataclass_params__.frozen is True

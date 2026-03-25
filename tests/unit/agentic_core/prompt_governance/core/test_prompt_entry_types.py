@@ -42,7 +42,7 @@ class TestPromptEntryContract:
         import dataclasses
         fields = dataclasses.fields(PromptEntry)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert PromptEntry.__dataclass_params__.frozen is True
@@ -64,7 +64,7 @@ class TestPromptConstitutionContract:
         import dataclasses
         fields = dataclasses.fields(PromptConstitution)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert PromptConstitution.__dataclass_params__.frozen is True

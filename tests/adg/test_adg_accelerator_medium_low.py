@@ -704,7 +704,7 @@ class TestYamlGrepBanGate:
         """guardian-tests.yml uses grep -q . as pipe-has-content idiom — must have exemption."""
         wf = ROOT / ".github" / "workflows" / "guardian-tests.yml"
         if not wf.exists():
-            pytest.skip("guardian-tests.yml not found")
+
         content = wf.read_text(encoding="utf-8")
         assert "guardian: allow-grep-yaml" in content, (
             "guardian-tests.yml must have # guardian: allow-grep-yaml -- <justification> "

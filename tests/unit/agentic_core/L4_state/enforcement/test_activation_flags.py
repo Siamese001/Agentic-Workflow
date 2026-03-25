@@ -44,7 +44,7 @@ class TestActivationFlagsContract:
         import dataclasses
         fields = dataclasses.fields(ActivationFlags)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert ActivationFlags.__dataclass_params__.frozen is True
@@ -66,7 +66,7 @@ class TestActivationProofContract:
         import dataclasses
         fields = dataclasses.fields(ActivationProof)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert ActivationProof.__dataclass_params__.frozen is True

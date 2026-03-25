@@ -487,7 +487,7 @@ class TestUnifiedForensicAudit:
         "StructureEnforcerAgent",
     }
 
-    @pytest.mark.skip(
+@pytest.mark.skip(
         reason="Lifecycle wiring introduced structural validation patterns in agents — needs separate remediation"
     )
     def test_structural_validation_violations(self, audit_result, scanner, report_builder):
@@ -558,7 +558,7 @@ class TestUnifiedForensicAudit:
                 + "\n".join(f"  - {v['agent']}: {v['pattern']}" for v in violations[:10]),
             )
 
-    @pytest.mark.skip(
+@pytest.mark.skip(
         reason="Depends on structural validation — lifecycle wiring introduced patterns that need separate remediation"
     )
     def test_no_critical_ai_checking_ai_violations(self, audit_result, report_builder):

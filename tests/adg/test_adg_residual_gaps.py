@@ -712,7 +712,7 @@ class TestEmitLayerViolationEdges:
             if violating_pair:
                 break
         if violating_pair is None:
-            pytest.skip("No violating layer pair found")
+
 
         from_path, to_path = violating_pair
         to_symbol = to_path.replace("/", ".").replace(".py", "")
@@ -725,7 +725,7 @@ class TestEmitLayerViolationEdges:
         from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES
 
         if not ALLOWED_LAYER_EDGES:
-            pytest.skip("No ALLOWED_LAYER_EDGES defined")
+
         fl, tl = next(iter(ALLOWED_LAYER_EDGES))
         layer_to_path = {
             "L0": "agentic_core/L0_routing/a.py",
@@ -737,7 +737,7 @@ class TestEmitLayerViolationEdges:
             "L6": "agentic_core/L6_runtime/g.py",
         }
         if fl not in layer_to_path or tl not in layer_to_path:
-            pytest.skip(f"No path mapping for {fl}->{tl}")
+
         from_path = layer_to_path[fl]
         to_symbol = layer_to_path[tl].replace("/", ".").replace(".py", "")
         result = self._result_with_import(from_path, to_symbol)
@@ -765,7 +765,7 @@ class TestEmitLayerViolationEdges:
             if violating_pair:
                 break
         if violating_pair is None:
-            pytest.skip("No violating pair found")
+
         from_path, to_path = violating_pair
         to_symbol1 = to_path.replace("/", ".").replace(".py", "") + ".Alpha"
         to_symbol2 = to_path.replace("/", ".").replace(".py", "") + ".Beta"
@@ -887,7 +887,7 @@ class TestCheckEvidenceFloors:
         )
 
         if not _MIN_EVIDENCE_FLOORS:
-            pytest.skip("No evidence floors defined")
+
         # Use an empty result — all floors will be 0
         result = ScanResult(edges=[], modules=[])
         # If any floor > 0, check returns False
@@ -919,7 +919,7 @@ class TestCheckCardinality:
         )
 
         if not _CARDINALITY_RANGES:
-            pytest.skip("No cardinality ranges defined")
+
         relation, (lo, hi) = next(iter(_CARDINALITY_RANGES.items()))
         # Create hi+1 edges to trigger HIGH violation
         edges = [
@@ -946,7 +946,7 @@ class TestCheckCardinality:
         )
 
         if not _CARDINALITY_RANGES:
-            pytest.skip("No cardinality ranges defined")
+
         # find a relation with lo > 0
         target_rel = None
         for relation, (lo, hi) in _CARDINALITY_RANGES.items():
@@ -954,7 +954,7 @@ class TestCheckCardinality:
                 target_rel = relation
                 break
         if target_rel is None:
-            pytest.skip("No cardinality range with lo > 0")
+
         result = ScanResult(edges=[], modules=[])
         violations = _check_cardinality(result)
         low_violations = [v for v in violations if "CARDINALITY LOW" in v and target_rel in v]

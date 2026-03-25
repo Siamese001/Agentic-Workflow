@@ -48,7 +48,7 @@ class TestDPOPairContract:
         import dataclasses
         fields = dataclasses.fields(DPOPair)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert DPOPair.__dataclass_params__.frozen is True
@@ -77,7 +77,7 @@ class TestDPOBoundingPolicyContract:
         import dataclasses
         fields = dataclasses.fields(DPOBoundingPolicy)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert DPOBoundingPolicy.__dataclass_params__.frozen is True

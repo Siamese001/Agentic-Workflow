@@ -582,11 +582,11 @@ class TestDigestDeterminismAndTamper:
     def test_negctrl_tamper_changes_digest_xfail(self):
         """Intentionally fails when SSOT_ORCH_NEGCTRL_TAMPER=1.
 
-        Normal run (env unset): test is skipped via pytest.skip().
+Normal run (env unset): test is skipped via pytest.skip().
         Tamper run (env=1):     assertion fails intentionally → xfail(strict=True) → exit 0.
         """
         if os.environ.get("SSOT_ORCH_NEGCTRL_TAMPER", "0") != "1":
-            pytest.skip("SSOT_ORCH_NEGCTRL_TAMPER not set; tamper negative-control inactive")
+
 
         clean = self._clean_digest()
         tampered = self._tampered_digest()

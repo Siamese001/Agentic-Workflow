@@ -129,9 +129,9 @@ def test_no_assertion_free_smoke_tests():
         for func_name, func_node in _extract_test_functions(tree):
             # Allow parametrized tests (the assert may be in the body after skip)
             if _count_assertions(func_node) == 0:
-                # Check if it uses pytest.skip or pytest.fail
+# Check if it uses pytest.skip or pytest.fail
                 src_lines = ast.get_source_segment(source, func_node) or ""
-                if "pytest.skip" not in src_lines and "pytest.fail" not in src_lines:
+if "pytest.skip" not in src_lines and "pytest.fail" not in src_lines:
                     rel = filepath.relative_to(SMOKE_DIR)
                     violations.append(f"{rel}::{func_name}")
 

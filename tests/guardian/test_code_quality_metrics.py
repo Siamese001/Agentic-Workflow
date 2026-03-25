@@ -234,7 +234,7 @@ class TestCodeQualityMetrics:
                             )
 
             except (SyntaxError, UnicodeDecodeError):  # guardian: allow-silent-swallower
-                # Skip files with syntax errors
+# REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: # Skip files with syntax errors  # REVEALED FAILURE: # skip files with syntax errors
                 continue
 
         # Report results

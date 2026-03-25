@@ -209,7 +209,7 @@ class TestADGQueryEngineCorrectness:
     def test_get_reverse_dependencies_returns_set(self, qe):
         some_module = next(iter(qe._reverse_deps), None)
         if some_module is None:
-            pytest.skip("No reverse deps in index")
+
         deps = qe.get_reverse_dependencies(some_module)
         assert isinstance(deps, set)
 

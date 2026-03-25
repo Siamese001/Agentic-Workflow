@@ -268,7 +268,7 @@ class TestGoldenDataset:
     def test_binary_golden_precision(self, examples, example_id):
         ex = next(e for e in examples if e["id"] == example_id)
         if "expected" not in ex or "precision" not in ex["expected"]:
-            pytest.skip("No precision in expected")
+
         m = BinaryClassificationMetric(positive_label=ex["positive_label"], metric="precision")
         score = m.compute(ex["predictions"], ex["ground_truth"])
         assert abs(score - ex["expected"]["precision"]) < 1e-4, (
@@ -287,7 +287,7 @@ class TestGoldenDataset:
     def test_binary_golden_recall(self, examples, example_id):
         ex = next(e for e in examples if e["id"] == example_id)
         if "expected" not in ex or "recall" not in ex["expected"]:
-            pytest.skip("No recall in expected")
+
         m = BinaryClassificationMetric(positive_label=ex["positive_label"], metric="recall")
         score = m.compute(ex["predictions"], ex["ground_truth"])
         assert abs(score - ex["expected"]["recall"]) < 1e-4
@@ -305,7 +305,7 @@ class TestGoldenDataset:
     def test_binary_golden_f1(self, examples, example_id):
         ex = next(e for e in examples if e["id"] == example_id)
         if "expected" not in ex or "f1" not in ex["expected"]:
-            pytest.skip("No f1 in expected")
+
         m = F1Score(positive_label=ex["positive_label"])
         score = m.compute(ex["predictions"], ex["ground_truth"])
         assert abs(score - ex["expected"]["f1"]) < 1e-4

@@ -495,7 +495,7 @@ class TestEnforceTestsStructureViolations:
                 agent,
                 tmp_path,
                 [
-                    ("unit/test_good.py", "def test_good(): pass"),  # valid → skip
+# REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: ("unit/test_good.py", "def test_good(): pass"),  # valid → skip
                     ("support/conftest.py", "import pytest"),  # infra in approved → skip
                     ("__init__.py", ""),  # dunder → skip
                     ("conftest.py", ""),  # whitelist → skip

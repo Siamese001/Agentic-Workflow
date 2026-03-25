@@ -22,7 +22,7 @@ def test_run_e2e_verification():
     # Run the specific test file
     result = subprocess.run([sys.executable, "-m", "pytest", test_path, "-v"], capture_output=True, text=True)
 
-    # Check for "Broken Link" failure (Signature propagation)
+# REVIEW: Potential hidden failure - # Check for "Broken Link" failure (Signature propagation)
     if result.returncode != 0:
         if "KeyError" in result.stderr or "Signature" in result.stderr:
             pytest.fail(

@@ -361,7 +361,7 @@ with pytest.raises(Exception):"""
             # Should handle invalid paths without crashing
             result = fixer.apply_fixes_to_all_remaining_violations()
             assert 'errors' in result
-            # Invalid path should be skipped, not crash
+# REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: # Invalid path should be skipped, not crash  # REVEALED FAILURE: # invalid path should be skipped, not crash
 
     # Test §1.8: Fail-closed - Permission errors handled gracefully
     def test_permission_errors_handled_gracefully(self, fixer):
@@ -450,7 +450,7 @@ with pytest.raises(Exception):"""
             assert 'completion_percentage' in report
             assert report['phase'] == '2.2'
         else:
-            pytest.skip("generate_systematic_fix_report not yet implemented")
+
 
 
 class TestPhase22Integration:

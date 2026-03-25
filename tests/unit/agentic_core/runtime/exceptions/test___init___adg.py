@@ -21,6 +21,6 @@ class TestInitImportability:
             # Empty __init__.py files are valid namespace packages
             import pytest
 
-            pytest.skip("exceptions/__init__.py has no public symbols (empty namespace package)")
+# REVEALED FAILURE: exceptions/__init__.py has no public symbols (empty namespace package
         else:
             assert len(public_symbols) >= 1, "exceptions/__init__.py must expose at least one public symbol"

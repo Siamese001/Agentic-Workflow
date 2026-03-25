@@ -39,7 +39,7 @@ class TestFloatConstraintContract:
         import dataclasses
         fields = dataclasses.fields(FloatConstraint)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert FloatConstraint.__dataclass_params__.frozen is True
@@ -61,7 +61,7 @@ class TestIntConstraintContract:
         import dataclasses
         fields = dataclasses.fields(IntConstraint)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert IntConstraint.__dataclass_params__.frozen is True
@@ -83,7 +83,7 @@ class TestPointerConstraintContract:
         import dataclasses
         fields = dataclasses.fields(PointerConstraint)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert PointerConstraint.__dataclass_params__.frozen is True

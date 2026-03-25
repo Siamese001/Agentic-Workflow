@@ -107,37 +107,37 @@ class TestMlMetricsScenariosPass:
     def test_binary_precision_perfect_score_is_one(self):
         result = self._run("binary_precision_perfect")
         if result.outcome == ScenarioOutcome.SKIP:
-            pytest.skip("agentic_core.evaluation not available")
+
         assert result.score == 1.0
 
     def test_binary_recall_perfect_score_is_one(self):
         result = self._run("binary_recall_perfect")
         if result.outcome == ScenarioOutcome.SKIP:
-            pytest.skip("agentic_core.evaluation not available")
+
         assert result.score == 1.0
 
     def test_binary_f1_harmonic_mean_score_is_one(self):
         result = self._run("binary_f1_harmonic_mean")
         if result.outcome == ScenarioOutcome.SKIP:
-            pytest.skip("agentic_core.evaluation not available")
+
         assert result.score == 1.0
 
     def test_multiclass_macro_f1_score_is_one(self):
         result = self._run("multiclass_macro_f1")
         if result.outcome == ScenarioOutcome.SKIP:
-            pytest.skip("agentic_core.evaluation not available")
+
         assert result.score == 1.0
 
     def test_multiclass_weighted_f1_score_is_one(self):
         result = self._run("multiclass_weighted_f1")
         if result.outcome == ScenarioOutcome.SKIP:
-            pytest.skip("agentic_core.evaluation not available")
+
         assert result.score >= 0.9
 
     def test_confusion_matrix_invariants_score_is_one(self):
         result = self._run("confusion_matrix_invariants")
         if result.outcome == ScenarioOutcome.SKIP:
-            pytest.skip("agentic_core.evaluation not available")
+
         assert result.score == 1.0
 
 

@@ -39,7 +39,7 @@ class TestCapabilityTokenSubjectContract:
         import dataclasses
         fields = dataclasses.fields(CapabilityTokenSubject)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert CapabilityTokenSubject.__dataclass_params__.frozen is True
@@ -61,7 +61,7 @@ class TestCapabilityConstraintsContract:
         import dataclasses
         fields = dataclasses.fields(CapabilityConstraints)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert CapabilityConstraints.__dataclass_params__.frozen is True
@@ -83,7 +83,7 @@ class TestCapabilityTokenArtifactContract:
         import dataclasses
         fields = dataclasses.fields(CapabilityTokenArtifact)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert CapabilityTokenArtifact.__dataclass_params__.frozen is True
@@ -105,7 +105,7 @@ class TestCapabilityDecisionArtifactContract:
         import dataclasses
         fields = dataclasses.fields(CapabilityDecisionArtifact)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert CapabilityDecisionArtifact.__dataclass_params__.frozen is True

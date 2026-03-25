@@ -46,7 +46,7 @@ class TestEmissionRecordContract:
         import dataclasses
         fields = dataclasses.fields(EmissionRecord)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert EmissionRecord.__dataclass_params__.frozen is True
@@ -68,7 +68,7 @@ class TestBlastRadiusConfigContract:
         import dataclasses
         fields = dataclasses.fields(BlastRadiusConfig)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert BlastRadiusConfig.__dataclass_params__.frozen is True
@@ -90,7 +90,7 @@ class TestActivationFlagsContract:
         import dataclasses
         fields = dataclasses.fields(ActivationFlags)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert ActivationFlags.__dataclass_params__.frozen is True

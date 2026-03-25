@@ -464,7 +464,7 @@ class TestCallVisitorBranches:
         from agentic_core.adg.schema_util import WRITE_SIDE_EFFECT_EXCLUSIONS
 
         if not WRITE_SIDE_EFFECT_EXCLUSIONS:
-            pytest.skip("No exclusions defined")
+
         sym = next(iter(WRITE_SIDE_EFFECT_EXCLUSIONS))
         # Call as bare name
         edges = self._visit(f"{sym}()\n")
@@ -487,7 +487,7 @@ class TestCallVisitorBranches:
         from agentic_core.adg.schema_util import PROVIDER_SDK_SYMBOLS
 
         if not PROVIDER_SDK_SYMBOLS:
-            pytest.skip("No provider SDK symbols")
+
         sym = next(iter(PROVIDER_SDK_SYMBOLS))
         base = sym.split(".")[0]
         src = f"{base}.something.create()\n"
@@ -736,7 +736,7 @@ class TestPromptSlotSymBranch:
         from agentic_core.adg.schema_util import PROMPT_FIELD_TO_SLOT
 
         if not PROMPT_FIELD_TO_SLOT:
-            pytest.skip("No PROMPT_FIELD_TO_SLOT entries")
+
         kwarg = next(iter(PROMPT_FIELD_TO_SLOT))
         src = f"builder.assemble({kwarg}='hello')\n"
         edges = self._visit(src)
@@ -846,7 +846,7 @@ class TestIterPythonFiles:
 
         repo = Path("C:/Git/Agentic-Workflow")
         if not repo.exists():
-            pytest.skip("Repo root not found at expected path")
+
         files = list(_iter_python_files(repo))
         assert len(files) > 0
         assert all(str(f).endswith(".py") for f in files)
@@ -858,7 +858,7 @@ class TestIterPythonFiles:
 
         repo = Path("C:/Git/Agentic-Workflow")
         if not repo.exists():
-            pytest.skip("Repo root not found")
+
         files = list(_iter_python_files(repo))
         for f in files:
             parts = set(f.parts)
@@ -1289,7 +1289,7 @@ class TestBuilderStructuralMetrics:
             if violating:
                 break
         if violating is None:
-            pytest.skip("No violating layer pair found")
+
 
         from_path, to_path = violating
         edge = Edge(

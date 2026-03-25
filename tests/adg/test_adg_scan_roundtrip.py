@@ -640,7 +640,7 @@ class TestPopulateModuleEntities:
         from agentic_core.adg.schema_util import SEAM_MODULE_PATTERNS
 
         if not SEAM_MODULE_PATTERNS:
-            pytest.skip("No SEAM_MODULE_PATTERNS")
+
         seam_path = SEAM_MODULE_PATTERNS[0] + "my_seam.py"
         artifact = self._build(modules=[seam_path])
         seam_ents = [e for e in artifact.entities if seam_path in e.resolved_path]

@@ -40,7 +40,7 @@ class TestEfficiencyBottleneckContract:
         import dataclasses
         fields = dataclasses.fields(EfficiencyBottleneck)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert EfficiencyBottleneck.__dataclass_params__.frozen is True
@@ -62,7 +62,7 @@ class TestEfficiencyReportContract:
         import dataclasses
         fields = dataclasses.fields(EfficiencyReport)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert EfficiencyReport.__dataclass_params__.frozen is True

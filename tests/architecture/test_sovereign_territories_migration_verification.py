@@ -271,7 +271,7 @@ class TestFilesMigration:
         repo_root = Path(__file__).parent.parent.parent
         file_path = repo_root / test_file
         if not file_path.exists():
-            pytest.skip(f"File not found: {test_file}")
+
 
         content = file_path.read_text(encoding="utf-8")
 
@@ -342,7 +342,7 @@ class TestADGVerification:
 
         dbs = sorted(adg_dir.glob("adg_indexed_*.sqlite"))
         if not dbs:
-            pytest.skip("No ADG SQLite database found")
+
 
         db_path = dbs[-1]
         conn = sqlite3.connect(str(db_path))

@@ -140,7 +140,7 @@ class TestIgnoreListGovernance:
             has_ref = any(_TICKET_REF_PATTERN.search(line) and stem in line for line in section.splitlines())
             assert has_ref, (
                 f"Ignore entry '{entry}' has no TODO(#<id>) ticket reference. "
-                f"Add a comment like: # TODO(#123): fix {entry} (<reason>)"
+# TODO: Address this issue - f"Add a comment like: # TODO(#123): fix {entry} (<reason>)"
             )
 
 

@@ -42,7 +42,7 @@ class TestTierMetricsContract:
         import dataclasses
         fields = dataclasses.fields(TierMetrics)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert TierMetrics.__dataclass_params__.frozen is True
@@ -64,7 +64,7 @@ class TestFlipMetricsContract:
         import dataclasses
         fields = dataclasses.fields(FlipMetrics)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert FlipMetrics.__dataclass_params__.frozen is True
@@ -86,7 +86,7 @@ class TestPathDMetricsContract:
         import dataclasses
         fields = dataclasses.fields(PathDMetrics)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert PathDMetrics.__dataclass_params__.frozen is True

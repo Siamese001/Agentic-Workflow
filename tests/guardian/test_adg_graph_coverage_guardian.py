@@ -368,7 +368,7 @@ class TestTestTraceabilityGraph:
         covers_count = scan_result.manifest.test_covers_count
         total = scan_result.manifest.parsed_module_count
         if total == 0:
-            pytest.skip("No modules parsed")
+
         ratio = covers_count / total
         assert ratio >= 0.01, (
             f"Too few covers edges relative to module count: "
@@ -387,7 +387,7 @@ class TestPromptSlotGraph:
         """E20: generates_prompt to_name must follow ADG::PromptSlot:: prefix."""
         gen_edges = [e for e in scan_result.edges if e.relation_type == "generates_prompt"]
         if not gen_edges:
-            pytest.skip("No generates_prompt edges in repo — visitor correctness tested in unit tests")
+
         bad = [e for e in gen_edges if not e.to_name.startswith("ADG::PromptSlot::")]
         assert bad == [], (
             f"{len(bad)} generates_prompt edges have wrong to_name prefix: "
@@ -398,7 +398,7 @@ class TestPromptSlotGraph:
         """E20: consumes_prompt to_name must follow ADG::PromptTemplate:: prefix."""
         con_edges = [e for e in scan_result.edges if e.relation_type == "consumes_prompt"]
         if not con_edges:
-            pytest.skip("No consumes_prompt edges in repo — visitor correctness tested in unit tests")
+
         bad = [e for e in con_edges if not e.to_name.startswith("ADG::PromptTemplate::")]
         assert bad == [], (
             f"{len(bad)} consumes_prompt edges have wrong to_name prefix: "
@@ -431,7 +431,7 @@ class TestScannerWiring:
         total = scan_result.manifest.parsed_module_count
         failures = scan_result.manifest.syntax_error_count
         if total == 0:
-            pytest.skip("No modules parsed")
+
         rate = failures / total
         assert rate < 0.01, (
             f"Parse failure rate too high: {failures}/{total} = {rate:.1%}"

@@ -355,7 +355,7 @@ with pytest.raises(_SCENARIO_EXCEPTIONS):"""
             # Should be identical
             assert strategy1 == strategy2
         else:
-            pytest.skip("_determine_exception_fix_strategy not yet implemented")
+# REVEALED FAILURE: _determine_exception_fix_strategy not yet implemented
 
     # Test §1.8: Fail-closed - Invalid file paths blocked
     def test_invalid_file_paths_blocked(self, temp_workspace, sample_low_violations):
@@ -383,7 +383,7 @@ with pytest.raises(_SCENARIO_EXCEPTIONS):"""
             # Should handle invalid paths without crashing
             result = fixer.apply_fixes_to_all_remaining_violations()
             assert 'errors' in result
-            # Invalid path should be skipped, not crash
+# REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: # Invalid path should be skipped, not crash  # REVEALED FAILURE: # invalid path should be skipped, not crash
         finally:
             os.chdir(original_cwd)
 
@@ -432,7 +432,7 @@ with pytest.raises(_SCENARIO_EXCEPTIONS):"""
                 assert 'action' in strategy
                 # Should detect specific strategy for exception type
         else:
-            pytest.skip("_determine_exception_fix_strategy not yet implemented")
+# REVEALED FAILURE: _determine_exception_fix_strategy not yet implemented
 
     # Test §1.6: Exception Analysis - Proper specific exception replacement
     def test_specific_exception_replacement(self, fixer):
@@ -450,7 +450,7 @@ with pytest.raises(_SCENARIO_EXCEPTIONS):"""
             assert "# guardian:" in new_handler or "# Syntax errors" in new_handler
             assert new_handler != original_line
         else:
-            pytest.skip("_create_targeted_exception_handler not yet implemented")
+# REVEALED FAILURE: _create_targeted_exception_handler not yet implemented
 
     # Test systematic application function
     def test_apply_fixes_to_all_remaining_violations(self, fixer):
@@ -481,7 +481,7 @@ with pytest.raises(_SCENARIO_EXCEPTIONS):"""
             assert 'completion_percentage' in report
             assert report['phase'] == '2.3'
         else:
-            pytest.skip("generate_systematic_fix_report not yet implemented")
+
 
 
 class TestPhase23Integration:

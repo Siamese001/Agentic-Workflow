@@ -11,7 +11,7 @@ def test_embeddings_package_has_known_submodules():
 
         spec = importlib.util.find_spec("agentic_core.embeddings.embedding_factory")
     except (ImportError, ModuleNotFoundError) as e:
-        pytest.skip(f"embeddings not available: {e}")
+
 
     assert spec is not None, "agentic_core.embeddings.embedding_factory must be discoverable"
 
@@ -26,7 +26,7 @@ def test_embedding_factory_error_hierarchy():
             EmbeddingSovereigntyViolationError,
         )
     except ImportError as e:
-        pytest.skip(f"EmbeddingClient not available: {e}")
+
 
     assert issubclass(EmbeddingDisabledError, Exception)
     assert issubclass(EmbeddingSovereigntyViolationError, Exception)
@@ -51,7 +51,7 @@ def test_embedding_input_guard_is_class():
     try:
         from agentic_core.embeddings.embedding_input_guard import EmbeddingInputGuard
     except ImportError as e:
-        pytest.skip(f"EmbeddingInputGuard not available: {e}")
+
 
     assert isinstance(EmbeddingInputGuard, type), "EmbeddingInputGuard should be a class"
 
@@ -62,6 +62,6 @@ def test_tokenization_adapter_is_class():
     try:
         from agentic_core.embeddings.tokenization_adapter import TokenCountAdapter
     except ImportError as e:
-        pytest.skip(f"TokenCountAdapter not available: {e}")
+
 
     assert isinstance(TokenCountAdapter, type), "TokenCountAdapter should be a class"

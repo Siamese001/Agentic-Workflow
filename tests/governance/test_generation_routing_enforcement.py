@@ -360,7 +360,7 @@ def test_no_direct_sdk_imports_in_agents():
             continue
 
         for py_file in agent_path.rglob("*.py"):
-            # Skip allowlist modules and known exceptions
+# REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: # Skip allowlist modules and known exceptions  # REVEALED FAILURE: # skip allowlist modules and known exceptions
             if any(
                 allowed in str(py_file)
                 for allowed in [
@@ -385,7 +385,7 @@ def test_no_direct_sdk_imports_in_agents():
                     violations.append(f"{py_file}: Direct VertexAI import")
 
             except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallower
-                pass  # Skip files that can't be read
+# REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: pass  # Skip files that can't be read
 
     # Log violations but don't fail - this is an audit, not enforcement yet
     if violations:

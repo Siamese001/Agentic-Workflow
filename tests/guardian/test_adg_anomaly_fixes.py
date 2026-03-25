@@ -252,7 +252,7 @@ pytestmark = pytest.mark.guardian
 def _parse(path: Path) -> ast.Module:
     """Return AST module, skip test if file is absent."""
     if not path.exists():
-        pytest.skip(f"source file not found: {path}")
+
     return ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
 
 
@@ -299,7 +299,7 @@ def _any_fragment(tree: ast.Module, fragment: str) -> list[int]:
 
 def _src(path: Path) -> str:
     if not path.exists():
-        pytest.skip(f"source file not found: {path}")
+
     return path.read_text(encoding="utf-8", errors="replace")
 
 

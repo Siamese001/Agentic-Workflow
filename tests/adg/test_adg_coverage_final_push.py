@@ -732,7 +732,7 @@ class TestEmitLayerViolationAllowedEdge:
         from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, LAYER_PREFIXES
 
         if not ALLOWED_LAYER_EDGES:
-            pytest.skip("No allowed edges defined")
+
 
         # Find a layer pair in ALLOWED_LAYER_EDGES and map to real paths
         from_layer, to_layer = next(iter(ALLOWED_LAYER_EDGES))
@@ -749,7 +749,7 @@ class TestEmitLayerViolationAllowedEdge:
                 break
 
         if not from_prefix or not to_prefix:
-            pytest.skip(f"No path mapping for {from_layer}->{to_layer}")
+
 
         from agentic_core.adg.schema_util import canonical_name
 
@@ -797,7 +797,7 @@ class TestCheckCardinalityHighActual:
                 break
 
         if target_relation is None:
-            pytest.skip("No bounded relation found")
+
 
         # Create upper_bound+1 edges for target_relation
         edges = [
@@ -853,7 +853,7 @@ class TestScanViolationAndCycleDigestUpdate:
         forbidden = all_pairs - set(ALLOWED_LAYER_EDGES)
 
         if not forbidden:
-            pytest.skip("All layer pairs are allowed")
+
 
         from_layer, to_layer = next(iter(forbidden))
 
@@ -861,7 +861,7 @@ class TestScanViolationAndCycleDigestUpdate:
         from_prefix = next((p for p, l in LAYER_PREFIXES.items() if l == from_layer), None)
         to_prefix = next((p for p, l in LAYER_PREFIXES.items() if l == to_layer), None)
         if not from_prefix or not to_prefix:
-            pytest.skip(f"Cannot find prefix for {from_layer} or {to_layer}")
+
 
         # Create files under tmp_path that mimic those layer paths
         from_dir = tmp_path / from_prefix
@@ -1195,7 +1195,7 @@ class TestScanPostPassViaFullScan:
                     break
 
         if not chosen:
-            pytest.skip("Could not find forbidden pair with resolvable prefixes")
+
 
         from_layer, to_layer, from_prefix, to_prefix, sym = chosen
         from_mod = _mod(f"{from_prefix}/mod.py")
@@ -1339,13 +1339,13 @@ class TestRemainingBranchGaps:
         from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, LAYER_PREFIXES
 
         if not ALLOWED_LAYER_EDGES:
-            pytest.skip("No allowed layer edges defined")
+
 
         from_layer, to_layer = next(iter(ALLOWED_LAYER_EDGES))
         from_prefix = next((p for p, l in LAYER_PREFIXES.items() if l == from_layer), None)
         to_prefix = next((p for p, l in LAYER_PREFIXES.items() if l == to_layer), None)
         if not from_prefix or not to_prefix:
-            pytest.skip(f"No prefix for {from_layer} or {to_layer}")
+
 
         from_mod = _mod(f"{from_prefix}/mod.py")
         to_mod = _mod(f"{to_prefix}/target.py")
@@ -1381,7 +1381,7 @@ class TestRemainingBranchGaps:
             None,
         )
         if relation is None:
-            pytest.skip("No bounded cardinality ranges")
+
 
         lo, hi = _CARDINALITY_RANGES[relation]
 
@@ -1468,7 +1468,7 @@ class TestRemainingBranchGaps:
         from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, LAYER_PREFIXES, module_path_to_layer
 
         if not ALLOWED_LAYER_EDGES:
-            pytest.skip("No allowed layer edges")
+
 
         # Find an allowed pair where we can construct a verifiable symbol
         chosen = None
@@ -1482,7 +1482,7 @@ class TestRemainingBranchGaps:
                     break
 
         if not chosen:
-            pytest.skip("No allowed pair with resolvable prefixes")
+
 
         from_layer, to_layer, from_prefix, to_prefix, sym = chosen
         from_mod = _mod(f"{from_prefix}/mod.py")
@@ -1516,7 +1516,7 @@ class TestRemainingBranchGaps:
             None,
         )
         if relation is None:
-            pytest.skip("No finite upper bound found")
+
         lo, hi = _CARDINALITY_RANGES[relation]
         edges = [
             Edge(
@@ -1550,7 +1550,7 @@ class TestRemainingBranchGaps:
             None,
         )
         if relation is None:
-            pytest.skip("No relation with range spanning 200")
+
         lo, hi = _CARDINALITY_RANGES[relation]
         in_range_count = lo  # at lower bound: lo <= lo <= hi → no violation
         edges = [

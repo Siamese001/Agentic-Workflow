@@ -444,7 +444,7 @@ class TestSkipFileRatchet:
         budget_data = json.loads(self._budget_file().read_text(encoding="utf-8"))
         actual_baseline = budget_data["baseline"]
         if actual_baseline == 0:
-            pytest.skip("baseline is 0, nothing to tighten")
+
 
         with patch(
             "ops_scripts.ci.adg_skip_file_ratchet._count_skip_files",
@@ -474,7 +474,7 @@ class TestSkipFileRatchet:
                     returncode=0,
                 ),
             ):
-                pass  # Would need git ls-files to return this file — skip mock complexity
+# REMOVED HIDDEN FAILURE SKIP: # REMOVED SKIP: pass  # Would need git ls-files to return this file — skip mock complexity
             # Just verify the ratchet script itself exists and has the right logic
             src = (ROOT / "ops_scripts" / "ci" / "adg_skip_file_ratchet.py").read_text(encoding="utf-8")
             assert "lines[:10]" in src or "lines[:5]" in src, (

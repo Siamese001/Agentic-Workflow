@@ -51,7 +51,7 @@ class TestVerificationContextContract:
         import dataclasses
         fields = dataclasses.fields(VerificationContext)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert VerificationContext.__dataclass_params__.frozen is True
@@ -73,7 +73,7 @@ class TestInstructionPacketContract:
         import dataclasses
         fields = dataclasses.fields(InstructionPacket)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert InstructionPacket.__dataclass_params__.frozen is True
@@ -95,7 +95,7 @@ class TestSandboxEnvelopeContract:
         import dataclasses
         fields = dataclasses.fields(SandboxEnvelope)
         if not fields:
-            pytest.skip('no fields to test immutability')
+
         # Verify frozen raises on setattr
         # (create requires knowing required fields — skip if args unknown)
         assert SandboxEnvelope.__dataclass_params__.frozen is True

@@ -9,7 +9,7 @@ def test_scanner_importable():
         assert ADGStaticScanner is not None
         assert callable(ADGStaticScanner)
     except ImportError as e:
-        pytest.skip(f"ADGStaticScanner not available: {e}")
+
 
 
 @pytest.mark.smoke
@@ -36,7 +36,7 @@ def test_schema_relation_types():
         assert not missing_relations, f"Missing RelationType literals: {missing_relations}"
 
     except ImportError as e:
-        pytest.skip(f"RelationType not available: {e}")
+
 
 @pytest.mark.smoke
 def test_schema_edge_kinds():
@@ -52,4 +52,4 @@ def test_schema_edge_kinds():
         assert not missing_kinds, f"Missing EdgeKind literals: {missing_kinds}"
 
     except ImportError as e:
-        pytest.skip(f"EdgeKind not available: {e}")
+
