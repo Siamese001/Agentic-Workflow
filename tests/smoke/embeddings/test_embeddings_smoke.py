@@ -1,4 +1,5 @@
 """Embeddings smoke tests — import verification and basic functionality."""
+
 import pytest
 
 
@@ -7,9 +8,11 @@ def test_embeddings_importable():
     """Verify embeddings module imports without error."""
     try:
         import agentic_core.embeddings
+
         assert agentic_core.embeddings is not None
     except ImportError as e:
         pytest.fail(f"Failed to import embeddings: {e}")
+
 
 @pytest.mark.smoke
 def test_embedding_factory_importable():
@@ -18,9 +21,11 @@ def test_embedding_factory_importable():
         from agentic_core.embeddings.embedding_factory import (
             EmbeddingFactory,
         )
+
         assert EmbeddingFactory is not None
     except ImportError as e:
         pytest.fail(f"Failed to import EmbeddingFactory: {e}")
+
 
 @pytest.mark.smoke
 def test_embedding_input_guard_importable():
@@ -29,9 +34,11 @@ def test_embedding_input_guard_importable():
         from agentic_core.embeddings.embedding_input_guard import (
             EmbeddingInputGuard,
         )
+
         assert EmbeddingInputGuard is not None
     except ImportError as e:
         pytest.fail(f"Failed to import EmbeddingInputGuard: {e}")
+
 
 @pytest.mark.smoke
 def test_embedding_engine_importable():
@@ -40,9 +47,11 @@ def test_embedding_engine_importable():
         from agentic_core.embeddings.embedding_engine import (
             EmbeddingEngine,
         )
+
         assert EmbeddingEngine is not None
     except ImportError as e:
         pytest.fail(f"Failed to import EmbeddingEngine: {e}")
+
 
 @pytest.mark.smoke
 def test_embedding_processor_importable():
@@ -51,9 +60,11 @@ def test_embedding_processor_importable():
         from agentic_core.embeddings.embedding_processor import (
             EmbeddingProcessor,
         )
+
         assert EmbeddingProcessor is not None
     except ImportError as e:
         pytest.fail(f"Failed to import EmbeddingProcessor: {e}")
+
 
 @pytest.mark.smoke
 def test_embedding_validator_importable():
@@ -62,9 +73,11 @@ def test_embedding_validator_importable():
         from agentic_core.embeddings.embedding_validator import (
             EmbeddingValidator,
         )
+
         assert EmbeddingValidator is not None
     except ImportError as e:
         pytest.fail(f"Failed to import EmbeddingValidator: {e}")
+
 
 @pytest.mark.smoke
 def test_embedding_cache_importable():
@@ -73,9 +86,11 @@ def test_embedding_cache_importable():
         from agentic_core.embeddings.embedding_cache import (
             EmbeddingCache,
         )
+
         assert EmbeddingCache is not None
     except ImportError as e:
         pytest.fail(f"Failed to import EmbeddingCache: {e}")
+
 
 @pytest.mark.smoke
 def test_embedding_monitoring_importable():
@@ -84,9 +99,11 @@ def test_embedding_monitoring_importable():
         from agentic_core.embeddings.embedding_monitoring import (
             EmbeddingMonitoring,
         )
+
         assert EmbeddingMonitoring is not None
     except ImportError as e:
         pytest.fail(f"Failed to import EmbeddingMonitoring: {e}")
+
 
 @pytest.mark.smoke
 def test_embedding_metrics_importable():
@@ -95,9 +112,11 @@ def test_embedding_metrics_importable():
         from agentic_core.embeddings.embedding_metrics import (
             EmbeddingMetrics,
         )
+
         assert EmbeddingMetrics is not None
     except ImportError as e:
         pytest.fail(f"Failed to import EmbeddingMetrics: {e}")
+
 
 @pytest.mark.smoke
 def test_embedding_config_importable():
@@ -106,9 +125,11 @@ def test_embedding_config_importable():
         from agentic_core.embeddings.embedding_config import (
             get_embedding_config,
         )
+
         assert callable(get_embedding_config), "get_embedding_config should be callable"
     except ImportError as e:
         pytest.fail(f"Failed to import embedding config: {e}")
+
 
 @pytest.mark.smoke
 def test_embedding_health_importable():
@@ -117,9 +138,11 @@ def test_embedding_health_importable():
         from agentic_core.embeddings.embedding_health import (
             EmbeddingHealthChecker,
         )
+
         assert EmbeddingHealthChecker is not None
     except ImportError as e:
         pytest.fail(f"Failed to import EmbeddingHealthChecker: {e}")
+
 
 @pytest.mark.smoke
 def test_embedding_recovery_importable():
@@ -128,9 +151,11 @@ def test_embedding_recovery_importable():
         from agentic_core.embeddings.embedding_recovery import (
             EmbeddingRecoveryManager,
         )
+
         assert EmbeddingRecoveryManager is not None
     except ImportError as e:
         pytest.fail(f"Failed to import EmbeddingRecoveryManager: {e}")
+
 
 @pytest.mark.smoke
 def test_embedding_optimization_importable():
@@ -139,9 +164,11 @@ def test_embedding_optimization_importable():
         from agentic_core.embeddings.embedding_optimization import (
             EmbeddingOptimizer,
         )
+
         assert EmbeddingOptimizer is not None
     except ImportError as e:
         pytest.fail(f"Failed to import EmbeddingOptimizer: {e}")
+
 
 @pytest.mark.smoke
 def test_embedding_serialization_importable():
@@ -150,9 +177,11 @@ def test_embedding_serialization_importable():
         from agentic_core.embeddings.embedding_serialization import (
             EmbeddingSerializer,
         )
+
         assert EmbeddingSerializer is not None
     except ImportError as e:
         pytest.fail(f"Failed to import EmbeddingSerializer: {e}")
+
 
 @pytest.mark.smoke
 def test_embedding_versioning_importable():
@@ -161,6 +190,7 @@ def test_embedding_versioning_importable():
         from agentic_core.embeddings.embedding_versioning import (
             EmbeddingVersioning,
         )
+
         assert EmbeddingVersioning is not None
     except ImportError as e:
         pytest.fail(f"Failed to import EmbeddingVersioning: {e}")

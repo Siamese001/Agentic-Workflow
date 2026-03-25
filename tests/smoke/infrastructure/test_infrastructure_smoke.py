@@ -1,4 +1,5 @@
 """Infrastructure smoke tests — import verification and basic functionality."""
+
 import pytest
 
 
@@ -7,18 +8,22 @@ def test_infrastructure_importable():
     """Verify infrastructure module imports without error."""
     try:
         import infrastructure
+
         assert infrastructure is not None
     except ImportError as e:
         pytest.fail(f"Failed to import infrastructure: {e}")
+
 
 @pytest.mark.smoke
 def test_infrastructure_hardening_importable():
     """Verify infrastructure hardening imports without error."""
     try:
         import infrastructure.hardening
+
         assert infrastructure.hardening is not None
     except ImportError as e:
         pytest.fail(f"Failed to import infrastructure.hardening: {e}")
+
 
 @pytest.mark.smoke
 def test_adaptive_optimizer_importable():
@@ -27,9 +32,11 @@ def test_adaptive_optimizer_importable():
         from infrastructure.hardening.adaptive_optimizer import (
             AdaptiveOptimizer,
         )
+
         assert AdaptiveOptimizer is not None
     except ImportError as e:
         pytest.fail(f"Failed to import AdaptiveOptimizer: {e}")
+
 
 @pytest.mark.smoke
 def test_cross_layer_coherence_importable():
@@ -38,9 +45,11 @@ def test_cross_layer_coherence_importable():
         from infrastructure.hardening.cross_layer_coherence import (
             CrossLayerCoherence,
         )
+
         assert CrossLayerCoherence is not None
     except ImportError as e:
         pytest.fail(f"Failed to import CrossLayerCoherence: {e}")
+
 
 @pytest.mark.smoke
 def test_distributed_state_manager_importable():
@@ -49,9 +58,11 @@ def test_distributed_state_manager_importable():
         from infrastructure.hardening.distributed_state_manager import (
             DistributedStateManager,
         )
+
         assert DistributedStateManager is not None
     except ImportError as e:
         pytest.fail(f"Failed to import DistributedStateManager: {e}")
+
 
 @pytest.mark.smoke
 def test_security_framework_importable():
@@ -60,9 +71,11 @@ def test_security_framework_importable():
         from infrastructure.hardening.security_framework import (
             SecurityFramework,
         )
+
         assert SecurityFramework is not None
     except ImportError as e:
         pytest.fail(f"Failed to import SecurityFramework: {e}")
+
 
 @pytest.mark.smoke
 def test_unified_query_router_importable():
@@ -71,9 +84,11 @@ def test_unified_query_router_importable():
         from infrastructure.hardening.unified_query_router import (
             UnifiedQueryRouter,
         )
+
         assert UnifiedQueryRouter is not None
     except ImportError as e:
         pytest.fail(f"Failed to import UnifiedQueryRouter: {e}")
+
 
 @pytest.mark.smoke
 def test_infrastructure_config_importable():
@@ -82,9 +97,11 @@ def test_infrastructure_config_importable():
         from infrastructure.hardening.infrastructure_config import (
             get_infrastructure_config,
         )
+
         assert callable(get_infrastructure_config), "get_infrastructure_config should be callable"
     except ImportError as e:
         pytest.fail(f"Failed to import infrastructure config: {e}")
+
 
 @pytest.mark.smoke
 def test_infrastructure_monitoring_importable():
@@ -93,9 +110,11 @@ def test_infrastructure_monitoring_importable():
         from infrastructure.hardening.infrastructure_monitoring import (
             InfrastructureMonitoring,
         )
+
         assert InfrastructureMonitoring is not None
     except ImportError as e:
         pytest.fail(f"Failed to import InfrastructureMonitoring: {e}")
+
 
 @pytest.mark.smoke
 def test_infrastructure_health_importable():
@@ -104,9 +123,11 @@ def test_infrastructure_health_importable():
         from infrastructure.hardening.infrastructure_health import (
             InfrastructureHealthChecker,
         )
+
         assert InfrastructureHealthChecker is not None
     except ImportError as e:
         pytest.fail(f"Failed to import InfrastructureHealthChecker: {e}")
+
 
 @pytest.mark.smoke
 def test_infrastructure_recovery_importable():
@@ -115,9 +136,11 @@ def test_infrastructure_recovery_importable():
         from infrastructure.hardening.infrastructure_recovery import (
             InfrastructureRecoveryManager,
         )
+
         assert InfrastructureRecoveryManager is not None
     except ImportError as e:
         pytest.fail(f"Failed to import InfrastructureRecoveryManager: {e}")
+
 
 @pytest.mark.smoke
 def test_infrastructure_scaling_importable():
@@ -126,9 +149,11 @@ def test_infrastructure_scaling_importable():
         from infrastructure.hardening.infrastructure_scaling import (
             InfrastructureScalingManager,
         )
+
         assert InfrastructureScalingManager is not None
     except ImportError as e:
         pytest.fail(f"Failed to import InfrastructureScalingManager: {e}")
+
 
 @pytest.mark.smoke
 def test_infrastructure_backup_importable():
@@ -137,9 +162,11 @@ def test_infrastructure_backup_importable():
         from infrastructure.hardening.infrastructure_backup import (
             InfrastructureBackupManager,
         )
+
         assert InfrastructureBackupManager is not None
     except ImportError as e:
         pytest.fail(f"Failed to import InfrastructureBackupManager: {e}")
+
 
 @pytest.mark.smoke
 def test_infrastructure_disaster_recovery_importable():
@@ -148,6 +175,7 @@ def test_infrastructure_disaster_recovery_importable():
         from infrastructure.hardening.infrastructure_disaster_recovery import (
             InfrastructureDisasterRecoveryManager,
         )
+
         assert InfrastructureDisasterRecoveryManager is not None
     except ImportError as e:
         pytest.fail(f"Failed to import InfrastructureDisasterRecoveryManager: {e}")

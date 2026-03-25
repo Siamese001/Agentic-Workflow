@@ -1,4 +1,5 @@
 """L0 routing layer smoke tests — import verification and basic functionality."""
+
 import pytest
 
 
@@ -7,18 +8,22 @@ def test_l0_routing_importable():
     """Verify L0 routing layer imports without error."""
     try:
         import agentic_core.L0_routing
+
         assert agentic_core.L0_routing is not None
     except ImportError as e:
         pytest.fail(f"Failed to import L0_routing: {e}")
+
 
 @pytest.mark.smoke
 def test_l0_routing_engines_importable():
     """Verify L0 routing engines import without error."""
     try:
         from agentic_core.L0_routing.engines.routing_engine import RoutingEngine
+
         assert RoutingEngine is not None
     except ImportError as e:
         pytest.skip(f"RoutingEngine not yet implemented: {e}")
+
 
 @pytest.mark.smoke
 def test_l0_path_constants_importable():
@@ -58,6 +63,7 @@ def test_l0_path_constants_importable():
     except ImportError as e:
         pytest.fail(f"Failed to import L0 path constants: {e}")
 
+
 @pytest.mark.smoke
 def test_l0_ssot_tier_constants_importable():
     """Verify L0 SSOT tier constants import without error."""
@@ -87,6 +93,7 @@ def test_l0_ssot_tier_constants_importable():
     except ImportError as e:
         pytest.fail(f"Failed to import L0 SSOT tier constants: {e}")
 
+
 @pytest.mark.smoke
 def test_l0_deterministic_routing_gateway_importable():
     """Verify L0 deterministic routing gateway imports without error."""
@@ -94,9 +101,11 @@ def test_l0_deterministic_routing_gateway_importable():
         from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
             DeterministicRoutingGateway,
         )
+
         assert DeterministicRoutingGateway is not None
     except ImportError as e:
         pytest.skip(f"DeterministicRoutingGateway not yet implemented: {e}")
+
 
 @pytest.mark.smoke
 def test_l0_legacy_agent_name_allowlist_importable():
@@ -105,7 +114,10 @@ def test_l0_legacy_agent_name_allowlist_importable():
         from agentic_core.L0_routing.legacy_agent_name_allowlist import (
             LEGACY_AGENT_ALLOWLIST,
         )
-        assert isinstance(LEGACY_AGENT_ALLOWLIST, (list, tuple, set)), "LEGACY_AGENT_ALLOWLIST should be a collection"
+
+        assert isinstance(LEGACY_AGENT_ALLOWLIST, (list, tuple, set)), (
+            "LEGACY_AGENT_ALLOWLIST should be a collection"
+        )
         assert len(LEGACY_AGENT_ALLOWLIST) >= 0, "LEGACY_AGENT_ALLOWLIST should not be negative length"
     except ImportError as e:
         pytest.skip(f"LEGACY_AGENT_ALLOWLIST not yet implemented: {e}")
