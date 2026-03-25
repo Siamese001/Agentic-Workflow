@@ -1,7 +1,12 @@
-STUB vs SHIM
+====================================================================================================
+                                 STUB vs SHIM vs FACADE
+====================================================================================================
+
+STUB = fake stand-in for a dependency
+SHIM = interface translator between real systems
 
 ┌────────────── STUB ──────────────┐   ┌────────────── SHIM ──────────────┐
-│ Fake dependency for testing      │   │ Adapter between real systems    │
+│ Fake dependency for testing      │   │ Adapter between real systems     │
 │                                  │   │                                  │
 │  Your Code                       │   │  System A                        │
 │      │                           │   │      │                           │
@@ -27,32 +32,53 @@ STUB vs SHIM
 │     Database                     │   │                                  │
 └──────────────────────────────────┘   └──────────────────────────────────┘
 
-STUB = fake stand-in for a dependency
-SHIM = interface translator between real systems
-
-VALID STUB vs INVALID STUB (SIMPLE EXAMPLE)
+----------------------------------------------------------------------------------------------------
+                               VALID STUB vs INVALID STUB
+----------------------------------------------------------------------------------------------------
+RULE OF THUMB: If the real world would say "no" sometimes, your stub must also say "no".
 
 ┌──────────────────── VALID STUB ────────────────────┐   ┌────────────────── INVALID STUB ──────────────────┐
 │ Pretends to be the real service correctly          │   │ Pretends badly and hides problems                │
-│                                                     │   │                                                   │
+│                                                    │   │                                                  │
 │ REAL WORLD                                         │   │ REAL WORLD                                       │
 │ Asking a library if a book exists                  │   │ Asking a library if a book exists                │
-│                                                     │   │                                                   │
+│                                                    │   │                                                  │
 │ STUB BEHAVIOR                                      │   │ STUB BEHAVIOR                                    │
-│                                                     │   │                                                   │
+│                                                    │   │                                                  │
 │ ask("Moby Dick")                                   │   │ ask("Moby Dick")                                 │
 │ → "Book found"                                     │   │ → "Book found"                                   │
-│                                                     │   │                                                   │
+│                                                    │   │                                                  │
 │ ask("Random Book")                                 │   │ ask("Random Book")                               │
 │ → "Not found"                                      │   │ → "Book found"                                   │
-│                                                     │   │                                                   │
+│                                                    │   │                                                  │
 │ RESULT                                             │   │ RESULT                                           │
 │ Program learns how to handle both cases            │   │ Program never learns how to handle missing books │
 │ Tests reflect real behavior                        │   │ Tests pass but reality will break                │
-└─────────────────────────────────────────────────────┘   └──────────────────────────────────────────────────┘
+└────────────────────────────────────────────────────┘   └──────────────────────────────────────────────────┘
+
+----------------------------------------------------------------------------------------------------
+                     ARCHITECTURAL EVOLUTION: SHIMS vs FACADES
+----------------------------------------------------------------------------------------------------
+
+ORIGINAL (single location)                 TEMP SHIM (remove later)                    PERMANENT FACADE (keep)
+───────────────────────────               ────────────────────────────                 ────────────────────────────
+
+callers                                   callers                                     many subsystems
+import L5_safety.decorators_util           import L5_safety.decorators_util            import safety.api
+        │                                           │                                           │
+        ▼                                           ▼                                           ▼
+L5_safety.decorators_util                  L5_safety.decorators_util                    safety/api.py
+(real implementation)                      (SHIM: re-export only)                      (stable public interface)
+                                           from base_agents.decorators                  defines approved surface
+                                                    │                                           │
+                                                    ▼                                           ▼
+                                           base_agents.decorators                        internal implementations
+                                           (real implementation)                         base_agents.decorators
+                                                                                         utils.decorators
+                                                                                         other internals
 
 
-RULE OF THUMB
-
-If the real world would say "no" sometimes,
-your stub must also say "no".
+END STATE:                                 END STATE:                                   END STATE:
+Single module holds logic                  Migrate callers → delete shim                Keep facade stable
+                                                                                        Swap internals safely
+====================================================================================================

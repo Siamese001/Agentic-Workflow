@@ -821,14 +821,18 @@ def _archive_old_artifacts(adg_dir: Path, current_ts: str, keep_runs: int = 1) -
                     archived_count += 1
                     bytes_original += file_size
         else:
-            # No zip file - archive individual files (legacy behavior for orphaned runs)
-            print(f"[ADG] Archive: Found orphaned run {ts} with {len(files)} individual files")
-            individual_archived, individual_bytes_original, individual_bytes_archived = (
-                _archive_individual_files(files, archive_month_dir)
-            )
-            archived_count += individual_archived
-            bytes_original += individual_bytes_original
-            bytes_archived += individual_bytes_archived
+            # No zip file - delete orphaned individual files (no longer archiving them)
+            print(f"[ADG] Archive: Found orphaned run {ts} with {len(files)} individual files - DELETING (no longer archiving individual files)")
+            for file_path in files:
+                if file_path.exists():
+                    try:
+                        file_size = file_path.stat().st_size
+                        bytes_original += file_size
+                        file_path.unlink()
+                        archived_count += 1
+                    except OSError as e:
+                        print(f"[ADG] Archive: failed to delete {file_path.name}: {e}")
+                        continue
 
     if bytes_original > 0:
         savings = bytes_original - bytes_archived
@@ -1371,6 +1375,7 @@ def _create_zip_archive(adg_dir: Path, ts: str, artifact_paths: list[Path]) -> P
 
     Structure:
         adg/<artifact>.json/.sqlite  - ADG graph artifacts (static only)
+        adg/<artifact>_report.json  - ADG reports (static only)
         NOTE: Runtime files are NOT included - they belong in separate runtime ADG
 
     Args:
