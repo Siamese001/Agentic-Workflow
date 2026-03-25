@@ -10,35 +10,20 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.prompt_governance.optimization.optimization_strategy import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        OptimizationConfig,
-        OptimizationLevel,
-        OptimizationStrategy,
-        PromptOptimizer,
-        create_prompt_optimizer,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    OptimizationStrategy = None  # type: ignore[assignment,misc]
-    OptimizationLevel = None  # type: ignore[assignment,misc]
-    OptimizationConfig = None  # type: ignore[assignment,misc]
-    PromptOptimizer = None  # type: ignore[assignment,misc]
-    create_prompt_optimizer = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.prompt_governance.optimization.optimization_strategy import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    OptimizationConfig,
+    OptimizationLevel,
+    OptimizationStrategy,
+    PromptOptimizer,
+    create_prompt_optimizer,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimization_strategy.py deps unavailable")
 class TestOptimizationStrategyContract:
     def test_is_enum(self):
         import enum
@@ -47,7 +32,6 @@ class TestOptimizationStrategyContract:
     def test_has_members(self):
         assert len(list(OptimizationStrategy)) >= 1
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimization_strategy.py deps unavailable")
 class TestOptimizationLevelContract:
     def test_is_enum(self):
         import enum
@@ -56,7 +40,6 @@ class TestOptimizationLevelContract:
     def test_has_members(self):
         assert len(list(OptimizationLevel)) >= 1
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimization_strategy.py deps unavailable")
 class TestOptimizationConfigContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -67,7 +50,6 @@ class TestOptimizationConfigContract:
         field_names = {f.name for f in dataclasses.fields(OptimizationConfig)}
         assert field_names >= {'max_length', 'level', 'strategy', 'preserve_intent'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimization_strategy.py deps unavailable")
 class TestPromptOptimizerContract:
     def test_is_class(self):
         assert isinstance(PromptOptimizer, type)
@@ -78,7 +60,6 @@ class TestPromptOptimizerContract:
     def test_has_method_analyze_prompt(self):
         assert callable(getattr(PromptOptimizer, 'analyze_prompt', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimization_strategy.py deps unavailable")
 class TestCreatePromptOptimizerFunction:
     def test_is_callable(self):
         assert callable(create_prompt_optimizer)
@@ -88,27 +69,22 @@ class TestCreatePromptOptimizerFunction:
         sig = inspect.signature(create_prompt_optimizer)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimization_strategy.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimization_strategy.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimization_strategy.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimization_strategy.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimization_strategy.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -116,4 +92,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module optimization_strategy must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

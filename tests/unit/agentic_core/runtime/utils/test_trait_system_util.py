@@ -10,39 +10,22 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.runtime.utils.trait_system_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        BatchingTrait,
-        CachingTrait,
-        MetricsTrait,
-        Trait,
-        get_applied_traits,
-        has_trait,
-        with_traits,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    Trait = None  # type: ignore[assignment,misc]
-    CachingTrait = None  # type: ignore[assignment,misc]
-    MetricsTrait = None  # type: ignore[assignment,misc]
-    BatchingTrait = None  # type: ignore[assignment,misc]
-    with_traits = None  # type: ignore[assignment,misc]
-    get_applied_traits = None  # type: ignore[assignment,misc]
-    has_trait = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.runtime.utils.trait_system_util import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    BatchingTrait,
+    CachingTrait,
+    MetricsTrait,
+    Trait,
+    get_applied_traits,
+    has_trait,
+    with_traits,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="trait_system_util.py deps unavailable")
 class TestTraitContract:
     def test_is_class(self):
         assert isinstance(Trait, type)
@@ -53,7 +36,6 @@ class TestTraitContract:
     def test_has_method_get_trait_name(self):
         assert callable(getattr(Trait, 'get_trait_name', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="trait_system_util.py deps unavailable")
 class TestCachingTraitContract:
     def test_is_class(self):
         assert isinstance(CachingTrait, type)
@@ -61,7 +43,6 @@ class TestCachingTraitContract:
     def test_has_method_apply(self):
         assert callable(getattr(CachingTrait, 'apply', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="trait_system_util.py deps unavailable")
 class TestMetricsTraitContract:
     def test_is_class(self):
         assert isinstance(MetricsTrait, type)
@@ -69,7 +50,6 @@ class TestMetricsTraitContract:
     def test_has_method_apply(self):
         assert callable(getattr(MetricsTrait, 'apply', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="trait_system_util.py deps unavailable")
 class TestBatchingTraitContract:
     def test_is_class(self):
         assert isinstance(BatchingTrait, type)
@@ -77,7 +57,6 @@ class TestBatchingTraitContract:
     def test_has_method_apply(self):
         assert callable(getattr(BatchingTrait, 'apply', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="trait_system_util.py deps unavailable")
 class TestWithTraitsFunction:
     def test_is_callable(self):
         assert callable(with_traits)
@@ -87,7 +66,6 @@ class TestWithTraitsFunction:
         sig = inspect.signature(with_traits)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="trait_system_util.py deps unavailable")
 class TestGetAppliedTraitsFunction:
     def test_is_callable(self):
         assert callable(get_applied_traits)
@@ -97,7 +75,6 @@ class TestGetAppliedTraitsFunction:
         sig = inspect.signature(get_applied_traits)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="trait_system_util.py deps unavailable")
 class TestHasTraitFunction:
     def test_is_callable(self):
         assert callable(has_trait)
@@ -107,27 +84,22 @@ class TestHasTraitFunction:
         sig = inspect.signature(has_trait)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="trait_system_util.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="trait_system_util.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="trait_system_util.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="trait_system_util.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="trait_system_util.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -135,4 +107,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module trait_system_util must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

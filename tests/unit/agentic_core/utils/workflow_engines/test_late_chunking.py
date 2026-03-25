@@ -10,35 +10,20 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.utils.workflow_engines.late_chunking import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        LateChunkingPipelineConfig,
-        LateChunkingProfile,
-        LateChunkManifest,
-        build_late_chunk_manifests_for_corpus,
-        segment_document,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    LateChunkingProfile = None  # type: ignore[assignment,misc]
-    LateChunkManifest = None  # type: ignore[assignment,misc]
-    LateChunkingPipelineConfig = None  # type: ignore[assignment,misc]
-    segment_document = None  # type: ignore[assignment,misc]
-    build_late_chunk_manifests_for_corpus = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.utils.workflow_engines.late_chunking import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    LateChunkingPipelineConfig,
+    LateChunkingProfile,
+    LateChunkManifest,
+    build_late_chunk_manifests_for_corpus,
+    segment_document,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="late_chunking.py deps unavailable")
 class TestLateChunkingProfileContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -61,7 +46,6 @@ class TestLateChunkingProfileContract:
         # (create requires knowing required fields — skip if args unknown)
         assert LateChunkingProfile.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="late_chunking.py deps unavailable")
 class TestLateChunkManifestContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -84,7 +68,6 @@ class TestLateChunkManifestContract:
         # (create requires knowing required fields — skip if args unknown)
         assert LateChunkManifest.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="late_chunking.py deps unavailable")
 class TestLateChunkingPipelineConfigContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -95,7 +78,6 @@ class TestLateChunkingPipelineConfigContract:
         field_names = {f.name for f in dataclasses.fields(LateChunkingPipelineConfig)}
         assert field_names >= {'stride', 'max_segment_tokens', 'profile'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="late_chunking.py deps unavailable")
 class TestSegmentDocumentFunction:
     def test_is_callable(self):
         assert callable(segment_document)
@@ -105,7 +87,6 @@ class TestSegmentDocumentFunction:
         sig = inspect.signature(segment_document)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="late_chunking.py deps unavailable")
 class TestBuildLateChunkManifestsForCorpusFunction:
     def test_is_callable(self):
         assert callable(build_late_chunk_manifests_for_corpus)
@@ -115,27 +96,22 @@ class TestBuildLateChunkManifestsForCorpusFunction:
         sig = inspect.signature(build_late_chunk_manifests_for_corpus)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="late_chunking.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="late_chunking.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="late_chunking.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="late_chunking.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="late_chunking.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -143,4 +119,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module late_chunking must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

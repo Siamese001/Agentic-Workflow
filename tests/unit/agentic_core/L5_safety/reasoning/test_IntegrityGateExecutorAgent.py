@@ -10,39 +10,22 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L5_safety.reasoning.IntegrityGateExecutorAgent import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        FinancialProofPoint,
-        IntegrityGateResult,
-        KeyExecutive,
-        KeyTechnology,
-        ValidationRejectionReason,
-        Violation,
-        validate_research_output,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    ValidationRejectionReason = None  # type: ignore[assignment,misc]
-    Violation = None  # type: ignore[assignment,misc]
-    IntegrityGateResult = None  # type: ignore[assignment,misc]
-    FinancialProofPoint = None  # type: ignore[assignment,misc]
-    KeyTechnology = None  # type: ignore[assignment,misc]
-    KeyExecutive = None  # type: ignore[assignment,misc]
-    validate_research_output = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L5_safety.reasoning.IntegrityGateExecutorAgent import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    FinancialProofPoint,
+    IntegrityGateResult,
+    KeyExecutive,
+    KeyTechnology,
+    ValidationRejectionReason,
+    Violation,
+    validate_research_output,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IntegrityGateExecutorAgent.py deps unavailable")
 class TestValidationRejectionReasonContract:
     def test_is_enum(self):
         import enum
@@ -58,7 +41,6 @@ class TestValidationRejectionReasonContract:
     def test_known_member_insufficient_depth_exists(self):
         assert hasattr(ValidationRejectionReason, 'INSUFFICIENT_DEPTH')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IntegrityGateExecutorAgent.py deps unavailable")
 class TestViolationContract:
     def test_is_class(self):
         assert isinstance(Violation, type)
@@ -66,7 +48,6 @@ class TestViolationContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(Violation, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IntegrityGateExecutorAgent.py deps unavailable")
 class TestIntegrityGateResultContract:
     def test_is_class(self):
         assert isinstance(IntegrityGateResult, type)
@@ -74,7 +55,6 @@ class TestIntegrityGateResultContract:
     def test_has_method_add_violation(self):
         assert callable(getattr(IntegrityGateResult, 'add_violation', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IntegrityGateExecutorAgent.py deps unavailable")
 class TestFinancialProofPointContract:
     def test_is_class(self):
         assert isinstance(FinancialProofPoint, type)
@@ -82,7 +62,6 @@ class TestFinancialProofPointContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(FinancialProofPoint, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IntegrityGateExecutorAgent.py deps unavailable")
 class TestKeyTechnologyContract:
     def test_is_class(self):
         assert isinstance(KeyTechnology, type)
@@ -90,7 +69,6 @@ class TestKeyTechnologyContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(KeyTechnology, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IntegrityGateExecutorAgent.py deps unavailable")
 class TestKeyExecutiveContract:
     def test_is_class(self):
         assert isinstance(KeyExecutive, type)
@@ -98,7 +76,6 @@ class TestKeyExecutiveContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(KeyExecutive, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IntegrityGateExecutorAgent.py deps unavailable")
 class TestValidateResearchOutputFunction:
     def test_is_callable(self):
         assert callable(validate_research_output)
@@ -108,27 +85,22 @@ class TestValidateResearchOutputFunction:
         sig = inspect.signature(validate_research_output)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IntegrityGateExecutorAgent.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IntegrityGateExecutorAgent.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IntegrityGateExecutorAgent.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IntegrityGateExecutorAgent.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IntegrityGateExecutorAgent.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -136,4 +108,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module IntegrityGateExecutorAgent must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

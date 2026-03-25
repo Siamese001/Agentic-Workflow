@@ -1,45 +1,9 @@
-"""ADG importability contract for agentic_core/mixins/tracing_mixin.py.
-
-Auto-generated stub — covers GT_covers edge for ADG reachability.
-Behavioral tests belong in test_tracing_mixin.py (no _adg suffix).
-"""
+"""ADG importability contract for agentic_core/mixins/tracing_mixin.py."""
 from __future__ import annotations
 
-import pytest
+import agentic_core.mixins.tracing_mixin  # noqa: F401
 
-try:
-    from agentic_core.mixins.tracing_mixin import (  # noqa: F401
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        SpanContext,
-        TracingMixin,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    SpanContext = None  # type: ignore[assignment,misc]
-    TracingMixin = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
 
-@pytest.mark.skipif(not _AVAILABLE, reason="tracing_mixin.py deps unavailable")
-class TestTracingMixinImportability:
-    def test_module_importable(self) -> None:
-        """ADG contract: tracing_mixin.py must be importable."""
-        assert _AVAILABLE
-
-    def test_spancontext_is_type(self) -> None:
-        assert SpanContext is not None
-
-    def test_tracingmixin_is_type(self) -> None:
-        assert TracingMixin is not None
-
-    def test_max_retries_defined(self) -> None:
-        assert MAX_RETRIES is not None
-
-    def test_default_sleep_defined(self) -> None:
-        assert DEFAULT_SLEEP is not None
+def test_module_importable():
+    """Module tracing_mixin must be importable."""
+    assert agentic_core.mixins.tracing_mixin is not None

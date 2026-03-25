@@ -10,41 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L5_safety.security.signature_verifier import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        InstructionPacket,
-        SandboxEnvelope,
-        SignatureVerificationError,
-        SignatureVerifier,
-        VerificationContext,
-        get_signature_verifier,
-        verify_instruction_packet,
-        verify_sandbox_envelope,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    SignatureVerificationError = None  # type: ignore[assignment,misc]
-    VerificationContext = None  # type: ignore[assignment,misc]
-    InstructionPacket = None  # type: ignore[assignment,misc]
-    SandboxEnvelope = None  # type: ignore[assignment,misc]
-    SignatureVerifier = None  # type: ignore[assignment,misc]
-    get_signature_verifier = None  # type: ignore[assignment,misc]
-    verify_instruction_packet = None  # type: ignore[assignment,misc]
-    verify_sandbox_envelope = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L5_safety.security.signature_verifier import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    InstructionPacket,
+    SandboxEnvelope,
+    SignatureVerificationError,
+    SignatureVerifier,
+    VerificationContext,
+    get_signature_verifier,
+    verify_instruction_packet,
+    verify_sandbox_envelope,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signature_verifier.py deps unavailable")
 class TestSignatureVerificationErrorContract:
     def test_is_class(self):
         assert isinstance(SignatureVerificationError, type)
@@ -52,7 +34,6 @@ class TestSignatureVerificationErrorContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(SignatureVerificationError, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signature_verifier.py deps unavailable")
 class TestVerificationContextContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -75,7 +56,6 @@ class TestVerificationContextContract:
         # (create requires knowing required fields — skip if args unknown)
         assert VerificationContext.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signature_verifier.py deps unavailable")
 class TestInstructionPacketContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -98,7 +78,6 @@ class TestInstructionPacketContract:
         # (create requires knowing required fields — skip if args unknown)
         assert InstructionPacket.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signature_verifier.py deps unavailable")
 class TestSandboxEnvelopeContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -121,7 +100,6 @@ class TestSandboxEnvelopeContract:
         # (create requires knowing required fields — skip if args unknown)
         assert SandboxEnvelope.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signature_verifier.py deps unavailable")
 class TestSignatureVerifierContract:
     def test_is_class(self):
         assert isinstance(SignatureVerifier, type)
@@ -135,7 +113,6 @@ class TestSignatureVerifierContract:
     def test_has_method_add_trusted_signer(self):
         assert callable(getattr(SignatureVerifier, 'add_trusted_signer', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signature_verifier.py deps unavailable")
 class TestGetSignatureVerifierFunction:
     def test_is_callable(self):
         assert callable(get_signature_verifier)
@@ -145,7 +122,6 @@ class TestGetSignatureVerifierFunction:
         sig = inspect.signature(get_signature_verifier)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signature_verifier.py deps unavailable")
 class TestVerifyInstructionPacketFunction:
     def test_is_callable(self):
         assert callable(verify_instruction_packet)
@@ -155,7 +131,6 @@ class TestVerifyInstructionPacketFunction:
         sig = inspect.signature(verify_instruction_packet)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signature_verifier.py deps unavailable")
 class TestVerifySandboxEnvelopeFunction:
     def test_is_callable(self):
         assert callable(verify_sandbox_envelope)
@@ -165,27 +140,22 @@ class TestVerifySandboxEnvelopeFunction:
         sig = inspect.signature(verify_sandbox_envelope)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signature_verifier.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signature_verifier.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signature_verifier.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signature_verifier.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signature_verifier.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -193,4 +163,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module signature_verifier must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

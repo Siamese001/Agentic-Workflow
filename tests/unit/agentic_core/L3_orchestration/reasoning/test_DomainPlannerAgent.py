@@ -10,37 +10,21 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L3_orchestration.reasoning.DomainPlannerAgent import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        DomainPlannerAgent,
-        DomainPlannerOutput,
-        PlannerAssessment,
-        ScenarioSimulationResult,
-        StrategyPlan,
-        WorkflowContext,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    DomainPlannerOutput = None  # type: ignore[assignment,misc]
-    PlannerAssessment = None  # type: ignore[assignment,misc]
-    ScenarioSimulationResult = None  # type: ignore[assignment,misc]
-    StrategyPlan = None  # type: ignore[assignment,misc]
-    WorkflowContext = None  # type: ignore[assignment,misc]
-    DomainPlannerAgent = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L3_orchestration.reasoning.DomainPlannerAgent import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    DomainPlannerAgent,
+    DomainPlannerOutput,
+    PlannerAssessment,
+    ScenarioSimulationResult,
+    StrategyPlan,
+    WorkflowContext,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="DomainPlannerAgent.py deps unavailable")
 class TestDomainPlannerOutputContract:
     def test_is_class(self):
         assert isinstance(DomainPlannerOutput, type)
@@ -48,7 +32,6 @@ class TestDomainPlannerOutputContract:
     def test_has_method_model_dump(self):
         assert callable(getattr(DomainPlannerOutput, 'model_dump', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="DomainPlannerAgent.py deps unavailable")
 class TestPlannerAssessmentContract:
     def test_is_class(self):
         assert isinstance(PlannerAssessment, type)
@@ -56,7 +39,6 @@ class TestPlannerAssessmentContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(PlannerAssessment, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="DomainPlannerAgent.py deps unavailable")
 class TestScenarioSimulationResultContract:
     def test_is_class(self):
         assert isinstance(ScenarioSimulationResult, type)
@@ -64,7 +46,6 @@ class TestScenarioSimulationResultContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(ScenarioSimulationResult, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="DomainPlannerAgent.py deps unavailable")
 class TestStrategyPlanContract:
     def test_is_class(self):
         assert isinstance(StrategyPlan, type)
@@ -72,7 +53,6 @@ class TestStrategyPlanContract:
     def test_has_method_model_copy(self):
         assert callable(getattr(StrategyPlan, 'model_copy', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="DomainPlannerAgent.py deps unavailable")
 class TestWorkflowContextContract:
     def test_is_class(self):
         assert isinstance(WorkflowContext, type)
@@ -80,7 +60,6 @@ class TestWorkflowContextContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(WorkflowContext, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="DomainPlannerAgent.py deps unavailable")
 class TestDomainPlannerAgentContract:
     def test_is_class(self):
         assert isinstance(DomainPlannerAgent, type)
@@ -97,27 +76,22 @@ class TestDomainPlannerAgentContract:
     def test_has_method_heal(self):
         assert callable(getattr(DomainPlannerAgent, 'heal', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="DomainPlannerAgent.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="DomainPlannerAgent.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="DomainPlannerAgent.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="DomainPlannerAgent.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="DomainPlannerAgent.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -125,4 +99,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module DomainPlannerAgent must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

@@ -5,22 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L0_routing.scripts.handler import (  # noqa: F401
-        debug_dashboard,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    debug_dashboard = None  # type: ignore[assignment,misc]
-
-
-@pytest.mark.skipif(not _AVAILABLE, reason="handler.py deps unavailable")
-class TestDebugDashboard:
-    def test_is_callable(self):
-        assert callable(debug_dashboard)
+import agentic_core.L0_routing.scripts.handler  # noqa: F401
 
 
 def test_module_importable():
-    """Module handler.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module handler must be importable."""
+    assert agentic_core.L0_routing.scripts.handler is not None

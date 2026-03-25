@@ -10,33 +10,19 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L5_safety.enforcement.governance.docs_structure_guard import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        has_backup_suffix,
-        has_h1_heading,
-        is_valid_extension,
-        scan_docs_directory,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    is_valid_extension = None  # type: ignore[assignment,misc]
-    has_backup_suffix = None  # type: ignore[assignment,misc]
-    has_h1_heading = None  # type: ignore[assignment,misc]
-    scan_docs_directory = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L5_safety.enforcement.governance.docs_structure_guard import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    has_backup_suffix,
+    has_h1_heading,
+    is_valid_extension,
+    scan_docs_directory,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="docs_structure_guard.py deps unavailable")
 class TestIsValidExtensionFunction:
     def test_is_callable(self):
         assert callable(is_valid_extension)
@@ -46,7 +32,6 @@ class TestIsValidExtensionFunction:
         sig = inspect.signature(is_valid_extension)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="docs_structure_guard.py deps unavailable")
 class TestHasBackupSuffixFunction:
     def test_is_callable(self):
         assert callable(has_backup_suffix)
@@ -56,7 +41,6 @@ class TestHasBackupSuffixFunction:
         sig = inspect.signature(has_backup_suffix)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="docs_structure_guard.py deps unavailable")
 class TestHasH1HeadingFunction:
     def test_is_callable(self):
         assert callable(has_h1_heading)
@@ -66,7 +50,6 @@ class TestHasH1HeadingFunction:
         sig = inspect.signature(has_h1_heading)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="docs_structure_guard.py deps unavailable")
 class TestScanDocsDirectoryFunction:
     def test_is_callable(self):
         assert callable(scan_docs_directory)
@@ -76,27 +59,22 @@ class TestScanDocsDirectoryFunction:
         sig = inspect.signature(scan_docs_directory)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="docs_structure_guard.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="docs_structure_guard.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="docs_structure_guard.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="docs_structure_guard.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="docs_structure_guard.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -104,4 +82,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module docs_structure_guard must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

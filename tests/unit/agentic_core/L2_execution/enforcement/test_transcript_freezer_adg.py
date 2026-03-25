@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import pytest
 
-_AVAILABLE = False
 try:
     from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         _emit_agent_executes_agent,
@@ -169,11 +168,11 @@ try:
     _emit_hard_fails_untranscripted("p1", "test_transcript_freezer_adg")
     _emit_gated_by_confidence("p1", "test_transcript_freezer_adg", "confidence_gate")
     from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_writes_through
-    _AVAILABLE = True
+
 except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
     pass
 
-pytestmark = pytest.mark.skipif(not _AVAILABLE, reason="transcript_freezer.py deps unavailable")
+pytestmark = pytest.mark.unit
 
 
 class TestTranscriptMutationViolation:
@@ -217,7 +216,6 @@ class TestFreezeTranscript:
         assert len(ft) == 2
 
 
-
 def test_module_importable():
     """Module is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

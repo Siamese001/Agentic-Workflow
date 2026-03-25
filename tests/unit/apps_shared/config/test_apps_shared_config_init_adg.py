@@ -8,27 +8,21 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    import apps_shared.config as mod
-    from apps_shared.config import (
-        OPERATIONAL_ALLOWED_DUPLICATES,
-        OPERATIONAL_EXCLUDED_DIRS,
-        OPERATIONAL_SCAN_TARGETS,
-        ConfigLoader,
-        ConfigLoadResult,
-        get_config_loader,
-        is_allowed_duplicate,
-        is_excluded_path,
-        load_agent_config,
-        should_scan_directory,
-    )
-    _IMPORT_OK = True
-except (ImportError, ModuleNotFoundError):
-    _IMPORT_OK = False
-    mod = None
+import apps_shared.config as mod
+from apps_shared.config import (
+    OPERATIONAL_ALLOWED_DUPLICATES,
+    OPERATIONAL_EXCLUDED_DIRS,
+    OPERATIONAL_SCAN_TARGETS,
+    ConfigLoader,
+    ConfigLoadResult,
+    get_config_loader,
+    is_allowed_duplicate,
+    is_excluded_path,
+    load_agent_config,
+    should_scan_directory,
+)
 
 
-@pytest.mark.skipif(not _IMPORT_OK, reason="apps_shared.config deps unavailable")
 class TestAppsSharedConfigInit:
     def test_module_importable(self):
         assert mod is not None

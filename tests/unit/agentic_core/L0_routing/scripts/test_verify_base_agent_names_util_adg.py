@@ -5,14 +5,13 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-_AVAILABLE = False
 try:
     import agentic_core.L0_routing.scripts.verify_base_agent_names_util as _mod  # noqa: F401
-    _AVAILABLE = True
+
 except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
     _mod = None
 
 
 def test_module_importable():
     """Module verify_base_agent_names_util.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

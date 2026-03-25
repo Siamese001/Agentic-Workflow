@@ -10,41 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_shared.utils.tone_voice_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        ToneAnalysisResult,
-        ToneEnforcer,
-        ToneSettings,
-        ToneViolation,
-        ToneVoice,
-        analyze_tone,
-        audit_text,
-        get_tone_enforcer,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    ToneVoice = None  # type: ignore[assignment,misc]
-    ToneSettings = None  # type: ignore[assignment,misc]
-    ToneViolation = None  # type: ignore[assignment,misc]
-    ToneAnalysisResult = None  # type: ignore[assignment,misc]
-    ToneEnforcer = None  # type: ignore[assignment,misc]
-    get_tone_enforcer = None  # type: ignore[assignment,misc]
-    audit_text = None  # type: ignore[assignment,misc]
-    analyze_tone = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from apps_shared.utils.tone_voice_util import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    ToneAnalysisResult,
+    ToneEnforcer,
+    ToneSettings,
+    ToneViolation,
+    ToneVoice,
+    analyze_tone,
+    audit_text,
+    get_tone_enforcer,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="tone_voice_util.py deps unavailable")
 class TestToneVoiceContract:
     def test_is_enum(self):
         import enum
@@ -60,7 +42,6 @@ class TestToneVoiceContract:
     def test_known_member_authoritative_exists(self):
         assert hasattr(ToneVoice, 'AUTHORITATIVE')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="tone_voice_util.py deps unavailable")
 class TestToneSettingsContract:
     def test_is_class(self):
         assert isinstance(ToneSettings, type)
@@ -68,7 +49,6 @@ class TestToneSettingsContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(ToneSettings, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="tone_voice_util.py deps unavailable")
 class TestToneViolationContract:
     def test_is_class(self):
         assert isinstance(ToneViolation, type)
@@ -76,7 +56,6 @@ class TestToneViolationContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(ToneViolation, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="tone_voice_util.py deps unavailable")
 class TestToneAnalysisResultContract:
     def test_is_class(self):
         assert isinstance(ToneAnalysisResult, type)
@@ -84,7 +63,6 @@ class TestToneAnalysisResultContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(ToneAnalysisResult, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="tone_voice_util.py deps unavailable")
 class TestToneEnforcerContract:
     def test_is_class(self):
         assert isinstance(ToneEnforcer, type)
@@ -101,7 +79,6 @@ class TestToneEnforcerContract:
     def test_has_method_create_custom_profile(self):
         assert callable(getattr(ToneEnforcer, 'create_custom_profile', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="tone_voice_util.py deps unavailable")
 class TestGetToneEnforcerFunction:
     def test_is_callable(self):
         assert callable(get_tone_enforcer)
@@ -111,7 +88,6 @@ class TestGetToneEnforcerFunction:
         sig = inspect.signature(get_tone_enforcer)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="tone_voice_util.py deps unavailable")
 class TestAuditTextFunction:
     def test_is_callable(self):
         assert callable(audit_text)
@@ -121,7 +97,6 @@ class TestAuditTextFunction:
         sig = inspect.signature(audit_text)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="tone_voice_util.py deps unavailable")
 class TestAnalyzeToneFunction:
     def test_is_callable(self):
         assert callable(analyze_tone)
@@ -131,27 +106,22 @@ class TestAnalyzeToneFunction:
         sig = inspect.signature(analyze_tone)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="tone_voice_util.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="tone_voice_util.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="tone_voice_util.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="tone_voice_util.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="tone_voice_util.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -159,4 +129,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module tone_voice_util must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

@@ -10,41 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_shared.enforcement.CircuitbreakerStrategy import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        CircuitBreaker,
-        CircuitBreakerConfig,
-        CircuitBreakerFactory,
-        CircuitOpenError,
-        CircuitState,
-        CriticalServiceFailure,
-        get_circuit_breaker,
-        with_circuit_breaker,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    CircuitState = None  # type: ignore[assignment,misc]
-    CircuitOpenError = None  # type: ignore[assignment,misc]
-    CriticalServiceFailure = None  # type: ignore[assignment,misc]
-    CircuitBreakerConfig = None  # type: ignore[assignment,misc]
-    CircuitBreaker = None  # type: ignore[assignment,misc]
-    CircuitBreakerFactory = None  # type: ignore[assignment,misc]
-    get_circuit_breaker = None  # type: ignore[assignment,misc]
-    with_circuit_breaker = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from apps_shared.enforcement.CircuitbreakerStrategy import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    CircuitBreaker,
+    CircuitBreakerConfig,
+    CircuitBreakerFactory,
+    CircuitOpenError,
+    CircuitState,
+    CriticalServiceFailure,
+    get_circuit_breaker,
+    with_circuit_breaker,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="CircuitbreakerStrategy.py deps unavailable")
 class TestCircuitStateContract:
     def test_is_enum(self):
         import enum
@@ -60,7 +42,6 @@ class TestCircuitStateContract:
     def test_known_member_closed_exists(self):
         assert hasattr(CircuitState, 'CLOSED')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="CircuitbreakerStrategy.py deps unavailable")
 class TestCircuitOpenErrorContract:
     def test_is_class(self):
         assert isinstance(CircuitOpenError, type)
@@ -68,7 +49,6 @@ class TestCircuitOpenErrorContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(CircuitOpenError, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="CircuitbreakerStrategy.py deps unavailable")
 class TestCriticalServiceFailureContract:
     def test_is_class(self):
         assert isinstance(CriticalServiceFailure, type)
@@ -76,7 +56,6 @@ class TestCriticalServiceFailureContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(CriticalServiceFailure, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="CircuitbreakerStrategy.py deps unavailable")
 class TestCircuitBreakerConfigContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -87,7 +66,6 @@ class TestCircuitBreakerConfigContract:
         field_names = {f.name for f in dataclasses.fields(CircuitBreakerConfig)}
         assert field_names >= {'success_threshold', 'expected_exception', 'failure_threshold', 'recovery_timeout', 'timeout'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="CircuitbreakerStrategy.py deps unavailable")
 class TestCircuitBreakerContract:
     def test_is_class(self):
         assert isinstance(CircuitBreaker, type)
@@ -104,7 +82,6 @@ class TestCircuitBreakerContract:
     def test_has_method_reset(self):
         assert callable(getattr(CircuitBreaker, 'reset', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="CircuitbreakerStrategy.py deps unavailable")
 class TestCircuitBreakerFactoryContract:
     def test_is_class(self):
         assert isinstance(CircuitBreakerFactory, type)
@@ -121,7 +98,6 @@ class TestCircuitBreakerFactoryContract:
     def test_has_method_reset(self):
         assert callable(getattr(CircuitBreakerFactory, 'reset', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="CircuitbreakerStrategy.py deps unavailable")
 class TestGetCircuitBreakerFunction:
     def test_is_callable(self):
         assert callable(get_circuit_breaker)
@@ -131,32 +107,26 @@ class TestGetCircuitBreakerFunction:
         sig = inspect.signature(get_circuit_breaker)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="CircuitbreakerStrategy.py deps unavailable")
 class TestWithCircuitBreakerFunction:
     def test_is_callable(self):
         assert callable(with_circuit_breaker)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="CircuitbreakerStrategy.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="CircuitbreakerStrategy.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="CircuitbreakerStrategy.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="CircuitbreakerStrategy.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="CircuitbreakerStrategy.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -164,4 +134,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module CircuitbreakerStrategy must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

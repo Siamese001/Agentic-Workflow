@@ -10,39 +10,22 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_shared.utils.rank_data_components_plan_type_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        RankDataComponentsPlanConstraints,
-        RankDataComponentsPlanImpl,
-        RankDataComponentsPlanProcessor,
-        RankDataComponentsPlanResult,
-        RankDataComponentsPlanType,
-        SecurityError,
-        rank_data_components,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    RankDataComponentsPlanType = None  # type: ignore[assignment,misc]
-    RankDataComponentsPlanConstraints = None  # type: ignore[assignment,misc]
-    RankDataComponentsPlanResult = None  # type: ignore[assignment,misc]
-    RankDataComponentsPlanProcessor = None  # type: ignore[assignment,misc]
-    RankDataComponentsPlanImpl = None  # type: ignore[assignment,misc]
-    SecurityError = None  # type: ignore[assignment,misc]
-    rank_data_components = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from apps_shared.utils.rank_data_components_plan_type_util import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    RankDataComponentsPlanConstraints,
+    RankDataComponentsPlanImpl,
+    RankDataComponentsPlanProcessor,
+    RankDataComponentsPlanResult,
+    RankDataComponentsPlanType,
+    SecurityError,
+    rank_data_components,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rank_data_components_plan_type_util.py deps unavailable")
 class TestRankDataComponentsPlanTypeContract:
     def test_is_enum(self):
         import enum
@@ -58,7 +41,6 @@ class TestRankDataComponentsPlanTypeContract:
     def test_known_member_default_exists(self):
         assert hasattr(RankDataComponentsPlanType, 'DEFAULT')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rank_data_components_plan_type_util.py deps unavailable")
 class TestRankDataComponentsPlanConstraintsContract:
     def test_is_class(self):
         assert isinstance(RankDataComponentsPlanConstraints, type)
@@ -66,7 +48,6 @@ class TestRankDataComponentsPlanConstraintsContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(RankDataComponentsPlanConstraints, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rank_data_components_plan_type_util.py deps unavailable")
 class TestRankDataComponentsPlanResultContract:
     def test_is_class(self):
         assert isinstance(RankDataComponentsPlanResult, type)
@@ -74,7 +55,6 @@ class TestRankDataComponentsPlanResultContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(RankDataComponentsPlanResult, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rank_data_components_plan_type_util.py deps unavailable")
 class TestRankDataComponentsPlanProcessorContract:
     def test_is_class(self):
         assert isinstance(RankDataComponentsPlanProcessor, type)
@@ -85,7 +65,6 @@ class TestRankDataComponentsPlanProcessorContract:
     def test_has_method_validate_safety(self):
         assert callable(getattr(RankDataComponentsPlanProcessor, 'validate_safety', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rank_data_components_plan_type_util.py deps unavailable")
 class TestRankDataComponentsPlanImplContract:
     def test_is_class(self):
         assert isinstance(RankDataComponentsPlanImpl, type)
@@ -96,7 +75,6 @@ class TestRankDataComponentsPlanImplContract:
     def test_has_method_validate_safety(self):
         assert callable(getattr(RankDataComponentsPlanImpl, 'validate_safety', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rank_data_components_plan_type_util.py deps unavailable")
 class TestSecurityErrorContract:
     def test_is_class(self):
         assert isinstance(SecurityError, type)
@@ -104,7 +82,6 @@ class TestSecurityErrorContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(SecurityError, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rank_data_components_plan_type_util.py deps unavailable")
 class TestRankDataComponentsFunction:
     def test_is_callable(self):
         assert callable(rank_data_components)
@@ -114,27 +91,22 @@ class TestRankDataComponentsFunction:
         sig = inspect.signature(rank_data_components)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rank_data_components_plan_type_util.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rank_data_components_plan_type_util.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rank_data_components_plan_type_util.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rank_data_components_plan_type_util.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rank_data_components_plan_type_util.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -142,4 +114,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module rank_data_components_plan_type_util must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

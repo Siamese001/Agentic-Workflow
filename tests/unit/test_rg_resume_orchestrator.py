@@ -40,12 +40,6 @@ class TestRgResumeOrchestratorAgent:
     @pytest.fixture
     def agent_class(self):
         """Import agent class with mocked dependencies."""
-        try:
-            from apps_rg.reasoning.RgResumeOrchestrator import RgResumeOrchestrator
-
-            return RgResumeOrchestrator
-        except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.fail(f"Cannot import RgResumeOrchestrator: {e}")
 
     def test_class_exists(self, agent_class):
         """Verify RgResumeOrchestrator exists and is importable."""
@@ -91,12 +85,9 @@ class TestRgResumeOrchestratorAgent:
             network_calls.append((args, kwargs))
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
-            try:
-                from apps_rg.reasoning.RgResumeOrchestrator import (
-                    RgResumeOrchestrator,  # noqa: F401
-                )
-            except (ImportError, NameError, AttributeError):  # guardian: allow-silent-swallower
-                pass
+            from apps_rg.reasoning.RgResumeOrchestrator import (
+                RgResumeOrchestrator,  # noqa: F401
+            )
 
             assert len(network_calls) == 0, "No network calls on import"
 

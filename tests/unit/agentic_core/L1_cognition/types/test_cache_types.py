@@ -10,29 +10,17 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L1_cognition.types.cache_types import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        DomainConfig,
-        EvictionPolicy,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    EvictionPolicy = None  # type: ignore[assignment,misc]
-    DomainConfig = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L1_cognition.types.cache_types import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    DomainConfig,
+    EvictionPolicy,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="cache_types.py deps unavailable")
 class TestEvictionPolicyContract:
     def test_is_enum(self):
         import enum
@@ -48,7 +36,6 @@ class TestEvictionPolicyContract:
     def test_known_member_lru_exists(self):
         assert hasattr(EvictionPolicy, 'LRU')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="cache_types.py deps unavailable")
 class TestDomainConfigContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -59,27 +46,22 @@ class TestDomainConfigContract:
         field_names = {f.name for f in dataclasses.fields(DomainConfig)}
         assert field_names >= {'similarity_threshold', 'eviction_policy', 'domain', 'ttl_seconds', 'max_cache_size'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="cache_types.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="cache_types.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="cache_types.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="cache_types.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="cache_types.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -87,4 +69,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module cache_types must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

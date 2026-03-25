@@ -45,12 +45,6 @@ class TestRgStrategicPlannerAgent:
     @pytest.fixture
     def agent_class(self):
         """Import agent class with mocked dependencies."""
-        try:
-            from apps_rg.reasoning.RgStrategicPlannerAgent import RgStrategicPlannerAgent
-
-            return RgStrategicPlannerAgent
-        except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.fail(f"Cannot import RgStrategicPlannerAgent: {e}")
 
     def test_class_exists(self, agent_class):
         """Verify RgStrategicPlannerAgent exists and is importable."""
@@ -96,12 +90,9 @@ class TestRgStrategicPlannerAgent:
             network_calls.append((args, kwargs))
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
-            try:
-                from apps_rg.reasoning.RgStrategicPlannerAgent import (
-                    RgStrategicPlannerAgent,  # noqa: F401
-                )
-            except (ImportError, NameError, AttributeError):  # guardian: allow-silent-swallower
-                pass
+            from apps_rg.reasoning.RgStrategicPlannerAgent import (
+                RgStrategicPlannerAgent,  # noqa: F401
+            )
 
             assert len(network_calls) == 0, "No network calls on import"
 

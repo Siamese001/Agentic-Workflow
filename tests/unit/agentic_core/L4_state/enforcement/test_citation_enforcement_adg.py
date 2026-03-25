@@ -1,33 +1,9 @@
-"""ADG importability contract for agentic_core/L4_state/enforcement/citation_enforcement.py.
-
-Auto-generated stub — covers GT_covers edge for ADG reachability.
-Behavioral tests belong in test_citation_enforcement.py (no _adg suffix).
-"""
-
+"""ADG importability contract for agentic_core/L4_state/enforcement/citation_enforcement.py."""
 from __future__ import annotations
 
-import pytest
-
-try:
-    from agentic_core.L4_state.enforcement.citation_enforcement import (  # noqa: F401
-        CitationEnforcementViolation,
-        assemble_response,
-        enforce_citations_for_retrieval,
-    )
-
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    CitationEnforcementViolation = None  # type: ignore[assignment,misc]
-    enforce_citations_for_retrieval = None  # type: ignore[assignment,misc]
-    assemble_response = None  # type: ignore[assignment,misc]
+import agentic_core.L4_state.enforcement.citation_enforcement  # noqa: F401
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="citation_enforcement deps unavailable")
-class TestCitationEnforcementImportability:
-    def test_module_importable(self) -> None:
-        """ADG contract: agentic_core/L4_state/enforcement/citation_enforcement.py must be importable."""
-        assert _AVAILABLE
-
-    def test_citationenforcementviolation_defined(self) -> None:
-        assert CitationEnforcementViolation is not None
+def test_module_importable():
+    """Module citation_enforcement must be importable."""
+    assert agentic_core.L4_state.enforcement.citation_enforcement is not None

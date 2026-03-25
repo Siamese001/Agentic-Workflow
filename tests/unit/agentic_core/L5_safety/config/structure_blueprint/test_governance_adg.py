@@ -5,14 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    import agentic_core.L5_safety.config.structure_blueprint.governance as _mod  # noqa: F401
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _mod = None
-    _AVAILABLE = False
+import agentic_core.L5_safety.config.structure_blueprint.governance as _mod  # noqa: F401
 
 
 def test_module_importable():
-    """Module governance.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module governance must be importable."""
+    assert _mod is not None

@@ -5,14 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    import agentic_core.L6_observability.__init__ as _mod  # noqa: F401
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _mod = None
-    _AVAILABLE = False
+import agentic_core.L6_observability.__init__ as _mod  # noqa: F401
 
 
 def test_module_importable():
-    """Package agentic_core.L6_observability.__init__ must be importable."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module L6_observability must be importable."""
+    assert _mod is not None

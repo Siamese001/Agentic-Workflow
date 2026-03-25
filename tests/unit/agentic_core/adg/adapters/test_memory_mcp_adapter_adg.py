@@ -1,31 +1,9 @@
-"""ADG importability contract for agentic_core/adg/adapters/memory_mcp_adapter.py.
-
-Auto-generated stub — covers GT_covers edge for ADG reachability.
-Behavioral tests belong in test_memory_mcp_adapter.py (no _adg suffix).
-"""
-
+"""ADG importability contract for agentic_core/adg/adapters/memory_mcp_adapter.py."""
 from __future__ import annotations
 
-import pytest
-
-try:
-    from agentic_core.adg.adapters.ADGMemoryAdapter import (  # noqa: F401
-        ADGMemoryAdapter,
-        get_adapter,
-    )
-
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    ADGMemoryAdapter = None  # type: ignore[assignment,misc]
-    get_adapter = None  # type: ignore[assignment,misc]
+import agentic_core.adg.adapters.ADGMemoryAdapter  # noqa: F401
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="memory_mcp_adapter deps unavailable")
-class TestMemoryMcpAdapterImportability:
-    def test_module_importable(self) -> None:
-        """ADG contract: agentic_core/adg/adapters/memory_mcp_adapter.py must be importable."""
-        assert _AVAILABLE
-
-    def test_adgmemoryadapter_defined(self) -> None:
-        assert ADGMemoryAdapter is not None
+def test_module_importable():
+    """Module ADGMemoryAdapter must be importable."""
+    assert agentic_core.adg.adapters.ADGMemoryAdapter is not None

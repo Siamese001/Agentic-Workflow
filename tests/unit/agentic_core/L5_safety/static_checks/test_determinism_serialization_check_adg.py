@@ -1,33 +1,9 @@
-"""ADG importability contract for agentic_core/L5_safety/static_checks/determinism_serialization_check.py.
-
-Auto-generated stub — covers GT_covers edge for ADG reachability.
-Behavioral tests belong in test_determinism_serialization_check.py (no _adg suffix).
-"""
-
+"""ADG importability contract for agentic_core/L5_safety/static_checks/determinism_serialization_check.py."""
 from __future__ import annotations
 
-import pytest
-
-try:
-    from agentic_core.L5_safety.static_checks.determinism_serialization_check import (  # noqa: F401
-        DeterminismVisitor,
-        scan_file_for_determinism,
-        scan_repository_for_determinism,
-    )
-
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    DeterminismVisitor = None  # type: ignore[assignment,misc]
-    scan_file_for_determinism = None  # type: ignore[assignment,misc]
-    scan_repository_for_determinism = None  # type: ignore[assignment,misc]
+import agentic_core.L5_safety.static_checks.determinism_serialization_check  # noqa: F401
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="determinism_serialization_check deps unavailable")
-class TestDeterminismSerializationCheckImportability:
-    def test_module_importable(self) -> None:
-        """ADG contract: agentic_core/L5_safety/static_checks/determinism_serialization_check.py must be importable."""
-        assert _AVAILABLE
-
-    def test_determinismvisitor_defined(self) -> None:
-        assert DeterminismVisitor is not None
+def test_module_importable():
+    """Module determinism_serialization_check must be importable."""
+    assert agentic_core.L5_safety.static_checks.determinism_serialization_check is not None

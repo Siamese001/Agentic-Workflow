@@ -4,6 +4,8 @@ E2E test example - should be routed to tests/e2e/
 
 import pytest
 
+pytestmark = pytest.mark.optional
+
 playwright = pytest.importorskip("playwright", reason="playwright not installed")
 from playwright.sync_api import Page  # noqa: E402
 

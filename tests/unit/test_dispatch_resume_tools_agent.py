@@ -40,12 +40,6 @@ class TestDispatchResumeToolsAgent:
     @pytest.fixture
     def agent_class(self):
         """Import agent class with mocked dependencies."""
-        try:
-            from apps_rg.reasoning.DispatchResumeToolsAgent import DispatchResumeToolsAgent
-
-            return DispatchResumeToolsAgent
-        except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.fail(f"Cannot import DispatchResumeToolsAgent: {e}")
 
     def test_class_exists(self, agent_class):
         """Verify DispatchResumeToolsAgent exists and is importable."""
@@ -89,12 +83,9 @@ class TestDispatchResumeToolsAgent:
             network_calls.append((args, kwargs))
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
-            try:
-                from apps_rg.reasoning.DispatchResumeToolsAgent import (
-                    DispatchResumeToolsAgent,  # noqa: F401
-                )
-            except (ImportError, NameError, AttributeError):  # guardian: allow-silent-swallower
-                pass
+            from apps_rg.reasoning.DispatchResumeToolsAgent import (
+                DispatchResumeToolsAgent,  # noqa: F401
+            )
 
             assert len(network_calls) == 0, "No network calls on import"
 

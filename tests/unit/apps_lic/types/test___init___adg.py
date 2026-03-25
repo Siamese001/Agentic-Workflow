@@ -5,14 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    import apps_lic.types.__init__ as _mod  # noqa: F401
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _mod = None
-    _AVAILABLE = False
+import apps_lic.types.__init__ as _mod  # noqa: F401
 
 
 def test_module_importable():
-    """Package apps_lic.types.__init__ must be importable."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module types must be importable."""
+    assert _mod is not None

@@ -11,28 +11,15 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.adg.client.mcp_client import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_DEPTH,
-        MAX_RETRIES,
-        THRESHOLD,
-        ADGMCPClient,
-    )
-
-    _AVAILABLE = True
-except ImportError:
-    pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    ADGMCPClient = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
-    MAX_DEPTH = None  # type: ignore[assignment,misc]
+from agentic_core.adg.client.mcp_client import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_DEPTH,
+    MAX_RETRIES,
+    THRESHOLD,
+    ADGMCPClient,
+)
 
 
 class TestADGMCPClientContract:

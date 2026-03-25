@@ -5,45 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L5_safety.config.blueprint_compiler import (  # noqa: F401
-        CompiledBlueprint,
-        compile_blueprint,
-        make_lcd_layer,
-        verify_blueprint_consistency,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    CompiledBlueprint = None  # type: ignore[assignment,misc]
-    make_lcd_layer = None  # type: ignore[assignment,misc]
-    compile_blueprint = None  # type: ignore[assignment,misc]
-    verify_blueprint_consistency = None  # type: ignore[assignment,misc]
-
-
-@pytest.mark.skipif(not _AVAILABLE, reason="blueprint_compiler.py deps unavailable")
-class TestCompiledBlueprint:
-    def test_is_class(self):
-        assert isinstance(CompiledBlueprint, type)
-    def test_importable(self):
-        assert CompiledBlueprint is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="blueprint_compiler.py deps unavailable")
-class TestMakeLcdLayer:
-    def test_is_callable(self):
-        assert callable(make_lcd_layer)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="blueprint_compiler.py deps unavailable")
-class TestCompileBlueprint:
-    def test_is_callable(self):
-        assert callable(compile_blueprint)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="blueprint_compiler.py deps unavailable")
-class TestVerifyBlueprintConsistency:
-    def test_is_callable(self):
-        assert callable(verify_blueprint_consistency)
+import agentic_core.L5_safety.config.blueprint_compiler  # noqa: F401
 
 
 def test_module_importable():
-    """Module blueprint_compiler.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module blueprint_compiler must be importable."""
+    assert agentic_core.L5_safety.config.blueprint_compiler is not None

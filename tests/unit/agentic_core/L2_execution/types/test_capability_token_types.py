@@ -10,31 +10,18 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L2_execution.types.capability_token_types import (  # noqa: F401
-        CapabilityConstraints,
-        CapabilityDecisionArtifact,
-        CapabilityEnforcer,
-        CapabilityTokenArtifact,
-        CapabilityTokenSubject,
-        build_capability_decision,
-        build_capability_token,
-        issue_capability_token,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    CapabilityTokenSubject = None  # type: ignore[assignment,misc]
-    CapabilityConstraints = None  # type: ignore[assignment,misc]
-    CapabilityTokenArtifact = None  # type: ignore[assignment,misc]
-    CapabilityDecisionArtifact = None  # type: ignore[assignment,misc]
-    CapabilityEnforcer = None  # type: ignore[assignment,misc]
-    build_capability_token = None  # type: ignore[assignment,misc]
-    build_capability_decision = None  # type: ignore[assignment,misc]
-    issue_capability_token = None  # type: ignore[assignment,misc]
+from agentic_core.L2_execution.types.capability_token_types import (  # noqa: F401
+    CapabilityConstraints,
+    CapabilityDecisionArtifact,
+    CapabilityEnforcer,
+    CapabilityTokenArtifact,
+    CapabilityTokenSubject,
+    build_capability_decision,
+    build_capability_token,
+    issue_capability_token,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="capability_token_types.py deps unavailable")
 class TestCapabilityTokenSubjectContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -57,7 +44,6 @@ class TestCapabilityTokenSubjectContract:
         # (create requires knowing required fields — skip if args unknown)
         assert CapabilityTokenSubject.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="capability_token_types.py deps unavailable")
 class TestCapabilityConstraintsContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -80,7 +66,6 @@ class TestCapabilityConstraintsContract:
         # (create requires knowing required fields — skip if args unknown)
         assert CapabilityConstraints.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="capability_token_types.py deps unavailable")
 class TestCapabilityTokenArtifactContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -103,7 +88,6 @@ class TestCapabilityTokenArtifactContract:
         # (create requires knowing required fields — skip if args unknown)
         assert CapabilityTokenArtifact.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="capability_token_types.py deps unavailable")
 class TestCapabilityDecisionArtifactContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -126,7 +110,6 @@ class TestCapabilityDecisionArtifactContract:
         # (create requires knowing required fields — skip if args unknown)
         assert CapabilityDecisionArtifact.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="capability_token_types.py deps unavailable")
 class TestCapabilityEnforcerContract:
     def test_is_class(self):
         assert isinstance(CapabilityEnforcer, type)
@@ -146,7 +129,6 @@ class TestCapabilityEnforcerContract:
     def test_has_method_check(self):
         assert callable(getattr(CapabilityEnforcer, 'check', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="capability_token_types.py deps unavailable")
 class TestBuildCapabilityTokenFunction:
     def test_is_callable(self):
         assert callable(build_capability_token)
@@ -156,7 +138,6 @@ class TestBuildCapabilityTokenFunction:
         sig = inspect.signature(build_capability_token)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="capability_token_types.py deps unavailable")
 class TestBuildCapabilityDecisionFunction:
     def test_is_callable(self):
         assert callable(build_capability_decision)
@@ -166,7 +147,6 @@ class TestBuildCapabilityDecisionFunction:
         sig = inspect.signature(build_capability_decision)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="capability_token_types.py deps unavailable")
 class TestIssueCapabilityTokenFunction:
     def test_is_callable(self):
         assert callable(issue_capability_token)
@@ -179,4 +159,4 @@ class TestIssueCapabilityTokenFunction:
 
 def test_module_importable():
     """Module capability_token_types must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

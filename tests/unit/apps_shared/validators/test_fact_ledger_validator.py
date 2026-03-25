@@ -10,41 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_shared.validators.fact_ledger_validator import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        ClaimExtractor,
-        Fact,
-        FactLedger,
-        FactStatus,
-        VerificationResult,
-        get_fact_ledger,
-        load_profile_facts,
-        verify_claim,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    FactStatus = None  # type: ignore[assignment,misc]
-    Fact = None  # type: ignore[assignment,misc]
-    VerificationResult = None  # type: ignore[assignment,misc]
-    ClaimExtractor = None  # type: ignore[assignment,misc]
-    FactLedger = None  # type: ignore[assignment,misc]
-    get_fact_ledger = None  # type: ignore[assignment,misc]
-    verify_claim = None  # type: ignore[assignment,misc]
-    load_profile_facts = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from apps_shared.validators.fact_ledger_validator import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    ClaimExtractor,
+    Fact,
+    FactLedger,
+    FactStatus,
+    VerificationResult,
+    get_fact_ledger,
+    load_profile_facts,
+    verify_claim,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="fact_ledger_validator.py deps unavailable")
 class TestFactStatusContract:
     def test_is_enum(self):
         import enum
@@ -60,7 +42,6 @@ class TestFactStatusContract:
     def test_known_member_verified_exists(self):
         assert hasattr(FactStatus, 'VERIFIED')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="fact_ledger_validator.py deps unavailable")
 class TestFactContract:
     def test_is_class(self):
         assert isinstance(Fact, type)
@@ -68,7 +49,6 @@ class TestFactContract:
     def test_has_method_to_dict(self):
         assert callable(getattr(Fact, 'to_dict', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="fact_ledger_validator.py deps unavailable")
 class TestVerificationResultContract:
     def test_is_class(self):
         assert isinstance(VerificationResult, type)
@@ -76,7 +56,6 @@ class TestVerificationResultContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(VerificationResult, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="fact_ledger_validator.py deps unavailable")
 class TestClaimExtractorContract:
     def test_is_class(self):
         assert isinstance(ClaimExtractor, type)
@@ -84,7 +63,6 @@ class TestClaimExtractorContract:
     def test_has_method_extract_claim(self):
         assert callable(getattr(ClaimExtractor, 'extract_claim', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="fact_ledger_validator.py deps unavailable")
 class TestFactLedgerContract:
     def test_is_class(self):
         assert isinstance(FactLedger, type)
@@ -101,7 +79,6 @@ class TestFactLedgerContract:
     def test_has_method_update_fact(self):
         assert callable(getattr(FactLedger, 'update_fact', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="fact_ledger_validator.py deps unavailable")
 class TestGetFactLedgerFunction:
     def test_is_callable(self):
         assert callable(get_fact_ledger)
@@ -111,7 +88,6 @@ class TestGetFactLedgerFunction:
         sig = inspect.signature(get_fact_ledger)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="fact_ledger_validator.py deps unavailable")
 class TestVerifyClaimFunction:
     def test_is_callable(self):
         assert callable(verify_claim)
@@ -121,7 +97,6 @@ class TestVerifyClaimFunction:
         sig = inspect.signature(verify_claim)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="fact_ledger_validator.py deps unavailable")
 class TestLoadProfileFactsFunction:
     def test_is_callable(self):
         assert callable(load_profile_facts)
@@ -131,27 +106,22 @@ class TestLoadProfileFactsFunction:
         sig = inspect.signature(load_profile_facts)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="fact_ledger_validator.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="fact_ledger_validator.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="fact_ledger_validator.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="fact_ledger_validator.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="fact_ledger_validator.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -159,4 +129,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module fact_ledger_validator must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

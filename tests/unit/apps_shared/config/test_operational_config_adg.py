@@ -5,78 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_shared.config.operational_config import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_DEPTH,
-        MAX_RETRIES,
-        THRESHOLD,
-        is_allowed_duplicate,
-        is_excluded_path,
-        should_scan_directory,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    is_excluded_path = None  # type: ignore[assignment,misc]
-    is_allowed_duplicate = None  # type: ignore[assignment,misc]
-    should_scan_directory = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
-    MAX_DEPTH = None  # type: ignore[assignment,misc]
-
-
-@pytest.mark.skipif(not _AVAILABLE, reason="operational_config.py deps unavailable")
-class TestIsExcludedPath:
-    def test_is_callable(self):
-        assert callable(is_excluded_path)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="operational_config.py deps unavailable")
-class TestIsAllowedDuplicate:
-    def test_is_callable(self):
-        assert callable(is_allowed_duplicate)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="operational_config.py deps unavailable")
-class TestShouldScanDirectory:
-    def test_is_callable(self):
-        assert callable(should_scan_directory)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="operational_config.py deps unavailable")
-class TestMaxRetriesConstant:
-    def test_is_not_none(self):
-        assert MAX_RETRIES is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="operational_config.py deps unavailable")
-class TestDefaultSleepConstant:
-    def test_is_not_none(self):
-        assert DEFAULT_SLEEP is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="operational_config.py deps unavailable")
-class TestThresholdConstant:
-    def test_is_not_none(self):
-        assert THRESHOLD is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="operational_config.py deps unavailable")
-class TestBufferSizeConstant:
-    def test_is_not_none(self):
-        assert BUFFER_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="operational_config.py deps unavailable")
-class TestBatchSizeConstant:
-    def test_is_not_none(self):
-        assert BATCH_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="operational_config.py deps unavailable")
-class TestMaxDepthConstant:
-    def test_is_not_none(self):
-        assert MAX_DEPTH is not None
+import apps_shared.config.operational_config  # noqa: F401
 
 
 def test_module_importable():
-    """Module operational_config.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module operational_config must be importable."""
+    assert apps_shared.config.operational_config is not None

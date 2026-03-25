@@ -10,43 +10,24 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_shared.utils.unified_executor_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        APIExecutionStrategy,
-        ExecutionContext,
-        ExecutionResult,
-        ExecutionStatus,
-        ExecutionStrategy,
-        LLMExecutionStrategy,
-        execute_outreach_generation,
-        execute_resume_generation,
-        get_engine_executor,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    ExecutionStatus = None  # type: ignore[assignment,misc]
-    ExecutionContext = None  # type: ignore[assignment,misc]
-    ExecutionResult = None  # type: ignore[assignment,misc]
-    ExecutionStrategy = None  # type: ignore[assignment,misc]
-    LLMExecutionStrategy = None  # type: ignore[assignment,misc]
-    APIExecutionStrategy = None  # type: ignore[assignment,misc]
-    get_engine_executor = None  # type: ignore[assignment,misc]
-    execute_resume_generation = None  # type: ignore[assignment,misc]
-    execute_outreach_generation = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from apps_shared.utils.unified_executor_util import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    APIExecutionStrategy,
+    ExecutionContext,
+    ExecutionResult,
+    ExecutionStatus,
+    ExecutionStrategy,
+    LLMExecutionStrategy,
+    execute_outreach_generation,
+    execute_resume_generation,
+    get_engine_executor,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_executor_util.py deps unavailable")
 class TestExecutionStatusContract:
     def test_is_enum(self):
         import enum
@@ -62,7 +43,6 @@ class TestExecutionStatusContract:
     def test_known_member_pending_exists(self):
         assert hasattr(ExecutionStatus, 'PENDING')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_executor_util.py deps unavailable")
 class TestExecutionContextContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -73,7 +53,6 @@ class TestExecutionContextContract:
         field_names = {f.name for f in dataclasses.fields(ExecutionContext)}
         assert field_names >= {'engine_type', 'config', 'operation_id', 'metadata', 'input_data'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_executor_util.py deps unavailable")
 class TestExecutionResultContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -84,7 +63,6 @@ class TestExecutionResultContract:
         field_names = {f.name for f in dataclasses.fields(ExecutionResult)}
         assert field_names >= {'error', 'context', 'status', 'metrics', 'data'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_executor_util.py deps unavailable")
 class TestExecutionStrategyContract:
     def test_is_class(self):
         assert isinstance(ExecutionStrategy, type)
@@ -95,7 +73,6 @@ class TestExecutionStrategyContract:
     def test_has_method_strategy_name(self):
         assert callable(getattr(ExecutionStrategy, 'strategy_name', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_executor_util.py deps unavailable")
 class TestLLMExecutionStrategyContract:
     def test_is_class(self):
         assert isinstance(LLMExecutionStrategy, type)
@@ -106,7 +83,6 @@ class TestLLMExecutionStrategyContract:
     def test_has_method_strategy_name(self):
         assert callable(getattr(LLMExecutionStrategy, 'strategy_name', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_executor_util.py deps unavailable")
 class TestAPIExecutionStrategyContract:
     def test_is_class(self):
         assert isinstance(APIExecutionStrategy, type)
@@ -117,7 +93,6 @@ class TestAPIExecutionStrategyContract:
     def test_has_method_strategy_name(self):
         assert callable(getattr(APIExecutionStrategy, 'strategy_name', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_executor_util.py deps unavailable")
 class TestGetEngineExecutorFunction:
     def test_is_callable(self):
         assert callable(get_engine_executor)
@@ -127,7 +102,6 @@ class TestGetEngineExecutorFunction:
         sig = inspect.signature(get_engine_executor)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_executor_util.py deps unavailable")
 class TestExecuteResumeGenerationFunction:
     def test_is_callable(self):
         assert callable(execute_resume_generation)
@@ -137,7 +111,6 @@ class TestExecuteResumeGenerationFunction:
         sig = inspect.signature(execute_resume_generation)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_executor_util.py deps unavailable")
 class TestExecuteOutreachGenerationFunction:
     def test_is_callable(self):
         assert callable(execute_outreach_generation)
@@ -147,27 +120,22 @@ class TestExecuteOutreachGenerationFunction:
         sig = inspect.signature(execute_outreach_generation)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_executor_util.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_executor_util.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_executor_util.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_executor_util.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_executor_util.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -175,4 +143,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module unified_executor_util must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

@@ -10,41 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_shared.utils.mutation_phase_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        DAGSafetyManager,
-        MutationPhase,
-        SafeMutationContext,
-        StateSnapshot,
-        validate_acyclic_hook,
-        validate_connectivity_hook,
-        validate_depth_consistency_hook,
-        validate_node_attributes_hook,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    MutationPhase = None  # type: ignore[assignment,misc]
-    StateSnapshot = None  # type: ignore[assignment,misc]
-    DAGSafetyManager = None  # type: ignore[assignment,misc]
-    SafeMutationContext = None  # type: ignore[assignment,misc]
-    validate_acyclic_hook = None  # type: ignore[assignment,misc]
-    validate_connectivity_hook = None  # type: ignore[assignment,misc]
-    validate_node_attributes_hook = None  # type: ignore[assignment,misc]
-    validate_depth_consistency_hook = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from apps_shared.utils.mutation_phase_util import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    DAGSafetyManager,
+    MutationPhase,
+    SafeMutationContext,
+    StateSnapshot,
+    validate_acyclic_hook,
+    validate_connectivity_hook,
+    validate_depth_consistency_hook,
+    validate_node_attributes_hook,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="mutation_phase_util.py deps unavailable")
 class TestMutationPhaseContract:
     def test_is_enum(self):
         import enum
@@ -60,7 +42,6 @@ class TestMutationPhaseContract:
     def test_known_member_pre_validate_exists(self):
         assert hasattr(MutationPhase, 'PRE_VALIDATE')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="mutation_phase_util.py deps unavailable")
 class TestStateSnapshotContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -71,7 +52,6 @@ class TestStateSnapshotContract:
         field_names = {f.name for f in dataclasses.fields(StateSnapshot)}
         assert field_names >= {'external_state', 'edge_attributes', 'graph_copy', 'timestamp', 'node_attributes'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="mutation_phase_util.py deps unavailable")
 class TestDAGSafetyManagerContract:
     def test_is_class(self):
         assert isinstance(DAGSafetyManager, type)
@@ -88,7 +68,6 @@ class TestDAGSafetyManagerContract:
     def test_has_method_begin_mutation(self):
         assert callable(getattr(DAGSafetyManager, 'begin_mutation', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="mutation_phase_util.py deps unavailable")
 class TestSafeMutationContextContract:
     def test_is_class(self):
         assert isinstance(SafeMutationContext, type)
@@ -96,7 +75,6 @@ class TestSafeMutationContextContract:
     def test_has_method_execute(self):
         assert callable(getattr(SafeMutationContext, 'execute', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="mutation_phase_util.py deps unavailable")
 class TestValidateAcyclicHookFunction:
     def test_is_callable(self):
         assert callable(validate_acyclic_hook)
@@ -106,7 +84,6 @@ class TestValidateAcyclicHookFunction:
         sig = inspect.signature(validate_acyclic_hook)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="mutation_phase_util.py deps unavailable")
 class TestValidateConnectivityHookFunction:
     def test_is_callable(self):
         assert callable(validate_connectivity_hook)
@@ -116,7 +93,6 @@ class TestValidateConnectivityHookFunction:
         sig = inspect.signature(validate_connectivity_hook)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="mutation_phase_util.py deps unavailable")
 class TestValidateNodeAttributesHookFunction:
     def test_is_callable(self):
         assert callable(validate_node_attributes_hook)
@@ -126,7 +102,6 @@ class TestValidateNodeAttributesHookFunction:
         sig = inspect.signature(validate_node_attributes_hook)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="mutation_phase_util.py deps unavailable")
 class TestValidateDepthConsistencyHookFunction:
     def test_is_callable(self):
         assert callable(validate_depth_consistency_hook)
@@ -136,27 +111,22 @@ class TestValidateDepthConsistencyHookFunction:
         sig = inspect.signature(validate_depth_consistency_hook)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="mutation_phase_util.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="mutation_phase_util.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="mutation_phase_util.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="mutation_phase_util.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="mutation_phase_util.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -164,4 +134,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module mutation_phase_util must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

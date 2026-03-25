@@ -4,13 +4,15 @@ Basic tests for Phase 2.2 medium severity fixes implementation.
 """
 
 import json
-import pytest
+
+# Import the module we're testing
+import sys
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-# Import the module we're testing
-import sys
+import pytest
+
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "tools"))
 
 try:
@@ -23,14 +25,14 @@ except ImportError as e:
 
 class TestPhase22Basic:
     """Basic tests for Phase 2.2 implementation."""
-    
+
     @pytest.fixture
     def temp_workspace(self):
         """Create temporary workspace for testing."""
         with tempfile.TemporaryDirectory() as temp_dir:
             workspace = Path(temp_dir)
             yield workspace
-    
+
     @pytest.mark.skipif(not CAN_IMPORT, reason="Cannot import fixer")
     def test_can_import_fixer(self):
         """Test that the fixer can be imported."""
@@ -46,7 +48,7 @@ class TestPhase22Basic:
         violations_file = tools_dir / "silent_swallower_report.json"
         with open(violations_file, 'w') as f:
             json.dump({'violations': []}, f)
-        
+
         with patch('fix_medium_severity_swallowers.PROJECT_ROOT', temp_workspace):
             fixer = MediumSeveritySilentSwallowerFixer()
             assert len(fixer.violations) == 0
@@ -79,13 +81,13 @@ class TestPhase22Basic:
                 }
             ]
         }
-        
+
         tools_dir = temp_workspace / "tools"
         tools_dir.mkdir()
         violations_file = tools_dir / "silent_swallower_report.json"
         with open(violations_file, 'w') as f:
             json.dump(sample_violations, f)
-        
+
         with patch('fix_medium_severity_swallowers.PROJECT_ROOT', temp_workspace):
             fixer = MediumSeveritySilentSwallowerFixer()
             assert len(fixer.violations) == 2
@@ -100,22 +102,22 @@ class TestPhase22Basic:
         violations_file = tools_dir / "silent_swallower_report.json"
         with open(violations_file, 'w') as f:
             json.dump({'violations': []}, f)
-        
+
         with patch('fix_medium_severity_swallowers.PROJECT_ROOT', temp_workspace):
             fixer = MediumSeveritySilentSwallowerFixer()
-            
+
             if hasattr(fixer, '_determine_specific_exception_types'):
                 # Test data processing context
                 types = fixer._determine_specific_exception_types('data processing error')
                 assert isinstance(types, list)
                 assert len(types) > 0
                 assert 'ValueError' in types or 'TypeError' in types
-                
+
                 # Test network context
                 types = fixer._determine_specific_exception_types('network request failed')
                 assert isinstance(types, list)
                 assert len(types) > 0
-                
+
                 # Test file context
                 types = fixer._determine_specific_exception_types('file read operation')
                 assert isinstance(types, list)
@@ -131,17 +133,17 @@ class TestPhase22Basic:
         violations_file = tools_dir / "silent_swallower_report.json"
         with open(violations_file, 'w') as f:
             json.dump({'violations': []}, f)
-        
+
         with patch('fix_medium_severity_swallowers.PROJECT_ROOT', temp_workspace):
             fixer = MediumSeveritySilentSwallowerFixer()
-            
+
             if hasattr(fixer, '_create_specific_exception_handler'):
                 # Test basic replacement
                 original = "    except Exception:"
                 context = "data processing"
                 types = ['ValueError', 'TypeError']
                 new_handler = fixer._create_specific_exception_handler(original, context, types)
-                
+
                 assert new_handler != original
                 assert 'ValueError' in new_handler or 'TypeError' in new_handler
                 assert 'as e' in new_handler

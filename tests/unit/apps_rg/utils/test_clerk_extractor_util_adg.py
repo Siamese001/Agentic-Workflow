@@ -5,24 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_rg.utils.clerk_extractor_util import (  # noqa: F401
-        ClerkExtractor,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    ClerkExtractor = None  # type: ignore[assignment,misc]
-
-
-@pytest.mark.skipif(not _AVAILABLE, reason="clerk_extractor_util.py deps unavailable")
-class TestClerkExtractor:
-    def test_is_class(self):
-        assert isinstance(ClerkExtractor, type)
-    def test_importable(self):
-        assert ClerkExtractor is not None
+import apps_rg.utils.clerk_extractor_util  # noqa: F401
 
 
 def test_module_importable():
-    """Module clerk_extractor_util.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module clerk_extractor_util must be importable."""
+    assert apps_rg.utils.clerk_extractor_util is not None

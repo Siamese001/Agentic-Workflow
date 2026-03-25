@@ -10,35 +10,20 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_shared.utils.secure_config_manager_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        SecureConfigManager,
-        get_config,
-        get_config_manager,
-        get_encryption_key,
-        set_config,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    SecureConfigManager = None  # type: ignore[assignment,misc]
-    get_config_manager = None  # type: ignore[assignment,misc]
-    get_config = None  # type: ignore[assignment,misc]
-    set_config = None  # type: ignore[assignment,misc]
-    get_encryption_key = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from apps_shared.utils.secure_config_manager_util import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    SecureConfigManager,
+    get_config,
+    get_config_manager,
+    get_encryption_key,
+    set_config,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_config_manager_util.py deps unavailable")
 class TestSecureConfigManagerContract:
     def test_is_class(self):
         assert isinstance(SecureConfigManager, type)
@@ -55,7 +40,6 @@ class TestSecureConfigManagerContract:
     def test_has_method_get_key(self):
         assert callable(getattr(SecureConfigManager, 'get_key', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_config_manager_util.py deps unavailable")
 class TestGetConfigManagerFunction:
     def test_is_callable(self):
         assert callable(get_config_manager)
@@ -65,7 +49,6 @@ class TestGetConfigManagerFunction:
         sig = inspect.signature(get_config_manager)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_config_manager_util.py deps unavailable")
 class TestGetConfigFunction:
     def test_is_callable(self):
         assert callable(get_config)
@@ -75,7 +58,6 @@ class TestGetConfigFunction:
         sig = inspect.signature(get_config)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_config_manager_util.py deps unavailable")
 class TestSetConfigFunction:
     def test_is_callable(self):
         assert callable(set_config)
@@ -85,7 +67,6 @@ class TestSetConfigFunction:
         sig = inspect.signature(set_config)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_config_manager_util.py deps unavailable")
 class TestGetEncryptionKeyFunction:
     def test_is_callable(self):
         assert callable(get_encryption_key)
@@ -95,27 +76,22 @@ class TestGetEncryptionKeyFunction:
         sig = inspect.signature(get_encryption_key)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_config_manager_util.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_config_manager_util.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_config_manager_util.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_config_manager_util.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_config_manager_util.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -123,4 +99,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module secure_config_manager_util must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

@@ -10,37 +10,21 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_shared.utils.security_config_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        InputSanitizer,
-        InputValidator,
-        RateLimiter,
-        SecureTokenGenerator,
-        ValidationLevel,
-        ValidationResult,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    ValidationLevel = None  # type: ignore[assignment,misc]
-    ValidationResult = None  # type: ignore[assignment,misc]
-    InputSanitizer = None  # type: ignore[assignment,misc]
-    InputValidator = None  # type: ignore[assignment,misc]
-    SecureTokenGenerator = None  # type: ignore[assignment,misc]
-    RateLimiter = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from apps_shared.utils.security_config_util import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    InputSanitizer,
+    InputValidator,
+    RateLimiter,
+    SecureTokenGenerator,
+    ValidationLevel,
+    ValidationResult,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="security_config_util.py deps unavailable")
 class TestValidationLevelContract:
     def test_is_enum(self):
         import enum
@@ -56,7 +40,6 @@ class TestValidationLevelContract:
     def test_known_member_strict_exists(self):
         assert hasattr(ValidationLevel, 'STRICT')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="security_config_util.py deps unavailable")
 class TestValidationResultContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -67,7 +50,6 @@ class TestValidationResultContract:
         field_names = {f.name for f in dataclasses.fields(ValidationResult)}
         assert field_names >= {'errors', 'sanitized_value', 'valid'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="security_config_util.py deps unavailable")
 class TestInputSanitizerContract:
     def test_is_class(self):
         assert isinstance(InputSanitizer, type)
@@ -81,7 +63,6 @@ class TestInputSanitizerContract:
     def test_has_method_sanitize_identifier(self):
         assert callable(getattr(InputSanitizer, 'sanitize_identifier', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="security_config_util.py deps unavailable")
 class TestInputValidatorContract:
     def test_is_class(self):
         assert isinstance(InputValidator, type)
@@ -98,7 +79,6 @@ class TestInputValidatorContract:
     def test_has_method_validate_not_empty(self):
         assert callable(getattr(InputValidator, 'validate_not_empty', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="security_config_util.py deps unavailable")
 class TestSecureTokenGeneratorContract:
     def test_is_class(self):
         assert isinstance(SecureTokenGenerator, type)
@@ -115,7 +95,6 @@ class TestSecureTokenGeneratorContract:
     def test_has_method_verify_hash(self):
         assert callable(getattr(SecureTokenGenerator, 'verify_hash', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="security_config_util.py deps unavailable")
 class TestRateLimiterContract:
     def test_is_class(self):
         assert isinstance(RateLimiter, type)
@@ -129,27 +108,22 @@ class TestRateLimiterContract:
     def test_has_method_reset(self):
         assert callable(getattr(RateLimiter, 'reset', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="security_config_util.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="security_config_util.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="security_config_util.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="security_config_util.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="security_config_util.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -157,4 +131,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module security_config_util must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

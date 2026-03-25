@@ -12,7 +12,6 @@ COGNITIVE HARDENING (Feb 2026):
 
 import pytest
 
-_AVAILABLE = False
 try:
     from agentic_core.L4_state.utils.sanitize_telemetry_util import sanitize_tool_output
     from agentic_core.mixins.golden_context_mixin import (
@@ -20,7 +19,7 @@ try:
         THRESHOLD,
         GoldenContextMixin,
     )
-    _AVAILABLE = True
+
 except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
     sanitize_tool_output = None  # type: ignore[assignment,misc]
     GOLDEN_CONTEXT_SUMMARY = ""  # type: ignore[assignment,misc]
@@ -28,7 +27,6 @@ except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swa
     GoldenContextMixin = None  # type: ignore[assignment,misc]
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="cognitive endurance deps unavailable")
 class TestTelemetrySanitizer:
     """Test the telemetry pruner (anti-token overload)."""
 
@@ -100,7 +98,6 @@ ValueError: This is the actual error message!
         assert "Pruned" in result
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="cognitive endurance deps unavailable")
 class TestGoldenContextMixin:
     """Test the golden context mixin (anti-context drift)."""
 
@@ -175,7 +172,6 @@ class TestGoldenContextMixin:
         assert result[-1]["role"] == "developer"
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="cognitive endurance deps unavailable")
 class TestIntegration:
     """Integration tests for cognitive endurance infrastructure."""
 

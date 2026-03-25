@@ -10,33 +10,19 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from system_learning.engines.l3_efficiency_tuner import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        EfficiencyBottleneck,
-        EfficiencyReport,
-        L3EfficiencyTuner,
-        extract_timings_from_runtime_state,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    EfficiencyBottleneck = None  # type: ignore[assignment,misc]
-    EfficiencyReport = None  # type: ignore[assignment,misc]
-    L3EfficiencyTuner = None  # type: ignore[assignment,misc]
-    extract_timings_from_runtime_state = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from system_learning.engines.l3_efficiency_tuner import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    EfficiencyBottleneck,
+    EfficiencyReport,
+    L3EfficiencyTuner,
+    extract_timings_from_runtime_state,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="l3_efficiency_tuner.py deps unavailable")
 class TestEfficiencyBottleneckContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -59,7 +45,6 @@ class TestEfficiencyBottleneckContract:
         # (create requires knowing required fields — skip if args unknown)
         assert EfficiencyBottleneck.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="l3_efficiency_tuner.py deps unavailable")
 class TestEfficiencyReportContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -82,7 +67,6 @@ class TestEfficiencyReportContract:
         # (create requires knowing required fields — skip if args unknown)
         assert EfficiencyReport.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="l3_efficiency_tuner.py deps unavailable")
 class TestL3EfficiencyTunerContract:
     def test_is_class(self):
         assert isinstance(L3EfficiencyTuner, type)
@@ -90,7 +74,6 @@ class TestL3EfficiencyTunerContract:
     def test_has_method_analyze(self):
         assert callable(getattr(L3EfficiencyTuner, 'analyze', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="l3_efficiency_tuner.py deps unavailable")
 class TestExtractTimingsFromRuntimeStateFunction:
     def test_is_callable(self):
         assert callable(extract_timings_from_runtime_state)
@@ -100,27 +83,22 @@ class TestExtractTimingsFromRuntimeStateFunction:
         sig = inspect.signature(extract_timings_from_runtime_state)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="l3_efficiency_tuner.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="l3_efficiency_tuner.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="l3_efficiency_tuner.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="l3_efficiency_tuner.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="l3_efficiency_tuner.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -128,4 +106,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module l3_efficiency_tuner must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

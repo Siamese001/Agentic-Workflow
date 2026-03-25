@@ -10,29 +10,17 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L1_cognition.types.client_types import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        CacheEntry,
-        HealingPattern,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    HealingPattern = None  # type: ignore[assignment,misc]
-    CacheEntry = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L1_cognition.types.client_types import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    CacheEntry,
+    HealingPattern,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="client_types.py deps unavailable")
 class TestHealingPatternContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -43,7 +31,6 @@ class TestHealingPatternContract:
         field_names = {f.name for f in dataclasses.fields(HealingPattern)}
         assert field_names >= {'success_count', 'healing_strategy', 'pattern_id', 'violation_type', 'error_signature'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="client_types.py deps unavailable")
 class TestCacheEntryContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -54,27 +41,22 @@ class TestCacheEntryContract:
         field_names = {f.name for f in dataclasses.fields(CacheEntry)}
         assert field_names >= {'created_at', 'key', 'domain', 'value', 'ttl'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="client_types.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="client_types.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="client_types.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="client_types.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="client_types.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -82,4 +64,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module client_types must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

@@ -10,27 +10,16 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.runtime.exceptions.SovereignError import (  # noqa: F401
-        CircularDependencyError,
-        ConfigurationError,
-        HealerError,
-        HygieneError,
-        SovereignError,
-        StructuralError,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    SovereignError = None  # type: ignore[assignment,misc]
-    HealerError = None  # type: ignore[assignment,misc]
-    CircularDependencyError = None  # type: ignore[assignment,misc]
-    ConfigurationError = None  # type: ignore[assignment,misc]
-    StructuralError = None  # type: ignore[assignment,misc]
-    HygieneError = None  # type: ignore[assignment,misc]
+from agentic_core.runtime.exceptions.SovereignError import (  # noqa: F401
+    CircularDependencyError,
+    ConfigurationError,
+    HealerError,
+    HygieneError,
+    SovereignError,
+    StructuralError,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="SovereignError.py deps unavailable")
 class TestSovereignErrorContract:
     def test_is_class(self):
         assert isinstance(SovereignError, type)
@@ -38,7 +27,6 @@ class TestSovereignErrorContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(SovereignError, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="SovereignError.py deps unavailable")
 class TestHealerErrorContract:
     def test_is_class(self):
         assert isinstance(HealerError, type)
@@ -46,7 +34,6 @@ class TestHealerErrorContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(HealerError, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="SovereignError.py deps unavailable")
 class TestCircularDependencyErrorContract:
     def test_is_class(self):
         assert isinstance(CircularDependencyError, type)
@@ -54,7 +41,6 @@ class TestCircularDependencyErrorContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(CircularDependencyError, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="SovereignError.py deps unavailable")
 class TestConfigurationErrorContract:
     def test_is_class(self):
         assert isinstance(ConfigurationError, type)
@@ -62,7 +48,6 @@ class TestConfigurationErrorContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(ConfigurationError, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="SovereignError.py deps unavailable")
 class TestStructuralErrorContract:
     def test_is_class(self):
         assert isinstance(StructuralError, type)
@@ -70,7 +55,6 @@ class TestStructuralErrorContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(StructuralError, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="SovereignError.py deps unavailable")
 class TestHygieneErrorContract:
     def test_is_class(self):
         assert isinstance(HygieneError, type)
@@ -81,4 +65,4 @@ class TestHygieneErrorContract:
 
 def test_module_importable():
     """Module SovereignError must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

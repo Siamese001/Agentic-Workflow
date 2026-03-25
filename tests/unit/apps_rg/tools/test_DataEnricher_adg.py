@@ -5,24 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_rg.tools.DataEnricher import (  # noqa: F401
-        DataEnricher,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    DataEnricher = None  # type: ignore[assignment,misc]
-
-
-@pytest.mark.skipif(not _AVAILABLE, reason="DataEnricher.py deps unavailable")
-class TestDataEnricher:
-    def test_is_class(self):
-        assert isinstance(DataEnricher, type)
-    def test_importable(self):
-        assert DataEnricher is not None
+import apps_rg.tools.DataEnricher  # noqa: F401
 
 
 def test_module_importable():
-    """Module DataEnricher.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module DataEnricher must be importable."""
+    assert apps_rg.tools.DataEnricher is not None

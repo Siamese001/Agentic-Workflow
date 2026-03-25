@@ -5,14 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    import agentic_core.utils.decorators_shim_util as _mod  # noqa: F401
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _mod = None
-    _AVAILABLE = False
+import agentic_core.utils.decorators_shim_util as _mod  # noqa: F401
 
 
 def test_module_importable():
-    """Module decorators_shim_util.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module decorators_shim_util must be importable."""
+    assert _mod is not None

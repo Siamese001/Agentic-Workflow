@@ -5,85 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L5_safety.enforcement.namespace_medic_enforcer import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_DEPTH,
-        MAX_RETRIES,
-        THRESHOLD,
-        find_missing_imports,
-        heal_file,
-        inject_imports,
-        main,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    find_missing_imports = None  # type: ignore[assignment,misc]
-    inject_imports = None  # type: ignore[assignment,misc]
-    heal_file = None  # type: ignore[assignment,misc]
-    main = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
-    MAX_DEPTH = None  # type: ignore[assignment,misc]
-
-
-@pytest.mark.skipif(not _AVAILABLE, reason="namespace_medic_enforcer.py deps unavailable")
-class TestFindMissingImports:
-    def test_is_callable(self):
-        assert callable(find_missing_imports)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="namespace_medic_enforcer.py deps unavailable")
-class TestInjectImports:
-    def test_is_callable(self):
-        assert callable(inject_imports)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="namespace_medic_enforcer.py deps unavailable")
-class TestHealFile:
-    def test_is_callable(self):
-        assert callable(heal_file)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="namespace_medic_enforcer.py deps unavailable")
-class TestMain:
-    def test_is_callable(self):
-        assert callable(main)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="namespace_medic_enforcer.py deps unavailable")
-class TestMaxRetriesConstant:
-    def test_is_not_none(self):
-        assert MAX_RETRIES is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="namespace_medic_enforcer.py deps unavailable")
-class TestDefaultSleepConstant:
-    def test_is_not_none(self):
-        assert DEFAULT_SLEEP is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="namespace_medic_enforcer.py deps unavailable")
-class TestThresholdConstant:
-    def test_is_not_none(self):
-        assert THRESHOLD is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="namespace_medic_enforcer.py deps unavailable")
-class TestBufferSizeConstant:
-    def test_is_not_none(self):
-        assert BUFFER_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="namespace_medic_enforcer.py deps unavailable")
-class TestBatchSizeConstant:
-    def test_is_not_none(self):
-        assert BATCH_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="namespace_medic_enforcer.py deps unavailable")
-class TestMaxDepthConstant:
-    def test_is_not_none(self):
-        assert MAX_DEPTH is not None
+import agentic_core.L5_safety.enforcement.namespace_medic_enforcer  # noqa: F401
 
 
 def test_module_importable():
-    """Module namespace_medic_enforcer.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module namespace_medic_enforcer must be importable."""
+    assert agentic_core.L5_safety.enforcement.namespace_medic_enforcer is not None

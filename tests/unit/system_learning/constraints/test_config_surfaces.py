@@ -10,31 +10,18 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from system_learning.constraints.config_surfaces import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        FloatConstraint,
-        IntConstraint,
-        PointerConstraint,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    FloatConstraint = None  # type: ignore[assignment,misc]
-    IntConstraint = None  # type: ignore[assignment,misc]
-    PointerConstraint = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from system_learning.constraints.config_surfaces import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    FloatConstraint,
+    IntConstraint,
+    PointerConstraint,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="config_surfaces.py deps unavailable")
 class TestFloatConstraintContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -57,7 +44,6 @@ class TestFloatConstraintContract:
         # (create requires knowing required fields — skip if args unknown)
         assert FloatConstraint.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="config_surfaces.py deps unavailable")
 class TestIntConstraintContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -80,7 +66,6 @@ class TestIntConstraintContract:
         # (create requires knowing required fields — skip if args unknown)
         assert IntConstraint.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="config_surfaces.py deps unavailable")
 class TestPointerConstraintContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -103,27 +88,22 @@ class TestPointerConstraintContract:
         # (create requires knowing required fields — skip if args unknown)
         assert PointerConstraint.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="config_surfaces.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="config_surfaces.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="config_surfaces.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="config_surfaces.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="config_surfaces.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -131,4 +111,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module config_surfaces must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

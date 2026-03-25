@@ -276,8 +276,8 @@ class TestConfCalibRiskGate:
         assert result.allow is True
         assert result.reasons == ("MANY_CHECK_IDS", "SANITIZED_INPUT")
 
-    def test_deny_execution_forces_high_and_disallows(self):
-        """Test DENY_EXECUTION forces HIGH risk and disallows execution."""
+    def test_deny_execution_with_combined_reasons(self):
+        """Test DENY_EXECUTION combined with other risk signals."""
         gate = ConfCalibRiskGate()
 
         class SimplePayload:

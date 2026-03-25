@@ -10,39 +10,22 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_shared.utils.agent_interface_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        AgentContext,
-        AgentRegistry,
-        AgentResult,
-        AgentStatus,
-        BaseAgent,
-        IAgent,
-        get_agent_registry,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    AgentStatus = None  # type: ignore[assignment,misc]
-    AgentContext = None  # type: ignore[assignment,misc]
-    AgentResult = None  # type: ignore[assignment,misc]
-    IAgent = None  # type: ignore[assignment,misc]
-    BaseAgent = None  # type: ignore[assignment,misc]
-    AgentRegistry = None  # type: ignore[assignment,misc]
-    get_agent_registry = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from apps_shared.utils.agent_interface_util import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    AgentContext,
+    AgentRegistry,
+    AgentResult,
+    AgentStatus,
+    BaseAgent,
+    IAgent,
+    get_agent_registry,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="agent_interface_util.py deps unavailable")
 class TestAgentStatusContract:
     def test_is_enum(self):
         import enum
@@ -58,7 +41,6 @@ class TestAgentStatusContract:
     def test_known_member_pending_exists(self):
         assert hasattr(AgentStatus, 'PENDING')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="agent_interface_util.py deps unavailable")
 class TestAgentContextContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -69,7 +51,6 @@ class TestAgentContextContract:
         field_names = {f.name for f in dataclasses.fields(AgentContext)}
         assert field_names >= {'session_id', 'user_id', 'metadata', 'timeout_seconds', 'trace_id'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="agent_interface_util.py deps unavailable")
 class TestAgentResultContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -80,7 +61,6 @@ class TestAgentResultContract:
         field_names = {f.name for f in dataclasses.fields(AgentResult)}
         assert field_names >= {'error', 'execution_time_ms', 'status', 'metadata', 'output'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="agent_interface_util.py deps unavailable")
 class TestIAgentContract:
     def test_is_class(self):
         assert isinstance(IAgent, type)
@@ -97,7 +77,6 @@ class TestIAgentContract:
     def test_has_method_execute(self):
         assert callable(getattr(IAgent, 'execute', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="agent_interface_util.py deps unavailable")
 class TestBaseAgentContract:
     def test_is_class(self):
         assert isinstance(BaseAgent, type)
@@ -111,7 +90,6 @@ class TestBaseAgentContract:
     def test_has_method_execute(self):
         assert callable(getattr(BaseAgent, 'execute', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="agent_interface_util.py deps unavailable")
 class TestAgentRegistryContract:
     def test_is_class(self):
         assert isinstance(AgentRegistry, type)
@@ -128,7 +106,6 @@ class TestAgentRegistryContract:
     def test_has_method_unregister(self):
         assert callable(getattr(AgentRegistry, 'unregister', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="agent_interface_util.py deps unavailable")
 class TestGetAgentRegistryFunction:
     def test_is_callable(self):
         assert callable(get_agent_registry)
@@ -138,27 +115,22 @@ class TestGetAgentRegistryFunction:
         sig = inspect.signature(get_agent_registry)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="agent_interface_util.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="agent_interface_util.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="agent_interface_util.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="agent_interface_util.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="agent_interface_util.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -166,4 +138,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module agent_interface_util must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

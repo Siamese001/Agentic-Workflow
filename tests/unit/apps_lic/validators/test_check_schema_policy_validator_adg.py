@@ -5,14 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    import apps_lic.validators.check_schema_policy_validator as _mod  # noqa: F401
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _mod = None
-    _AVAILABLE = False
+import apps_lic.validators.check_schema_policy_validator as _mod  # noqa: F401
 
 
 def test_module_importable():
-    """Module check_schema_policy_validator.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module check_schema_policy_validator must be importable."""
+    assert _mod is not None

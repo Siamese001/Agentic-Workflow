@@ -170,37 +170,21 @@ _emit_links_execution_to_snapshot("p4", "test_healer_exceptions", "exec_snapshot
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.runtime.exceptions.healer_exceptions import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        CircularDependencyError,
-        HealerError,
-        HealingBudgetExceededError,
-        HealingTimeoutError,
-        SovereignError,
-        ValidationRegistryError,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    HealerError = None  # type: ignore[assignment,misc]
-    CircularDependencyError = None  # type: ignore[assignment,misc]
-    HealingBudgetExceededError = None  # type: ignore[assignment,misc]
-    ValidationRegistryError = None  # type: ignore[assignment,misc]
-    HealingTimeoutError = None  # type: ignore[assignment,misc]
-    SovereignError = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.runtime.exceptions.healer_exceptions import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    CircularDependencyError,
+    HealerError,
+    HealingBudgetExceededError,
+    HealingTimeoutError,
+    SovereignError,
+    ValidationRegistryError,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestHealerErrorContract:
     def test_is_exception_subclass(self):
         assert issubclass(HealerError, Exception)
@@ -213,7 +197,6 @@ class TestHealerErrorContract:
         exc = HealerError("healer failed")
         assert str(exc) == "healer failed"
 
-@pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestCircularDependencyErrorContract:
     def test_is_exception_subclass(self):
         assert issubclass(CircularDependencyError, Exception)
@@ -226,7 +209,6 @@ class TestCircularDependencyErrorContract:
         exc = CircularDependencyError("circular dep")
         assert str(exc) == "circular dep"
 
-@pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestHealingBudgetExceededErrorContract:
     def test_is_exception_subclass(self):
         assert issubclass(HealingBudgetExceededError, Exception)
@@ -239,7 +221,6 @@ class TestHealingBudgetExceededErrorContract:
         exc = HealingBudgetExceededError("budget exceeded")
         assert str(exc) == "budget exceeded"
 
-@pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestValidationRegistryErrorContract:
     def test_is_exception_subclass(self):
         assert issubclass(ValidationRegistryError, Exception)
@@ -252,7 +233,6 @@ class TestValidationRegistryErrorContract:
         exc = ValidationRegistryError("registry error")
         assert str(exc) == "registry error"
 
-@pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestHealingTimeoutErrorContract:
     def test_is_exception_subclass(self):
         assert issubclass(HealingTimeoutError, Exception)
@@ -265,7 +245,6 @@ class TestHealingTimeoutErrorContract:
         exc = HealingTimeoutError("timeout")
         assert str(exc) == "timeout"
 
-@pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestSovereignErrorContract:
     def test_is_exception_subclass(self):
         assert issubclass(SovereignError, Exception)
@@ -278,31 +257,26 @@ class TestSovereignErrorContract:
         exc = SovereignError("sovereign violation")
         assert str(exc) == "sovereign violation"
 
-@pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_positive_int(self):
         assert isinstance(MAX_RETRIES, int)
         assert MAX_RETRIES > 0
 
-@pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_positive_number(self):
         assert isinstance(DEFAULT_SLEEP, (int, float))
         assert DEFAULT_SLEEP > 0
 
-@pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestThresholdConstant:
     def test_is_fraction(self):
         assert isinstance(THRESHOLD, (int, float))
         assert 0 < THRESHOLD <= 1.0
 
-@pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_positive_int(self):
         assert isinstance(BUFFER_SIZE, int)
         assert BUFFER_SIZE > 0
 
-@pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_positive_int(self):
         assert isinstance(BATCH_SIZE, int)
@@ -310,8 +284,6 @@ class TestBatchSizeConstant:
 
 
 def test_module_importable():
-    """Module healer_exceptions must be importable or skip gracefully."""
-    if not _AVAILABLE:
-        pytest.skip("healer_exceptions.py deps unavailable — import failed")
+    """Module healer_exceptions must be importable."""
     assert issubclass(HealerError, Exception)
     assert issubclass(CircularDependencyError, Exception)

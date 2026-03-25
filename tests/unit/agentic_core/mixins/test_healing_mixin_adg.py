@@ -5,24 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.mixins.healing_mixin import (  # noqa: F401
-        HealingStrategyMixin,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    HealingStrategyMixin = None  # type: ignore[assignment,misc]
-
-
-@pytest.mark.skipif(not _AVAILABLE, reason="healing_mixin.py deps unavailable")
-class TestHealingStrategyMixin:
-    def test_is_class(self):
-        assert isinstance(HealingStrategyMixin, type)
-    def test_importable(self):
-        assert HealingStrategyMixin is not None
+import agentic_core.mixins.healing_mixin  # noqa: F401
 
 
 def test_module_importable():
-    """Module healing_mixin.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module healing_mixin must be importable."""
+    assert agentic_core.mixins.healing_mixin is not None

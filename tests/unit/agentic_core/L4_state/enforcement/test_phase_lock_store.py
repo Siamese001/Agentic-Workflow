@@ -10,39 +10,22 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L4_state.enforcement.phase_lock_store import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        PhaseLockRecord,
-        PhaseLockStore,
-        PhaseLockValidator,
-        get_phase_lock,
-        is_phase_locked,
-        lock_phase,
-        unlock_phase,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    PhaseLockRecord = None  # type: ignore[assignment,misc]
-    PhaseLockStore = None  # type: ignore[assignment,misc]
-    PhaseLockValidator = None  # type: ignore[assignment,misc]
-    lock_phase = None  # type: ignore[assignment,misc]
-    unlock_phase = None  # type: ignore[assignment,misc]
-    is_phase_locked = None  # type: ignore[assignment,misc]
-    get_phase_lock = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L4_state.enforcement.phase_lock_store import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    PhaseLockRecord,
+    PhaseLockStore,
+    PhaseLockValidator,
+    get_phase_lock,
+    is_phase_locked,
+    lock_phase,
+    unlock_phase,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="phase_lock_store.py deps unavailable")
 class TestPhaseLockRecordContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -65,7 +48,6 @@ class TestPhaseLockRecordContract:
         # (create requires knowing required fields — skip if args unknown)
         assert PhaseLockRecord.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="phase_lock_store.py deps unavailable")
 class TestPhaseLockStoreContract:
     def test_is_class(self):
         assert isinstance(PhaseLockStore, type)
@@ -82,7 +64,6 @@ class TestPhaseLockStoreContract:
     def test_has_method_get_lock_record(self):
         assert callable(getattr(PhaseLockStore, 'get_lock_record', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="phase_lock_store.py deps unavailable")
 class TestPhaseLockValidatorContract:
     def test_is_class(self):
         assert isinstance(PhaseLockValidator, type)
@@ -96,7 +77,6 @@ class TestPhaseLockValidatorContract:
     def test_has_method_validate_unlock_permissions(self):
         assert callable(getattr(PhaseLockValidator, 'validate_unlock_permissions', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="phase_lock_store.py deps unavailable")
 class TestLockPhaseFunction:
     def test_is_callable(self):
         assert callable(lock_phase)
@@ -106,7 +86,6 @@ class TestLockPhaseFunction:
         sig = inspect.signature(lock_phase)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="phase_lock_store.py deps unavailable")
 class TestUnlockPhaseFunction:
     def test_is_callable(self):
         assert callable(unlock_phase)
@@ -116,7 +95,6 @@ class TestUnlockPhaseFunction:
         sig = inspect.signature(unlock_phase)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="phase_lock_store.py deps unavailable")
 class TestIsPhaseLockedFunction:
     def test_is_callable(self):
         assert callable(is_phase_locked)
@@ -126,7 +104,6 @@ class TestIsPhaseLockedFunction:
         sig = inspect.signature(is_phase_locked)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="phase_lock_store.py deps unavailable")
 class TestGetPhaseLockFunction:
     def test_is_callable(self):
         assert callable(get_phase_lock)
@@ -136,27 +113,22 @@ class TestGetPhaseLockFunction:
         sig = inspect.signature(get_phase_lock)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="phase_lock_store.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="phase_lock_store.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="phase_lock_store.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="phase_lock_store.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="phase_lock_store.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -164,4 +136,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module phase_lock_store must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

@@ -173,13 +173,7 @@ project_root = current_file.parent.parent.parent  # Go up 3 levels from tests/un
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-try:
-    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-except (ImportError, NameError, AttributeError, TypeError) as e:
-    print(f"Import error: {e}")
-    print(f"Project root: {project_root}")
-    print(f"Sys path: {sys.path[:3]}")  # Show first 3 paths
-    raise
+from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
 
 class TestTerritoryIntegrity(unittest.TestCase):

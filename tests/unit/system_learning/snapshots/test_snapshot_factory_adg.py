@@ -1,26 +1,9 @@
-"""ADG importability contract for system_learning/snapshots/snapshot_factory.py.
-
-Auto-generated stub — covers GT_covers edge for ADG reachability.
-Behavioral tests belong in test_snapshot_factory.py (no _adg suffix).
-"""
+"""ADG importability contract for system_learning/snapshots/snapshot_factory.py."""
 from __future__ import annotations
 
-import pytest
+import system_learning.snapshots.snapshot_factory  # noqa: F401
 
-try:
-    from system_learning.snapshots.snapshot_factory import (  # noqa: F401
-        create_snapshot,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    create_snapshot = None  # type: ignore[assignment,misc]
 
-@pytest.mark.skipif(not _AVAILABLE, reason="snapshot_factory.py deps unavailable")
-class TestSnapshotFactoryImportability:
-    def test_module_importable(self) -> None:
-        """ADG contract: snapshot_factory.py must be importable."""
-        assert _AVAILABLE
-
-    def test_create_snapshot_callable(self) -> None:
-        assert callable(create_snapshot)
+def test_module_importable():
+    """Module snapshot_factory must be importable."""
+    assert system_learning.snapshots.snapshot_factory is not None

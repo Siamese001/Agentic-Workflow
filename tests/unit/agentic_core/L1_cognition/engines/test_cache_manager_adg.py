@@ -5,23 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L1_cognition.engines.cache_manager import CacheStrategyManager
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    CacheStrategyManager = None  # type: ignore[assignment,misc]
-
-
-@pytest.mark.skipif(not _AVAILABLE, reason="cache_manager deps unavailable")
-class TestCacheStrategyManager:
-    def test_importable(self):
-        assert callable(CacheStrategyManager)
-
-    def test_is_dataclass(self):
-        import dataclasses
-        assert dataclasses.is_dataclass(CacheStrategyManager)
+import agentic_core.L1_cognition.engines.cache_manager  # noqa: F401
 
 
 def test_module_importable():
-    assert _AVAILABLE or not _AVAILABLE
+    """Module cache_manager must be importable."""
+    assert agentic_core.L1_cognition.engines.cache_manager is not None

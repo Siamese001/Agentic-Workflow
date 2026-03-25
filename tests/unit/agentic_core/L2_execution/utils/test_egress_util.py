@@ -10,35 +10,20 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L2_execution.utils.egress_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        EgressResult,
-        NetworkingUtility,
-        get_networking_utility,
-        send_email,
-        strict_egress_filter,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    EgressResult = None  # type: ignore[assignment,misc]
-    NetworkingUtility = None  # type: ignore[assignment,misc]
-    get_networking_utility = None  # type: ignore[assignment,misc]
-    strict_egress_filter = None  # type: ignore[assignment,misc]
-    send_email = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L2_execution.utils.egress_util import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    EgressResult,
+    NetworkingUtility,
+    get_networking_utility,
+    send_email,
+    strict_egress_filter,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="egress_util.py deps unavailable")
 class TestEgressResultContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -49,7 +34,6 @@ class TestEgressResultContract:
         field_names = {f.name for f in dataclasses.fields(EgressResult)}
         assert field_names >= {'reason', 'status', 'host'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="egress_util.py deps unavailable")
 class TestNetworkingUtilityContract:
     def test_is_class(self):
         assert isinstance(NetworkingUtility, type)
@@ -66,7 +50,6 @@ class TestNetworkingUtilityContract:
     def test_has_method_get_stats(self):
         assert callable(getattr(NetworkingUtility, 'get_stats', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="egress_util.py deps unavailable")
 class TestGetNetworkingUtilityFunction:
     def test_is_callable(self):
         assert callable(get_networking_utility)
@@ -76,7 +59,6 @@ class TestGetNetworkingUtilityFunction:
         sig = inspect.signature(get_networking_utility)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="egress_util.py deps unavailable")
 class TestStrictEgressFilterFunction:
     def test_is_callable(self):
         assert callable(strict_egress_filter)
@@ -86,7 +68,6 @@ class TestStrictEgressFilterFunction:
         sig = inspect.signature(strict_egress_filter)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="egress_util.py deps unavailable")
 class TestSendEmailFunction:
     def test_is_callable(self):
         assert callable(send_email)
@@ -96,27 +77,22 @@ class TestSendEmailFunction:
         sig = inspect.signature(send_email)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="egress_util.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="egress_util.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="egress_util.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="egress_util.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="egress_util.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -124,4 +100,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module egress_util must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

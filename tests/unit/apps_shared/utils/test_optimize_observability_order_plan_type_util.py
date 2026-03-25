@@ -10,39 +10,22 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_shared.utils.optimize_observability_order_plan_type_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        OptimizeObservabilityOrderPlanConstraints,
-        OptimizeObservabilityOrderPlanImpl,
-        OptimizeObservabilityOrderPlanProcessor,
-        OptimizeObservabilityOrderPlanResult,
-        OptimizeObservabilityOrderPlanType,
-        SecurityError,
-        optimize_observability_order,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    OptimizeObservabilityOrderPlanType = None  # type: ignore[assignment,misc]
-    OptimizeObservabilityOrderPlanConstraints = None  # type: ignore[assignment,misc]
-    OptimizeObservabilityOrderPlanResult = None  # type: ignore[assignment,misc]
-    OptimizeObservabilityOrderPlanProcessor = None  # type: ignore[assignment,misc]
-    OptimizeObservabilityOrderPlanImpl = None  # type: ignore[assignment,misc]
-    SecurityError = None  # type: ignore[assignment,misc]
-    optimize_observability_order = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from apps_shared.utils.optimize_observability_order_plan_type_util import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    OptimizeObservabilityOrderPlanConstraints,
+    OptimizeObservabilityOrderPlanImpl,
+    OptimizeObservabilityOrderPlanProcessor,
+    OptimizeObservabilityOrderPlanResult,
+    OptimizeObservabilityOrderPlanType,
+    SecurityError,
+    optimize_observability_order,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimize_observability_order_plan_type_util.py deps unavailable")
 class TestOptimizeObservabilityOrderPlanTypeContract:
     def test_is_enum(self):
         import enum
@@ -58,7 +41,6 @@ class TestOptimizeObservabilityOrderPlanTypeContract:
     def test_known_member_default_exists(self):
         assert hasattr(OptimizeObservabilityOrderPlanType, 'DEFAULT')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimize_observability_order_plan_type_util.py deps unavailable")
 class TestOptimizeObservabilityOrderPlanConstraintsContract:
     def test_is_class(self):
         assert isinstance(OptimizeObservabilityOrderPlanConstraints, type)
@@ -66,7 +48,6 @@ class TestOptimizeObservabilityOrderPlanConstraintsContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(OptimizeObservabilityOrderPlanConstraints, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimize_observability_order_plan_type_util.py deps unavailable")
 class TestOptimizeObservabilityOrderPlanResultContract:
     def test_is_class(self):
         assert isinstance(OptimizeObservabilityOrderPlanResult, type)
@@ -74,7 +55,6 @@ class TestOptimizeObservabilityOrderPlanResultContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(OptimizeObservabilityOrderPlanResult, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimize_observability_order_plan_type_util.py deps unavailable")
 class TestOptimizeObservabilityOrderPlanProcessorContract:
     def test_is_class(self):
         assert isinstance(OptimizeObservabilityOrderPlanProcessor, type)
@@ -85,7 +65,6 @@ class TestOptimizeObservabilityOrderPlanProcessorContract:
     def test_has_method_validate_safety(self):
         assert callable(getattr(OptimizeObservabilityOrderPlanProcessor, 'validate_safety', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimize_observability_order_plan_type_util.py deps unavailable")
 class TestOptimizeObservabilityOrderPlanImplContract:
     def test_is_class(self):
         assert isinstance(OptimizeObservabilityOrderPlanImpl, type)
@@ -96,7 +75,6 @@ class TestOptimizeObservabilityOrderPlanImplContract:
     def test_has_method_validate_safety(self):
         assert callable(getattr(OptimizeObservabilityOrderPlanImpl, 'validate_safety', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimize_observability_order_plan_type_util.py deps unavailable")
 class TestSecurityErrorContract:
     def test_is_class(self):
         assert isinstance(SecurityError, type)
@@ -104,7 +82,6 @@ class TestSecurityErrorContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(SecurityError, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimize_observability_order_plan_type_util.py deps unavailable")
 class TestOptimizeObservabilityOrderFunction:
     def test_is_callable(self):
         assert callable(optimize_observability_order)
@@ -114,27 +91,22 @@ class TestOptimizeObservabilityOrderFunction:
         sig = inspect.signature(optimize_observability_order)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimize_observability_order_plan_type_util.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimize_observability_order_plan_type_util.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimize_observability_order_plan_type_util.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimize_observability_order_plan_type_util.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="optimize_observability_order_plan_type_util.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -142,4 +114,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module optimize_observability_order_plan_type_util must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

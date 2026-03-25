@@ -5,34 +5,30 @@ Tests follow windsurfrules §1.1-§1.8 requirements.
 """
 
 import json
-import pytest
-import tempfile
-import os
-from pathlib import Path
-from unittest.mock import patch, MagicMock
 
 # Import the module we're testing
 import sys
+import tempfile
+from pathlib import Path
+from unittest.mock import patch
+
+import pytest
+
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent / "tools"))
 
-try:
-    from fix_medium_severity_swallowers import MediumSeveritySilentSwallowerFixer
-    CAN_IMPORT = True
-except ImportError as e:
-    print(f"Cannot import fix_medium_severity_swallowers: {e}")
-    CAN_IMPORT = False
+from fix_medium_severity_swallowers import MediumSeveritySilentSwallowerFixer
 
 
 class TestPhase22MediumSeverityFixes:
     """Test Phase 2.2 implementation of MEDIUM severity broad exception fixes."""
-    
+
     @pytest.fixture
     def temp_workspace(self):
         """Create temporary workspace for testing."""
         with tempfile.TemporaryDirectory() as temp_dir:
             workspace = Path(temp_dir)
             yield workspace
-    
+
     @pytest.fixture
     def sample_medium_violations(self):
         """Create sample MEDIUM severity violation data."""
@@ -49,7 +45,7 @@ class TestPhase22MediumSeverityFixes:
                     'severity': 'MEDIUM'
                 },
                 {
-                    'file_path': 'test_file2.py', 
+                    'file_path': 'test_file2.py',
                     'line_number': 20,
                     'exception_type': 'Exception',
                     'handler_body': ['pass'],
@@ -59,7 +55,7 @@ class TestPhase22MediumSeverityFixes:
                 {
                     'file_path': 'test_file3.py',
                     'line_number': 30,
-                    'exception_type': 'Exception', 
+                    'exception_type': 'Exception',
                     'handler_body': ['pass'],
                     'context': 'network operation',
                     'severity': 'MEDIUM'
@@ -82,7 +78,7 @@ class TestPhase22MediumSeverityFixes:
                 }
             ]
         }
-    
+
     @pytest.fixture
     def fixer(self, temp_workspace, sample_medium_violations):
         """Create fixer instance with test data."""
@@ -92,7 +88,7 @@ class TestPhase22MediumSeverityFixes:
         violations_file = tools_dir / "silent_swallower_report.json"  # Use the correct file name
         with open(violations_file, 'w') as f:
             json.dump(sample_medium_violations, f)
-        
+
         # Patch the report file path
         with patch('fix_medium_severity_swallowers.PROJECT_ROOT', str(temp_workspace)):
             fixer = MediumSeveritySwallowerFixer()
@@ -107,15 +103,12 @@ class TestPhase22MediumSeverityFixes:
         violations_file = tools_dir / "silent_swallower_report.json"  # Use correct file name
         with open(violations_file, 'w') as f:
             json.dump({'violations': []}, f)
-        
+
         # Test without patching for now
-        if CAN_IMPORT:
             fixer = MediumSeveritySilentSwallowerFixer()
             # Should handle empty list gracefully
             assert len(fixer.violations) == 0
             assert fixer.fixes_applied == 0
-        else:
-            pytest.skip("Cannot import fixer")
 
     # Test §1.5: Edge cases - Malformed violation data
     def test_malformed_violation_data(self, temp_workspace):
@@ -126,7 +119,7 @@ class TestPhase22MediumSeverityFixes:
         violations_file = tools_dir / "silent_swallower_report.json"  # Use correct file name
         with open(violations_file, 'w') as f:
             json.dump({'invalid': 'data'}, f)
-        
+
         with patch('fix_medium_severity_swallowers.PROJECT_ROOT', str(temp_workspace)):
             # Should handle malformed data gracefully
             with pytest.raises(KeyError):
@@ -143,16 +136,16 @@ class TestPhase22MediumSeverityFixes:
             'severity': 'MEDIUM'
             # Missing file_path
         })
-        
+
         tools_dir = temp_workspace / "tools"
         tools_dir.mkdir()
         violations_file = tools_dir / "medium_severity_violations_report.json"
         with open(violations_file, 'w') as f:
             json.dump(sample_medium_violations, f)
-        
+
         with patch('fix_medium_severity_swallowers.PROJECT_ROOT', str(temp_workspace)):
             fixer = MediumSeveritySwallowerFixer()
-            
+
             # Should skip violations with missing file paths
             assert len(fixer.violations) == 5  # Original 5, malformed one skipped
 
@@ -162,20 +155,20 @@ class TestPhase22MediumSeverityFixes:
         # Create a file with restricted permissions
         restricted_file = temp_workspace / "restricted.py"
         restricted_file.write_text("try:\n    risky_operation()\nexcept Exception:\n    pass\n")
-        
+
         # Remove read permissions (on Unix systems)
         original_mode = restricted_file.stat().st_mode
         restricted_file.chmod(0o000)
-        
+
         try:
             violations_file = temp_workspace / "tools" / "silent_swallower_report.json"  # Use correct file name
             sample_medium_violations['violations'][0]['file_path'] = str(restricted_file)
             with open(violations_file, 'w') as f:
                 json.dump(sample_medium_violations, f)
-            
+
             with patch('fix_medium_severity_swallowers.PROJECT_ROOT', str(temp_workspace)):
                 fixer = MediumSeveritySwallowerFixer()
-                
+
                 # Should handle permission errors gracefully
                 result = fixer.apply_fixes_to_all_remaining_violations()
                 assert result['errors'] >= 0  # Should record permission errors
@@ -188,15 +181,15 @@ class TestPhase22MediumSeverityFixes:
         """Test handling of Unicode file names."""
         unicode_file = temp_workspace / "tëst_ünïcødë.py"
         unicode_file.write_text("try:\n    risky_operation()\nexcept Exception:\n    pass\n")
-        
+
         violations_file = temp_workspace / "tools" / "silent_swallower_report.json"  # Use correct file name
         sample_medium_violations['violations'][0]['file_path'] = str(unicode_file)
         with open(violations_file, 'w') as f:
             json.dump(sample_medium_violations, f)
-        
+
         with patch('fix_medium_severity_swallowers.PROJECT_ROOT', str(temp_workspace)):
             fixer = MediumSeveritySwallowerFixer()
-            
+
             # Should handle Unicode file names
             assert len(fixer.violations) == 5
 
@@ -233,7 +226,7 @@ class TestPhase22MediumSeverityFixes:
                 }
             ]
         }
-        
+
         # Create files with complex patterns
         for i, violation in enumerate(complex_violations['violations']):
             file_path = temp_workspace / violation['file_path']
@@ -255,19 +248,19 @@ except Exception:
 except Exception:
     pass"""
             file_path.write_text(content)
-        
+
         tools_dir = temp_workspace / "tools"
         tools_dir.mkdir()
         violations_file = tools_dir / "medium_severity_violations_report.json"
         with open(violations_file, 'w') as f:
             json.dump(complex_violations, f)
-        
+
         with patch('fix_medium_severity_swallowers.PROJECT_ROOT', str(temp_workspace)):
             fixer = MediumSeveritySwallowerFixer()
-            
+
             # Should handle complex patterns
             assert len(fixer.violations) == 3
-            
+
             # Test systematic application
             result = fixer.apply_fixes_to_all_remaining_violations()
             assert isinstance(result, dict)
@@ -286,7 +279,7 @@ except Exception:
 except Exception:
     pass"""
         nested_file.write_text(nested_content)
-        
+
         nested_violations = {
             'scan_timestamp': '2026-03-24T19:40:00Z',
             'total_violations': 2,
@@ -309,19 +302,19 @@ except Exception:
                 }
             ]
         }
-        
+
         tools_dir = temp_workspace / "tools"
         tools_dir.mkdir()
         violations_file = tools_dir / "medium_severity_violations_report.json"
         with open(violations_file, 'w') as f:
             json.dump(nested_violations, f)
-        
+
         with patch('fix_medium_severity_swallowers.PROJECT_ROOT', str(temp_workspace)):
             fixer = MediumSeveritySwallowerFixer()
-            
+
             # Should handle nested handlers
             assert len(fixer.violations) == 2
-            
+
             result = fixer.apply_fixes_to_all_remaining_violations()
             assert result['fixes_applied'] >= 0
 
@@ -332,7 +325,7 @@ except Exception:
         result1 = fixer.apply_fixes_to_all_remaining_violations()
         fixer.fixes_applied = 0  # Reset counter
         result2 = fixer.apply_fixes_to_all_remaining_violations()
-        
+
         # Results should be identical
         assert result1['fixes_applied'] == result2['fixes_applied']
         assert result1['errors'] == result2['errors']
@@ -345,7 +338,7 @@ except Exception:
             context = "data processing error"
             types1 = fixer._determine_specific_exception_types(context)
             types2 = fixer._determine_specific_exception_types(context)
-            
+
             # Should be identical
             assert types1 == types2
         else:
@@ -362,14 +355,14 @@ except Exception:
             'handler_body': ['pass'],
             'severity': 'MEDIUM'
         })
-        
+
         violations_file = temp_workspace / "tools" / "silent_swallower_report.json"  # Use correct file name
         with open(violations_file, 'w') as f:
             json.dump(sample_medium_violations, f)
-        
+
         with patch('fix_medium_severity_swallowers.PROJECT_ROOT', str(temp_workspace)):
             fixer = MediumSeveritySwallowerFixer()
-            
+
             # Should handle invalid paths without crashing
             result = fixer.apply_fixes_to_all_remaining_violations()
             assert 'errors' in result
@@ -381,7 +374,7 @@ except Exception:
         # Mock file operations to raise permission error
         with patch('pathlib.Path.read_text', side_effect=PermissionError("Permission denied")):
             result = fixer.apply_fixes_to_all_remaining_violations()
-            
+
             # Should handle permission errors gracefully
             assert 'errors' in result
             assert result['errors'] >= 0
@@ -390,9 +383,9 @@ except Exception:
     def test_no_partial_modifications_on_error(self, fixer):
         """Test that no partial modifications occur on error."""
         # Mock write operation to fail
-        with patch('pathlib.Path.write_text', side_effect=IOError("Write failed")):
+        with patch('pathlib.Path.write_text', side_effect=OSError("Write failed")):
             result = fixer.apply_fixes_to_all_remaining_violations()
-            
+
             # Should record error but not claim success
             assert 'errors' in result
             # Fix count should be accurate despite write failures
@@ -409,7 +402,7 @@ except Exception:
                 ("validation error", ["ValueError", "TypeError"]),
                 ("general error handling", ["Exception"])
             ]
-            
+
             for context, expected_types in test_cases:
                 detected = fixer._determine_specific_exception_types(context)
                 assert isinstance(detected, list)
@@ -426,9 +419,9 @@ except Exception:
             original_line = "    except Exception:"
             context = "data processing error"
             specific_types = ["ValueError", "TypeError"]
-            
+
             new_handler = fixer._create_specific_exception_handler(original_line, context, specific_types)
-            
+
             # Should replace with specific exceptions
             assert "ValueError" in new_handler or "TypeError" in new_handler
             assert "except Exception:" not in new_handler or "# guardian:" in new_handler
@@ -439,7 +432,7 @@ except Exception:
     def test_apply_fixes_to_all_remaining_violations(self, fixer):
         """Test the systematic application function."""
         result = fixer.apply_fixes_to_all_remaining_violations()
-        
+
         assert isinstance(result, dict)
         assert 'fixes_applied' in result
         assert 'errors' in result
@@ -451,10 +444,10 @@ except Exception:
         """Test the enhanced reporting function."""
         # Apply some fixes first
         fixer.apply_fixes_to_all_remaining_violations()
-        
+
         if hasattr(fixer, 'generate_systematic_fix_report'):
             report = fixer.generate_systematic_fix_report()
-            
+
             assert isinstance(report, dict)
             assert 'phase' in report
             assert 'fix_timestamp' in report
@@ -467,13 +460,13 @@ except Exception:
 
 class TestPhase22Integration:
     """Integration tests for Phase 2.2 implementation."""
-    
+
     @pytest.fixture
     def integration_workspace(self):
         """Create integration test workspace."""
         with tempfile.TemporaryDirectory() as temp_dir:
             workspace = Path(temp_dir)
-            
+
             # Create sample Python files with MEDIUM severity violations
             test_files = [
                 ("data_processor.py", """
@@ -501,11 +494,11 @@ except Exception:
     pass
 """)
             ]
-            
+
             for filename, content in test_files:
                 file_path = workspace / filename
                 file_path.write_text(content)
-            
+
             yield workspace
 
     def test_end_to_end_phase22_fixes(self, integration_workspace):
@@ -549,29 +542,29 @@ except Exception:
                 }
             ]
         }
-        
+
         violations_file = integration_workspace / "tools" / "silent_swallower_report.json"  # Use correct file name
         violations_file.parent.mkdir()
         with open(violations_file, 'w') as f:
             json.dump(violations, f)
-        
+
         with patch('fix_medium_severity_swallowers.PROJECT_ROOT', integration_workspace):
             fixer = MediumSeveritySwallowerFixer()
-            
+
             # Apply fixes
             result = fixer.apply_fixes_to_all_remaining_violations()
-            
+
             # Verify results
             assert isinstance(result, dict)
             assert 'fixes_applied' in result
             assert 'errors' in result
-            
+
             # Check that files were modified appropriately
             data_content = (integration_workspace / 'data_processor.py').read_text()
             network_content = (integration_workspace / 'network_client.py').read_text()
             file_content = (integration_workspace / 'file_handler.py').read_text()
             validator_content = (integration_workspace / 'validator.py').read_text()
-            
+
             # Should have replaced broad exceptions with specific ones
             assert "ValueError" in data_content or "TypeError" in data_content
             assert "ConnectionError" in network_content or "TimeoutError" in network_content

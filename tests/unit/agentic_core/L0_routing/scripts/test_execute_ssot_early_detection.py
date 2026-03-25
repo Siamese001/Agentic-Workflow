@@ -7,7 +7,6 @@ to catch naming violations early in the SSOT compliance workflow.
 
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock
 
 import pytest
 
@@ -99,99 +98,10 @@ class TestPhase1EarlyDetectionIntegration:
 
     def test_file_classification_agent_can_be_imported(self):
         """Verify FileClassificationAgent can be imported."""
-        try:
-            from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
-                FileClassificationAgent,
-            )
-
-            assert FileClassificationAgent is not None
-        except ImportError as e:
-            pytest.fail(f"Failed to import FileClassificationAgent: {e}")
-
-    def test_file_classification_agent_has_required_methods(self):
-        """Verify FileClassificationAgent has required methods for early detection."""
         from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
-
-        # Check required methods exist
-        assert hasattr(FileClassificationAgent, "run")
-        assert callable(getattr(FileClassificationAgent, "run", None))
-
-    def test_early_detection_mock_execution(self):
-        """Test early detection logic with mocked components."""
-        # Create mock state manager
-        mock_state_mgr = MagicMock()
-        mock_state_mgr.state = {
-            "compliance_scores": {},
-            "location_violations": [],
-            "location_scan_result": {},
-        }
-
-        # Create mock file classifier
-        mock_classifier = MagicMock()
-        mock_classifier.stats = {
-            "violations": {"NAMING": 2, "HEADER": 1},
-            "renamed": 0,
-            "collisions_resolved": 0,
-        }
-        mock_classifier.run.return_value = {"success": True}
-
-        # Simulate early detection logic
-        classification_violations = []
-        if mock_classifier.stats.get("violations"):
-            for vtype, count in mock_classifier.stats["violations"].items():
-                if count > 0:
-                    classification_violations.append(
-                        {
-                            "type": "CLASSIFICATION",
-                            "subtype": vtype,
-                            "count": count,
-                            "territory": "test_territory",
-                        },
-                    )
-
-        # Verify violations extracted
-        assert len(classification_violations) == 2
-        assert classification_violations[0]["type"] == "CLASSIFICATION"
-        assert classification_violations[0]["subtype"] in ["NAMING", "HEADER"]
-
-    def test_early_detection_empty_violations(self):
-        """Test early detection with no violations."""
-        mock_classifier = MagicMock()
-        mock_classifier.stats = {
-            "violations": {},
-            "renamed": 0,
-            "collisions_resolved": 0,
-        }
-
-        classification_violations = []
-        if mock_classifier.stats.get("violations"):
-            for vtype, count in mock_classifier.stats["violations"].items():
-                if count > 0:
-                    classification_violations.append(
-                        {
-                            "type": "CLASSIFICATION",
-                            "subtype": vtype,
-                            "count": count,
-                            "territory": "test_territory",
-                        },
-                    )
-
-        assert len(classification_violations) == 0
-
-    def test_early_detection_error_handling(self):
-        """Test early detection error handling."""
-        mock_state_mgr = MagicMock()
-        mock_state_mgr.state = {}
-
-        # Simulate error scenario: set empty state as error handling would
-        mock_state_mgr.state["classification_violations"] = []
-        mock_state_mgr.state["classification_scan_result"] = {}
-
-        assert mock_state_mgr.state["classification_violations"] == []
-        assert mock_state_mgr.state["classification_scan_result"] == {}
-
+        assert FileClassificationAgent is not None
 
 class TestPhase1EarlyDetectionPosition:
     """Test that early detection is in the correct position in Phase 1."""

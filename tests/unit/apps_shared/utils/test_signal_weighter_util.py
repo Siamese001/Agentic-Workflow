@@ -10,35 +10,20 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_shared.utils.signal_weighter_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        SignalWeighter,
-        SignalWeights,
-        WeightingResult,
-        create_signal_weighter,
-        weight_results,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    SignalWeights = None  # type: ignore[assignment,misc]
-    WeightingResult = None  # type: ignore[assignment,misc]
-    SignalWeighter = None  # type: ignore[assignment,misc]
-    create_signal_weighter = None  # type: ignore[assignment,misc]
-    weight_results = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from apps_shared.utils.signal_weighter_util import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    SignalWeighter,
+    SignalWeights,
+    WeightingResult,
+    create_signal_weighter,
+    weight_results,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signal_weighter_util.py deps unavailable")
 class TestSignalWeightsContract:
     def test_is_class(self):
         assert isinstance(SignalWeights, type)
@@ -46,7 +31,6 @@ class TestSignalWeightsContract:
     def test_has_method_as_dict(self):
         assert callable(getattr(SignalWeights, 'as_dict', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signal_weighter_util.py deps unavailable")
 class TestWeightingResultContract:
     def test_is_class(self):
         assert isinstance(WeightingResult, type)
@@ -57,7 +41,6 @@ class TestWeightingResultContract:
     def test_has_method_percent_change(self):
         assert callable(getattr(WeightingResult, 'percent_change', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signal_weighter_util.py deps unavailable")
 class TestSignalWeighterContract:
     def test_is_class(self):
         assert isinstance(SignalWeighter, type)
@@ -71,7 +54,6 @@ class TestSignalWeighterContract:
     def test_has_method_batch_reweight(self):
         assert callable(getattr(SignalWeighter, 'batch_reweight', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signal_weighter_util.py deps unavailable")
 class TestCreateSignalWeighterFunction:
     def test_is_callable(self):
         assert callable(create_signal_weighter)
@@ -81,7 +63,6 @@ class TestCreateSignalWeighterFunction:
         sig = inspect.signature(create_signal_weighter)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signal_weighter_util.py deps unavailable")
 class TestWeightResultsFunction:
     def test_is_callable(self):
         assert callable(weight_results)
@@ -91,27 +72,22 @@ class TestWeightResultsFunction:
         sig = inspect.signature(weight_results)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signal_weighter_util.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signal_weighter_util.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signal_weighter_util.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signal_weighter_util.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="signal_weighter_util.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -119,4 +95,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module signal_weighter_util must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

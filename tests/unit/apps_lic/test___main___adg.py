@@ -5,22 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_lic.__main__ import (  # noqa: F401
-        main,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    main = None  # type: ignore[assignment,misc]
-
-
-@pytest.mark.skipif(not _AVAILABLE, reason="__main__.py deps unavailable")
-class TestMain:
-    def test_is_callable(self):
-        assert callable(main)
+import apps_lic.__main__  # noqa: F401
 
 
 def test_module_importable():
-    """Module __main__.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module __main__ must be importable."""
+    assert apps_lic.__main__ is not None

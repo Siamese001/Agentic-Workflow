@@ -1,29 +1,9 @@
-"""ADG importability contract for agentic_core/mixins/replay_guard_mixin.py.
-
-Auto-generated stub — covers GT_covers edge for ADG reachability.
-Behavioral tests belong in test_replay_guard_mixin.py (no _adg suffix).
-"""
-
+"""ADG importability contract for agentic_core/mixins/replay_guard_mixin.py."""
 from __future__ import annotations
 
-import pytest
-
-try:
-    from agentic_core.mixins.replay_guard_mixin import (  # noqa: F401
-        ReplayGuardMixin,
-    )
-
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    ReplayGuardMixin = None  # type: ignore[assignment,misc]
+import agentic_core.mixins.replay_guard_mixin  # noqa: F401
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="replay_guard_mixin deps unavailable")
-class TestReplayGuardMixinImportability:
-    def test_module_importable(self) -> None:
-        """ADG contract: agentic_core/mixins/replay_guard_mixin.py must be importable."""
-        assert _AVAILABLE
-
-    def test_replayguardmixin_defined(self) -> None:
-        assert ReplayGuardMixin is not None
+def test_module_importable():
+    """Module replay_guard_mixin must be importable."""
+    assert agentic_core.mixins.replay_guard_mixin is not None

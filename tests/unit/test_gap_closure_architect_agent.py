@@ -42,14 +42,6 @@ class TestGapClosureArchitectAgent:
     @pytest.fixture
     def agent_class(self):
         """Import agent class with mocked dependencies."""
-        try:
-            from apps_rg.types.gap_closure_architect_agent_types import (
-                GapClosureArchitectAgent,
-            )
-
-            return GapClosureArchitectAgent
-        except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.fail(f"Cannot import GapClosureArchitectAgent: {e}")
 
     def test_class_exists(self, agent_class):
         """Verify GapClosureArchitectAgent exists and is importable."""
@@ -83,12 +75,9 @@ class TestGapClosureArchitectAgent:
             network_calls.append((args, kwargs))
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
-            try:
-                from apps_rg.types.gap_closure_architect_agent_types import (
-                    GapClosureArchitectAgent,  # noqa: F401
-                )
-            except (ImportError, NameError, AttributeError):  # guardian: allow-silent-swallower
-                pass
+            from apps_rg.types.gap_closure_architect_agent_types import (
+                GapClosureArchitectAgent,  # noqa: F401
+            )
 
             assert len(network_calls) == 0, "No network calls on import"
 

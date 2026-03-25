@@ -1,54 +1,9 @@
-"""ADG importability contract for agentic_core/L5_safety/validators/read_file_args_validator.py.
-
-Auto-generated stub — covers GT_covers edge for ADG reachability.
-Behavioral tests belong in test_read_file_args_validator.py (no _adg suffix).
-"""
-
+"""ADG importability contract for agentic_core/L5_safety/validators/read_file_args_validator.py."""
 from __future__ import annotations
 
-import pytest
-
-try:
-    from agentic_core.L5_safety.validators.read_file_args_validator import (  # noqa: F401
-        CreateDirectoryArgs,
-        DeleteFileArgs,
-        ListFilesArgs,
-        MoveFileArgs,
-        ReadFileArgs,
-        WriteFileArgs,
-    )
-
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    ReadFileArgs = None  # type: ignore[assignment,misc]
-    WriteFileArgs = None  # type: ignore[assignment,misc]
-    MoveFileArgs = None  # type: ignore[assignment,misc]
-    ListFilesArgs = None  # type: ignore[assignment,misc]
-    DeleteFileArgs = None  # type: ignore[assignment,misc]
-    CreateDirectoryArgs = None  # type: ignore[assignment,misc]
+import agentic_core.L5_safety.validators.read_file_args_validator  # noqa: F401
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="read_file_args_validator deps unavailable")
-class TestReadFileArgsValidatorImportability:
-    def test_module_importable(self) -> None:
-        """ADG contract: agentic_core/L5_safety/validators/read_file_args_validator.py must be importable."""
-        assert _AVAILABLE
-
-    def test_readfileargs_defined(self) -> None:
-        assert ReadFileArgs is not None
-
-    def test_writefileargs_defined(self) -> None:
-        assert WriteFileArgs is not None
-
-    def test_movefileargs_defined(self) -> None:
-        assert MoveFileArgs is not None
-
-    def test_listfilesargs_defined(self) -> None:
-        assert ListFilesArgs is not None
-
-    def test_deletefileargs_defined(self) -> None:
-        assert DeleteFileArgs is not None
-
-    def test_createdirectoryargs_defined(self) -> None:
-        assert CreateDirectoryArgs is not None
+def test_module_importable():
+    """Module read_file_args_validator must be importable."""
+    assert agentic_core.L5_safety.validators.read_file_args_validator is not None

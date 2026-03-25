@@ -10,33 +10,19 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L0_routing.scripts.run_hygiene_guardian_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        remove_artifacts,
-        scan_empty_folders,
-        scan_folders_with_only_init,
-        scan_temp_artifacts,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    scan_temp_artifacts = None  # type: ignore[assignment,misc]
-    scan_empty_folders = None  # type: ignore[assignment,misc]
-    scan_folders_with_only_init = None  # type: ignore[assignment,misc]
-    remove_artifacts = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L0_routing.scripts.run_hygiene_guardian_util import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    remove_artifacts,
+    scan_empty_folders,
+    scan_folders_with_only_init,
+    scan_temp_artifacts,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="run_hygiene_guardian_util.py deps unavailable")
 class TestScanTempArtifactsFunction:
     def test_is_callable(self):
         assert callable(scan_temp_artifacts)
@@ -46,7 +32,6 @@ class TestScanTempArtifactsFunction:
         sig = inspect.signature(scan_temp_artifacts)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="run_hygiene_guardian_util.py deps unavailable")
 class TestScanEmptyFoldersFunction:
     def test_is_callable(self):
         assert callable(scan_empty_folders)
@@ -56,7 +41,6 @@ class TestScanEmptyFoldersFunction:
         sig = inspect.signature(scan_empty_folders)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="run_hygiene_guardian_util.py deps unavailable")
 class TestScanFoldersWithOnlyInitFunction:
     def test_is_callable(self):
         assert callable(scan_folders_with_only_init)
@@ -66,7 +50,6 @@ class TestScanFoldersWithOnlyInitFunction:
         sig = inspect.signature(scan_folders_with_only_init)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="run_hygiene_guardian_util.py deps unavailable")
 class TestRemoveArtifactsFunction:
     def test_is_callable(self):
         assert callable(remove_artifacts)
@@ -76,27 +59,22 @@ class TestRemoveArtifactsFunction:
         sig = inspect.signature(remove_artifacts)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="run_hygiene_guardian_util.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="run_hygiene_guardian_util.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="run_hygiene_guardian_util.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="run_hygiene_guardian_util.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="run_hygiene_guardian_util.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -104,4 +82,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module run_hygiene_guardian_util must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

@@ -5,73 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L4_state.memory.verifiable_checkpoint_manager import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_DEPTH,
-        MAX_RETRIES,
-        THRESHOLD,
-        VerifiableCheckpointManager,
-        create_checkpoint_manager,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    VerifiableCheckpointManager = None  # type: ignore[assignment,misc]
-    create_checkpoint_manager = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
-    MAX_DEPTH = None  # type: ignore[assignment,misc]
-
-
-@pytest.mark.skipif(not _AVAILABLE, reason="verifiable_checkpoint_manager.py deps unavailable")
-class TestVerifiableCheckpointManager:
-    def test_is_class(self):
-        assert isinstance(VerifiableCheckpointManager, type)
-    def test_importable(self):
-        assert VerifiableCheckpointManager is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="verifiable_checkpoint_manager.py deps unavailable")
-class TestCreateCheckpointManager:
-    def test_is_callable(self):
-        assert callable(create_checkpoint_manager)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="verifiable_checkpoint_manager.py deps unavailable")
-class TestMaxRetriesConstant:
-    def test_is_not_none(self):
-        assert MAX_RETRIES is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="verifiable_checkpoint_manager.py deps unavailable")
-class TestDefaultSleepConstant:
-    def test_is_not_none(self):
-        assert DEFAULT_SLEEP is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="verifiable_checkpoint_manager.py deps unavailable")
-class TestThresholdConstant:
-    def test_is_not_none(self):
-        assert THRESHOLD is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="verifiable_checkpoint_manager.py deps unavailable")
-class TestBufferSizeConstant:
-    def test_is_not_none(self):
-        assert BUFFER_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="verifiable_checkpoint_manager.py deps unavailable")
-class TestBatchSizeConstant:
-    def test_is_not_none(self):
-        assert BATCH_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="verifiable_checkpoint_manager.py deps unavailable")
-class TestMaxDepthConstant:
-    def test_is_not_none(self):
-        assert MAX_DEPTH is not None
+import agentic_core.L4_state.memory.verifiable_checkpoint_manager  # noqa: F401
 
 
 def test_module_importable():
-    """Module verifiable_checkpoint_manager.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module verifiable_checkpoint_manager must be importable."""
+    assert agentic_core.L4_state.memory.verifiable_checkpoint_manager is not None

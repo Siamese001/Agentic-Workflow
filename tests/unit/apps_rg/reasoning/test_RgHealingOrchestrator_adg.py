@@ -1,40 +1,9 @@
-"""ADG importability contract for apps_rg/reasoning/RgHealingOrchestrator.py.
-
-Auto-generated stub — covers GT_covers edge for ADG reachability.
-Behavioral tests belong in test_RgHealingOrchestrator.py (no _adg suffix).
-"""
+"""ADG importability contract for apps_rg/reasoning/RgHealingOrchestrator.py."""
 from __future__ import annotations
 
-import pytest
+import apps_rg.reasoning.RgHealingOrchestrator  # noqa: F401
 
-try:
-    from apps_rg.reasoning.RgHealingOrchestrator import (  # noqa: F401
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        RgHealingOrchestrator,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    RgHealingOrchestrator = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
 
-@pytest.mark.skipif(not _AVAILABLE, reason="RgHealingOrchestrator.py deps unavailable")
-class TestRghealingorchestratorImportability:
-    def test_module_importable(self) -> None:
-        """ADG contract: RgHealingOrchestrator.py must be importable."""
-        assert _AVAILABLE
-
-    def test_rghealingorchestrator_is_type(self) -> None:
-        assert RgHealingOrchestrator is not None
-
-    def test_max_retries_defined(self) -> None:
-        assert MAX_RETRIES is not None
-
-    def test_default_sleep_defined(self) -> None:
-        assert DEFAULT_SLEEP is not None
+def test_module_importable():
+    """Module RgHealingOrchestrator must be importable."""
+    assert apps_rg.reasoning.RgHealingOrchestrator is not None

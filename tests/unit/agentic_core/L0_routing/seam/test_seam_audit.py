@@ -10,37 +10,21 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L0_routing.seam.seam_audit import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        SeamAuditLogger,
-        SeamAuditRecord,
-        get_seam_audit_digest,
-        get_seam_audit_logger,
-        log_seam_operation,
-        seam_audit_hook,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    SeamAuditRecord = None  # type: ignore[assignment,misc]
-    SeamAuditLogger = None  # type: ignore[assignment,misc]
-    get_seam_audit_logger = None  # type: ignore[assignment,misc]
-    seam_audit_hook = None  # type: ignore[assignment,misc]
-    log_seam_operation = None  # type: ignore[assignment,misc]
-    get_seam_audit_digest = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L0_routing.seam.seam_audit import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    SeamAuditLogger,
+    SeamAuditRecord,
+    get_seam_audit_digest,
+    get_seam_audit_logger,
+    log_seam_operation,
+    seam_audit_hook,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="seam_audit.py deps unavailable")
 class TestSeamAuditRecordContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -63,7 +47,6 @@ class TestSeamAuditRecordContract:
         # (create requires knowing required fields — skip if args unknown)
         assert SeamAuditRecord.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="seam_audit.py deps unavailable")
 class TestSeamAuditLoggerContract:
     def test_is_class(self):
         assert isinstance(SeamAuditLogger, type)
@@ -80,7 +63,6 @@ class TestSeamAuditLoggerContract:
     def test_has_method_get_records(self):
         assert callable(getattr(SeamAuditLogger, 'get_records', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="seam_audit.py deps unavailable")
 class TestGetSeamAuditLoggerFunction:
     def test_is_callable(self):
         assert callable(get_seam_audit_logger)
@@ -90,12 +72,10 @@ class TestGetSeamAuditLoggerFunction:
         sig = inspect.signature(get_seam_audit_logger)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="seam_audit.py deps unavailable")
 class TestSeamAuditHookFunction:
     def test_is_callable(self):
         assert callable(seam_audit_hook)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="seam_audit.py deps unavailable")
 class TestLogSeamOperationFunction:
     def test_is_callable(self):
         assert callable(log_seam_operation)
@@ -105,7 +85,6 @@ class TestLogSeamOperationFunction:
         sig = inspect.signature(log_seam_operation)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="seam_audit.py deps unavailable")
 class TestGetSeamAuditDigestFunction:
     def test_is_callable(self):
         assert callable(get_seam_audit_digest)
@@ -115,27 +94,22 @@ class TestGetSeamAuditDigestFunction:
         sig = inspect.signature(get_seam_audit_digest)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="seam_audit.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="seam_audit.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="seam_audit.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="seam_audit.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="seam_audit.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -143,4 +117,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module seam_audit must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

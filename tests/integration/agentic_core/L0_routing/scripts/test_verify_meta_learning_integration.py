@@ -183,15 +183,9 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-try:
-    from agentic_core.L5_safety.reasoning.AutonomyGuardianAgent import get_autonomy_guardian
+from agentic_core.L5_safety.reasoning.AutonomyGuardianAgent import get_autonomy_guardian
 
-    _HAS_GUARDIAN = True
-except (ImportError, AttributeError):
-    get_autonomy_guardian = None  # type: ignore[assignment]
-    _HAS_GUARDIAN = False
-
-pytestmark = pytest.mark.skipif(not _HAS_GUARDIAN, reason="AutonomyGuardianAgent not importable")
+pytestmark = pytest.mark.integration
 
 
 def test_redis_cache_method():

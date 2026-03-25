@@ -10,35 +10,20 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_shared.reasoning.InfrastructureOrchestrator import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        InfrastructureOrchestrator,
-        execute_task,
-        get_infrastructure_orchestrator,
-        get_system_status,
-        with_infrastructure,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    InfrastructureOrchestrator = None  # type: ignore[assignment,misc]
-    get_infrastructure_orchestrator = None  # type: ignore[assignment,misc]
-    execute_task = None  # type: ignore[assignment,misc]
-    get_system_status = None  # type: ignore[assignment,misc]
-    with_infrastructure = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from apps_shared.reasoning.InfrastructureOrchestrator import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    InfrastructureOrchestrator,
+    execute_task,
+    get_infrastructure_orchestrator,
+    get_system_status,
+    with_infrastructure,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="InfrastructureOrchestrator.py deps unavailable")
 class TestInfrastructureOrchestratorContract:
     def test_is_class(self):
         assert isinstance(InfrastructureOrchestrator, type)
@@ -55,7 +40,6 @@ class TestInfrastructureOrchestratorContract:
     def test_has_method_shutdown(self):
         assert callable(getattr(InfrastructureOrchestrator, 'shutdown', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="InfrastructureOrchestrator.py deps unavailable")
 class TestGetInfrastructureOrchestratorFunction:
     def test_is_callable(self):
         assert callable(get_infrastructure_orchestrator)
@@ -65,7 +49,6 @@ class TestGetInfrastructureOrchestratorFunction:
         sig = inspect.signature(get_infrastructure_orchestrator)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="InfrastructureOrchestrator.py deps unavailable")
 class TestExecuteTaskFunction:
     def test_is_callable(self):
         assert callable(execute_task)
@@ -75,7 +58,6 @@ class TestExecuteTaskFunction:
         sig = inspect.signature(execute_task)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="InfrastructureOrchestrator.py deps unavailable")
 class TestGetSystemStatusFunction:
     def test_is_callable(self):
         assert callable(get_system_status)
@@ -85,32 +67,26 @@ class TestGetSystemStatusFunction:
         sig = inspect.signature(get_system_status)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="InfrastructureOrchestrator.py deps unavailable")
 class TestWithInfrastructureFunction:
     def test_is_callable(self):
         assert callable(with_infrastructure)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="InfrastructureOrchestrator.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="InfrastructureOrchestrator.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="InfrastructureOrchestrator.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="InfrastructureOrchestrator.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="InfrastructureOrchestrator.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -118,4 +94,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module InfrastructureOrchestrator must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

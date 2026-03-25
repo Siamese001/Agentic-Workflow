@@ -1,36 +1,9 @@
-"""ADG importability contract for agentic_core/L6_observability/utils/system_telemetry_util.py.
-
-Auto-generated stub — covers GT_covers edge for ADG reachability.
-Behavioral tests belong in test_system_telemetry_util.py (no _adg suffix).
-"""
+"""ADG importability contract for agentic_core/L6_observability/utils/system_telemetry_util.py."""
 from __future__ import annotations
 
-import pytest
+import agentic_core.L6_observability.utils.system_telemetry_util  # noqa: F401
 
-try:
-    from agentic_core.L6_observability.utils.system_telemetry_util import (  # noqa: F401
-        OperationStatus,
-        SystemTelemetry,
-        get_telemetry,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    SystemTelemetry = None  # type: ignore[assignment,misc]
-    OperationStatus = None  # type: ignore[assignment,misc]
-    get_telemetry = None  # type: ignore[assignment,misc]
 
-@pytest.mark.skipif(not _AVAILABLE, reason="system_telemetry_util.py deps unavailable")
-class TestSystemTelemetryUtilImportability:
-    def test_module_importable(self) -> None:
-        """ADG contract: system_telemetry_util.py must be importable."""
-        assert _AVAILABLE
-
-    def test_systemtelemetry_is_type(self) -> None:
-        assert SystemTelemetry is not None
-
-    def test_operationstatus_is_type(self) -> None:
-        assert OperationStatus is not None
-
-    def test_get_telemetry_callable(self) -> None:
-        assert callable(get_telemetry)
+def test_module_importable():
+    """Module system_telemetry_util must be importable."""
+    assert agentic_core.L6_observability.utils.system_telemetry_util is not None

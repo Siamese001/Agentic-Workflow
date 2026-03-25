@@ -10,37 +10,21 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.prompt_governance.core.prompt_entry_types import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        PromptConstitution,
-        PromptEntry,
-        get_constitution,
-        get_persona,
-        get_prompt,
-        get_template,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    PromptEntry = None  # type: ignore[assignment,misc]
-    PromptConstitution = None  # type: ignore[assignment,misc]
-    get_constitution = None  # type: ignore[assignment,misc]
-    get_prompt = None  # type: ignore[assignment,misc]
-    get_template = None  # type: ignore[assignment,misc]
-    get_persona = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.prompt_governance.core.prompt_entry_types import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    PromptConstitution,
+    PromptEntry,
+    get_constitution,
+    get_persona,
+    get_prompt,
+    get_template,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="prompt_entry_types.py deps unavailable")
 class TestPromptEntryContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -63,7 +47,6 @@ class TestPromptEntryContract:
         # (create requires knowing required fields — skip if args unknown)
         assert PromptEntry.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="prompt_entry_types.py deps unavailable")
 class TestPromptConstitutionContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -86,7 +69,6 @@ class TestPromptConstitutionContract:
         # (create requires knowing required fields — skip if args unknown)
         assert PromptConstitution.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="prompt_entry_types.py deps unavailable")
 class TestGetConstitutionFunction:
     def test_is_callable(self):
         assert callable(get_constitution)
@@ -96,7 +78,6 @@ class TestGetConstitutionFunction:
         sig = inspect.signature(get_constitution)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="prompt_entry_types.py deps unavailable")
 class TestGetPromptFunction:
     def test_is_callable(self):
         assert callable(get_prompt)
@@ -106,7 +87,6 @@ class TestGetPromptFunction:
         sig = inspect.signature(get_prompt)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="prompt_entry_types.py deps unavailable")
 class TestGetTemplateFunction:
     def test_is_callable(self):
         assert callable(get_template)
@@ -116,7 +96,6 @@ class TestGetTemplateFunction:
         sig = inspect.signature(get_template)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="prompt_entry_types.py deps unavailable")
 class TestGetPersonaFunction:
     def test_is_callable(self):
         assert callable(get_persona)
@@ -126,27 +105,22 @@ class TestGetPersonaFunction:
         sig = inspect.signature(get_persona)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="prompt_entry_types.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="prompt_entry_types.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="prompt_entry_types.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="prompt_entry_types.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="prompt_entry_types.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -154,4 +128,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module prompt_entry_types must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

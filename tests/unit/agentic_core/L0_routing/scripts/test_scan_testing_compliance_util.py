@@ -10,33 +10,19 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L0_routing.scripts.scan_testing_compliance_util import (  # noqa: F401
-        AGENTIC_CORE,
-        DISCOVERY_JSON,
-        DISCOVERY_SCRIPT,
-        PROJECT_ROOT,
-        SELF_TESTING_BASES,
-        analyze_agent,
-        extract_bases,
-        has_method,
-        regenerate_discovery_json,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    extract_bases = None  # type: ignore[assignment,misc]
-    has_method = None  # type: ignore[assignment,misc]
-    analyze_agent = None  # type: ignore[assignment,misc]
-    regenerate_discovery_json = None  # type: ignore[assignment,misc]
-    PROJECT_ROOT = None  # type: ignore[assignment,misc]
-    AGENTIC_CORE = None  # type: ignore[assignment,misc]
-    DISCOVERY_JSON = None  # type: ignore[assignment,misc]
-    DISCOVERY_SCRIPT = None  # type: ignore[assignment,misc]
-    SELF_TESTING_BASES = None  # type: ignore[assignment,misc]
+from agentic_core.L0_routing.scripts.scan_testing_compliance_util import (  # noqa: F401
+    AGENTIC_CORE,
+    DISCOVERY_JSON,
+    DISCOVERY_SCRIPT,
+    PROJECT_ROOT,
+    SELF_TESTING_BASES,
+    analyze_agent,
+    extract_bases,
+    has_method,
+    regenerate_discovery_json,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="scan_testing_compliance_util.py deps unavailable")
 class TestExtractBasesFunction:
     def test_is_callable(self):
         assert callable(extract_bases)
@@ -46,7 +32,6 @@ class TestExtractBasesFunction:
         sig = inspect.signature(extract_bases)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="scan_testing_compliance_util.py deps unavailable")
 class TestHasMethodFunction:
     def test_is_callable(self):
         assert callable(has_method)
@@ -56,7 +41,6 @@ class TestHasMethodFunction:
         sig = inspect.signature(has_method)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="scan_testing_compliance_util.py deps unavailable")
 class TestAnalyzeAgentFunction:
     def test_is_callable(self):
         assert callable(analyze_agent)
@@ -66,32 +50,26 @@ class TestAnalyzeAgentFunction:
         sig = inspect.signature(analyze_agent)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="scan_testing_compliance_util.py deps unavailable")
 class TestRegenerateDiscoveryJsonFunction:
     def test_is_callable(self):
         assert callable(regenerate_discovery_json)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="scan_testing_compliance_util.py deps unavailable")
 class TestProjectRootConstant:
     def test_is_not_none(self):
         assert PROJECT_ROOT is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="scan_testing_compliance_util.py deps unavailable")
 class TestAgenticCoreConstant:
     def test_is_not_none(self):
         assert AGENTIC_CORE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="scan_testing_compliance_util.py deps unavailable")
 class TestDiscoveryJsonConstant:
     def test_is_not_none(self):
         assert DISCOVERY_JSON is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="scan_testing_compliance_util.py deps unavailable")
 class TestDiscoveryScriptConstant:
     def test_is_not_none(self):
         assert DISCOVERY_SCRIPT is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="scan_testing_compliance_util.py deps unavailable")
 class TestSelfTestingBasesConstant:
     def test_is_not_none(self):
         assert SELF_TESTING_BASES is not None
@@ -102,4 +80,4 @@ class TestSelfTestingBasesConstant:
 
 def test_module_importable():
     """Module scan_testing_compliance_util must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

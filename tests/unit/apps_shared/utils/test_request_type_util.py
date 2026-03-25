@@ -10,43 +10,24 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_shared.utils.request_type_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        AggregationType,
-        DataSource,
-        LogQuery,
-        MetricDefinition,
-        RequestType,
-        TraceQuery,
-        create_observability_load_planner,
-        load_data_planning,
-        plan_observability_load,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    RequestType = None  # type: ignore[assignment,misc]
-    DataSource = None  # type: ignore[assignment,misc]
-    AggregationType = None  # type: ignore[assignment,misc]
-    MetricDefinition = None  # type: ignore[assignment,misc]
-    LogQuery = None  # type: ignore[assignment,misc]
-    TraceQuery = None  # type: ignore[assignment,misc]
-    create_observability_load_planner = None  # type: ignore[assignment,misc]
-    plan_observability_load = None  # type: ignore[assignment,misc]
-    load_data_planning = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from apps_shared.utils.request_type_util import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    AggregationType,
+    DataSource,
+    LogQuery,
+    MetricDefinition,
+    RequestType,
+    TraceQuery,
+    create_observability_load_planner,
+    load_data_planning,
+    plan_observability_load,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="request_type_util.py deps unavailable")
 class TestRequestTypeContract:
     def test_is_enum(self):
         import enum
@@ -62,7 +43,6 @@ class TestRequestTypeContract:
     def test_known_member_metric_query_exists(self):
         assert hasattr(RequestType, 'METRIC_QUERY')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="request_type_util.py deps unavailable")
 class TestDataSourceContract:
     def test_is_enum(self):
         import enum
@@ -78,7 +58,6 @@ class TestDataSourceContract:
     def test_known_member_prometheus_exists(self):
         assert hasattr(DataSource, 'PROMETHEUS')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="request_type_util.py deps unavailable")
 class TestAggregationTypeContract:
     def test_is_enum(self):
         import enum
@@ -94,7 +73,6 @@ class TestAggregationTypeContract:
     def test_known_member_sum_exists(self):
         assert hasattr(AggregationType, 'SUM')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="request_type_util.py deps unavailable")
 class TestMetricDefinitionContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -105,7 +83,6 @@ class TestMetricDefinitionContract:
         field_names = {f.name for f in dataclasses.fields(MetricDefinition)}
         assert field_names >= {'query', 'aggregation', 'labels', 'name', 'time_range'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="request_type_util.py deps unavailable")
 class TestLogQueryContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -116,7 +93,6 @@ class TestLogQueryContract:
         field_names = {f.name for f in dataclasses.fields(LogQuery)}
         assert field_names >= {'size', 'query', 'index', 'filters', 'time_range'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="request_type_util.py deps unavailable")
 class TestTraceQueryContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -127,7 +103,6 @@ class TestTraceQueryContract:
         field_names = {f.name for f in dataclasses.fields(TraceQuery)}
         assert field_names >= {'service', 'operation', 'tags', 'time_range', 'trace_id'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="request_type_util.py deps unavailable")
 class TestCreateObservabilityLoadPlannerFunction:
     def test_is_callable(self):
         assert callable(create_observability_load_planner)
@@ -137,7 +112,6 @@ class TestCreateObservabilityLoadPlannerFunction:
         sig = inspect.signature(create_observability_load_planner)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="request_type_util.py deps unavailable")
 class TestPlanObservabilityLoadFunction:
     def test_is_callable(self):
         assert callable(plan_observability_load)
@@ -147,7 +121,6 @@ class TestPlanObservabilityLoadFunction:
         sig = inspect.signature(plan_observability_load)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="request_type_util.py deps unavailable")
 class TestLoadDataPlanningFunction:
     def test_is_callable(self):
         assert callable(load_data_planning)
@@ -157,27 +130,22 @@ class TestLoadDataPlanningFunction:
         sig = inspect.signature(load_data_planning)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="request_type_util.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="request_type_util.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="request_type_util.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="request_type_util.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="request_type_util.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -185,4 +153,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module request_type_util must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

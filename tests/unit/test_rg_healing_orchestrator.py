@@ -43,12 +43,6 @@ class TestRgHealingOrchestratorAgent:
     @pytest.fixture
     def agent_class(self):
         """Import agent class with mocked dependencies."""
-        try:
-            from apps_rg.reasoning.RgHealingOrchestrator import RgHealingOrchestrator
-
-            return RgHealingOrchestrator
-        except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.fail(f"Cannot import RgHealingOrchestrator: {e}")
 
     def test_class_exists(self, agent_class):
         """Verify RgHealingOrchestrator exists and is importable."""
@@ -94,12 +88,9 @@ class TestRgHealingOrchestratorAgent:
             network_calls.append((args, kwargs))
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
-            try:
-                from apps_rg.reasoning.RgHealingOrchestrator import (
-                    RgHealingOrchestrator,  # noqa: F401
-                )
-            except (ImportError, NameError, AttributeError):  # guardian: allow-silent-swallower
-                pass
+            from apps_rg.reasoning.RgHealingOrchestrator import (
+                RgHealingOrchestrator,  # noqa: F401
+            )
 
             assert len(network_calls) == 0, "No network calls on import"
 

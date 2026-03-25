@@ -10,33 +10,19 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L5_safety.runners.arch_governor_runner import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        capture_golden_baseline,
-        get_project_root,
-        run_audit,
-        run_ci_verification,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    get_project_root = None  # type: ignore[assignment,misc]
-    run_ci_verification = None  # type: ignore[assignment,misc]
-    capture_golden_baseline = None  # type: ignore[assignment,misc]
-    run_audit = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L5_safety.runners.arch_governor_runner import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    capture_golden_baseline,
+    get_project_root,
+    run_audit,
+    run_ci_verification,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="arch_governor_runner.py deps unavailable")
 class TestGetProjectRootFunction:
     def test_is_callable(self):
         assert callable(get_project_root)
@@ -46,7 +32,6 @@ class TestGetProjectRootFunction:
         sig = inspect.signature(get_project_root)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="arch_governor_runner.py deps unavailable")
 class TestRunCiVerificationFunction:
     def test_is_callable(self):
         assert callable(run_ci_verification)
@@ -56,7 +41,6 @@ class TestRunCiVerificationFunction:
         sig = inspect.signature(run_ci_verification)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="arch_governor_runner.py deps unavailable")
 class TestCaptureGoldenBaselineFunction:
     def test_is_callable(self):
         assert callable(capture_golden_baseline)
@@ -66,7 +50,6 @@ class TestCaptureGoldenBaselineFunction:
         sig = inspect.signature(capture_golden_baseline)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="arch_governor_runner.py deps unavailable")
 class TestRunAuditFunction:
     def test_is_callable(self):
         assert callable(run_audit)
@@ -76,27 +59,22 @@ class TestRunAuditFunction:
         sig = inspect.signature(run_audit)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="arch_governor_runner.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="arch_governor_runner.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="arch_governor_runner.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="arch_governor_runner.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="arch_governor_runner.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -104,4 +82,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module arch_governor_runner must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

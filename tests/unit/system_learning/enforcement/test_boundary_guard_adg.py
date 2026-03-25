@@ -5,29 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from system_learning.enforcement.boundary_guard import (  # noqa: F401
-        check_file_isolation,
-        check_system_learning_isolation,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    check_file_isolation = None  # type: ignore[assignment,misc]
-    check_system_learning_isolation = None  # type: ignore[assignment,misc]
-
-
-@pytest.mark.skipif(not _AVAILABLE, reason="boundary_guard.py deps unavailable")
-class TestCheckFileIsolation:
-    def test_is_callable(self):
-        assert callable(check_file_isolation)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="boundary_guard.py deps unavailable")
-class TestCheckSystemLearningIsolation:
-    def test_is_callable(self):
-        assert callable(check_system_learning_isolation)
+import system_learning.enforcement.boundary_guard  # noqa: F401
 
 
 def test_module_importable():
-    """Module boundary_guard.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module boundary_guard must be importable."""
+    assert system_learning.enforcement.boundary_guard is not None

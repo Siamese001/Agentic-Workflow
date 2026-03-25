@@ -3,9 +3,7 @@
 L4 State Agent Inventory Contract Tests
 
 
-
 Hard gates to prevent agent count inflation in agentic_core/L4_state/.
-
 
 
 Rules enforced:

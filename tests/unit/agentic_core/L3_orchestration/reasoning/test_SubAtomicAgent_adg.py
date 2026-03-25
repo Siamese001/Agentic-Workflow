@@ -1,55 +1,9 @@
-"""ADG importability contract for agentic_core/L3_orchestration/reasoning/SubAtomicAgent.py.
-
-Auto-generated stub — covers GT_covers edge for ADG reachability.
-Behavioral tests belong in test_SubAtomicAgent.py (no _adg suffix).
-"""
+"""ADG importability contract for agentic_core/L3_orchestration/reasoning/SubAtomicAgent.py."""
 from __future__ import annotations
 
-import pytest
+import agentic_core.L3_orchestration.reasoning.SubAtomicAgent  # noqa: F401
 
-try:
-    from agentic_core.L3_orchestration.reasoning.SubAtomicAgent import (  # noqa: F401
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        SubAtomicAgent,
-        SubAtomicAgent_impl,
-        get_SubAtomicAgent,
-        nesting_depth_visitor,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    SubAtomicAgent = None  # type: ignore[assignment,misc]
-    SubAtomicAgent_impl = None  # type: ignore[assignment,misc]
-    nesting_depth_visitor = None  # type: ignore[assignment,misc]
-    get_SubAtomicAgent = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
 
-@pytest.mark.skipif(not _AVAILABLE, reason="SubAtomicAgent.py deps unavailable")
-class TestSubatomicagentImportability:
-    def test_module_importable(self) -> None:
-        """ADG contract: SubAtomicAgent.py must be importable."""
-        assert _AVAILABLE
-
-    def test_subatomicagent_is_type(self) -> None:
-        assert SubAtomicAgent is not None
-
-    def test_subatomicagent_impl_is_type(self) -> None:
-        assert SubAtomicAgent_impl is not None
-
-    def test_nesting_depth_visitor_is_type(self) -> None:
-        assert nesting_depth_visitor is not None
-
-    def test_get_subatomicagent_callable(self) -> None:
-        assert callable(get_SubAtomicAgent)
-
-    def test_max_retries_defined(self) -> None:
-        assert MAX_RETRIES is not None
-
-    def test_default_sleep_defined(self) -> None:
-        assert DEFAULT_SLEEP is not None
+def test_module_importable():
+    """Module SubAtomicAgent must be importable."""
+    assert agentic_core.L3_orchestration.reasoning.SubAtomicAgent is not None

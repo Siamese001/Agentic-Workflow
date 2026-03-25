@@ -5,34 +5,31 @@ Tests follow windsurfrules §1.1-§1.8 requirements.
 """
 
 import json
-import pytest
-import tempfile
 import os
-from pathlib import Path
-from unittest.mock import patch, MagicMock
 
 # Import the module we're testing
 import sys
+import tempfile
+from pathlib import Path
+from unittest.mock import patch
+
+import pytest
+
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "tools"))
 
-try:
-    from fix_low_severity_swallowers import LowSeveritySilentSwallowerFixer
-    CAN_IMPORT = True
-except ImportError as e:
-    print(f"Cannot import fix_low_severity_swallowers: {e}")
-    CAN_IMPORT = False
+from fix_low_severity_swallowers import LowSeveritySilentSwallowerFixer
 
 
 class TestPhase23LowSeverityFixes:
     """Test Phase 2.3 implementation of LOW severity specific exception fixes."""
-    
+
     @pytest.fixture
     def temp_workspace(self):
         """Create temporary workspace for testing."""
         with tempfile.TemporaryDirectory() as temp_dir:
             workspace = Path(temp_dir)
             yield workspace
-    
+
     @pytest.fixture
     def sample_low_violations(self):
         """Create sample LOW severity violation data."""
@@ -49,7 +46,7 @@ class TestPhase23LowSeverityFixes:
                     'severity': 'LOW'
                 },
                 {
-                    'file_path': 'test_file2.py', 
+                    'file_path': 'test_file2.py',
                     'line_number': 20,
                     'exception_type': 'OSError',
                     'handler_body': ['pass'],
@@ -59,7 +56,7 @@ class TestPhase23LowSeverityFixes:
                 {
                     'file_path': 'test_file3.py',
                     'line_number': 30,
-                    'exception_type': 'UnicodeDecodeError', 
+                    'exception_type': 'UnicodeDecodeError',
                     'handler_body': ['pass'],
                     'context': 'encoding error',
                     'severity': 'LOW'
@@ -90,7 +87,7 @@ class TestPhase23LowSeverityFixes:
                 }
             ]
         }
-    
+
     @pytest.fixture
     def fixer(self, temp_workspace, sample_low_violations):
         """Create fixer instance with test data."""
@@ -100,7 +97,7 @@ class TestPhase23LowSeverityFixes:
         violations_file = tools_dir / "silent_swallower_report.json"
         with open(violations_file, 'w') as f:
             json.dump(sample_low_violations, f)
-        
+
         # Temporarily change working directory to temp workspace
         original_cwd = Path.cwd()
         try:
@@ -113,22 +110,20 @@ class TestPhase23LowSeverityFixes:
     # Test §1.5: Edge cases - Empty violation list
     def test_empty_violations_list(self, temp_workspace):
         """Test handling of empty violation list."""
-        if not CAN_IMPORT:
-            pytest.skip("Cannot import fixer")
-            
+
         # Create tools directory and empty violations file
         tools_dir = temp_workspace / "tools"
         tools_dir.mkdir()
         violations_file = tools_dir / "silent_swallower_report.json"
         with open(violations_file, 'w') as f:
             json.dump({'violations': []}, f)
-        
+
         # Temporarily change working directory to temp workspace
         original_cwd = Path.cwd()
         try:
             os.chdir(temp_workspace)
             fixer = LowSeveritySilentSwallowerFixer()
-            
+
             # Should handle empty list gracefully
             assert len(fixer.violations) == 0
             assert fixer.fixes_applied == 0
@@ -138,21 +133,19 @@ class TestPhase23LowSeverityFixes:
     # Test §1.5: Edge cases - Malformed violation data
     def test_malformed_violation_data(self, temp_workspace):
         """Test handling of malformed violation data."""
-        if not CAN_IMPORT:
-            pytest.skip("Cannot import fixer")
-            
+
         # Create tools directory and malformed violations file
         tools_dir = temp_workspace / "tools"
         tools_dir.mkdir()
         violations_file = tools_dir / "silent_swallower_report.json"
         with open(violations_file, 'w') as f:
             json.dump({'invalid': 'data'}, f)
-        
+
         # Temporarily change working directory to temp workspace
         original_cwd = Path.cwd()
         try:
             os.chdir(temp_workspace)
-            
+
             # Should handle malformed data gracefully
             with pytest.raises(KeyError):
                 LowSeveritySilentSwallowerFixer()
@@ -162,9 +155,7 @@ class TestPhase23LowSeverityFixes:
     # Test §1.5: Edge cases - Missing file paths
     def test_missing_file_paths(self, temp_workspace, sample_low_violations):
         """Test handling of violations with missing file paths."""
-        if not CAN_IMPORT:
-            pytest.skip("Cannot import fixer")
-            
+
         # Add violation with missing file path
         sample_low_violations['violations'].append({
             'line_number': 70,
@@ -173,19 +164,19 @@ class TestPhase23LowSeverityFixes:
             'severity': 'LOW'
             # Missing file_path
         })
-        
+
         tools_dir = temp_workspace / "tools"
         tools_dir.mkdir()
         violations_file = tools_dir / "silent_swallower_report.json"
         with open(violations_file, 'w') as f:
             json.dump(sample_low_violations, f)
-        
+
         # Temporarily change working directory to temp workspace
         original_cwd = Path.cwd()
         try:
             os.chdir(temp_workspace)
             fixer = LowSeveritySilentSwallowerFixer()
-            
+
             # Should skip violations with missing file paths
             assert len(fixer.violations) == 6  # Original 6, malformed one skipped
         finally:
@@ -194,29 +185,27 @@ class TestPhase23LowSeverityFixes:
     # Test §1.5: Edge cases - Permission denied files
     def test_permission_denied_files(self, temp_workspace, sample_low_violations):
         """Test handling of permission denied files."""
-        if not CAN_IMPORT:
-            pytest.skip("Cannot import fixer")
-            
+
         # Create a file with restricted permissions
         restricted_file = temp_workspace / "restricted.py"
         restricted_file.write_text("try:\n    risky_operation()\nexcept SyntaxError:\n    pass\n")
-        
+
         # Remove read permissions (on Unix systems)
         original_mode = restricted_file.stat().st_mode
         restricted_file.chmod(0o000)
-        
+
         try:
             violations_file = temp_workspace / "tools" / "silent_swallower_report.json"
             sample_low_violations['violations'][0]['file_path'] = str(restricted_file)
             with open(violations_file, 'w') as f:
                 json.dump(sample_low_violations, f)
-            
+
             # Temporarily change working directory to temp workspace
             original_cwd = Path.cwd()
             try:
                 os.chdir(temp_workspace)
                 fixer = LowSeveritySilentSwallowerFixer()
-                
+
                 # Should handle permission errors gracefully
                 result = fixer.apply_fixes_to_all_remaining_violations()
                 assert result['errors'] >= 0  # Should record permission errors
@@ -229,23 +218,21 @@ class TestPhase23LowSeverityFixes:
     # Test §1.5: Edge cases - Unicode file names
     def test_unicode_file_names(self, temp_workspace, sample_low_violations):
         """Test handling of Unicode file names."""
-        if not CAN_IMPORT:
-            pytest.skip("Cannot import fixer")
-            
+
         unicode_file = temp_workspace / "tëst_ünïcødë.py"
         unicode_file.write_text("try:\n    risky_operation()\nexcept OSError:\n    pass\n")
-        
+
         violations_file = temp_workspace / "tools" / "silent_swallower_report.json"
         sample_low_violations['violations'][0]['file_path'] = str(unicode_file)
         with open(violations_file, 'w') as f:
             json.dump(sample_low_violations, f)
-        
+
         # Temporarily change working directory to temp workspace
         original_cwd = Path.cwd()
         try:
             os.chdir(temp_workspace)
             fixer = LowSeveritySilentSwallowerFixer()
-            
+
             # Should handle Unicode file names
             assert len(fixer.violations) == 6
         finally:
@@ -254,9 +241,7 @@ class TestPhase23LowSeverityFixes:
     # Test §1.5: Edge cases - Complex exception patterns
     def test_complex_exception_patterns(self, temp_workspace):
         """Test handling of complex exception patterns."""
-        if not CAN_IMPORT:
-            pytest.skip("Cannot import fixer")
-            
+
         complex_violations = {
             'scan_timestamp': '2026-03-24T20:00:00Z',
             'total_violations': 4,
@@ -295,7 +280,7 @@ class TestPhase23LowSeverityFixes:
                 }
             ]
         }
-        
+
         # Create files with complex patterns
         for i, violation in enumerate(complex_violations['violations']):
             file_path = temp_workspace / violation['file_path']
@@ -321,22 +306,22 @@ except (OSError, UnicodeDecodeError, SyntaxError):
 except _SCENARIO_EXCEPTIONS:
     pass"""
             file_path.write_text(content)
-        
+
         tools_dir = temp_workspace / "tools"
         tools_dir.mkdir()
         violations_file = tools_dir / "silent_swallower_report.json"
         with open(violations_file, 'w') as f:
             json.dump(complex_violations, f)
-        
+
         # Temporarily change working directory to temp workspace
         original_cwd = Path.cwd()
         try:
             os.chdir(temp_workspace)
             fixer = LowSeveritySilentSwallowerFixer()
-            
+
             # Should handle complex patterns
             assert len(fixer.violations) == 4
-            
+
             # Test systematic application
             result = fixer.apply_fixes_to_all_remaining_violations()
             assert isinstance(result, dict)
@@ -347,14 +332,12 @@ except _SCENARIO_EXCEPTIONS:
     # Test §1.7: Determinism - Identical input → identical output
     def test_deterministic_fixes(self, fixer):
         """Test that identical input produces identical output."""
-        if not CAN_IMPORT:
-            pytest.skip("Cannot import fixer")
-            
+
         # Run fixes twice
         result1 = fixer.apply_fixes_to_all_remaining_violations()
         fixer.fixes_applied = 0  # Reset counter
         result2 = fixer.apply_fixes_to_all_remaining_violations()
-        
+
         # Results should be identical
         assert result1['fixes_applied'] == result2['fixes_applied']
         assert result1['errors'] == result2['errors']
@@ -362,16 +345,14 @@ except _SCENARIO_EXCEPTIONS:
     # Test §1.7: Determinism - Exception strategy detection consistency
     def test_exception_strategy_detection_consistency(self, fixer):
         """Test that exception strategy detection is consistent."""
-        if not CAN_IMPORT:
-            pytest.skip("Cannot import fixer")
-            
+
         if hasattr(fixer, '_determine_exception_fix_strategy'):
             # Test with same exception type multiple times
             exception_type = 'SyntaxError'
             context = 'syntax parsing error'
             strategy1 = fixer._determine_exception_fix_strategy(exception_type, context)
             strategy2 = fixer._determine_exception_fix_strategy(exception_type, context)
-            
+
             # Should be identical
             assert strategy1 == strategy2
         else:
@@ -380,9 +361,7 @@ except _SCENARIO_EXCEPTIONS:
     # Test §1.8: Fail-closed - Invalid file paths blocked
     def test_invalid_file_paths_blocked(self, temp_workspace, sample_low_violations):
         """Test that invalid file paths are blocked."""
-        if not CAN_IMPORT:
-            pytest.skip("Cannot import fixer")
-            
+
         # Add violation with invalid file path
         sample_low_violations['violations'].append({
             'file_path': '/invalid/nonexistent/path.py',
@@ -391,17 +370,17 @@ except _SCENARIO_EXCEPTIONS:
             'handler_body': ['pass'],
             'severity': 'LOW'
         })
-        
+
         violations_file = temp_workspace / "tools" / "silent_swallower_report.json"
         with open(violations_file, 'w') as f:
             json.dump(sample_low_violations, f)
-        
+
         # Temporarily change working directory to temp workspace
         original_cwd = Path.cwd()
         try:
             os.chdir(temp_workspace)
             fixer = LowSeveritySilentSwallowerFixer()
-            
+
             # Should handle invalid paths without crashing
             result = fixer.apply_fixes_to_all_remaining_violations()
             assert 'errors' in result
@@ -412,13 +391,11 @@ except _SCENARIO_EXCEPTIONS:
     # Test §1.8: Fail-closed - Permission errors handled gracefully
     def test_permission_errors_handled_gracefully(self, fixer):
         """Test that permission errors are handled gracefully."""
-        if not CAN_IMPORT:
-            pytest.skip("Cannot import fixer")
-            
+
         # Mock file operations to raise permission error
         with patch('pathlib.Path.read_text', side_effect=PermissionError("Permission denied")):
             result = fixer.apply_fixes_to_all_remaining_violations()
-            
+
             # Should handle permission errors gracefully
             assert 'errors' in result
             assert result['errors'] >= 0
@@ -426,13 +403,11 @@ except _SCENARIO_EXCEPTIONS:
     # Test §1.8: Fail-closed - No partial modifications on error
     def test_no_partial_modifications_on_error(self, fixer):
         """Test that no partial modifications occur on error."""
-        if not CAN_IMPORT:
-            pytest.skip("Cannot import fixer")
-            
+
         # Mock write operation to fail
-        with patch('pathlib.Path.write_text', side_effect=IOError("Write failed")):
+        with patch('pathlib.Path.write_text', side_effect=OSError("Write failed")):
             result = fixer.apply_fixes_to_all_remaining_violations()
-            
+
             # Should record error but not claim success
             assert 'errors' in result
             # Fix count should be accurate despite write failures
@@ -440,9 +415,7 @@ except _SCENARIO_EXCEPTIONS:
     # Test §1.6: Exception Analysis - Correct exception type identification
     def test_exception_type_identification(self, fixer):
         """Test correct exception type identification."""
-        if not CAN_IMPORT:
-            pytest.skip("Cannot import fixer")
-            
+
         if hasattr(fixer, '_determine_exception_fix_strategy'):
             # Test various exception types
             test_cases = [
@@ -453,7 +426,7 @@ except _SCENARIO_EXCEPTIONS:
                 ('RuntimeError', 'runtime failure', 'add_runtime_context'),
                 ('FileNotFoundError', 'file not found', 'add_file_context')
             ]
-            
+
             for exception_type, context, expected_strategy in test_cases:
                 strategy = fixer._determine_exception_fix_strategy(exception_type, context)
                 assert isinstance(strategy, dict)
@@ -465,17 +438,15 @@ except _SCENARIO_EXCEPTIONS:
     # Test §1.6: Exception Analysis - Proper specific exception replacement
     def test_specific_exception_replacement(self, fixer):
         """Test proper specific exception replacement."""
-        if not CAN_IMPORT:
-            pytest.skip("Cannot import fixer")
-            
+
         if hasattr(fixer, '_create_targeted_exception_handler'):
             # Test creating targeted exception handler
             original_line = "    except SyntaxError:"
             context = "syntax parsing error"
             strategy = {'action': 'add_guardian_comment', 'comment': 'Syntax errors should be caught at parser level'}
-            
+
             new_handler = fixer._create_targeted_exception_handler(original_line, context, strategy)
-            
+
             # Should add guardian comment
             assert "# guardian:" in new_handler or "# Syntax errors" in new_handler
             assert new_handler != original_line
@@ -485,11 +456,9 @@ except _SCENARIO_EXCEPTIONS:
     # Test systematic application function
     def test_apply_fixes_to_all_remaining_violations(self, fixer):
         """Test the systematic application function."""
-        if not CAN_IMPORT:
-            pytest.skip("Cannot import fixer")
-            
+
         result = fixer.apply_fixes_to_all_remaining_violations()
-        
+
         assert isinstance(result, dict)
         assert 'fixes_applied' in result
         assert 'errors' in result
@@ -499,15 +468,13 @@ except _SCENARIO_EXCEPTIONS:
     # Test enhanced reporting function
     def test_generate_systematic_fix_report(self, fixer):
         """Test the enhanced reporting function."""
-        if not CAN_IMPORT:
-            pytest.skip("Cannot import fixer")
-            
+
         # Apply some fixes first
         fixer.apply_fixes_to_all_remaining_violations()
-        
+
         if hasattr(fixer, 'generate_systematic_fix_report'):
             report = fixer.generate_systematic_fix_report()
-            
+
             assert isinstance(report, dict)
             assert 'phase' in report
             assert 'fix_timestamp' in report
@@ -520,13 +487,13 @@ except _SCENARIO_EXCEPTIONS:
 
 class TestPhase23Integration:
     """Integration tests for Phase 2.3 implementation."""
-    
+
     @pytest.fixture
     def integration_workspace(self):
         """Create integration test workspace."""
         with tempfile.TemporaryDirectory() as temp_dir:
             workspace = Path(temp_dir)
-            
+
             # Create sample Python files with LOW severity violations
             test_files = [
                 ("syntax_handler.py", """
@@ -554,18 +521,16 @@ except PermissionError:
     pass
 """)
             ]
-            
+
             for filename, content in test_files:
                 file_path = workspace / filename
                 file_path.write_text(content)
-            
+
             yield workspace
 
     def test_end_to_end_phase23_fixes(self, integration_workspace):
         """Test end-to-end Phase 2.3 fix process."""
-        if not CAN_IMPORT:
-            pytest.skip("Cannot import fixer")
-            
+
         # Create violations report
         violations = {
             'scan_timestamp': '2026-03-24T20:00:00Z',
@@ -605,33 +570,33 @@ except PermissionError:
                 }
             ]
         }
-        
+
         violations_file = integration_workspace / "tools" / "silent_swallower_report.json"
         violations_file.parent.mkdir()
         with open(violations_file, 'w') as f:
             json.dump(violations, f)
-        
+
         # Temporarily change working directory to integration workspace
         original_cwd = Path.cwd()
         try:
             os.chdir(integration_workspace)
-            
+
             fixer = LowSeveritySilentSwallowerFixer()
-            
+
             # Apply fixes
             result = fixer.apply_fixes_to_all_remaining_violations()
-            
+
             # Verify results
             assert isinstance(result, dict)
             assert 'fixes_applied' in result
             assert 'errors' in result
-            
+
             # Check that files were modified appropriately
             syntax_content = (integration_workspace / 'syntax_handler.py').read_text()
             file_content = (integration_workspace / 'file_handler.py').read_text()
             encoding_content = (integration_workspace / 'encoding_handler.py').read_text()
             permission_content = (integration_workspace / 'permission_handler.py').read_text()
-            
+
             # Should have added guardian comments or context
             assert "# guardian:" in syntax_content or "# Syntax errors" in syntax_content
             assert "# guardian:" in file_content or "# File system" in file_content

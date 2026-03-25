@@ -10,41 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_shared.utils.performance_monitor_types_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        MetricsCollector,
-        MetricsSummary,
-        OperationTimer,
-        PerformanceMonitor,
-        PerformanceThresholds,
-        TimingMetric,
-        get_performance_monitor,
-        timed,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    TimingMetric = None  # type: ignore[assignment,misc]
-    MetricsSummary = None  # type: ignore[assignment,misc]
-    MetricsCollector = None  # type: ignore[assignment,misc]
-    PerformanceThresholds = None  # type: ignore[assignment,misc]
-    PerformanceMonitor = None  # type: ignore[assignment,misc]
-    OperationTimer = None  # type: ignore[assignment,misc]
-    timed = None  # type: ignore[assignment,misc]
-    get_performance_monitor = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from apps_shared.utils.performance_monitor_types_util import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    MetricsCollector,
+    MetricsSummary,
+    OperationTimer,
+    PerformanceMonitor,
+    PerformanceThresholds,
+    TimingMetric,
+    get_performance_monitor,
+    timed,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="performance_monitor_types_util.py deps unavailable")
 class TestTimingMetricContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -55,7 +37,6 @@ class TestTimingMetricContract:
         field_names = {f.name for f in dataclasses.fields(TimingMetric)}
         assert field_names >= {'duration_ms', 'metadata', 'timestamp', 'name'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="performance_monitor_types_util.py deps unavailable")
 class TestMetricsSummaryContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -66,7 +47,6 @@ class TestMetricsSummaryContract:
         field_names = {f.name for f in dataclasses.fields(MetricsSummary)}
         assert field_names >= {'min_ms', 'mean_ms', 'name', 'max_ms', 'count'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="performance_monitor_types_util.py deps unavailable")
 class TestMetricsCollectorContract:
     def test_is_class(self):
         assert isinstance(MetricsCollector, type)
@@ -83,7 +63,6 @@ class TestMetricsCollectorContract:
     def test_has_method_get_summary(self):
         assert callable(getattr(MetricsCollector, 'get_summary', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="performance_monitor_types_util.py deps unavailable")
 class TestPerformanceThresholdsContract:
     def test_is_class(self):
         assert isinstance(PerformanceThresholds, type)
@@ -100,7 +79,6 @@ class TestPerformanceThresholdsContract:
     def test_has_method_get_violations(self):
         assert callable(getattr(PerformanceThresholds, 'get_violations', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="performance_monitor_types_util.py deps unavailable")
 class TestPerformanceMonitorContract:
     def test_is_class(self):
         assert isinstance(PerformanceMonitor, type)
@@ -117,7 +95,6 @@ class TestPerformanceMonitorContract:
     def test_has_method_reset(self):
         assert callable(getattr(PerformanceMonitor, 'reset', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="performance_monitor_types_util.py deps unavailable")
 class TestOperationTimerContract:
     def test_is_class(self):
         assert isinstance(OperationTimer, type)
@@ -125,7 +102,6 @@ class TestOperationTimerContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(OperationTimer, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="performance_monitor_types_util.py deps unavailable")
 class TestTimedFunction:
     def test_is_callable(self):
         assert callable(timed)
@@ -135,7 +111,6 @@ class TestTimedFunction:
         sig = inspect.signature(timed)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="performance_monitor_types_util.py deps unavailable")
 class TestGetPerformanceMonitorFunction:
     def test_is_callable(self):
         assert callable(get_performance_monitor)
@@ -145,27 +120,22 @@ class TestGetPerformanceMonitorFunction:
         sig = inspect.signature(get_performance_monitor)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="performance_monitor_types_util.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="performance_monitor_types_util.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="performance_monitor_types_util.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="performance_monitor_types_util.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="performance_monitor_types_util.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -173,4 +143,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module performance_monitor_types_util must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

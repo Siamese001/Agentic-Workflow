@@ -5,50 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L0_routing.scripts.run_guardian_hierarchy_compliance import (  # noqa: F401
-        GUARDIAN_ID,
-        main,
-        run_hierarchy_compliance_guardian,
-        scan_missing_structure,
-        scan_subfolder_compliance,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    scan_missing_structure = None  # type: ignore[assignment,misc]
-    scan_subfolder_compliance = None  # type: ignore[assignment,misc]
-    run_hierarchy_compliance_guardian = None  # type: ignore[assignment,misc]
-    main = None  # type: ignore[assignment,misc]
-    GUARDIAN_ID = None  # type: ignore[assignment,misc]
-
-
-@pytest.mark.skipif(not _AVAILABLE, reason="run_guardian_hierarchy_compliance.py deps unavailable")
-class TestScanMissingStructure:
-    def test_is_callable(self):
-        assert callable(scan_missing_structure)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="run_guardian_hierarchy_compliance.py deps unavailable")
-class TestScanSubfolderCompliance:
-    def test_is_callable(self):
-        assert callable(scan_subfolder_compliance)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="run_guardian_hierarchy_compliance.py deps unavailable")
-class TestRunHierarchyComplianceGuardian:
-    def test_is_callable(self):
-        assert callable(run_hierarchy_compliance_guardian)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="run_guardian_hierarchy_compliance.py deps unavailable")
-class TestMain:
-    def test_is_callable(self):
-        assert callable(main)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="run_guardian_hierarchy_compliance.py deps unavailable")
-class TestGuardianIdConstant:
-    def test_is_not_none(self):
-        assert GUARDIAN_ID is not None
+import agentic_core.L0_routing.scripts.run_guardian_hierarchy_compliance  # noqa: F401
 
 
 def test_module_importable():
-    """Module run_guardian_hierarchy_compliance.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module run_guardian_hierarchy_compliance must be importable."""
+    assert agentic_core.L0_routing.scripts.run_guardian_hierarchy_compliance is not None

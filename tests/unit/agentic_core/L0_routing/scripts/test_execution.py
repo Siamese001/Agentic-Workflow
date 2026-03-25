@@ -10,39 +10,22 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L0_routing.scripts.execution import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        DAGStrategy,
-        ExecutionStatus,
-        ExecutionStrategy,
-        WorkflowContext,
-        WorkflowResult,
-        WorkflowStep,
-        get_strategy,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    ExecutionStatus = None  # type: ignore[assignment,misc]
-    WorkflowContext = None  # type: ignore[assignment,misc]
-    WorkflowResult = None  # type: ignore[assignment,misc]
-    WorkflowStep = None  # type: ignore[assignment,misc]
-    ExecutionStrategy = None  # type: ignore[assignment,misc]
-    DAGStrategy = None  # type: ignore[assignment,misc]
-    get_strategy = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L0_routing.scripts.execution import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    DAGStrategy,
+    ExecutionStatus,
+    ExecutionStrategy,
+    WorkflowContext,
+    WorkflowResult,
+    WorkflowStep,
+    get_strategy,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="execution.py deps unavailable")
 class TestExecutionStatusContract:
     def test_is_enum(self):
         import enum
@@ -58,7 +41,6 @@ class TestExecutionStatusContract:
     def test_known_member_pending_exists(self):
         assert hasattr(ExecutionStatus, 'PENDING')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="execution.py deps unavailable")
 class TestWorkflowContextContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -69,7 +51,6 @@ class TestWorkflowContextContract:
         field_names = {f.name for f in dataclasses.fields(WorkflowContext)}
         assert field_names >= {'workflow_id', 'metadata', 'state', 'input_data', 'workflow_type'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="execution.py deps unavailable")
 class TestWorkflowResultContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -80,7 +61,6 @@ class TestWorkflowResultContract:
         field_names = {f.name for f in dataclasses.fields(WorkflowResult)}
         assert field_names >= {'error', 'status', 'metrics', 'workflow_id', 'output'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="execution.py deps unavailable")
 class TestWorkflowStepContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -91,7 +71,6 @@ class TestWorkflowStepContract:
         field_names = {f.name for f in dataclasses.fields(WorkflowStep)}
         assert field_names >= {'step_id', 'dependencies', 'name', 'handler', 'timeout_seconds'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="execution.py deps unavailable")
 class TestExecutionStrategyContract:
     def test_is_class(self):
         assert isinstance(ExecutionStrategy, type)
@@ -105,7 +84,6 @@ class TestExecutionStrategyContract:
     def test_has_method_can_handle(self):
         assert callable(getattr(ExecutionStrategy, 'can_handle', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="execution.py deps unavailable")
 class TestDAGStrategyContract:
     def test_is_class(self):
         assert isinstance(DAGStrategy, type)
@@ -119,7 +97,6 @@ class TestDAGStrategyContract:
     def test_has_method_can_handle(self):
         assert callable(getattr(DAGStrategy, 'can_handle', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="execution.py deps unavailable")
 class TestGetStrategyFunction:
     def test_is_callable(self):
         assert callable(get_strategy)
@@ -129,27 +106,22 @@ class TestGetStrategyFunction:
         sig = inspect.signature(get_strategy)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="execution.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="execution.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="execution.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="execution.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="execution.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -157,4 +129,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module execution must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

@@ -10,35 +10,20 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L5_safety.enforcement.error_recovery_guardrail import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        ErrorCategory,
-        ErrorContext,
-        ErrorRecoveryGuardrail,
-        RecoveryResult,
-        RecoveryStrategy,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    ErrorCategory = None  # type: ignore[assignment,misc]
-    RecoveryStrategy = None  # type: ignore[assignment,misc]
-    ErrorContext = None  # type: ignore[assignment,misc]
-    RecoveryResult = None  # type: ignore[assignment,misc]
-    ErrorRecoveryGuardrail = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L5_safety.enforcement.error_recovery_guardrail import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    ErrorCategory,
+    ErrorContext,
+    ErrorRecoveryGuardrail,
+    RecoveryResult,
+    RecoveryStrategy,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="error_recovery_guardrail.py deps unavailable")
 class TestErrorCategoryContract:
     def test_is_enum(self):
         import enum
@@ -54,7 +39,6 @@ class TestErrorCategoryContract:
     def test_known_member_validation_exists(self):
         assert hasattr(ErrorCategory, 'VALIDATION')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="error_recovery_guardrail.py deps unavailable")
 class TestRecoveryStrategyContract:
     def test_is_enum(self):
         import enum
@@ -70,7 +54,6 @@ class TestRecoveryStrategyContract:
     def test_known_member_retry_exists(self):
         assert hasattr(RecoveryStrategy, 'RETRY')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="error_recovery_guardrail.py deps unavailable")
 class TestErrorContextContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -81,7 +64,6 @@ class TestErrorContextContract:
         field_names = {f.name for f in dataclasses.fields(ErrorContext)}
         assert field_names >= {'error', 'stack_trace', 'message', 'timestamp', 'error_type'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="error_recovery_guardrail.py deps unavailable")
 class TestRecoveryResultContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -92,7 +74,6 @@ class TestRecoveryResultContract:
         field_names = {f.name for f in dataclasses.fields(RecoveryResult)}
         assert field_names >= {'success', 'strategy_used', 'error_message', 'attempts', 'recovered_value'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="error_recovery_guardrail.py deps unavailable")
 class TestErrorRecoveryGuardrailContract:
     def test_is_class(self):
         assert isinstance(ErrorRecoveryGuardrail, type)
@@ -106,27 +87,22 @@ class TestErrorRecoveryGuardrailContract:
     def test_has_method_get_error_log(self):
         assert callable(getattr(ErrorRecoveryGuardrail, 'get_error_log', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="error_recovery_guardrail.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="error_recovery_guardrail.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="error_recovery_guardrail.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="error_recovery_guardrail.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="error_recovery_guardrail.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -134,4 +110,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module error_recovery_guardrail must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

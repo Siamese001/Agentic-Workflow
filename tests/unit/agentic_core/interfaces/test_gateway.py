@@ -1,23 +1,13 @@
-"""Foundational behavioral tests for agentic_core/interfaces/gateway.py.
-
-fan_in=10 — this module is imported by 10 other modules.
-ADG contract: import-hygiene is covered by test_gateway_adg.py.
-This file covers behavioral invariants and public API contracts.
-"""
+"""Foundational behavioral tests for agentic_core/interfaces/gateway.py."""
 from __future__ import annotations
 
 import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    import agentic_core.interfaces.gateway as _mod  # noqa: F401
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-
+import agentic_core.interfaces.gateway as _mod  # noqa: F401
 
 
 def test_module_importable():
     """Module gateway must be importable."""
-    assert _AVAILABLE or not _AVAILABLE
+    assert _mod is not None

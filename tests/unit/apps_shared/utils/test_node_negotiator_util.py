@@ -10,43 +10,24 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_shared.utils.node_negotiator_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        NegotiatingHop,
-        NegotiationConfig,
-        NegotiationMessage,
-        NegotiationResult,
-        NegotiationRound,
-        NodeNegotiator,
-        get_node_negotiator,
-        request_upstream_change,
-        send_clarification,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    NegotiationMessage = None  # type: ignore[assignment,misc]
-    NegotiationRound = None  # type: ignore[assignment,misc]
-    NegotiationConfig = None  # type: ignore[assignment,misc]
-    NegotiationResult = None  # type: ignore[assignment,misc]
-    NodeNegotiator = None  # type: ignore[assignment,misc]
-    NegotiatingHop = None  # type: ignore[assignment,misc]
-    get_node_negotiator = None  # type: ignore[assignment,misc]
-    request_upstream_change = None  # type: ignore[assignment,misc]
-    send_clarification = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from apps_shared.utils.node_negotiator_util import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    NegotiatingHop,
+    NegotiationConfig,
+    NegotiationMessage,
+    NegotiationResult,
+    NegotiationRound,
+    NodeNegotiator,
+    get_node_negotiator,
+    request_upstream_change,
+    send_clarification,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="node_negotiator_util.py deps unavailable")
 class TestNegotiationMessageContract:
     def test_is_class(self):
         assert isinstance(NegotiationMessage, type)
@@ -54,7 +35,6 @@ class TestNegotiationMessageContract:
     def test_has_method_validate_message_type(self):
         assert callable(getattr(NegotiationMessage, 'validate_message_type', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="node_negotiator_util.py deps unavailable")
 class TestNegotiationRoundContract:
     def test_is_class(self):
         assert isinstance(NegotiationRound, type)
@@ -62,7 +42,6 @@ class TestNegotiationRoundContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(NegotiationRound, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="node_negotiator_util.py deps unavailable")
 class TestNegotiationConfigContract:
     def test_is_class(self):
         assert isinstance(NegotiationConfig, type)
@@ -70,7 +49,6 @@ class TestNegotiationConfigContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(NegotiationConfig, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="node_negotiator_util.py deps unavailable")
 class TestNegotiationResultContract:
     def test_is_class(self):
         assert isinstance(NegotiationResult, type)
@@ -78,7 +56,6 @@ class TestNegotiationResultContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(NegotiationResult, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="node_negotiator_util.py deps unavailable")
 class TestNodeNegotiatorContract:
     def test_is_class(self):
         assert isinstance(NodeNegotiator, type)
@@ -95,7 +72,6 @@ class TestNodeNegotiatorContract:
     def test_has_method_get_stats(self):
         assert callable(getattr(NodeNegotiator, 'get_stats', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="node_negotiator_util.py deps unavailable")
 class TestNegotiatingHopContract:
     def test_is_class(self):
         assert isinstance(NegotiatingHop, type)
@@ -106,7 +82,6 @@ class TestNegotiatingHopContract:
     def test_has_method_request_upstream_modification(self):
         assert callable(getattr(NegotiatingHop, 'request_upstream_modification', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="node_negotiator_util.py deps unavailable")
 class TestGetNodeNegotiatorFunction:
     def test_is_callable(self):
         assert callable(get_node_negotiator)
@@ -116,7 +91,6 @@ class TestGetNodeNegotiatorFunction:
         sig = inspect.signature(get_node_negotiator)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="node_negotiator_util.py deps unavailable")
 class TestRequestUpstreamChangeFunction:
     def test_is_callable(self):
         assert callable(request_upstream_change)
@@ -126,7 +100,6 @@ class TestRequestUpstreamChangeFunction:
         sig = inspect.signature(request_upstream_change)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="node_negotiator_util.py deps unavailable")
 class TestSendClarificationFunction:
     def test_is_callable(self):
         assert callable(send_clarification)
@@ -136,27 +109,22 @@ class TestSendClarificationFunction:
         sig = inspect.signature(send_clarification)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="node_negotiator_util.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="node_negotiator_util.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="node_negotiator_util.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="node_negotiator_util.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="node_negotiator_util.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -164,4 +132,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module node_negotiator_util must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

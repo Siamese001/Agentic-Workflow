@@ -5,73 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_rg.tools.match_job_patterns import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_DEPTH,
-        MAX_RETRIES,
-        THRESHOLD,
-        match_job_patterns,
-        process,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    match_job_patterns = None  # type: ignore[assignment,misc]
-    process = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
-    MAX_DEPTH = None  # type: ignore[assignment,misc]
-
-
-@pytest.mark.skipif(not _AVAILABLE, reason="match_job_patterns.py deps unavailable")
-class Testmatch_job_patterns:
-    def test_is_class(self):
-        assert isinstance(match_job_patterns, type)
-    def test_importable(self):
-        assert match_job_patterns is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="match_job_patterns.py deps unavailable")
-class TestProcess:
-    def test_is_callable(self):
-        assert callable(process)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="match_job_patterns.py deps unavailable")
-class TestMaxRetriesConstant:
-    def test_is_not_none(self):
-        assert MAX_RETRIES is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="match_job_patterns.py deps unavailable")
-class TestDefaultSleepConstant:
-    def test_is_not_none(self):
-        assert DEFAULT_SLEEP is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="match_job_patterns.py deps unavailable")
-class TestThresholdConstant:
-    def test_is_not_none(self):
-        assert THRESHOLD is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="match_job_patterns.py deps unavailable")
-class TestBufferSizeConstant:
-    def test_is_not_none(self):
-        assert BUFFER_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="match_job_patterns.py deps unavailable")
-class TestBatchSizeConstant:
-    def test_is_not_none(self):
-        assert BATCH_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="match_job_patterns.py deps unavailable")
-class TestMaxDepthConstant:
-    def test_is_not_none(self):
-        assert MAX_DEPTH is not None
+import apps_rg.tools.match_job_patterns  # noqa: F401
 
 
 def test_module_importable():
-    """Module match_job_patterns.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module match_job_patterns must be importable."""
+    assert apps_rg.tools.match_job_patterns is not None

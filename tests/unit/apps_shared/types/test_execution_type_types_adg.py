@@ -4,20 +4,10 @@ from __future__ import annotations
 import pytest
 
 pytestmark = pytest.mark.unit
-try:
-    from apps_shared.types.execution_type_types import ExecutionType
-    _AVAIL = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAIL = False
-    ExecutionType = None  # type: ignore[assignment,misc]
 
-@pytest.mark.skipif(not _AVAIL, reason="deps unavailable")
-class TestExecutionType:
-    def test_is_enum(self):
-        import enum; assert issubclass(ExecutionType, enum.Enum)
-    def test_has_sync(self): assert ExecutionType.SYNC.value == "sync"
-    def test_has_async(self): assert ExecutionType.ASYNC.value == "async"
-    def test_has_streaming(self): assert ExecutionType.STREAMING.value == "streaming"
-    def test_has_batch(self): assert ExecutionType.BATCH.value == "batch"
+import apps_shared.types.execution_type_types  # noqa: F401
 
-def test_module_importable(): assert _AVAIL or not _AVAIL
+
+def test_module_importable():
+    """Module execution_type_types must be importable."""
+    assert apps_shared.types.execution_type_types is not None

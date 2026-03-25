@@ -10,35 +10,20 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L4_state.enforcement.promotion_authority import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        PromotionAuthority,
-        PromotionPointerUpdate,
-        get_promotion_authority,
-        update_pointer_via_gateway,
-        validate_pointer_update_integrity,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    PromotionPointerUpdate = None  # type: ignore[assignment,misc]
-    PromotionAuthority = None  # type: ignore[assignment,misc]
-    get_promotion_authority = None  # type: ignore[assignment,misc]
-    update_pointer_via_gateway = None  # type: ignore[assignment,misc]
-    validate_pointer_update_integrity = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L4_state.enforcement.promotion_authority import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    PromotionAuthority,
+    PromotionPointerUpdate,
+    get_promotion_authority,
+    update_pointer_via_gateway,
+    validate_pointer_update_integrity,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="promotion_authority.py deps unavailable")
 class TestPromotionPointerUpdateContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -61,7 +46,6 @@ class TestPromotionPointerUpdateContract:
         # (create requires knowing required fields — skip if args unknown)
         assert PromotionPointerUpdate.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="promotion_authority.py deps unavailable")
 class TestPromotionAuthorityContract:
     def test_is_class(self):
         assert isinstance(PromotionAuthority, type)
@@ -78,7 +62,6 @@ class TestPromotionAuthorityContract:
     def test_has_method_validate_pointer_update_integrity(self):
         assert callable(getattr(PromotionAuthority, 'validate_pointer_update_integrity', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="promotion_authority.py deps unavailable")
 class TestGetPromotionAuthorityFunction:
     def test_is_callable(self):
         assert callable(get_promotion_authority)
@@ -88,7 +71,6 @@ class TestGetPromotionAuthorityFunction:
         sig = inspect.signature(get_promotion_authority)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="promotion_authority.py deps unavailable")
 class TestUpdatePointerViaGatewayFunction:
     def test_is_callable(self):
         assert callable(update_pointer_via_gateway)
@@ -98,7 +80,6 @@ class TestUpdatePointerViaGatewayFunction:
         sig = inspect.signature(update_pointer_via_gateway)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="promotion_authority.py deps unavailable")
 class TestValidatePointerUpdateIntegrityFunction:
     def test_is_callable(self):
         assert callable(validate_pointer_update_integrity)
@@ -108,27 +89,22 @@ class TestValidatePointerUpdateIntegrityFunction:
         sig = inspect.signature(validate_pointer_update_integrity)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="promotion_authority.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="promotion_authority.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="promotion_authority.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="promotion_authority.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="promotion_authority.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -136,4 +112,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module promotion_authority must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

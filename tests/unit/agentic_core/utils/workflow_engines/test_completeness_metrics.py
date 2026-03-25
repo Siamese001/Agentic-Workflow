@@ -10,37 +10,21 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.utils.workflow_engines.completeness_metrics import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        ChunkStrategyReport,
-        CompletenessExperimentReport,
-        EvaluationDeltaReport,
-        EvaluationMetricResult,
-        EvaluationReport,
-        RetrievalExperimentReport,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    EvaluationMetricResult = None  # type: ignore[assignment,misc]
-    EvaluationReport = None  # type: ignore[assignment,misc]
-    EvaluationDeltaReport = None  # type: ignore[assignment,misc]
-    RetrievalExperimentReport = None  # type: ignore[assignment,misc]
-    ChunkStrategyReport = None  # type: ignore[assignment,misc]
-    CompletenessExperimentReport = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.utils.workflow_engines.completeness_metrics import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    ChunkStrategyReport,
+    CompletenessExperimentReport,
+    EvaluationDeltaReport,
+    EvaluationMetricResult,
+    EvaluationReport,
+    RetrievalExperimentReport,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness_metrics.py deps unavailable")
 class TestEvaluationMetricResultContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -63,7 +47,6 @@ class TestEvaluationMetricResultContract:
         # (create requires knowing required fields — skip if args unknown)
         assert EvaluationMetricResult.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness_metrics.py deps unavailable")
 class TestEvaluationReportContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -86,7 +69,6 @@ class TestEvaluationReportContract:
         # (create requires knowing required fields — skip if args unknown)
         assert EvaluationReport.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness_metrics.py deps unavailable")
 class TestEvaluationDeltaReportContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -109,7 +91,6 @@ class TestEvaluationDeltaReportContract:
         # (create requires knowing required fields — skip if args unknown)
         assert EvaluationDeltaReport.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness_metrics.py deps unavailable")
 class TestRetrievalExperimentReportContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -132,7 +113,6 @@ class TestRetrievalExperimentReportContract:
         # (create requires knowing required fields — skip if args unknown)
         assert RetrievalExperimentReport.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness_metrics.py deps unavailable")
 class TestChunkStrategyReportContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -155,7 +135,6 @@ class TestChunkStrategyReportContract:
         # (create requires knowing required fields — skip if args unknown)
         assert ChunkStrategyReport.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness_metrics.py deps unavailable")
 class TestCompletenessExperimentReportContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -178,27 +157,22 @@ class TestCompletenessExperimentReportContract:
         # (create requires knowing required fields — skip if args unknown)
         assert CompletenessExperimentReport.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness_metrics.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness_metrics.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness_metrics.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness_metrics.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness_metrics.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -206,4 +180,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module completeness_metrics must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

@@ -23,9 +23,8 @@ try:
         _propagate_violations,
     )
 
-    _AVAILABLE = True
 except Exception:
-    _AVAILABLE = False
+
     Edge = None  # type: ignore[assignment,misc]
     ScanResult = None  # type: ignore[assignment,misc]
     _ModuleDefinitionVisitor = None  # type: ignore[assignment,misc]
@@ -50,7 +49,6 @@ def _make_edge(**overrides) -> Edge:
 # ---------------------------------------------------------------------------
 # W1a: Violation confidence floor
 # ---------------------------------------------------------------------------
-@pytest.mark.skipif(not _AVAILABLE, reason="static_scanner.py deps unavailable")
 class TestW1aViolationConfidenceFloor:
     """Verify violation_propagates_through edges have confidence >= 0.5."""
 
@@ -119,7 +117,6 @@ class TestW1aViolationConfidenceFloor:
 # ---------------------------------------------------------------------------
 # W1b: Edge deduplication
 # ---------------------------------------------------------------------------
-@pytest.mark.skipif(not _AVAILABLE, reason="static_scanner.py deps unavailable")
 class TestW1bEdgeDeduplication:
     """Verify key-based edge dedup removes exact duplicates."""
 
@@ -182,7 +179,6 @@ class TestW1bEdgeDeduplication:
 # ---------------------------------------------------------------------------
 # W1c: _ModuleDefinitionVisitor
 # ---------------------------------------------------------------------------
-@pytest.mark.skipif(not _AVAILABLE, reason="static_scanner.py deps unavailable")
 class TestW1cModuleDefinitionVisitor:
     """Verify _ModuleDefinitionVisitor emits decomposes_into for all defs."""
 

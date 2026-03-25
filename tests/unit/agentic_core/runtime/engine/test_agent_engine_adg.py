@@ -5,24 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.runtime.engine.agent_engine import (  # noqa: F401
-        AgentEngine,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    AgentEngine = None  # type: ignore[assignment,misc]
-
-
-@pytest.mark.skipif(not _AVAILABLE, reason="agent_engine.py deps unavailable")
-class TestAgentEngine:
-    def test_is_class(self):
-        assert isinstance(AgentEngine, type)
-    def test_importable(self):
-        assert AgentEngine is not None
+import agentic_core.runtime.engine.agent_engine  # noqa: F401
 
 
 def test_module_importable():
-    """Module agent_engine.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module agent_engine must be importable."""
+    assert agentic_core.runtime.engine.agent_engine is not None

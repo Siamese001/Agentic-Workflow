@@ -10,33 +10,19 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L0_routing.scripts.ssot_cli import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        cmd_enforce,
-        cmd_scan,
-        cmd_validate,
-        print_header,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    print_header = None  # type: ignore[assignment,misc]
-    cmd_scan = None  # type: ignore[assignment,misc]
-    cmd_validate = None  # type: ignore[assignment,misc]
-    cmd_enforce = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L0_routing.scripts.ssot_cli import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    cmd_enforce,
+    cmd_scan,
+    cmd_validate,
+    print_header,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="ssot_cli.py deps unavailable")
 class TestPrintHeaderFunction:
     def test_is_callable(self):
         assert callable(print_header)
@@ -46,7 +32,6 @@ class TestPrintHeaderFunction:
         sig = inspect.signature(print_header)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="ssot_cli.py deps unavailable")
 class TestCmdScanFunction:
     def test_is_callable(self):
         assert callable(cmd_scan)
@@ -56,7 +41,6 @@ class TestCmdScanFunction:
         sig = inspect.signature(cmd_scan)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="ssot_cli.py deps unavailable")
 class TestCmdValidateFunction:
     def test_is_callable(self):
         assert callable(cmd_validate)
@@ -66,7 +50,6 @@ class TestCmdValidateFunction:
         sig = inspect.signature(cmd_validate)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="ssot_cli.py deps unavailable")
 class TestCmdEnforceFunction:
     def test_is_callable(self):
         assert callable(cmd_enforce)
@@ -76,27 +59,22 @@ class TestCmdEnforceFunction:
         sig = inspect.signature(cmd_enforce)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="ssot_cli.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="ssot_cli.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="ssot_cli.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="ssot_cli.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="ssot_cli.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -104,4 +82,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module ssot_cli must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

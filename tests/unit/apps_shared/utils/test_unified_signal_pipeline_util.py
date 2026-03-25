@@ -10,43 +10,24 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_shared.utils.unified_signal_pipeline_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        ContextEnrichmentStage,
-        InputProcessingStage,
-        PipelineContext,
-        PipelineStage,
-        PipelineStageType,
-        SignalAugmentationStage,
-        get_unified_pipeline,
-        process_outreach_signal,
-        process_resume_signal,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    PipelineStageType = None  # type: ignore[assignment,misc]
-    PipelineContext = None  # type: ignore[assignment,misc]
-    PipelineStage = None  # type: ignore[assignment,misc]
-    InputProcessingStage = None  # type: ignore[assignment,misc]
-    ContextEnrichmentStage = None  # type: ignore[assignment,misc]
-    SignalAugmentationStage = None  # type: ignore[assignment,misc]
-    get_unified_pipeline = None  # type: ignore[assignment,misc]
-    process_resume_signal = None  # type: ignore[assignment,misc]
-    process_outreach_signal = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from apps_shared.utils.unified_signal_pipeline_util import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    ContextEnrichmentStage,
+    InputProcessingStage,
+    PipelineContext,
+    PipelineStage,
+    PipelineStageType,
+    SignalAugmentationStage,
+    get_unified_pipeline,
+    process_outreach_signal,
+    process_resume_signal,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_signal_pipeline_util.py deps unavailable")
 class TestPipelineStageTypeContract:
     def test_is_enum(self):
         import enum
@@ -62,7 +43,6 @@ class TestPipelineStageTypeContract:
     def test_known_member_input_processing_exists(self):
         assert hasattr(PipelineStageType, 'INPUT_PROCESSING')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_signal_pipeline_util.py deps unavailable")
 class TestPipelineContextContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -73,7 +53,6 @@ class TestPipelineContextContract:
         field_names = {f.name for f in dataclasses.fields(PipelineContext)}
         assert field_names >= {'original_input', 'domain_config', 'engine_type', 'processed_data', 'metadata'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_signal_pipeline_util.py deps unavailable")
 class TestPipelineStageContract:
     def test_is_class(self):
         assert isinstance(PipelineStage, type)
@@ -84,7 +63,6 @@ class TestPipelineStageContract:
     def test_has_method_stage_name(self):
         assert callable(getattr(PipelineStage, 'stage_name', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_signal_pipeline_util.py deps unavailable")
 class TestInputProcessingStageContract:
     def test_is_class(self):
         assert isinstance(InputProcessingStage, type)
@@ -95,7 +73,6 @@ class TestInputProcessingStageContract:
     def test_has_method_stage_name(self):
         assert callable(getattr(InputProcessingStage, 'stage_name', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_signal_pipeline_util.py deps unavailable")
 class TestContextEnrichmentStageContract:
     def test_is_class(self):
         assert isinstance(ContextEnrichmentStage, type)
@@ -106,7 +83,6 @@ class TestContextEnrichmentStageContract:
     def test_has_method_stage_name(self):
         assert callable(getattr(ContextEnrichmentStage, 'stage_name', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_signal_pipeline_util.py deps unavailable")
 class TestSignalAugmentationStageContract:
     def test_is_class(self):
         assert isinstance(SignalAugmentationStage, type)
@@ -117,7 +93,6 @@ class TestSignalAugmentationStageContract:
     def test_has_method_stage_name(self):
         assert callable(getattr(SignalAugmentationStage, 'stage_name', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_signal_pipeline_util.py deps unavailable")
 class TestGetUnifiedPipelineFunction:
     def test_is_callable(self):
         assert callable(get_unified_pipeline)
@@ -127,7 +102,6 @@ class TestGetUnifiedPipelineFunction:
         sig = inspect.signature(get_unified_pipeline)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_signal_pipeline_util.py deps unavailable")
 class TestProcessResumeSignalFunction:
     def test_is_callable(self):
         assert callable(process_resume_signal)
@@ -137,7 +111,6 @@ class TestProcessResumeSignalFunction:
         sig = inspect.signature(process_resume_signal)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_signal_pipeline_util.py deps unavailable")
 class TestProcessOutreachSignalFunction:
     def test_is_callable(self):
         assert callable(process_outreach_signal)
@@ -147,27 +120,22 @@ class TestProcessOutreachSignalFunction:
         sig = inspect.signature(process_outreach_signal)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_signal_pipeline_util.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_signal_pipeline_util.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_signal_pipeline_util.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_signal_pipeline_util.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="unified_signal_pipeline_util.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -175,4 +143,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module unified_signal_pipeline_util must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

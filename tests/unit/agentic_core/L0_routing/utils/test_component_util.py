@@ -10,35 +10,20 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L0_routing.utils.component_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        ComponentFactory,
-        get_detection_emitter,
-        get_human_review_queue,
-        get_meta_learning_service,
-        get_verification_gate,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    ComponentFactory = None  # type: ignore[assignment,misc]
-    get_verification_gate = None  # type: ignore[assignment,misc]
-    get_human_review_queue = None  # type: ignore[assignment,misc]
-    get_detection_emitter = None  # type: ignore[assignment,misc]
-    get_meta_learning_service = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L0_routing.utils.component_util import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    ComponentFactory,
+    get_detection_emitter,
+    get_human_review_queue,
+    get_meta_learning_service,
+    get_verification_gate,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="component_util.py deps unavailable")
 class TestComponentFactoryContract:
     def test_is_class(self):
         assert isinstance(ComponentFactory, type)
@@ -55,7 +40,6 @@ class TestComponentFactoryContract:
     def test_has_method_get_meta_learning_service(self):
         assert callable(getattr(ComponentFactory, 'get_meta_learning_service', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="component_util.py deps unavailable")
 class TestGetVerificationGateFunction:
     def test_is_callable(self):
         assert callable(get_verification_gate)
@@ -65,7 +49,6 @@ class TestGetVerificationGateFunction:
         sig = inspect.signature(get_verification_gate)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="component_util.py deps unavailable")
 class TestGetHumanReviewQueueFunction:
     def test_is_callable(self):
         assert callable(get_human_review_queue)
@@ -75,7 +58,6 @@ class TestGetHumanReviewQueueFunction:
         sig = inspect.signature(get_human_review_queue)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="component_util.py deps unavailable")
 class TestGetDetectionEmitterFunction:
     def test_is_callable(self):
         assert callable(get_detection_emitter)
@@ -85,7 +67,6 @@ class TestGetDetectionEmitterFunction:
         sig = inspect.signature(get_detection_emitter)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="component_util.py deps unavailable")
 class TestGetMetaLearningServiceFunction:
     def test_is_callable(self):
         assert callable(get_meta_learning_service)
@@ -95,27 +76,22 @@ class TestGetMetaLearningServiceFunction:
         sig = inspect.signature(get_meta_learning_service)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="component_util.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="component_util.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="component_util.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="component_util.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="component_util.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -123,4 +99,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module component_util must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

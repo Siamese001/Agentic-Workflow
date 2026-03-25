@@ -10,37 +10,21 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.runtime.config.model_provider_config import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        Config,
-        GovernorConfig,
-        ModelConfig,
-        ModelProvider,
-        RAGConfig,
-        WorkflowConfig,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    ModelProvider = None  # type: ignore[assignment,misc]
-    ModelConfig = None  # type: ignore[assignment,misc]
-    RAGConfig = None  # type: ignore[assignment,misc]
-    GovernorConfig = None  # type: ignore[assignment,misc]
-    WorkflowConfig = None  # type: ignore[assignment,misc]
-    Config = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.runtime.config.model_provider_config import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    Config,
+    GovernorConfig,
+    ModelConfig,
+    ModelProvider,
+    RAGConfig,
+    WorkflowConfig,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="model_provider_config.py deps unavailable")
 class TestModelProviderContract:
     def test_is_enum(self):
         import enum
@@ -56,7 +40,6 @@ class TestModelProviderContract:
     def test_known_member_openai_exists(self):
         assert hasattr(ModelProvider, 'OPENAI')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="model_provider_config.py deps unavailable")
 class TestModelConfigContract:
     def test_is_class(self):
         assert isinstance(ModelConfig, type)
@@ -64,7 +47,6 @@ class TestModelConfigContract:
     def test_has_method_validate_model_name(self):
         assert callable(getattr(ModelConfig, 'validate_model_name', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="model_provider_config.py deps unavailable")
 class TestRAGConfigContract:
     def test_is_class(self):
         assert isinstance(RAGConfig, type)
@@ -72,7 +54,6 @@ class TestRAGConfigContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(RAGConfig, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="model_provider_config.py deps unavailable")
 class TestGovernorConfigContract:
     def test_is_class(self):
         assert isinstance(GovernorConfig, type)
@@ -80,7 +61,6 @@ class TestGovernorConfigContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(GovernorConfig, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="model_provider_config.py deps unavailable")
 class TestWorkflowConfigContract:
     def test_is_class(self):
         assert isinstance(WorkflowConfig, type)
@@ -88,7 +68,6 @@ class TestWorkflowConfigContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(WorkflowConfig, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="model_provider_config.py deps unavailable")
 class TestConfigContract:
     def test_is_class(self):
         assert isinstance(Config, type)
@@ -96,27 +75,22 @@ class TestConfigContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(Config, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="model_provider_config.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="model_provider_config.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="model_provider_config.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="model_provider_config.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="model_provider_config.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -124,4 +98,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module model_provider_config must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

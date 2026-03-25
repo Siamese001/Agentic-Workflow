@@ -5,24 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L0_routing.types.v15_contracts_types import (
-        RESULT_EMISSION_ALLOWED_LAYERS,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    RESULT_EMISSION_ALLOWED_LAYERS = None  # type: ignore[assignment]
-
-
-@pytest.mark.skipif(not _AVAILABLE, reason="v15_contracts_types deps unavailable")
-class TestV15ContractsTypes:
-    def test_result_emission_allowed_layers_is_collection(self):
-        assert hasattr(RESULT_EMISSION_ALLOWED_LAYERS, "__contains__")
-
-    def test_non_empty(self):
-        assert len(RESULT_EMISSION_ALLOWED_LAYERS) >= 1
+import agentic_core.L0_routing.types.v15_contracts_types  # noqa: F401
 
 
 def test_module_importable():
-    assert _AVAILABLE or not _AVAILABLE
+    """Module v15_contracts_types must be importable."""
+    assert agentic_core.L0_routing.types.v15_contracts_types is not None

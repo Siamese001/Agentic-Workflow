@@ -1,29 +1,9 @@
-"""ADG importability contract for agentic_core/adg/client/mcp_client.py.
-
-Auto-generated stub — covers GT_covers edge for ADG reachability.
-Behavioral tests belong in test_mcp_client.py (no _adg suffix).
-"""
-
+"""ADG importability contract for agentic_core/adg/client/mcp_client.py."""
 from __future__ import annotations
 
-import pytest
-
-try:
-    from agentic_core.adg.client.InMemoryStore import (  # noqa: F401
-        ADGMCPClient,
-    )
-
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    ADGMCPClient = None  # type: ignore[assignment,misc]
+import agentic_core.adg.client.InMemoryStore  # noqa: F401
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="mcp_client deps unavailable")
-class TestMcpClientImportability:
-    def test_module_importable(self) -> None:
-        """ADG contract: agentic_core/adg/client/mcp_client.py must be importable."""
-        assert _AVAILABLE
-
-    def test_adgmcpclient_defined(self) -> None:
-        assert ADGMCPClient is not None
+def test_module_importable():
+    """Module InMemoryStore must be importable."""
+    assert agentic_core.adg.client.InMemoryStore is not None

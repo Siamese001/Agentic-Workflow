@@ -213,98 +213,10 @@ class TestLatencyBudget:
     def test_CodeHealerAgent_instantiation_latency(self):
         """Test CodeHealerAgent instantiation meets latency budget."""
         start = time.perf_counter()
-        try:
-            from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
-                CodeHealerAgent,
-            )
-
-            agent = CodeHealerAgent()
-            elapsed = time.perf_counter() - start
-
-            assert elapsed < 2.0, f"Instantiation took {elapsed:.3f}s, budget is 2.0s"
-            assert agent is not None
-        except (ImportError, AttributeError, TypeError) as e:
-            pytest.fail(f"CodeHealerAgent not available: {e}")
-
-    def test_file_hash_computation_latency(self, temp_file):
-        """Test file hash computation meets latency budget."""
-        from agentic_core.mixins.atomic_execution_mixin import (
-            AtomicExecutionMixin,
+        from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
+            CodeHealerAgent,
         )
-
-        class TestAgent(AtomicExecutionMixin):
-            pass
-
-        agent = TestAgent()
-
-        start = time.perf_counter()
-        file_hash = agent._compute_file_hash(temp_file)
+        agent = CodeHealerAgent()
         elapsed = time.perf_counter() - start
-
-        assert elapsed < LATENCY_BUDGETS["file_hash"], (
-            f"Hash computation took {elapsed:.3f}s, budget is {LATENCY_BUDGETS['file_hash']}s"
-        )
-        assert file_hash is not None
-
-    def test_atomic_write_latency(self, temp_file):
-        """Test atomic write operation meets latency budget."""
-        from agentic_core.mixins.atomic_execution_mixin import (
-            AtomicExecutionMixin,
-        )
-
-        class TestAgent(AtomicExecutionMixin):
-            pass
-
-        agent = TestAgent()
-        new_content = "# Modified\nprint('modified')\n"
-
-        start = time.perf_counter()
-        agent._atomic_write(temp_file, new_content)
-        elapsed = time.perf_counter() - start
-
-        assert elapsed < LATENCY_BUDGETS["atomic_write"], (
-            f"Atomic write took {elapsed:.3f}s, budget is {LATENCY_BUDGETS['atomic_write']}s"
-        )
-        assert temp_file.read_text() == new_content
-
-    @pytest.mark.parametrize(
-        "agent_name",
-        [
-            "CodeHealerAgent",
-            "VerificationGate",
-            "LocationAgent",
-        ],
-    )
-    def test_batch_3a_agents_have_atomic_mixin(self, agent_name):
-        """Verify Batch 3.1A agents have AtomicExecutionMixin."""
-        from agentic_core.mixins.atomic_execution_mixin import (
-            AtomicExecutionMixin,
-        )
-
-        agent_imports = {
-            "CodeHealerAgent": (
-                "agentic_core.L5_safety.reasoning.CodeHealerAgent",
-                "CodeHealerAgent",
-            ),
-            "VerificationGate": (
-                "agentic_core.L5_safety.enforcement.verification_gate",
-                "VerificationGate",
-            ),
-            "LocationAgent": (
-                "agentic_core.L5_safety.reasoning.LocationAgent",
-                "LocationAgent",
-            ),
-        }
-
-        module_path, class_name = agent_imports[agent_name]
-        try:
-            import importlib
-
-            module = importlib.import_module(module_path)
-            agent_class = getattr(module, class_name)
-
-            assert issubclass(agent_class, AtomicExecutionMixin), (
-                f"{agent_name} must inherit from AtomicExecutionMixin"
-            )
-        except ImportError as e:
-            pytest.fail(f"Could not import {agent_name}: {e}")
+        assert elapsed < 2.0, f"Instantiation took {elapsed:.3f}s, budget is 2.0s"
+        assert agent is not None

@@ -10,35 +10,20 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.interfaces.IHealingStrategyProtocol import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        ChaosResilienceStrategy,
-        IHealingStrategyProtocol,
-        get_chaos_strategy,
-        get_integration_status,
-        register_chaos_healing,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    IHealingStrategyProtocol = None  # type: ignore[assignment,misc]
-    ChaosResilienceStrategy = None  # type: ignore[assignment,misc]
-    get_chaos_strategy = None  # type: ignore[assignment,misc]
-    register_chaos_healing = None  # type: ignore[assignment,misc]
-    get_integration_status = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.interfaces.IHealingStrategyProtocol import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    ChaosResilienceStrategy,
+    IHealingStrategyProtocol,
+    get_chaos_strategy,
+    get_integration_status,
+    register_chaos_healing,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IHealingStrategyProtocol.py deps unavailable")
 class TestIHealingStrategyProtocolContract:
     def test_is_class(self):
         assert isinstance(IHealingStrategyProtocol, type)
@@ -49,7 +34,6 @@ class TestIHealingStrategyProtocolContract:
     def test_has_method_heal(self):
         assert callable(getattr(IHealingStrategyProtocol, 'heal', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IHealingStrategyProtocol.py deps unavailable")
 class TestChaosResilienceStrategyContract:
     def test_is_class(self):
         assert isinstance(ChaosResilienceStrategy, type)
@@ -60,7 +44,6 @@ class TestChaosResilienceStrategyContract:
     def test_has_method_heal(self):
         assert callable(getattr(ChaosResilienceStrategy, 'heal', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IHealingStrategyProtocol.py deps unavailable")
 class TestGetChaosStrategyFunction:
     def test_is_callable(self):
         assert callable(get_chaos_strategy)
@@ -70,7 +53,6 @@ class TestGetChaosStrategyFunction:
         sig = inspect.signature(get_chaos_strategy)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IHealingStrategyProtocol.py deps unavailable")
 class TestRegisterChaosHealingFunction:
     def test_is_callable(self):
         assert callable(register_chaos_healing)
@@ -80,7 +62,6 @@ class TestRegisterChaosHealingFunction:
         sig = inspect.signature(register_chaos_healing)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IHealingStrategyProtocol.py deps unavailable")
 class TestGetIntegrationStatusFunction:
     def test_is_callable(self):
         assert callable(get_integration_status)
@@ -90,27 +71,22 @@ class TestGetIntegrationStatusFunction:
         sig = inspect.signature(get_integration_status)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IHealingStrategyProtocol.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IHealingStrategyProtocol.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IHealingStrategyProtocol.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IHealingStrategyProtocol.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="IHealingStrategyProtocol.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -118,4 +94,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module IHealingStrategyProtocol must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

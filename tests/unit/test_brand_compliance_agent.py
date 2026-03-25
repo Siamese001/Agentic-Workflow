@@ -45,12 +45,6 @@ class TestBrandComplianceAgent:
     @pytest.fixture
     def agent_class(self):
         """Import agent class with mocked dependencies."""
-        try:
-            from apps_rg.reasoning.BrandComplianceAgent import BrandComplianceAgent
-
-            return BrandComplianceAgent
-        except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.fail(f"Cannot import BrandComplianceAgent: {e}")
 
     def test_class_exists(self, agent_class):
         """Verify BrandComplianceAgent exists and is importable."""
@@ -96,10 +90,7 @@ class TestBrandComplianceAgent:
             network_calls.append((args, kwargs))
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
-            try:
-                from apps_rg.reasoning.BrandComplianceAgent import BrandComplianceAgent  # noqa: F401
-            except (ImportError, NameError, AttributeError):  # guardian: allow-silent-swallower
-                pass
+            from apps_rg.reasoning.BrandComplianceAgent import BrandComplianceAgent  # noqa: F401
 
             assert len(network_calls) == 0, "No network calls on import"
 

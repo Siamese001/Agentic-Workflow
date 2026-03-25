@@ -10,39 +10,22 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L3_orchestration.engines.rl_coordinator_orchestrator import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        HealthCoordinator,
-        MCPCoordinator,
-        MissionCoordinator,
-        ModelCoordinator,
-        RLCoordinatorOrchestrator,
-        TerritoryCoordinator,
-        register_all_coordinators,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    RLCoordinatorOrchestrator = None  # type: ignore[assignment,misc]
-    TerritoryCoordinator = None  # type: ignore[assignment,misc]
-    MCPCoordinator = None  # type: ignore[assignment,misc]
-    MissionCoordinator = None  # type: ignore[assignment,misc]
-    ModelCoordinator = None  # type: ignore[assignment,misc]
-    HealthCoordinator = None  # type: ignore[assignment,misc]
-    register_all_coordinators = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L3_orchestration.engines.rl_coordinator_orchestrator import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    HealthCoordinator,
+    MCPCoordinator,
+    MissionCoordinator,
+    ModelCoordinator,
+    RLCoordinatorOrchestrator,
+    TerritoryCoordinator,
+    register_all_coordinators,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rl_coordinator_orchestrator.py deps unavailable")
 class TestRLCoordinatorOrchestratorContract:
     def test_is_class(self):
         assert isinstance(RLCoordinatorOrchestrator, type)
@@ -56,7 +39,6 @@ class TestRLCoordinatorOrchestratorContract:
     def test_has_method_can_handle(self):
         assert callable(getattr(RLCoordinatorOrchestrator, 'can_handle', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rl_coordinator_orchestrator.py deps unavailable")
 class TestTerritoryCoordinatorContract:
     def test_is_class(self):
         assert isinstance(TerritoryCoordinator, type)
@@ -70,7 +52,6 @@ class TestTerritoryCoordinatorContract:
     def test_has_method_can_handle(self):
         assert callable(getattr(TerritoryCoordinator, 'can_handle', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rl_coordinator_orchestrator.py deps unavailable")
 class TestMCPCoordinatorContract:
     def test_is_class(self):
         assert isinstance(MCPCoordinator, type)
@@ -84,7 +65,6 @@ class TestMCPCoordinatorContract:
     def test_has_method_can_handle(self):
         assert callable(getattr(MCPCoordinator, 'can_handle', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rl_coordinator_orchestrator.py deps unavailable")
 class TestMissionCoordinatorContract:
     def test_is_class(self):
         assert isinstance(MissionCoordinator, type)
@@ -98,7 +78,6 @@ class TestMissionCoordinatorContract:
     def test_has_method_can_handle(self):
         assert callable(getattr(MissionCoordinator, 'can_handle', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rl_coordinator_orchestrator.py deps unavailable")
 class TestModelCoordinatorContract:
     def test_is_class(self):
         assert isinstance(ModelCoordinator, type)
@@ -112,7 +91,6 @@ class TestModelCoordinatorContract:
     def test_has_method_can_handle(self):
         assert callable(getattr(ModelCoordinator, 'can_handle', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rl_coordinator_orchestrator.py deps unavailable")
 class TestHealthCoordinatorContract:
     def test_is_class(self):
         assert isinstance(HealthCoordinator, type)
@@ -126,32 +104,26 @@ class TestHealthCoordinatorContract:
     def test_has_method_can_handle(self):
         assert callable(getattr(HealthCoordinator, 'can_handle', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rl_coordinator_orchestrator.py deps unavailable")
 class TestRegisterAllCoordinatorsFunction:
     def test_is_callable(self):
         assert callable(register_all_coordinators)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rl_coordinator_orchestrator.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rl_coordinator_orchestrator.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rl_coordinator_orchestrator.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rl_coordinator_orchestrator.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="rl_coordinator_orchestrator.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -159,4 +131,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module rl_coordinator_orchestrator must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

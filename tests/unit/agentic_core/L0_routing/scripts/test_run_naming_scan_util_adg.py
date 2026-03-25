@@ -5,7 +5,6 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-_AVAILABLE = False
 try:
     from agentic_core.L0_routing.scripts.run_naming_scan_util import (  # noqa: F401
         BATCH_SIZE,
@@ -15,7 +14,7 @@ try:
         MAX_RETRIES,
         THRESHOLD,
     )
-    _AVAILABLE = True
+
 except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
     MAX_RETRIES = None  # type: ignore[assignment,misc]
     DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
@@ -25,32 +24,26 @@ except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swa
     MAX_DEPTH = None  # type: ignore[assignment,misc]
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="run_naming_scan_util.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="run_naming_scan_util.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="run_naming_scan_util.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="run_naming_scan_util.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="run_naming_scan_util.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="run_naming_scan_util.py deps unavailable")
 class TestMaxDepthConstant:
     def test_is_not_none(self):
         assert MAX_DEPTH is not None
@@ -58,4 +51,4 @@ class TestMaxDepthConstant:
 
 def test_module_importable():
     """Module run_naming_scan_util.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

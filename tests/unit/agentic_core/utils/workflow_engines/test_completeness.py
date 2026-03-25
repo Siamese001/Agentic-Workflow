@@ -10,37 +10,21 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.utils.workflow_engines.completeness import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        ContextCompletenessScore,
-        GroundedDocument,
-        IAnswerSupportValidator,
-        IContextCompletenessScorer,
-        IParentChildExpander,
-        SupportedAnswerCheck,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    ContextCompletenessScore = None  # type: ignore[assignment,misc]
-    GroundedDocument = None  # type: ignore[assignment,misc]
-    IParentChildExpander = None  # type: ignore[assignment,misc]
-    IContextCompletenessScorer = None  # type: ignore[assignment,misc]
-    IAnswerSupportValidator = None  # type: ignore[assignment,misc]
-    SupportedAnswerCheck = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.utils.workflow_engines.completeness import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    ContextCompletenessScore,
+    GroundedDocument,
+    IAnswerSupportValidator,
+    IContextCompletenessScorer,
+    IParentChildExpander,
+    SupportedAnswerCheck,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness.py deps unavailable")
 class TestContextCompletenessScoreContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -63,7 +47,6 @@ class TestContextCompletenessScoreContract:
         # (create requires knowing required fields — skip if args unknown)
         assert ContextCompletenessScore.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness.py deps unavailable")
 class TestGroundedDocumentContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -74,7 +57,6 @@ class TestGroundedDocumentContract:
         field_names = {f.name for f in dataclasses.fields(GroundedDocument)}
         assert field_names >= {'parent_section_id', 'sibling_ids', 'parent_content', 'heading_path', 'completeness_score'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness.py deps unavailable")
 class TestIParentChildExpanderContract:
     def test_is_class(self):
         assert isinstance(IParentChildExpander, type)
@@ -88,7 +70,6 @@ class TestIParentChildExpanderContract:
     def test_has_method_get_heading_path(self):
         assert callable(getattr(IParentChildExpander, 'get_heading_path', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness.py deps unavailable")
 class TestIContextCompletenessScorerContract:
     def test_is_class(self):
         assert isinstance(IContextCompletenessScorer, type)
@@ -99,7 +80,6 @@ class TestIContextCompletenessScorerContract:
     def test_has_method_score_batch(self):
         assert callable(getattr(IContextCompletenessScorer, 'score_batch', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness.py deps unavailable")
 class TestIAnswerSupportValidatorContract:
     def test_is_class(self):
         assert isinstance(IAnswerSupportValidator, type)
@@ -107,7 +87,6 @@ class TestIAnswerSupportValidatorContract:
     def test_has_method_validate(self):
         assert callable(getattr(IAnswerSupportValidator, 'validate', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness.py deps unavailable")
 class TestSupportedAnswerCheckContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -130,27 +109,22 @@ class TestSupportedAnswerCheckContract:
         # (create requires knowing required fields — skip if args unknown)
         assert SupportedAnswerCheck.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="completeness.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -158,4 +132,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module completeness must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

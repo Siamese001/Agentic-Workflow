@@ -264,39 +264,21 @@ class TestDomainTypes:
 # ---------------------------------------------------------------------------
 class TestMemoryTypes:
     def test_importable(self):
-        try:
-            import agentic_core.L1_cognition.types.memory_types as mod
-            assert mod is not None
-        except (ImportError, ModuleNotFoundError) as e:
-            pytest.skip(f"memory_types deps unavailable: {e}")
-
-    def test_has_content(self):
-        try:
-            import agentic_core.L1_cognition.types.memory_types as mod
-            assert len(dir(mod)) > 0
-        except (ImportError, ModuleNotFoundError) as e:
-            pytest.skip(f"memory_types deps unavailable: {e}")
-
+        import agentic_core.L1_cognition.types.memory_types as mod
+        assert mod is not None
 
 # ---------------------------------------------------------------------------
 # observability_types
 # ---------------------------------------------------------------------------
 class TestObservabilityTypes:
     def test_importable(self):
-        try:
-            import agentic_core.L1_cognition.types.observability_types as mod
-            assert mod is not None
-        except (ImportError, ModuleNotFoundError) as e:
-            pytest.skip(f"observability_types deps unavailable: {e}")
-
+        import agentic_core.L1_cognition.types.observability_types as mod
+        assert mod is not None
 
 # ---------------------------------------------------------------------------
 # validation_types
 # ---------------------------------------------------------------------------
 class TestValidationTypes:
     def test_importable(self):
-        try:
-            import agentic_core.L1_cognition.types.validation_types as mod
-            assert mod is not None
-        except (ImportError, ModuleNotFoundError) as e:
-            pytest.skip(f"validation_types deps unavailable: {e}")
+        import agentic_core.L1_cognition.types.validation_types as mod
+        assert mod is not None

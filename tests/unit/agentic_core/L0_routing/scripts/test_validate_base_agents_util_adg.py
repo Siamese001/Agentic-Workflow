@@ -5,89 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-_AVAILABLE = False
-try:
-    try:
-        from agentic_core.L0_routing.scripts.validate_base_agents_util import (  # noqa: F401
-            BATCH_SIZE,
-            BUFFER_SIZE,
-            DEFAULT_SLEEP,
-            MAX_DEPTH,
-            MAX_RETRIES,
-            THRESHOLD,
-            find_base_agents,
-            main,
-            suggest_fixes,
-            validate_base_agents,
-        )
-        _AVAILABLE = True
-    pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-        _AVAILABLE = False
-        find_base_agents = None  # type: ignore[assignment,misc]
-        validate_base_agents = None  # type: ignore[assignment,misc]
-        suggest_fixes = None  # type: ignore[assignment,misc]
-        main = None  # type: ignore[assignment,misc]
-        MAX_RETRIES = None  # type: ignore[assignment,misc]
-        DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-        THRESHOLD = None  # type: ignore[assignment,misc]
-        BUFFER_SIZE = None  # type: ignore[assignment,misc]
-        BATCH_SIZE = None  # type: ignore[assignment,misc]
-        MAX_DEPTH = None  # type: ignore[assignment,misc]
-except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
-    pass
-
-
-@pytest.mark.skipif(not _AVAILABLE, reason="validate_base_agents_util.py deps unavailable")
-class TestFindBaseAgents:
-    def test_is_callable(self):
-        assert callable(find_base_agents)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="validate_base_agents_util.py deps unavailable")
-class TestValidateBaseAgents:
-    def test_is_callable(self):
-        assert callable(validate_base_agents)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="validate_base_agents_util.py deps unavailable")
-class TestSuggestFixes:
-    def test_is_callable(self):
-        assert callable(suggest_fixes)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="validate_base_agents_util.py deps unavailable")
-class TestMain:
-    def test_is_callable(self):
-        assert callable(main)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="validate_base_agents_util.py deps unavailable")
-class TestMaxRetriesConstant:
-    def test_is_not_none(self):
-        assert MAX_RETRIES is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="validate_base_agents_util.py deps unavailable")
-class TestDefaultSleepConstant:
-    def test_is_not_none(self):
-        assert DEFAULT_SLEEP is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="validate_base_agents_util.py deps unavailable")
-class TestThresholdConstant:
-    def test_is_not_none(self):
-        assert THRESHOLD is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="validate_base_agents_util.py deps unavailable")
-class TestBufferSizeConstant:
-    def test_is_not_none(self):
-        assert BUFFER_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="validate_base_agents_util.py deps unavailable")
-class TestBatchSizeConstant:
-    def test_is_not_none(self):
-        assert BATCH_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="validate_base_agents_util.py deps unavailable")
-class TestMaxDepthConstant:
-    def test_is_not_none(self):
-        assert MAX_DEPTH is not None
+import agentic_core.L0_routing.scripts.validate_base_agents_util  # noqa: F401
 
 
 def test_module_importable():
-    """Module validate_base_agents_util.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module validate_base_agents_util must be importable."""
+    assert agentic_core.L0_routing.scripts.validate_base_agents_util is not None

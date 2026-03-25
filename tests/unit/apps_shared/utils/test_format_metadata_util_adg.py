@@ -5,80 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_shared.utils.format_metadata_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_DEPTH,
-        MAX_RETRIES,
-        THRESHOLD,
-        FormatData,
-        FormatMetadata,
-        format,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    FormatMetadata = None  # type: ignore[assignment,misc]
-    format = None  # type: ignore[assignment,misc]
-    FormatData = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
-    MAX_DEPTH = None  # type: ignore[assignment,misc]
-
-
-@pytest.mark.skipif(not _AVAILABLE, reason="format_metadata_util.py deps unavailable")
-class TestFormatMetadata:
-    def test_is_class(self):
-        assert isinstance(FormatMetadata, type)
-    def test_importable(self):
-        assert FormatMetadata is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="format_metadata_util.py deps unavailable")
-class TestFormat:
-    def test_is_callable(self):
-        assert callable(format)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="format_metadata_util.py deps unavailable")
-class TestFormatdata:
-    def test_is_callable(self):
-        assert callable(FormatData)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="format_metadata_util.py deps unavailable")
-class TestMaxRetriesConstant:
-    def test_is_not_none(self):
-        assert MAX_RETRIES is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="format_metadata_util.py deps unavailable")
-class TestDefaultSleepConstant:
-    def test_is_not_none(self):
-        assert DEFAULT_SLEEP is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="format_metadata_util.py deps unavailable")
-class TestThresholdConstant:
-    def test_is_not_none(self):
-        assert THRESHOLD is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="format_metadata_util.py deps unavailable")
-class TestBufferSizeConstant:
-    def test_is_not_none(self):
-        assert BUFFER_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="format_metadata_util.py deps unavailable")
-class TestBatchSizeConstant:
-    def test_is_not_none(self):
-        assert BATCH_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="format_metadata_util.py deps unavailable")
-class TestMaxDepthConstant:
-    def test_is_not_none(self):
-        assert MAX_DEPTH is not None
+import apps_shared.utils.format_metadata_util  # noqa: F401
 
 
 def test_module_importable():
-    """Module format_metadata_util.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module format_metadata_util must be importable."""
+    assert apps_shared.utils.format_metadata_util is not None

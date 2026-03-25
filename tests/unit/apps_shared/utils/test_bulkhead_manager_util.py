@@ -10,43 +10,24 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_shared.utils.bulkhead_manager_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        Bulkhead,
-        BulkheadConfig,
-        BulkheadManager,
-        BulkheadMetrics,
-        ResourceExhaustedError,
-        TaskPriority,
-        get_bulkhead_manager,
-        with_bulkhead,
-        with_engine_bulkhead,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    TaskPriority = None  # type: ignore[assignment,misc]
-    BulkheadConfig = None  # type: ignore[assignment,misc]
-    BulkheadMetrics = None  # type: ignore[assignment,misc]
-    ResourceExhaustedError = None  # type: ignore[assignment,misc]
-    Bulkhead = None  # type: ignore[assignment,misc]
-    BulkheadManager = None  # type: ignore[assignment,misc]
-    get_bulkhead_manager = None  # type: ignore[assignment,misc]
-    with_bulkhead = None  # type: ignore[assignment,misc]
-    with_engine_bulkhead = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from apps_shared.utils.bulkhead_manager_util import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    Bulkhead,
+    BulkheadConfig,
+    BulkheadManager,
+    BulkheadMetrics,
+    ResourceExhaustedError,
+    TaskPriority,
+    get_bulkhead_manager,
+    with_bulkhead,
+    with_engine_bulkhead,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="bulkhead_manager_util.py deps unavailable")
 class TestTaskPriorityContract:
     def test_is_enum(self):
         import enum
@@ -62,7 +43,6 @@ class TestTaskPriorityContract:
     def test_known_member_low_exists(self):
         assert hasattr(TaskPriority, 'LOW')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="bulkhead_manager_util.py deps unavailable")
 class TestBulkheadConfigContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -73,7 +53,6 @@ class TestBulkheadConfigContract:
         field_names = {f.name for f in dataclasses.fields(BulkheadConfig)}
         assert field_names >= {'queue_size', 'priority', 'metrics_enabled', 'max_concurrency', 'timeout_seconds'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="bulkhead_manager_util.py deps unavailable")
 class TestBulkheadMetricsContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -84,7 +63,6 @@ class TestBulkheadMetricsContract:
         field_names = {f.name for f in dataclasses.fields(BulkheadMetrics)}
         assert field_names >= {'queue_size', 'queued_tasks', 'active_tasks', 'name', 'max_concurrency'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="bulkhead_manager_util.py deps unavailable")
 class TestResourceExhaustedErrorContract:
     def test_is_class(self):
         assert isinstance(ResourceExhaustedError, type)
@@ -92,7 +70,6 @@ class TestResourceExhaustedErrorContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(ResourceExhaustedError, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="bulkhead_manager_util.py deps unavailable")
 class TestBulkheadContract:
     def test_is_class(self):
         assert isinstance(Bulkhead, type)
@@ -109,7 +86,6 @@ class TestBulkheadContract:
     def test_has_method_wait_for_available(self):
         assert callable(getattr(Bulkhead, 'wait_for_available', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="bulkhead_manager_util.py deps unavailable")
 class TestBulkheadManagerContract:
     def test_is_class(self):
         assert isinstance(BulkheadManager, type)
@@ -126,7 +102,6 @@ class TestBulkheadManagerContract:
     def test_has_method_execute(self):
         assert callable(getattr(BulkheadManager, 'execute', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="bulkhead_manager_util.py deps unavailable")
 class TestGetBulkheadManagerFunction:
     def test_is_callable(self):
         assert callable(get_bulkhead_manager)
@@ -136,37 +111,30 @@ class TestGetBulkheadManagerFunction:
         sig = inspect.signature(get_bulkhead_manager)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="bulkhead_manager_util.py deps unavailable")
 class TestWithBulkheadFunction:
     def test_is_callable(self):
         assert callable(with_bulkhead)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="bulkhead_manager_util.py deps unavailable")
 class TestWithEngineBulkheadFunction:
     def test_is_callable(self):
         assert callable(with_engine_bulkhead)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="bulkhead_manager_util.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="bulkhead_manager_util.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="bulkhead_manager_util.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="bulkhead_manager_util.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="bulkhead_manager_util.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -174,4 +142,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module bulkhead_manager_util must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

@@ -5,73 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L4_state.workflow_engines.schema_validator_cache import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_DEPTH,
-        MAX_RETRIES,
-        THRESHOLD,
-        SchemaValidatorCache,
-        get_schema_validator_cache,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    SchemaValidatorCache = None  # type: ignore[assignment,misc]
-    get_schema_validator_cache = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
-    MAX_DEPTH = None  # type: ignore[assignment,misc]
-
-
-@pytest.mark.skipif(not _AVAILABLE, reason="schema_validator_cache.py deps unavailable")
-class TestSchemaValidatorCache:
-    def test_is_class(self):
-        assert isinstance(SchemaValidatorCache, type)
-    def test_importable(self):
-        assert SchemaValidatorCache is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="schema_validator_cache.py deps unavailable")
-class TestGetSchemaValidatorCache:
-    def test_is_callable(self):
-        assert callable(get_schema_validator_cache)
-
-@pytest.mark.skipif(not _AVAILABLE, reason="schema_validator_cache.py deps unavailable")
-class TestMaxRetriesConstant:
-    def test_is_not_none(self):
-        assert MAX_RETRIES is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="schema_validator_cache.py deps unavailable")
-class TestDefaultSleepConstant:
-    def test_is_not_none(self):
-        assert DEFAULT_SLEEP is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="schema_validator_cache.py deps unavailable")
-class TestThresholdConstant:
-    def test_is_not_none(self):
-        assert THRESHOLD is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="schema_validator_cache.py deps unavailable")
-class TestBufferSizeConstant:
-    def test_is_not_none(self):
-        assert BUFFER_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="schema_validator_cache.py deps unavailable")
-class TestBatchSizeConstant:
-    def test_is_not_none(self):
-        assert BATCH_SIZE is not None
-
-@pytest.mark.skipif(not _AVAILABLE, reason="schema_validator_cache.py deps unavailable")
-class TestMaxDepthConstant:
-    def test_is_not_none(self):
-        assert MAX_DEPTH is not None
+import agentic_core.L4_state.workflow_engines.schema_validator_cache  # noqa: F401
 
 
 def test_module_importable():
-    """Module schema_validator_cache.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module schema_validator_cache must be importable."""
+    assert agentic_core.L4_state.workflow_engines.schema_validator_cache is not None

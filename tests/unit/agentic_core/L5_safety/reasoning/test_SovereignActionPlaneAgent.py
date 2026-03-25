@@ -10,35 +10,20 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L5_safety.reasoning.SovereignActionPlaneAgent import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        SovereignActionPlaneAgent,
-        SovereignSandbox,
-        SovereignToolsmith,
-        create_sovereign_action_plane,
-        get_sovereign_action_plane,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    SovereignToolsmith = None  # type: ignore[assignment,misc]
-    SovereignSandbox = None  # type: ignore[assignment,misc]
-    SovereignActionPlaneAgent = None  # type: ignore[assignment,misc]
-    create_sovereign_action_plane = None  # type: ignore[assignment,misc]
-    get_sovereign_action_plane = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L5_safety.reasoning.SovereignActionPlaneAgent import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    SovereignActionPlaneAgent,
+    SovereignSandbox,
+    SovereignToolsmith,
+    create_sovereign_action_plane,
+    get_sovereign_action_plane,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="SovereignActionPlaneAgent.py deps unavailable")
 class TestSovereignToolsmithContract:
     def test_is_class(self):
         assert isinstance(SovereignToolsmith, type)
@@ -46,7 +31,6 @@ class TestSovereignToolsmithContract:
     def test_has_method_forge_diagnostic_tool(self):
         assert callable(getattr(SovereignToolsmith, 'forge_diagnostic_tool', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="SovereignActionPlaneAgent.py deps unavailable")
 class TestSovereignSandboxContract:
     def test_is_class(self):
         assert isinstance(SovereignSandbox, type)
@@ -60,13 +44,11 @@ class TestSovereignSandboxContract:
     def test_has_method_execute_tool(self):
         assert callable(getattr(SovereignSandbox, 'execute_tool', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="SovereignActionPlaneAgent.py deps unavailable")
 class TestSovereignActionPlaneAgentContract:
     def test_is_dataclass(self):
         import dataclasses
         assert dataclasses.is_dataclass(SovereignActionPlaneAgent)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="SovereignActionPlaneAgent.py deps unavailable")
 class TestCreateSovereignActionPlaneFunction:
     def test_is_callable(self):
         assert callable(create_sovereign_action_plane)
@@ -76,7 +58,6 @@ class TestCreateSovereignActionPlaneFunction:
         sig = inspect.signature(create_sovereign_action_plane)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="SovereignActionPlaneAgent.py deps unavailable")
 class TestGetSovereignActionPlaneFunction:
     def test_is_callable(self):
         assert callable(get_sovereign_action_plane)
@@ -86,27 +67,22 @@ class TestGetSovereignActionPlaneFunction:
         sig = inspect.signature(get_sovereign_action_plane)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="SovereignActionPlaneAgent.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="SovereignActionPlaneAgent.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="SovereignActionPlaneAgent.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="SovereignActionPlaneAgent.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="SovereignActionPlaneAgent.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -114,4 +90,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module SovereignActionPlaneAgent must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

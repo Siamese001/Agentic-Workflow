@@ -11,40 +11,22 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_shared.utils.open_telemetry_tracing_adapter_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        CostMetrics,
-        OpenTelemetryTracingAdapter,
-        ResilienceMetrics,
-        SpanMetadata,
-        SpanType,
-        get_tracer,
-        reset_tracer,
-    )
-
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    SpanType = None  # type: ignore[assignment,misc]
-    SpanMetadata = None  # type: ignore[assignment,misc]
-    CostMetrics = None  # type: ignore[assignment,misc]
-    ResilienceMetrics = None  # type: ignore[assignment,misc]
-    OpenTelemetryTracingAdapter = None  # type: ignore[assignment,misc]
-    get_tracer = None  # type: ignore[assignment,misc]
-    reset_tracer = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from apps_shared.utils.open_telemetry_tracing_adapter_util import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    CostMetrics,
+    OpenTelemetryTracingAdapter,
+    ResilienceMetrics,
+    SpanMetadata,
+    SpanType,
+    get_tracer,
+    reset_tracer,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="open_telemetry_tracing_adapter_util.py deps unavailable")
 class TestSpanTypeContract:
     def test_is_enum(self):
         import enum
@@ -62,7 +44,6 @@ class TestSpanTypeContract:
         assert hasattr(SpanType, "ORCHESTRATOR")
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="open_telemetry_tracing_adapter_util.py deps unavailable")
 class TestSpanMetadataContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -76,7 +57,6 @@ class TestSpanMetadataContract:
         assert field_names >= {"layer", "attributes", "span_type", "component"}
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="open_telemetry_tracing_adapter_util.py deps unavailable")
 class TestCostMetricsContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -96,7 +76,6 @@ class TestCostMetricsContract:
         }
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="open_telemetry_tracing_adapter_util.py deps unavailable")
 class TestResilienceMetricsContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -116,7 +95,6 @@ class TestResilienceMetricsContract:
         }
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="open_telemetry_tracing_adapter_util.py deps unavailable")
 class TestOpenTelemetryTracingAdapterContract:
     def test_is_class(self):
         assert isinstance(OpenTelemetryTracingAdapter, type)
@@ -137,7 +115,6 @@ class TestOpenTelemetryTracingAdapterContract:
         assert callable(getattr(OpenTelemetryTracingAdapter, "drain_completed_spans", None))
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="open_telemetry_tracing_adapter_util.py deps unavailable")
 class TestRuntimeTelemetryCapture:
     def test_drain_completed_spans_captures_nested_relationships(self):
         import apps_shared.utils.open_telemetry_tracing_adapter_util as otel_module
@@ -275,7 +252,6 @@ class TestRuntimeTelemetryCapture:
         assert adapter.drain_completed_spans() == []
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="open_telemetry_tracing_adapter_util.py deps unavailable")
 class TestGetTracerFunction:
     def test_is_callable(self):
         assert callable(get_tracer)
@@ -287,37 +263,31 @@ class TestGetTracerFunction:
         assert sig.return_annotation is not inspect.Parameter.empty
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="open_telemetry_tracing_adapter_util.py deps unavailable")
 class TestResetTracerFunction:
     def test_is_callable(self):
         assert callable(reset_tracer)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="open_telemetry_tracing_adapter_util.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="open_telemetry_tracing_adapter_util.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="open_telemetry_tracing_adapter_util.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="open_telemetry_tracing_adapter_util.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="open_telemetry_tracing_adapter_util.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -325,4 +295,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module open_telemetry_tracing_adapter_util must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

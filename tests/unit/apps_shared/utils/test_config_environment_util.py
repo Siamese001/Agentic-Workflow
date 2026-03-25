@@ -10,41 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from apps_shared.utils.config_environment_util import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        ConfigDefinition,
-        ConfigEnvironment,
-        ConfigFormat,
-        ConfigValidationRule,
-        DeploymentPlan,
-        DeploymentStrategy,
-        create_config_planning_orchestrator,
-        plan_config_deployment,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    ConfigEnvironment = None  # type: ignore[assignment,misc]
-    ConfigFormat = None  # type: ignore[assignment,misc]
-    DeploymentStrategy = None  # type: ignore[assignment,misc]
-    ConfigDefinition = None  # type: ignore[assignment,misc]
-    ConfigValidationRule = None  # type: ignore[assignment,misc]
-    DeploymentPlan = None  # type: ignore[assignment,misc]
-    create_config_planning_orchestrator = None  # type: ignore[assignment,misc]
-    plan_config_deployment = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from apps_shared.utils.config_environment_util import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    ConfigDefinition,
+    ConfigEnvironment,
+    ConfigFormat,
+    ConfigValidationRule,
+    DeploymentPlan,
+    DeploymentStrategy,
+    create_config_planning_orchestrator,
+    plan_config_deployment,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="config_environment_util.py deps unavailable")
 class TestConfigEnvironmentContract:
     def test_is_enum(self):
         import enum
@@ -60,7 +42,6 @@ class TestConfigEnvironmentContract:
     def test_known_member_development_exists(self):
         assert hasattr(ConfigEnvironment, 'DEVELOPMENT')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="config_environment_util.py deps unavailable")
 class TestConfigFormatContract:
     def test_is_enum(self):
         import enum
@@ -76,7 +57,6 @@ class TestConfigFormatContract:
     def test_known_member_json_exists(self):
         assert hasattr(ConfigFormat, 'JSON')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="config_environment_util.py deps unavailable")
 class TestDeploymentStrategyContract:
     def test_is_enum(self):
         import enum
@@ -92,7 +72,6 @@ class TestDeploymentStrategyContract:
     def test_known_member_blue_green_exists(self):
         assert hasattr(DeploymentStrategy, 'BLUE_GREEN')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="config_environment_util.py deps unavailable")
 class TestConfigDefinitionContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -103,7 +82,6 @@ class TestConfigDefinitionContract:
         field_names = {f.name for f in dataclasses.fields(ConfigDefinition)}
         assert field_names >= {'content', 'format', 'version', 'name', 'environment'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="config_environment_util.py deps unavailable")
 class TestConfigValidationRuleContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -114,7 +92,6 @@ class TestConfigValidationRuleContract:
         field_names = {f.name for f in dataclasses.fields(ConfigValidationRule)}
         assert field_names >= {'constraint', 'path', 'message', 'name', 'rule_type'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="config_environment_util.py deps unavailable")
 class TestDeploymentPlanContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -125,7 +102,6 @@ class TestDeploymentPlanContract:
         field_names = {f.name for f in dataclasses.fields(DeploymentPlan)}
         assert field_names >= {'rollback_plan', 'target_environments', 'rollout_percentage', 'validation_steps', 'strategy'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="config_environment_util.py deps unavailable")
 class TestCreateConfigPlanningOrchestratorFunction:
     def test_is_callable(self):
         assert callable(create_config_planning_orchestrator)
@@ -135,7 +111,6 @@ class TestCreateConfigPlanningOrchestratorFunction:
         sig = inspect.signature(create_config_planning_orchestrator)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="config_environment_util.py deps unavailable")
 class TestPlanConfigDeploymentFunction:
     def test_is_callable(self):
         assert callable(plan_config_deployment)
@@ -145,27 +120,22 @@ class TestPlanConfigDeploymentFunction:
         sig = inspect.signature(plan_config_deployment)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="config_environment_util.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="config_environment_util.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="config_environment_util.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="config_environment_util.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="config_environment_util.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -173,4 +143,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module config_environment_util must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

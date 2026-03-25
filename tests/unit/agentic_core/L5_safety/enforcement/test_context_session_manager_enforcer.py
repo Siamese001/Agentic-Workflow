@@ -10,39 +10,22 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L5_safety.enforcement.context_session_manager_enforcer import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        AttentionState,
-        ContextSession,
-        ContextSessionManager,
-        RiskLevel,
-        classify_risk,
-        get_current_session,
-        get_session_manager,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    RiskLevel = None  # type: ignore[assignment,misc]
-    AttentionState = None  # type: ignore[assignment,misc]
-    ContextSession = None  # type: ignore[assignment,misc]
-    ContextSessionManager = None  # type: ignore[assignment,misc]
-    get_session_manager = None  # type: ignore[assignment,misc]
-    get_current_session = None  # type: ignore[assignment,misc]
-    classify_risk = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L5_safety.enforcement.context_session_manager_enforcer import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    AttentionState,
+    ContextSession,
+    ContextSessionManager,
+    RiskLevel,
+    classify_risk,
+    get_current_session,
+    get_session_manager,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="context_session_manager_enforcer.py deps unavailable")
 class TestRiskLevelContract:
     def test_is_enum(self):
         import enum
@@ -58,7 +41,6 @@ class TestRiskLevelContract:
     def test_known_member_low_exists(self):
         assert hasattr(RiskLevel, 'LOW')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="context_session_manager_enforcer.py deps unavailable")
 class TestAttentionStateContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -69,7 +51,6 @@ class TestAttentionStateContract:
         field_names = {f.name for f in dataclasses.fields(AttentionState)}
         assert field_names >= {'focus_files', 'focus_agents', 'priority_violations', 'max_context_items'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="context_session_manager_enforcer.py deps unavailable")
 class TestContextSessionContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -80,13 +61,9 @@ class TestContextSessionContract:
         field_names = {f.name for f in dataclasses.fields(ContextSession)}
         assert field_names >= {'session_id', 'created_at', 'attention', 'risk_level', 'metadata'}
 
-@pytest.mark.skipif(not _AVAILABLE, reason="context_session_manager_enforcer.py deps unavailable")
 class TestContextSessionManagerContract:
     def test_is_class(self):
         assert isinstance(ContextSessionManager, type)
-
-    def test_has_method_current_session(self):
-        assert callable(getattr(ContextSessionManager, 'current_session', None))
 
     def test_has_method_current_session(self):
         assert callable(getattr(ContextSessionManager, 'current_session', None))
@@ -97,7 +74,6 @@ class TestContextSessionManagerContract:
     def test_has_method_get_session(self):
         assert callable(getattr(ContextSessionManager, 'get_session', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="context_session_manager_enforcer.py deps unavailable")
 class TestGetSessionManagerFunction:
     def test_is_callable(self):
         assert callable(get_session_manager)
@@ -107,7 +83,6 @@ class TestGetSessionManagerFunction:
         sig = inspect.signature(get_session_manager)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="context_session_manager_enforcer.py deps unavailable")
 class TestGetCurrentSessionFunction:
     def test_is_callable(self):
         assert callable(get_current_session)
@@ -117,7 +92,6 @@ class TestGetCurrentSessionFunction:
         sig = inspect.signature(get_current_session)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="context_session_manager_enforcer.py deps unavailable")
 class TestClassifyRiskFunction:
     def test_is_callable(self):
         assert callable(classify_risk)
@@ -127,27 +101,22 @@ class TestClassifyRiskFunction:
         sig = inspect.signature(classify_risk)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="context_session_manager_enforcer.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="context_session_manager_enforcer.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="context_session_manager_enforcer.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="context_session_manager_enforcer.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="context_session_manager_enforcer.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -155,4 +124,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module context_session_manager_enforcer must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

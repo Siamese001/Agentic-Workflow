@@ -10,35 +10,20 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.runtime.config.capability_gap_types import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        AnalysisReport,
-        CapabilityGap,
-        CapabilityGapType,
-        Recommendation,
-        RecommendationType,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    CapabilityGapType = None  # type: ignore[assignment,misc]
-    RecommendationType = None  # type: ignore[assignment,misc]
-    CapabilityGap = None  # type: ignore[assignment,misc]
-    Recommendation = None  # type: ignore[assignment,misc]
-    AnalysisReport = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.runtime.config.capability_gap_types import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    AnalysisReport,
+    CapabilityGap,
+    CapabilityGapType,
+    Recommendation,
+    RecommendationType,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="capability_gap_types.py deps unavailable")
 class TestCapabilityGapTypeContract:
     def test_is_enum(self):
         import enum
@@ -54,7 +39,6 @@ class TestCapabilityGapTypeContract:
     def test_known_member_missing_tool_exists(self):
         assert hasattr(CapabilityGapType, 'MISSING_TOOL')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="capability_gap_types.py deps unavailable")
 class TestRecommendationTypeContract:
     def test_is_enum(self):
         import enum
@@ -70,7 +54,6 @@ class TestRecommendationTypeContract:
     def test_known_member_add_tool_exists(self):
         assert hasattr(RecommendationType, 'ADD_TOOL')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="capability_gap_types.py deps unavailable")
 class TestCapabilityGapContract:
     def test_is_class(self):
         assert isinstance(CapabilityGap, type)
@@ -78,7 +61,6 @@ class TestCapabilityGapContract:
     def test_has_method_to_dict(self):
         assert callable(getattr(CapabilityGap, 'to_dict', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="capability_gap_types.py deps unavailable")
 class TestRecommendationContract:
     def test_is_class(self):
         assert isinstance(Recommendation, type)
@@ -86,7 +68,6 @@ class TestRecommendationContract:
     def test_has_method_to_dict(self):
         assert callable(getattr(Recommendation, 'to_dict', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="capability_gap_types.py deps unavailable")
 class TestAnalysisReportContract:
     def test_is_class(self):
         assert isinstance(AnalysisReport, type)
@@ -94,27 +75,22 @@ class TestAnalysisReportContract:
     def test_has_method_to_dict(self):
         assert callable(getattr(AnalysisReport, 'to_dict', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="capability_gap_types.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="capability_gap_types.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="capability_gap_types.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="capability_gap_types.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="capability_gap_types.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -122,4 +98,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module capability_gap_types must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

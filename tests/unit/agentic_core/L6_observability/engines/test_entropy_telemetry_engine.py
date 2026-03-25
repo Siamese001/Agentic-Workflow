@@ -10,37 +10,21 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L6_observability.engines.entropy_telemetry_engine import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        EntropyTelemetryEngine,
-        FlipMetrics,
-        PathDMetrics,
-        TierMetrics,
-        get_entropy_telemetry_engine,
-        reset_entropy_telemetry_engine,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    TierMetrics = None  # type: ignore[assignment,misc]
-    FlipMetrics = None  # type: ignore[assignment,misc]
-    PathDMetrics = None  # type: ignore[assignment,misc]
-    EntropyTelemetryEngine = None  # type: ignore[assignment,misc]
-    get_entropy_telemetry_engine = None  # type: ignore[assignment,misc]
-    reset_entropy_telemetry_engine = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L6_observability.engines.entropy_telemetry_engine import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    EntropyTelemetryEngine,
+    FlipMetrics,
+    PathDMetrics,
+    TierMetrics,
+    get_entropy_telemetry_engine,
+    reset_entropy_telemetry_engine,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="entropy_telemetry_engine.py deps unavailable")
 class TestTierMetricsContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -63,7 +47,6 @@ class TestTierMetricsContract:
         # (create requires knowing required fields — skip if args unknown)
         assert TierMetrics.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="entropy_telemetry_engine.py deps unavailable")
 class TestFlipMetricsContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -86,7 +69,6 @@ class TestFlipMetricsContract:
         # (create requires knowing required fields — skip if args unknown)
         assert FlipMetrics.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="entropy_telemetry_engine.py deps unavailable")
 class TestPathDMetricsContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -109,7 +91,6 @@ class TestPathDMetricsContract:
         # (create requires knowing required fields — skip if args unknown)
         assert PathDMetrics.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="entropy_telemetry_engine.py deps unavailable")
 class TestEntropyTelemetryEngineContract:
     def test_is_class(self):
         assert isinstance(EntropyTelemetryEngine, type)
@@ -126,7 +107,6 @@ class TestEntropyTelemetryEngineContract:
     def test_has_method_get_tier_metrics(self):
         assert callable(getattr(EntropyTelemetryEngine, 'get_tier_metrics', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="entropy_telemetry_engine.py deps unavailable")
 class TestGetEntropyTelemetryEngineFunction:
     def test_is_callable(self):
         assert callable(get_entropy_telemetry_engine)
@@ -136,7 +116,6 @@ class TestGetEntropyTelemetryEngineFunction:
         sig = inspect.signature(get_entropy_telemetry_engine)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="entropy_telemetry_engine.py deps unavailable")
 class TestResetEntropyTelemetryEngineFunction:
     def test_is_callable(self):
         assert callable(reset_entropy_telemetry_engine)
@@ -146,27 +125,22 @@ class TestResetEntropyTelemetryEngineFunction:
         sig = inspect.signature(reset_entropy_telemetry_engine)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="entropy_telemetry_engine.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="entropy_telemetry_engine.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="entropy_telemetry_engine.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="entropy_telemetry_engine.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="entropy_telemetry_engine.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -174,4 +148,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module entropy_telemetry_engine must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

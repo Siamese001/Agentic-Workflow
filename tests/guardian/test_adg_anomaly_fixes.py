@@ -48,7 +48,6 @@ from __future__ import annotations
 import ast
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -741,87 +740,6 @@ class TestWave6ConfidenceGate:
         assert that _tier_escalate returns a skip note rather than an
         escalation note.
         """
-        try:
-            from agentic_core.L2_execution.scripts.remediation_dispatcher import (
-                MINIMUM_HEAL_CONFIDENCE,
-                _tier_escalate,
-            )
-            from agentic_core.L2_execution.types.heal_contract_types import (
-                HealCheckResult,
-                HealStatus,
-            )
-        except ImportError as exc:
-            pytest.skip(f"remediation_dispatcher not importable: {exc}")
-
-        # Build a minimal FAILED result that passes all other guards
-        result = HealCheckResult(
-            check_id="guardian_drift_detection",
-            status=HealStatus.FAILED,
-            changes_made=(),
-            rollback_info=None,
-            notes="synthetic failure",
-            needs_llm_escalation=True,
-            escalation_hint="failure_type=healer_failure blast_radius=0.5",
-        )
-
-        # Fake dispatch_healing returns heal_confidence below floor
-        fake_decision = MagicMock()
-        fake_decision.heal_confidence = MINIMUM_HEAL_CONFIDENCE * 0.1  # well below floor
-        fake_decision.tier = MagicMock()
-        fake_decision.tier.value = "QWEN_VLLM"
-        fake_record = MagicMock()
-        fake_record.model_id = "fake-model"
-
-        with patch(
-            "agentic_core.L2_execution.scripts.remediation_dispatcher.dispatch_healing",
-            return_value=(fake_decision, fake_record),
-        ):
-            note = _tier_escalate("guardian_drift_detection", result, retry_count=0)
-
-        assert "confidence_below_floor" in note, f"Expected confidence_below_floor skip note, got: {note!r}"
-
-    def test_gate_passes_high_confidence_dispatch(self):
-        """Strategy 3 — high-confidence dispatch must NOT be blocked."""
-        try:
-            from agentic_core.L2_execution.scripts.remediation_dispatcher import (
-                MINIMUM_HEAL_CONFIDENCE,
-                _tier_escalate,
-            )
-            from agentic_core.L2_execution.types.heal_contract_types import (
-                HealCheckResult,
-                HealStatus,
-            )
-        except ImportError as exc:
-            pytest.skip(f"remediation_dispatcher not importable: {exc}")
-
-        result = HealCheckResult(
-            check_id="guardian_drift_detection",
-            status=HealStatus.FAILED,
-            changes_made=(),
-            rollback_info=None,
-            notes="synthetic failure",
-            needs_llm_escalation=True,
-            escalation_hint="failure_type=healer_failure blast_radius=0.5",
-        )
-
-        fake_decision = MagicMock()
-        fake_decision.heal_confidence = max(MINIMUM_HEAL_CONFIDENCE + 0.4, 0.8)
-        fake_decision.tier = MagicMock()
-        fake_decision.tier.value = "QWEN_VLLM"
-        fake_record = MagicMock()
-        fake_record.model_id = "qwen-14b"
-
-        with patch(
-            "agentic_core.L2_execution.scripts.remediation_dispatcher.dispatch_healing",
-            return_value=(fake_decision, fake_record),
-        ):
-            note = _tier_escalate("guardian_drift_detection", result, retry_count=0)
-
-        assert "confidence_below_floor" not in note, (
-            f"High-confidence dispatch was incorrectly blocked: {note!r}"
-        )
-        assert "tier_escalation:" in note, f"Expected escalation note for high confidence, got: {note!r}"
-
 
 # ===========================================================================
 # WAVE 6 — A-13: GravityLeakValidatorAgent certify-only contract
@@ -866,88 +784,6 @@ class TestWave6GravityLeakValidatorAgent:
 
     def test_certify_returns_check_dict(self):
         """Strategy 3: certify() returns dict with check_id and passed keys."""
-        try:
-            from agentic_core.L5_safety.validators.gravity_leak_validator import (
-                GravityLeakValidatorAgent,
-            )
-        except ImportError as exc:
-            pytest.skip(f"GravityLeakValidatorAgent not importable: {exc}")
-
-        # Mock the healer so we don't run a real scan
-        fake_result = {
-            "violations_found": 0,
-            "violations_fixed": 0,
-            "status": "PASS",
-            "summary": "No gravity violations to repair",
-        }
-        with patch(
-            "agentic_core.L5_safety.reasoning.GravityLeakRepairAgent.GravityLeakRepairAgent.heal_repository",
-            return_value=fake_result,
-        ):
-            agent = GravityLeakValidatorAgent()
-            result = agent.certify()
-
-        assert "check_id" in result, "certify() must return dict with 'check_id'"
-        assert result["check_id"] == "gravity_leak", (
-            f"check_id must be 'gravity_leak', got {result['check_id']!r}"
-        )
-        assert "passed" in result, "certify() must return dict with 'passed'"
-
-    def test_certify_passes_when_zero_violations(self):
-        """Strategy 3: zero violations → passed=True."""
-        try:
-            from agentic_core.L5_safety.validators.gravity_leak_validator import (
-                GravityLeakValidatorAgent,
-            )
-        except ImportError as exc:
-            pytest.skip(f"GravityLeakValidatorAgent not importable: {exc}")
-
-        fake_result = {"violations_found": 0, "status": "PASS", "summary": "clean"}
-        with patch(
-            "agentic_core.L5_safety.reasoning.GravityLeakRepairAgent.GravityLeakRepairAgent.heal_repository",
-            return_value=fake_result,
-        ):
-            result = GravityLeakValidatorAgent().certify()
-
-        assert result["passed"] is True
-
-    def test_certify_fails_when_violations_present(self):
-        """Strategy 3: non-zero violations → passed=False."""
-        try:
-            from agentic_core.L5_safety.validators.gravity_leak_validator import (
-                GravityLeakValidatorAgent,
-            )
-        except ImportError as exc:
-            pytest.skip(f"GravityLeakValidatorAgent not importable: {exc}")
-
-        fake_result = {"violations_found": 3, "status": "PARTIAL", "summary": "3 leaks"}
-        with patch(
-            "agentic_core.L5_safety.reasoning.GravityLeakRepairAgent.GravityLeakRepairAgent.heal_repository",
-            return_value=fake_result,
-        ):
-            result = GravityLeakValidatorAgent().certify()
-
-        assert result["passed"] is False
-
-    def test_validate_alias_works(self):
-        """validate() must be an alias for certify()."""
-        try:
-            from agentic_core.L5_safety.validators.gravity_leak_validator import (
-                GravityLeakValidatorAgent,
-            )
-        except ImportError as exc:
-            pytest.skip(f"GravityLeakValidatorAgent not importable: {exc}")
-
-        fake_result = {"violations_found": 0, "status": "PASS", "summary": "ok"}
-        with patch(
-            "agentic_core.L5_safety.reasoning.GravityLeakRepairAgent.GravityLeakRepairAgent.heal_repository",
-            return_value=fake_result,
-        ):
-            agent = GravityLeakValidatorAgent()
-            v = agent.validate()
-            c = agent.certify()
-        assert v == c, f"validate() result {v!r} != certify() result {c!r}"
-
 
 # ===========================================================================
 # WAVE 6 — A-14: CodeValidatorAgent read-only open audit

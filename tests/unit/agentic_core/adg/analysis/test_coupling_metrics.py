@@ -10,19 +10,11 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.adg.analysis.coupling_metrics_config import (  # noqa: F401
-        CouplingMetricsReport,
-        ModuleMetrics,
-        compute_coupling_metrics,
-    )
-    _AVAILABLE = True
-except ImportError:
-    pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    ModuleMetrics = None  # type: ignore[assignment,misc]
-    CouplingMetricsReport = None  # type: ignore[assignment,misc]
-    compute_coupling_metrics = None  # type: ignore[assignment,misc]
+from agentic_core.adg.analysis.coupling_metrics_config import (  # noqa: F401
+    CouplingMetricsReport,
+    ModuleMetrics,
+    compute_coupling_metrics,
+)
 
 
 class TestModuleMetricsContract:

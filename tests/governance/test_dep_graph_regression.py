@@ -1,7 +1,6 @@
 """Dep-graph regression gate.
 
 
-
 Enforces non-growing bounds on import graph structural debt:
 
   - Cycle count must not exceed budget
@@ -11,7 +10,6 @@ Enforces non-growing bounds on import graph structural debt:
   - Pinecone importer count must not exceed budget (shrinks as Pinecone is removed)
 
   - No new star-imports without __all__ in __init__.py files
-
 
 
 Uses tools.dep_graph_db (NetworkX-backed) for accurate transitive queries.

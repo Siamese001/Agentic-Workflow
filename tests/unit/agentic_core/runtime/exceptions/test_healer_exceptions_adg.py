@@ -1,39 +1,25 @@
 """ADG importability contract for agentic_core/runtime/exceptions/healer_exceptions.py.
 
-Auto-generated stub — covers GT_covers edge for ADG reachability.
+Auto-generated stub - covers GT_covers edge for ADG reachability.
 Behavioral tests belong in test_healer_exceptions.py (no _adg suffix).
 """
-
 from __future__ import annotations
 
-import pytest
-
-try:
-    from agentic_core.runtime.exceptions.healer_exceptions import (  # noqa: F401
-        CircularDependencyError,
-        HealerError,
-        HealingBudgetExceededError,
-        HealingTimeoutError,
-        SovereignError,
-        ValidationRegistryError,
-    )
-
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    HealerError = None  # type: ignore[assignment,misc]
-    CircularDependencyError = None  # type: ignore[assignment,misc]
-    HealingBudgetExceededError = None  # type: ignore[assignment,misc]
-    ValidationRegistryError = None  # type: ignore[assignment,misc]
-    HealingTimeoutError = None  # type: ignore[assignment,misc]
-    SovereignError = None  # type: ignore[assignment,misc]
+from agentic_core.runtime.exceptions.healer_exceptions import (
+    CircularDependencyError,
+    HealerError,
+    HealingBudgetExceededError,
+    HealingTimeoutError,
+    SovereignError,
+    ValidationRegistryError,
+)  # noqa: F401
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="healer_exceptions deps unavailable")
 class TestHealerExceptionsImportability:
     def test_module_importable(self) -> None:
         """ADG contract: agentic_core/runtime/exceptions/healer_exceptions.py must be importable."""
-        assert _AVAILABLE
+
+        pass  # Import verified at module level
 
     def test_healererror_defined(self) -> None:
         assert HealerError is not None

@@ -10,41 +10,23 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L5_safety.enforcement.secure_error_handler_enforcer import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        ConfigurationError,
-        ErrorSanitizer,
-        ExecutionError,
-        SecureError,
-        SecurityError,
-        ValidationError,
-        handle_secure_error,
-        secure_exception,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    SecureError = None  # type: ignore[assignment,misc]
-    SecurityError = None  # type: ignore[assignment,misc]
-    ConfigurationError = None  # type: ignore[assignment,misc]
-    ValidationError = None  # type: ignore[assignment,misc]
-    ExecutionError = None  # type: ignore[assignment,misc]
-    ErrorSanitizer = None  # type: ignore[assignment,misc]
-    secure_exception = None  # type: ignore[assignment,misc]
-    handle_secure_error = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L5_safety.enforcement.secure_error_handler_enforcer import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    ConfigurationError,
+    ErrorSanitizer,
+    ExecutionError,
+    SecureError,
+    SecurityError,
+    ValidationError,
+    handle_secure_error,
+    secure_exception,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_error_handler_enforcer.py deps unavailable")
 class TestSecureErrorContract:
     def test_is_class(self):
         assert isinstance(SecureError, type)
@@ -52,7 +34,6 @@ class TestSecureErrorContract:
     def test_has_method_to_dict(self):
         assert callable(getattr(SecureError, 'to_dict', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_error_handler_enforcer.py deps unavailable")
 class TestSecurityErrorContract:
     def test_is_class(self):
         assert isinstance(SecurityError, type)
@@ -60,7 +41,6 @@ class TestSecurityErrorContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(SecurityError, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_error_handler_enforcer.py deps unavailable")
 class TestConfigurationErrorContract:
     def test_is_class(self):
         assert isinstance(ConfigurationError, type)
@@ -68,7 +48,6 @@ class TestConfigurationErrorContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(ConfigurationError, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_error_handler_enforcer.py deps unavailable")
 class TestValidationErrorContract:
     def test_is_class(self):
         assert isinstance(ValidationError, type)
@@ -76,7 +55,6 @@ class TestValidationErrorContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(ValidationError, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_error_handler_enforcer.py deps unavailable")
 class TestExecutionErrorContract:
     def test_is_class(self):
         assert isinstance(ExecutionError, type)
@@ -84,7 +62,6 @@ class TestExecutionErrorContract:
     def test_instantiable_or_abstract(self):
         assert isinstance(ExecutionError, type)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_error_handler_enforcer.py deps unavailable")
 class TestErrorSanitizerContract:
     def test_is_class(self):
         assert isinstance(ErrorSanitizer, type)
@@ -98,12 +75,10 @@ class TestErrorSanitizerContract:
     def test_has_method_create_secure_error(self):
         assert callable(getattr(ErrorSanitizer, 'create_secure_error', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_error_handler_enforcer.py deps unavailable")
 class TestSecureExceptionFunction:
     def test_is_callable(self):
         assert callable(secure_exception)
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_error_handler_enforcer.py deps unavailable")
 class TestHandleSecureErrorFunction:
     def test_is_callable(self):
         assert callable(handle_secure_error)
@@ -113,27 +88,22 @@ class TestHandleSecureErrorFunction:
         sig = inspect.signature(handle_secure_error)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_error_handler_enforcer.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_error_handler_enforcer.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_error_handler_enforcer.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_error_handler_enforcer.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="secure_error_handler_enforcer.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -141,4 +111,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module secure_error_handler_enforcer must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

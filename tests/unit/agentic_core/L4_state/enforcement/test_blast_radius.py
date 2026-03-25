@@ -10,39 +10,22 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L4_state.enforcement.blast_radius import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        BlastRadiusCalculator,
-        BlastRadiusEnforcer,
-        BlastRadiusMetrics,
-        clear_proposal,
-        enforce_blast_radius,
-        get_proposal_metrics,
-        validate_total_impact,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    BlastRadiusMetrics = None  # type: ignore[assignment,misc]
-    BlastRadiusCalculator = None  # type: ignore[assignment,misc]
-    BlastRadiusEnforcer = None  # type: ignore[assignment,misc]
-    enforce_blast_radius = None  # type: ignore[assignment,misc]
-    get_proposal_metrics = None  # type: ignore[assignment,misc]
-    clear_proposal = None  # type: ignore[assignment,misc]
-    validate_total_impact = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.L4_state.enforcement.blast_radius import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    BlastRadiusCalculator,
+    BlastRadiusEnforcer,
+    BlastRadiusMetrics,
+    clear_proposal,
+    enforce_blast_radius,
+    get_proposal_metrics,
+    validate_total_impact,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="blast_radius.py deps unavailable")
 class TestBlastRadiusMetricsContract:
     def test_is_dataclass(self):
         import dataclasses
@@ -65,7 +48,6 @@ class TestBlastRadiusMetricsContract:
         # (create requires knowing required fields — skip if args unknown)
         assert BlastRadiusMetrics.__dataclass_params__.frozen is True
 
-@pytest.mark.skipif(not _AVAILABLE, reason="blast_radius.py deps unavailable")
 class TestBlastRadiusCalculatorContract:
     def test_is_class(self):
         assert isinstance(BlastRadiusCalculator, type)
@@ -73,7 +55,6 @@ class TestBlastRadiusCalculatorContract:
     def test_has_method_calculate_blast_radius(self):
         assert callable(getattr(BlastRadiusCalculator, 'calculate_blast_radius', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="blast_radius.py deps unavailable")
 class TestBlastRadiusEnforcerContract:
     def test_is_class(self):
         assert isinstance(BlastRadiusEnforcer, type)
@@ -90,7 +71,6 @@ class TestBlastRadiusEnforcerContract:
     def test_has_method_get_total_blast_radius(self):
         assert callable(getattr(BlastRadiusEnforcer, 'get_total_blast_radius', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="blast_radius.py deps unavailable")
 class TestEnforceBlastRadiusFunction:
     def test_is_callable(self):
         assert callable(enforce_blast_radius)
@@ -100,7 +80,6 @@ class TestEnforceBlastRadiusFunction:
         sig = inspect.signature(enforce_blast_radius)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="blast_radius.py deps unavailable")
 class TestGetProposalMetricsFunction:
     def test_is_callable(self):
         assert callable(get_proposal_metrics)
@@ -110,7 +89,6 @@ class TestGetProposalMetricsFunction:
         sig = inspect.signature(get_proposal_metrics)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="blast_radius.py deps unavailable")
 class TestClearProposalFunction:
     def test_is_callable(self):
         assert callable(clear_proposal)
@@ -120,7 +98,6 @@ class TestClearProposalFunction:
         sig = inspect.signature(clear_proposal)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="blast_radius.py deps unavailable")
 class TestValidateTotalImpactFunction:
     def test_is_callable(self):
         assert callable(validate_total_impact)
@@ -130,27 +107,22 @@ class TestValidateTotalImpactFunction:
         sig = inspect.signature(validate_total_impact)
         assert sig.return_annotation is not inspect.Parameter.empty
 
-@pytest.mark.skipif(not _AVAILABLE, reason="blast_radius.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="blast_radius.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="blast_radius.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="blast_radius.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="blast_radius.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -158,4 +130,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module blast_radius must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

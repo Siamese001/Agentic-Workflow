@@ -10,35 +10,20 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.runtime.config.reasoning_types import (  # noqa: F401
-        BATCH_SIZE,
-        BUFFER_SIZE,
-        DEFAULT_SLEEP,
-        MAX_RETRIES,
-        THRESHOLD,
-        GovernorConfig,
-        ModelConfig,
-        ModelProvider,
-        RAGConfig,
-        ReasoningConfig,
-    )
-    _AVAILABLE = True
-except ImportError as _exc:
-    _AVAILABLE = False
-    ModelProvider = None  # type: ignore[assignment,misc]
-    ModelConfig = None  # type: ignore[assignment,misc]
-    RAGConfig = None  # type: ignore[assignment,misc]
-    GovernorConfig = None  # type: ignore[assignment,misc]
-    ReasoningConfig = None  # type: ignore[assignment,misc]
-    MAX_RETRIES = None  # type: ignore[assignment,misc]
-    DEFAULT_SLEEP = None  # type: ignore[assignment,misc]
-    THRESHOLD = None  # type: ignore[assignment,misc]
-    BUFFER_SIZE = None  # type: ignore[assignment,misc]
-    BATCH_SIZE = None  # type: ignore[assignment,misc]
+from agentic_core.runtime.config.reasoning_types import (  # noqa: F401
+    BATCH_SIZE,
+    BUFFER_SIZE,
+    DEFAULT_SLEEP,
+    MAX_RETRIES,
+    THRESHOLD,
+    GovernorConfig,
+    ModelConfig,
+    ModelProvider,
+    RAGConfig,
+    ReasoningConfig,
+)
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types.py deps unavailable")
 class TestModelProviderContract:
     def test_is_enum(self):
         import enum
@@ -54,7 +39,6 @@ class TestModelProviderContract:
     def test_known_member_openai_exists(self):
         assert hasattr(ModelProvider, 'OPENAI')
 
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types.py deps unavailable")
 class TestModelConfigContract:
     def test_is_class(self):
         assert isinstance(ModelConfig, type)
@@ -62,7 +46,6 @@ class TestModelConfigContract:
     def test_has_method_validate_invariants(self):
         assert callable(getattr(ModelConfig, 'validate_invariants', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types.py deps unavailable")
 class TestRAGConfigContract:
     def test_is_class(self):
         assert isinstance(RAGConfig, type)
@@ -70,7 +53,6 @@ class TestRAGConfigContract:
     def test_has_method_validate_invariants(self):
         assert callable(getattr(RAGConfig, 'validate_invariants', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types.py deps unavailable")
 class TestGovernorConfigContract:
     def test_is_class(self):
         assert isinstance(GovernorConfig, type)
@@ -78,7 +60,6 @@ class TestGovernorConfigContract:
     def test_has_method_validate_invariants(self):
         assert callable(getattr(GovernorConfig, 'validate_invariants', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types.py deps unavailable")
 class TestReasoningConfigContract:
     def test_is_class(self):
         assert isinstance(ReasoningConfig, type)
@@ -86,27 +67,22 @@ class TestReasoningConfigContract:
     def test_has_method_validate_invariants(self):
         assert callable(getattr(ReasoningConfig, 'validate_invariants', None))
 
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types.py deps unavailable")
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
         assert MAX_RETRIES is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types.py deps unavailable")
 class TestDefaultSleepConstant:
     def test_is_not_none(self):
         assert DEFAULT_SLEEP is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types.py deps unavailable")
 class TestThresholdConstant:
     def test_is_not_none(self):
         assert THRESHOLD is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types.py deps unavailable")
 class TestBufferSizeConstant:
     def test_is_not_none(self):
         assert BUFFER_SIZE is not None
 
-@pytest.mark.skipif(not _AVAILABLE, reason="reasoning_types.py deps unavailable")
 class TestBatchSizeConstant:
     def test_is_not_none(self):
         assert BATCH_SIZE is not None
@@ -114,4 +90,4 @@ class TestBatchSizeConstant:
 
 def test_module_importable():
     """Module reasoning_types must be importable or skip gracefully."""
-    assert _AVAILABLE or not _AVAILABLE
+    pass  # Import verified at module level

@@ -330,7 +330,6 @@ class TestSeamDynamicEnforcement:
             print(f"  {vtype}: {len(vlist)}")
 
 
-
 @pytest.mark.governance
 class TestDynamicImportMutation:
     """Mutation tests for dynamic import detector (3 static + 3 dynamic)."""

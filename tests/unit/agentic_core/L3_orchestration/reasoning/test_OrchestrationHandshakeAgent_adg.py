@@ -1,29 +1,9 @@
-"""ADG importability contract for agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py.
-
-Auto-generated stub — covers GT_covers edge for ADG reachability.
-Behavioral tests belong in test_OrchestrationHandshakeAgent.py (no _adg suffix).
-"""
-
+"""ADG importability contract for agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py."""
 from __future__ import annotations
 
-import pytest
-
-try:
-    from agentic_core.L3_orchestration.reasoning.OrchestrationHandshakeAgent import (  # noqa: F401
-        OrchestrationHandshakeAgent,
-    )
-
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    OrchestrationHandshakeAgent = None  # type: ignore[assignment,misc]
+import agentic_core.L3_orchestration.reasoning.OrchestrationHandshakeAgent  # noqa: F401
 
 
-@pytest.mark.skipif(not _AVAILABLE, reason="OrchestrationHandshakeAgent deps unavailable")
-class TestOrchestrationhandshakeagentImportability:
-    def test_module_importable(self) -> None:
-        """ADG contract: agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py must be importable."""
-        assert _AVAILABLE
-
-    def test_orchestrationhandshakeagent_defined(self) -> None:
-        assert OrchestrationHandshakeAgent is not None
+def test_module_importable():
+    """Module OrchestrationHandshakeAgent must be importable."""
+    assert agentic_core.L3_orchestration.reasoning.OrchestrationHandshakeAgent is not None

@@ -4,13 +4,14 @@ Basic tests for Phase 2.3 low severity fixes implementation.
 """
 
 import json
-import pytest
-import tempfile
-from pathlib import Path
-from unittest.mock import patch
 
 # Import the module we're testing
 import sys
+import tempfile
+from pathlib import Path
+
+import pytest
+
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "tools"))
 
 try:
@@ -23,14 +24,14 @@ except ImportError as e:
 
 class TestPhase23Basic:
     """Basic tests for Phase 2.3 implementation."""
-    
+
     @pytest.fixture
     def temp_workspace(self):
         """Create temporary workspace for testing."""
         with tempfile.TemporaryDirectory() as temp_dir:
             workspace = Path(temp_dir)
             yield workspace
-    
+
     @pytest.mark.skipif(not CAN_IMPORT, reason="Cannot import fixer")
     def test_can_import_fixer(self):
         """Test that the fixer can be imported."""
@@ -46,7 +47,7 @@ class TestPhase23Basic:
         violations_file = tools_dir / "silent_swallower_report.json"
         with open(violations_file, 'w') as f:
             json.dump({'violations': []}, f)
-        
+
         # Temporarily change working directory to temp workspace
         original_cwd = Path.cwd()
         try:
@@ -85,13 +86,13 @@ class TestPhase23Basic:
                 }
             ]
         }
-        
+
         tools_dir = temp_workspace / "tools"
         tools_dir.mkdir()
         violations_file = tools_dir / "silent_swallower_report.json"
         with open(violations_file, 'w') as f:
             json.dump(sample_violations, f)
-        
+
         # Temporarily change working directory to temp workspace
         original_cwd = Path.cwd()
         try:
@@ -112,25 +113,25 @@ class TestPhase23Basic:
         violations_file = tools_dir / "silent_swallower_report.json"
         with open(violations_file, 'w') as f:
             json.dump({'violations': []}, f)
-        
+
         # Temporarily change working directory to temp workspace
         original_cwd = Path.cwd()
         try:
             import os
             os.chdir(temp_workspace)
             fixer = LowSeveritySilentSwallowerFixer()
-            
+
             if hasattr(fixer, '_determine_exception_fix_strategy'):
                 # Test SyntaxError strategy
                 strategy = fixer._determine_exception_fix_strategy('SyntaxError', 'syntax parsing error')
                 assert isinstance(strategy, dict)
                 assert 'action' in strategy
-                
+
                 # Test OSError strategy
                 strategy = fixer._determine_exception_fix_strategy('OSError', 'file system error')
                 assert isinstance(strategy, dict)
                 assert 'action' in strategy
-                
+
                 # Test UnicodeDecodeError strategy
                 strategy = fixer._determine_exception_fix_strategy('UnicodeDecodeError', 'encoding error')
                 assert isinstance(strategy, dict)
@@ -148,21 +149,21 @@ class TestPhase23Basic:
         violations_file = tools_dir / "silent_swallower_report.json"
         with open(violations_file, 'w') as f:
             json.dump({'violations': []}, f)
-        
+
         # Temporarily change working directory to temp workspace
         original_cwd = Path.cwd()
         try:
             import os
             os.chdir(temp_workspace)
             fixer = LowSeveritySilentSwallowerFixer()
-            
+
             if hasattr(fixer, '_create_targeted_exception_handler'):
                 # Test basic replacement
                 original = "    except SyntaxError:"
                 context = "syntax parsing error"
                 strategy = {'action': 'add_guardian_comment', 'comment': 'Syntax errors should be caught earlier'}
                 new_handler = fixer._create_targeted_exception_handler(original, context, strategy)
-                
+
                 assert new_handler != original
                 assert "# guardian:" in new_handler or "Syntax errors" in new_handler
             else:

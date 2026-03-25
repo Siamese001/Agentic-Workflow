@@ -14,7 +14,6 @@ except (ValueError, TypeError, RuntimeError) as e:
     _mod = None
 
 
-
 def test_module_syntax():
     """Verify module is syntactically valid Python without importing it."""
     import ast

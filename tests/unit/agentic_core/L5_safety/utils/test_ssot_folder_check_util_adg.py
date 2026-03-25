@@ -5,22 +5,9 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-try:
-    from agentic_core.L5_safety.utils.ssot_folder_check_util import (  # noqa: F401
-        main,
-    )
-    _AVAILABLE = True
-pytest.importorskip("missing_dependency")  # TODO: specify actual dependency
-    _AVAILABLE = False
-    main = None  # type: ignore[assignment,misc]
-
-
-@pytest.mark.skipif(not _AVAILABLE, reason="ssot_folder_check_util.py deps unavailable")
-class TestMain:
-    def test_is_callable(self):
-        assert callable(main)
+import agentic_core.L5_safety.utils.ssot_folder_check_util  # noqa: F401
 
 
 def test_module_importable():
-    """Module ssot_folder_check_util.py is importable (or deps unavailable)."""
-    assert _AVAILABLE or not _AVAILABLE
+    """Module ssot_folder_check_util must be importable."""
+    assert agentic_core.L5_safety.utils.ssot_folder_check_util is not None
