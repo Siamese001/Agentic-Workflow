@@ -200,20 +200,20 @@ def validate_knowledge_base():
 
     from apps_rg.config.knowledge_base import FROZEN_SNAPSHOT, get_node_config, get_prompt
 
-    logging.debug(f"Test output: f"✅ Knowledge base version: {FROZEN_SNAPSHOT.version}"")
-    logging.debug(f"Test output: f"✅ Total prompts: {len(FROZEN_SNAPSHOT.prompts")}")
-    logging.debug(f"Test output: f"✅ Total K-nodes: {len(FROZEN_SNAPSHOT.nodes")}")
-    logging.debug(f"Test output: f"✅ Total rules: {len(FROZEN_SNAPSHOT.global_rules")}")
+    logging.debug(f"Test output: f"✓ Knowledge base version: {FROZEN_SNAPSHOT.version}"")
+    logging.debug("Test output: ✓ Total prompts: {len(FROZEN_SNAPSHOT.prompts")}")
+    logging.debug("Test output: ✓ Total K-nodes: {len(FROZEN_SNAPSHOT.nodes")}")
+    logging.debug("Test output: ✓ Total rules: {len(FROZEN_SNAPSHOT.global_rules")}")
 
     # Test prompt retrieval
     hyde_prompt = get_prompt("k1_hyde_generation")
     assert "{company_name}" in hyde_prompt
-    logging.debug(f"Test output: "✅ Hyde generation prompt validated"")
+    logging.debug(f"Test output: "✓ Hyde generation prompt validated"")
 
     # Test node config
     k9 = get_node_config("K.9")
     assert k9.config.qa_thresholds["count"] == "Exactly 6"
-    logging.debug(f"Test output: "✅ K.9 Leadership Competencies config validated"")
+    logging.debug(f"Test output: "✓ K.9 Leadership Competencies config validated"")
 
     return True
 
@@ -237,14 +237,14 @@ def validate_base_engine():
     engine = TestEngine()
     status = engine.get_status()
 
-    logging.debug(f"Test output: f"✅ Engine initialized: {status['initialized']}"")
-    logging.debug(f"Test output: f"✅ Knowledge available: {status['knowledge_available']}"")
-    logging.debug(f"Test output: f"✅ Engine name: {status['engine']}"")
+    logging.debug(f"Test output: f"✓ Engine initialized: {status['initialized']}"")
+    logging.debug(f"Test output: f"✓ Knowledge available: {status['knowledge_available']}"")
+    logging.debug(f"Test output: f"✓ Engine name: {status['engine']}"")
 
     # Test prompt access
     prompt = engine.get_prompt("input_jd")
     assert "Job Description" in prompt
-    logging.debug(f"Test output: "✅ Prompt access from engine validated"")
+    logging.debug(f"Test output: "✓ Prompt access from engine validated"")
 
     return True
 
@@ -277,15 +277,15 @@ def validate_hop_engines():
     clerk_output = clerk.execute(clerk_input)
     assert len(clerk_output.experience_sections) == 1
     assert clerk_output.skills == ["Python", "AWS"]
-    logging.debug(f"Test output: f"✅ HOP1 Clerk extracted {len(clerk_output.experience_sections")} sections")
+    logging.debug("Test output: ✓ HOP1 Clerk extracted {len(clerk_output.experience_sections")} sections")
 
     # Test HOP2 Enrichment
     enrichment = EnrichmentEngine()
     enrich_input = EnrichmentInput(clerk_output=clerk_output)
     enrich_output = enrichment.execute(enrich_input)
 
-    logging.debug(f"Test output: f"✅ HOP2 Enrichment canonicalized {enrich_output.verbs_canonicalized} verbs"")
-    logging.debug(f"Test output: f"✅ HOP2 Enrichment removed {enrich_output.duplicates_removed} duplicates"")
+    logging.debug(f"Test output: f"✓ HOP2 Enrichment canonicalized {enrich_output.verbs_canonicalized} verbs"")
+    logging.debug(f"Test output: f"✓ HOP2 Enrichment removed {enrich_output.duplicates_removed} duplicates"")
 
     return True
 
@@ -319,13 +319,13 @@ def validate_orchestrator():
 
     output = orch.execute(input_data)
 
-    logging.debug(f"Test output: f"✅ Workflow state: {output.workflow_state}"")
-    logging.debug(f"Test output: f"✅ HOPs executed: {len(output.hop_results")}")
+    logging.debug(f"Test output: f"✓ Workflow state: {output.workflow_state}"")
+    logging.debug("Test output: ✓ HOPs executed: {len(output.hop_results")}")
 
     if output.workflow_state == WorkflowState.COMPLETE:
-        logging.debug(f"Test output: "✅ Orchestration completed successfully"")
+        logging.debug(f"Test output: "✓ Orchestration completed successfully"")
     elif output.workflow_state == WorkflowState.ERROR:
-        logging.debug(f"Test output: f"⚠️ Orchestration completed with error: {output.metadata.get('error'")}")
+        logging.debug("Test output: ⚠️ Orchestration completed with error: {output.metadata.get('error'")}")
 
     return True
 
@@ -343,7 +343,7 @@ def validate_void_compliance():
     # Test detection of legacy imports
     engine.scan_file_content("test_file.py", ComplianceInput())
 
-    logging.debug(f"Test output: "✅ Void Compliance engine initialized"")
+    logging.debug(f"Test output: "✓ Void Compliance engine initialized"")
 
     # Test with actual dirty content
     import tempfile
@@ -360,12 +360,12 @@ def validate_void_compliance():
 
     os.unlink(temp_path)
 
-    logging.debug(f"Test output: f"✅ Detected {len(violations")} violations in test file")
+    logging.debug("Test output: ✓ Detected {len(violations")} violations in test file")
 
     # Check for critical violations
     critical = [v for v in violations if v.severity == "CRITICAL"]
     if critical:
-        logging.debug(f"Test output: f"✅ Found {len(critical")} CRITICAL violations (legacy imports)")
+        logging.debug("Test output: ✓ Found {len(critical")} CRITICAL violations (legacy imports)")
 
     return True
 
@@ -381,7 +381,7 @@ def validate_pydantic_models():
 
     # Valid model
     ClerkInput(master_resume={"test": "data"})
-    logging.debug(f"Test output: "✅ Valid ClerkInput created"")
+    logging.debug(f"Test output: "✓ Valid ClerkInput created"")
 
     # Valid ExperienceSection
     exp = ExperienceSection(
@@ -390,7 +390,7 @@ def validate_pydantic_models():
         duration="2020-2023",
         bullets=["Task 1", "Task 2"],
     )
-    logging.debug(f"Test output: f"✅ Valid ExperienceSection with {len(exp.bullets")} bullets")
+    logging.debug("Test output: ✓ Valid ExperienceSection with {len(exp.bullets")} bullets")
 
     # Invalid model should raise
     try:
@@ -398,7 +398,7 @@ def validate_pydantic_models():
         logging.debug(f"Test output: "❌ Should have raised ValidationError"")
         return False
     except ValidationError:
-        logging.debug(f"Test output: "✅ ValidationError raised for invalid input"")
+        logging.debug(f"Test output: "✓ ValidationError raised for invalid input"")
 
     return True
 
@@ -427,7 +427,7 @@ def validate_directory_structure():
     for domain in domains:
         path = base / domain
         if path.exists():
-            logging.debug(f"Test output: f"✅ Domain '{domain}' directory exists"")
+            logging.debug(f"Test output: f"✓ Domain '{domain}' directory exists"")
         else:
             logging.debug(f"Test output: f"❌ Domain '{domain}' directory missing"")
             all_exist = False
@@ -446,7 +446,7 @@ def validate_directory_structure():
     logging.debug(f"Test output: "KEY FILES:"")
     for file_path in key_files:
         if Path(file_path).exists():
-            logging.debug(f"Test output: f"✅ {file_path}"")
+            logging.debug(f"Test output: f"✓ {file_path}"")
         else:
             logging.debug(f"Test output: f"❌ {file_path}"")
             all_exist = False
@@ -512,11 +512,11 @@ def main():
     total = len(results)
 
     for name, result in results:
-        status = "✅ PASS" if result else "❌ FAIL"
+        status = "✓ PASS" if result else "❌ FAIL"
         logging.debug(f"Test output: f"{name:20} {status}"")
 
     logging.debug(f"Test output: "-" * 60")
-    logging.debug(f"Test output: f"TOTAL: {passed}/{total} passed ({100 * passed / total:.0f}%")")
+    logging.debug("Test output: TOTAL: {passed}/{total} passed ({100 * passed / total:.0f}%")")
 
     if passed == total:
         logging.debug(f"Test output: "\n🎉 ALL VALIDATIONS PASSED! Migration successful."")

@@ -226,7 +226,7 @@ def run_tests():
         }
         topology = OrchestrationTopology(**data)
         assert topology.phases["PHASE1"] == ["AGENT_A"]
-        logging.debug(f"Test output: "  ✅ PASSED"")
+        logging.debug(f"Test output: "  ✓ PASSED"")
         passed += 1
     except Exception as e:
         logging.debug(f"Test output: f"  ❌ FAILED: {e}"")
@@ -241,7 +241,7 @@ def run_tests():
             logging.debug(f"Test output: "  ❌ FAILED: Expected ValueError"")
             failed += 1
         except ValueError:
-            logging.debug(f"Test output: "  ✅ PASSED"")
+            logging.debug(f"Test output: "  ✓ PASSED"")
             passed += 1
     except Exception as e:
         logging.debug(f"Test output: f"  ❌ FAILED: {e}"")
@@ -255,7 +255,7 @@ def run_tests():
         assert spec.criticality == "required"
         assert spec.inputs == []
         assert spec.outputs == []
-        logging.debug(f"Test output: "  ✅ PASSED"")
+        logging.debug(f"Test output: "  ✓ PASSED"")
         passed += 1
     except Exception as e:
         logging.debug(f"Test output: f"  ❌ FAILED: {e}"")
@@ -269,7 +269,7 @@ def run_tests():
         assert ctx.trace is not None
         ctx.add_signal("TEST_SIGNAL")
         assert "TEST_SIGNAL" in ctx.signals
-        logging.debug(f"Test output: "  ✅ PASSED"")
+        logging.debug(f"Test output: "  ✓ PASSED"")
         passed += 1
     except Exception as e:
         logging.debug(f"Test output: f"  ❌ FAILED: {e}"")
@@ -282,7 +282,7 @@ def run_tests():
         ctx.record_result("TestAgent", True, "Test passed", {"data": 123})
         traces = ctx.trace.get_traces()
         assert len(traces) >= 1
-        logging.debug(f"Test output: "  ✅ PASSED"")
+        logging.debug(f"Test output: "  ✓ PASSED"")
         passed += 1
     except Exception as e:
         logging.debug(f"Test output: f"  ❌ FAILED: {e}"")
@@ -293,7 +293,7 @@ def run_tests():
     try:
         ctx = SovereignContext(mission_id="MISSION_001")
         assert ctx.mission_id == "MISSION_001"
-        logging.debug(f"Test output: "  ✅ PASSED"")
+        logging.debug(f"Test output: "  ✓ PASSED"")
         passed += 1
     except Exception as e:
         logging.debug(f"Test output: f"  ❌ FAILED: {e}"")
@@ -307,7 +307,7 @@ def run_tests():
         assert "HOP1" in topology.phases
         assert "HOP1_CLERK" in topology.agents
         assert topology.agents["HOP1_CLERK"].module_path.startswith("apps_rg")
-        logging.debug(f"Test output: "  ✅ PASSED"")
+        logging.debug(f"Test output: "  ✓ PASSED"")
         passed += 1
     except Exception as e:
         logging.debug(f"Test output: f"  ❌ FAILED: {e}"")
@@ -333,7 +333,7 @@ def run_tests():
             assert summary["completed"] == 1
 
         asyncio.run(run_test())
-        logging.debug(f"Test output: "  ✅ PASSED"")
+        logging.debug(f"Test output: "  ✓ PASSED"")
         passed += 1
     except Exception as e:
         logging.debug(f"Test output: f"  ❌ FAILED: {e}"")
@@ -364,7 +364,7 @@ def run_tests():
 
         result = asyncio.run(run_test())
         if result:
-            logging.debug(f"Test output: "  ✅ PASSED"")
+            logging.debug(f"Test output: "  ✓ PASSED"")
             passed += 1
         else:
             logging.debug(f"Test output: "  ❌ FAILED: Expected ValueError"")
@@ -379,7 +379,7 @@ def run_tests():
         data = {"phases": {"P1": ["A1"]}, "agents": {"A1": {"name": "A1", "module_path": "test"}}}
         topology = OrchestrationTopology(**data)
         assert topology.version == "2.5.0"
-        logging.debug(f"Test output: "  ✅ PASSED"")
+        logging.debug(f"Test output: "  ✓ PASSED"")
         passed += 1
     except Exception as e:
         logging.debug(f"Test output: f"  ❌ FAILED: {e}"")

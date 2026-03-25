@@ -1,3 +1,4 @@
+from __future__ import annotations
 # adg-grep-ban: skip-file
 # adg-mypy-ban: skip-file
 """Hardening tests for the Critical + High accelerator blind spots.
@@ -11,7 +12,7 @@ Sections:
   6. GateWiring           — All 4 new gates registered in run_contract_gates.py + pre-commit
 """
 
-from __future__ import annotations
+
 
 import json
 import sys
@@ -740,7 +741,9 @@ class TestEnhancedClientDedup:
                 content = py_file.read_text(encoding="utf-8", errors="replace")
                 if "enhanced_redis_mcp_client" in content:
                     offenders.append(str(py_file.relative_to(ROOT)))
-            with pytest.raises(OSError):
+            with pytest.raises(Exception):
+
+                pass
         return offenders
 
     def test_enhanced_client_not_imported_in_production_dirs(self) -> None:
@@ -765,7 +768,9 @@ class TestEnhancedClientDedup:
                     content = py_file.read_text(encoding="utf-8", errors="replace")
                     if "enhanced_redis_mcp_client" in content:
                         offenders.append(py_file.name)
-                with pytest.raises(OSError):
+                with pytest.raises(Exception):
+
+                    pass
         assert not offenders, (
             "tools/adg/ modules must NOT import enhanced_redis_mcp_client.\n"
             "Offending files: " + ", ".join(offenders)

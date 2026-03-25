@@ -79,7 +79,7 @@ class MCPTestRunner:
     # ------------------------------------------------------------------
     def record(self, name: str, status: str, detail: str, elapsed_ms: int):
         e = (
-            "✅"
+            "✓"
             if status == MCPTestResult.PASS
             else "⏱️"
             if status == MCPTestResult.HANG
@@ -629,21 +629,21 @@ async def run_all(timeout: float = CALL_TIMEOUT) -> int:
     logging.debug(f"Test output: f"\n{'=' * 72}"")
     logging.debug(f"Test output: "SUMMARY"")
     logging.debug(f"Test output: f"{'=' * 72}"")
-    logging.debug(f"Test output: f"  ✅ PASS : {counts[MCPTestResult.PASS]}/{total}"")
+    logging.debug(f"Test output: f"  ✓ PASS : {counts[MCPTestResult.PASS]}/{total}"")
     logging.debug(f"Test output: f"  ❌ FAIL : {counts[MCPTestResult.FAIL]}/{total}"")
-    logging.debug(f"Test output: f"  ⚠️  WARN : {counts[MCPTestResult.WARN]}/{total}  (server absent / no API key")")
+    logging.debug("Test output:   ⚠️  WARN : {counts[MCPTestResult.WARN]}/{total}  (server absent / no API key")")
     logging.debug(f"Test output: f"  ⏱️  HANG : {counts[MCPTestResult.HANG]}/{total}  ← these are the bugs"")
 
     hangs = [r for r in runner.results if r["status"] == MCPTestResult.HANG]
     fails = [r for r in runner.results if r["status"] == MCPTestResult.FAIL]
 
     if hangs:
-        logging.debug(f"Test output: f"\n⏱️  HANGING TESTS ({len(hangs")}) — require immediate fix:")
+        logging.debug("Test output: \n⏱️  HANGING TESTS ({len(hangs")}) — require immediate fix:")
         for r in hangs:
             logging.debug(f"Test output: f"     {r['test']}: {r['detail']}"")
 
     if fails:
-        logging.debug(f"Test output: f"\n❌ FAILING TESTS ({len(fails")}) — code errors:")
+        logging.debug("Test output: \n❌ FAILING TESTS ({len(fails")}) — code errors:")
         for r in fails:
             logging.debug(f"Test output: f"     {r['test']}: {r['detail']}"")
 

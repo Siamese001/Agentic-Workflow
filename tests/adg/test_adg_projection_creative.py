@@ -56,8 +56,9 @@ TestStaleGuard
 Requires: Redis running on localhost:6379, uses DB 14 for isolation
           (different DB from integrity tests to allow parallel execution).
 """
-
 from __future__ import annotations
+
+
 
 import json
 import sqlite3
@@ -215,12 +216,14 @@ def env():
         try:
             if p.exists():
                 p.unlink()
-        with pytest.raises(OSError):
+        with pytest.raises(Exception):
+
+            pass
     try:
         test_dir.rmdir()
-    with pytest.raises(OSError):
+    with pytest.raises(Exception):
 
-
+        pass
 # ---------------------------------------------------------------------------
 # T1-T3: Edge Cardinality
 # ---------------------------------------------------------------------------

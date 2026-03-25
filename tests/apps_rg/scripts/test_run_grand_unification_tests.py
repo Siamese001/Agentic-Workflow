@@ -147,7 +147,7 @@ async def test_full_system_lifecycle_happy_path():
     final = ctx.buffer.read("ranked_content")
     assert final is not None, "Final ranked content is missing from Buffer"
     assert "experience" in final, "Final content missing experience section"
-    logging.debug(f"Test output: "✅ test_full_system_lifecycle_happy_path PASSED"")
+    logging.debug(f"Test output: "✓ test_full_system_lifecycle_happy_path PASSED"")
 
 
 @pytest.mark.asyncio
@@ -174,7 +174,7 @@ async def test_resilience_to_garbage_input():
     logging.debug(f"Test output: f"  Debug: summary={summary}, failures={failures}, status={result['status']}"")
     # The system handles empty input gracefully, so SUCCESS or WARNING is acceptable
     assert result["status"] in ["SUCCESS", "WARNING"], f"Unexpected status: {result['status']}"
-    logging.debug(f"Test output: "✅ test_resilience_to_garbage_input PASSED"")
+    logging.debug(f"Test output: "✓ test_resilience_to_garbage_input PASSED"")
 
 
 @pytest.mark.asyncio
@@ -198,7 +198,7 @@ async def test_buffer_cryptography_and_lineage():
     assert writers.get("hop1_extraction") == "ClerkExtractionEngine"
     assert writers.get("hop2_enrichment") == "DataEnrichmentEngine"
     assert writers.get("ranked_content") == "SectionRankerEngine"
-    logging.debug(f"Test output: "✅ test_buffer_cryptography_and_lineage PASSED"")
+    logging.debug(f"Test output: "✓ test_buffer_cryptography_and_lineage PASSED"")
 
 
 @pytest.mark.asyncio
@@ -219,7 +219,7 @@ async def test_telemetry_fidelity_check():
     # We expect at least 6 spans (Orch + 5 HOPs)
     assert summary["total_spans"] >= 6, f"Telemetry gap detected. Only found {summary['total_spans']} spans."
     assert summary["completed"] == summary["total_spans"], "Orphaned spans detected (did not close)."
-    logging.debug(f"Test output: "✅ test_telemetry_fidelity_check PASSED"")
+    logging.debug(f"Test output: "✓ test_telemetry_fidelity_check PASSED"")
 
 
 async def main():

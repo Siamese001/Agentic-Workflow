@@ -157,12 +157,12 @@ logging.debug(f"Test output: "=" * 70")
 
 logging.debug(f"Test output: "\nCore Hygiene Agents by Tier:\n"")
 for tier, agents in CORE_HYGIENE_AGENTS.items():
-    logging.debug(f"Test output: f"{tier}: {len(agents")} agents")
+    logging.debug("Test output: {tier}: {len(agents")} agents")
     for agent in agents:
         logging.debug(f"Test output: f"  - {agent}"")
     print()
 
-logging.debug(f"Test output: f"Total hygiene agents: {len(get_all_hygiene_agents("))}")
+logging.debug("Test output: Total hygiene agents: {len(get_all_hygiene_agents("))}")
 logging.debug(f"Test output: f"\nMandatory preflight agents: {MANDATORY_PREFLIGHT}"")
 
 logging.debug(f"Test output: "\n" + "=" * 70")
@@ -171,8 +171,8 @@ logging.debug(f"Test output: "=" * 70")
 
 for tier_num in range(4):
     agents = get_tier_agents(tier_num)
-    logging.debug(f"Test output: f"Tier {tier_num}: {len(agents")} agents - {agents}")
+    logging.debug("Test output: Tier {tier_num}: {len(agents")} agents - {agents}")
 
 logging.debug(f"Test output: "\n" + "=" * 70")
-logging.debug(f"Test output: "✅ REGISTRY VALIDATION COMPLETE"")
+logging.debug(f"Test output: "✓ REGISTRY VALIDATION COMPLETE"")
 logging.debug(f"Test output: "=" * 70")

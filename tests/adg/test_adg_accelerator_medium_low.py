@@ -1,3 +1,4 @@
+from __future__ import annotations
 # adg-grep-ban: skip-file
 # adg-mypy-ban: skip-file
 # adg-pytest-ban: skip-file
@@ -12,7 +13,7 @@ Sections:
   6. AllGatesWired         — All 3 new gates in run_contract_gates.py + pre-commit
 """
 
-from __future__ import annotations
+
 
 import sys
 import tempfile
@@ -761,7 +762,9 @@ class TestRawRedisAdgBypass:
                 has_adg_keys = '"adg:' in content or "'adg:" in content
                 if has_raw_redis and has_adg_keys:
                     offenders.append(str(py_file.relative_to(ROOT)))
-            with pytest.raises(OSError):
+            with pytest.raises(Exception):
+
+                pass
         return offenders
 
     def test_no_raw_redis_accessing_adg_keys_in_production(self) -> None:

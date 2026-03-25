@@ -86,24 +86,24 @@ from tests.conftest_factories import *
 
 class Test[ComponentName]:
     """Test suite for [ComponentName]."""
-    
+
     def test_functionality_basic(self):
         """Test basic functionality."""
         # Arrange
         test_data = TestDataFactory.create_test_scenario("basic")
-        
+
         # Act
         result = component.process(test_data)
-        
+
         # Assert
         assert result.status == "success"
         assert result.data is not None
-    
+
     def test_error_handling(self):
         """Test error handling scenarios."""
         # Arrange
         invalid_data = TestDataFactory.create_test_scenario("invalid")
-        
+
         # Act & Assert
         with pytest.raises(ValueError):
             component.process(invalid_data)

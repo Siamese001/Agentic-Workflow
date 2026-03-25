@@ -103,10 +103,10 @@ def test_component_functionality():
     """Test that component performs expected functionality."""
     # Arrange
     setup_data = create_test_data()
-    
+
     # Act
     result = component.process(setup_data)
-    
+
     # Assert
     assert result.status == "success"
     assert result.data is not None
