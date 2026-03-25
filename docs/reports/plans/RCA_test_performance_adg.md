@@ -131,31 +131,218 @@ Tests use **97 distinct relation types** — the same full set used for producti
 
 ---
 
-## Recommended Fixes (Priority Order)
+# Implementation Plan: Phases and Waves
 
-### P0: Remove Bootstrap Emitters from Test Files
-- **Action**: Strip `_emit_*()` calls from test file top-level scope
-- **Impact**: Eliminates 76 function calls per file at collection time
-- **Risk**: ADG coverage numbers for test files will drop (acceptable — tests are not production code)
+## Phase 0: Immediate Performance Recovery (1-2 days) ✅ READY
 
-### P1: Exclude `tests/` from Non-Structural Scan
-- **Action**: Move `TESTS_DIR` from `_NON_STRUCTURAL_SCAN_ROOTS` to a new `_COVERAGE_ONLY_SCAN_ROOTS` that skips execution/semantic visitors
-- **Impact**: Eliminates 125,000+ edges (`tests_execution_of` + `flows_to` + `resolves_callsite`)
+**Implementation Guide**: See `docs/reports/plans/Phase0_Implementation_Guide.md`
 
-### P2: Create Lightweight Test Scanner Mode
-- **Action**: Add `scan_mode="structural_only"` that runs only G1 (imports) + G3 (inheritance) visitors on test files
-- **Impact**: 33 visitors → 2 visitors per test file
+**Files Created**:
+- `tools/strip_test_emitters.py` - Bootstrap emitter cleanup tool
+- `tests/conftest_adg_phase0.py` - Session-scoped ADG fixtures
+- `tests/unit/test_phase0_adg_performance.py` - Comprehensive test suite
+- `tools/verify_phase0.py` - Automated verification script
 
-### P3: Split `tests/adg/` Into Tiers
-- **Action**: Tag heavy tests (`>1000 edges`) as `@pytest.mark.slow` and exclude from default runs
-- **Impact**: 73 files with 49,078 edges removed from fast path
+### Wave 0.1: Bootstrap Emitter Cleanup (Day 1)
+**Target**: 30 test files with 76–77 emitter imports each
+```bash
+# Strip top-level _emit_*() calls from test files
+python tools/strip_test_emitters.py --dry-run
+python tools/strip_test_emitters.py --apply
+```
+**Expected Impact**: ~30s reduction in test collection time
+**Verification**: `pytest --collect-only tests/` timing before/after
 
-### P4: Session-Scoped ADG Fixture
-- **Action**: Pre-compute ADG once per session, share across all tests via `@pytest.fixture(scope="session")`
-- **Impact**: Eliminates redundant scans across test modules
+### Wave 0.2: Session-Scoped ADG Fixture (Day 1)
+**Target**: Eliminate redundant scans across test modules
+```python
+# In tests/conftest.py
+@pytest.fixture(scope="session")
+def cached_adg_scan():
+    from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+    scanner = ADGStaticScanner(cache_path=Path("tests/.adg_cache.json"))
+    return scanner.scan(commit_sha="session-scan")
+```
+**Expected Impact**: 3-5 minutes saved per test session
+**Verification**: Test suite runtime before/after
+
+---
+
+## Phase 1: Scanner Architecture Cleanup (3-5 days)
+
+### Wave 1.1: Test-Only Scan Mode (Day 2-3)
+**Target**: Create `scan_mode="structural_only"` for test files
+```python
+# In static_scanner.py
+def _selected_scan_roots(include_tests: bool, scan_mode: str = "full") -> tuple[str, ...]:
+    if scan_mode == "structural_only" and include_tests:
+        return _STRUCTURAL_SCAN_ROOTS + (TESTS_DIR,)
+    return _selected_scan_roots(include_tests)
+
+def _get_visitors_for_mode(scan_mode: str, file_path: str) -> list[BaseASTVisitor]:
+    if scan_mode == "structural_only" and file_path.startswith("tests/"):
+        return [_ImportVisitor, _InheritanceVisitor]  # Only G1 + G3
+    return ALL_VISITORS
+```
+**Expected Impact**: 33 visitors → 2 visitors for test files
+**Verification**: Edge count reduction in ADG for test files
+
+### Wave 1.2: Exclude Tests from Non-Structural Scan (Day 3-4)
+**Target**: Move `TESTS_DIR` to `_COVERAGE_ONLY_SCAN_ROOTS`
+```python
+# In static_scanner.py
+_COVERAGE_ONLY_SCAN_ROOTS: tuple[str, ...] = (TESTS_DIR,)
+
+def _filter_runtime_only_edges(edges: list[Edge], include_tests: bool, scan_mode: str = "full") -> list[Edge]:
+    if scan_mode == "structural_only" and include_tests:
+        return []  # Strip all runtime edges from tests
+    return _filter_runtime_only_edges(edges, include_tests)
+```
+**Expected Impact**: Eliminates 125,000+ edges (`tests_execution_of` + `flows_to` + `resolves_callsite`)
+**Verification**: ADG edge count drops from 322,978 to ~197,000 test edges
+
+---
+
+## Phase 2: Test Suite Restructuring (1 week)
+
+### Wave 2.1: Heavy Test Tagging (Day 5-6)
+**Target**: Tag tests with >1000 edges as `@pytest.mark.slow`
+```bash
+# Identify heavy tests
+python tools/identify_heavy_tests.py --threshold 1000 --output slow_tests.txt
+
+# Auto-tag heavy tests
+python tools/tag_slow_tests.py --input slow_tests.txt --apply
+```
+**Files to Tag**:
+- `tests/adg/test_adg_hardening_comprehensive.py` (2,410 edges)
+- `tests/adg/test_adg_coverage_supplement.py` (2,207 edges)
+- `tests/adg/test_adg_coverage_final_push.py` (2,035 edges)
+- All 73 `tests/adg/` files (672 edges avg)
+
+**Expected Impact**: 49,078 edges removed from default test runs
+**Verification**: `pytest -m "not slow"` runtime vs full suite
+
+### Wave 2.2: Test Tier Separation (Day 6-7)
+**Target**: Create separate test suites with different ADG requirements
+```python
+# tests/fast_suite/conftest.py
+pytest_plugins = ["tests.conftest"]
+@pytest.fixture(scope="session")
+def adg_scan_mode():
+    return "structural_only"
+
+# tests/full_suite/conftest.py  
+pytest_plugins = ["tests.conftest"]
+@pytest.fixture(scope="session")
+def adg_scan_mode():
+    return "full"
+```
+**Expected Impact**: Fast suite runs in <30s, full suite for CI only
+**Verification**: Timing comparison between suites
+
+---
+
+## Phase 3: Infrastructure Optimization (1-2 weeks)
+
+### Wave 3.1: Parallel Test Processing (Week 2)
+**Target**: Run test files in parallel during ADG scanning
+```python
+# In static_scanner.py
+from concurrent.futures import ThreadPoolExecutor
+
+def _scan_files_parallel(filepaths: list[Path], scan_mode: str) -> list[Edge]:
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        futures = [executor.submit(_scan_file, f, scan_mode) for f in filepaths]
+        results = [f.result() for f in futures]
+    return [edge for file_edges, _, _, _ in results for edge in file_edges]
+```
+**Expected Impact**: 4× speedup for multi-file test scans
+**Verification**: Benchmark single vs parallel scanning
+
+### Wave 3.2: Incremental Test ADG Updates (Week 2-3)
+**Target**: Only rescan changed test files
+```python
+# In tools/adg_incremental_update.py
+def update_test_adg(changed_files: list[Path]) -> None:
+    test_files = [f for f in changed_files if f.is_relative_to("tests/")]
+    if not test_files:
+        return
+    
+    # Rescan only changed test files
+    scanner = ADGStaticScanner(scan_mode="structural_only")
+    new_edges = scanner.scan_files(test_files)
+    
+    # Update cache incrementally
+    cache = ScanCache.load("tests/.adg_cache.json")
+    for f in test_files:
+        cache.invalidate(str(f))
+    cache.save("tests/.adg_cache.json")
+```
+**Expected Impact**: <10s for single test file changes
+**Verification**: Time measurement for incremental updates
+
+---
+
+## Phase 4: Long-term Architecture (2-3 weeks)
+
+### Wave 4.1: Test-Only ADG Schema (Week 3)
+**Target**: Separate ADG schema for test vs production code
+```python
+# In agentic_core/adg/schema_test.py
+TEST_RELATION_TYPES = frozenset({
+    "imports", "implements", "calls", "exports"  # Structural only
+})
+
+# In static_scanner.py
+def _get_schema_for_file(file_path: str) -> frozenset:
+    if file_path.startswith("tests/"):
+        return TEST_RELATION_TYPES
+    return PRODUCTION_RELATION_TYPES
+```
+**Expected Impact**: Clean separation of concerns
+**Verification**: ADG validation passes for both schemas
+
+### Wave 4.2: Mock ADG for Unit Tests (Week 3-4)
+**Target**: Create lightweight mock ADG for unit test performance
+```python
+# In tests/unit/conftest.py
+@pytest.fixture
+def mock_adg():
+    class MockADG:
+        def __init__(self):
+            self.edges = []
+            self.nodes = []
+        def query(self, relation, **kwargs):
+            return []
+    return MockADG()
+```
+**Expected Impact**: Unit tests run in <1s without ADG dependency
+**Verification**: Unit test suite timing
+
+---
+
+## Success Metrics
+
+| Phase | Target Metric | Current | Target |
+|-------|---------------|---------|--------|
+| Phase 0 | Test collection time | ~60s | <30s |
+| Phase 1 | Test ADG edges | 322,978 | <200,000 |
+| Phase 2 | Fast suite runtime | 5-10 min | <30s |
+| Phase 3 | Parallel scan speedup | 1× | 4× |
+| Phase 4 | Unit test isolation | Full ADG | Mock ADG |
+
+---
+
+## Risk Mitigation
+
+1. **Coverage Loss**: Track ADG coverage metrics before/after each wave
+2. **Test Regression**: Run full test suite after each phase
+3. **Cache Corruption**: Implement cache validation and fallback
+4. **Performance Regression**: Benchmark at each checkpoint
 
 ---
 
 ## Conclusion
 
-The ADG proves that **test files are treated identically to production code** by the scanner — all 33+ visitors, all 97 relation types, all bootstrap wiring. This creates a situation where 38% of the entire graph is test-related overhead. The fix is architectural: decouple test coverage tracking from test execution performance by limiting which visitors and emitters apply to `tests/`.
+The ADG proves that **test files are treated identically to production code** by the scanner — all 33+ visitors, all 97 relation types, all bootstrap wiring. This creates a situation where 38% of the entire graph is test-related overhead. This phased approach systematically decouples test coverage tracking from test execution performance while preserving architectural integrity.
