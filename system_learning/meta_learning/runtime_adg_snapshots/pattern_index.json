@@ -1,0 +1,88 @@
+{
+  "runtime_adg_1774484071_4e1fef6b": {
+    "component_distribution": {
+      "ActionPlane": 1,
+      "CognitivePlane": 1,
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L1_Cognition": 1,
+      "L2_Execution": 1,
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 3,
+      "temporal_sequence": 2
+    },
+    "span_type_distribution": {
+      "action": 1,
+      "cognitive": 1,
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 4.041,
+          "node_id": "ead333e9b87ad67c"
+        },
+        {
+          "component": "CognitivePlane",
+          "duration_ms": 2.526,
+          "node_id": "ffccb1cc78557ee5"
+        },
+        {
+          "component": "ActionPlane",
+          "duration_ms": 1.515,
+          "node_id": "b620ecadf73fcf90"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774484071_93882f07": {
+    "component_distribution": {
+      "Tool.force_test_tool": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L2_Execution": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "tool": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "Tool.force_test_tool",
+          "duration_ms": 2.537,
+          "node_id": "b5ec85ec727861f9"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774484071_c96fca09": {
+    "component_distribution": {
+      "L6TestComponent": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L2_Execution": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "test": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [],
+      "slow_operations": []
+    }
+  }
+}

@@ -1,6 +1,7 @@
 """Runtime ADG store — persists and queries RuntimeADGSnapshots via L4.
 
 Uses FileBackedVersionStore (content-addressable) as the persistence backend.
+Integrates with L4 sovereign territory for runtime ADG storage.
 No new storage subsystem. InMemoryRuntimeADGStore is provided for tests.
 
 Idempotency: committing the same snapshot twice returns the same version_id.
@@ -15,6 +16,10 @@ from typing import Any
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    L4_APPROVED_FOLDERS,
+    get_validated_project_root,
 )
 from system_learning.runtime_adg.snapshot import (
     RuntimeADGEdge,
@@ -55,9 +60,10 @@ class InMemoryRuntimeADGStore:
 class FileBackedRuntimeADGStore:
     """File-backed runtime ADG store using content-addressable L4 storage.
 
+    Integrates with sovereign L4 territory for runtime ADG persistence.
     Directory layout (mirrors FileBackedVersionStore)::
 
-        <base_dir>/
+        <L4_STATE_MEMORY>/runtime_adg/
             <content_hash[:2]>/<content_hash>.json   # snapshot entry
             _index.json                               # version_id -> hash
             _trace_index.json                         # trace_id -> version_id
@@ -65,14 +71,50 @@ class FileBackedRuntimeADGStore:
     Parameters
     ----------
     base_dir:
-        Root directory for snapshot persistence.
+        Root directory for snapshot persistence. If None, uses L4-approved territory.
     """
 
-    def __init__(self, base_dir: Path) -> None:
-        self._version_store = FileBackedVersionStore(base_dir)
+    def __init__(self, base_dir: Path | None = None) -> None:
+        # Use L4 sovereign territory if no base_dir specified
+        if base_dir is None:
+            project_root = get_validated_project_root()
+            base_dir = project_root / "agentic_core" / "L4_state" / "memory" / "runtime_adg"
+
         self._base_dir = Path(base_dir)
+        self._validate_l4_compliance()
+
+        self._version_store = FileBackedVersionStore(self._base_dir)
         self._trace_index_path = self._base_dir / "_trace_index.json"
         self._trace_index: dict[str, str] = self._load_trace_index()
+
+    def _validate_l4_compliance(self) -> None:
+        """Validate storage location is within L4 sovereign territory."""
+        try:
+            # Convert to relative path for L4 validation
+            abs_base = self._base_dir.resolve()
+            project_root = get_validated_project_root()
+
+            if not abs_base.is_relative_to(project_root):
+                raise ValueError(f"Runtime ADG store must be within project root: {self._base_dir}")
+
+            rel_path = abs_base.relative_to(project_root)
+            rel_path_str = str(rel_path).replace("\\", "/")
+
+            # Check if this path is in L4 approved folders
+            l4_approved = False
+            for approved in L4_APPROVED_FOLDERS:
+                if rel_path_str.startswith(approved):
+                    l4_approved = True
+                    break
+
+            if not l4_approved:
+                raise ValueError(
+                    f"Runtime ADG store path not in L4 approved territory: {rel_path_str}. "
+                    f"Approved L4 folders include: {sorted(L4_APPROVED_FOLDERS)[:3]}..."
+                )
+
+        except Exception as e:
+            raise ValueError(f"L4 compliance validation failed for {self._base_dir}: {e}")
 
     def _load_trace_index(self) -> dict[str, str]:
         if self._trace_index_path.exists():

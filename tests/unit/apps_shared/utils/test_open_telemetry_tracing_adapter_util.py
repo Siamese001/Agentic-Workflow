@@ -106,17 +106,17 @@ class TestOpenTelemetryTracingAdapterContract:
         assert callable(getattr(OpenTelemetryTracingAdapter, "trace_cognitive", None))
 
     def test_has_method_trace_action(self):
-    """Test has_method_trace_action runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for has_method_trace_action
-    test_data = {}  # Replace with actual test data
+        """Test has_method_trace_action runtime behavior."""
+        # Arrange
+        # TODO: Set up test data for has_method_trace_action
+        test_data = {}  # Replace with actual test data
 
-    # Act
-    # TODO: Execute has_method_trace_action
-    result = None  # Replace with actual function call
+        # Act
+        # TODO: Execute has_method_trace_action
+        result = None  # Replace with actual function call
 
-    # Assert
-    assert result is not None, f"{function_name} should return a result"
+        # Assert
+        assert result is not None, f"{function_name} should return a result"
     assert isinstance(result, object), "Result should be an object"
     # TODO: Add specific runtime behavior assertions
         class _StatusCode:

@@ -11,12 +11,14 @@ RuntimeADGMaterializer — converts drained OTel spans → RuntimeADGSnapshot
 
 InMemoryRuntimeADGStore    — in-memory store (tests / single-process)
 FileBackedRuntimeADGStore  — file-backed L4 store (production)
+L6MetaLearningBridge        — L6 meta-learning integration (system learning)
 """
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     emit_determinism_digest,
     record_execution_trace,
 )
+from system_learning.runtime_adg.l6_integration import L6MetaLearningBridge
 from system_learning.runtime_adg.materializer import RuntimeADGMaterializer
 from system_learning.runtime_adg.snapshot import (
     RuntimeADGEdge,
@@ -40,6 +42,7 @@ __all__ = [
     "RuntimeADGMaterializer",
     "InMemoryRuntimeADGStore",
     "FileBackedRuntimeADGStore",
+    "L6MetaLearningBridge",
     "attributes_to_json",
     "create_runtime_adg_snapshot",
 ]
