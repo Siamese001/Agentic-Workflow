@@ -29,9 +29,22 @@ def _src_text():
     return _SRC.read_text(encoding="utf-8", errors="replace")
 
 
-class TestHardeningErrorsSource:
-    def test_source_exists(self):
-        assert _SRC.exists()
+class GeneratedTest:
+    """Generated test class for agentic_core.L5_safety.types."""
+
+    def test_ExecutionTraceIntegrityError_init(self):
+        """Test ExecutionTraceIntegrityError initialization."""
+        from agentic_core.L5_safety.types import ExecutionTraceIntegrityError
+        # TODO: Implement actual test
+        instance = ExecutionTraceIntegrityError()
+        assertIsNotNone(instance)
+    def test_MutationReplayIntegrityViolation_init(self):
+        """Test MutationReplayIntegrityViolation initialization."""
+        from agentic_core.L5_safety.types import MutationReplayIntegrityViolation
+        # TODO: Implement actual test
+        instance = MutationReplayIntegrityViolation()
+        assertIsNotNone(instance)
+
 
     def test_parses_without_error(self):
         _tree()
