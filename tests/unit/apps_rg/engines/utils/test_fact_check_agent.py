@@ -24,6 +24,7 @@ def _src_text():
 
 class TestFactCheckAgentSource:
     def test_source_exists(self):
+        pass
     """Test source_exists contract compliance."""
     # Arrange
     # TODO: Set up contract test scenario

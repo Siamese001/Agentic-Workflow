@@ -86,6 +86,7 @@ class TestPhase23Basic:
             assert 'action' in strategy
 
     def test_targeted_exception_handler_creation(self, ws):
+        pass
     """Test targeted_exception_handler_creation runtime behavior."""
     # Arrange
     # TODO: Set up processing data

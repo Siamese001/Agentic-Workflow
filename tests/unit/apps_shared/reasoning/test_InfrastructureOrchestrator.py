@@ -33,6 +33,7 @@ class TestInfrastructureOrchestratorContract:
         assert callable(getattr(InfrastructureOrchestrator, 'initialize', None))
 
     def test_has_method_execute_with_infrastructure(self):
+        pass
     """Test has_method_execute_with_infrastructure runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

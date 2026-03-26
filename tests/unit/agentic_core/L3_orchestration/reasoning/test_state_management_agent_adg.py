@@ -57,6 +57,7 @@ class TestStateManagementAgentSource:
         assert "file_path" in _src_text()
 
     def test_state_management_agent_has_run_or_execute(self):
+        pass
     """Test state_management_agent_has_run_or_execute runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

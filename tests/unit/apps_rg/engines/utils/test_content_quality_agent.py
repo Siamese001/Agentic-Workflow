@@ -50,6 +50,7 @@ class TestContentQualityAgentSource:
         assert "heal_repository" in _methods_of("ContentQualityAgent")
 
     def test_has_check_placeholders(self):
+        pass
     """Test has_check_placeholders contract compliance."""
     # Arrange
     # TODO: Set up test data

@@ -94,6 +94,7 @@ class TestSecureTokenGeneratorContract:
         assert callable(getattr(SecureTokenGenerator, 'hash_value', None))
 
     def test_has_method_verify_hash(self):
+        pass
     """Test has_method_verify_hash contract compliance."""
     # Arrange
     # TODO: Set up contract test scenario

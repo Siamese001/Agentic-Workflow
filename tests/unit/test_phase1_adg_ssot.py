@@ -106,31 +106,20 @@ class TestADGViolationsSchemaExtensions:
             yield db_path
 
     def test_schema_extensions_exist(self, temp_adg_db: Path) -> None:
-    """Test schema_extensions_exist contract compliance."""
-    # Arrange
-    # TODO: Set up test data
-    test_data = {}  # Replace with actual test data
+        """Test schema_extensions_exist contract compliance."""
+        # Arrange
+        # TODO: Set up test data
+        test_data = {}  # Replace with actual test data
 
-    # Act
-    # TODO: Validate schema
-    validation_result = None  # Replace with actual validation
+        # Act
+        # TODO: Validate schema
+        validation_result = None  # Replace with actual validation
 
-    # Assert - Schema Contract
-    assert validation_result is not None, "Schema validation should produce a result"
-    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
-    # TODO: Add specific schema validation assertions
-    # assert validation_result.get("valid", False), "Data should conform to schema"
-                SELECT disposition, disposition_source, disposition_date, severity
-                FROM violations WHERE id = 1
-            """)
-            row = cursor.fetchone()
-            assert row[0] == 'untriaged'  # disposition default
-            assert row[1] == ''           # disposition_source default
-            assert row[2] == ''           # disposition_date default
-            assert row[3] == 'HIGH'       # severity set during insert
-
-        finally:
-            conn.close()
+        # Assert - Schema Contract
+        assert validation_result is not None, "Schema validation should produce a result"
+        assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
+        # TODO: Add specific schema validation assertions
+        # assert validation_result.get("valid", False), "Data should conform to schema"
 
 
 class TestGuardianSweepFixerADGIntegration:

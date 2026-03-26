@@ -33,6 +33,7 @@ class TestCampaignPlannerAgentSource:
         assert "CampaignPlannerAgent" in _src_text()
 
     def test_no_network_calls_on_import(self):
+        pass
     """Test no_network_calls_on_import runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

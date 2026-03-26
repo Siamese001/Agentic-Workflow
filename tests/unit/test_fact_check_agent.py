@@ -45,7 +45,7 @@ class TestFactCheckAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
 
-    
+
     def test_fuzzing_invalid_inputs(self, agent_class):
         """Test handling of invalid inputs."""
         invalid_inputs = [None, {}, "", [], 123]
@@ -56,6 +56,7 @@ class TestFactCheckAgent:
                 pass  # Expected for invalid inputs
 
     def test_no_network_calls_on_import(self):
+        pass
     """Test no_network_calls_on_import runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

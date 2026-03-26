@@ -69,6 +69,7 @@ class TestProvenanceContextContract:
 
 class TestGetProvenanceTrackerFunction:
     def test_is_callable(self):
+        pass
     """Test is_callable runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

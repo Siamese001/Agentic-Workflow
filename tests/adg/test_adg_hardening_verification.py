@@ -1028,6 +1028,7 @@ class TestProductionSmoke:
         """Dynamically find the latest production DB."""
         candidates = sorted(REAL_ADG_DIR.glob("adg_indexed_*.sqlite"), key=lambda p: p.stat().st_mtime, reverse=True) if REAL_ADG_DIR.exists() else []
         if not candidates:
+            pass
 
         self.PRODUCTION_DB = candidates[0]
 

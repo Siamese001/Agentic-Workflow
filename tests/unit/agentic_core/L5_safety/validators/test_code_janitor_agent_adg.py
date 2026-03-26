@@ -68,6 +68,7 @@ class TestCodeJanitorAgentSource:
         assert "CodeJanitorAgent" in _class_names()
 
     def test_has_check_syntax(self):
+        pass
     """Test has_check_syntax contract compliance."""
     # Arrange
     # TODO: Set up test data

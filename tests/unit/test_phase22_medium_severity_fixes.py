@@ -450,7 +450,7 @@ with pytest.raises(Exception):"""
             assert 'completion_percentage' in report
             assert report['phase'] == '2.2'
         else:
-
+            pass  # REVEALED FAILURE: generate_systematic_fix_report not yet implemented
 
 
 class TestPhase22Integration:

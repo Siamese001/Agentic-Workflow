@@ -20,67 +20,114 @@ except ImportError:
     class ProgressTracker:
         def __init__(self, total, description):
             self.total = total
+            self.current = 0
             self.description = description
         def start(self): print(f"Starting {self.description}...")
-        def update(self, n, msg=""): pass
+        def update(self, n, msg=""):
+            self.current += n
+            print(f"[{self.current}/{self.total}] {msg}")
         def complete(self, msg=""): print(f"Completed: {msg}")
 
 def fix_content(content: str) -> str:
     """Apply all fix patterns to content."""
-    lines = content.split('\n')
-    
-    # 1. Remove MOVED blocks and REMOVED lines (Pattern A)
+    # Pass 1: Pattern A - Remove MOVED blocks and REMOVED lines
+    lines = content.splitlines()
     fixed_lines = []
     i = 0
     while i < len(lines):
         line = lines[i]
+        # Pattern A: MOVED comment
         if re.search(r'#\s*#\s*MOVED:', line):
             i += 1
-            # Skip indented lines or orphaned parentheses
-            while i < len(lines) and (lines[i].startswith('    ') or re.match(r'^\s*\)\s*$', lines[i])):
+            # Skip until we find a line that is NOT indented
+            # OR we find a closing parenthesis on its own line
+            while i < len(lines):
+                l = lines[i]
+                if not l.strip():
+                    i += 1
+                    continue
+                if re.match(r'^\s*\)\s*$', l):
+                    i += 1
+                    break
+                if not l.startswith(' ') and not l.startswith('\t'):
+                    break
                 i += 1
             continue
+
         if re.search(r'#\s*REMOVED:', line):
             i += 1
             continue
+
         fixed_lines.append(line)
         i += 1
-    
-    # 2. Fix Stub Indentation (Pattern B)
-    # Look for unindented docstrings/bodies immediately after def
-    intermediate_lines = []
-    for i, line in enumerate(fixed_lines):
-        if i > 0 and re.match(r'^\"\"\"Test \w+', line):
-            # Check if previous line was a def
-            prev_line = fixed_lines[i-1]
-            if re.match(r'^(\s+)def\s+', prev_line):
-                def_indent = len(prev_line) - len(prev_line.lstrip())
-                intermediate_lines.append(' ' * (def_indent + 4) + line.strip())
-                continue
-        intermediate_lines.append(line)
 
-    # 3. Add pass for empty blocks (Pattern C)
+    # Pass 2: Pattern B - Fix stub indentation and cleanup consecutive duplicates
+    intermediate_lines = []
+    last_non_empty = None
+    for i, line in enumerate(fixed_lines):
+        stripped = line.strip()
+
+        # Deduplicate consecutive identical lines (often leftovers)
+        if stripped and stripped == last_non_empty:
+            continue
+
+        # Fix Stub Indentation (Pattern B)
+        if stripped.startswith('"""Test ') and i > 0:
+            prev = fixed_lines[i-1]
+            if re.match(r'^\s*def\s+', prev):
+                indent = len(prev) - len(prev.lstrip())
+                line = ' ' * (indent + 4) + stripped
+
+        intermediate_lines.append(line)
+        if stripped:
+            last_non_empty = stripped
+
+    # Pass 3: Pattern C - Ensure empty blocks have 'pass'
     final_lines = []
     for i, line in enumerate(intermediate_lines):
         final_lines.append(line)
-        if re.search(r':\s*$', line) and not re.search(r'#.*:', line):
-            if i + 1 < len(intermediate_lines):
-                next_line = intermediate_lines[i + 1]
-                # If next line is empty or a new definition at same/lesser indent
-                if (next_line.strip() == '' or 
-                    re.match(r'^\s*(def|class|@)', next_line)):
-                    curr_indent = len(line) - len(line.lstrip())
-                    final_lines.append(' ' * (curr_indent + 4) + 'pass')
-            elif i == len(intermediate_lines) - 1:
-                # End of file
-                curr_indent = len(line) - len(line.lstrip())
-                final_lines.append(' ' * (curr_indent + 4) + 'pass')
+        if line.strip().endswith(':') and not line.strip().startswith('#'):
+            # Look ahead for body
+            has_body = False
+            for j in range(i + 1, len(intermediate_lines)):
+                next_l = intermediate_lines[j]
+                if not next_l.strip():
+                    continue
 
-    # 4. Miscellaneous Cleanups (Pattern D)
+                curr_indent = len(line) - len(line.lstrip())
+                next_indent = len(next_l) - len(next_l.lstrip())
+
+                if next_indent > curr_indent:
+                    has_body = True
+                break
+
+            if not has_body:
+                indent = len(line) - len(line.lstrip())
+                final_lines.append(' ' * (indent + 4) + 'pass')
+
     result = '\n'.join(final_lines)
-    # Remove trailing unmatched delimiters often left by corrupt migrations
-    result = re.sub(r'[\)\}]$', '', result, flags=re.MULTILINE)
-    
+
+    # Pass 4: Pattern D - Final delimiter cleanup if still failing
+    try:
+        ast.parse(result)
+    except SyntaxError:
+        # Try removing trailing unmatched delimiters
+        lines = result.splitlines()
+        cleaned = []
+        for l in lines:
+            s = l.strip()
+            if s in (')', '(', '],', '}', '{'):
+                # Check if it parses without this line
+                temp = '\n'.join(cleaned + lines[lines.index(l)+1:])
+                try:
+                    ast.parse(temp)
+                    # If it parses, skip this line
+                    continue
+                except SyntaxError:
+                    pass
+            cleaned.append(l)
+        result = '\n'.join(cleaned)
+
     return result
 
 def get_broken_files(limit: int) -> List[pathlib.Path]:
@@ -112,16 +159,16 @@ def main():
 
     tracker = ProgressTracker(len(files), "Combined Wave Fix")
     tracker.start()
-    
+
     fixed_count = 0
     for f in files:
         try:
             content = f.read_text(encoding='utf-8', errors='replace')
             fixed = fix_content(content)
-            
+
             # Verify
             ast.parse(fixed)
-            
+
             if fixed != content:
                 if not args.dry_run:
                     f.write_text(fixed, encoding='utf-8')
@@ -133,7 +180,7 @@ def main():
             tracker.update(1, f"❌ {f.name} (failed: {str(e)[:50]})")
 
     tracker.complete(f"Wave finished. Fixed: {fixed_count}")
-    
+
     if fixed_count > 0 and not args.dry_run:
         print(f"\nTo commit:\ngit add tests/\ngit commit -m \"Wave Combined: Fix {fixed_count} files\"\ngit push")
 

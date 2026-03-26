@@ -361,20 +361,22 @@ class TestPhase22Comprehensive:
 
     # Test exception handler creation
     def test_specific_exception_replacement(self, temp_workspace):
-    """Test specific_exception_replacement contract compliance."""
-    # Arrange
-    # TODO: Set up specification test case
-    spec_input = {}  # Replace with actual specification input
+        """Test specific_exception_replacement contract compliance."""
+        # Arrange
+        # TODO: Set up specification test case
+        spec_input = {}  # Replace with actual specification input
 
-    # Act
-    # TODO: Test specification compliance
-    compliance_result = None  # Replace with actual compliance test
+        # Act
+        # TODO: Test specification compliance
+        compliance_result = None  # Replace with actual compliance test
 
-    # Assert - Specification Contract
-    assert compliance_result is not None, "Specification compliance should be testable"
-    assert isinstance(compliance_result, (bool, dict)), "Compliance result should be structured"
-    # TODO: Add specific specification assertions
-    # assert compliance_result.get("meets_spec", False), "Should meet specification requirements"
+        # Assert - Specification Contract
+        assert compliance_result is not None, "Specification compliance should be testable"
+        assert isinstance(compliance_result, (bool, dict)), "Compliance result should be structured"
+        # TODO: Add specific specification assertions
+        # assert compliance_result.get("meets_spec", False), "Should meet specification requirements"
+
+        if hasattr(MediumSeveritySilentSwallowerFixer, '_create_specific_exception_handler'):
             fixer = MediumSeveritySilentSwallowerFixer()
 
             # Test creating specific exception handler
@@ -386,8 +388,6 @@ class TestPhase22Comprehensive:
             # Should replace with specific exceptions
             assert "ValueError" in new_handler or "TypeError" in new_handler
             assert "except Exception:" not in new_handler or "# guardian:" in new_handler
-        finally:
-            os.chdir(original_cwd)
 
 
 class TestPhase22Integration:

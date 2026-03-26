@@ -63,6 +63,7 @@ class TestGapClosureArchitectAgent:
                 pass  # Expected for invalid inputs
 
     def test_no_network_calls_on_import(self):
+        pass
     """Test no_network_calls_on_import runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

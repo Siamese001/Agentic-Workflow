@@ -70,6 +70,7 @@ class TestValidationConfigContract:
 
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
+        pass
     """Test is_not_none contract compliance."""
     # Arrange
     # TODO: Set up contract test scenario

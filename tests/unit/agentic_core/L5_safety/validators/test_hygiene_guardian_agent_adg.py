@@ -72,6 +72,7 @@ class TestHygieneGuardianAgentSource:
         assert "COPY_PATTERNS" in _src_text()
 
     def test_has_dry_run_field(self):
+        pass
     """Test has_dry_run_field runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

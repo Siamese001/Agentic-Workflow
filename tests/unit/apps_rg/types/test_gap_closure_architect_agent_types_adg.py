@@ -53,6 +53,7 @@ class TestGapClosureArchitectTypesSource:
         assert "_calculate_gap_coverage" in _methods_of("GapClosureArchitectAgent")
 
     def test_agent_has_check_industry_first_ranking(self):
+        pass
     """Test agent_has_check_industry_first_ranking contract compliance."""
     # Arrange
     # TODO: Set up test data

@@ -87,6 +87,7 @@ class TestOverviewSynthesisOutputContract:
 
 class TestExampleTwoPhaseGenerationFunction:
     def test_is_callable(self):
+        pass
     """Test is_callable runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

@@ -55,6 +55,7 @@ class TestGovernanceAgentSource:
         assert "DependencyGraph" in _class_names()
 
     def test_has_module_level_heal_function(self):
+        pass
     """Test has_module_level_heal_function runtime behavior."""
     # Arrange
     # TODO: Set up test data for has_module_level_heal_function

@@ -1,24 +1,44 @@
 {
-  "_comment": "ADG-aware MCP configuration with sequential thinking server. Constitutional Rule #0: NEVER write to .windsurf/plans/ or any out-of-repo path. Sovereign write territories: docs/reports/plans/, artifacts/adg/, artifacts/memory/, ops_scripts/ci/, tools/. Read-sensitive paths (NEVER write ad-hoc): agentic_core/adg/schema.py, agentic_core/adg/extraction/static_scanner.py, agentic_core/runtime/lifecycle_trace_contract.py. Generated/gitignored paths excluded: artifacts/adg/scan_result_cache.json, artifacts/memory/knowledge_graph.sqlite.",
+  "_comment": "Optimized MCP configuration with performance-tested installations. Constitutional Rule #0: NEVER write to .windsurf/plans/ or any out-of-repo path. Sovereign write territories: docs/reports/plans/, artifacts/adg/, artifacts/memory/, ops_scripts/ci/, tools/. Read-sensitive paths (NEVER write ad-hoc): agentic_core/adg/schema.py, agentic_core/adg/extraction/static_scanner.py, agentic_core/runtime/lifecycle_trace_contract.py. Generated/gitignored paths excluded: artifacts/adg/scan_result_cache.json, artifacts/memory/knowledge_graph.sqlite.",
   "mcpServers": {
     "filesystem": {
-      "_comment": "Filesystem MCP — allowedDirectories LOCKED to repo root only. SSOT enforced by pre-commit.",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:\\Git\\Agentic-Workflow"],
-      "disabled": false
+      "_comment": "Filesystem MCP — OPTIMIZED: Using global npm for best performance. Directory passed as first argument. allowedDirectories LOCKED to repo root only. SSOT enforced by pre-commit.",
+      "command": "node",
+      "args": [
+        "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\@modelcontextprotocol\\server-filesystem\\dist\\index.js",
+        "C:\\Git\\Agentic-Workflow"
+      ],
+      "disabled": false,
+      "env": {
+        "NODE_ENV": "production"
+      }
     },
     "sequential-thinking": {
-      "_comment": "Sequential Thinking MCP - TypeScript-based server for structured problem-solving and reasoning processes.",
+      "_comment": "Sequential Thinking MCP \u00e2\u20ac\u201d OPTIMIZED: Using global npm for consistent 5.0s startup. TypeScript-based server for structured problem-solving and reasoning processes.",
       "command": "node",
-      "args": ["C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\@modelcontextprotocol\\server-sequential-thinking\\dist\\index.js"],
+      "args": [
+        "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\@modelcontextprotocol\\server-sequential-thinking\\dist\\index.js"
+      ],
       "disabled": false,
       "env": {
         "DISABLE_THOUGHT_LOGGING": "false"
       }
     },
+    "redis": {
+      "_comment": "Redis MCP \u00e2\u20ac\u201d OPTIMIZED: Using global npm for 0.430s startup. Basic Redis operations (STRING-only). Disabled in favor of custom adg_redis server which provides HASH/SET access for ADG cache.",
+      "command": "node",
+      "args": [
+        "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\@modelcontextprotocol\\server-redis\\dist\\index.js",
+        "redis://localhost:6379"
+      ],
+      "disabled": true
+    },
     "adg_redis": {
+      "_comment": "ADG Redis MCP \u00e2\u20ac\u201d CUSTOM: Python-based server with 17 specialized tools for ADG cache access. Supports HASH/SET operations, hot cache validation, and ADG-specific queries. Replaces marketplace Redis MCP.",
       "command": "python",
-      "args": ["C:\\Git\\Agentic-Workflow\\tools\\adg\\adg_mcp_server.py"],
+      "args": [
+        "C:\\Git\\Agentic-Workflow\\tools\\adg\\adg_mcp_server.py"
+      ],
       "cwd": "C:\\Git\\Agentic-Workflow",
       "disabled": false,
       "env": {
@@ -29,8 +49,11 @@
       }
     },
     "memory": {
+      "_comment": "Memory MCP \u00e2\u20ac\u201d CUSTOM: SQLite-backed knowledge graph server. Persistent storage that survives Windsurf restarts. 13 tools for entity management and session context.",
       "command": "python",
-      "args": ["C:\\Git\\Agentic-Workflow\\tools\\memory\\adg_memory_server.py"],
+      "args": [
+        "C:\\Git\\Agentic-Workflow\\tools\\memory\\adg_memory_server.py"
+      ],
       "cwd": "C:\\Git\\Agentic-Workflow",
       "disabled": false,
       "env": {
@@ -38,11 +61,46 @@
         "MEMORY_DB": "C:\\Git\\Agentic-Workflow\\artifacts\\memory\\knowledge_graph.sqlite"
       }
     },
-    "redis": {
-      "_comment": "Marketplace Redis MCP — DISABLED. STRING-only, cannot read HASH/SET ADG cache keys. Use adg_redis instead.",
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-redis", "redis://localhost:6379"],
+    "firecrawl": {
+      "_comment": "Firecrawl MCP \u00e2\u20ac\u201d OPTIMIZED: Web scraping and content extraction. Requires FIRECRAWL_API_KEY. Global npm for 0.215s startup.",
+      "command": "node",
+      "args": [
+        "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\firecrawl-mcp\\dist\\index.js"
+      ],
+      "disabled": true,
+      "env": {
+        "FIRECRAWL_API_KEY": ""
+      }
+    },
+    "tavily": {
+      "_comment": "Tavily MCP \u00e2\u20ac\u201d OPTIMIZED: Advanced web search capabilities. Requires TAVILY_API_KEY. Global npm for 0.194s startup.",
+      "command": "node",
+      "args": [
+        "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\tavily-mcp\\build\\index.js"
+      ],
+      "disabled": false,
+      "env": {
+        "TAVILY_API_KEY": ""
+      }
+    },
+    "playwright": {
+      "_comment": "Playwright MCP \u00e2\u20ac\u201d OPTIMIZED: Browser automation and testing. Global npm for 0.355s startup.",
+      "command": "node",
+      "args": [
+        "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\@playwright\\mcp\\index.js"
+      ],
       "disabled": true
+    },
+    "brave-search": {
+      "_comment": "Brave Search MCP \u00e2\u20ac\u201d OPTIMIZED: Web search, images, videos, AI summaries. Requires BRAVE_API_KEY. Global npm for 0.223s startup.",
+      "command": "node",
+      "args": [
+        "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\@brave\\brave-search-mcp-server\\dist\\index.js"
+      ],
+      "disabled": false,
+      "env": {
+        "BRAVE_API_KEY": ""
+      }
     }
   }
 }

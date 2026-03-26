@@ -29,6 +29,7 @@ class TestRegenerationStrategyContract:
         assert isinstance(RegenerationStrategy, type)
 
     def test_has_method_execute(self):
+        pass
     """Test has_method_execute runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

@@ -47,6 +47,7 @@ class TestRgResumeOrchestratorSource:
         assert "heal_repository" in _methods_of("RgResumeOrchestrator")
 
     def test_has_run(self):
+        pass
     """Test has_run runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

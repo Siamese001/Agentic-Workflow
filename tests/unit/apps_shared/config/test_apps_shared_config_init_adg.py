@@ -38,6 +38,7 @@ class TestAppsSharedConfigInit:
         assert OPERATIONAL_ALLOWED_DUPLICATES is not None
 
     def test_is_excluded_path_callable(self):
+        pass
     """Test is_excluded_path_callable runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

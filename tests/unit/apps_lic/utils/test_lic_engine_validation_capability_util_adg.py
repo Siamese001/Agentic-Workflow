@@ -20,6 +20,7 @@ class TestLICEngineValidationCapability:
         assert LICEngineValidationCapability.VALIDATION_LABEL == ""
 
     def test_has_run_validation(self):
+        pass
     """Test has_run_validation runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

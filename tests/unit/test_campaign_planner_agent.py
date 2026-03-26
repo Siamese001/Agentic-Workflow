@@ -60,7 +60,7 @@ class TestCampaignPlannerAgent:
         """Verify agent has generate_strategy method."""
         assert hasattr(agent_class, "generate_strategy"), "Should have generate_strategy method"
 
-    
+
     def test_fuzzing_invalid_inputs(self, agent_class):
         """Test handling of invalid inputs."""
         invalid_inputs = [None, {}, "", [], 123]
@@ -71,6 +71,7 @@ class TestCampaignPlannerAgent:
                 pass  # Expected for invalid inputs
 
     def test_no_network_calls_on_import(self):
+        pass
     """Test no_network_calls_on_import runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

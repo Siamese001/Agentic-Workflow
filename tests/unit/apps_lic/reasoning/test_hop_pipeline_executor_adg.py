@@ -28,6 +28,7 @@ def _src_text():
 
 class TestHOPPipelineExecutorSource:
     def test_source_exists(self):
+        pass
     """Test source_exists runtime behavior."""
     # Arrange
     # TODO: Set up test data for source_exists

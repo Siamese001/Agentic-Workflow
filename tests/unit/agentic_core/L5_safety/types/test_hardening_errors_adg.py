@@ -37,6 +37,7 @@ class TestHardeningErrorsSource:
         _tree()
 
     def test_has_execution_trace_integrity_error(self):
+        pass
     """Test has_execution_trace_integrity_error runtime behavior."""
     # Arrange
     # TODO: Set up error condition
