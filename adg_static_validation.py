@@ -17,7 +17,6 @@ import statistics
 from pathlib import Path
 from typing import Dict, List, Tuple, Any
 import ast
-import sys
 
 # Add agentic_core to path
 sys.path.insert(0, str(Path(__file__).parent / "agentic_core"))
@@ -26,6 +25,7 @@ try:
     from agentic_core.adg.runtime.cache_loader import ADGCacheLoader
     from agentic_core.adg.runtime.query_engine import ADGQueryEngine
     CAN_IMPORT = True
+# guardian: allow-silent-degradation - Optional ADG runtime modules
 except ImportError:
     CAN_IMPORT = False
     print("WARNING: Cannot import ADG modules - using mock validation")
