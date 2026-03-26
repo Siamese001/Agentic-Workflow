@@ -34,8 +34,7 @@ try:
     signal.alarm(120)
 except AttributeError as e:
         # TODO: Fix programming error - AttributeError should not occur
-        raise e  # Re-raise to surface the issue
-    pass  # Windows doesn't have SIGALRM
+        pass  # Windows doesn't have SIGALRM
 
 T.checkpoint("START")
 

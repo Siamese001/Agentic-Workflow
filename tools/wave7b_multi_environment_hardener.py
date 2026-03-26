@@ -185,11 +185,12 @@ class MultiEnvironmentHardener:
                         },
                         {
                             'name': 'Install Python dependencies',
-                            'run': |
+                            'run': '''
                                 python -m pip install --upgrade pip
                                 pip install -r requirements.txt
                                 pip install pytest pytest-cov pytest-xdist
                                 if [ "${{ matrix.extra-deps }}" != "" ]; then pip install ${{ matrix.extra-deps }}; fi
+                                '''
                         },
                         {
                             'name': 'Run unit tests',
@@ -217,10 +218,12 @@ class MultiEnvironmentHardener:
                             'if': 'always()',
                             'with': {
                                 'name': 'test-results-${{ runner.os }}-${{ matrix.python-version }}-${{ matrix.test-category }}',
-                                'path': |
+                                'path': '''
                                     test-results.xml
                                     coverage.xml
                                     benchmark-*.json
+                                    '''
+                                ,
                                 'retention-days': 7
                             }
                         },
@@ -250,7 +253,7 @@ class MultiEnvironmentHardener:
                         },
                         {
                             'name': 'Generate summary report',
-                            'run': |
+                            'run': '''
                             python << 'EOF'
                             import json
                             import os
@@ -286,7 +289,7 @@ class MultiEnvironmentHardener:
                                 json.dump(summary, f, indent=2)
                             
                             print(f"Summary: {summary}")
-                            EOF
+                            '''
                         },
                         {
                             'name': 'Upload summary report',
@@ -338,20 +341,22 @@ class MultiEnvironmentHardener:
                         },
                         {
                             'name': 'Install dependencies',
-                            'run': |
+                            'run': '''
                                 python -m pip install --upgrade pip
                                 pip install -r requirements.txt
                                 pip install pytest pytest-cov
+                                '''
                         },
                         {
                             'name': 'Run Windows-specific tests',
-                            'run': |
+                            'run': '''
                                 pytest tests/unit/ -v --tb=short -k "not unix_only"
                                 pytest tests/integration/ -v --tb=short -k "not unix_only"
+                                '''
                         },
                         {
                             'name': 'Test Windows path handling',
-                            'run': |
+                            'run': '''
                                 python -c "
                                 import pathlib
                                 import os
@@ -361,6 +366,7 @@ class MultiEnvironmentHardener:
                                 print(f'Path exists: {path.exists()}')
                                 print('Windows path handling test passed')
                                 "
+                                '''
                         }
                     ]
                 }
@@ -397,20 +403,22 @@ class MultiEnvironmentHardener:
                         },
                         {
                             'name': 'Install dependencies',
-                            'run': |
+                            'run': '''
                                 python -m pip install --upgrade pip
                                 pip install -r requirements.txt
                                 pip install pytest pytest-cov
+                                '''
                         },
                         {
                             'name': 'Run macOS-specific tests',
-                            'run': |
+                            'run': '''
                                 pytest tests/unit/ -v --tb=short -k "not windows_only"
                                 pytest tests/integration/ -v --tb=short -k "not windows_only"
+                                '''
                         },
                         {
                             'name': 'Test macOS file permissions',
-                            'run': |
+                            'run': '''
                                 python -c "
                                 import os
                                 import stat
@@ -422,6 +430,7 @@ class MultiEnvironmentHardener:
                                 os.remove('test_file.txt')
                                 print('macOS file permissions test passed')
                                 "
+                                '''
                         }
                     ]
                 }
@@ -458,27 +467,30 @@ class MultiEnvironmentHardener:
                         },
                         {
                             'name': 'Install system dependencies',
-                            'run': |
+                            'run': '''
                                 sudo apt-get update
                                 sudo apt-get install -y build-essential libssl-dev libffi-dev
+                                '''
                         },
                         {
                             'name': 'Install Python dependencies',
-                            'run': |
+                            'run': '''
                                 python -m pip install --upgrade pip
                                 pip install -r requirements.txt
                                 pip install pytest pytest-cov pytest-xdist
+                                '''
                         },
                         {
                             'name': 'Run Ubuntu-specific tests',
-                            'run': |
+                            'run': '''
                                 pytest tests/unit/ -v --tb=short
                                 pytest tests/integration/ -v --tb=short
                                 pytest tests/smoke/ -v --tb=short
+                                '''
                         },
                         {
                             'name': 'Test Linux-specific features',
-                            'run': |
+                            'run': '''
                                 python -c "
                                 import os
                                 import signal
@@ -491,6 +503,7 @@ class MultiEnvironmentHardener:
                                 os.remove('/tmp/test_file')
                                 print('Linux-specific features test passed')
                                 "
+                                '''
                         }
                     ]
                 }
