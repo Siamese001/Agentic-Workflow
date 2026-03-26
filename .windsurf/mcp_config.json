@@ -14,11 +14,12 @@
       }
     },
     "sequential-thinking": {
-      "_comment": "Sequential Thinking MCP \u00e2\u20ac\u201d OPTIMIZED: Using global npm for consistent 5.0s startup. TypeScript-based server for structured problem-solving and reasoning processes.",
+      "_comment": "Sequential Thinking MCP \u00e2\u20ac\u201d OPTIMIZED: Using global npm for consistent 5.0s startup. TypeScript-based server for structured problem-solving and reasoning processes. FIXED: Added explicit cwd to resolve Windows ESM path issue.",
       "command": "node",
       "args": [
         "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\@modelcontextprotocol\\server-sequential-thinking\\dist\\index.js"
       ],
+      "cwd": "C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\@modelcontextprotocol\\server-sequential-thinking",
       "disabled": false,
       "env": {
         "DISABLE_THOUGHT_LOGGING": "false"
@@ -100,6 +101,20 @@
       "disabled": false,
       "env": {
         "BRAVE_API_KEY": ""
+      }
+    },
+    "otel": {
+      "_comment": "OpenTelemetry Runtime ADG MCP \u00e2\u20ac\u201d CUSTOM: Bridges OpenTelemetry traces to Runtime ADG snapshots. Provides ADG-semantic projection of execution traces for Windsurf chat. 8 core tools for trace ingestion, healing chains, policy decisions, and runtime metrics.",
+      "command": "python",
+      "args": [
+        "C:\\Git\\Agentic-Workflow\\tools\\otel\\otel_mcp_server.py"
+      ],
+      "cwd": "C:\\Git\\Agentic-Workflow",
+      "disabled": false,
+      "env": {
+        "OTEL_MCP_LOG_LEVEL": "INFO",
+        "RUNTIME_ADG_DIR": "C:\\Git\\Agentic-Workflow\\system_learning\\meta_learning\\runtime_adg_snapshots",
+        "RUNTIME_ADG_STORE": "C:\\Git\\Agentic-Workflow\\system_learning\\runtime_adg"
       }
     }
   }
