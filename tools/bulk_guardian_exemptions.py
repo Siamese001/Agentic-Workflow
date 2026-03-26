@@ -38,17 +38,17 @@ def add_guardian_exemption(file_path: Path, pattern: str) -> bool:
     if not file_path.exists():
         print(f"File not found: {file_path}")
         return False
-    
+
     content = file_path.read_text(encoding='utf-8')
-    
+
     # Check if exemption already exists
     if f"guardian: allow-{pattern}" in content:
         print(f"  ✓ {pattern} exemption already exists in {file_path}")
         return True
-    
+
     # Add exemption at the top after any existing docstring
     lines = content.splitlines()
-    
+
     # Find the end of the docstring or module header
     insert_idx = 0
     for i, line in enumerate(lines):
@@ -62,12 +62,12 @@ def add_guardian_exemption(file_path: Path, pattern: str) -> bool:
         elif line.strip().startswith('from ') or line.strip().startswith('import '):
             insert_idx = i
             break
-    
+
     # Insert the guardian exemption
     exemption_line = f"# guardian: allow-{pattern} - ADG violation exemption"
     lines.insert(insert_idx, exemption_line)
     lines.insert(insert_idx + 1, "")
-    
+
     file_path.write_text("\n".join(lines), encoding='utf-8')
     print(f"  ✓ Added {pattern} exemption to {file_path}")
     return True
@@ -75,14 +75,14 @@ def add_guardian_exemption(file_path: Path, pattern: str) -> bool:
 def main():
     """Add guardian exemptions to all files."""
     root = Path(__file__).parent.parent  # Go up to project root
-    
+
     for file_rel, patterns in FILE_EXEMPTIONS.items():
         file_path = root / file_rel
         print(f"\nProcessing {file_rel}:")
-        
+
         for pattern in patterns:
             add_guardian_exemption(file_path, pattern)
-    
+
     print("\nBulk guardian exemption addition complete!")
 
 if __name__ == "__main__":
