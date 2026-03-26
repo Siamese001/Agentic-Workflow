@@ -288,30 +288,32 @@ class TestBoundaryPrecisionAtK:
     """§1.4: PrecisionAtK denominator is always k, not len(retrieved)."""
 
     def test_prediction_exactly_k(self):
-        from agentic_core.evaluation.chunking.policies import (
-        from agentic_core.evaluation.chunking.validators import (
-        from agentic_core.evaluation.feedback.dpo_batch_builder import DPOBatchBuilder
-        from agentic_core.evaluation.feedback.proposer_bridge import (
-        from agentic_core.evaluation.feedback.schemas import (
-        from agentic_core.evaluation.metrics.answer_correctness import AnswerCorrectness
-        from agentic_core.evaluation.metrics.groundedness import Groundedness, _token_f1, _tokenize
-        from agentic_core.evaluation.metrics.ndcg import NDCG
-        from agentic_core.evaluation.metrics.precision_at_k import PrecisionAtK
-        from agentic_core.evaluation.metrics.recall_at_k import RecallAtK
-        from agentic_core.evaluation.monitoring.drift_monitor import (
-        from agentic_core.evaluation.monitoring.snapshots import (
-        from agentic_core.evaluation.retrieval.fusion import ReciprocalRankFusion, ScoreFusion
-        from agentic_core.evaluation.retrieval.interfaces import Document
-        from agentic_core.evaluation.retrieval.profiles import (
-        from agentic_core.evaluation.retrieval.reranker import HeuristicReranker, PassthroughReranker
-        from agentic_core.evaluation.schemas.evaluation_result_schema import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.evaluation.monitoring.snapshots import RetrievalDriftSnapshot
-        from agentic_core.evaluation.monitoring.snapshots import RetrievalDriftSnapshot
-        from agentic_core.evaluation.chunking.policies import Chunk
-        from agentic_core.evaluation.chunking.policies import Chunk
-        # prediction = exactly k docs, all relevant
+                from agentic_core.evaluation.chunking.policies import (
+                from agentic_core.evaluation.chunking.validators import (
+                from agentic_core.evaluation.feedback.dpo_batch_builder import DPOBatchBuilder
+                from agentic_core.evaluation.feedback.proposer_bridge import (
+                from agentic_core.evaluation.feedback.schemas import (
+                from agentic_core.evaluation.metrics.answer_correctness import AnswerCorrectness
+                from agentic_core.evaluation.metrics.groundedness import Groundedness, _token_f1, _tokenize
+                from agentic_core.evaluation.metrics.ndcg import NDCG
+                from agentic_core.evaluation.metrics.precision_at_k import PrecisionAtK
+                from agentic_core.evaluation.metrics.recall_at_k import RecallAtK
+                from agentic_core.evaluation.monitoring.drift_monitor import (
+                from agentic_core.evaluation.monitoring.snapshots import (
+                from agentic_core.evaluation.retrieval.fusion import ReciprocalRankFusion, ScoreFusion
+                from agentic_core.evaluation.retrieval.interfaces import Document
+                from agentic_core.evaluation.retrieval.profiles import (
+                from agentic_core.evaluation.retrieval.reranker import HeuristicReranker, PassthroughReranker
+                from agentic_core.evaluation.schemas.evaluation_result_schema import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.evaluation.monitoring.snapshots import RetrievalDriftSnapshot
+                from agentic_core.evaluation.monitoring.snapshots import RetrievalDriftSnapshot
+                from agentic_core.evaluation.chunking.policies import Chunk
+                from agentic_core.evaluation.chunking.policies import Chunk
+                # prediction = exactly k docs, all relevant
+                assert PrecisionAtK(k=3).compute(["a", "b", "c"], ["a", "b", "c"]) == pytest.approx(1.0)
+
         assert PrecisionAtK(k=3).compute(["a", "b", "c"], ["a", "b", "c"]) == pytest.approx(1.0)
 
     def test_prediction_k_minus_one(self):

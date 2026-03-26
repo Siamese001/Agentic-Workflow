@@ -176,8 +176,10 @@ class TestIrreflexivity:
 
     @pytest.mark.parametrize("t", ALL_TIERS, ids=str)
     def test_no_self_dominance(self, t):
-        from agentic_core.L5_safety.types.tier_lattice_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.types.tier_lattice_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert not LATTICE.dominates(t, t)
+
         assert not LATTICE.dominates(t, t)
 
 

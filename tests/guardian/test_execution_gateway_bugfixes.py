@@ -189,23 +189,26 @@ class TestEnforcementModeSemantics:
     """is_v15_enforced() must return True for log/soft/1; is_v15_hard_fail() only for 1."""
 
     def test_is_v15_enforced_accepts_log(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
-        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
-        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
-        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
-        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
-        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_hard_fail
-        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_hard_fail
-        from agentic_core.L0_routing.enforcement.runtime_guard import (
-        from agentic_core.L0_routing.enforcement.runtime_guard import (
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L0_routing.utils.core_integrity_util import (
-        from agentic_core.L0_routing.types.traceability_types import validate_trace_id
-        from agentic_core.L0_routing.enforcement.execution_gateway import (
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+                from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+                from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+                from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+                from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+                from agentic_core.L0_routing.types.guardian_contract_types import is_v15_hard_fail
+                from agentic_core.L0_routing.types.guardian_contract_types import is_v15_hard_fail
+                from agentic_core.L0_routing.enforcement.runtime_guard import (
+                from agentic_core.L0_routing.enforcement.runtime_guard import (
+                from agentic_core.L0_routing.types.guardian_contract_types import (
+                from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+                from agentic_core.L0_routing.utils.core_integrity_util import (
+                from agentic_core.L0_routing.types.traceability_types import validate_trace_id
+                from agentic_core.L0_routing.enforcement.execution_gateway import (
+                from agentic_core.L0_routing.enforcement.execution_gateway import (
+        #  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+
 #  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 
         with patch.dict(os.environ, {"V15_ENFORCEMENT": "log"}):

@@ -56,8 +56,10 @@ class TestNoNewUpwardImportsInInitFiles:
         return violations
 
     def test_l3_init_no_upward_imports(self) -> None:
-        from agentic_core.L0_routing.config.path_constants import (
-        violations = self._check_init(_L3_ROOT / "__init__.py")
+                from agentic_core.L0_routing.config.path_constants import (
+                violations = self._check_init(_L3_ROOT / "__init__.py")
+                assert not violations, f"Upward imports in L3 __init__.py: {violations}"
+
         assert not violations, f"Upward imports in L3 __init__.py: {violations}"
 
     def test_l3_scripts_init_no_upward_imports(self) -> None:

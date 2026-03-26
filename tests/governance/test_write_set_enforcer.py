@@ -165,10 +165,12 @@ class TestDeclaredWriteAllowed:
     """Declared writes must succeed."""
 
     def test_declared_write_succeeds(self):
-        from agentic_core.L2_execution.enforcement.write_set_enforcer import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        enforcer = WriteSetEnforcer(declared_write_set=frozenset({"key_a", "key_b"}))
-        enforcer.record_write("key_a")
+                from agentic_core.L2_execution.enforcement.write_set_enforcer import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                enforcer = WriteSetEnforcer(declared_write_set=frozenset({"key_a", "key_b"}))
+                enforcer.record_write("key_a")
+                assert "key_a" in enforcer.actual_writes
+
         assert "key_a" in enforcer.actual_writes
 
     def test_multiple_declared_writes(self):

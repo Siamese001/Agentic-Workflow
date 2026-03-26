@@ -101,22 +101,23 @@ class TestNoDirectPersistenceImport:
     """Non-L2 agent files must not import persistence."""
 
     def test_no_persistence_imports_in_agents(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-        violations = []
-        for path in _agent_files():
-            try:
-                tree = ast.parse(path.read_text("utf-8"))
-            except SyntaxError as e:
-                assert False, f"SyntaxError in {path}: {e}"
-            for lineno, module in _scan_imports(tree):
-                root_mod = module.split(".")[0]
-                if root_mod in PERSISTENCE_MODULES:
-                    rel = path.relative_to(REPO_ROOT)
-                    violations.append(f"{rel}:{lineno} imports {module}")
-        assert violations == [], (
-            "Non-L2 agent files must not import persistence modules directly:\n" + "\n".join(violations)
-        )
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+                violations = []
+                for path in _agent_files():
+                    try:
+                        tree = ast.parse(path.read_text("utf-8"))
+                    except SyntaxError as e:
+                        assert False, f"SyntaxError in {path}: {e}"
+                    for lineno, module in _scan_imports(tree):
+                        root_mod = module.split(".")[0]
+                        if root_mod in PERSISTENCE_MODULES:
+                            rel = path.relative_to(REPO_ROOT)
+                            violations.append(f"{rel}:{lineno} imports {module}")
+                assert violations == [], (
+                    "Non-L2 agent files must not import persistence modules directly:\n" + "\n".join(violations)
+                )
+
 
 
 class TestNoForbiddenWriteCalls:

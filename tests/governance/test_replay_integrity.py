@@ -169,15 +169,17 @@ class TestReplayHashComputed:
     """replay_hash must be set on create."""
 
     def test_replay_hash_is_sha256(self):
-        from agentic_core.L2_execution.types.llm_replay_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        bundle = ReplayBundle.create(
-            model_version="v1",
-            tokenizer_version="t1",
-            raw_prompt_bytes=PROMPT,
-            raw_response_bytes=RESPONSE,
-        )
-        assert len(bundle.replay_hash) == 64
+                from agentic_core.L2_execution.types.llm_replay_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                bundle = ReplayBundle.create(
+                    model_version="v1",
+                    tokenizer_version="t1",
+                    raw_prompt_bytes=PROMPT,
+                    raw_response_bytes=RESPONSE,
+                )
+                assert len(bundle.replay_hash) == 64
+                assert all(c in "0123456789abcdef" for c in bundle.replay_hash)
+
         assert all(c in "0123456789abcdef" for c in bundle.replay_hash)
 
     def test_integrity_verified_true_on_create(self):

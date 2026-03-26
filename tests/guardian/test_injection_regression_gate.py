@@ -162,14 +162,16 @@ class TestInjectionRegressionGate:
     """Test injection regression gate functionality."""
 
     def test_regression_triggers_fail_closed_attack_success_rate(self):
-        from agentic_core.L5_safety.security.injection_regression_gate import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Test that attack success rate regression triggers fail-closed."""
-        baseline = {
-            "total_samples": 100,
-            "attack_success_rate": 0.10,
-            "high_risk_count": 5,
-            "certification_hash": "baseline_hash",
+                from agentic_core.L5_safety.security.injection_regression_gate import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Test that attack success rate regression triggers fail-closed."""
+                baseline = {
+                    "total_samples": 100,
+                    "attack_success_rate": 0.10,
+                    "high_risk_count": 5,
+                    "certification_hash": "baseline_hash",
+                }
+
         }
 
         current = {

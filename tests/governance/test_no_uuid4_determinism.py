@@ -182,19 +182,20 @@ CI_SCRIPT = REPO_ROOT / OPS_SCRIPTS_DIR / "ci" / "check_determinism_violations.p
 
 @pytest.mark.governance
 def test_req111_no_uuid4_determinism_critical_paths():
-    from agentic_core.L0_routing.config.path_constants import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.determinism.determinism_guard import assert_no_uuid4
-    from agentic_core.L2_execution.determinism.determinism_guard import assert_deterministic_context
-    """REQ-111: AST scan proves uuid4 absent from determinism-critical artifact classes."""
-    # Run the CI script to check for uuid4 usage
-    result = subprocess.run(
-        [sys.executable, str(CI_SCRIPT)],
-        cwd=str(REPO_ROOT),
-        capture_output=True,
-        text=True,
-    )
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.determinism.determinism_guard import assert_no_uuid4
+        from agentic_core.L2_execution.determinism.determinism_guard import assert_deterministic_context
+        """REQ-111: AST scan proves uuid4 absent from determinism-critical artifact classes."""
+        # Run the CI script to check for uuid4 usage
+        result = subprocess.run(
+            [sys.executable, str(CI_SCRIPT)],
+            cwd=str(REPO_ROOT),
+            capture_output=True,
+            text=True,
+        )
+
 
     # The CI script should run and report violations (existing code has them)
     # The important thing is that it can detect them

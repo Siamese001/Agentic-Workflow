@@ -199,13 +199,15 @@ pytestmark = pytest.mark.guardian
 
 class TestStructuralContract:
     def test_bootstrap_module_exists(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.runtime.sovereignty_bootstrap import SovereigntyBootstrap
-    """Test bootstrap_module_exists runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.runtime.sovereignty_bootstrap import SovereigntyBootstrap
+            """Test bootstrap_module_exists runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
     runtime_context = {}  # Replace with actual runtime context
 
     # Act

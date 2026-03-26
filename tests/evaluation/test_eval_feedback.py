@@ -252,15 +252,17 @@ def _make_report(scores=None):
 
 class TestReviewRubric:
     def test_all_positive_is_positive(self):
-        from agentic_core.evaluation.feedback.dpo_batch_builder import DPOBatchBuilder
-        from agentic_core.evaluation.feedback.proposer_bridge import (
-        from agentic_core.evaluation.feedback.schemas import (
-        from agentic_core.evaluation.monitoring.snapshots import (
-        from agentic_core.evaluation.schemas.evaluation_result_schema import EvaluationReport
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.evaluation.feedback.schemas import DPOBatch, DPOPair
-        from agentic_core.evaluation.feedback.schemas import DPOBatch, DPOPair
+                from agentic_core.evaluation.feedback.dpo_batch_builder import DPOBatchBuilder
+                from agentic_core.evaluation.feedback.proposer_bridge import (
+                from agentic_core.evaluation.feedback.schemas import (
+                from agentic_core.evaluation.monitoring.snapshots import (
+                from agentic_core.evaluation.schemas.evaluation_result_schema import EvaluationReport
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.evaluation.feedback.schemas import DPOBatch, DPOPair
+                from agentic_core.evaluation.feedback.schemas import DPOBatch, DPOPair
+                assert _make_rubric().is_positive is True
+
         assert _make_rubric().is_positive is True
 
     def test_not_grounded_is_negative(self):

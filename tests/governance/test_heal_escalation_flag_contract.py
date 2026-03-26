@@ -216,13 +216,15 @@ class TestFlagDefaultOff:
     """Enforce flag default-off behavior is preserved."""
 
     def test_no_escalation_log_without_env_var(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        import agentic_core.utils.decorators_util as decorators_module
-        from agentic_core.L5_safety.types.heal_policy_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.utils.decorators_compat_util import standard_heal
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import agentic_core.utils.decorators_util
-        """Without env var, no 'escalation_enabled=1' log appears."""
+                import agentic_core.utils.decorators_util as decorators_module
+                from agentic_core.L5_safety.types.heal_policy_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.utils.decorators_compat_util import standard_heal
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import agentic_core.utils.decorators_util
+                """Without env var, no 'escalation_enabled=1' log appears."""
+                monkeypatch.delenv("HEAL_POLICY_MODEL_ESCALATION", raising=False)
+
         monkeypatch.delenv("HEAL_POLICY_MODEL_ESCALATION", raising=False)
 
         mock_decision = HealEscalationDecision(

@@ -215,18 +215,20 @@ class TestP3_34_EvidencePackArtifact:
     """§3.4 — EvidencePack typed artifact validation."""
 
     def test_all_required_fields_present(self):
-        from agentic_core.L0_routing.enforcement.governance_contracts import (
-        from agentic_core.L0_routing.types.governance_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        required = {
-            "trace_id",
-            "action_trace",
-            "policy_evals",
-            "risk_score",
-            "budget_breach_data",
-            "boundary_snapshot_hash",
-        }
-        actual = {f.name for f in dataclasses.fields(EvidencePack)}
+                from agentic_core.L0_routing.enforcement.governance_contracts import (
+                from agentic_core.L0_routing.types.governance_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                required = {
+                    "trace_id",
+                    "action_trace",
+                    "policy_evals",
+                    "risk_score",
+                    "budget_breach_data",
+                    "boundary_snapshot_hash",
+                }
+                actual = {f.name for f in dataclasses.fields(EvidencePack)}
+                assert required.issubset(actual), f"Missing: {required - actual}"
+
         assert required.issubset(actual), f"Missing: {required - actual}"
 
     def test_frozen(self):

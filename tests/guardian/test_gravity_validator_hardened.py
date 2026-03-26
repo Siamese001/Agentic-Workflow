@@ -263,17 +263,19 @@ def _fresh_validator(tmp_path: Path) -> UnifiedSSOTValidator:
 
 class TestViolationStrContracts:
     def test_gravity_violation_str_contains_file_path(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L5_safety.validators.gravity_validator import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        v = GravityViolation(
-            file_path="agentic_core/L0_routing/MyAgent.py",
-            actual_layer="L0",
-            assigned_layer="L2",
-            agent_name="MyAgent",
-        )
-        s = str(v)
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L5_safety.validators.gravity_validator import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                v = GravityViolation(
+                    file_path="agentic_core/L0_routing/MyAgent.py",
+                    actual_layer="L0",
+                    assigned_layer="L2",
+                    agent_name="MyAgent",
+                )
+                s = str(v)
+                assert "agentic_core/L0_routing/MyAgent.py" in s
+
         assert "agentic_core/L0_routing/MyAgent.py" in s
 
     def test_gravity_violation_str_contains_layers(self):

@@ -168,12 +168,14 @@ class TestSandboxBlocking:
     """Write vectors must raise SandboxViolationError when active."""
 
     def test_os_remove_blocked(self):
-        from agentic_core.L2_execution.enforcement.preventative_sandbox import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        sandbox = PreventativeSandbox()
-        with sandbox.activated():
-            with pytest.raises(SandboxViolationError) as exc:
-                os.remove("nonexistent.txt")
+                from agentic_core.L2_execution.enforcement.preventative_sandbox import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                sandbox = PreventativeSandbox()
+                with sandbox.activated():
+                    with pytest.raises(SandboxViolationError) as exc:
+                        os.remove("nonexistent.txt")
+                    assert "os.remove" in str(exc.value)
+
             assert "os.remove" in str(exc.value)
 
     def test_subprocess_run_blocked(self):

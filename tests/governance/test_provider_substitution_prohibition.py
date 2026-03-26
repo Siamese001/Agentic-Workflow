@@ -194,14 +194,15 @@ class TestREQ415ProviderSubstitutionProhibition:
     """Test suite for REQ-415 Provider Substitution Prohibition."""
 
     def test_validate_provider_request_success(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.enforcement.provider_substitution_prohibition import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Test successful validation when provider/model match."""
-        # Given
-        original_request = ProviderRequest(
-            provider="openai", model="gpt-4", agent_id="test_agent", request_id="req_123"
-        )
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.enforcement.provider_substitution_prohibition import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Test successful validation when provider/model match."""
+                # Given
+                original_request = ProviderRequest(
+                    provider="openai", model="gpt-4", agent_id="test_agent", request_id="req_123"
+                )
+
 
         # When/Then - Should not raise
         validate_provider_request(

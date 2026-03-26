@@ -185,15 +185,17 @@ class TestRequireManifestHashOk:
     """require_manifest_hash_ok must raise on hash mismatch."""
 
     def test_valid_manifest_passes(self):
-        from agentic_core.L0_routing.types.determinism_contracts_types import (
-        from agentic_core.L0_routing.types.determinism_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test valid_manifest_passes contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
     test_scenario = {}  # Replace with actual test scenario
 
 """Test mutated_snippet_fails_verify contract compliance."""
+                from agentic_core.L0_routing.types.determinism_contracts_types import (
+                from agentic_core.L0_routing.types.determinism_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test valid_manifest_passes contract compliance."""
+            # Arrange
+            # TODO: Set up contract test scenario
+            test_scenario = {}  # Replace with actual test scenario
+
 # Arrange
 # TODO: Set up contract test scenario
 test_scenario = {}  # Replace with actual test scenario

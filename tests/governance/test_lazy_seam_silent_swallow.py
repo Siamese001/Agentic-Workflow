@@ -51,11 +51,13 @@ class TestScanFileSwallowsSyntaxError:
     """scan_file must return [] on unparseable Python without raising."""
 
     def test_syntax_error_returns_empty(self, tmp_path: Path) -> None:
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L5_safety.validators import x
-        from agentic_core.L5_safety.validators import x
-        cls = _get_enforcer_class()
-        bad_file = tmp_path / "bad.py"
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L5_safety.validators import x
+                from agentic_core.L5_safety.validators import x
+                cls = _get_enforcer_class()
+                bad_file = tmp_path / "bad.py"
+                bad_file.write_text("def broken(\n", encoding="utf-8")
+
         bad_file.write_text("def broken(\n", encoding="utf-8")
 
         enforcer = _make_enforcer(cls, tmp_path)

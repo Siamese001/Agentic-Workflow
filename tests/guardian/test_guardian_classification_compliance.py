@@ -290,13 +290,15 @@ class TestSchemaValidity:
     """Verify guardian result conforms to contract schema."""
 
     def test_guardian_id(self, real_result: GuardianResult) -> None:
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.scripts.run_guardian_classification_compliance import (
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-        from agentic_core.L0_routing.types.guardian_registry_types import get_guardian_by_id
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.scripts.run_guardian_classification_compliance import (
+                from agentic_core.L0_routing.types.guardian_contract_types import (
+                from agentic_core.L0_routing.types.guardian_registry_types import get_guardian_by_id
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert real_result.guardian_id == GUARDIAN_ID
+
         assert real_result.guardian_id == GUARDIAN_ID
 
     def test_timestamp_injected(self, real_result: GuardianResult) -> None:

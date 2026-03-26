@@ -75,8 +75,10 @@ def get_module_layer(module_path: str) -> int | None:
 
 @pytest.mark.governance
 def test_no_upward_mutations():
-    from agentic_core.L0_routing.config.path_constants import (
-    """
+        from agentic_core.L0_routing.config.path_constants import (
+        """
+        Verifies that no module imports from a strictly lower layer.
+
     Verifies that no module imports from a strictly lower layer.
 
     This test enforces the Layer Sovereignty Guard by performing an AST-based

@@ -58,13 +58,15 @@ class TestWave21InventoryPresence:
     """Verify the inventory file exists and is loadable."""
 
     def test_inventory_file_exists(self) -> None:
-        from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
-    """Test inventory_file_exists runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
-    """Test inventory_is_valid_json runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
+                from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
+            """Test inventory_file_exists runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            """Test inventory_is_valid_json runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
     runtime_context = {}  # Replace with actual runtime context
 
     # Act

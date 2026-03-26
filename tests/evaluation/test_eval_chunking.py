@@ -204,9 +204,11 @@ def _make_manifest(chunks, policy="fixed_token"):
 
 class TestApproxTokenCount:
     def test_empty_string(self):
-        from agentic_core.evaluation.chunking.policies import (
-        from agentic_core.evaluation.chunking.validators import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.evaluation.chunking.policies import (
+                from agentic_core.evaluation.chunking.validators import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert _approx_token_count("") == 0
+
         assert _approx_token_count("") == 0
 
     def test_single_word(self):

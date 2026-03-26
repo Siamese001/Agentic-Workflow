@@ -226,13 +226,15 @@ pytestmark = pytest.mark.guardian
 
 class TestGetProfileHardFail:
     def test_unregistered_agent_raises_key_error(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.agents.agent_registry import (
-        from agentic_core.agents.types.agent_execution_profile_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
-        from agentic_core.L2_execution.types.gateway_types import GenerationRequest
-        with pytest.raises(KeyError):
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.agents.agent_registry import (
+                from agentic_core.agents.types.agent_execution_profile_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
+                from agentic_core.L2_execution.types.gateway_types import GenerationRequest
+                with pytest.raises(KeyError):
+                    get_profile("__totally_nonexistent_agent__")
+
             get_profile("__totally_nonexistent_agent__")
 
     def test_error_message_contains_available_agents(self):

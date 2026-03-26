@@ -194,28 +194,30 @@ pytestmark = pytest.mark.governance
 
 class TestForwardRollingContractImportParity:
     def test_execution_mode_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.seams.contracts.forward_rolling import HealthStatus
-        from agentic_core.L3_orchestration.types.forward_rolling_types import (
-        from agentic_core.seams.contracts.forward_rolling import (
-        from agentic_core.seams.contracts.activation import assert_activation_allowed
-        from agentic_core.L5_safety.enforcement.activation_gate import (
-        from agentic_core.seams.contracts.activation import (
-        from agentic_core.seams.contracts.mcp import MCPConnectionManager
-        from agentic_core.seams.contracts.mcp import MCPConnectionManager
-        from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
-        from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
-        from agentic_core.seams.contracts.safety_agents import HealingAgentProtocol
-        from agentic_core.L3_orchestration.enforcement.safety_strategy import (
-        from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
-        from agentic_core.L3_orchestration.enforcement.safety_strategy import (
-        from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
-        from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
-        from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
-    """Test execution_mode_importable runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for execution_mode_importable
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.seams.contracts.forward_rolling import HealthStatus
+                from agentic_core.L3_orchestration.types.forward_rolling_types import (
+                from agentic_core.seams.contracts.forward_rolling import (
+                from agentic_core.seams.contracts.activation import assert_activation_allowed
+                from agentic_core.L5_safety.enforcement.activation_gate import (
+                from agentic_core.seams.contracts.activation import (
+                from agentic_core.seams.contracts.mcp import MCPConnectionManager
+                from agentic_core.seams.contracts.mcp import MCPConnectionManager
+                from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+                from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+                from agentic_core.seams.contracts.safety_agents import HealingAgentProtocol
+                from agentic_core.L3_orchestration.enforcement.safety_strategy import (
+                from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+                from agentic_core.L3_orchestration.enforcement.safety_strategy import (
+                from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+                from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+                from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+            """Test execution_mode_importable runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for execution_mode_importable
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

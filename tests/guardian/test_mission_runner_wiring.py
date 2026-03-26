@@ -233,15 +233,17 @@ class TestStructuralMissionRunner:
 
     @pytest.mark.parametrize("mode", list(MODE_SPECS.keys()))
     def test_mode_function_exists(self, mode):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L0_routing.types.determinism_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced as _check
-        from agentic_core.L0_routing.enforcement.traceability_contracts import generate_trace_id
-    """Test mode_function_exists runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for mode_function_exists
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L0_routing.types.determinism_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced as _check
+                from agentic_core.L0_routing.enforcement.traceability_contracts import generate_trace_id
+            """Test mode_function_exists runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for mode_function_exists
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

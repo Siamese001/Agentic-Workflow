@@ -189,15 +189,17 @@ def tmp_repo(tmp_path: Path) -> Path:
 class TestSuccessPaths:
     @pytest.mark.governance
     def test_extract_layer_from_module_returns_level_when_valid_L2(self):
-        from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
-        from agentic_core.L5_safety.enforcement.layer_sovereignty_enforcer import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.enforcement import foo
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        result = LayerSovereigntyEnforcer.extract_layer_from_module(
-            "agentic_core.L2_execution.assembly.sandbox"
-        )
+                from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+                from agentic_core.L5_safety.enforcement.layer_sovereignty_enforcer import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.enforcement import foo
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                result = LayerSovereigntyEnforcer.extract_layer_from_module(
+                    "agentic_core.L2_execution.assembly.sandbox"
+                )
+                assert result == 2
+
         assert result == 2
 
     @pytest.mark.governance

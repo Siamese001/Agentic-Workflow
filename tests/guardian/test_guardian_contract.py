@@ -228,25 +228,27 @@ class TestStatusPromotion:
     """Verify that a FAIL check correctly promotes the top-level status."""
 
     def test_initial_status_is_pass(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L0_routing.scripts.run_guardian_c0_sovereignty import (
-        from agentic_core.L0_routing.scripts.run_guardian_change_package_activation import (
-        from agentic_core.L0_routing.scripts.run_guardian_cross_layer_mutation import (
-        from agentic_core.L0_routing.scripts.run_guardian_escalation_determinism import (
-        from agentic_core.L0_routing.scripts.run_guardian_gateway_bypass import (
-    """Test initial_status_is_pass contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
-    contract_terms = {}  # Replace with actual contract terms
-    """Test single_fail_check_promotes_to_fail contract compliance."""
-    # Arrange
-    # TODO: Set up test data
     test_data = {}  # Replace with actual test data
 
 """Test pass_check_does_not_change_pass_status contract compliance."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.types.guardian_contract_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L0_routing.scripts.run_guardian_c0_sovereignty import (
+                from agentic_core.L0_routing.scripts.run_guardian_change_package_activation import (
+                from agentic_core.L0_routing.scripts.run_guardian_cross_layer_mutation import (
+                from agentic_core.L0_routing.scripts.run_guardian_escalation_determinism import (
+                from agentic_core.L0_routing.scripts.run_guardian_gateway_bypass import (
+            """Test initial_status_is_pass contract compliance."""
+            # Arrange
+            # TODO: Set up contract parties and terms
+            contract_terms = {}  # Replace with actual contract terms
+            """Test single_fail_check_promotes_to_fail contract compliance."""
+            # Arrange
+            # TODO: Set up test data
+            test_data = {}  # Replace with actual test data
+
 # Arrange
 # TODO: Set up test data
 test_data = {}  # Replace with actual test data

@@ -197,18 +197,20 @@ class TestStructuralContract:
     REQUIRED_METHODS = {"increment_and_check", "get_current_step_count", "reset_trace"}
 
     def test_module_exists(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
-        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
-        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
-        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
-        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import ToolBudget
-        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
-        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
-        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
-        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+                from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+                from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+                from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+                from agentic_core.L2_execution.enforcement.deterministic_loop_detector import ToolBudget
+                from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+                from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+                from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+                from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+                assert MODULE_PATH.exists(), "deterministic_loop_detector.py must exist in L2_execution/enforcement"
+
         assert MODULE_PATH.exists(), "deterministic_loop_detector.py must exist in L2_execution/enforcement"
 
     def test_required_classes_present(self):

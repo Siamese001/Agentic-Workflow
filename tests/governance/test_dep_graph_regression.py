@@ -259,10 +259,12 @@ class TestDepGraphRegression:
         self._dg = dep_graph
 
     def test_cycle_count_within_budget(self) -> None:
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """Import cycles must not exceed CYCLE_BUDGET."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Import cycles must not exceed CYCLE_BUDGET."""
+
 
         cycles = self._dg.cycles()
 

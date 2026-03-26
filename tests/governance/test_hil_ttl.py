@@ -176,10 +176,13 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.governance
 def test_req245_expired_exception_auto_revoked():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L0_routing.types.governance_types import PolicyExceptionArtifact
-    from agentic_core.L0_routing.types.governance_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.types.governance_types import PolicyExceptionArtifact
+        from agentic_core.L0_routing.types.governance_types import (
+        from agentic_core.L0_routing.types.governance_types import (
+    #  # MOVED: from agentic_core.L0_routing.types.governance_types import PolicyExceptionArtifact
+
 #  # MOVED: from agentic_core.L0_routing.types.governance_types import PolicyExceptionArtifact
 
     fields = {f.name for f in dataclasses.fields(PolicyExceptionArtifact)}

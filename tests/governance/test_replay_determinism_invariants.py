@@ -202,11 +202,13 @@ def _make_profile(profile_id: str, top_k: int = 10, cutoff: float = 0.85) -> Ret
 
 
 def test_replay_artifacts_stable_across_two_runs():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from system_learning.engines.deterministic_replay_engine import DeterministicReplayEngine
-    from system_learning.engines.retrieval_profile import RetrievalProfile
-    """INV-RPL-1: Same inputs produce identical replay digest on two consecutive runs."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.deterministic_replay_engine import DeterministicReplayEngine
+        from system_learning.engines.retrieval_profile import RetrievalProfile
+        """INV-RPL-1: Same inputs produce identical replay digest on two consecutive runs."""
+        tamper = os.environ.get("SPRAWL_NEGCTRL_TAMPER", "0")
+
     tamper = os.environ.get("SPRAWL_NEGCTRL_TAMPER", "0")
 
     engine = DeterministicReplayEngine()

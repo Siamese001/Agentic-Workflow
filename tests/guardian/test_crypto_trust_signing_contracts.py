@@ -233,11 +233,13 @@ class TestP5_741_SignatureEnclave:
     """§7.4.1: Enclave is deterministic, no wall-clock, no env reads."""
 
     def test_sign_deterministic(self):
-        from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
-        from agentic_core.L0_routing.types.crypto_trust_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        sig1 = TEST_ENCLAVE.sign(SAMPLE_BYTES, FIXED_KEY_ID)
-        sig2 = TEST_ENCLAVE.sign(SAMPLE_BYTES, FIXED_KEY_ID)
+                from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
+                from agentic_core.L0_routing.types.crypto_trust_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                sig1 = TEST_ENCLAVE.sign(SAMPLE_BYTES, FIXED_KEY_ID)
+                sig2 = TEST_ENCLAVE.sign(SAMPLE_BYTES, FIXED_KEY_ID)
+                assert sig1 == sig2
+
         assert sig1 == sig2
 
     def test_sign_different_bytes_different_sig(self):

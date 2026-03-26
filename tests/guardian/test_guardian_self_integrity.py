@@ -205,14 +205,16 @@ def run_guardian_bad(repo_root=None) -> dict:
 
 class TestASTChecks:
     def test_compliant_imports_contract(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.scripts.run_guardian_contract_integrity import (
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        tree = ast.parse(COMPLIANT_SCRIPT)
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.scripts.run_guardian_contract_integrity import (
+                from agentic_core.L0_routing.types.guardian_contract_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.types.guardian_contract_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                tree = ast.parse(COMPLIANT_SCRIPT)
+                assert _check_imports_contract(tree) is True
+
         assert _check_imports_contract(tree) is True
 
     def test_non_compliant_missing_contract(self):

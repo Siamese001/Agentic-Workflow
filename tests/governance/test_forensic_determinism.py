@@ -179,17 +179,18 @@ import pytest
 
 @pytest.mark.governance
 def test_req378_forensic_buffer_uses_semantic_clock():
-    from agentic_core.L0_routing.enforcement.trace_id_generator import (
-    from agentic_core.L0_routing.types.determinism_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L0_routing.types.determinism_types import TRACE_BUFFER_VELOCITY_THRESHOLD
-    """REQ-378: ForensicTraceBuffer uses semantic clock only."""
-    # Create buffer with semantic clock
-    clock = SemanticClockSnapshot(tick=42)
-    buffer = ForensicTraceBuffer(
-        trace_id="test-trace", semantic_clock_tick=clock.tick, velocity_threshold=THRESHOLD
-    )
+        from agentic_core.L0_routing.enforcement.trace_id_generator import (
+        from agentic_core.L0_routing.types.determinism_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.types.determinism_types import TRACE_BUFFER_VELOCITY_THRESHOLD
+        """REQ-378: ForensicTraceBuffer uses semantic clock only."""
+        # Create buffer with semantic clock
+        clock = SemanticClockSnapshot(tick=42)
+        buffer = ForensicTraceBuffer(
+            trace_id="test-trace", semantic_clock_tick=clock.tick, velocity_threshold=THRESHOLD
+        )
+
 
     # Verify semantic clock is used
     assert buffer.semantic_clock_tick == 42

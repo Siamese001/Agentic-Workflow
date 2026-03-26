@@ -234,14 +234,16 @@ class TestRetrievalDriftSnapshot:
         )
 
     def test_to_dict_keys(self):
-        from agentic_core.evaluation.monitoring.drift_monitor import (
-        from agentic_core.evaluation.monitoring.shadow_eval_runner import (
-        from agentic_core.evaluation.monitoring.snapshots import (
-        from agentic_core.evaluation.runners.replay_eval_runner import SystemConfig
-        from agentic_core.evaluation.schemas.evaluation_dataset_schema import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        d = self._make().to_dict()
-        assert d["snapshot_type"] == "retrieval_drift"
+                from agentic_core.evaluation.monitoring.drift_monitor import (
+                from agentic_core.evaluation.monitoring.shadow_eval_runner import (
+                from agentic_core.evaluation.monitoring.snapshots import (
+                from agentic_core.evaluation.runners.replay_eval_runner import SystemConfig
+                from agentic_core.evaluation.schemas.evaluation_dataset_schema import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                d = self._make().to_dict()
+                assert d["snapshot_type"] == "retrieval_drift"
+                assert d["retrieval_hit_rate"] == pytest.approx(0.82)
+
         assert d["retrieval_hit_rate"] == pytest.approx(0.82)
 
     def test_from_dict_roundtrip(self):

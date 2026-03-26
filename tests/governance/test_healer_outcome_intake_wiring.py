@@ -242,16 +242,18 @@ def _populated_aggregator():
 
 class TestAdapterBuildRecord:
     def test_build_record_returns_intake_record(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.ports.healing_outcome_intake_store import HealingOutcomeIntakeStore
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
-        store = InMemoryHealingOutcomeIntakeStore()
-        adapter = HealingOutcomeIntakeAdapter(store)
-        agg = _populated_aggregator()
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+                from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+                from system_learning.ports.healing_outcome_intake_store import HealingOutcomeIntakeStore
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
+                store = InMemoryHealingOutcomeIntakeStore()
+                adapter = HealingOutcomeIntakeAdapter(store)
+                agg = _populated_aggregator()
+                record = adapter.build_record(agg, created_utc=1000)
+
         record = adapter.build_record(agg, created_utc=1000)
 #  # MOVED: from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
 

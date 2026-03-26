@@ -184,8 +184,10 @@ class TestScannerSelfTest:
     """S1: Scanner self-test must pass before any graph analysis."""
 
     def test_self_test_passes(self):
-        from agentic_core.adg.extraction.static_scanner import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.adg.extraction.static_scanner import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert run_scanner_self_test() is True
+
         assert run_scanner_self_test() is True
 
 

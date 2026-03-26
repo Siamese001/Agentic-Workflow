@@ -182,14 +182,16 @@ def _make_trust_root() -> TrustRoot:
 
 @pytest.mark.governance
 def test_sign_artifact_uses_hmac_sha256() -> None:
-    from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
-    from agentic_core.L0_routing.types.crypto_trust_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """SignatureEnvelope.algorithm MUST be HMAC_SHA256."""
-    trust_root = _make_trust_root()
-    enclave = DeterministicTestEnclave(trust_root)
-    artifact = b'{"instruction_id":"INS-001","payload":"run_gate"}'
-    envelope = sign_artifact(artifact, _KEY_ID, enclave, "TR-001", 1)
+        from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
+        from agentic_core.L0_routing.types.crypto_trust_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        """SignatureEnvelope.algorithm MUST be HMAC_SHA256."""
+        trust_root = _make_trust_root()
+        enclave = DeterministicTestEnclave(trust_root)
+        artifact = b'{"instruction_id":"INS-001","payload":"run_gate"}'
+        envelope = sign_artifact(artifact, _KEY_ID, enclave, "TR-001", 1)
+        assert envelope.algorithm == SigningAlgorithm.HMAC_SHA256
+
     assert envelope.algorithm == SigningAlgorithm.HMAC_SHA256
 
 

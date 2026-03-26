@@ -105,8 +105,10 @@ def _ast_scan_sdk_imports(source: str, canon: str) -> list[str]:
 
 
 def test_llm_egress_only_via_sovereign_gateway():
-    from agentic_core.L0_routing.config.path_constants import (
-    """INV-GW-1: Zero direct SDK imports outside L2 gateway (AST scan of non-gateway layers)."""
+        from agentic_core.L0_routing.config.path_constants import (
+        """INV-GW-1: Zero direct SDK imports outside L2 gateway (AST scan of non-gateway layers)."""
+        tamper = os.environ.get("SPRAWL_NEGCTRL_TAMPER", "0")
+
     tamper = os.environ.get("SPRAWL_NEGCTRL_TAMPER", "0")
 
     violations: dict[str, list[str]] = {}

@@ -194,14 +194,16 @@ class TestProtectedRootEnforcement:
     """Test suite for protected root enforcement."""
 
     def test_protected_root_blocks_write_under_agentic_core(self, tmp_path):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.enforcement.mutation_prohibition import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import agentic_core.L0_routing.enforcement.mutation_prohibition as mp
-    """Test protected_root_blocks_write_under_agentic_core runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for protected_root_blocks_write_under_agentic_core
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import agentic_core.L0_routing.enforcement.mutation_prohibition as mp
+            """Test protected_root_blocks_write_under_agentic_core runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for protected_root_blocks_write_under_agentic_core
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

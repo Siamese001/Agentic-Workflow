@@ -172,12 +172,14 @@ from pathlib import Path
 
 
 def test_manifest_determinism():
-    from agentic_core.L5_safety.utils.structure_drift_writer import save_manifest
-    from agentic_core.L5_safety.validators.structure_drift_validator import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test that manifest generation is deterministic."""
-    manifest1 = generate_structure_manifest()
+        from agentic_core.L5_safety.utils.structure_drift_writer import save_manifest
+        from agentic_core.L5_safety.validators.structure_drift_validator import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        """Test that manifest generation is deterministic."""
+        manifest1 = generate_structure_manifest()
+        manifest2 = generate_structure_manifest()
+
     manifest2 = generate_structure_manifest()
 
     # Manifests should be identical

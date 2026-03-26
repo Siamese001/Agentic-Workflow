@@ -188,16 +188,18 @@ class TestShiftReportImmutability:
     """ShiftReport must be frozen."""
 
     def test_cannot_mutate_field(self):
-        from agentic_core.L5_safety.types.shift_report_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        report = ShiftReport.create(
-            joint_shift=False,
-            per_feature={},
-            mmd_score=0.0,
-            psi_scores={},
-            sample_size_ok=True,
-        )
-        with pytest.raises(AttributeError):
+                from agentic_core.L5_safety.types.shift_report_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                report = ShiftReport.create(
+                    joint_shift=False,
+                    per_feature={},
+                    mmd_score=0.0,
+                    psi_scores={},
+                    sample_size_ok=True,
+                )
+                with pytest.raises(AttributeError):
+                    report.joint_shift = True  # type: ignore[misc]
+
             report.joint_shift = True  # type: ignore[misc]
 
     def test_timestamp_is_set(self):

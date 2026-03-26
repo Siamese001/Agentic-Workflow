@@ -174,9 +174,11 @@ class TestConfigReadVisitor:
     """Unit-level: _AttributeVisitor correctly classifies reads."""
 
     def test_os_getenv_is_reads_env(self):
-        from agentic_core.adg.extraction.static_scanner import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        edges = _visit("x = os.getenv('KEY')\n")
+                from agentic_core.adg.extraction.static_scanner import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                edges = _visit("x = os.getenv('KEY')\n")
+                assert any(e.edge_kind == "reads_env" for e in edges)
+
         assert any(e.edge_kind == "reads_env" for e in edges)
 
     def test_os_environ_get_is_reads_env(self):

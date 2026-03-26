@@ -47,10 +47,12 @@ class TestDeterministicRepoRoot:
     """execute_ssot.py must never depend on os.getcwd() / Path.cwd() at runtime."""
 
     def test_no_cwd_calls_in_source(self):
-        from agentic_core.L0_routing.config.path_constants import (
-    """Test no_cwd_calls_in_source runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
+                from agentic_core.L0_routing.config.path_constants import (
+            """Test no_cwd_calls_in_source runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
     input_data = {}  # Replace with actual test data
 
     # Act

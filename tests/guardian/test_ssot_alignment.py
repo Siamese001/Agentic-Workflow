@@ -171,11 +171,13 @@ class TestSSOTAlignment:
         self.project_root = PROJECT_ROOT
 
     def test_blueprint_reality_check(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    """Test blueprint_reality_check contract compliance."""
-    # Arrange
-    # TODO: Set up test data
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+            """Test blueprint_reality_check contract compliance."""
+            # Arrange
+            # TODO: Set up test data
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

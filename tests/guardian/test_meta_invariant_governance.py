@@ -221,11 +221,13 @@ class TestP6_15_SSOTBinding:
     """§1.5: node_id resolves to a valid SSOT definition."""
 
     def test_all_required_fields(self):
-        from agentic_core.L0_routing.enforcement.boundary_contracts import (
-        from agentic_core.L0_routing.types.boundary_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        required = {"node_id", "blueprint_entry", "resolved"}
-        actual = {f.name for f in dataclasses.fields(SSOTBinding)}
+                from agentic_core.L0_routing.enforcement.boundary_contracts import (
+                from agentic_core.L0_routing.types.boundary_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                required = {"node_id", "blueprint_entry", "resolved"}
+                actual = {f.name for f in dataclasses.fields(SSOTBinding)}
+                assert required.issubset(actual)
+
         assert required.issubset(actual)
 
     def test_frozen(self):

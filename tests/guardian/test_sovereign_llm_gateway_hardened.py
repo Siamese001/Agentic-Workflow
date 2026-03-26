@@ -257,12 +257,14 @@ class TestPolicyEnforcementHardFails:
         SovereignLLMGateway.reset_instance()
 
     def test_missing_agent_id_raises_sovereignty_violation(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
-        from agentic_core.L2_execution.types.gateway_types import GenerationRequest
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        gw = _fresh_gw()
-        with pytest.raises(SovereigntyViolation, match="agent_id is required"):
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
+                from agentic_core.L2_execution.types.gateway_types import GenerationRequest
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                gw = _fresh_gw()
+                with pytest.raises(SovereigntyViolation, match="agent_id is required"):
+                    _run(gw.route_generation(_req(agent_id="")))
+
             _run(gw.route_generation(_req(agent_id="")))
 
     def test_unregistered_agent_raises_sovereignty_violation(self):

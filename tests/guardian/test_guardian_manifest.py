@@ -257,11 +257,13 @@ def repo_tampered(tmp_path: Path) -> Path:
 
 class TestMissingManifest:
     def test_no_manifest_returns_pass(self, repo_no_manifest: Path):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.scripts.run_guardian_manifest import (
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        result = run_manifest_guardian(repo_root=repo_no_manifest)
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.scripts.run_guardian_manifest import (
+                from agentic_core.L0_routing.types.guardian_contract_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                result = run_manifest_guardian(repo_root=repo_no_manifest)
+                assert result.status == GuardianStatus.PASS.value
+
         assert result.status == GuardianStatus.PASS.value
 
     def test_no_manifest_has_skip_check(self, repo_no_manifest: Path):

@@ -220,15 +220,17 @@ def mutation_context_repo(tmp_path: Path) -> Path:
 
 class TestEscalationDeterminismGuardianClean:
     def test_clean_repo_passes(self, clean_repo):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.scripts.run_guardian_escalation_determinism import (
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        result = run_escalation_determinism_guardian(repo_root=clean_repo)
-        check_map = {c.check_id: c.status for c in result.checks}
-        assert check_map["failure_signal_built_from_raw_notes"] == CheckStatus.PASS.value
-        assert check_map["alternate_escalation_context_construction"] == CheckStatus.PASS.value
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.scripts.run_guardian_escalation_determinism import (
+                from agentic_core.L0_routing.types.guardian_contract_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                result = run_escalation_determinism_guardian(repo_root=clean_repo)
+                check_map = {c.check_id: c.status for c in result.checks}
+                assert check_map["failure_signal_built_from_raw_notes"] == CheckStatus.PASS.value
+                assert check_map["alternate_escalation_context_construction"] == CheckStatus.PASS.value
+                assert check_map["escalation_context_mutation"] == CheckStatus.PASS.value
+
         assert check_map["escalation_context_mutation"] == CheckStatus.PASS.value
 
     def test_clean_repo_top_status_pass(self, clean_repo):

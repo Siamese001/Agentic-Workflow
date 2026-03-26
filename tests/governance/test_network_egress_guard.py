@@ -198,13 +198,15 @@ class TestREQ414NetworkEgressGuard:
     """Test suite for REQ-414 Network Egress Guard."""
 
     def test_is_llm_endpoint_openai(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.enforcement.network_egress_guard import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Test detection of OpenAI endpoints."""
-        assert is_llm_endpoint("api.openai.com")
-        assert is_llm_endpoint("api.openai.com", 443)
-        assert is_llm_endpoint("openai.com")
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.enforcement.network_egress_guard import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Test detection of OpenAI endpoints."""
+                assert is_llm_endpoint("api.openai.com")
+                assert is_llm_endpoint("api.openai.com", 443)
+                assert is_llm_endpoint("openai.com")
+                assert is_llm_endpoint("any.openai.com")
+
         assert is_llm_endpoint("any.openai.com")
 
     def test_is_llm_endpoint_anthropic(self):

@@ -411,10 +411,12 @@ class TestAgentCapabilityLimits:
         return GuardianReportBuilder()
 
     def test_agent_capability_limits(self, report_builder):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """
+                Staged capability enforcement.
+
         Staged capability enforcement.
 
         BLOCKING only for ENFORCED_AGENT_PATTERNS.

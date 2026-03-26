@@ -208,11 +208,13 @@ def _wallclock_violations(path: Path) -> list[str]:
 
 @pytest.mark.governance
 def test_req411_no_wallclock_in_determinism_types():
-    from agentic_core.L0_routing.types.determinism_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """REQ-411: No wall-clock calls in determinism_types.py (AST scan)."""
-    assert _DETERMINISM_MODULE.exists(), f"Module not found: {_DETERMINISM_MODULE}"
-    violations = _wallclock_violations(_DETERMINISM_MODULE)
+        from agentic_core.L0_routing.types.determinism_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        """REQ-411: No wall-clock calls in determinism_types.py (AST scan)."""
+        assert _DETERMINISM_MODULE.exists(), f"Module not found: {_DETERMINISM_MODULE}"
+        violations = _wallclock_violations(_DETERMINISM_MODULE)
+        assert violations == [], f"Wall-clock calls in {_DETERMINISM_MODULE.name}:\n" + "\n".join(violations)
+
     assert violations == [], f"Wall-clock calls in {_DETERMINISM_MODULE.name}:\n" + "\n".join(violations)
 
 

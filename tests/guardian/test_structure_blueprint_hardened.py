@@ -228,16 +228,18 @@ pytestmark = pytest.mark.guardian
 
 class TestIsKernelComponent:
     def test_exact_match_l5_safety(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.config.path_constants import SYSTEM_LEARNING_DIR
-        from agentic_core.L5_safety.config.structure_blueprint.sovereign_kernel import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import agentic_core.L5_safety.config.structure_blueprint_config as shim  # noqa: F401
-        import agentic_core.L5_safety.config.structure_blueprint_config as shim
-        import agentic_core.L5_safety.config.structure_blueprint as pkg
-        import agentic_core.L5_safety.config.structure_blueprint_config as shim
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.config.path_constants import SYSTEM_LEARNING_DIR
+                from agentic_core.L5_safety.config.structure_blueprint.sovereign_kernel import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import agentic_core.L5_safety.config.structure_blueprint_config as shim  # noqa: F401
+                import agentic_core.L5_safety.config.structure_blueprint_config as shim
+                import agentic_core.L5_safety.config.structure_blueprint as pkg
+                import agentic_core.L5_safety.config.structure_blueprint_config as shim
+                from agentic_core.L5_safety.config.structure_blueprint_config import (
+                from agentic_core.L5_safety.config.structure_blueprint_config import (
+                assert is_kernel_component("agentic_core.L5_safety") is True
+
         assert is_kernel_component("agentic_core.L5_safety") is True
 
     def test_prefix_match_l5_safety_submodule(self):

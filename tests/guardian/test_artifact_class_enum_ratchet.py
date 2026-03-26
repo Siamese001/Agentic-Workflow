@@ -113,11 +113,13 @@ def _check_ast_context_allowed(node: ast.AST, allowed_contexts: set[str]) -> boo
 
 
 def test_no_artifact_class_value_usage_in_construction():
-    from agentic_core.L0_routing.config.path_constants import (
-    from agentic_core.L0_routing.types.guardian_contract_types import GuardianResult, ArtifactClass
-    from agentic_core.L0_routing.types.guardian_contract_types import GuardianResult, ArtifactClass
-    from agentic_core.L0_routing.types.guardian_contract_types import GuardianResult, ArtifactClass
-    """Ratchet: GuardianResult construction must use enum, not .value strings."""
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L0_routing.types.guardian_contract_types import GuardianResult, ArtifactClass
+        from agentic_core.L0_routing.types.guardian_contract_types import GuardianResult, ArtifactClass
+        from agentic_core.L0_routing.types.guardian_contract_types import GuardianResult, ArtifactClass
+        """Ratchet: GuardianResult construction must use enum, not .value strings."""
+        repo_root = pathlib.Path(__file__).parent.parent.parent
+
     repo_root = pathlib.Path(__file__).parent.parent.parent
 
     # Scan specific directories

@@ -174,16 +174,18 @@ class TestArchitectureGovernance:
         return file_path
 
     def test_compliant_file_passes(self, validator, temp_agentic_core):
-        from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L5_safety.validators.SomeValidator import SomeValidator
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L1_cognition.engines.CognitiveNode import CognitiveNode
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L6_observability.dashboard import Dashboard
-        from agentic_core.L0_routing.config.path_constants import (
-        """TC-AG-01: Compliant file with no violations passes."""
         agent_code = """
+                from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+                from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+                from agentic_core.L5_safety.validators.SomeValidator import SomeValidator
+                from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+                from agentic_core.L1_cognition.engines.CognitiveNode import CognitiveNode
+                from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+                from agentic_core.L6_observability.dashboard import Dashboard
+                from agentic_core.L0_routing.config.path_constants import (
+                """TC-AG-01: Compliant file with no violations passes."""
+                agent_code = """
+
 #  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 class TestAgent(SovereignBaseAgent):

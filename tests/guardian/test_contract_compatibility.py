@@ -243,22 +243,24 @@ class TestSchemaSnapshot:
     }
 
     def test_snapshot_has_all_required_keys(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test snapshot_has_all_required_keys contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
-    """Test snapshot_has_optional_keys contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
-    """Test snapshot_has_no_extra_keys contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
-    contract_terms = {}  # Replace with actual contract terms
-    """Test result_serialization_matches_snapshot contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.types.guardian_contract_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test snapshot_has_all_required_keys contract compliance."""
+            # Arrange
+            # TODO: Set up contract parties and terms
+            """Test snapshot_has_optional_keys contract compliance."""
+            # Arrange
+            # TODO: Set up contract parties and terms
+            """Test snapshot_has_no_extra_keys contract compliance."""
+            # Arrange
+            # TODO: Set up contract parties and terms
+            contract_terms = {}  # Replace with actual contract terms
+            """Test result_serialization_matches_snapshot contract compliance."""
+            # Arrange
+            # TODO: Set up contract parties and terms
+            contract_terms = {}  # Replace with actual contract terms
+
     contract_terms = {}  # Replace with actual contract terms
 
     # Act

@@ -173,10 +173,12 @@ class TestSealImmutability:
     """RoutingConfigSeal must be frozen."""
 
     def test_seal_is_frozen(self):
-        from agentic_core.L0_routing.types.routing_config_seal_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        seal = RoutingConfigSeal.create(config=SAMPLE_CONFIG, version="1.0")
-        with pytest.raises(AttributeError):
+                from agentic_core.L0_routing.types.routing_config_seal_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                seal = RoutingConfigSeal.create(config=SAMPLE_CONFIG, version="1.0")
+                with pytest.raises(AttributeError):
+                    seal.canonical_hash = "tampered"  # type: ignore[misc]
+
             seal.canonical_hash = "tampered"  # type: ignore[misc]
 
     def test_sealed_at_is_set(self):

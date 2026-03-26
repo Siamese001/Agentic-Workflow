@@ -31,16 +31,18 @@ class TestInfrastructurePerformance(unittest.TestCase):
         self.security_gateway = SecurityGateway()
 
     def test_query_router_performance(self):
-        from infrastructure.hardening.adaptive_optimizer import AdaptiveOptimizer
-        from infrastructure.hardening.cross_layer_coherence import CrossLayerCoherenceManager
-        from infrastructure.hardening.distributed_state_manager import DistributedStateManager
-        from infrastructure.hardening.implementation_plan import LayerType, QueryRequest, QueryStatus
-        from infrastructure.hardening.security_framework import (
-        from infrastructure.hardening.unified_query_router import UnifiedQueryRouter
-        from infrastructure.hardening.adaptive_optimizer import LayerResponse
-    """Test query_router_performance runtime behavior."""
-    # Arrange
-    # TODO: Set up processing data
+                from infrastructure.hardening.adaptive_optimizer import AdaptiveOptimizer
+                from infrastructure.hardening.cross_layer_coherence import CrossLayerCoherenceManager
+                from infrastructure.hardening.distributed_state_manager import DistributedStateManager
+                from infrastructure.hardening.implementation_plan import LayerType, QueryRequest, QueryStatus
+                from infrastructure.hardening.security_framework import (
+                from infrastructure.hardening.unified_query_router import UnifiedQueryRouter
+                from infrastructure.hardening.adaptive_optimizer import LayerResponse
+            """Test query_router_performance runtime behavior."""
+            # Arrange
+            # TODO: Set up processing data
+            raw_data = []  # Replace with actual test data
+
     raw_data = []  # Replace with actual test data
 
     # Act

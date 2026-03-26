@@ -211,13 +211,15 @@ class TestHealPolicyRuntimeIntegration:
     """Prove policy decision is computed and logged without behavior change."""
 
     def test_decide_reasoning_tier_is_invoked(self) -> None:
-        from agentic_core.L5_safety.types.heal_policy_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.utils.decorators_compat_util import standard_heal
-    """Test decide_reasoning_tier_is_invoked runtime behavior."""
-    # Arrange
-    # TODO: Set up runtime environment
+                from agentic_core.L5_safety.types.heal_policy_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.utils.decorators_compat_util import standard_heal
+            """Test decide_reasoning_tier_is_invoked runtime behavior."""
+            # Arrange
+            # TODO: Set up runtime environment
+            runtime_context = {}  # Replace with actual runtime context
+
     runtime_context = {}  # Replace with actual runtime context
 
     # Act

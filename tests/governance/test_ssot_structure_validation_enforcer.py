@@ -209,19 +209,21 @@ def validator() -> SSOTStructureValidator:
 class TestSuccessPaths:
     @pytest.mark.governance
     def test_validate_agent_returns_empty_when_l2_agent_compliant(self, validator):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L5_safety.enforcement.registry_verification_enforcer import AgentInfo
-        from agentic_core.L5_safety.enforcement.ssot_structure_validation_enforcer import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        agent = _make_agent(
-            class_name="SandboxAirlock",
-            relative_path="agentic_core/L2_execution/assembly/sandbox_airlock.py",
-            layer="L2",
-        )
-        violations = validator.validate_agent(agent)
-        # May or may not have territory/depth violations depending on blueprint;
-        # critical: no base_agent_location violation for non-BaseAgent class
-        base_violations = [v for v in violations if v.violation_type == "base_agent_location"]
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L5_safety.enforcement.registry_verification_enforcer import AgentInfo
+                from agentic_core.L5_safety.enforcement.ssot_structure_validation_enforcer import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                agent = _make_agent(
+                    class_name="SandboxAirlock",
+                    relative_path="agentic_core/L2_execution/assembly/sandbox_airlock.py",
+                    layer="L2",
+                )
+                violations = validator.validate_agent(agent)
+                # May or may not have territory/depth violations depending on blueprint;
+                # critical: no base_agent_location violation for non-BaseAgent class
+                base_violations = [v for v in violations if v.violation_type == "base_agent_location"]
+                assert base_violations == []
+
         assert base_violations == []
 
     @pytest.mark.governance

@@ -200,46 +200,48 @@ class TestInfrastructureDependencyError:
     """§1.5 §1.8 — InfrastructureDependencyError is the canonical fail-closed signal."""
 
     def test_error_is_importable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.types.infra_error_types import (
-        from agentic_core.L2_execution.types.infra_error_types import (
-        from agentic_core.L2_execution.types.infra_error_types import (
-        from agentic_core.L2_execution.types.infra_error_types import (
-        from agentic_core.L2_execution.types.infra_error_types import (
-        from agentic_core.L3_orchestration.engines.sovereign_redis_orchestrator import (
-        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
-        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
-        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
-        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
-        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
-        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
-        from agentic_core.L5_safety.enforcement import embedding_non_interference_guardrail as mod
-        from agentic_core.L5_safety.enforcement import embedding_non_interference_guardrail as mod
-        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
-        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
-        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
-        from agentic_core.interfaces.meta_learning import ChangePackage
-        from agentic_core.interfaces.meta_learning import ChangePackage
-        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
-        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
-        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
-#  # MOVED: from agentic_core.L2_execution.types.infra_error_types import (
-            InfrastructureDependencyError,
-        )
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.types.infra_error_types import (
+                from agentic_core.L2_execution.types.infra_error_types import (
+                from agentic_core.L2_execution.types.infra_error_types import (
+                from agentic_core.L2_execution.types.infra_error_types import (
+                from agentic_core.L2_execution.types.infra_error_types import (
+                from agentic_core.L3_orchestration.engines.sovereign_redis_orchestrator import (
+                from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+                from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+                from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+                from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+                from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+                from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+                from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+                from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+                from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+                from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+                from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+                from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+                from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+                from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+                from agentic_core.L5_safety.enforcement import embedding_non_interference_guardrail as mod
+                from agentic_core.L5_safety.enforcement import embedding_non_interference_guardrail as mod
+                from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+                from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+                from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+                from agentic_core.interfaces.meta_learning import ChangePackage
+                from agentic_core.interfaces.meta_learning import ChangePackage
+                from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+                from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+                from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+                from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
+                from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
+                from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
+                from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
+                from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
+                from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
+        #  # MOVED: from agentic_core.L2_execution.types.infra_error_types import (
+                    InfrastructureDependencyError,
+                )
+
 
         assert InfrastructureDependencyError is not None
 

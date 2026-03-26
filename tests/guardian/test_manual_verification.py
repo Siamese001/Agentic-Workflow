@@ -31,8 +31,10 @@ class TestManualVerification:
     """
 
     def test_monolith_detection_works(self, tmp_path):
-        from agentic_core.L0_routing.config.path_constants import (
-        """
+                from agentic_core.L0_routing.config.path_constants import (
+                """
+                Verify monolith detection by creating a temporary >800 LOC file.
+
         Verify monolith detection by creating a temporary >800 LOC file.
 
         This test creates a temporary monolith file and runs the

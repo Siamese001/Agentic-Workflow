@@ -172,11 +172,13 @@ class MockSurgicalManifest:
 
 
 def test_req298_discovery_scan_determinism():
-    from agentic_core.L0_routing.config.path_constants import (
-    """REQ-298: Test that discovery scan is deterministic."""
-    # Given
-    scanner = MockDiscoveryScanner()
-    root_path = AGENTIC_CORE_DIR
+        from agentic_core.L0_routing.config.path_constants import (
+        """REQ-298: Test that discovery scan is deterministic."""
+        # Given
+        scanner = MockDiscoveryScanner()
+        root_path = AGENTIC_CORE_DIR
+        patterns = ["**/reasoning/*.py", "**/engines/*.py"]
+
     patterns = ["**/reasoning/*.py", "**/engines/*.py"]
 
     # When - Run scan twice with identical inputs

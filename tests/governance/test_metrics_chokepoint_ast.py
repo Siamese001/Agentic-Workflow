@@ -97,9 +97,11 @@ def _collect_python_files(roots: list[str]) -> list[Path]:
 
 @pytest.mark.governance
 def test_req063_zero_rogue_metric_emissions_ast_scan():
-    from agentic_core.L0_routing.config.path_constants import (
-    """REQ-063: Zero metric emission calls outside control spine in L0/L1/L2/L3/L5."""
-    files = _collect_python_files(_SCAN_ROOTS)
+        from agentic_core.L0_routing.config.path_constants import (
+        """REQ-063: Zero metric emission calls outside control spine in L0/L1/L2/L3/L5."""
+        files = _collect_python_files(_SCAN_ROOTS)
+        assert len(files) > 0, "Must find files to scan"
+
     assert len(files) > 0, "Must find files to scan"
 
     all_violations: list[str] = []

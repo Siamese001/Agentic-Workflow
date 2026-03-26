@@ -435,11 +435,13 @@ class TestUnifiedForensicAudit:
         return GuardianReportBuilder.get_instance("guardian")
 
     def test_agent_discovery(self, audit_result):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """BLOCKING: Must discover agents to validate."""
-        if audit_result.total_agents == 0:
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """BLOCKING: Must discover agents to validate."""
+                if audit_result.total_agents == 0:
+                    pytest.fail("BLOCKING: No agents discovered - cannot validate")
+
             pytest.fail("BLOCKING: No agents discovered - cannot validate")
 
     _LLM_VALIDATION_ALLOWLIST = {

@@ -192,15 +192,17 @@ class TestREQ413ProviderBindingDeterminism:
     """Test suite for REQ-413 Provider Binding Determinism."""
 
     def test_compute_provider_binding_digest_deterministic(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-        from agentic_core.L2_execution.enforcement.provider_binding_determinism import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Test that provider binding digest is deterministic."""
-        # Given
-        provider_id = "openai"
-        model_id = "gpt-4"
-        gateway_version = "1.0.0"
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+                from agentic_core.L2_execution.enforcement.provider_binding_determinism import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Test that provider binding digest is deterministic."""
+                # Given
+                provider_id = "openai"
+                model_id = "gpt-4"
+                gateway_version = "1.0.0"
+                semantic_clock = SemanticClockSnapshot(tick=42, vector_clock=(("L0", 1), ("L2", 3), ("L5", 2)))
+
         semantic_clock = SemanticClockSnapshot(tick=42, vector_clock=(("L0", 1), ("L2", 3), ("L5", 2)))
 
         # When

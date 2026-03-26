@@ -213,17 +213,19 @@ class TestStructuralContract:
     REQUIRED_FUNCTIONS = {"get_breaker", "get_all_breakers", "reset_registry"}
 
     def test_module_exists(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import reset_registry
-        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import (
-        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
-        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import reset_registry
-        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
-        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
-        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import (
-        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import (
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.enforcement.circuit_breaker_gate import reset_registry
+                from agentic_core.L5_safety.enforcement.circuit_breaker_gate import (
+                from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
+                from agentic_core.L5_safety.enforcement.circuit_breaker_gate import reset_registry
+                from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
+                from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
+                from agentic_core.L5_safety.enforcement.circuit_breaker_gate import (
+                from agentic_core.L5_safety.enforcement.circuit_breaker_gate import (
+                assert MODULE_PATH.exists(), "circuit_breaker_gate.py must exist in L5_safety/enforcement"
+
         assert MODULE_PATH.exists(), "circuit_breaker_gate.py must exist in L5_safety/enforcement"
 
     def test_required_classes_present(self):

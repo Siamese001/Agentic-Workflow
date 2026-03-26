@@ -223,11 +223,13 @@ class TestComprehensiveSSOTStructure:
 
     @pytest.mark.guardian
     def test_comprehensive_file_placement(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """
+                Test that all Python files are in valid SSOT locations.
+
         Test that all Python files are in valid SSOT locations.
 
         This is a comprehensive check of all files in the repository,

@@ -208,12 +208,14 @@ def _make_doc(doc_id, score=1.0, content="content"):
 
 class TestDocument:
     def test_to_dict_keys(self):
-        from agentic_core.evaluation.retrieval.fusion import ReciprocalRankFusion, ScoreFusion
-        from agentic_core.evaluation.retrieval.interfaces import (
-        from agentic_core.evaluation.retrieval.profiles import (
-        from agentic_core.evaluation.retrieval.reranker import HeuristicReranker, PassthroughReranker
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        d = _make_doc("doc_1", 0.8).to_dict()
+                from agentic_core.evaluation.retrieval.fusion import ReciprocalRankFusion, ScoreFusion
+                from agentic_core.evaluation.retrieval.interfaces import (
+                from agentic_core.evaluation.retrieval.profiles import (
+                from agentic_core.evaluation.retrieval.reranker import HeuristicReranker, PassthroughReranker
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                d = _make_doc("doc_1", 0.8).to_dict()
+                assert set(d.keys()) == {"doc_id", "content", "score", "metadata"}
+
         assert set(d.keys()) == {"doc_id", "content", "score", "metadata"}
 
     def test_defaults(self):

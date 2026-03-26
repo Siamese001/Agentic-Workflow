@@ -207,11 +207,13 @@ class TestAssertionQuality:
         clear_assertion_registry()
 
     def test_empty_assertion_not_recorded(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Assertion with only check_id presence does not count toward coverage."""
-        r = GuardianResult(guardian_id="test")
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.types.guardian_contract_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Assertion with only check_id presence does not count toward coverage."""
+                r = GuardianResult(guardian_id="test")
+                r.add_check("c1", CheckStatus.PASS, "ok")
+
         r.add_check("c1", CheckStatus.PASS, "ok")
 
         # Empty assertion - just checks existence

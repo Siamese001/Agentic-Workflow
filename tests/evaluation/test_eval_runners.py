@@ -226,22 +226,24 @@ def _bad_generation(query, docs):
 
 class TestDefaultMetrics:
     def test_returns_list(self):
-        from agentic_core.evaluation.runners.offline_eval_runner import (
-        from agentic_core.evaluation.runners.replay_eval_runner import (
-        from agentic_core.evaluation.schemas.evaluation_dataset_schema import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test returns_list runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for returns_list
-    test_data = {}  # Replace with actual test data
-    """Test contains_six_metrics runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for contains_six_metrics
-    test_data = {}  # Replace with actual test data
-    """Test metric_names_include_precision_recall_mrr runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
+                from agentic_core.evaluation.runners.offline_eval_runner import (
+                from agentic_core.evaluation.runners.replay_eval_runner import (
+                from agentic_core.evaluation.schemas.evaluation_dataset_schema import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test returns_list runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for returns_list
+            test_data = {}  # Replace with actual test data
+            """Test contains_six_metrics runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for contains_six_metrics
+            test_data = {}  # Replace with actual test data
+            """Test metric_names_include_precision_recall_mrr runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
     input_data = {}  # Replace with actual test data
 
     # Act

@@ -205,15 +205,17 @@ SEAM_MODULE_PREFIX = "agentic_core.L0_routing.seams."
 
 @pytest.mark.parametrize("stem,_callable,_type", SEAM_REGISTRY)
 def test_seam_imports_without_error(stem, _callable, _type):
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L0_routing.seams.observability_seam import load_meta_learning_agent
-    from agentic_core.L0_routing.seams.observability_seam import load_meta_learning_agent
-    from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
-    from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
-    from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
-    """Each seam module must be importable with no ImportError."""
-    mod = importlib.import_module(SEAM_MODULE_PREFIX + stem)
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.seams.observability_seam import load_meta_learning_agent
+        from agentic_core.L0_routing.seams.observability_seam import load_meta_learning_agent
+        from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
+        from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
+        from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
+        """Each seam module must be importable with no ImportError."""
+        mod = importlib.import_module(SEAM_MODULE_PREFIX + stem)
+        assert mod is not None
+
     assert mod is not None
 
 

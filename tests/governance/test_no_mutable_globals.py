@@ -68,9 +68,11 @@ ALLOWED_PATTERNS = {
 
 @pytest.mark.governance
 def test_req129_no_mutable_globals_critical_modules():
-    from agentic_core.L0_routing.config.path_constants import (
-    from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
-    """REQ-129: AST scan: no module-level mutable state in L0-L5 sovereignty-critical modules."""
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+        """REQ-129: AST scan: no module-level mutable state in L0-L5 sovereignty-critical modules."""
+        mutable_global_violations = []
+
     mutable_global_violations = []
 
     for critical_dir in CRITICAL_DIRS:

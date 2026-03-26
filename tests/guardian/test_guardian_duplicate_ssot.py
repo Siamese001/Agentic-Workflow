@@ -185,15 +185,17 @@ class TestRealRepoSingletonInvariant:
         ],
     )
     def test_singleton_class_has_exactly_one_owner(self, cls_name, expected_stem):
-        from agentic_core.L0_routing.config.path_constants import (
-        owners: list[str] = []
-        for scan_root in _SSOT_SCAN_ROOTS:
-            if not scan_root.exists():
-                continue
-            for py_file in scan_root.rglob("*.py"):
-                if py_file.name in _EXCLUDED_FILENAMES:
-                    continue
-                if cls_name in _extract_class_names(py_file):
+                from agentic_core.L0_routing.config.path_constants import (
+                owners: list[str] = []
+                for scan_root in _SSOT_SCAN_ROOTS:
+                    if not scan_root.exists():
+                        continue
+                    for py_file in scan_root.rglob("*.py"):
+                        if py_file.name in _EXCLUDED_FILENAMES:
+                            continue
+                        if cls_name in _extract_class_names(py_file):
+                            owners.append(py_file.relative_to(REPO_ROOT).as_posix())
+
                     owners.append(py_file.relative_to(REPO_ROOT).as_posix())
 
         assert len(owners) == 1, (

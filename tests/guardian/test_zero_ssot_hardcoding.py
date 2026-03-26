@@ -274,9 +274,11 @@ def _scan_file_for_violations(fpath: Path) -> list[dict[str, Any]]:
 
 @pytest.mark.guardian
 def test_zero_ssot_hardcoding_violations():
-    from agentic_core.L0_routing.config.path_constants import (
-    from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    """
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+        """
+        GUARDIAN: Assert zero fixable SSOT hardcoding violations across all enforced territories.
+
     GUARDIAN: Assert zero fixable SSOT hardcoding violations across all enforced territories.
 
     This test scans all Python files in the 10 enforced sovereign territories and

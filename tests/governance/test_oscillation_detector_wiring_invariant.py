@@ -219,9 +219,11 @@ pytestmark = pytest.mark.governance
 
 class TestConstruction:
     def test_cooldown_window_less_than_2_raises(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.enforcement.oscillation_detector import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.enforcement.oscillation_detector import (
+                with pytest.raises(Exception):
+
         with pytest.raises(Exception):
 
             pass

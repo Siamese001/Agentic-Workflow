@@ -36,16 +36,17 @@ class TestPrecisionContractGuard(unittest.TestCase):
         self.guard = PrecisionFourLayerContractGuard(l4_rate_limit_per_minute=60)
 
     def test_query_request_cryptographic_integrity(self):
-        from infrastructure.hardening.novel_testing_frameworks import (
-        from infrastructure.hardening.precision_contracts import (
-        """Test query request cryptographic integrity verification."""
-        # Valid request
-        request = PrecisionQueryRequest(
-            query_id="test_123",
-            user_query="What is the capital of France?",
-            timestamp=datetime.now(),
-            priority=5
-        )
+                from infrastructure.hardening.novel_testing_frameworks import (
+                from infrastructure.hardening.precision_contracts import (
+                """Test query request cryptographic integrity verification."""
+                # Valid request
+                request = PrecisionQueryRequest(
+                    query_id="test_123",
+                    user_query="What is the capital of France?",
+                    timestamp=datetime.now(),
+                    priority=5
+                )
+
 
         self.assertTrue(request.verify_integrity())
         self.assertTrue(self.guard.validate_query_request(request))

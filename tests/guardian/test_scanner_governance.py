@@ -176,9 +176,11 @@ class TestScannerGovernance:
     """S10: The scanner can scan itself and produce meaningful output."""
 
     def test_scanner_scans_itself(self):
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner, ScanResult
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        result = _scan_scanner()
+                from agentic_core.adg.extraction.static_scanner import ADGStaticScanner, ScanResult
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                result = _scan_scanner()
+                assert result.modules, "Scanner produced no modules from its own file"
+
         assert result.modules, "Scanner produced no modules from its own file"
 
     def test_scanner_file_in_modules(self):

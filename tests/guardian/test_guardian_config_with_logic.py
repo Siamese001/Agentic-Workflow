@@ -212,10 +212,12 @@ def _violations(source: str, tmp_path: Path) -> list:
 
 class TestConfigWithLogicCleanFile:
     def test_plain_data_dict_no_violations(self, tmp_path):
-        from agentic_core.L5_safety.validators.base_detector_validator import (
-        from agentic_core.L5_safety.validators.config_with_logic_validator import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        src = "my_config = {'key': 'value', 'n': 42}\n"
+                from agentic_core.L5_safety.validators.base_detector_validator import (
+                from agentic_core.L5_safety.validators.config_with_logic_validator import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                src = "my_config = {'key': 'value', 'n': 42}\n"
+                assert _violations(src, tmp_path) == []
+
         assert _violations(src, tmp_path) == []
 
     def test_nested_plain_dict_no_violations(self, tmp_path):

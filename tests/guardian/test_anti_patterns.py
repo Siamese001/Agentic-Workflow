@@ -275,21 +275,23 @@ class TestSilentSwallowerDetector:
     """Tests for silent exception swallowing detection."""
 
     def test_detects_bare_except(self, silent_swallower_validator, temp_python_file):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.validators.base_detector_validator import (
-        from agentic_core.L5_safety.validators.global_mutation_validator import (
-        from agentic_core.L5_safety.validators.magic_validator import (
-        from agentic_core.L5_safety.validators.path_fragility_validator import (
-        from agentic_core.L5_safety.validators.silent_swallower_validator import (
-        from agentic_core.L5_safety.validators.type_erasure_validator import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
-        from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
-        from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
-        from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
-        """Bare except clauses should be detected."""
         code = """
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.validators.base_detector_validator import (
+                from agentic_core.L5_safety.validators.global_mutation_validator import (
+                from agentic_core.L5_safety.validators.magic_validator import (
+                from agentic_core.L5_safety.validators.path_fragility_validator import (
+                from agentic_core.L5_safety.validators.silent_swallower_validator import (
+                from agentic_core.L5_safety.validators.type_erasure_validator import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
+                from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
+                from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
+                from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
+                """Bare except clauses should be detected."""
+                code = """
+
 def risky_function():
     try:
         do_something()

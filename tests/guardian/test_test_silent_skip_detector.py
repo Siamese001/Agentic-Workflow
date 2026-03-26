@@ -169,11 +169,13 @@ def det():
 
 @pytest.fixture
 def test_py(tmp_path):
-    from agentic_core.L5_safety.validators.base_detector_validator import (
-    from agentic_core.L5_safety.validators.test_skip_detector_validator import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L4_state.enforcement.graph_memory_bridge import (
     """Write content into a test_probe.py file (test file name)."""
+        from agentic_core.L5_safety.validators.base_detector_validator import (
+        from agentic_core.L5_safety.validators.test_skip_detector_validator import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L4_state.enforcement.graph_memory_bridge import (
+        """Write content into a test_probe.py file (test file name)."""
+
 
     def _make(content: str) -> Path:
         p = tmp_path / "test_probe.py"

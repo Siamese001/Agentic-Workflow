@@ -260,12 +260,14 @@ def repo_with_init_only_folder(tmp_path: Path) -> Path:
 
 class TestCleanRepoPass:
     def test_clean_repo_returns_pass(self, clean_repo: Path):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.scripts.run_guardian_hygiene import (
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        result = run_hygiene_guardian(repo_root=clean_repo)
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.scripts.run_guardian_hygiene import (
+                from agentic_core.L0_routing.types.guardian_contract_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                result = run_hygiene_guardian(repo_root=clean_repo)
+                assert result.status == GuardianStatus.PASS.value
+
         assert result.status == GuardianStatus.PASS.value
 
     def test_clean_repo_all_checks_pass(self, clean_repo: Path):

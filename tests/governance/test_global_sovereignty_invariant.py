@@ -76,12 +76,14 @@ class _MockInterceptor:
 
 @pytest.mark.governance
 def test_inv_no_upward_mutation_runtime_interceptor():
-    from agentic_core.L0_routing.config.path_constants import (
-    """Invariant: runtime interceptor blocks direct writes in replay mode."""
-    ic = _MockInterceptor()
-    ic.enable()
-    with pytest.raises(_WriteInterceptViolation):
-        ic.assert_write_allowed("/L4_state/data.json")
+        from agentic_core.L0_routing.config.path_constants import (
+        """Invariant: runtime interceptor blocks direct writes in replay mode."""
+        ic = _MockInterceptor()
+        ic.enable()
+        with pytest.raises(_WriteInterceptViolation):
+            ic.assert_write_allowed("/L4_state/data.json")
+        assert len(ic.blocked) == 1
+
     assert len(ic.blocked) == 1
 
 

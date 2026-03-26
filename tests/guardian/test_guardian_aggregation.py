@@ -275,11 +275,13 @@ def _aggregate(results: list[GuardianResult]) -> GuardianResult:
 
 class TestAllPassRollup:
     def test_all_pass_returns_pass(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        results = [_passing_result("g1"), _passing_result("g2"), _passing_result("g3")]
-        agg = _aggregate(results)
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.types.guardian_contract_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                results = [_passing_result("g1"), _passing_result("g2"), _passing_result("g3")]
+                agg = _aggregate(results)
+                assert agg.status == GuardianStatus.PASS.value
+
         assert agg.status == GuardianStatus.PASS.value
 
     def test_single_pass_returns_pass(self):

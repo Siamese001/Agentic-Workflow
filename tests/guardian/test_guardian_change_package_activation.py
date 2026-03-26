@@ -218,15 +218,17 @@ def missing_gate_repo(tmp_path: Path) -> Path:
 
 class TestChangePackageActivationGuardianClean:
     def test_clean_repo_passes(self, clean_repo):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.scripts.run_guardian_change_package_activation import (
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        result = run_change_package_activation_guardian(repo_root=clean_repo)
-        check_map = {c.check_id: c.status for c in result.checks}
-        assert check_map["proposal_only_bypass"] == CheckStatus.PASS.value
-        assert check_map["direct_version_store_commit"] == CheckStatus.PASS.value
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.scripts.run_guardian_change_package_activation import (
+                from agentic_core.L0_routing.types.guardian_contract_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                result = run_change_package_activation_guardian(repo_root=clean_repo)
+                check_map = {c.check_id: c.status for c in result.checks}
+                assert check_map["proposal_only_bypass"] == CheckStatus.PASS.value
+                assert check_map["direct_version_store_commit"] == CheckStatus.PASS.value
+                assert check_map["activation_without_approval_gate"] == CheckStatus.PASS.value
+
         assert check_map["activation_without_approval_gate"] == CheckStatus.PASS.value
 
     def test_clean_repo_top_status_pass(self, clean_repo):

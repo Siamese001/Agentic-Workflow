@@ -193,9 +193,12 @@ def _find_wallclock_calls(path: Path) -> list[str]:
 
 @pytest.mark.governance
 def test_req192_semantic_clock_advancement_two_run_identical():
-    from agentic_core.L0_routing.types.determinism_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test req192_semantic_clock_advancement_two_run_identical runtime behavior."""
+        from agentic_core.L0_routing.types.determinism_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    """Test req192_semantic_clock_advancement_two_run_identical runtime behavior."""
+
 # Arrange
 # TODO: Set up execution parameters
 input_data = {}  # Replace with actual test data

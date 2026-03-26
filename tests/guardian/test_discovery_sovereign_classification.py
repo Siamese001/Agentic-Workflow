@@ -44,18 +44,20 @@ class TestSovereignClassification:
     """Sovereign flag must be consistent with mro_chain content."""
 
     def test_sovereign_iff_sovereign_base_in_mro(self, discovery_agents):
-        from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
-        """Every agent's is_sovereign must equal 'SovereignBaseAgent' in mro_chain."""
-        mismatches = []
-        for agent in discovery_agents:
-            mro = agent.get("mro_chain", [])
-            expected = "SovereignBaseAgent" in mro
-            actual = agent.get("is_sovereign", False)
-            if actual != expected:
-                mismatches.append(
-                    f"{agent['identity']}: is_sovereign={actual}, "
-                    f"'SovereignBaseAgent' in mro={expected}, mro={mro[:5]}",
-                )
+                from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
+                """Every agent's is_sovereign must equal 'SovereignBaseAgent' in mro_chain."""
+                mismatches = []
+                for agent in discovery_agents:
+                    mro = agent.get("mro_chain", [])
+                    expected = "SovereignBaseAgent" in mro
+                    actual = agent.get("is_sovereign", False)
+                    if actual != expected:
+                        mismatches.append(
+                            f"{agent['identity']}: is_sovereign={actual}, "
+                            f"'SovereignBaseAgent' in mro={expected}, mro={mro[:5]}",
+                        )
+                assert not mismatches, "Sovereign flag / MRO mismatches:\n" + "\n".join(mismatches)
+
         assert not mismatches, "Sovereign flag / MRO mismatches:\n" + "\n".join(mismatches)
 
     def test_non_sovereign_agents_are_expected(self, discovery_agents):

@@ -45,8 +45,10 @@ CORE_DIRS = [
 
 @pytest.mark.governance
 def test_req118_no_reflection_bypass_core_layers():
-    from agentic_core.L0_routing.config.path_constants import (
-    """REQ-118: AST scan proves no getattr/setattr used to bypass layer boundary in core L0-L5."""
+        from agentic_core.L0_routing.config.path_constants import (
+        """REQ-118: AST scan proves no getattr/setattr used to bypass layer boundary in core L0-L5."""
+        reflection_violations = []
+
     reflection_violations = []
 
     for core_dir in CORE_DIRS:

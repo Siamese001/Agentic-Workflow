@@ -212,60 +212,63 @@ class TestD0EngineAdapterBranches:
     # B-D0-1: ImportError path
     # ------------------------------------------------------------------
     def test_import_error_sets_null_fallback(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from apps_shared.spine import d0_engine_adapter as mod
-        from apps_shared.spine import d0_engine_adapter as mod
-        from apps_shared.spine import d0_engine_adapter as mod
-        from apps_shared.spine import d0_engine_adapter as mod
-        from apps_shared.spine import risk_gate_adapter as mod
-        from apps_shared.spine import risk_gate_adapter as mod
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
-        from apps_shared.spine import risk_gate_adapter as mod
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
-        from apps_shared.spine.vigilance_dispatcher_adapter import _drain_event_queue
-        from apps_shared.spine import vigilance_dispatcher_adapter as mod
-        from apps_shared.spine import vigilance_dispatcher_adapter as mod
-        from apps_shared.spine.vigilance_dispatcher_adapter import _drain_event_queue
-        from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
-        from apps_shared.spine import vigilance_dispatcher_adapter as mod
-        from apps_shared.spine.vigilance_dispatcher_adapter import _drain_event_queue
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
-        from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
-        from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
-        from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
-        from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
-        from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
-        from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
-        from apps_shared.spine.d0_engine_adapter import D0EngineAdapter
-        from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from apps_shared.spine import d0_engine_adapter as mod
+                from apps_shared.spine import d0_engine_adapter as mod
+                from apps_shared.spine import d0_engine_adapter as mod
+                from apps_shared.spine import d0_engine_adapter as mod
+                from apps_shared.spine import risk_gate_adapter as mod
+                from apps_shared.spine import risk_gate_adapter as mod
+                from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+                from apps_shared.spine import risk_gate_adapter as mod
+                from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+                from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+                from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+                from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+                from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+                from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+                from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+                from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+                from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+                from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+                from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+                from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+                from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+                from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+                from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+                from apps_shared.spine.vigilance_dispatcher_adapter import _drain_event_queue
+                from apps_shared.spine import vigilance_dispatcher_adapter as mod
+                from apps_shared.spine import vigilance_dispatcher_adapter as mod
+                from apps_shared.spine.vigilance_dispatcher_adapter import _drain_event_queue
+                from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
+                from apps_shared.spine import vigilance_dispatcher_adapter as mod
+                from apps_shared.spine.vigilance_dispatcher_adapter import _drain_event_queue
+                from apps_shared.spine.vigilance_dispatcher_adapter import (
+                from apps_shared.spine.vigilance_dispatcher_adapter import (
+                from apps_shared.spine.vigilance_dispatcher_adapter import (
+                from apps_shared.spine.vigilance_dispatcher_adapter import (
+                from apps_shared.spine.vigilance_dispatcher_adapter import (
+                from apps_shared.spine.vigilance_dispatcher_adapter import (
+                from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
+                from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
+                from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
+                from apps_shared.spine.vigilance_dispatcher_adapter import (
+                from apps_shared.spine.vigilance_dispatcher_adapter import (
+                from apps_shared.spine.vigilance_dispatcher_adapter import (
+                from apps_shared.spine.vigilance_dispatcher_adapter import (
+                from apps_shared.spine.vigilance_dispatcher_adapter import (
+                from apps_shared.spine.vigilance_dispatcher_adapter import (
+                from apps_shared.spine.vigilance_dispatcher_adapter import (
+                from apps_shared.spine.vigilance_dispatcher_adapter import (
+                from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+                from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+                from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+                from apps_shared.spine.d0_engine_adapter import D0EngineAdapter
+                from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+                from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+        #  # MOVED: from apps_shared.spine import d0_engine_adapter as mod
+
 #  # MOVED: from apps_shared.spine import d0_engine_adapter as mod
 
         with patch.object(mod, "_build_real_engine", side_effect=ImportError("missing")):

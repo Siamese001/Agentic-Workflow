@@ -235,15 +235,16 @@ class TestSchemaLock:
     """CONTRACT_JSON_SCHEMA rejects extra/missing fields."""
 
     def test_extra_field_rejected(self, certification_result: GuardianResult):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        d = certification_result.to_dict()
-        d["rogue_field"] = "should_not_exist"
-        errors = validate_against_json_schema(d)
-        assert any("rogue_field" in e for e in errors), (
-            f"Extra field 'rogue_field' must be rejected, got errors: {errors}"
-        )
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.types.guardian_contract_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                d = certification_result.to_dict()
+                d["rogue_field"] = "should_not_exist"
+                errors = validate_against_json_schema(d)
+                assert any("rogue_field" in e for e in errors), (
+                    f"Extra field 'rogue_field' must be rejected, got errors: {errors}"
+                )
+
 
     def test_missing_required_field_rejected(self, certification_result: GuardianResult):
         d = certification_result.to_dict()

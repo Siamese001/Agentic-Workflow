@@ -37,21 +37,22 @@ class TestNoDirectL5Import:
     """validation_orchestrator.py must not contain any static L5 import."""
 
     def test_no_static_l5_import(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        tree = ast.parse(_ORCHESTRATOR.read_text("utf-8"), filename=str(_ORCHESTRATOR))
-        for node in ast.walk(tree):
-            if isinstance(node, ast.ImportFrom) and node.module:
-                assert "L5_safety" not in node.module, (
-                    f"Static L2ΓåÆL5 import at line {node.lineno}: from {node.module}"
-                )
-            elif isinstance(node, ast.Import):
-                for alias in node.names:
-                    assert "L5_safety" not in alias.name, (
-                        f"Static L2ΓåÆL5 import at line {node.lineno}: import {alias.name}"
-                    )
 
     def test_no_static_l3_import(self):
         """No static L2ΓåÆL3 import either."""
+                from agentic_core.L0_routing.config.path_constants import (
+                tree = ast.parse(_ORCHESTRATOR.read_text("utf-8"), filename=str(_ORCHESTRATOR))
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.ImportFrom) and node.module:
+                        assert "L5_safety" not in node.module, (
+                            f"Static L2ΓåÆL5 import at line {node.lineno}: from {node.module}"
+                        )
+                    elif isinstance(node, ast.Import):
+                        for alias in node.names:
+                            assert "L5_safety" not in alias.name, (
+                                f"Static L2ΓåÆL5 import at line {node.lineno}: import {alias.name}"
+                            )
+
         tree = ast.parse(_ORCHESTRATOR.read_text("utf-8"), filename=str(_ORCHESTRATOR))
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom) and node.module:

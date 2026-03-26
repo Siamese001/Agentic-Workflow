@@ -131,9 +131,11 @@ class TestAgentValidation:
                 time.sleep(0.1)
 
     def test_valid_agent_passes(self, validator):
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        """TC-AV-01: Valid agent with all methods passes."""
         agent_code = """
+                from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+                """TC-AV-01: Valid agent with all methods passes."""
+                agent_code = """
+
 #  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 class TestAgent(SovereignBaseAgent):

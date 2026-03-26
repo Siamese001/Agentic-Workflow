@@ -233,11 +233,13 @@ class TestP2_1_1_SurgicalManifestExclusive:
     """§1.1: Only SurgicalManifest is a valid execution input."""
 
     def test_valid_manifest_accepted(self):
-        from agentic_core.L0_routing.types.determinism_contracts_types import (
-        from agentic_core.L0_routing.types.determinism_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        m = _make_manifest()
-        result = validate_execution_input(m)
+                from agentic_core.L0_routing.types.determinism_contracts_types import (
+                from agentic_core.L0_routing.types.determinism_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                m = _make_manifest()
+                result = validate_execution_input(m)
+                assert isinstance(result, SurgicalManifest)
+
         assert isinstance(result, SurgicalManifest)
 
     def test_raw_dict_rejected(self):

@@ -179,11 +179,13 @@ HARDENING_ORDER = "land AST/CI ratchet for fail-closed patterns BEFORE applying 
 
 @pytest.mark.governance
 def test_req016_all_subsystems_fail_closed():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
-    from agentic_core.L4_state.enforcement.replay_bundle_store import ReplayBundleStore
     """Boundary: 10 subsystems must raise on failure, never silently return."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+        from agentic_core.L4_state.enforcement.replay_bundle_store import ReplayBundleStore
+        """Boundary: 10 subsystems must raise on failure, never silently return."""
+
 #  # MOVED: from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
 
     uwg = UniversalWriteGateway()

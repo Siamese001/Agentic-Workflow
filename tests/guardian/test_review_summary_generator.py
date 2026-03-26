@@ -235,11 +235,13 @@ class TestDeterministicContent:
     """Validate fixed headings and key lines in generated markdown."""
 
     def test_all_present_all_pass(self, tmp_path):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """All evidence + guardian present and passing."""
-        for ph in ["P3", "P4", "P5", "P6"]:
-            _write_evidence(tmp_path, ph, passed=5, violations=0, gate=f"gate_{ph.lower()}")
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """All evidence + guardian present and passing."""
+                for ph in ["P3", "P4", "P5", "P6"]:
+                    _write_evidence(tmp_path, ph, passed=5, violations=0, gate=f"gate_{ph.lower()}")
+                gp = _write_guardian(tmp_path)
+
         gp = _write_guardian(tmp_path)
 
         ev = _build_paths(tmp_path, ["P3", "P4", "P5", "P6"])

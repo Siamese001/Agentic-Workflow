@@ -77,12 +77,14 @@ class TestUnifiedQueryRouter(unittest.TestCase):
         self.router.add_layer_instances(LayerType.AGENTIC_ACTION, [("agentic_1", "http://localhost:8005", 1)])
 
     def test_load_balancer_round_robin(self):
-        from infrastructure.hardening.adaptive_optimizer import (
-        from infrastructure.hardening.cross_layer_coherence import (
-        from infrastructure.hardening.distributed_state_manager import (
-        from infrastructure.hardening.security_framework import (
-        from infrastructure.hardening.unified_query_router import (
-        """Test round-robin load balancing."""
+                from infrastructure.hardening.adaptive_optimizer import (
+                from infrastructure.hardening.cross_layer_coherence import (
+                from infrastructure.hardening.distributed_state_manager import (
+                from infrastructure.hardening.security_framework import (
+                from infrastructure.hardening.unified_query_router import (
+                """Test round-robin load balancing."""
+                load_balancer = self.router.load_balancers[LayerType.REDIS_EXACT_MATCH]
+
         load_balancer = self.router.load_balancers[LayerType.REDIS_EXACT_MATCH]
 
         # Test round-robin selection

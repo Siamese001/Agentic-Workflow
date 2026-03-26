@@ -195,20 +195,21 @@ class TestREQ416CriticalDualEnforcement:
     """Test suite for REQ-416 CRITICAL Dual Enforcement Guarantee."""
 
     def test_requirement_metadata_creation(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.enforcement.critical_dual_enforcement_audit_enforcer import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Test RequirementMetadata dataclass creation."""
-        # Given
-        metadata = RequirementMetadata(
-            req_id="REQ-001",
-            domain="Test Domain",
-            requirement="Test requirement",
-            enforcement="AST + Runtime",
-            severity="CRITICAL",
-            enforcement_layers=["AST", "Runtime"],
-            enforcement_class="EXECUTION_PATH",
-        )
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.enforcement.critical_dual_enforcement_audit_enforcer import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Test RequirementMetadata dataclass creation."""
+                # Given
+                metadata = RequirementMetadata(
+                    req_id="REQ-001",
+                    domain="Test Domain",
+                    requirement="Test requirement",
+                    enforcement="AST + Runtime",
+                    severity="CRITICAL",
+                    enforcement_layers=["AST", "Runtime"],
+                    enforcement_class="EXECUTION_PATH",
+                )
+
 
         # Then
         assert metadata.req_id == "REQ-001"

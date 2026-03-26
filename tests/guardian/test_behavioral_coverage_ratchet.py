@@ -84,11 +84,13 @@ class TestCheckIdCoverage:
 
     @pytest.mark.parametrize("guardian_id", _ENABLED_WITH_TESTS)
     def test_all_check_ids_referenced_in_tests(self, guardian_id: str):
-        from agentic_core.L0_routing.config.path_constants import TESTS_DIR
-        from agentic_core.L0_routing.types.guardian_registry_types import (
-    """Test all_check_ids_referenced_in_tests runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for all_check_ids_referenced_in_tests
+                from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+                from agentic_core.L0_routing.types.guardian_registry_types import (
+            """Test all_check_ids_referenced_in_tests runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for all_check_ids_referenced_in_tests
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

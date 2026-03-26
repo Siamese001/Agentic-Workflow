@@ -220,15 +220,17 @@ def embedding_threshold_repo(tmp_path: Path) -> Path:
 
 class TestC0SovereigntyGuardianClean:
     def test_clean_repo_passes(self, clean_repo):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.scripts.run_guardian_c0_sovereignty import (
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        result = run_c0_sovereignty_guardian(repo_root=clean_repo)
-        check_map = {c.check_id: c.status for c in result.checks}
-        assert check_map["embedding_drives_routing"] == CheckStatus.PASS.value
-        assert check_map["embedding_drives_tier_selection"] == CheckStatus.PASS.value
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.scripts.run_guardian_c0_sovereignty import (
+                from agentic_core.L0_routing.types.guardian_contract_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                result = run_c0_sovereignty_guardian(repo_root=clean_repo)
+                check_map = {c.check_id: c.status for c in result.checks}
+                assert check_map["embedding_drives_routing"] == CheckStatus.PASS.value
+                assert check_map["embedding_drives_tier_selection"] == CheckStatus.PASS.value
+                assert check_map["embedding_mutates_threshold"] == CheckStatus.PASS.value
+
         assert check_map["embedding_mutates_threshold"] == CheckStatus.PASS.value
 
     def test_clean_repo_top_status_pass(self, clean_repo):

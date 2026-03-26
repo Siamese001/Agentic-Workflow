@@ -222,14 +222,16 @@ def direct_call_repo(tmp_path: Path) -> Path:
 
 class TestGatewayBypassGuardianClean:
     def test_clean_repo_passes(self, clean_repo):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.scripts.run_guardian_gateway_bypass import (
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        result = run_gateway_bypass_guardian(repo_root=clean_repo)
-        check_map = {c.check_id: c.status for c in result.checks}
-        assert check_map["provider_sdk_import"] == CheckStatus.PASS.value
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.scripts.run_guardian_gateway_bypass import (
+                from agentic_core.L0_routing.types.guardian_contract_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                result = run_gateway_bypass_guardian(repo_root=clean_repo)
+                check_map = {c.check_id: c.status for c in result.checks}
+                assert check_map["provider_sdk_import"] == CheckStatus.PASS.value
+                assert check_map["direct_model_call"] == CheckStatus.PASS.value
+
         assert check_map["direct_model_call"] == CheckStatus.PASS.value
 
     def test_clean_repo_top_status_pass(self, clean_repo):

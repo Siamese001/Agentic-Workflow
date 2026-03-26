@@ -54,8 +54,10 @@ class TestCodeQualityMetrics:
 
     @pytest.mark.guardian
     def test_file_size_validation(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        """
+                from agentic_core.L0_routing.config.path_constants import (
+                """
+                Test that no files exceed maximum size limits (monolith detection).
+
         Test that no files exceed maximum size limits (monolith detection).
 
         Large files are harder to maintain and should be split.

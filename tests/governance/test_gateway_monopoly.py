@@ -178,10 +178,12 @@ def _collect_python_files(roots: list[str]) -> list[Path]:
 
 @pytest.mark.governance
 def test_req_p0_zero_sdk_imports_outside_gateway():
-    from agentic_core.L0_routing.config.path_constants import (
-    from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-    """P0: Zero direct SDK imports outside gateway-allowlisted paths (AST scan)."""
-    files = _collect_python_files(_SCAN_ROOTS)
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+        """P0: Zero direct SDK imports outside gateway-allowlisted paths (AST scan)."""
+        files = _collect_python_files(_SCAN_ROOTS)
+        assert len(files) > 0, "Should find files to scan"
+
     assert len(files) > 0, "Should find files to scan"
 
     all_violations: list[str] = []

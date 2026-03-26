@@ -37,8 +37,10 @@ def _import_scanner():
 
 
 def test_scanner_and_allowlist_exist() -> None:
-    from agentic_core.L0_routing.config.path_constants import (
-    assert SCANNER.exists(), f"Scanner missing: {SCANNER}"
+        from agentic_core.L0_routing.config.path_constants import (
+        assert SCANNER.exists(), f"Scanner missing: {SCANNER}"
+        assert ALLOWLIST.exists(), f"Allowlist missing: {ALLOWLIST}"
+
     assert ALLOWLIST.exists(), f"Allowlist missing: {ALLOWLIST}"
 
 

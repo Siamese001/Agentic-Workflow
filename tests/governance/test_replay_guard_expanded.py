@@ -194,11 +194,13 @@ pytestmark = pytest.mark.governance
 
 class TestReplayGuardSocket:
     def test_blocks_socket_creation(self) -> None:
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.determinism.replay_guard import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        with ReplayGuard():
-            with pytest.raises(ReplayViolation, match="socket"):
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.determinism.replay_guard import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                with ReplayGuard():
+                    with pytest.raises(ReplayViolation, match="socket"):
+                        socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
                 socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     def test_socket_restored_after_context(self) -> None:

@@ -208,10 +208,12 @@ _CONFIG_V2 = {
 
 class TestSealCreation:
     def test_create_returns_seal(self):
-        from agentic_core.L0_routing.types.routing_config_seal_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        seal = RoutingConfigSeal.create(config=_CONFIG_V1, version="1.0")
-        assert seal.canonical_hash
+                from agentic_core.L0_routing.types.routing_config_seal_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                seal = RoutingConfigSeal.create(config=_CONFIG_V1, version="1.0")
+                assert seal.canonical_hash
+                assert seal.version == "1.0"
+
         assert seal.version == "1.0"
 
     def test_empty_config_creates_seal(self):

@@ -291,9 +291,11 @@ class TestSeamDynamicEnforcement:
     """Test suite for seam and dynamic import enforcement."""
 
     def test_seam_file_detection(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        """Test seam file classification."""
-        seam_path = Path("agentic_core/L0_routing/seams/loader_seam.py")
+                from agentic_core.L0_routing.config.path_constants import (
+                """Test seam file classification."""
+                seam_path = Path("agentic_core/L0_routing/seams/loader_seam.py")
+                assert is_seam_file(seam_path)
+
         assert is_seam_file(seam_path)
 
         non_seam = Path("agentic_core/L0_routing/router.py")

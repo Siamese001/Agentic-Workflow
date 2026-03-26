@@ -178,11 +178,14 @@ import pytest
 
 @pytest.mark.governance
 def test_install_guards_is_idempotent() -> None:
-    from agentic_core.L0_routing.config.path_constants import (
-    from agentic_core.L5_safety.enforcement.runtime_mutation_guardrail import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test install_guards_is_idempotent runtime behavior."""
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L5_safety.enforcement.runtime_mutation_guardrail import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    """Test install_guards_is_idempotent runtime behavior."""
+
 # Arrange
 # TODO: Set up runtime environment
 runtime_context = {}  # Replace with actual runtime context

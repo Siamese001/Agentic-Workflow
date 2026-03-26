@@ -258,21 +258,23 @@ class TestRegistryIsSSoT:
     """Registry is sole authority. These tests pass without filesystem discovery."""
 
     def test_no_dead_registry_entries(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
-        from agentic_core.L0_routing.types.guardian_registry_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Every registry entry must point to an importable callable."""
-        errors = []
-        for spec in ALL_GUARDIANS:
-            try:
-                mod = importlib.import_module(spec.entrypoint_module)
-                if not hasattr(mod, spec.entrypoint_fn):
-                    errors.append(
-                        f"{spec.guardian_id}: function '{spec.entrypoint_fn}' "
-                        f"not found in {spec.entrypoint_module}",
-                    )
-            except ImportError as exc:  # guardian: allow-silent-swallower
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+                from agentic_core.L0_routing.types.guardian_registry_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Every registry entry must point to an importable callable."""
+                errors = []
+                for spec in ALL_GUARDIANS:
+                    try:
+                        mod = importlib.import_module(spec.entrypoint_module)
+                        if not hasattr(mod, spec.entrypoint_fn):
+                            errors.append(
+                                f"{spec.guardian_id}: function '{spec.entrypoint_fn}' "
+                                f"not found in {spec.entrypoint_module}",
+                            )
+                    except ImportError as exc:  # guardian: allow-silent-swallower
+                        errors.append(f"{spec.guardian_id}: ImportError - {exc}")
+
                 errors.append(f"{spec.guardian_id}: ImportError - {exc}")
 
         assert not errors, "Dead registry entries:\n" + "\n".join(errors)

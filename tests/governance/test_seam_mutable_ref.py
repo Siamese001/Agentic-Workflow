@@ -165,15 +165,17 @@ import pytest
 
 @pytest.mark.governance
 def test_req270_immutable_reference_enforcement():
-    from agentic_core.L2_execution.enforcement.runtime_interceptor import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """REQ-270: Seam passes only immutable references."""
-    # Test immutable types pass
-    assert_immutable_reference(42, "test context")
-    assert_immutable_reference("hello", "test context")
-    assert_immutable_reference((1, 2, 3), "test context")
-    assert_immutable_reference(frozenset([1, 2, 3]), "test context")
-    assert_immutable_reference(True, "test context")
+        from agentic_core.L2_execution.enforcement.runtime_interceptor import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        """REQ-270: Seam passes only immutable references."""
+        # Test immutable types pass
+        assert_immutable_reference(42, "test context")
+        assert_immutable_reference("hello", "test context")
+        assert_immutable_reference((1, 2, 3), "test context")
+        assert_immutable_reference(frozenset([1, 2, 3]), "test context")
+        assert_immutable_reference(True, "test context")
+        assert_immutable_reference(None, "test context")
+
     assert_immutable_reference(None, "test context")
 
     # Test hashable objects pass

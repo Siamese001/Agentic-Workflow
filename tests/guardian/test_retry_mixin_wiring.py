@@ -65,12 +65,14 @@ class TestStructuralRetryMixin:
     """AST-level proof of retry mixin wiring."""
 
     def test_build_retry_manifest_exists(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L0_routing.types.determinism_types import (
-        from agentic_core.mixins.tool_reliability_mixin import ToolReliabilityMixin
-        from agentic_core.L0_routing.enforcement.execution_gateway import (
-        from agentic_core.L0_routing.enforcement.execution_gateway import (
-        node = _find_method_node(MIXIN_AST, "ToolReliabilityMixin", "_v15_build_retry_manifest")
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L0_routing.types.determinism_types import (
+                from agentic_core.mixins.tool_reliability_mixin import ToolReliabilityMixin
+                from agentic_core.L0_routing.enforcement.execution_gateway import (
+                from agentic_core.L0_routing.enforcement.execution_gateway import (
+                node = _find_method_node(MIXIN_AST, "ToolReliabilityMixin", "_v15_build_retry_manifest")
+                assert node is not None
+
         assert node is not None
 
     def test_retry_audit_exists(self):

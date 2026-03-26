@@ -193,19 +193,20 @@ CI_SCRIPT = REPO_ROOT / OPS_SCRIPTS_DIR / "ci" / "check_determinism_violations.p
 
 @pytest.mark.governance
 def test_req114_no_wallclock_determinism_critical_paths():
-    from agentic_core.L0_routing.config.path_constants import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.determinism.determinism_guard import assert_no_wallclock
-    from agentic_core.L2_execution.determinism.determinism_guard import assert_no_wallclock
-    """REQ-114: AST scan proves no wall-clock in canonical byte computation paths."""
-    # Run the CI script to check for wall-clock usage
-    result = subprocess.run(
-        [sys.executable, str(CI_SCRIPT)],
-        cwd=str(REPO_ROOT),
-        capture_output=True,
-        text=True,
-    )
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.determinism.determinism_guard import assert_no_wallclock
+        from agentic_core.L2_execution.determinism.determinism_guard import assert_no_wallclock
+        """REQ-114: AST scan proves no wall-clock in canonical byte computation paths."""
+        # Run the CI script to check for wall-clock usage
+        result = subprocess.run(
+            [sys.executable, str(CI_SCRIPT)],
+            cwd=str(REPO_ROOT),
+            capture_output=True,
+            text=True,
+        )
+
 
     # The CI script should run and report violations (existing code has them)
     # The important thing is that it can detect them

@@ -221,11 +221,13 @@ class TestAvailabilityGuardSkip:
     """if not self._X_available: return None/[]/{}"""
 
     def test_detects_mcp_available_guard(self, det, tmp_py):
-        from agentic_core.L5_safety.validators.base_detector_validator import (
-        from agentic_core.L5_safety.validators.silent_degradation_validator import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import AntiPatternScanner
+                from agentic_core.L5_safety.validators.base_detector_validator import (
+                from agentic_core.L5_safety.validators.silent_degradation_validator import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import AntiPatternScanner
+                code = """\
+
         code = """\
 class Bridge:
     def push(self, op):

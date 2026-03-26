@@ -335,14 +335,15 @@ class TestWave1UWGImportRemoval:
 
     @pytest.mark.parametrize("path,name", TARGETS, ids=lambda x: x if isinstance(x, str) else "")
     def test_no_top_level_write_gateway_import(self, path, name):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        tree = _parse(path)
-        hits = _top_level_fragment(tree, "write_gateway")
-        assert hits == [], (
-            f"{name}: found top-level write_gateway import at lines {hits}. "
-            "Validators must not hold a top-level UWG dependency."
-        )
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                tree = _parse(path)
+                hits = _top_level_fragment(tree, "write_gateway")
+                assert hits == [], (
+                    f"{name}: found top-level write_gateway import at lines {hits}. "
+                    "Validators must not hold a top-level UWG dependency."
+                )
+
 
     @pytest.mark.parametrize("path,name", TARGETS, ids=lambda x: x if isinstance(x, str) else "")
     def test_no_wg_alias_in_source(self, path, name):

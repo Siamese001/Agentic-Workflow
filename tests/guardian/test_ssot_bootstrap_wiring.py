@@ -222,14 +222,16 @@ class TestStructuralSSOTBootstrap:
     """AST-level proof of SSOT bootstrap wiring."""
 
     def test_legacy_main_exists(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L0_routing.types.determinism_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
-        from agentic_core.L0_routing.enforcement.traceability_contracts import generate_trace_id
-        from agentic_core.L0_routing.enforcement.execution_gateway import (
-        node = _find_function_node(SSOT_AST, "_legacy_main")
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L0_routing.types.determinism_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+                from agentic_core.L0_routing.enforcement.traceability_contracts import generate_trace_id
+                from agentic_core.L0_routing.enforcement.execution_gateway import (
+                node = _find_function_node(SSOT_AST, "_legacy_main")
+                assert node is not None
+
         assert node is not None
 
     def test_build_ssot_manifest_exists(self):

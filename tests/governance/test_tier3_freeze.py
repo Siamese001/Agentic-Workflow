@@ -176,10 +176,13 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.governance
 def test_tier3_freeze_disables_write_gateway():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
-    from agentic_core.L2_execution.enforcement.capability_chokepoint import CapabilityChokepoint
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+        from agentic_core.L2_execution.enforcement.capability_chokepoint import CapabilityChokepoint
+        from agentic_core.L2_execution.enforcement.capability_chokepoint import CapabilityChokepoint
+    #  # MOVED: from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+
 #  # MOVED: from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
 
     uwg = UniversalWriteGateway()

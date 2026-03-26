@@ -203,14 +203,16 @@ def compute_w4_determinism_digest() -> str:
 
 
 def test_sovereign_llm_gateway_exists():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
-    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
-    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
-    from agentic_core.L0_routing.config.path_constants import (
-    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
     """Test that SovereignLLMGateway exists and is the generation choke point."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
+        from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
+        from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
+        """Test that SovereignLLMGateway exists and is the generation choke point."""
+
 #  # MOVED: from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
 
     # Verify gateway exists

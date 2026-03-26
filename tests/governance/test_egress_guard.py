@@ -183,15 +183,17 @@ pytestmark = pytest.mark.governance
 
 
 def test_gateway_has_egress_audit_log():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.audit.hash_chain_audit_log import HashChainAuditLog
-    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
-    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
-    from agentic_core.L2_execution.types.gateway_types import GenerationRequest
-    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
-    from agentic_core.L2_execution.types.gateway_types import GenerationRequest
     """Gateway must expose a HashChainAuditLog as _egress_audit_log."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.audit.hash_chain_audit_log import HashChainAuditLog
+        from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
+        from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
+        from agentic_core.L2_execution.types.gateway_types import GenerationRequest
+        from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
+        from agentic_core.L2_execution.types.gateway_types import GenerationRequest
+        """Gateway must expose a HashChainAuditLog as _egress_audit_log."""
+
 #  # MOVED: from agentic_core.L2_execution.audit.hash_chain_audit_log import HashChainAuditLog
 #  # MOVED: from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
         SovereignLLMGateway,

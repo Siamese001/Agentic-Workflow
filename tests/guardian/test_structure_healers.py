@@ -331,15 +331,17 @@ class TestHealerRegistry:
     }
 
     def test_all_healers_registered(self) -> None:
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.healers.architecture_governance_healer import (
-        from agentic_core.L2_execution.healers.classification_compliance_healer import (
-        from agentic_core.L2_execution.healers.hierarchy_compliance_healer import (
-        from agentic_core.L2_execution.types.heal_contract_types import (
-        from agentic_core.L2_execution.types.healer_registry_types import HEALER_REGISTRY
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        for cid in self.EXPECTED_IDS:
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.healers.architecture_governance_healer import (
+                from agentic_core.L2_execution.healers.classification_compliance_healer import (
+                from agentic_core.L2_execution.healers.hierarchy_compliance_healer import (
+                from agentic_core.L2_execution.types.heal_contract_types import (
+                from agentic_core.L2_execution.types.healer_registry_types import HEALER_REGISTRY
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                for cid in self.EXPECTED_IDS:
+                    assert cid in HEALER_REGISTRY, f"{cid} not in HEALER_REGISTRY"
+
             assert cid in HEALER_REGISTRY, f"{cid} not in HEALER_REGISTRY"
 
     def test_registry_values_are_callable(self) -> None:

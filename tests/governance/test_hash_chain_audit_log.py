@@ -167,10 +167,12 @@ class TestGenesisRule:
     """First entry must follow genesis convention."""
 
     def test_first_entry_has_genesis_previous_hash(self):
-        from agentic_core.L2_execution.audit.hash_chain_audit_log import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        log = HashChainAuditLog()
-        entry = log.append(tier="L2", action="init")
+                from agentic_core.L2_execution.audit.hash_chain_audit_log import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                log = HashChainAuditLog()
+                entry = log.append(tier="L2", action="init")
+                assert entry.previous_hash == GENESIS_HASH
+
         assert entry.previous_hash == GENESIS_HASH
 
     def test_first_entry_has_index_zero(self):

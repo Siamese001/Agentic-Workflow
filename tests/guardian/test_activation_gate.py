@@ -176,10 +176,12 @@ class TestHappyPath:
     """All enforcement modules present → gate allows."""
 
     def test_all_components_present_no_raise(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L5_safety.enforcement.activation_gate import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """With real modules present, assert_activation_allowed must not raise."""
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L5_safety.enforcement.activation_gate import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """With real modules present, assert_activation_allowed must not raise."""
+                assert_activation_allowed()
+
         assert_activation_allowed()
 
     def test_all_components_present_with_trace_id(self):

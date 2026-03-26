@@ -190,12 +190,14 @@ pytestmark = pytest.mark.governance
 
 class TestDeriveHmacKey:
     def test_returns_tuple_of_three(self) -> None:
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.enforcement.key_derivation import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        key, version, salt_hash = derive_hmac_key(b"master-secret")
-        assert isinstance(key, bytes)
-        assert isinstance(version, str)
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.enforcement.key_derivation import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                key, version, salt_hash = derive_hmac_key(b"master-secret")
+                assert isinstance(key, bytes)
+                assert isinstance(version, str)
+                assert isinstance(salt_hash, str)
+
         assert isinstance(salt_hash, str)
 
     def test_key_is_32_bytes(self) -> None:

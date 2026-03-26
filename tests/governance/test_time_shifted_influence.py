@@ -185,11 +185,13 @@ class TestNoMidRunMutation:
     """Routing must not change during a single run."""
 
     def test_routing_unchanged_in_same_run(self):
-        from agentic_core.L0_routing.types.routing_config_seal_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test routing_unchanged_in_same_run runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
+                from agentic_core.L0_routing.types.routing_config_seal_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test routing_unchanged_in_same_run runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
     input_data = {}  # Replace with actual test data
 
     # Act

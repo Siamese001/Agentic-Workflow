@@ -192,9 +192,11 @@ class TestOscillationDetectorBasic:
         self.detector = OscillationDetector(cooldown_window=10, freeze_cycles=5)
 
     def test_single_change_no_freeze(self) -> None:
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.enforcement.oscillation_detector import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.enforcement.oscillation_detector import (
+                self.detector.record_change("threshold_a", 0.7, cycle=1)
+
         self.detector.record_change("threshold_a", 0.7, cycle=1)
 
     def test_same_value_repeated_no_freeze(self) -> None:

@@ -187,22 +187,24 @@ class TestHealTelemetrySchema:
     """Tests for HealTelemetryRecord schema and determinism."""
 
     def test_telemetry_record_schema(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.types.heal_llm_seam_types import HealTelemetryRecord
-        from agentic_core.L5_safety.types.heal_llm_seam_types import HealTelemetryRecord
-        from agentic_core.L5_safety.types.heal_llm_seam_types import HealTelemetryRecord
-        from agentic_core.L5_safety.types.heal_llm_seam_types import (
-        from agentic_core.L5_safety.types.heal_llm_seam_types import (
-        from agentic_core.L5_safety.types.heal_llm_seam_types import (
-        from agentic_core.L5_safety.types.heal_llm_seam_types import HealBudgetCaps
-        from agentic_core.L5_safety.types.heal_llm_seam_types import HealBudgetCaps
-        from agentic_core.L5_safety.types.heal_llm_seam_types import (
-        from agentic_core.L5_safety.types.heal_llm_seam_types import (
-        from agentic_core.L5_safety.types.heal_llm_seam_types import (
-        from agentic_core.L5_safety.types.heal_llm_seam_types import (
-        from agentic_core.L5_safety.types.heal_llm_seam_types import (
         """HealTelemetryRecord has all required fields."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.types.heal_llm_seam_types import HealTelemetryRecord
+                from agentic_core.L5_safety.types.heal_llm_seam_types import HealTelemetryRecord
+                from agentic_core.L5_safety.types.heal_llm_seam_types import HealTelemetryRecord
+                from agentic_core.L5_safety.types.heal_llm_seam_types import (
+                from agentic_core.L5_safety.types.heal_llm_seam_types import (
+                from agentic_core.L5_safety.types.heal_llm_seam_types import (
+                from agentic_core.L5_safety.types.heal_llm_seam_types import HealBudgetCaps
+                from agentic_core.L5_safety.types.heal_llm_seam_types import HealBudgetCaps
+                from agentic_core.L5_safety.types.heal_llm_seam_types import (
+                from agentic_core.L5_safety.types.heal_llm_seam_types import (
+                from agentic_core.L5_safety.types.heal_llm_seam_types import (
+                from agentic_core.L5_safety.types.heal_llm_seam_types import (
+                from agentic_core.L5_safety.types.heal_llm_seam_types import (
+                """HealTelemetryRecord has all required fields."""
+
 #  # MOVED: from agentic_core.L5_safety.types.heal_llm_seam_types import HealTelemetryRecord
 
         record = HealTelemetryRecord(

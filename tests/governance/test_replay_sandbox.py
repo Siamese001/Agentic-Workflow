@@ -176,9 +176,12 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.governance
 def test_replay_sandbox_blocks_network():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.determinism.replay_guard import ReplayGuard
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.determinism.replay_guard import ReplayGuard
+        from agentic_core.L2_execution.determinism.replay_guard import ReplayGuard
+    #  # MOVED: from agentic_core.L2_execution.determinism.replay_guard import ReplayGuard
+
 #  # MOVED: from agentic_core.L2_execution.determinism.replay_guard import ReplayGuard
 
     guard = ReplayGuard()

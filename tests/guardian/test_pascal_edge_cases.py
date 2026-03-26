@@ -56,11 +56,13 @@ class TestPascalHardening:
         return agent
 
     def test_ops_script_protection(self, agent, tmp_path):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
-        """Verify scripts in ops_scripts with classes are classified by AST content."""
-        script_path = tmp_path / OPS_SCRIPTS_DIR / "DatabaseFixer.py"
-        script_path.parent.mkdir()
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
+                """Verify scripts in ops_scripts with classes are classified by AST content."""
+                script_path = tmp_path / OPS_SCRIPTS_DIR / "DatabaseFixer.py"
+                script_path.parent.mkdir()
+                script_path.write_text("class InternalTool: pass\nif __name__ == '__main__': pass")
+
         script_path.write_text("class InternalTool: pass\nif __name__ == '__main__': pass")
 
         ftype = agent.classify_file(script_path)

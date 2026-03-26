@@ -189,13 +189,15 @@ class TestEvaluationExample:
         return EvaluationExample(**defaults)
 
     def test_to_dict_roundtrip(self):
-        from agentic_core.evaluation.schemas.evaluation_dataset_schema import (
-        from agentic_core.evaluation.schemas.evaluation_report_schema import (
-        from agentic_core.evaluation.schemas.evaluation_result_schema import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test to_dict_roundtrip contract compliance."""
-    # Arrange
-    # TODO: Set up contract test scenario
+                from agentic_core.evaluation.schemas.evaluation_dataset_schema import (
+                from agentic_core.evaluation.schemas.evaluation_report_schema import (
+                from agentic_core.evaluation.schemas.evaluation_result_schema import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test to_dict_roundtrip contract compliance."""
+            # Arrange
+            # TODO: Set up contract test scenario
+            test_scenario = {}  # Replace with actual test scenario
+
     test_scenario = {}  # Replace with actual test scenario
 
     # Act

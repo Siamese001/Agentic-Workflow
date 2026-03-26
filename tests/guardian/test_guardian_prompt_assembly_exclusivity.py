@@ -215,9 +215,11 @@ def _violations(source: str, tmp_path: Path, filename: str = "subject.py") -> li
 
 class TestDirectPromptCompilationCleanFile:
     def test_empty_file_no_violations(self, tmp_path):
-        from agentic_core.L5_safety.validators.base_detector_validator import (
-        from agentic_core.L5_safety.validators.direct_prompt_compilation_validator import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.validators.base_detector_validator import (
+                from agentic_core.L5_safety.validators.direct_prompt_compilation_validator import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert _violations("", tmp_path) == []
+
         assert _violations("", tmp_path) == []
 
     def test_regular_string_ops_no_violations(self, tmp_path):

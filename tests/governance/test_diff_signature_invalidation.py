@@ -178,10 +178,13 @@ def _make_trust_root() -> TrustRoot:
 
 @pytest.mark.governance
 def test_modify_diff_invalidates_old_signature() -> None:
-    from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
-    from agentic_core.L0_routing.types.crypto_trust_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test modify_diff_invalidates_old_signature contract compliance."""
+        from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
+        from agentic_core.L0_routing.types.crypto_trust_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    """Test modify_diff_invalidates_old_signature contract compliance."""
+
 # Arrange
 # TODO: Set up test data
 test_data = {}  # Replace with actual test data

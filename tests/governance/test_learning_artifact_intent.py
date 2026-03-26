@@ -166,16 +166,18 @@ class TestFrozenImmutability:
     """LearningArtifactIntent must be frozen — no field mutation."""
 
     def test_cannot_set_field_after_construction(self):
-        from agentic_core.L0_routing.seams.learning_seam import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        intent = LearningArtifactIntent.create(
-            agent_id="agent-1",
-            execution_id="exec-1",
-            outcome="success",
-            metrics=SAMPLE_METRICS,
-            context_hash="abc123",
-        )
-        with pytest.raises(AttributeError):
+                from agentic_core.L0_routing.seams.learning_seam import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                intent = LearningArtifactIntent.create(
+                    agent_id="agent-1",
+                    execution_id="exec-1",
+                    outcome="success",
+                    metrics=SAMPLE_METRICS,
+                    context_hash="abc123",
+                )
+                with pytest.raises(AttributeError):
+                    intent.agent_id = "tampered"  # type: ignore[misc]
+
             intent.agent_id = "tampered"  # type: ignore[misc]
 
     def test_cannot_delete_field(self):

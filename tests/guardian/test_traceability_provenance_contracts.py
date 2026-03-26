@@ -206,9 +206,11 @@ class TestP4_155_TraceIDFormat:
     """§15.5: Trace IDs must match ^CC3AL1-[0-9A-F]{8}$."""
 
     def test_valid_trace_id(self):
-        from agentic_core.L0_routing.enforcement.traceability_contracts import (
-        from agentic_core.L0_routing.types.traceability_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.enforcement.traceability_contracts import (
+                from agentic_core.L0_routing.types.traceability_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                assert validate_trace_id("CC3AL1-0A1B2C3D") == "CC3AL1-0A1B2C3D"
+
         assert validate_trace_id("CC3AL1-0A1B2C3D") == "CC3AL1-0A1B2C3D"
 
     def test_generate_valid(self):

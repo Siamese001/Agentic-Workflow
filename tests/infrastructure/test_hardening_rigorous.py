@@ -48,17 +48,18 @@ class TestEdgeCasesAndBoundaries(unittest.TestCase):
         self.security_gateway = SecurityGateway()
 
     def test_empty_query_handling(self):
-        from infrastructure.hardening.adaptive_optimizer import AdaptiveOptimizer
-        from infrastructure.hardening.cross_layer_coherence import CrossLayerCoherenceManager
-        from infrastructure.hardening.distributed_state_manager import DistributedStateManager
-        from infrastructure.hardening.implementation_plan import (
-        from infrastructure.hardening.security_framework import (
-        from infrastructure.hardening.unified_query_router import UnifiedQueryRouter
-        """Test handling of empty and null queries."""
-        # Test empty string query
-        empty_request = QueryRequest(
-            query_id="empty_test", user_query="", timestamp=datetime.now(), priority=1
-        )
+                from infrastructure.hardening.adaptive_optimizer import AdaptiveOptimizer
+                from infrastructure.hardening.cross_layer_coherence import CrossLayerCoherenceManager
+                from infrastructure.hardening.distributed_state_manager import DistributedStateManager
+                from infrastructure.hardening.implementation_plan import (
+                from infrastructure.hardening.security_framework import (
+                from infrastructure.hardening.unified_query_router import UnifiedQueryRouter
+                """Test handling of empty and null queries."""
+                # Test empty string query
+                empty_request = QueryRequest(
+                    query_id="empty_test", user_query="", timestamp=datetime.now(), priority=1
+                )
+
 
         responses = asyncio.run(self.router.route_query(empty_request, [LayerType.REDIS_EXACT_MATCH]))
 

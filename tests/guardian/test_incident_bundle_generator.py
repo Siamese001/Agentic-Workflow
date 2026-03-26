@@ -184,10 +184,12 @@ class TestFirstRun:
     """First run on empty dir creates the full bundle."""
 
     def test_exit_zero(self, tmp_path):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        out = tmp_path / "bundle"
-        code, msgs = create_bundle(out, INCIDENT_ID)
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                out = tmp_path / "bundle"
+                code, msgs = create_bundle(out, INCIDENT_ID)
+                assert code == 0
+
         assert code == 0
 
     def test_readme_created(self, tmp_path):

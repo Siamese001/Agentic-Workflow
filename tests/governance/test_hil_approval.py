@@ -178,10 +178,13 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.governance
 def test_req085_reviewer_sig_field_required():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L0_routing.types.governance_types import HILReviewOutcome
-    from agentic_core.L0_routing.types.governance_types import HILReviewOutcome
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.types.governance_types import HILReviewOutcome
+        from agentic_core.L0_routing.types.governance_types import HILReviewOutcome
+        from agentic_core.L0_routing.types.governance_types import HILReviewOutcome
+    #  # MOVED: from agentic_core.L0_routing.types.governance_types import HILReviewOutcome
+
 #  # MOVED: from agentic_core.L0_routing.types.governance_types import HILReviewOutcome
 
     fields = {f.name for f in dataclasses.fields(HILReviewOutcome)}

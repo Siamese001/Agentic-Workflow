@@ -319,17 +319,19 @@ class TestScanCapImportDetection:
     """AST correctly identifies guardians that import scan cap constants."""
 
     def test_detects_scan_cap_imports(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.scripts.run_guardian_contract_integrity import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-        from agentic_core.L0_routing.types.guardian_contract_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        tree = ast.parse(GOOD_GUARDIAN_SOURCE)
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.scripts.run_guardian_contract_integrity import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.types.guardian_contract_types import (
+                from agentic_core.L0_routing.types.guardian_contract_types import (
+                from agentic_core.L0_routing.types.guardian_contract_types import (
+                from agentic_core.L0_routing.types.guardian_contract_types import (
+                from agentic_core.L0_routing.types.guardian_contract_types import (
+                from agentic_core.L0_routing.types.guardian_contract_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                tree = ast.parse(GOOD_GUARDIAN_SOURCE)
+                assert _check_imports_scan_caps(tree) is True
+
         assert _check_imports_scan_caps(tree) is True
 
     def test_non_scanning_guardian_has_no_caps(self):

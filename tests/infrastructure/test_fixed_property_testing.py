@@ -20,11 +20,13 @@ class TestFixedPropertyBasedTesting(unittest.TestCase):
         self.guard = PrecisionFourLayerContractGuard()
 
     def test_simple_boolean_property(self):
-        from infrastructure.hardening.novel_testing_frameworks import PropertyBasedTestingFramework, PropertyInvariant
-        from infrastructure.hardening.precision_contracts import PrecisionFourLayerContractGuard
-        """Test simple boolean property that should always pass."""
-        def always_true_property(x):
-            """Property: Always returns True for any input."""
+                from infrastructure.hardening.novel_testing_frameworks import PropertyBasedTestingFramework, PropertyInvariant
+                from infrastructure.hardening.precision_contracts import PrecisionFourLayerContractGuard
+                """Test simple boolean property that should always pass."""
+                def always_true_property(x):
+                    """Property: Always returns True for any input."""
+                    return True
+
             return True
 
         invariant = PropertyInvariant(

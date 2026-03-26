@@ -371,22 +371,24 @@ class TestParentChildExpander:
         return expander, entry
 
     def test_expand_known_chunk_sets_parent_content(self):
-        from agentic_core.evaluation.monitoring.completeness_monitors import (
-        from agentic_core.evaluation.retrieval.answer_support import KeywordAnswerSupportValidator
-        from agentic_core.evaluation.retrieval.completeness import (
-        from agentic_core.evaluation.retrieval.completeness_reranker import (
-        from agentic_core.evaluation.retrieval.completeness_scorer import (
-        from agentic_core.evaluation.retrieval.interfaces import Document
-        from agentic_core.evaluation.retrieval.l4_registries import (
-        from agentic_core.evaluation.retrieval.late_chunking import (
-        from agentic_core.evaluation.retrieval.meta_learning_bridge import (
-        from agentic_core.evaluation.retrieval.parent_child import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        expander, entry = self._build_registry_with_chunk()
-        doc = _make_doc("c1", content="chunk one content")
-        result = expander.expand(doc)
-        assert result.expanded is True
-        assert result.parent_section_id == "sec_1"
+                from agentic_core.evaluation.monitoring.completeness_monitors import (
+                from agentic_core.evaluation.retrieval.answer_support import KeywordAnswerSupportValidator
+                from agentic_core.evaluation.retrieval.completeness import (
+                from agentic_core.evaluation.retrieval.completeness_reranker import (
+                from agentic_core.evaluation.retrieval.completeness_scorer import (
+                from agentic_core.evaluation.retrieval.interfaces import Document
+                from agentic_core.evaluation.retrieval.l4_registries import (
+                from agentic_core.evaluation.retrieval.late_chunking import (
+                from agentic_core.evaluation.retrieval.meta_learning_bridge import (
+                from agentic_core.evaluation.retrieval.parent_child import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                expander, entry = self._build_registry_with_chunk()
+                doc = _make_doc("c1", content="chunk one content")
+                result = expander.expand(doc)
+                assert result.expanded is True
+                assert result.parent_section_id == "sec_1"
+                assert "conditions" in result.parent_content
+
         assert "conditions" in result.parent_content
 
     def test_expand_known_chunk_heading_path(self):

@@ -120,9 +120,11 @@ class TestLayerInventory:
     """Test suite for layer inventory and deterministic scanning."""
 
     def test_exactly_seven_layers_exist(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        """Assert exactly 7 layers exist (L0–L6)."""
-        layers = discover_layers()
+                from agentic_core.L0_routing.config.path_constants import (
+                """Assert exactly 7 layers exist (L0–L6)."""
+                layers = discover_layers()
+                assert layers == [0, 1, 2, 3, 4, 5, 6], f"Expected L0-L6, got {layers}"
+
         assert layers == [0, 1, 2, 3, 4, 5, 6], f"Expected L0-L6, got {layers}"
 
     def test_layer_ordering_is_monotonic(self):
