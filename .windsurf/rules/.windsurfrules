@@ -235,6 +235,29 @@ Commit message footer MUST include: `repair_class: <class>`
 
 **Full tool reference, CLI examples, forbidden substitutions, config entries, and fix protocol:** See `docs/reference/adg_mcp_reference.md`.
 
+### 2.7 Tool Selection Hierarchy
+
+Query Type → Tool Selection:
+1. "Which files import X?" → ADG Redis: adg_edge_fanin(node, "imports")
+2. "What does file X call?" → ADG Redis: adg_edge_fanout(node, "calls") 
+3. "Which layer is X in?" → ADG Redis: adg_node(id) → layer field
+4. "Does X violate anti-patterns?" → ADG Redis: adg_violations()
+5. "Find all subprocess.run calls" → ADG SQLite: edges WHERE symbol LIKE 'subprocess.run%'
+6. "Find string literal 'foo'" → grep (ADG doesn't index literals)
+7. "Parse single fresh file" → AST (file not yet in ADG)
+8. "Check comment format" → grep (ADG doesn't index comments)
+
+Decision Matrix:
+| Need | Tool | When |
+|------|------|------|
+| Relationship query | ADG Redis | Cache is hot (adg_status → fresh) |
+| Relationship query | ADG SQLite | Cache stale, SQLite exists |
+| Bulk symbol search | ADG SQLite | SQL query faster than Redis scan |
+| Fresh-file structure | AST parse | File changed since last ADG regen |
+| String literal/comment | grep/regex | ADG doesn't index these |
+| File discovery | ADG nodes_by_file/layer | Replaces glob/rglob |
+| Fallback | AST → grep | ADG unavailable AND fail-closed waived |
+
 ---
 
 ## §3. EVIDENCE & DOCUMENTATION
