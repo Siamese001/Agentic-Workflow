@@ -219,47 +219,24 @@ class GraphMemoryBridge:
     All operations are thread-safe.
 
     Usage:
-        bridge = GraphMemoryBridge.get_instance()
+        bridge = GraphMemoryBridge()
         bridge.create_agent_entity("GovernorAgent")
         bridge.create_mastered_task_relation("GovernorAgent", "task_hash_123")
+
+    For testing with isolation:
+        with GraphMemoryBridge() as bridge:
+            bridge.create_agent_entity("TestAgent")
+            # Automatically cleaned up when exiting context
     """
 
-    _instance: GraphMemoryBridge | None = None
-    _instance_lock = threading.RLock()
     RELATION_MASTERED_TASK = "MASTERED_TASK"
     RELATION_FAILED_TASK = "FAILED_TASK"
     RELATION_INTERACTS_WITH = "INTERACTS_WITH"
     RELATION_DEPENDS_ON = "DEPENDS_ON"
     RELATION_INHERITS_FROM = "INHERITS_FROM"
 
-    @classmethod
-    def get_instance(cls) -> GraphMemoryBridge:
-        """Get the singleton instance of GraphMemoryBridge."""
-        import uuid as _uuid  # noqa: PLC0415
-
-        _emit_snapshots_state(str(_uuid.uuid4()), "GraphMemoryBridge.get_instance", "state_snapshot")
-        import hashlib as _hashlib  # noqa: PLC0415
-        import uuid as _uuid  # noqa: PLC0415
-
-        _tid = str(_uuid.uuid4())
-        _emit_signs_execution_trace(_tid, _hashlib.sha256(_tid.encode()).hexdigest()[:12], "p0_trace", 0)
-        import uuid as _uuid  # noqa: PLC0415
-
-        _emit_applies_guardrail(str(_uuid.uuid4()), "GraphMemoryBridge.get_instance", "p0_governance")
-        _emit_writes_through(str(uuid.uuid4()), "GraphMemoryBridge.get_instance", "L4_STATE")
-        with cls._instance_lock:
-            if cls._instance is None:
-                cls._instance = cls()
-            return cls._instance
-
-    @classmethod
-    def reset_instance(cls) -> None:
-        """Reset the singleton instance (for testing only)."""
-        with cls._instance_lock:
-            cls._instance = None
-
     def __init__(self):
-        """Initialize the Graph Memory Bridge."""
+        """Initialize the Graph Memory Bridge with isolated state."""
         self._lock = threading.RLock()
         self._mcp_available = False
         self._sqlite_store: Any = None
@@ -276,7 +253,73 @@ class GraphMemoryBridge:
             "operations_skipped": 0,
         }
         self._registered_entities: set[str] = set()
+        self._cleanup_registered = False
         self._init_mcp()
+
+    def __enter__(self):
+        """Context manager entry - return self for use in 'with' statement."""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager exit - automatically cleanup when leaving context."""
+        self.cleanup()
+        return False  # Don't suppress exceptions
+
+    def cleanup(self) -> None:
+        """Explicit cleanup method for test isolation.
+
+        Resets all instance state to ensure clean test isolation.
+        Can be called multiple times safely.
+        """
+        if self._cleanup_registered:
+            return  # Already cleaned up
+
+        with self._lock:
+            # Clear all state
+            self._registered_entities.clear()
+            self.stats = {
+                "entities_created": 0,
+                "relations_created": 0,
+                "observations_added": 0,
+                "searches_performed": 0,
+                "mcp_errors": 0,
+                "operations_skipped": 0,
+            }
+
+            # Reset MCP connections
+            self._mcp_available = False
+            self._mcp_module = None
+            self._create_entities_fn = None
+            self._create_relations_fn = None
+            self._add_observations_fn = None
+            self._search_nodes_fn = None
+
+            # Mark as cleaned up
+            self._cleanup_registered = True
+
+    def validate_state_isolation(self) -> dict[str, Any]:
+        """Validate that state is properly isolated.
+
+        Returns:
+            Dictionary with isolation validation results.
+        """
+        with self._lock:
+            return {
+                "registered_entities_count": len(self._registered_entities),
+                "stats_totals": sum(self._stats.values()),
+                "mcp_available": self._mcp_available,
+                "cleanup_registered": self._cleanup_registered,
+                "is_clean": len(self._registered_entities) == 0 and sum(self._stats.values()) == 0
+            }
+
+    @classmethod
+    def create_isolated(cls) -> GraphMemoryBridge:
+        """Create a completely isolated instance for testing.
+
+        Returns:
+            New GraphMemoryBridge instance with guaranteed isolation.
+        """
+        return cls()
 
     def _init_mcp(self) -> None:
         """
