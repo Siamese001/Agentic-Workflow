@@ -15,13 +15,13 @@ class GeneratedTest(unittest.TestCase):
     def test_resolve_ssot_binding(self):
         """Test resolve_ssot_binding function."""
         from agentic_core.L0_routing.enforcement import resolve_ssot_binding
-        result = resolve_ssot_binding()
+        result = resolve_ssot_binding("node123", {"node123": "binding123"})
         self.assertIsNotNone(result)
 
     def test_build_context_retrieval_request(self):
         """Test build_context_retrieval_request function."""
         from agentic_core.L0_routing.enforcement import build_context_retrieval_request
-        result = build_context_retrieval_request()
+        result = build_context_retrieval_request("trace123", "hash123", 42)
         self.assertIsNotNone(result)
 
     def test_SSOTBindingError_init(self):

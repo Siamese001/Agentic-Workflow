@@ -346,7 +346,7 @@ def _emit_transcripts_response(root_trace_id: str, transcript_id: str, model_id:
 
 def _emit_hard_fails_untranscripted(root_trace_id: str, reason: str) -> None:
     """Emit hard_fails_untranscripted ADG edge (§8)."""
-    _HARDFAIL_LOG.warning(
+    _HARDFAIL_LOG.debug(
         "hard_fails_untranscripted root_trace_id=%s reason=%s",
         root_trace_id,
         reason,

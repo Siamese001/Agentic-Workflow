@@ -64,13 +64,28 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 )
 
 # Import classes from individual modules
+from .boundary_contracts import (
+    SSOTBindingError,
+    ContextRetrievalError,
+    resolve_ssot_binding,
+    build_context_retrieval_request,
+)
 from .crypto_trust_contracts import (
     SigningError,
     VerificationError,
+    hash_artifact_canonical,
+    sign_artifact,
+)
+from .execution_gateway import (
+    ExecutionGatewayError,
+    UnregisteredAgentError,
+    V15ExecutionGateway as ExecutionGateway,
 )
 from .governance_contracts import (
     EvidencePackError,
     PolicyExceptionError,
+    build_evidence_pack,
+    validate_evidence_pack,
 )
 from .mutation_prohibition import (
     ProtectedRootBlockEvent,
@@ -92,7 +107,7 @@ def active_merkle_root():
     return "dummy_merkle_root"
 
 def format():
-    """Placeholder function for test compatibility.""" 
+    """Placeholder function for test compatibility."""
     # This would normally format something
     # For test purposes, return a dummy value
     return "formatted_output"
@@ -180,10 +195,21 @@ __all__ = [
     'emit_determinism_digest',
     'emit_replay_key',
     # Classes and functions
+    'SSOTBindingError',
+    'ContextRetrievalError',
+    'resolve_ssot_binding',
+    'build_context_retrieval_request',
     'SigningError',
     'VerificationError',
+    'hash_artifact_canonical',
+    'sign_artifact',
+    'ExecutionGatewayError',
+    'UnregisteredAgentError',
+    'ExecutionGateway',
     'EvidencePackError',
     'PolicyExceptionError',
+    'build_evidence_pack',
+    'validate_evidence_pack',
     'ProtectedRootBlockEvent',
     'SourceMutationBlocked',
     'enforce_protected_root',

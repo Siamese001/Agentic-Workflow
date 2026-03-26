@@ -15,13 +15,20 @@ class GeneratedTest(unittest.TestCase):
     def test_build_evidence_pack(self):
         """Test build_evidence_pack function."""
         from agentic_core.L0_routing.enforcement import build_evidence_pack
-        result = build_evidence_pack()
+        result = build_evidence_pack(
+            "trace123", ("action1", "action2"), ("eval1", "eval2"),
+            risk_score=0.5, budget_breach_data={}, boundary_snapshot_hash="hash123"
+        )
         self.assertIsNotNone(result)
 
     def test_validate_evidence_pack(self):
         """Test validate_evidence_pack function."""
-        from agentic_core.L0_routing.enforcement import validate_evidence_pack
-        result = validate_evidence_pack()
+        from agentic_core.L0_routing.enforcement import build_evidence_pack, validate_evidence_pack
+        pack = build_evidence_pack(
+            "trace123", ("action1", "action2"), ("eval1", "eval2"),
+            risk_score=0.5, budget_breach_data={}, boundary_snapshot_hash="hash123"
+        )
+        result = validate_evidence_pack(pack)
         self.assertIsNotNone(result)
 
     def test_EvidencePackError_init(self):

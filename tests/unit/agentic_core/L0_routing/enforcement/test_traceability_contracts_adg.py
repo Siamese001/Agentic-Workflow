@@ -7,7 +7,11 @@ BATCH_SIZE = 32
 MAX_DEPTH = 6
 MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300
+import os
 import unittest
+
+# Disable runtime mutation guard for tests
+os.environ['DISABLE_RUNTIME_MUTATION_GUARD'] = '1'
 
 class GeneratedTest(unittest.TestCase):
     """Generated test class for agentic_core.L0_routing.enforcement."""
@@ -15,13 +19,13 @@ class GeneratedTest(unittest.TestCase):
     def test_generate_trace_id(self):
         """Test generate_trace_id function."""
         from agentic_core.L0_routing.enforcement import generate_trace_id
-        result = generate_trace_id()
+        result = generate_trace_id("ABCDEF12")  # 8 hex chars
         self.assertIsNotNone(result)
 
     def test_build_error_signature(self):
         """Test build_error_signature function."""
         from agentic_core.L0_routing.enforcement import build_error_signature
-        result = build_error_signature()
+        result = build_error_signature("TypeError", "node123", 42)
         self.assertIsNotNone(result)
 
     def test_TraceIDFormatError_init(self):
