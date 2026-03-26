@@ -9,6 +9,7 @@ from typing import Any
 
 try:
     from agentic_core.L6_observability.reasoning.layer_decorator import layer_entry
+# guardian: allow-silent-degradation - Optional layer decorator
 except ImportError:  # guardian: allow-silent-swallow
 
     def layer_entry(*args, **kwargs):  # type: ignore[misc]
@@ -136,6 +137,7 @@ from agentic_core.utils.timeout_decorator_util import timeout
 
 try:
     from agentic_core.runtime.shared_runtime import publish_event, subscribe_event
+# guardian: allow-silent-degradation - Optional runtime events
 except ImportError:
 
     def publish_event(event_type: str, payload: dict) -> Any:
@@ -149,6 +151,7 @@ except ImportError:
 
 try:
     from agentic_core.L3_orchestration.reasoning.task_queue import enqueue
+# guardian: allow-silent-degradation - Optional task queue
 except ImportError:
 
     def enqueue(task_payload: dict) -> Any:
