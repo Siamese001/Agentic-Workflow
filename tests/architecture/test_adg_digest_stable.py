@@ -202,12 +202,14 @@ def full_scan_result(scan_cache_path: Path):
 @pytest.mark.determinism
 @pytest.mark.timeout(420)
 def test_adg_digest_stable_two_runs(full_scan_result, scan_cache_path: Path) -> None:
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
-    from agentic_core.adg.artifact.builder_types import build_artifact
-    """Scanner digest must be identical across two independent invocations."""
-    result_1 = full_scan_result
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.artifact.builder_types import build_artifact
+        """Scanner digest must be identical across two independent invocations."""
+        result_1 = full_scan_result
+        result_2 = _make_scanner(scan_cache_path).scan(commit_sha="test-run-2")
+
     result_2 = _make_scanner(scan_cache_path).scan(commit_sha="test-run-2")
 
     assert result_1.digest, "First scan produced empty digest"

@@ -153,11 +153,13 @@ def _ast_parse_raises(source: str) -> bool:
 @pytest.mark.architecture
 @pytest.mark.parametrize("filepath", PARSE_FAILURE_FILES, ids=[p.name for p in PARSE_FAILURE_FILES])
 def test_parse_failure_file_parses_cleanly(filepath):
-    from agentic_core.L0_routing.config.path_constants import (
-    from agentic_core.L5_safety.enforcement.import_guard import get_import_guard
-    """Success: each formerly-broken file must now parse without SyntaxError."""
-    assert filepath.exists(), f"File missing: {filepath}"
-    ok, err = _ast_parse_ok(filepath)
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L5_safety.enforcement.import_guard import get_import_guard
+        """Success: each formerly-broken file must now parse without SyntaxError."""
+        assert filepath.exists(), f"File missing: {filepath}"
+        ok, err = _ast_parse_ok(filepath)
+        assert ok, f"{filepath.name} still has a SyntaxError: {err}"
+
     assert ok, f"{filepath.name} still has a SyntaxError: {err}"
 
 

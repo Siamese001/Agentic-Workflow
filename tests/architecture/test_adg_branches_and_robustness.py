@@ -195,142 +195,145 @@ class TestCanonicalNameBranches:
 
     @pytest.mark.architecture
     def test_single_part(self) -> None:
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.schema_util import ADG_NS, canonical_name
-        from agentic_core.adg.schema_util import module_path_to_layer
-        from agentic_core.adg.schema_util import module_path_to_layer
-        from agentic_core.adg.schema_util import module_path_to_layer
-        from agentic_core.adg.schema_util import module_path_to_layer
-        from agentic_core.adg.schema_util import module_path_to_layer
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
-        from agentic_core.adg.extraction.static_scanner import _scan_file
-        from agentic_core.adg.extraction.static_scanner import _scan_file
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
-        from agentic_core.adg.extraction.static_scanner import _scan_file
-        from agentic_core.adg.extraction.static_scanner import _scan_file
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
-        from agentic_core.adg.extraction.static_scanner import _repo_relative
-        from agentic_core.adg.extraction.static_scanner import Edge
-        from agentic_core.adg.extraction.static_scanner import Edge
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.applications.BlastRadiusResult import (
-        from agentic_core.adg.applications.BlastRadiusResult import _HUMAN_REVIEW_THRESHOLD
-        from agentic_core.adg.applications.BlastRadiusResult import (
-        from agentic_core.adg.applications.BlastRadiusResult import _RESTRICTED_THRESHOLD
-        from agentic_core.adg.applications.BlastRadiusResult import _HUMAN_REVIEW_THRESHOLD
-        from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
-        from agentic_core.adg.applications.BlastRadiusResult import _LAYER_WEIGHTS
-        from agentic_core.adg.applications.BlastRadiusResult import _LAYER_WEIGHTS
-        from agentic_core.adg.applications.BlastRadiusResult import _LAYER_WEIGHTS
-        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.ci.invariant_scanner_config import Violation
-        from agentic_core.adg.ci.invariant_scanner_config import ScanReport
-        from agentic_core.adg.ci.invariant_scanner_config import ScanReport, Violation
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import PROVIDER_SDK_SYMBOLS, canonical_name
-        from agentic_core.adg.applications.gateway_topology_validator import check_gateway_topology
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.applications.uwg_write_authority_validator import _classify_side_effect
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.extraction.graph_persister import persist_scan_result
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.extraction.graph_persister import persist_scan_result
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.extraction.graph_persister import persist_scan_result
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.extraction.graph_persister import persist_scan_result
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.applications.rag_sovereignty_validator import (
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.cli import main
-        from agentic_core.adg.cli import main
-        from agentic_core.adg.cli import main
-        from agentic_core.adg.cli import main
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.schema_util import ADG_NS, canonical_name
+                from agentic_core.adg.schema_util import module_path_to_layer
+                from agentic_core.adg.schema_util import module_path_to_layer
+                from agentic_core.adg.schema_util import module_path_to_layer
+                from agentic_core.adg.schema_util import module_path_to_layer
+                from agentic_core.adg.schema_util import module_path_to_layer
+                from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+                from agentic_core.adg.extraction.static_scanner import _scan_file
+                from agentic_core.adg.extraction.static_scanner import _scan_file
+                from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+                from agentic_core.adg.extraction.static_scanner import _scan_file
+                from agentic_core.adg.extraction.static_scanner import _scan_file
+                from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+                from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+                from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+                from agentic_core.adg.extraction.static_scanner import _repo_relative
+                from agentic_core.adg.extraction.static_scanner import Edge
+                from agentic_core.adg.extraction.static_scanner import Edge
+                from agentic_core.adg.extraction.static_scanner import ScanResult
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.adg.extraction.static_scanner import ScanResult
+                from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
+                from agentic_core.adg.extraction.static_scanner import ScanResult
+                from agentic_core.adg.applications.BlastRadiusResult import (
+                from agentic_core.adg.applications.BlastRadiusResult import _HUMAN_REVIEW_THRESHOLD
+                from agentic_core.adg.applications.BlastRadiusResult import (
+                from agentic_core.adg.applications.BlastRadiusResult import _RESTRICTED_THRESHOLD
+                from agentic_core.adg.applications.BlastRadiusResult import _HUMAN_REVIEW_THRESHOLD
+                from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
+                from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+                from agentic_core.adg.applications.BlastRadiusResult import _LAYER_WEIGHTS
+                from agentic_core.adg.applications.BlastRadiusResult import _LAYER_WEIGHTS
+                from agentic_core.adg.applications.BlastRadiusResult import _LAYER_WEIGHTS
+                from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+                from agentic_core.adg.extraction.static_scanner import ScanResult
+                from agentic_core.adg.ci.invariant_scanner_config import Violation
+                from agentic_core.adg.ci.invariant_scanner_config import ScanReport
+                from agentic_core.adg.ci.invariant_scanner_config import ScanReport, Violation
+                from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+                from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+                from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+                from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+                from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+                from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+                from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+                from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+                from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+                from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+                from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+                from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+                from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+                from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+                from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.adg.schema_util import PROVIDER_SDK_SYMBOLS, canonical_name
+                from agentic_core.adg.applications.gateway_topology_validator import check_gateway_topology
+                from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.extraction.static_scanner import ScanResult
+                from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
+                from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.applications.uwg_write_authority_validator import _classify_side_effect
+                from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+                from agentic_core.adg.extraction.graph_persister import persist_scan_result
+                from agentic_core.adg.extraction.static_scanner import ScanResult
+                from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+                from agentic_core.adg.extraction.graph_persister import persist_scan_result
+                from agentic_core.adg.extraction.static_scanner import ScanResult
+                from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+                from agentic_core.adg.extraction.graph_persister import persist_scan_result
+                from agentic_core.adg.extraction.static_scanner import ScanResult
+                from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+                from agentic_core.adg.extraction.graph_persister import persist_scan_result
+                from agentic_core.adg.extraction.static_scanner import ScanResult
+                from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+                from agentic_core.adg.extraction.static_scanner import ScanResult
+                from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+                from agentic_core.adg.extraction.static_scanner import ScanResult
+                from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+                from agentic_core.adg.extraction.static_scanner import ScanResult
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+                from agentic_core.adg.extraction.static_scanner import ScanResult
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.applications.rag_sovereignty_validator import (
+                from agentic_core.adg.extraction.static_scanner import ScanResult
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+                from agentic_core.adg.extraction.static_scanner import ScanResult
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.cli import main
+                from agentic_core.adg.cli import main
+                from agentic_core.adg.cli import main
+                from agentic_core.adg.cli import main
+                from agentic_core.adg.cli import main
+        #  # MOVED: from agentic_core.adg.schema_util import canonical_name
+
 #  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         assert canonical_name("Module", "a.py") == "ADG::Module::a.py"

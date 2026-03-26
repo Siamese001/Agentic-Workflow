@@ -282,15 +282,16 @@ def loaded_patterns() -> list[Any]:
 
 @pytest.mark.architecture
 def test_markdown_parses_to_exactly_30_entries(canon_names: list[str]) -> None:
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.runtime.config.instructional_injections import (
-    """Pure parse test — no YAML, no imports."""
-    count = len(canon_names)
-    assert count == _EXPECTED_COUNT, (
-        f"Expected {_EXPECTED_COUNT} canonical entries in markdown table, got {count}. "
-        f"Entries found: {canon_names}"
-    )
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.runtime.config.instructional_injections import (
+        """Pure parse test — no YAML, no imports."""
+        count = len(canon_names)
+        assert count == _EXPECTED_COUNT, (
+            f"Expected {_EXPECTED_COUNT} canonical entries in markdown table, got {count}. "
+            f"Entries found: {canon_names}"
+        )
+
 
 
 def _canonical_name_to_keywords(name: str) -> list[str]:

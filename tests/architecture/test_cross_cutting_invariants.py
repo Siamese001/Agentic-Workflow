@@ -68,13 +68,14 @@ class TestSingleThresholdSource:
         }
 
     def test_healing_confidence_x_defined_only_in_tier_config(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-        qwen_names = self._assignment_names(self._QWEN_ML)
-        assert "HEALING_CONFIDENCE_X" not in qwen_names, (
-            "HEALING_CONFIDENCE_X must not be re-defined in qwen_meta_learning.py; "
-            "import from healing_tier_config.py"
-        )
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+                qwen_names = self._assignment_names(self._QWEN_ML)
+                assert "HEALING_CONFIDENCE_X" not in qwen_names, (
+                    "HEALING_CONFIDENCE_X must not be re-defined in qwen_meta_learning.py; "
+                    "import from healing_tier_config.py"
+                )
+
 
     def test_healing_confidence_y_defined_only_in_tier_config(self):
         qwen_names = self._assignment_names(self._QWEN_ML)

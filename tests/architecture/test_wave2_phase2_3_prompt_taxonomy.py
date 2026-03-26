@@ -294,12 +294,14 @@ def _make_analyzer_with_files(file_map: dict[Path, FileAnalysis]) -> SemanticGap
 
 @pytest.mark.architecture
 def test_looks_like_prompt_assembler_prompt_in_name_assembler_in_rel():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L0_routing.config.path_constants import TESTS_DIR
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Success: 'prompt' in filename + 'assembler' in rel path -> qualifies."""
-    p = AGENTIC_CORE / "L1_cognition" / "assembler" / "prompt_assembler.py"
-    analysis = _ok_analysis(p)
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        """Success: 'prompt' in filename + 'assembler' in rel path -> qualifies."""
+        p = AGENTIC_CORE / "L1_cognition" / "assembler" / "prompt_assembler.py"
+        analysis = _ok_analysis(p)
+        assert _looks_like_prompt_assembler(p, analysis)
+
     assert _looks_like_prompt_assembler(p, analysis)
 
 

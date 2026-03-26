@@ -215,37 +215,39 @@ class TestProtocolCoverageCheck:
     """
 
     def test_abstract_class_with_concrete_implementor_is_covered(self):
-        from agentic_core.adg.analysis.protocol_coverage_validator import (
-        from agentic_core.adg.analysis.schema_migration_util import (
-        from agentic_core.adg.analysis.SymbolIndex import SymbolIndex
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """MyProtocol extends Protocol (abstract). ConcreteImpl extends MyProtocol (covered)."""
-        my_protocol_adg = _make_module_adg("iface.py") + "::MyProtocol"
-        concrete_adg = _make_module_adg("impl.py") + "::ConcreteImpl"
-        e1 = Edge(
-            from_name=my_protocol_adg,
-            relation_type="implements",
-            to_name="ADG::Symbol::Protocol",
-            edge_kind="resolved_internal",
-            source_file="iface.py",
-            line_no=1,
-            symbol="Protocol",
-        )
-        e2 = Edge(
-            from_name=concrete_adg,
-            relation_type="implements",
-            to_name=my_protocol_adg,
-            edge_kind="resolved_internal",
-            source_file="impl.py",
-            line_no=5,
-            symbol="MyProtocol",
-        )
-        result = _scan_result(e1, e2)
-        report = check_protocol_coverage(result)
-        assert my_protocol_adg in report.abstract_bases
-        assert my_protocol_adg in report.covered_bases
-        assert my_protocol_adg not in report.uncovered_bases
+                from agentic_core.adg.analysis.protocol_coverage_validator import (
+                from agentic_core.adg.analysis.schema_migration_util import (
+                from agentic_core.adg.analysis.SymbolIndex import SymbolIndex
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """MyProtocol extends Protocol (abstract). ConcreteImpl extends MyProtocol (covered)."""
+                my_protocol_adg = _make_module_adg("iface.py") + "::MyProtocol"
+                concrete_adg = _make_module_adg("impl.py") + "::ConcreteImpl"
+                e1 = Edge(
+                    from_name=my_protocol_adg,
+                    relation_type="implements",
+                    to_name="ADG::Symbol::Protocol",
+                    edge_kind="resolved_internal",
+                    source_file="iface.py",
+                    line_no=1,
+                    symbol="Protocol",
+                )
+                e2 = Edge(
+                    from_name=concrete_adg,
+                    relation_type="implements",
+                    to_name=my_protocol_adg,
+                    edge_kind="resolved_internal",
+                    source_file="impl.py",
+                    line_no=5,
+                    symbol="MyProtocol",
+                )
+                result = _scan_result(e1, e2)
+                report = check_protocol_coverage(result)
+                assert my_protocol_adg in report.abstract_bases
+                assert my_protocol_adg in report.covered_bases
+                assert my_protocol_adg not in report.uncovered_bases
+                assert report.coverage_rate == 1.0
+
         assert report.coverage_rate == 1.0
 
     def test_abstract_class_without_implementor_is_uncovered(self):

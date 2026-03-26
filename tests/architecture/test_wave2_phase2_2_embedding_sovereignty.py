@@ -247,11 +247,13 @@ def _make_analyzer_with_files(file_map: dict[Path, FileAnalysis]) -> SemanticGap
 
 @pytest.mark.architecture
 def test_no_embedding_mentions_produces_no_gap():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """File with empty embedding_mentions is skipped — no EMBEDDING-PLACEMENT-GAP."""
-    fake_path = AGENTIC_CORE / "L0_routing" / "engines" / "fake_router.py"
-    fake_analysis = _ok_analysis(fake_path, embedding_mentions=set())
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        """File with empty embedding_mentions is skipped — no EMBEDDING-PLACEMENT-GAP."""
+        fake_path = AGENTIC_CORE / "L0_routing" / "engines" / "fake_router.py"
+        fake_analysis = _ok_analysis(fake_path, embedding_mentions=set())
+        analyzer = _make_analyzer_with_files({fake_path: fake_analysis})
+
     analyzer = _make_analyzer_with_files({fake_path: fake_analysis})
 
     gaps = analyzer.analyze_rag_embedding_sovereignty()

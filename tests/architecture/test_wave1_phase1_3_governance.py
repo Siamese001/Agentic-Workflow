@@ -264,12 +264,14 @@ def _make_analysis(source: str) -> FileAnalysis:
 
 @pytest.mark.architecture
 def test_governance_hint_in_string_literal_detected():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L0_routing.config.path_constants import TESTS_DIR
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Success: string literal containing 'compliance_hash' adds to governance_mentions."""
-    analysis = _make_analysis('x = "compliance_hash check"\n')
-    assert analysis.governance_mentions, "Expected governance_mentions to be non-empty"
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        """Success: string literal containing 'compliance_hash' adds to governance_mentions."""
+        analysis = _make_analysis('x = "compliance_hash check"\n')
+        assert analysis.governance_mentions, "Expected governance_mentions to be non-empty"
+        assert any("compliance_hash" in m.lower() for m in analysis.governance_mentions)
+
     assert any("compliance_hash" in m.lower() for m in analysis.governance_mentions)
 
 

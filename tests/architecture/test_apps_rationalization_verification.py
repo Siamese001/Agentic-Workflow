@@ -48,26 +48,28 @@ class TestADGInheritanceEdges:
 
     @pytest.mark.xfail(reason="ADG stale — inheritance edges missing until regeneration", strict=True)
     def test_base_reflection_agent_fan_in(self, adg_conn, path_to_node):
-        from apps_shared.reasoning.BaseReflectionAgent import BaseReflectionAgent
-        from apps_lic.reasoning.LicReflectionAgent import LicReflectionAgent
-        from apps_shared.reasoning.BaseReflectionAgent import BaseReflectionAgent
-        from apps_rg.reasoning.RgReflectionAgent import RgReflectionAgent
-        from apps_shared.reasoning.BaseReflectionAgent import BaseReflectionAgent
-        from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
-        from apps_lic.reasoning.LICValidationExecutor import LICValidationExecutor
-        from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
-        from apps_rg.reasoning.RGValidationExecutor import RGValidationExecutor
-        from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
-        from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
-        from apps_lic.reasoning.LicHealingOrchestrator import LicHealingOrchestrator
-        from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
-        from apps_rg.reasoning.RgHealingOrchestrator import RgHealingOrchestrator
-        from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
-        from apps_lic.reasoning.LICValidationExecutor import LICValidationExecutor
-        from apps_rg.reasoning.RGValidationExecutor import RGValidationExecutor
-        from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
-        """BaseReflectionAgent has fan-in=2 (LicReflectionAgent + RgReflectionAgent)."""
-        base_path = "apps_shared/reasoning/BaseReflectionAgent.py"
+                from apps_shared.reasoning.BaseReflectionAgent import BaseReflectionAgent
+                from apps_lic.reasoning.LicReflectionAgent import LicReflectionAgent
+                from apps_shared.reasoning.BaseReflectionAgent import BaseReflectionAgent
+                from apps_rg.reasoning.RgReflectionAgent import RgReflectionAgent
+                from apps_shared.reasoning.BaseReflectionAgent import BaseReflectionAgent
+                from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
+                from apps_lic.reasoning.LICValidationExecutor import LICValidationExecutor
+                from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
+                from apps_rg.reasoning.RGValidationExecutor import RGValidationExecutor
+                from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
+                from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
+                from apps_lic.reasoning.LicHealingOrchestrator import LicHealingOrchestrator
+                from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
+                from apps_rg.reasoning.RgHealingOrchestrator import RgHealingOrchestrator
+                from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
+                from apps_lic.reasoning.LICValidationExecutor import LICValidationExecutor
+                from apps_rg.reasoning.RGValidationExecutor import RGValidationExecutor
+                from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
+                """BaseReflectionAgent has fan-in=2 (LicReflectionAgent + RgReflectionAgent)."""
+                base_path = "apps_shared/reasoning/BaseReflectionAgent.py"
+                assert base_path in path_to_node, "BaseReflectionAgent not in ADG"
+
         assert base_path in path_to_node, "BaseReflectionAgent not in ADG"
 
         base_id = path_to_node[base_path]

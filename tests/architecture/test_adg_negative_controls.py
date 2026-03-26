@@ -236,42 +236,44 @@ def _make_module_edge(
 @pytest.mark.architecture
 @pytest.mark.negative_control
 def test_negative_rule_a_direct_openai_import_flagged() -> None:
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.adg.extraction.static_scanner import Edge
-    from agentic_core.adg.schema_util import canonical_name
-    from agentic_core.adg.extraction.static_scanner import Edge
-    from agentic_core.adg.schema_util import canonical_name
-    from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-    from agentic_core.adg.extraction.static_scanner import ScanResult
-    from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-    from agentic_core.adg.extraction.static_scanner import ScanResult
-    from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-    from agentic_core.adg.extraction.static_scanner import ScanResult
-    from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-    from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-    from agentic_core.adg.schema_util import canonical_name
-    from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-    from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-    from agentic_core.adg.schema_util import canonical_name
-    from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-    from agentic_core.adg.extraction.static_scanner import ScanResult
-    from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-    from agentic_core.adg.extraction.static_scanner import ScanResult
-    from agentic_core.adg.applications.gateway_topology_validator import check_gateway_topology
-    from agentic_core.adg.extraction.static_scanner import ScanResult
-    from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
-    from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-    from agentic_core.adg.schema_util import canonical_name
-    from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
-    from agentic_core.adg.extraction.static_scanner import ScanResult
-    from agentic_core.adg.schema_util import canonical_name
-    from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
-    from agentic_core.adg.extraction.static_scanner import ScanResult
-    from agentic_core.adg.schema_util import canonical_name
-    from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
-    from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
     """Direct openai import outside SovereignLLMGateway must trigger RULE_A."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.extraction.static_scanner import Edge
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.extraction.static_scanner import Edge
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.applications.gateway_topology_validator import check_gateway_topology
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        """Direct openai import outside SovereignLLMGateway must trigger RULE_A."""
+
 #  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
 #  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 

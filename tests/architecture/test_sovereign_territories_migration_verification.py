@@ -100,21 +100,23 @@ class TestNewTerritoryAPI:
     """Verify new territory API functions work correctly."""
 
     def test_get_all_territories_returns_mapping(self):
-        from agentic_core.L5_safety.config.structure_blueprint.territories import (
-        from agentic_core.L5_safety.config.structure_blueprint.territories import (
-        from agentic_core.L5_safety.config.structure_blueprint.territories import (
-        from agentic_core.L5_safety.config.structure_blueprint.territories import (
-        from agentic_core.L5_safety.config.structure_blueprint.territories import (
-        from agentic_core.L5_safety.config.structure_blueprint import __all__
-        from agentic_core.L5_safety.config.structure_blueprint import __all__
-        from agentic_core.L5_safety.config.structure_blueprint import __all__
-        import agentic_core.L5_safety.config.structure_blueprint._constants as const_mod
-        from agentic_core.L5_safety.config.structure_blueprint._constants import (
-        from agentic_core.L5_safety.config.structure_blueprint.derived import DEPTH_RULES
-        from agentic_core.L5_safety.config.structure_blueprint.derived import (
-        from agentic_core.L5_safety.config.structure_blueprint.ssot import (
-        from agentic_core.L5_safety.config.structure_blueprint.territories import (
         """get_all_territories() returns a Mapping with expected territories."""
+                from agentic_core.L5_safety.config.structure_blueprint.territories import (
+                from agentic_core.L5_safety.config.structure_blueprint.territories import (
+                from agentic_core.L5_safety.config.structure_blueprint.territories import (
+                from agentic_core.L5_safety.config.structure_blueprint.territories import (
+                from agentic_core.L5_safety.config.structure_blueprint.territories import (
+                from agentic_core.L5_safety.config.structure_blueprint import __all__
+                from agentic_core.L5_safety.config.structure_blueprint import __all__
+                from agentic_core.L5_safety.config.structure_blueprint import __all__
+                import agentic_core.L5_safety.config.structure_blueprint._constants as const_mod
+                from agentic_core.L5_safety.config.structure_blueprint._constants import (
+                from agentic_core.L5_safety.config.structure_blueprint.derived import DEPTH_RULES
+                from agentic_core.L5_safety.config.structure_blueprint.derived import (
+                from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+                from agentic_core.L5_safety.config.structure_blueprint.territories import (
+                """get_all_territories() returns a Mapping with expected territories."""
+
 #  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.territories import (
             get_all_territories,
         )

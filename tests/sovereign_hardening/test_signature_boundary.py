@@ -307,19 +307,21 @@ class TestUniversalWriteGateway:
     """Tests for Universal Write Gateway enforcement."""
 
     def test_default_permissions_blocked(self, write_gateway):
-        from agentic_core.L2_execution.engines.execution_gateway import ExecutionGateway, SignatureBoundaryError
-        from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
-        from agentic_core.L2_execution.UniversalWriteGateway import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
-        from agentic_core.L2_execution.enforcement.key_source import TestKeySource
-        from agentic_core.L2_execution.enforcement.key_source import TestKeySource
-        from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
-        """Test that default write permissions are blocked."""
-        assert not write_gateway.check_write_permission("test.py")
-        assert not write_gateway.check_write_permission("/etc/config")
-        assert write_gateway.check_write_permission("artifacts/output.txt")
+                from agentic_core.L2_execution.engines.execution_gateway import ExecutionGateway, SignatureBoundaryError
+                from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
+                from agentic_core.L2_execution.UniversalWriteGateway import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
+                from agentic_core.L2_execution.enforcement.key_source import TestKeySource
+                from agentic_core.L2_execution.enforcement.key_source import TestKeySource
+                from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
+                """Test that default write permissions are blocked."""
+                assert not write_gateway.check_write_permission("test.py")
+                assert not write_gateway.check_write_permission("/etc/config")
+                assert write_gateway.check_write_permission("artifacts/output.txt")
+                assert write_gateway.check_write_permission("logs/test.log")
+
         assert write_gateway.check_write_permission("logs/test.log")
 
     def test_allowed_paths_permitted(self, write_gateway):

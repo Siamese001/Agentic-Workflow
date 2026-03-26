@@ -172,9 +172,11 @@ class TestInheritanceGraph:
     """Graph 3 — class inheritance (implements) edges."""
 
     def test_single_base_class(self):
-        from agentic_core.adg.extraction.static_scanner import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         src = """
+                from agentic_core.adg.extraction.static_scanner import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                src = """
+
 class ConcreteAgent(SovereignBaseAgent):
     pass
 """

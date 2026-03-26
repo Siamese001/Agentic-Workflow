@@ -289,11 +289,13 @@ def _make_analyzer(
 
 @pytest.mark.architecture
 def test_analysis_mentions_cache_module_hint_match():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """_analysis_mentions_cache returns True when module_hint found in imported_module_names."""
-    p = AGENTIC_CORE / "utils" / "fake.py"
-    analysis = _ok_analysis(p, imported_module_names={"core.discovery_cache"})
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        """_analysis_mentions_cache returns True when module_hint found in imported_module_names."""
+        p = AGENTIC_CORE / "utils" / "fake.py"
+        analysis = _ok_analysis(p, imported_module_names={"core.discovery_cache"})
+        assert _analysis_mentions_cache(analysis, module_hint="discovery_cache")
+
     assert _analysis_mentions_cache(analysis, module_hint="discovery_cache")
 
 

@@ -243,11 +243,13 @@ def _make_analysis_from_source(source: str, file_path: Path | None = None) -> Fi
 
 @pytest.mark.architecture
 def test_import_openai_flagged_as_direct_provider():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L0_routing.config.path_constants import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Success: bare 'import openai' is flagged as a direct provider import."""
-    analysis = _make_analysis_from_source("import openai\n")
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        """Success: bare 'import openai' is flagged as a direct provider import."""
+        analysis = _make_analysis_from_source("import openai\n")
+        assert "openai" in analysis.direct_provider_imports
+
     assert "openai" in analysis.direct_provider_imports
 
 

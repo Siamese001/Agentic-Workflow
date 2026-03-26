@@ -331,17 +331,19 @@ def _make_gap(
 
 @pytest.mark.architecture
 def test_l2_validator_cache_in_name_skipped():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """L2: validator file with 'cache' in name is excluded from L2-GAP-VALIDATOR."""
-    val_path = AGENTIC_CORE / "L2_execution" / "schema_validator_cache.py"
-    val_analysis = _ok_analysis(val_path, imported_module_names={"os"}, imported_symbol_names=set())
-    analyzer, _ = _make_analyzer(
-        {val_path: val_analysis},
-        file_lists={"*validator*": [val_path]},
-    )
-    gaps = analyzer.analyze_l2_execution()
-    validator_gaps = [g for g in gaps if "VALIDATOR" in g.gap_id]
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        """L2: validator file with 'cache' in name is excluded from L2-GAP-VALIDATOR."""
+        val_path = AGENTIC_CORE / "L2_execution" / "schema_validator_cache.py"
+        val_analysis = _ok_analysis(val_path, imported_module_names={"os"}, imported_symbol_names=set())
+        analyzer, _ = _make_analyzer(
+            {val_path: val_analysis},
+            file_lists={"*validator*": [val_path]},
+        )
+        gaps = analyzer.analyze_l2_execution()
+        validator_gaps = [g for g in gaps if "VALIDATOR" in g.gap_id]
+        assert not validator_gaps, "Files with 'cache' in name must be excluded"
+
     assert not validator_gaps, "Files with 'cache' in name must be excluded"
 
 

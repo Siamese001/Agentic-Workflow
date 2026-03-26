@@ -203,23 +203,25 @@ class TestTypeCheckingGuard:
     """E7: Imports under TYPE_CHECKING should be tagged type_checking_import."""
 
     def test_type_checking_import_tagged(self):
-        from agentic_core.adg.extraction.static_scanner import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
-        source = """
-        from __future__ import annotations
-        from typing import TYPE_CHECKING
-        if TYPE_CHECKING:
-            import os
-        """
-        v = _import_visitor(source)
-        import_edges = {e.symbol: e for e in v.edges if e.relation_type == "imports"}
-        assert "os" in import_edges
+                from agentic_core.adg.extraction.static_scanner import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.adg.analysis.EdgeConfidence import score_edge
+                from agentic_core.adg.analysis.EdgeConfidence import score_edge
+                from agentic_core.adg.analysis.EdgeConfidence import score_edge
+                from agentic_core.adg.analysis.EdgeConfidence import score_edge
+                from agentic_core.adg.analysis.EdgeConfidence import score_edge
+                source = """
+                from __future__ import annotations
+                from typing import TYPE_CHECKING
+                if TYPE_CHECKING:
+                    import os
+                """
+                v = _import_visitor(source)
+                import_edges = {e.symbol: e for e in v.edges if e.relation_type == "imports"}
+                assert "os" in import_edges
+                assert import_edges["os"].edge_kind == "type_checking_import"
+
         assert import_edges["os"].edge_kind == "type_checking_import"
 
     def test_type_checking_from_import_tagged(self):

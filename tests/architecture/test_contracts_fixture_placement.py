@@ -224,16 +224,18 @@ class TestNoAgentFilesInContractsRoot:
     """*Agent.py files must never reside directly in tests/contracts/."""
 
     def test_no_agent_py_in_contracts_root(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
-        from agentic_core.L5_safety.config.structure_blueprint import (
-        from agentic_core.L5_safety.config.structure_blueprint import (
-    """Test no_agent_py_in_contracts_root contract compliance."""
-    # Arrange
-    # TODO: Set up contract scenario
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+                from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+                from agentic_core.L5_safety.config.structure_blueprint import (
+                from agentic_core.L5_safety.config.structure_blueprint import (
+            """Test no_agent_py_in_contracts_root contract compliance."""
+            # Arrange
+            # TODO: Set up contract scenario
+            contract_scenario = {}  # Replace with actual scenario
+
     contract_scenario = {}  # Replace with actual scenario
 
     # Act

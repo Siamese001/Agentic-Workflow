@@ -176,10 +176,12 @@ class TestDeterminismDigest:
     """Tests for determinism digest calculation and emission."""
 
     def test_digest_calculation(self):
-        from agentic_core.L2_execution.determinism import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Test that determinism digest is calculated correctly."""
+                from agentic_core.L2_execution.determinism import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Test that determinism digest is calculated correctly."""
+                digest = compute_lockdown_determinism_digest()
+
         digest = compute_lockdown_determinism_digest()
 
         assert isinstance(digest, str)

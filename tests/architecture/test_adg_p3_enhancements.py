@@ -223,15 +223,17 @@ class TestScanCacheBasic:
     """E9: Core cache get/put/save/load behaviour."""
 
     def test_empty_cache_is_miss(self):
-        from agentic_core.adg.extraction.scan_cache import (
-        from agentic_core.adg.extraction.static_scanner import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
-        cache = ScanCache()
-        edges, hit = cache.get("foo/bar.py", "abc123")
-        assert hit is False
+                from agentic_core.adg.extraction.scan_cache import (
+                from agentic_core.adg.extraction.static_scanner import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.adg.analysis.EdgeConfidence import score_edge
+                from agentic_core.adg.analysis.EdgeConfidence import score_edge
+                cache = ScanCache()
+                edges, hit = cache.get("foo/bar.py", "abc123")
+                assert hit is False
+                assert edges is None
+
         assert edges is None
 
     def test_put_then_get_hit(self):

@@ -282,10 +282,12 @@ def _analyzer_with_gaps(gaps: list[SemanticGap]) -> SemanticGapAnalyzer:
 
 @pytest.mark.architecture
 def test_run_analysis_returns_dict():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """run_analysis must return a dict."""
-    result = SemanticGapAnalyzer().run_analysis()
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        """run_analysis must return a dict."""
+        result = SemanticGapAnalyzer().run_analysis()
+        assert isinstance(result, dict)
+
     assert isinstance(result, dict)
 
 

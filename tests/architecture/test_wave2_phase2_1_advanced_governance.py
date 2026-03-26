@@ -260,11 +260,13 @@ def _make_analyzer_with_files(file_map: dict[Path, FileAnalysis]) -> SemanticGap
 
 @pytest.mark.architecture
 def test_upward_import_generates_layer_upward_import_gap():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Success: L2 file with upward import (L1 ref) generates LAYER-UPWARD-IMPORT gap."""
-    fake_path = AGENTIC_CORE / "L2_execution" / "engines" / "fake_exec.py"
-    fake_analysis = _ok_analysis(fake_path, imported_layer_refs={"L1"})
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        """Success: L2 file with upward import (L1 ref) generates LAYER-UPWARD-IMPORT gap."""
+        fake_path = AGENTIC_CORE / "L2_execution" / "engines" / "fake_exec.py"
+        fake_analysis = _ok_analysis(fake_path, imported_layer_refs={"L1"})
+        analyzer = _make_analyzer_with_files({fake_path: fake_analysis})
+
     analyzer = _make_analyzer_with_files({fake_path: fake_analysis})
 
     gaps = analyzer.analyze_layer_connection_integrity()

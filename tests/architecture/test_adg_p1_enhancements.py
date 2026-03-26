@@ -223,18 +223,20 @@ class TestSymbolInventoryVisitor:
     """E1: Verify exports edges are emitted for public top-level symbols."""
 
     def test_public_function_emits_export_edge(self):
-        from agentic_core.adg.extraction.static_scanner import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
-        from agentic_core.adg.analysis.RepairRoute import route_violations
-        from agentic_core.adg.analysis.RepairRoute import route_violations
-        from agentic_core.adg.analysis.RepairRoute import route_violations
-    """Test public_function_emits_export_edge runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for public_function_emits_export_edge
+                from agentic_core.adg.extraction.static_scanner import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.adg.analysis.EdgeConfidence import score_edge
+                from agentic_core.adg.analysis.EdgeConfidence import score_edge
+                from agentic_core.adg.analysis.EdgeConfidence import score_edge
+                from agentic_core.adg.analysis.RepairRoute import route_violations
+                from agentic_core.adg.analysis.RepairRoute import route_violations
+                from agentic_core.adg.analysis.RepairRoute import route_violations
+            """Test public_function_emits_export_edge runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for public_function_emits_export_edge
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

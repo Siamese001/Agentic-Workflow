@@ -193,28 +193,30 @@ def _make_fake_cache():
 
 
 def test_agent_discovery_cache_has_get_or_fetch():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
     """AgentDiscoveryCache must have get_or_fetch method."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+        from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+        from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+        from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+        from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+        from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+        from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+        from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+        from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+        from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+        from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+        from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+        from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+        from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+        from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+        from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+        from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+        from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+        from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+        """AgentDiscoveryCache must have get_or_fetch method."""
+
 #  # MOVED: from agentic_core.cache.discovery_cache import AgentDiscoveryCache
 
     cache = AgentDiscoveryCache(cache=_make_fake_cache())

@@ -225,24 +225,26 @@ class TestInternalCallGraphVisitor:
     """G4: Calls between internal modules."""
 
     def test_calls_edge_emitted_for_imported_internal_symbol(self):
-        from agentic_core.adg.extraction.static_scanner import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.schema_util import canonical_name
-        from apps_shared.reasoning import InfrastructureOrchestrator
-        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.schema_util import canonical_name
-        from agentic_core.adg.extraction.static_scanner import ScanManifest
-        from agentic_core.adg.extraction.static_scanner import ScanManifest
-        from agentic_core.adg.extraction.static_scanner import ScanManifest
-        from agentic_core.adg.extraction.static_scanner import ScanManifest
-        from agentic_core.adg.extraction.static_scanner import run_scanner_self_test
-    """Test calls_edge_emitted_for_imported_internal_symbol runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
+                from agentic_core.adg.extraction.static_scanner import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.schema_util import canonical_name
+                from apps_shared.reasoning import InfrastructureOrchestrator
+                from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.schema_util import canonical_name
+                from agentic_core.adg.extraction.static_scanner import ScanManifest
+                from agentic_core.adg.extraction.static_scanner import ScanManifest
+                from agentic_core.adg.extraction.static_scanner import ScanManifest
+                from agentic_core.adg.extraction.static_scanner import ScanManifest
+                from agentic_core.adg.extraction.static_scanner import run_scanner_self_test
+            """Test calls_edge_emitted_for_imported_internal_symbol runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
     input_data = {}  # Replace with actual test data
 
     # Act

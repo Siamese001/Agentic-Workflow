@@ -238,20 +238,22 @@ class TestFix1EnforceTestsStructure:
         return r
 
     def test_agent_file_in_approved_subfolder_raises_violation(self, tmp_path: Path) -> None:
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-        from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
-        from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
-        from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
-        from agentic_core.L5_safety.enforcement.mission_utils_enforcer import (
-        from agentic_core.L5_safety.enforcement.mission_utils_enforcer import (
-        from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
-        from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
-        from agentic_core.L5_safety.config.structure_blueprint import (
-        """*Agent.py inside tests/support/ must be flagged — no silent skip."""
-        r = self._run(tmp_path, [("support/SomeAgent.py", "class SomeAgent: pass")])
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+                from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
+                from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
+                from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
+                from agentic_core.L5_safety.enforcement.mission_utils_enforcer import (
+                from agentic_core.L5_safety.enforcement.mission_utils_enforcer import (
+                from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
+                from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
+                from agentic_core.L5_safety.config.structure_blueprint import (
+                """*Agent.py inside tests/support/ must be flagged — no silent skip."""
+                r = self._run(tmp_path, [("support/SomeAgent.py", "class SomeAgent: pass")])
+                assert r["violations_found"] >= 1
+
         assert r["violations_found"] >= 1
 
     def test_infra_file_in_approved_subfolder_is_exempt(self, tmp_path: Path) -> None:

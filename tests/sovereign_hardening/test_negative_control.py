@@ -158,11 +158,13 @@ class TestNegativeControl:
     """Tests for negative control tampering detection."""
 
     def test_tamper_environment_detection(self):
-        from agentic_core.L2_execution.determinism import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Test that tampering environment variable is detected."""
-        # Test with tampering enabled
-        with patch.dict(os.environ, {"W_HARDEN_NEGCTRL_TAMPER": "1"}):
+                from agentic_core.L2_execution.determinism import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Test that tampering environment variable is detected."""
+                # Test with tampering enabled
+                with patch.dict(os.environ, {"W_HARDEN_NEGCTRL_TAMPER": "1"}):
+                    assert os.environ.get("W_HARDEN_NEGCTRL_TAMPER") == "1"
+
             assert os.environ.get("W_HARDEN_NEGCTRL_TAMPER") == "1"
 
         # Test without tampering

@@ -225,70 +225,73 @@ def _make_offline_cache(db=0):
 
 class TestCanonicalJsonBytes:
     def test_sorted_keys(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
-        from agentic_core.cache.cache_key_builders import build_route_decision_key
-        from agentic_core.cache.cache_key_builders import build_route_decision_key
-        from agentic_core.cache.cache_key_builders import build_safety_eval_key
-        from agentic_core.cache.cache_key_builders import build_orch_plan_key
-        from agentic_core.cache.cache_key_builders import build_compiled_prompt_key
-        from agentic_core.cache.cache_key_builders import build_compiled_prompt_key
-        from agentic_core.cache.cache_key_builders import build_rag_topk_key
-        from agentic_core.cache.cache_key_builders import build_template_render_key
-        from agentic_core.cache.cache_key_builders import (
-        from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
-        from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
-        from agentic_core.L3_orchestration.engines.orchestration_plan_cache import (
-        from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
-        from agentic_core.L2_execution.coordination.lease_coordinator import (
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
-        from agentic_core.L2_execution.coordination.lease_coordinator import (
-        from agentic_core.L2_execution.coordination.lease_coordinator import (
-        from agentic_core.L2_execution.coordination.lease_coordinator import (
-        from agentic_core.L2_execution.coordination.lease_coordinator import (
-        from agentic_core.L2_execution.coordination.lease_coordinator import (
-        from agentic_core.L2_execution.coordination.lease_coordinator import (
-        from agentic_core.L2_execution.coordination.lease_coordinator import (
-        from agentic_core.cache.redis_cache_client import _BoundedLRU
-        from agentic_core.cache.redis_cache_client import _BoundedLRU
-        from agentic_core.cache.cache_key_builders import build_orch_plan_key
-        from agentic_core.cache.cache_key_builders import build_template_render_key
-        from agentic_core.cache.cache_key_builders import build_template_render_key
-        from agentic_core.cache.cache_key_builders import build_rag_topk_key
-        from agentic_core.cache.cache_key_builders import (
-        from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
-        from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
-        from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
-        from agentic_core.L0_routing.seams.redis_decision_cache import (
-        from agentic_core.L0_routing.seams.redis_decision_cache import (
-        from agentic_core.L0_routing.seams.redis_decision_cache import (
-        from agentic_core.L0_routing.seams.redis_decision_cache import (
-        from system_learning.engines.rag_retrieval_cache import RagRetrievalCache
-        from system_learning.engines.rag_retrieval_cache import RagRetrievalCache
-        from agentic_core.cache.cache_key_builders import build_rag_topk_key
-        from system_learning.engines.rag_retrieval_cache import RagRetrievalCache
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
-        from agentic_core.cache.cache_key_builders import build_lease_key
-        from agentic_core.cache.cache_key_builders import build_lease_key
-        from agentic_core.cache.cache_key_builders import (
-        from agentic_core.cache.redis_cache_client import (
-        from agentic_core.cache.redis_cache_client import (
-        from agentic_core.cache.redis_cache_client import (
-        from agentic_core.cache import content_hash, reset_cache_singletons
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+                from agentic_core.cache.redis_cache_client import canonical_json_bytes
+                from agentic_core.cache.redis_cache_client import canonical_json_bytes
+                from agentic_core.cache.redis_cache_client import canonical_json_bytes
+                from agentic_core.cache.redis_cache_client import canonical_json_bytes
+                from agentic_core.cache.redis_cache_client import canonical_json_bytes
+                from agentic_core.cache.cache_key_builders import build_route_decision_key
+                from agentic_core.cache.cache_key_builders import build_route_decision_key
+                from agentic_core.cache.cache_key_builders import build_safety_eval_key
+                from agentic_core.cache.cache_key_builders import build_orch_plan_key
+                from agentic_core.cache.cache_key_builders import build_compiled_prompt_key
+                from agentic_core.cache.cache_key_builders import build_compiled_prompt_key
+                from agentic_core.cache.cache_key_builders import build_rag_topk_key
+                from agentic_core.cache.cache_key_builders import build_template_render_key
+                from agentic_core.cache.cache_key_builders import (
+                from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+                from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
+                from agentic_core.L3_orchestration.engines.orchestration_plan_cache import (
+                from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
+                from agentic_core.L2_execution.coordination.lease_coordinator import (
+                from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+                from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+                from agentic_core.cache.redis_cache_client import canonical_json_bytes
+                from agentic_core.L2_execution.coordination.lease_coordinator import (
+                from agentic_core.L2_execution.coordination.lease_coordinator import (
+                from agentic_core.L2_execution.coordination.lease_coordinator import (
+                from agentic_core.L2_execution.coordination.lease_coordinator import (
+                from agentic_core.L2_execution.coordination.lease_coordinator import (
+                from agentic_core.L2_execution.coordination.lease_coordinator import (
+                from agentic_core.L2_execution.coordination.lease_coordinator import (
+                from agentic_core.cache.redis_cache_client import _BoundedLRU
+                from agentic_core.cache.redis_cache_client import _BoundedLRU
+                from agentic_core.cache.cache_key_builders import build_orch_plan_key
+                from agentic_core.cache.cache_key_builders import build_template_render_key
+                from agentic_core.cache.cache_key_builders import build_template_render_key
+                from agentic_core.cache.cache_key_builders import build_rag_topk_key
+                from agentic_core.cache.cache_key_builders import (
+                from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
+                from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
+                from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
+                from agentic_core.L0_routing.seams.redis_decision_cache import (
+                from agentic_core.L0_routing.seams.redis_decision_cache import (
+                from agentic_core.L0_routing.seams.redis_decision_cache import (
+                from agentic_core.L0_routing.seams.redis_decision_cache import (
+                from system_learning.engines.rag_retrieval_cache import RagRetrievalCache
+                from system_learning.engines.rag_retrieval_cache import RagRetrievalCache
+                from agentic_core.cache.cache_key_builders import build_rag_topk_key
+                from system_learning.engines.rag_retrieval_cache import RagRetrievalCache
+                from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+                from agentic_core.cache.redis_cache_client import canonical_json_bytes
+                from agentic_core.cache.redis_cache_client import canonical_json_bytes
+                from agentic_core.cache.redis_cache_client import canonical_json_bytes
+                from agentic_core.cache.redis_cache_client import canonical_json_bytes
+                from agentic_core.cache.redis_cache_client import canonical_json_bytes
+                from agentic_core.cache.redis_cache_client import canonical_json_bytes
+                from agentic_core.cache.cache_key_builders import build_lease_key
+                from agentic_core.cache.cache_key_builders import build_lease_key
+                from agentic_core.cache.cache_key_builders import (
+                from agentic_core.cache.redis_cache_client import (
+                from agentic_core.cache.redis_cache_client import (
+                from agentic_core.cache.redis_cache_client import (
+                from agentic_core.cache import content_hash, reset_cache_singletons
+                from agentic_core.cache import content_hash, reset_cache_singletons
+        #  # MOVED: from agentic_core.cache.redis_cache_client import canonical_json_bytes
+
 #  # MOVED: from agentic_core.cache.redis_cache_client import canonical_json_bytes
 
         obj = {"z": 1, "a": 2, "m": 3}

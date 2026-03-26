@@ -220,49 +220,52 @@ def _make_fake_cache() -> MagicMock:
 
 
 def test_route_decision_cache_has_get_or_fetch():
-    from agentic_core.L0_routing.config.path_constants import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
-    from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
-    from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
-    from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
-    from agentic_core.L0_routing.seams.redis_decision_cache import RoutingRuleSurfaceCache
-    from agentic_core.L0_routing.seams.redis_decision_cache import RoutingRuleSurfaceCache
-    from agentic_core.L0_routing.seams.redis_decision_cache import CapabilityRegistryCache
-    from agentic_core.L0_routing.seams.redis_decision_cache import CapabilityRegistryCache
-    from agentic_core.L1_cognition.engines.prompt_artifact_cache import CompiledPromptCache
-    from agentic_core.L1_cognition.engines.prompt_artifact_cache import CompiledPromptCache
-    from agentic_core.L1_cognition.engines.prompt_artifact_cache import CompiledPromptCache
-    from agentic_core.L1_cognition.engines.prompt_artifact_cache import TemplateRenderCache
-    from agentic_core.L1_cognition.engines.prompt_artifact_cache import TemplateRenderCache
-    from agentic_core.L1_cognition.engines.prompt_artifact_cache import TemplateRenderCache
-    from agentic_core.L3_orchestration.engines.orchestration_plan_cache import OrchestrationPlanCache
-    from agentic_core.L3_orchestration.engines.orchestration_plan_cache import OrchestrationPlanCache
-    from agentic_core.L3_orchestration.engines.orchestration_plan_cache import OrchestrationPlanCache
-    from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
-    from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
-    from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
-    from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
-    from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
-    from agentic_core.L3_orchestration.engines.orchestration_plan_cache import OrchestrationPlanCache
-    from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
-    from agentic_core.L1_cognition.engines.prompt_artifact_cache import TemplateRenderCache
-    from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
-    from agentic_core.L4_state.memory import blob_storage_provider as bsp
-    from agentic_core.L4_state.memory import blob_storage_provider as bsp
-    from agentic_core.L4_state.memory import blob_storage_provider as bsp
-    from agentic_core.L4_state.memory import blob_storage_provider as bsp
-    from agentic_core.cache.cache_key_builders import _require_hash_segment
-    from agentic_core.cache.cache_key_builders import _require_hash_segment
-    from agentic_core.cache.cache_key_builders import _require_hash_segment
-    from agentic_core.cache.cache_key_builders import _require_hash_segment
-    from agentic_core.cache.cache_key_builders import _require_hash_segment
-    from agentic_core.cache.cache_key_builders import _require_hash_segment
-    from agentic_core.cache.cache_key_builders import _require_hash_segment
-    from agentic_core.cache.cache_key_builders import _require_hash_segment
-    from agentic_core.cache.cache_key_builders import _require_hash_segment
-    from agentic_core.cache.cache_key_builders import _require_hash_segment
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+        from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+        from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+        from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+        from agentic_core.L0_routing.seams.redis_decision_cache import RoutingRuleSurfaceCache
+        from agentic_core.L0_routing.seams.redis_decision_cache import RoutingRuleSurfaceCache
+        from agentic_core.L0_routing.seams.redis_decision_cache import CapabilityRegistryCache
+        from agentic_core.L0_routing.seams.redis_decision_cache import CapabilityRegistryCache
+        from agentic_core.L1_cognition.engines.prompt_artifact_cache import CompiledPromptCache
+        from agentic_core.L1_cognition.engines.prompt_artifact_cache import CompiledPromptCache
+        from agentic_core.L1_cognition.engines.prompt_artifact_cache import CompiledPromptCache
+        from agentic_core.L1_cognition.engines.prompt_artifact_cache import TemplateRenderCache
+        from agentic_core.L1_cognition.engines.prompt_artifact_cache import TemplateRenderCache
+        from agentic_core.L1_cognition.engines.prompt_artifact_cache import TemplateRenderCache
+        from agentic_core.L3_orchestration.engines.orchestration_plan_cache import OrchestrationPlanCache
+        from agentic_core.L3_orchestration.engines.orchestration_plan_cache import OrchestrationPlanCache
+        from agentic_core.L3_orchestration.engines.orchestration_plan_cache import OrchestrationPlanCache
+        from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
+        from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
+        from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
+        from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
+        from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+        from agentic_core.L3_orchestration.engines.orchestration_plan_cache import OrchestrationPlanCache
+        from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
+        from agentic_core.L1_cognition.engines.prompt_artifact_cache import TemplateRenderCache
+        from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+        from agentic_core.L4_state.memory import blob_storage_provider as bsp
+        from agentic_core.L4_state.memory import blob_storage_provider as bsp
+        from agentic_core.L4_state.memory import blob_storage_provider as bsp
+        from agentic_core.L4_state.memory import blob_storage_provider as bsp
+        from agentic_core.cache.cache_key_builders import _require_hash_segment
+        from agentic_core.cache.cache_key_builders import _require_hash_segment
+        from agentic_core.cache.cache_key_builders import _require_hash_segment
+        from agentic_core.cache.cache_key_builders import _require_hash_segment
+        from agentic_core.cache.cache_key_builders import _require_hash_segment
+        from agentic_core.cache.cache_key_builders import _require_hash_segment
+        from agentic_core.cache.cache_key_builders import _require_hash_segment
+        from agentic_core.cache.cache_key_builders import _require_hash_segment
+        from agentic_core.cache.cache_key_builders import _require_hash_segment
+        from agentic_core.cache.cache_key_builders import _require_hash_segment
+        from agentic_core.cache.cache_key_builders import _require_hash_segment
+    #  # MOVED: from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+
 #  # MOVED: from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
 
     assert hasattr(RouteDecisionCache, "get_or_fetch"), "RouteDecisionCache must expose get_or_fetch()"

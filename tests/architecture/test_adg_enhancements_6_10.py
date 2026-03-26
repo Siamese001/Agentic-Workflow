@@ -220,53 +220,55 @@ class TestCanonicalSnapshot:
         return build_snapshot(_make_result(edges))
 
     def test_snapshot_has_graph_hash(self):
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
-        from agentic_core.adg.analysis.CanonicalSnapshot import CanonicalSnapshot
-        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
-        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
-        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
-        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
-        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
-        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
-        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
-        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
-        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
-        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
-        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
-        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
-        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
-        from agentic_core.adg.analysis.ModuleOwnership import ModuleOwnership
-        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
-        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
-        from agentic_core.adg.analysis.EdgeConfidence import score_edges
-        from agentic_core.adg.analysis.EdgeConfidence import confidence_summary, score_edges
-        from agentic_core.adg.analysis.EdgeConfidence import confidence_summary, score_edges
-        from agentic_core.adg.analysis.EdgeConfidence import confidence_summary, score_edges
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
-        from agentic_core.adg.analysis.EdgeConfidence import confidence_summary
-        from agentic_core.adg.analysis.RepairRoute import route_violations
-        from agentic_core.adg.analysis.RepairRoute import route_violations
-        from agentic_core.adg.analysis.RepairRoute import route_violations
-        from agentic_core.adg.analysis.RepairRoute import route_violations
-        from agentic_core.adg.analysis.RepairRoute import route_violations
-        from agentic_core.adg.analysis.RepairRoute import RepairRoute
-        from agentic_core.adg.analysis.RepairRoute import repair_routing_summary, route_violations
-        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
-        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
-        from agentic_core.adg.analysis.RepairRoute import route_diff_violations
-        from agentic_core.adg.analysis.RepairRoute import route_violations
-        e = _make_edge("ADG::Module::a.py", "imports", "ADG::Symbol::b")
-        snap = self._build([e])
+                from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+                from agentic_core.adg.analysis.CanonicalSnapshot import CanonicalSnapshot
+                from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+                from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+                from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+                from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+                from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+                from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
+                from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
+                from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
+                from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
+                from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
+                from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
+                from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
+                from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
+                from agentic_core.adg.analysis.ModuleOwnership import ModuleOwnership
+                from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
+                from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
+                from agentic_core.adg.analysis.EdgeConfidence import score_edge
+                from agentic_core.adg.analysis.EdgeConfidence import score_edge
+                from agentic_core.adg.analysis.EdgeConfidence import score_edge
+                from agentic_core.adg.analysis.EdgeConfidence import score_edge
+                from agentic_core.adg.analysis.EdgeConfidence import score_edge
+                from agentic_core.adg.analysis.EdgeConfidence import score_edges
+                from agentic_core.adg.analysis.EdgeConfidence import confidence_summary, score_edges
+                from agentic_core.adg.analysis.EdgeConfidence import confidence_summary, score_edges
+                from agentic_core.adg.analysis.EdgeConfidence import confidence_summary, score_edges
+                from agentic_core.adg.analysis.EdgeConfidence import score_edge
+                from agentic_core.adg.analysis.EdgeConfidence import score_edge
+                from agentic_core.adg.analysis.EdgeConfidence import score_edge
+                from agentic_core.adg.analysis.EdgeConfidence import confidence_summary
+                from agentic_core.adg.analysis.RepairRoute import route_violations
+                from agentic_core.adg.analysis.RepairRoute import route_violations
+                from agentic_core.adg.analysis.RepairRoute import route_violations
+                from agentic_core.adg.analysis.RepairRoute import route_violations
+                from agentic_core.adg.analysis.RepairRoute import route_violations
+                from agentic_core.adg.analysis.RepairRoute import RepairRoute
+                from agentic_core.adg.analysis.RepairRoute import repair_routing_summary, route_violations
+                from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+                from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+                from agentic_core.adg.analysis.RepairRoute import route_diff_violations
+                from agentic_core.adg.analysis.RepairRoute import route_violations
+                e = _make_edge("ADG::Module::a.py", "imports", "ADG::Symbol::b")
+                snap = self._build([e])
+                assert len(snap.graph_hash) == 64  # SHA-256 hex
+
         assert len(snap.graph_hash) == 64  # SHA-256 hex
 
     def test_snapshot_deterministic_same_edges(self):

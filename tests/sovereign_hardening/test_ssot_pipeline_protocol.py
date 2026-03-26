@@ -236,13 +236,15 @@ class TestAllSubphasesPresent:
     """Every AgentRunResult must have exactly the four subphase keys."""
 
     def test_all_four_slots_populated(self, mock_ctx, mock_decision_engine, mock_state_mgr):
-        from agentic_core.L0_routing.scripts.execute_ssot import (
-        from agentic_core.L2_execution.protocol import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        adapter = MagicMock()
-        adapter.pre_commit.return_value = SubphaseResult()
-        adapter.validate.return_value = SubphaseResult()
-        adapter.execute.return_value = SubphaseResult()
+                from agentic_core.L0_routing.scripts.execute_ssot import (
+                from agentic_core.L2_execution.protocol import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                adapter = MagicMock()
+                adapter.pre_commit.return_value = SubphaseResult()
+                adapter.validate.return_value = SubphaseResult()
+                adapter.execute.return_value = SubphaseResult()
+                adapter.heal.return_value = SubphaseResult()
+
         adapter.heal.return_value = SubphaseResult()
 
         adapters = {"reconciler": adapter}

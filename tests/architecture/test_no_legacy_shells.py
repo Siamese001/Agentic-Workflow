@@ -57,13 +57,15 @@ def _collect_agent_files():
 
 @pytest.mark.architecture
 def test_no_legacy_shells():
-    from agentic_core.L0_routing.config.path_constants import (
-    """No active agent file should have >80% comment lines (dead weight gate)."""
-    violations = []
-    for py in _collect_agent_files():
-        ratio = _comment_ratio(py)
-        if ratio > COMMENT_CEILING:
-            rel = py.relative_to(REPO_ROOT)
+        from agentic_core.L0_routing.config.path_constants import (
+        """No active agent file should have >80% comment lines (dead weight gate)."""
+        violations = []
+        for py in _collect_agent_files():
+            ratio = _comment_ratio(py)
+            if ratio > COMMENT_CEILING:
+                rel = py.relative_to(REPO_ROOT)
+                violations.append(f"{rel}  ({ratio:.0%} comment lines)")
+
             violations.append(f"{rel}  ({ratio:.0%} comment lines)")
 
     if violations:
