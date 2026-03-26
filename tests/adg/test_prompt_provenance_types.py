@@ -12,7 +12,7 @@ import json
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -59,7 +59,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_prompt_provenance_types", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_prompt_provenance_types", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_prompt_provenance_types", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -189,7 +189,7 @@ def _make_slot_manifest(
     total_tokens=512,
     budget_class="STANDARD",
 ):
-    from system_learning.types.prompt_artifact_types import PromptSlotManifest
+#  # MOVED: from system_learning.types.prompt_artifact_types import PromptSlotManifest
 
     s0 = _sha256("s0_content")
     d0 = _sha256("d0_content")
@@ -219,7 +219,7 @@ def _make_artifact(
     policy_hash=None,
     model_target="gpt-4o",
 ):
-    from system_learning.types.prompt_artifact_types import CompiledPromptArtifact
+#  # MOVED: from system_learning.types.prompt_artifact_types import CompiledPromptArtifact
 
     ph = prompt_hash or _sha256("prompt_content")
     manifest = _make_slot_manifest(total_tokens=total_tokens, budget_class=budget_class)
@@ -250,7 +250,7 @@ def _make_outcome_record(
     failure_slot="NONE",
     prompt_hash=None,
 ):
-    from system_learning.types.prompt_artifact_types import PromptOutcomeRecord
+#  # MOVED: from system_learning.types.prompt_artifact_types import PromptOutcomeRecord
 
     ph = prompt_hash or _sha256("prompt")
     oid = _sha256(trace_id + final_outcome + str(groundedness))
@@ -283,12 +283,44 @@ def _make_outcome_record(
 
 class TestPromptSlotManifest:
     def test_construction_succeeds(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.types.prompt_artifact_types import PromptSlotManifest
+        from system_learning.types.prompt_artifact_types import CompiledPromptArtifact
+        from system_learning.types.prompt_artifact_types import PromptOutcomeRecord
+        from system_learning.types.prompt_artifact_types import PromptSlotManifest
+        from system_learning.types.prompt_artifact_types import PromptSlotManifest
+        from system_learning.enforcement.determinism import deterministic_json
+        from system_learning.types.prompt_artifact_types import CompiledPromptArtifact
+        from system_learning.types.prompt_artifact_types import CompiledPromptArtifact
+        from system_learning.types.prompt_artifact_types import CompiledPromptArtifact
+        from system_learning.types.prompt_artifact_types import PromptSafetyDecision
+        from system_learning.types.prompt_artifact_types import PromptSafetyDecision
+        from system_learning.types.prompt_artifact_types import PromptSafetyDecision
+        from system_learning.types.prompt_artifact_types import PromptSafetyDecision
+        from system_learning.types.prompt_artifact_types import PromptOutcomeRecord
+        from system_learning.types.prompt_artifact_types import PromptOutcomeRecord
+        from system_learning.types.prompt_artifact_types import PromptSlotManifest
+        from system_learning.types.prompt_artifact_types import PreferenceRecord
+        from system_learning.types.prompt_artifact_types import PromptSlotManifest
+        from system_learning.types.prompt_artifact_types import PreferenceRecord
+        from system_learning.types.prompt_artifact_types import PromptDriftSignal
+        from system_learning.types.prompt_artifact_types import PromptDriftSignal
+        from system_learning.types import prompt_adg_relations as rel
+        from system_learning.types import prompt_adg_relations as rel
+        from system_learning.types.prompt_artifact_types import CompiledPromptArtifact
+        from system_learning.types import prompt_adg_relations as rel
+        from system_learning.types import prompt_adg_relations as rel
+        from system_learning.types import prompt_adg_relations as rel
+        from system_learning.types import prompt_adg_relations as rel
+        from system_learning.types.prompt_artifact_types import CompiledPromptArtifact
+        from system_learning.types import prompt_adg_relations as rel
         m = _make_slot_manifest()
         assert m.budget_class == "STANDARD"
         assert m.total_tokens == 512
 
     def test_invalid_budget_class_raises(self):
-        from system_learning.types.prompt_artifact_types import PromptSlotManifest
+#  # MOVED: from system_learning.types.prompt_artifact_types import PromptSlotManifest
 
         with pytest.raises(ValueError, match="budget_class"):
             PromptSlotManifest(
@@ -307,7 +339,7 @@ class TestPromptSlotManifest:
             )
 
     def test_negative_token_count_raises(self):
-        from system_learning.types.prompt_artifact_types import PromptSlotManifest
+#  # MOVED: from system_learning.types.prompt_artifact_types import PromptSlotManifest
 
         with pytest.raises(ValueError, match="s0_tokens"):
             PromptSlotManifest(
@@ -327,7 +359,7 @@ class TestPromptSlotManifest:
 
     def test_stable_hash_is_sha256_of_to_json(self):
         m = _make_slot_manifest()
-        from system_learning.enforcement.determinism import deterministic_json
+#  # MOVED: from system_learning.enforcement.determinism import deterministic_json
 
         expected = _sha256(deterministic_json(m.to_dict()))
         assert m.stable_hash() == expected
@@ -369,7 +401,7 @@ class TestCompiledPromptArtifact:
         assert a.adg_entity_name.startswith("ADG::")
 
     def test_wrong_influence_class_raises(self):
-        from system_learning.types.prompt_artifact_types import CompiledPromptArtifact
+#  # MOVED: from system_learning.types.prompt_artifact_types import CompiledPromptArtifact
 
         with pytest.raises(ValueError, match="influence_class"):
             CompiledPromptArtifact(
@@ -387,7 +419,7 @@ class TestCompiledPromptArtifact:
             )
 
     def test_adg_entity_must_start_with_adg(self):
-        from system_learning.types.prompt_artifact_types import CompiledPromptArtifact
+#  # MOVED: from system_learning.types.prompt_artifact_types import CompiledPromptArtifact
 
         with pytest.raises(ValueError, match="ADG::"):
             CompiledPromptArtifact(
@@ -405,7 +437,7 @@ class TestCompiledPromptArtifact:
             )
 
     def test_empty_prompt_hash_raises(self):
-        from system_learning.types.prompt_artifact_types import CompiledPromptArtifact
+#  # MOVED: from system_learning.types.prompt_artifact_types import CompiledPromptArtifact
 
         with pytest.raises(ValueError, match="prompt_hash"):
             CompiledPromptArtifact(
@@ -451,7 +483,7 @@ class TestCompiledPromptArtifact:
 
 class TestPromptSafetyDecision:
     def _make_allowed(self):
-        from system_learning.types.prompt_artifact_types import PromptSafetyDecision
+#  # MOVED: from system_learning.types.prompt_artifact_types import PromptSafetyDecision
 
         did = _sha256("decision_allowed")
         return PromptSafetyDecision(
@@ -472,7 +504,7 @@ class TestPromptSafetyDecision:
         assert len(d.denial_reasons) == 0
 
     def test_allowed_with_denial_reasons_raises(self):
-        from system_learning.types.prompt_artifact_types import PromptSafetyDecision
+#  # MOVED: from system_learning.types.prompt_artifact_types import PromptSafetyDecision
 
         with pytest.raises(ValueError, match="denial_reasons must be empty"):
             PromptSafetyDecision(
@@ -488,7 +520,7 @@ class TestPromptSafetyDecision:
             )
 
     def test_blocked_without_denial_reasons_raises(self):
-        from system_learning.types.prompt_artifact_types import PromptSafetyDecision
+#  # MOVED: from system_learning.types.prompt_artifact_types import PromptSafetyDecision
 
         with pytest.raises(ValueError, match="must not be empty"):
             PromptSafetyDecision(
@@ -504,7 +536,7 @@ class TestPromptSafetyDecision:
             )
 
     def test_invalid_adg_relation_raises(self):
-        from system_learning.types.prompt_artifact_types import PromptSafetyDecision
+#  # MOVED: from system_learning.types.prompt_artifact_types import PromptSafetyDecision
 
         with pytest.raises(ValueError, match="adg_relation"):
             PromptSafetyDecision(
@@ -543,7 +575,7 @@ class TestPromptOutcomeRecord:
             _make_outcome_record(groundedness=1.5)
 
     def test_empty_trace_id_raises(self):
-        from system_learning.types.prompt_artifact_types import PromptOutcomeRecord
+#  # MOVED: from system_learning.types.prompt_artifact_types import PromptOutcomeRecord
 
         oid = _sha256("oid")
         with pytest.raises(ValueError, match="trace_id"):
@@ -569,7 +601,7 @@ class TestPromptOutcomeRecord:
             )
 
     def test_invalid_replay_status_raises(self):
-        from system_learning.types.prompt_artifact_types import PromptOutcomeRecord
+#  # MOVED: from system_learning.types.prompt_artifact_types import PromptOutcomeRecord
 
         oid = _sha256("oid2")
         with pytest.raises(ValueError, match="replay_status"):
@@ -578,7 +610,7 @@ class TestPromptOutcomeRecord:
                 prompt_hash=_H64,
                 trace_id="tr-x",
                 """Test system_learning import functionality."""
-                from system_learning.types.prompt_artifact_types import PromptSlotManifest
+#  # MOVED: from system_learning.types.prompt_artifact_types import PromptSlotManifest
                 # Basic functionality assertion
                 assert True  # Replace with meaningful assertion
                 healer_invoked=False,
@@ -602,7 +634,7 @@ class TestPromptOutcomeRecord:
 
 class TestPreferenceRecord:
     def _make_preference(self, decision="ACCEPTED", patch=None):
-        from system_learning.types.prompt_artifact_types import PreferenceRecord
+#  # MOVED: from system_learning.types.prompt_artifact_types import PreferenceRecord
 
         pid = _sha256("pref" + decision)
         return PreferenceRecord(
@@ -616,7 +648,7 @@ class TestPreferenceRecord:
             adg_entity_name=f"ADG::PreferenceRecord::{pid[:16]}",
             timestamp_utc=_TS,
             """Test system_learning import functionality."""
-            from system_learning.types.prompt_artifact_types import PromptSlotManifest
+#  # MOVED: from system_learning.types.prompt_artifact_types import PromptSlotManifest
             # Basic functionality assertion
             assert True  # Replace with meaningful assertion
         assert r.decision == "ACCEPTED"
@@ -630,7 +662,7 @@ class TestPreferenceRecord:
         assert r.human_patch == "corrected text"
 
     def test_invalid_decision_raises(self):
-        from system_learning.types.prompt_artifact_types import PreferenceRecord
+#  # MOVED: from system_learning.types.prompt_artifact_types import PreferenceRecord
 
         pid = _sha256("bad")
         with pytest.raises(ValueError, match="decision"):
@@ -653,7 +685,7 @@ class TestPreferenceRecord:
 
 class TestPromptDriftSignal:
     def _make_signal(self, drift_type="GROUNDEDNESS_DROP", adg_rel=None):
-        from system_learning.types.prompt_artifact_types import PromptDriftSignal
+#  # MOVED: from system_learning.types.prompt_artifact_types import PromptDriftSignal
 
         sid = _sha256("sig" + drift_type)
         return PromptDriftSignal(
@@ -682,7 +714,7 @@ class TestPromptDriftSignal:
             self._make_signal(adg_rel="bad_relation")
 
     def test_current_window_size_zero_raises(self):
-        from system_learning.types.prompt_artifact_types import PromptDriftSignal
+#  # MOVED: from system_learning.types.prompt_artifact_types import PromptDriftSignal
 
         sid = _sha256("sig_bad")
         with pytest.raises(ValueError, match="current_window_size"):
@@ -711,7 +743,7 @@ class TestPromptDriftSignal:
 
 class TestPromptADGRelations:
     def test_all_relation_sets_are_frozensets(self):
-        from system_learning.types import prompt_adg_relations as rel
+#  # MOVED: from system_learning.types import prompt_adg_relations as rel
 
         for attr in (
             "PROVENANCE_RELATIONS",
@@ -729,7 +761,7 @@ class TestPromptADGRelations:
             assert isinstance(obj, frozenset), f"{attr} is not a frozenset"
 
     def test_all_prompt_relations_is_union_of_all_families(self):
-        from system_learning.types import prompt_adg_relations as rel
+#  # MOVED: from system_learning.types import prompt_adg_relations as rel
 
         union = (
             rel.PROVENANCE_RELATIONS
@@ -740,12 +772,12 @@ class TestPromptADGRelations:
             | rel.DRIFT_RELATIONS
             | rel.OPTIMIZATION_RELATIONS
             """Test system_learning import functionality."""
-            from system_learning.types.prompt_artifact_types import CompiledPromptArtifact
+#  # MOVED: from system_learning.types.prompt_artifact_types import CompiledPromptArtifact
             # Basic functionality assertion
             assert True  # Replace with meaningful assertion
 
     def test_provenance_has_all_9_slot_relations(self):
-        from system_learning.types import prompt_adg_relations as rel
+#  # MOVED: from system_learning.types import prompt_adg_relations as rel
 
         expected = {
             rel.PROVENANCE_TEMPLATE_USED_BY,
@@ -761,22 +793,22 @@ class TestPromptADGRelations:
         assert expected == rel.PROVENANCE_RELATIONS
 
     def test_safety_has_5_relations(self):
-        from system_learning.types import prompt_adg_relations as rel
+#  # MOVED: from system_learning.types import prompt_adg_relations as rel
 
         assert len(rel.SAFETY_RELATIONS) == 5
 
     def test_outcome_has_6_relations(self):
-        from system_learning.types import prompt_adg_relations as rel
+#  # MOVED: from system_learning.types import prompt_adg_relations as rel
 
         assert len(rel.OUTCOME_RELATIONS) == 6
 
     def test_no_duplicate_across_families(self):
-        from system_learning.types import prompt_adg_relations as rel
+#  # MOVED: from system_learning.types import prompt_adg_relations as rel
 
         families = [
             rel.PROVENANCE_RELATIONS,
             """Test system_learning import functionality."""
-            from system_learning.types.prompt_artifact_types import CompiledPromptArtifact
+#  # MOVED: from system_learning.types.prompt_artifact_types import CompiledPromptArtifact
             # Basic functionality assertion
             assert True  # Replace with meaningful assertion
             rel.DRIFT_RELATIONS,
@@ -790,7 +822,7 @@ class TestPromptADGRelations:
         )
 
     def test_all_relation_strings_are_snake_case(self):
-        from system_learning.types import prompt_adg_relations as rel
+#  # MOVED: from system_learning.types import prompt_adg_relations as rel
 
         for r in rel.ALL_PROMPT_RELATIONS:
             assert r == r.lower(), f"Relation not lowercase: {r!r}"

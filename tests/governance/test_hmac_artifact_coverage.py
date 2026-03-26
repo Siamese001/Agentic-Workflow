@@ -7,19 +7,19 @@ import hmac
 
 import pytest
 
-from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
     hash_artifact_canonical,
     sign_artifact,
     verify_signature,
 )
-from agentic_core.L0_routing.types.crypto_trust_types import (
+#  # MOVED: from agentic_core.L0_routing.types.crypto_trust_types import (
     DeterministicTestEnclave,
     KeyRecord,
     KeyStatus,
     SigningAlgorithm,
     TrustRoot,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -182,6 +182,9 @@ def _make_trust_root() -> TrustRoot:
 
 @pytest.mark.governance
 def test_sign_artifact_uses_hmac_sha256() -> None:
+    from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
+    from agentic_core.L0_routing.types.crypto_trust_types import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """SignatureEnvelope.algorithm MUST be HMAC_SHA256."""
     trust_root = _make_trust_root()
     enclave = DeterministicTestEnclave(trust_root)

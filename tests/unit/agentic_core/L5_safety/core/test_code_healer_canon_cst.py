@@ -8,7 +8,7 @@ using CST-based transformers while preserving comments and formatting.
 import ast
 import tempfile
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -84,21 +84,21 @@ from pathlib import Path
 import libcst as cst
 import pytest
 
-from agentic_core.L5_safety.types.cst_transformers_types import (
+#  # MOVED: from agentic_core.L5_safety.types.cst_transformers_types import (
     DocstringTarget,
     SurgicalBareExceptFixer,
     SurgicalDocstringInserter,
     SurgicalFutureImportInserter,
 )
-from agentic_core.L5_safety.types.surgical_context_types import (
+#  # MOVED: from agentic_core.L5_safety.types.surgical_context_types import (
     ASTCoordinate,
     SurgicalContext,
     ViolationConstraint,
 )
-from agentic_core.mixins.cst_healer_mixin import (
+#  # MOVED: from agentic_core.mixins.cst_healer_mixin import (
     SurgicalCSTHealerMixin,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -165,6 +165,11 @@ class TestCanonHealingCST:
     """Test CST-based canon healing operations."""
 
     def test_future_import_insertion(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.types.cst_transformers_types import (
+        from agentic_core.L5_safety.types.surgical_context_types import (
+        from agentic_core.mixins.cst_healer_mixin import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """Test that __future__ import is correctly inserted."""
         source_code = """# Module comment
 import os

@@ -15,7 +15,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -62,7 +62,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_memory_routing", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_memory_routing", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_memory_routing", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -192,7 +192,22 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 def test_null_retriever_returns_empty_list():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     from agentic_core.L1_cognition.memory.healing_memory_retriever import NullHealingMemoryRetriever
+    from agentic_core.L1_cognition.memory.healing_memory_retriever import NullHealingMemoryRetriever
+    from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
+    from system_learning.engines.local_faiss_store import LocalFAISSStore
+    from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
+    from system_learning.engines.local_faiss_store import LocalFAISSStore
+    from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+    from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+    from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+    from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
+    from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
+    from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+    from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
+#  # MOVED: from agentic_core.L1_cognition.memory.healing_memory_retriever import NullHealingMemoryRetriever
 
     r = NullHealingMemoryRetriever()
     result = r.retrieve_similar_incidents("any signal text", top_k=5)
@@ -201,7 +216,7 @@ def test_null_retriever_returns_empty_list():
 
 @pytest.mark.unit
 def test_null_retriever_is_not_active():
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import NullHealingMemoryRetriever
+#  # MOVED: from agentic_core.L1_cognition.memory.healing_memory_retriever import NullHealingMemoryRetriever
 
     r = NullHealingMemoryRetriever()
     assert r.is_active is False
@@ -209,8 +224,8 @@ def test_null_retriever_is_not_active():
 
 @pytest.mark.unit
 def test_healing_retriever_is_active():
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
-    from system_learning.engines.local_faiss_store import LocalFAISSStore
+#  # MOVED: from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore
 
     store = LocalFAISSStore(base_path=Path("."))
     r = HealingMemoryRetriever(store=store)
@@ -219,8 +234,8 @@ def test_healing_retriever_is_active():
 
 @pytest.mark.unit
 def test_healing_retriever_empty_signal_returns_empty():
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
-    from system_learning.engines.local_faiss_store import LocalFAISSStore
+#  # MOVED: from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore
 
     store = LocalFAISSStore(base_path=Path("."))
     r = HealingMemoryRetriever(store=store)
@@ -230,7 +245,7 @@ def test_healing_retriever_empty_signal_returns_empty():
 
 @pytest.mark.unit
 def test_healing_retriever_returns_advisory_only_incidents():
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+#  # MOVED: from agentic_core.L1_cognition.memory.healing_memory_retriever import (
         HealingMemoryRetriever,
         SimilarIncident,
     )
@@ -258,7 +273,7 @@ def test_healing_retriever_returns_advisory_only_incidents():
 @pytest.mark.negative_control
 def test_build_retriever_returns_active_when_base_path_provided(tmp_path):
     """BGE is always active; build_retriever returns live retriever when base_path is given."""
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+#  # MOVED: from agentic_core.L1_cognition.memory.healing_memory_retriever import (
         HealingMemoryRetriever,
         build_retriever,
     )
@@ -271,7 +286,7 @@ def test_build_retriever_returns_active_when_base_path_provided(tmp_path):
 @pytest.mark.negative_control
 def test_build_retriever_returns_null_when_base_path_none():
     """build_retriever returns NullHealingMemoryRetriever when base_path is None."""
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+#  # MOVED: from agentic_core.L1_cognition.memory.healing_memory_retriever import (
         NullHealingMemoryRetriever,
         build_retriever,
     )
@@ -308,7 +323,7 @@ def test_advisory_result_never_alters_routing_score():
 @pytest.mark.determinism
 def test_retrieve_similar_incidents_prints_wb_digest(capsys):
     """W-B-DETERMINISM-DIGEST must be printed exactly once per retrieve call."""
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
+#  # MOVED: from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
 
     mock_store = MagicMock()
     mock_store.search.return_value = [("hash_x", "trace_x", 0.88)]
@@ -331,7 +346,7 @@ def test_retrieve_similar_incidents_prints_wb_digest(capsys):
 @pytest.mark.determinism
 def test_wb_digest_is_deterministic(capsys):
     """Two retrieve calls with identical inputs must produce identical W-B digests."""
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
+#  # MOVED: from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
 
     mock_store = MagicMock()
     mock_store.search.return_value = [("hash_aa", "trace_aa", 0.91), ("hash_bb", "trace_bb", 0.77)]
@@ -365,7 +380,7 @@ def test_wb_digest_is_deterministic(capsys):
 @pytest.mark.negative_control
 def test_sovereignty_error_on_advisory_only_false():
     """B-NEGCTRL: SimilarIncident with advisory_only=False must raise SovereigntyError."""
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+#  # MOVED: from agentic_core.L1_cognition.memory.healing_memory_retriever import (
         HealingMemoryRetriever,
         SimilarIncident,
         SovereigntyError,
@@ -414,7 +429,7 @@ def test_retrieve_similar_incidents_sort_is_deterministic(capsys):
     Two calls with the same store contents MUST produce identical ordering
     regardless of the iteration order returned by the store.
     """
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
+#  # MOVED: from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
 
     mock_store = MagicMock()
     mock_store.search.return_value = [

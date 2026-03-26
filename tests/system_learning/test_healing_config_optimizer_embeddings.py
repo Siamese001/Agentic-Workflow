@@ -16,7 +16,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -79,11 +79,11 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_healing_config_optimizer_embeddings", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_healing_config_optimizer_embeddings", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_healing_config_optimizer_embeddings", "exec_snapshot_link")
-from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
-from system_learning.engines.healing_config_optimizer import (
+#  # MOVED: from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
+#  # MOVED: from system_learning.engines.healing_config_optimizer import (
     HealingConfigOptimizer,
 )
-from system_learning.types.healing_outcome_learning_types import (
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import (
     HealingOutcomeAggregate,
     HealingOutcomeAggregateKey,
     HealingOutcomeAggregateSnapshot,
@@ -93,7 +93,7 @@ from system_learning.types.healing_outcome_learning_types import (
 # REMOVED: _emit_applies_guardrail("p0", "test_healing_config_optimizer_embeddings", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_healing_config_optimizer_embeddings", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_healing_config_optimizer_embeddings", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -266,6 +266,11 @@ class TestHealingConfigOptimizerEmbeddings:
         )
 
     def test_kill_switch_path(
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
+        from system_learning.engines.healing_config_optimizer import (
+        from system_learning.types.healing_outcome_learning_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         self, optimizer: HealingConfigOptimizer, sample_snapshot: HealingOutcomeAggregateSnapshot
     ) -> None:
         """T1 - Kill-switch path: embeddings disabled should use statistical-only scoring."""

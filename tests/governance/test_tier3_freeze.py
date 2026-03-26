@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -51,7 +51,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_tier3_freeze", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_tier3_freeze", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_tier3_freeze", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -176,7 +176,11 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.governance
 def test_tier3_freeze_disables_write_gateway():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+    from agentic_core.L2_execution.enforcement.capability_chokepoint import CapabilityChokepoint
+#  # MOVED: from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
 
     uwg = UniversalWriteGateway()
     uwg.freeze()
@@ -186,7 +190,7 @@ def test_tier3_freeze_disables_write_gateway():
 
 @pytest.mark.governance
 def test_tier3_freeze_halts_token_issuance():
-    from agentic_core.L2_execution.enforcement.capability_chokepoint import CapabilityChokepoint
+#  # MOVED: from agentic_core.L2_execution.enforcement.capability_chokepoint import CapabilityChokepoint
 
     cp = CapabilityChokepoint()
     cp.freeze()

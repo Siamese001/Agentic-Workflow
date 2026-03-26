@@ -15,11 +15,11 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L5_safety.types.heal_policy_types import (
+#  # MOVED: from agentic_core.L5_safety.types.heal_policy_types import (
     HealEscalationDecision,
     ReasoningTier,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -82,7 +82,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_heal_policy_runtime_integration", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_heal_policy_runtime_integration", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_heal_policy_runtime_integration", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -120,7 +120,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from agentic_core.utils.decorators_compat_util import standard_heal
+#  # MOVED: from agentic_core.utils.decorators_compat_util import standard_heal
 
 # REMOVED: _emit_emits_metric_event("test_heal_policy_runtime_integration", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_heal_policy_runtime_integration", "p4obs", "metric_2")
@@ -211,6 +211,10 @@ class TestHealPolicyRuntimeIntegration:
     """Prove policy decision is computed and logged without behavior change."""
 
     def test_decide_reasoning_tier_is_invoked(self) -> None:
+        from agentic_core.L5_safety.types.heal_policy_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.utils.decorators_compat_util import standard_heal
     """Test decide_reasoning_tier_is_invoked runtime behavior."""
     # Arrange
     # TODO: Set up runtime environment

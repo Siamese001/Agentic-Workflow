@@ -6,11 +6,12 @@ Behavioral tests belong in test_tools.py (no _adg suffix).
 
 from __future__ import annotations
 
-import agentic_core.runtime.tools as _tools_mod  # noqa: F401
+#  # MOVED: import agentic_core.runtime.tools as _tools_mod  # noqa: F401
 
 
 class TestToolsImportability:
     def test_module_importable(self) -> None:
+        import agentic_core.runtime.tools as _tools_mod  # noqa: F401
     """Test module_importable runtime behavior."""
     # Arrange
     # TODO: Set up runtime environment

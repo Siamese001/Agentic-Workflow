@@ -5,11 +5,12 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
+#  # MOVED: from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
 
 
 class TestRuntimeSafetyMixin:
     def test_importable(self):
+        from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
     """Test importable runtime behavior."""
     # Arrange
     # TODO: Set up runtime environment

@@ -14,27 +14,27 @@ import time
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     APPS_RG_DIR,
     SYSTEM_LEARNING_DIR,
 )
-from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
     ProviderHealthState,
     SovereignLLMGateway,
 )
-from agentic_core.L5_safety.config.structure_blueprint.sovereign_kernel import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.sovereign_kernel import (
     SOVEREIGN_KERNEL_COMPONENTS,
 )
-from agentic_core.L5_safety.enforcement.priority_violation_guard import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.priority_violation_guard import (
     OptimizationPriority,
     PriorityViolationGuard,
 )
-from agentic_core.L6_observability.engines.drift_detector import DriftDetector
-from agentic_core.L6_observability.engines.replay_key_computer import (
+#  # MOVED: from agentic_core.L6_observability.engines.drift_detector import DriftDetector
+#  # MOVED: from agentic_core.L6_observability.engines.replay_key_computer import (
     ReplayKeyComponents,
     compute_replay_key,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -96,14 +96,14 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_sovereignty_attack_suite", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_sovereignty_attack_suite", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_sovereignty_attack_suite", "exec_snapshot_link")
-from system_learning.engines.surface_isolation_validator import (
+#  # MOVED: from system_learning.engines.surface_isolation_validator import (
     SurfaceIsolationValidator,
 )
 
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_sovereignty_attack_suite")
 # REMOVED: _emit_reads_policy_state("p0", "test_sovereignty_attack_suite", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_sovereignty_attack_suite", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -227,6 +227,15 @@ class TestKernelBoundaryViolation:
     """Verify kernel boundary is fully declared and tamper-evident."""
 
     def test_sovereign_kernel_contains_critical_components(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
+        from agentic_core.L5_safety.config.structure_blueprint.sovereign_kernel import (
+        from agentic_core.L5_safety.enforcement.priority_violation_guard import (
+        from agentic_core.L6_observability.engines.drift_detector import DriftDetector
+        from agentic_core.L6_observability.engines.replay_key_computer import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.surface_isolation_validator import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """Immutable frozenset must contain every L2/L5 kernel component."""
         assert "agentic_core.L5_safety" in SOVEREIGN_KERNEL_COMPONENTS
         assert "agentic_core.L2_execution" in SOVEREIGN_KERNEL_COMPONENTS

@@ -19,8 +19,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import SYSTEM_LEARNING_DIR
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import SYSTEM_LEARNING_DIR
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -83,27 +83,27 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_healer_output_persistence", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_healer_output_persistence", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_healer_output_persistence", "exec_snapshot_link")
-from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-from system_learning.engines.healing_success_rate_store import (
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+#  # MOVED: from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+#  # MOVED: from system_learning.engines.healing_success_rate_store import (
     _EMA_ALPHA,
     _MIN_SAMPLE_SIZE,
     _NEUTRAL_PRIOR,
     HealingSuccessRateStore,
     reset_default_store,
 )
-from system_learning.engines.in_memory_healing_outcome_intake_store import (
+#  # MOVED: from system_learning.engines.in_memory_healing_outcome_intake_store import (
     InMemoryHealingOutcomeIntakeStore,
 )
-from system_learning.stores.version_store import FileBackedVersionStore, InMemoryVersionStore
-from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
-from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeStats
+#  # MOVED: from system_learning.stores.version_store import FileBackedVersionStore, InMemoryVersionStore
+#  # MOVED: from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeStats
 
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_healer_output_persistence")
 # REMOVED: _emit_applies_guardrail("p0", "test_healer_output_persistence", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_healer_output_persistence", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_healer_output_persistence", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -279,6 +279,17 @@ class TestWave1HealingSuccessRateStore:
         reset_default_store()
 
     def test_record_success_increments_count(self) -> None:
+        from agentic_core.L0_routing.config.path_constants import SYSTEM_LEARNING_DIR
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+        from system_learning.engines.healing_success_rate_store import (
+        from system_learning.engines.in_memory_healing_outcome_intake_store import (
+        from system_learning.stores.version_store import FileBackedVersionStore, InMemoryVersionStore
+        from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeStats
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        import agentic_core.L0_routing.scripts.execute_ssot as mod
         store = HealingSuccessRateStore()
         store.record_outcome("sig_a", True)
         assert store.get_counts()["sig_a"] == 1
@@ -918,7 +929,7 @@ class TestFireMetaLearningIntakeFaultIsolation:
             if "agentic_core.L0_routing.scripts.execute_ssot" in sys.modules:
                 mod = sys.modules["agentic_core.L0_routing.scripts.execute_ssot"]
             else:
-                import agentic_core.L0_routing.scripts.execute_ssot as mod
+#  # MOVED: import agentic_core.L0_routing.scripts.execute_ssot as mod
 
             state_mgr = self._make_state_mgr()
             mod._fire_meta_learning_intake(state_mgr, now_utc=0)  # Must not raise

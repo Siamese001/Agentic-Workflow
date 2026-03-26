@@ -18,7 +18,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -65,7 +65,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_stale_guard", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_stale_guard", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_stale_guard", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -216,6 +216,8 @@ def _make_checker(ingested_at: str | None, repo_root: Path | None = None):
 
 class TestStalenessResult:
     def test_seconds_stale_positive_when_stale(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         from tools.adg.adg_stale_guard import StalenessResult
 
         r = StalenessResult(is_stale=True, ingest_time=1000.0, last_commit_time=1100.0)

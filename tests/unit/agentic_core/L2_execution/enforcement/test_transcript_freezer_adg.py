@@ -4,7 +4,7 @@ from __future__ import annotations
 import pytest
 
 try:
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         _emit_agent_executes_agent,
         _emit_applies_guardrail,  # noqa: E402
         _emit_authorize_and_execute,
@@ -74,12 +74,12 @@ try:
 # REMOVED:     _emit_updates_meta_learning_state("p4", "test_transcript_freezer_adg", "meta_learning")
 # REMOVED:     _emit_links_execution_to_snapshot("p4", "test_transcript_freezer_adg", "exec_snapshot_link")
     pytestmark = pytest.mark.unit
-    from agentic_core.L2_execution.enforcement.transcript_freezer import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.transcript_freezer import (
         FrozenTranscript,
         TranscriptMutationViolation,
         freeze_transcript,
     )
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         _emit_agent_executes_agent,
         _emit_captures_pattern,
         _emit_captures_runtime_anomaly,
@@ -167,7 +167,7 @@ try:
 # REMOVED:     _emit_transcripts_response("p1", "test_transcript_freezer_adg", "transcript")
 # REMOVED:     _emit_hard_fails_untranscripted("p1", "test_transcript_freezer_adg")
 # REMOVED:     _emit_gated_by_confidence("p1", "test_transcript_freezer_adg", "confidence_gate")
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_writes_through
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_writes_through
 
 except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swallow
     pass
@@ -177,6 +177,10 @@ pytestmark = pytest.mark.unit
 
 class TestTranscriptMutationViolation:
     def test_is_exception(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.enforcement.transcript_freezer import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import _emit_writes_through
     """Test is_exception runtime behavior."""
     # Arrange
     # TODO: Set up error condition

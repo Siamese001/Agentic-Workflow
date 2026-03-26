@@ -7,7 +7,7 @@ and semantic_clock_vector for reproducible LLM interactions.
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -90,14 +90,14 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.governance
 
-from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-from agentic_core.L2_execution.enforcement.provider_binding_determinism import (
+#  # MOVED: from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+#  # MOVED: from agentic_core.L2_execution.enforcement.provider_binding_determinism import (
     ProviderBindingContext,
     compute_provider_binding_digest,
     extract_provider_context_from_request,
     verify_provider_binding_determinism,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -192,6 +192,10 @@ class TestREQ413ProviderBindingDeterminism:
     """Test suite for REQ-413 Provider Binding Determinism."""
 
     def test_compute_provider_binding_digest_deterministic(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+        from agentic_core.L2_execution.enforcement.provider_binding_determinism import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """Test that provider binding digest is deterministic."""
         # Given
         provider_id = "openai"

@@ -18,11 +18,11 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.L5_safety.enforcement.registry_verification_enforcer import AgentInfo
-from agentic_core.L5_safety.enforcement.ssot_structure_validation_enforcer import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.registry_verification_enforcer import AgentInfo
+#  # MOVED: from agentic_core.L5_safety.enforcement.ssot_structure_validation_enforcer import (
     BASE_AGENT_REQUIRED_PATH,
     LAYER_PATTERNS,
     SSOTStructureValidator,
@@ -30,7 +30,7 @@ from agentic_core.L5_safety.enforcement.ssot_structure_validation_enforcer impor
     StructureViolation,
     run_structure_validation,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -209,6 +209,10 @@ def validator() -> SSOTStructureValidator:
 class TestSuccessPaths:
     @pytest.mark.governance
     def test_validate_agent_returns_empty_when_l2_agent_compliant(self, validator):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L5_safety.enforcement.registry_verification_enforcer import AgentInfo
+        from agentic_core.L5_safety.enforcement.ssot_structure_validation_enforcer import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         agent = _make_agent(
             class_name="SandboxAirlock",
             relative_path="agentic_core/L2_execution/assembly/sandbox_airlock.py",

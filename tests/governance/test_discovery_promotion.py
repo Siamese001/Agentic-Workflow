@@ -11,7 +11,7 @@ from typing import Any
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     L1_COGNITION_DIR,
     L2_EXECUTION_DIR,
@@ -172,6 +172,7 @@ class MockSurgicalManifest:
 
 
 def test_req298_discovery_scan_determinism():
+    from agentic_core.L0_routing.config.path_constants import (
     """REQ-298: Test that discovery scan is deterministic."""
     # Given
     scanner = MockDiscoveryScanner()

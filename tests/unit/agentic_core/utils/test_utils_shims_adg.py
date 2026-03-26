@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -85,7 +85,7 @@ pytestmark = pytest.mark.unit
 # ---------------------------------------------------------------------------
 # detection_protocol_util
 # ---------------------------------------------------------------------------
-from agentic_core.utils.detection_protocol_util import (
+#  # MOVED: from agentic_core.utils.detection_protocol_util import (
     DetectionRequest,
     DetectionResult,
     DetectionSignalProtocol,
@@ -96,6 +96,12 @@ from agentic_core.utils.detection_protocol_util import (
 
 class TestDetectionProtocolShim:
     def test_all_list_complete(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.utils.detection_protocol_util import (
+        from agentic_core.runtime.config.detection_config import DetectionRequest as canon
+        from agentic_core.utils.project_root_util import get_project_root, get_project_root_safe
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.utils.meta_learning_storage_util import MetaLearningStorage
         for name in ("DetectionRequest", "DetectionResult", "Severity"):
             assert name in __all__
 
@@ -109,7 +115,7 @@ class TestDetectionProtocolShim:
         assert callable(Severity)
 
     def test_identity_matches_canonical(self):
-        from agentic_core.runtime.config.detection_config import DetectionRequest as canon
+#  # MOVED: from agentic_core.runtime.config.detection_config import DetectionRequest as canon
         assert DetectionRequest is canon
 
 
@@ -130,7 +136,7 @@ class TestDetectionSignalProtocol:
 # ---------------------------------------------------------------------------
 # project_root_util
 # ---------------------------------------------------------------------------
-from agentic_core.utils.project_root_util import get_project_root, get_project_root_safe
+#  # MOVED: from agentic_core.utils.project_root_util import get_project_root, get_project_root_safe
 
 
 class TestGetProjectRoot:
@@ -164,7 +170,7 @@ class TestGetProjectRoot:
 # ---------------------------------------------------------------------------
 # meta_learning_storage_util
 # ---------------------------------------------------------------------------
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -202,7 +208,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from agentic_core.utils.meta_learning_storage_util import MetaLearningStorage
+#  # MOVED: from agentic_core.utils.meta_learning_storage_util import MetaLearningStorage
 
 # REMOVED: _emit_emits_metric_event("test_utils_shims_adg", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_utils_shims_adg", "p4obs", "metric_2")

@@ -20,7 +20,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -93,12 +93,12 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L0_routing.engines.intent_embedding_classifier import (
+#  # MOVED: from agentic_core.L0_routing.engines.intent_embedding_classifier import (
     IntentEmbeddingClassifier,
     _average_vectors,
     _l2_normalize,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -227,6 +227,10 @@ def _make_classifier_with_stub(mapping: dict[str, list[float]]) -> IntentEmbeddi
 
 class TestL2Normalize:
     def test_unit_vector_unchanged(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.engines.intent_embedding_classifier import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.engines.intent_embedding_classifier import _PrototypeEntry
         v = [1.0, 0.0, 0.0]
         n = _l2_normalize(v)
         assert abs(math.sqrt(sum(x * x for x in n)) - 1.0) < 1e-6
@@ -286,7 +290,7 @@ class TestNoEmbedder:
     def test_classify_returns_none_embedder_unavailable(self):
         with patch.object(self.clf, "_get_embedder", return_value=None):
             # Manually add a fake entry to bypass the empty-prototypes guard
-            from agentic_core.L0_routing.engines.intent_embedding_classifier import _PrototypeEntry
+#  # MOVED: from agentic_core.L0_routing.engines.intent_embedding_classifier import _PrototypeEntry
 
             self.clf._prototypes["x"] = _PrototypeEntry("x", "abc", [1.0, 0.0])
             result = self.clf.classify("write my resume")

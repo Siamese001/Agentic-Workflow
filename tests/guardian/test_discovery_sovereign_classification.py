@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -44,6 +44,7 @@ class TestSovereignClassification:
     """Sovereign flag must be consistent with mro_chain content."""
 
     def test_sovereign_iff_sovereign_base_in_mro(self, discovery_agents):
+        from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
         """Every agent's is_sovereign must equal 'SovereignBaseAgent' in mro_chain."""
         mismatches = []
         for agent in discovery_agents:

@@ -13,15 +13,15 @@ import json
 
 import pytest
 
-from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-from agentic_core.L2_execution.types.self_healing_trigger_types import (
+#  # MOVED: from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+#  # MOVED: from agentic_core.L2_execution.types.self_healing_trigger_types import (
     AUTHORIZED_DECISIONS,
     REJECTED_DECISIONS,
     L2SelfHealingTrigger,
     emit_self_healing_trigger,
     is_healing_authorized,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -182,6 +182,9 @@ def clock() -> SemanticClockSnapshot:
 
 class TestContractDeterminism:
     def test_to_dict_stable_json(self, clock):
+        from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+        from agentic_core.L2_execution.types.self_healing_trigger_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test to_dict_stable_json runtime behavior."""
     # Arrange
     # TODO: Set up test data for to_dict_stable_json

@@ -15,8 +15,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from agentic_core.L3_orchestration.reasoning.UnifiedAgent import HealingResult
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L3_orchestration.reasoning.UnifiedAgent import HealingResult
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -63,7 +63,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_code_healer_facade", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_code_healer_facade", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_code_healer_facade", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -203,13 +203,25 @@ class TestCodeHealingStrategy:
     @pytest.fixture
     def strategy(self, config):
         """Create CodeHealingStrategy instance."""
-        from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
             CodeHealingStrategy,
         )
 
         return CodeHealingStrategy(config)
 
     def test_initialization(self, strategy, config):
+        from agentic_core.L3_orchestration.reasoning.UnifiedAgent import HealingResult
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
+        from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
+        from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
+        from agentic_core.L5_safety.reasoning.CodeHealerAgent import HealingType
+        from agentic_core.L5_safety.reasoning.CodeHealerAgent import HealerConfig
+        from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
+        from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
         """Test strategy initialization."""
         assert strategy.enable_canon is True
         assert strategy.enable_import is True
@@ -235,7 +247,7 @@ class TestCodeHealerAgentFacade:
     def agent(self):
         """Create CodeHealerAgent instance."""
         with patch("agentic_core.base_agents.SovereignBaseAgent.SovereignBaseAgent.__init__"):
-            from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
                 CodeHealerAgent,
             )
 
@@ -251,7 +263,7 @@ class TestCodeHealerAgentFacade:
     def test_unified_strategy_initialized(self, agent):
         """Test unified strategy is initialized."""
         assert agent._unified_strategy is not None
-        from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
             CodeHealingStrategy,
         )
 
@@ -307,7 +319,7 @@ class TestHealingTypes:
 
     def test_healing_type_enum(self):
         """Test HealingType enum exists."""
-        from agentic_core.L5_safety.reasoning.CodeHealerAgent import HealingType
+#  # MOVED: from agentic_core.L5_safety.reasoning.CodeHealerAgent import HealingType
 
         assert hasattr(HealingType, "CANON")
         assert hasattr(HealingType, "IMPORT")
@@ -331,7 +343,7 @@ class TestHealingTypes:
 
     def test_healer_config_dataclass(self):
         """Test HealerConfig dataclass exists."""
-        from agentic_core.L5_safety.reasoning.CodeHealerAgent import HealerConfig
+#  # MOVED: from agentic_core.L5_safety.reasoning.CodeHealerAgent import HealerConfig
 
         config = HealerConfig()
 
@@ -346,14 +358,14 @@ class TestLegacyCompatibility:
 
     def test_import_compatibility(self):
         """Test original import still works."""
-        from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
 
         assert CodeHealerAgent is not None
 
     def test_inherits_from_sovereign_base(self):
         """Test class still inherits from SovereignBaseAgent."""
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
+#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
 
         assert issubclass(CodeHealerAgent, SovereignBaseAgent)
 
@@ -377,7 +389,7 @@ class TestLegacyCompatibility:
 
     def test_atomic_write_method(self):
         """Test atomic_write method exists."""
-        from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.CodeHealerAgent import CodeHealerAgent
 
         with patch("agentic_core.base_agents.SovereignBaseAgent.SovereignBaseAgent.__init__"):
             agent = CodeHealerAgent()

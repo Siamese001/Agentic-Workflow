@@ -51,7 +51,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -98,7 +98,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_anomaly_fixes", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_anomaly_fixes", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_anomaly_fixes", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -335,6 +335,8 @@ class TestWave1UWGImportRemoval:
 
     @pytest.mark.parametrize("path,name", TARGETS, ids=lambda x: x if isinstance(x, str) else "")
     def test_no_top_level_write_gateway_import(self, path, name):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         tree = _parse(path)
         hits = _top_level_fragment(tree, "write_gateway")
         assert hits == [], (

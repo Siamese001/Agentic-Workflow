@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.prompt_governance.scripts.cleanup_duplicates_util  # noqa: F401
+#  # MOVED: import agentic_core.prompt_governance.scripts.cleanup_duplicates_util  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.prompt_governance.scripts.cleanup_duplicates_util  # noqa: F401
     """Module cleanup_duplicates_util must be importable."""
     assert agentic_core.prompt_governance.scripts.cleanup_duplicates_util is not None

@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from agentic_core.L2_execution.healers.healing_event_emitter import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_event_emitter import (
     HealingAttemptEvent,
     HealingEventEmitter,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -53,7 +53,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_healing_visibility", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_healing_visibility", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_healing_visibility", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -169,6 +169,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestHealingEventEmitter:
     def test_emit_returns_event(self, tmp_path):
+        from agentic_core.L2_execution.healers.healing_event_emitter import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test emit_returns_event runtime behavior."""
     # Arrange
     # TODO: Set up test data for emit_returns_event

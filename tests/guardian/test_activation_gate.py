@@ -16,14 +16,14 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.L5_safety.enforcement.activation_gate import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.activation_gate import (
     ACTIVATION_GATE_VERSION,
     assert_activation_allowed,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -176,6 +176,9 @@ class TestHappyPath:
     """All enforcement modules present → gate allows."""
 
     def test_all_components_present_no_raise(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L5_safety.enforcement.activation_gate import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """With real modules present, assert_activation_allowed must not raise."""
         assert_activation_allowed()
 

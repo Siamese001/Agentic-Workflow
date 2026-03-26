@@ -5,7 +5,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L1_cognition.types.research_hop_phase_types import (
+#  # MOVED: from agentic_core.L1_cognition.types.research_hop_phase_types import (
     ResearchHopPhase,
     ValidationRejectionReason,
 )
@@ -13,6 +13,7 @@ from agentic_core.L1_cognition.types.research_hop_phase_types import (
 
 class TestResearchHopPhase:
     def test_is_enum(self):
+        from agentic_core.L1_cognition.types.research_hop_phase_types import (
         import enum
         assert issubclass(ResearchHopPhase, enum.Enum)
 

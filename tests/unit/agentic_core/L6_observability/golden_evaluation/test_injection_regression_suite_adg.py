@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L6_observability.golden_evaluation.injection_regression_suite  # noqa: F401
+#  # MOVED: import agentic_core.L6_observability.golden_evaluation.injection_regression_suite  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L6_observability.golden_evaluation.injection_regression_suite  # noqa: F401
     """Module injection_regression_suite must be importable."""
     assert agentic_core.L6_observability.golden_evaluation.injection_regression_suite is not None

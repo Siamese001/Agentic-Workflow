@@ -20,7 +20,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -72,7 +72,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_validates_agent_capability("p1", "test_plumbing_rigorous", "test")
 # REMOVED: _emit_checks_agent_registry("p1", "test_plumbing_rigorous", "test")
 # REMOVED: _emit_snapshots_state("p0", "test_plumbing_rigorous", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -212,7 +212,61 @@ class TestD0EngineAdapterBranches:
     # B-D0-1: ImportError path
     # ------------------------------------------------------------------
     def test_import_error_sets_null_fallback(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         from apps_shared.spine import d0_engine_adapter as mod
+        from apps_shared.spine import d0_engine_adapter as mod
+        from apps_shared.spine import d0_engine_adapter as mod
+        from apps_shared.spine import d0_engine_adapter as mod
+        from apps_shared.spine import risk_gate_adapter as mod
+        from apps_shared.spine import risk_gate_adapter as mod
+        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+        from apps_shared.spine import risk_gate_adapter as mod
+        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+        from apps_shared.spine.vigilance_dispatcher_adapter import _drain_event_queue
+        from apps_shared.spine import vigilance_dispatcher_adapter as mod
+        from apps_shared.spine import vigilance_dispatcher_adapter as mod
+        from apps_shared.spine.vigilance_dispatcher_adapter import _drain_event_queue
+        from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
+        from apps_shared.spine import vigilance_dispatcher_adapter as mod
+        from apps_shared.spine.vigilance_dispatcher_adapter import _drain_event_queue
+        from apps_shared.spine.vigilance_dispatcher_adapter import (
+        from apps_shared.spine.vigilance_dispatcher_adapter import (
+        from apps_shared.spine.vigilance_dispatcher_adapter import (
+        from apps_shared.spine.vigilance_dispatcher_adapter import (
+        from apps_shared.spine.vigilance_dispatcher_adapter import (
+        from apps_shared.spine.vigilance_dispatcher_adapter import (
+        from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
+        from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
+        from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
+        from apps_shared.spine.vigilance_dispatcher_adapter import (
+        from apps_shared.spine.vigilance_dispatcher_adapter import (
+        from apps_shared.spine.vigilance_dispatcher_adapter import (
+        from apps_shared.spine.vigilance_dispatcher_adapter import (
+        from apps_shared.spine.vigilance_dispatcher_adapter import (
+        from apps_shared.spine.vigilance_dispatcher_adapter import (
+        from apps_shared.spine.vigilance_dispatcher_adapter import (
+        from apps_shared.spine.vigilance_dispatcher_adapter import (
+        from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+        from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+        from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+        from apps_shared.spine.d0_engine_adapter import D0EngineAdapter
+        from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+#  # MOVED: from apps_shared.spine import d0_engine_adapter as mod
 
         with patch.object(mod, "_build_real_engine", side_effect=ImportError("missing")):
             adapter = mod.D0EngineAdapter()
@@ -221,7 +275,7 @@ class TestD0EngineAdapterBranches:
         assert adapter._RoleFence is None
 
     def test_null_fallback_render_d0_returns_input_unchanged(self):
-        from apps_shared.spine import d0_engine_adapter as mod
+#  # MOVED: from apps_shared.spine import d0_engine_adapter as mod
 
         with patch.object(mod, "_build_real_engine", side_effect=ImportError("missing")):
             adapter = mod.D0EngineAdapter()
@@ -229,7 +283,7 @@ class TestD0EngineAdapterBranches:
 
     # B-D0-1: negative control — null fallback does NOT call any engine
     def test_null_fallback_never_calls_engine(self):
-        from apps_shared.spine import d0_engine_adapter as mod
+#  # MOVED: from apps_shared.spine import d0_engine_adapter as mod
 
         with patch.object(mod, "_build_real_engine", side_effect=ImportError("missing")):
             adapter = mod.D0EngineAdapter()
@@ -248,7 +302,7 @@ class TestD0EngineAdapterBranches:
     # B-D0-3: not _real branch in render_d0
     # ------------------------------------------------------------------
     def test_render_d0_not_real_returns_any_string_unchanged(self):
-        from apps_shared.spine import d0_engine_adapter as mod
+#  # MOVED: from apps_shared.spine import d0_engine_adapter as mod
 
         with patch.object(mod, "_build_real_engine", side_effect=ImportError):
             adapter = mod.D0EngineAdapter()
@@ -411,7 +465,7 @@ class TestRiskGateAdapterBranches:
 
     # B-RG-1
     def test_import_error_sets_null_fallback(self):
-        from apps_shared.spine import risk_gate_adapter as mod
+#  # MOVED: from apps_shared.spine import risk_gate_adapter as mod
 
         with patch.object(mod, "_build_real_gate", side_effect=ImportError("missing")):
             adapter = mod.RiskGateAdapter()
@@ -419,7 +473,7 @@ class TestRiskGateAdapterBranches:
         assert adapter._gate is None
 
     def test_null_fallback_evaluate_returns_allow_true(self):
-        from apps_shared.spine import risk_gate_adapter as mod
+#  # MOVED: from apps_shared.spine import risk_gate_adapter as mod
 
         with patch.object(mod, "_build_real_gate", side_effect=ImportError):
             adapter = mod.RiskGateAdapter()
@@ -432,14 +486,14 @@ class TestRiskGateAdapterBranches:
 
     # B-RG-2
     def test_successful_import_sets_real_true(self):
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+#  # MOVED: from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
 
         adapter = RiskGateAdapter()
         assert adapter.is_real is True
 
     # B-RG-3: negative control — null fallback does NOT block even on DENY_EXECUTION
     def test_null_fallback_never_blocks(self):
-        from apps_shared.spine import risk_gate_adapter as mod
+#  # MOVED: from apps_shared.spine import risk_gate_adapter as mod
 
         with patch.object(mod, "_build_real_gate", side_effect=ImportError):
             adapter = mod.RiskGateAdapter()
@@ -455,7 +509,7 @@ class TestRiskGateAdapterBranches:
 
     # B-RG-4: d0_injections already a string
     def test_evaluate_str_d0_injections_passed_through(self):
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+#  # MOVED: from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
 
         adapter = RiskGateAdapter()
         assert adapter.is_real
@@ -470,7 +524,7 @@ class TestRiskGateAdapterBranches:
 
     # B-RG-5: d0_injections not str → converted via str()
     def test_evaluate_non_str_d0_injections_converted(self):
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+#  # MOVED: from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
 
         adapter = RiskGateAdapter()
         assert adapter.is_real
@@ -485,7 +539,7 @@ class TestRiskGateAdapterBranches:
 
     # B-RG-6/7: real gate allow=True
     def test_evaluate_real_gate_clean_payload_allows(self):
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+#  # MOVED: from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
 
         adapter = RiskGateAdapter()
         assert adapter.is_real
@@ -499,7 +553,7 @@ class TestRiskGateAdapterBranches:
 
     # B-RG-8: real gate allow=False on DENY_EXECUTION
     def test_evaluate_real_gate_deny_execution_blocks(self):
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+#  # MOVED: from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
 
         adapter = RiskGateAdapter()
         assert adapter.is_real
@@ -515,7 +569,7 @@ class TestRiskGateAdapterBranches:
 
     # B-RG-9: level.value → string
     def test_evaluate_level_is_string(self):
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+#  # MOVED: from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
 
         adapter = RiskGateAdapter()
         assert adapter.is_real
@@ -529,7 +583,7 @@ class TestRiskGateAdapterBranches:
 
     # B-RG-10: reasons is tuple
     def test_evaluate_reasons_is_tuple(self):
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+#  # MOVED: from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
 
         adapter = RiskGateAdapter()
 
@@ -542,7 +596,7 @@ class TestRiskGateAdapterBranches:
 
     # §1.4 Boundary: check_ids length threshold (gate raises at >= 5)
     def test_evaluate_exactly_4_check_ids_is_low(self):
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+#  # MOVED: from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
 
         adapter = RiskGateAdapter()
         assert adapter.is_real
@@ -555,7 +609,7 @@ class TestRiskGateAdapterBranches:
         assert result.level == "LOW"
 
     def test_evaluate_exactly_5_check_ids_is_medium(self):
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+#  # MOVED: from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
 
         adapter = RiskGateAdapter()
         assert adapter.is_real
@@ -569,7 +623,7 @@ class TestRiskGateAdapterBranches:
         assert "MANY_CHECK_IDS" in result.reasons
 
     def test_evaluate_6_check_ids_is_medium(self):
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+#  # MOVED: from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
 
         adapter = RiskGateAdapter()
         assert adapter.is_real
@@ -582,7 +636,7 @@ class TestRiskGateAdapterBranches:
         assert result.level == "MEDIUM"
 
     def test_evaluate_0_check_ids_is_low(self):
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+#  # MOVED: from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
 
         adapter = RiskGateAdapter()
         assert adapter.is_real
@@ -596,7 +650,7 @@ class TestRiskGateAdapterBranches:
 
     # §1.6 Negative control: missing .sanitized attribute
     def test_evaluate_payload_missing_sanitized_attr(self):
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+#  # MOVED: from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
 
         adapter = RiskGateAdapter()
 
@@ -609,7 +663,7 @@ class TestRiskGateAdapterBranches:
         assert isinstance(result.allow, bool)
 
     def test_evaluate_payload_missing_check_ids_attr(self):
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+#  # MOVED: from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
 
         adapter = RiskGateAdapter()
 
@@ -622,7 +676,7 @@ class TestRiskGateAdapterBranches:
 
     # §1.10 Determinism
     def test_evaluate_deterministic_same_input(self):
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+#  # MOVED: from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
 
         class _P:
             sanitized = False
@@ -654,7 +708,7 @@ class TestRiskGateAdapterBranches:
 
     # §1.8 Malformed: empty d0_injections
     def test_evaluate_empty_d0_injections_does_not_block(self):
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+#  # MOVED: from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
 
         adapter = RiskGateAdapter()
 
@@ -676,7 +730,7 @@ class TestRiskGateAdapterBranches:
         ],
     )
     def test_evaluate_matrix_sanitized_x_deny(self, sanitized, d0, expected_allow):
-        from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+#  # MOVED: from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
 
         adapter = RiskGateAdapter()
         assert adapter.is_real
@@ -713,13 +767,13 @@ class TestVigilanceDispatcherAdapterBranches:
     """
 
     def setup_method(self):
-        from apps_shared.spine.vigilance_dispatcher_adapter import _drain_event_queue
+#  # MOVED: from apps_shared.spine.vigilance_dispatcher_adapter import _drain_event_queue
 
         _drain_event_queue()
 
     # B-VD-1
     def test_import_error_sets_null_fallback(self):
-        from apps_shared.spine import vigilance_dispatcher_adapter as mod
+#  # MOVED: from apps_shared.spine import vigilance_dispatcher_adapter as mod
 
         with patch.object(mod, "_build_real_dispatcher", side_effect=ImportError("missing")):
             adapter = mod.VigilanceDispatcherAdapter()
@@ -727,27 +781,27 @@ class TestVigilanceDispatcherAdapterBranches:
         assert adapter._dispatcher is None
 
     def test_null_fallback_dispatch_is_no_op(self):
-        from apps_shared.spine import vigilance_dispatcher_adapter as mod
+#  # MOVED: from apps_shared.spine import vigilance_dispatcher_adapter as mod
 
         with patch.object(mod, "_build_real_dispatcher", side_effect=ImportError):
             adapter = mod.VigilanceDispatcherAdapter()
         # Must not raise, must not enqueue anything
         adapter.dispatch(trace_id="t", signals=("s",), summary="test")
-        from apps_shared.spine.vigilance_dispatcher_adapter import _drain_event_queue
+#  # MOVED: from apps_shared.spine.vigilance_dispatcher_adapter import _drain_event_queue
 
         assert _drain_event_queue() == []
 
     # B-VD-2
     def test_successful_import_sets_real_true(self):
-        from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
+#  # MOVED: from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
 
         adapter = VigilanceDispatcherAdapter()
         assert adapter.is_real is True
 
     # B-VD-3: not _real early return
     def test_null_fallback_dispatch_does_not_enqueue(self):
-        from apps_shared.spine import vigilance_dispatcher_adapter as mod
-        from apps_shared.spine.vigilance_dispatcher_adapter import _drain_event_queue
+#  # MOVED: from apps_shared.spine import vigilance_dispatcher_adapter as mod
+#  # MOVED: from apps_shared.spine.vigilance_dispatcher_adapter import _drain_event_queue
 
         with patch.object(mod, "_build_real_dispatcher", side_effect=ImportError):
             adapter = mod.VigilanceDispatcherAdapter()
@@ -756,7 +810,7 @@ class TestVigilanceDispatcherAdapterBranches:
 
     # B-VD-4: signals is str → wrapped in tuple
     def test_dispatch_signals_str_wrapped_in_tuple(self):
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
+#  # MOVED: from apps_shared.spine.vigilance_dispatcher_adapter import (
             VigilanceDispatcherAdapter,
             _drain_event_queue,
         )
@@ -770,7 +824,7 @@ class TestVigilanceDispatcherAdapterBranches:
 
     # B-VD-5: signals is tuple
     def test_dispatch_signals_tuple_passed(self):
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
+#  # MOVED: from apps_shared.spine.vigilance_dispatcher_adapter import (
             VigilanceDispatcherAdapter,
             _drain_event_queue,
         )
@@ -784,7 +838,7 @@ class TestVigilanceDispatcherAdapterBranches:
 
     # B-VD-5 (list variant)
     def test_dispatch_signals_list_converted_to_tuple(self):
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
+#  # MOVED: from apps_shared.spine.vigilance_dispatcher_adapter import (
             VigilanceDispatcherAdapter,
             _drain_event_queue,
         )
@@ -797,7 +851,7 @@ class TestVigilanceDispatcherAdapterBranches:
 
     # B-VD-6: trace_id=None → str("None")
     def test_dispatch_none_trace_id_does_not_raise(self):
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
+#  # MOVED: from apps_shared.spine.vigilance_dispatcher_adapter import (
             VigilanceDispatcherAdapter,
             _drain_event_queue,
         )
@@ -810,7 +864,7 @@ class TestVigilanceDispatcherAdapterBranches:
 
     # B-VD-7: summary=None → str("None")
     def test_dispatch_none_summary_does_not_raise(self):
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
+#  # MOVED: from apps_shared.spine.vigilance_dispatcher_adapter import (
             VigilanceDispatcherAdapter,
             _drain_event_queue,
         )
@@ -822,7 +876,7 @@ class TestVigilanceDispatcherAdapterBranches:
 
     # B-VD-8: event enqueued
     def test_dispatch_enqueues_event(self):
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
+#  # MOVED: from apps_shared.spine.vigilance_dispatcher_adapter import (
             VigilanceDispatcherAdapter,
             _drain_event_queue,
         )
@@ -835,7 +889,7 @@ class TestVigilanceDispatcherAdapterBranches:
 
     # B-VD-9: exception in try-block swallowed
     def test_dispatch_exception_swallowed_never_reraises(self):
-        from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
+#  # MOVED: from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
 
         adapter = VigilanceDispatcherAdapter()
         assert adapter.is_real
@@ -846,7 +900,7 @@ class TestVigilanceDispatcherAdapterBranches:
             adapter.dispatch(trace_id="t", signals=("s",), summary="test")
 
     def test_dispatch_dispatcher_raises_swallowed(self):
-        from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
+#  # MOVED: from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
 
         adapter = VigilanceDispatcherAdapter()
         assert adapter.is_real
@@ -858,7 +912,7 @@ class TestVigilanceDispatcherAdapterBranches:
 
     # §1.5 Exception path: unrelated exception also swallowed
     def test_dispatch_unexpected_exception_swallowed(self):
-        from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
+#  # MOVED: from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
 
         adapter = VigilanceDispatcherAdapter()
         assert adapter.is_real
@@ -869,7 +923,7 @@ class TestVigilanceDispatcherAdapterBranches:
 
     # §1.4 Boundary: queue bounded at 256
     def test_event_queue_bounded_at_256(self):
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
+#  # MOVED: from apps_shared.spine.vigilance_dispatcher_adapter import (
             _EVENT_QUEUE,
             VigilanceDispatcherAdapter,
             _drain_event_queue,
@@ -885,7 +939,7 @@ class TestVigilanceDispatcherAdapterBranches:
         _drain_event_queue()
 
     def test_event_queue_exactly_256_items(self):
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
+#  # MOVED: from apps_shared.spine.vigilance_dispatcher_adapter import (
             _EVENT_QUEUE,
             VigilanceDispatcherAdapter,
             _drain_event_queue,
@@ -899,7 +953,7 @@ class TestVigilanceDispatcherAdapterBranches:
         _drain_event_queue()
 
     def test_event_queue_255_items_under_max(self):
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
+#  # MOVED: from apps_shared.spine.vigilance_dispatcher_adapter import (
             _EVENT_QUEUE,
             VigilanceDispatcherAdapter,
             _drain_event_queue,
@@ -914,7 +968,7 @@ class TestVigilanceDispatcherAdapterBranches:
 
     # §1.8 Empty signals
     def test_dispatch_empty_signals_tuple(self):
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
+#  # MOVED: from apps_shared.spine.vigilance_dispatcher_adapter import (
             VigilanceDispatcherAdapter,
             _drain_event_queue,
         )
@@ -925,7 +979,7 @@ class TestVigilanceDispatcherAdapterBranches:
         assert len(events) == 1
 
     def test_dispatch_empty_signals_list(self):
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
+#  # MOVED: from apps_shared.spine.vigilance_dispatcher_adapter import (
             VigilanceDispatcherAdapter,
             _drain_event_queue,
         )
@@ -937,7 +991,7 @@ class TestVigilanceDispatcherAdapterBranches:
 
     # §1.11 Side-effect safety: dispatch does not mutate adapter state
     def test_dispatch_does_not_mutate_adapter_state(self):
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
+#  # MOVED: from apps_shared.spine.vigilance_dispatcher_adapter import (
             VigilanceDispatcherAdapter,
             _drain_event_queue,
         )
@@ -950,7 +1004,7 @@ class TestVigilanceDispatcherAdapterBranches:
 
     # §1.17 Stateful: drain + re-enqueue
     def test_drain_then_reenqueue_is_clean(self):
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
+#  # MOVED: from apps_shared.spine.vigilance_dispatcher_adapter import (
             VigilanceDispatcherAdapter,
             _drain_event_queue,
         )
@@ -969,7 +1023,7 @@ class TestVigilanceDispatcherAdapterBranches:
 
     # §1.10 Determinism: identical dispatch → identical enqueued content
     def test_dispatch_deterministic_event_content(self):
-        from apps_shared.spine.vigilance_dispatcher_adapter import (
+#  # MOVED: from apps_shared.spine.vigilance_dispatcher_adapter import (
             VigilanceDispatcherAdapter,
             _drain_event_queue,
         )
@@ -1096,14 +1150,14 @@ class TestExecutionOrchestratorBranches:
 
     # B-EO-11: _L3_PATHS constant
     def test_l3_paths_contains_b_c_d(self):
-        from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+#  # MOVED: from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
 
         assert "B" in ExecutionOrchestrator._L3_PATHS
         assert "C" in ExecutionOrchestrator._L3_PATHS
         assert "D" in ExecutionOrchestrator._L3_PATHS
 
     def test_l3_paths_does_not_contain_a(self):
-        from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+#  # MOVED: from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
 
         assert "A" not in ExecutionOrchestrator._L3_PATHS
 
@@ -1194,7 +1248,7 @@ class TestExecutionOrchestratorBranches:
 
     # §1.13 Contradiction: removing _L3_PATHS would make B/C/D not delegate
     def test_l3_paths_is_frozenset(self):
-        from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+#  # MOVED: from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
 
         assert isinstance(ExecutionOrchestrator._L3_PATHS, frozenset)
 
@@ -1231,7 +1285,7 @@ class TestExecutionOrchestratorBranches:
 
 
 def _make_real_d0_adapter():
-    from apps_shared.spine.d0_engine_adapter import D0EngineAdapter
+#  # MOVED: from apps_shared.spine.d0_engine_adapter import D0EngineAdapter
 
     a = D0EngineAdapter()
     if not a.is_real:
@@ -1333,7 +1387,7 @@ class _FakeMetaBus:
 
 
 def _make_orchestrator(path="A", allow=True, l3=None, max_reentry=3):
-    from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+#  # MOVED: from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
 
     return ExecutionOrchestrator(
         assembler=_FakeAssembler(),

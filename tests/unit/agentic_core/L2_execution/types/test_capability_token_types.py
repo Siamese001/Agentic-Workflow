@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L2_execution.types.capability_token_types import (  # noqa: F401
+#  # MOVED: from agentic_core.L2_execution.types.capability_token_types import (  # noqa: F401
     CapabilityConstraints,
     CapabilityDecisionArtifact,
     CapabilityEnforcer,
@@ -24,6 +24,7 @@ from agentic_core.L2_execution.types.capability_token_types import (  # noqa: F4
 
 class TestCapabilityTokenSubjectContract:
     def test_is_dataclass(self):
+        from agentic_core.L2_execution.types.capability_token_types import (  # noqa: F401
         import dataclasses
         assert dataclasses.is_dataclass(CapabilityTokenSubject)
 

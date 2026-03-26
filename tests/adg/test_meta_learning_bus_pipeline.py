@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import hashlib
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -56,7 +56,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_meta_learning_bus_pipeline", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_meta_learning_bus_pipeline", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_meta_learning_bus_pipeline", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -193,7 +193,7 @@ def _sha256(text: str) -> str:
 
 class TestMetaLearningBus:
     def _bus(self, **kw):
-        from system_learning.engines.meta_learning_bus import (
+#  # MOVED: from system_learning.engines.meta_learning_bus import (
             MetaLearningBus,
             MetaLearningBusConfig,
         )
@@ -223,6 +223,15 @@ class TestMetaLearningBus:
         return sig
 
     def test_empty_traces_returns_empty_pipeline_result(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.meta_learning_bus import (
+        from system_learning.types.trace_feature_types import FailurePattern
+        from system_learning.engines.meta_learning_bus import run_learning_pipeline
+        from system_learning.engines.meta_learning_bus import MetaLearningBus, MetaLearningBusConfig
+        from system_learning.engines.meta_learning_bus import (
+        from system_learning.engines.meta_learning_bus import MetaLearningBus
+        from system_learning.types.trace_feature_types import FailurePattern
         result = self._bus().process_traces([], _TS)
         assert result.bundles == []
         assert result.records == []
@@ -353,7 +362,7 @@ class TestMetaLearningBus:
             assert "proposal_commits_optimization" in relation_types
 
     def test_negative_seed_injection_adds_clusters(self):
-        from system_learning.types.trace_feature_types import FailurePattern
+#  # MOVED: from system_learning.types.trace_feature_types import FailurePattern
 
         seed = FailurePattern(
             pattern_id=_HASH64,
@@ -406,7 +415,7 @@ class TestMetaLearningBus:
         assert isinstance(result, object)  # pipeline completes without crash
 
     def test_module_level_run_learning_pipeline(self):
-        from system_learning.engines.meta_learning_bus import run_learning_pipeline
+#  # MOVED: from system_learning.engines.meta_learning_bus import run_learning_pipeline
 
         traces = [("t1", self._signal("t1"), _TS)]
         result = run_learning_pipeline(traces, _TS + 10)
@@ -424,7 +433,7 @@ class TestMetaLearningBus:
         assert hasattr(result, "adg_relations_emitted")
 
     def test_bridge_none_does_not_crash(self):
-        from system_learning.engines.meta_learning_bus import MetaLearningBus, MetaLearningBusConfig
+#  # MOVED: from system_learning.engines.meta_learning_bus import MetaLearningBus, MetaLearningBusConfig
 
         bus = MetaLearningBus(MetaLearningBusConfig(emit_adg_relations=True), bridge=None)
         result = bus.process_traces([("t1", self._signal("t1"), _TS)], _TS + 10)
@@ -441,7 +450,7 @@ class TestClosedLearningLoop:
 
     def test_10_low_groundedness_traces_produce_commit(self):
         """10 low-groundedness traces → cluster → proposal → validation → commit."""
-        from system_learning.engines.meta_learning_bus import (
+#  # MOVED: from system_learning.engines.meta_learning_bus import (
             MetaLearningBus,
             MetaLearningBusConfig,
         )
@@ -518,8 +527,8 @@ class TestClosedLearningLoop:
 
     def test_negative_case_plus_live_traces_produce_richer_cluster_set(self):
         """Negative seeds augment live-trace clusters."""
-        from system_learning.engines.meta_learning_bus import MetaLearningBus
-        from system_learning.types.trace_feature_types import FailurePattern
+#  # MOVED: from system_learning.engines.meta_learning_bus import MetaLearningBus
+#  # MOVED: from system_learning.types.trace_feature_types import FailurePattern
 
         traces = [
             (

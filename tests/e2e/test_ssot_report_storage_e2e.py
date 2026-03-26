@@ -19,10 +19,10 @@ import sys
 import tempfile
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -69,7 +69,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_ssot_report_storage_e2e", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_ssot_report_storage_e2e", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_ssot_report_storage_e2e", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -190,13 +190,22 @@ class TestE2EDiscoveryToEnforcement:
     """E2E tests for the complete discovery to enforcement workflow."""
 
     def test_full_workflow_empty_project(self) -> None:
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
+        from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
+        from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
+        from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
+        from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
+        from agentic_core.utils.report_location_validator_types_util import (
         """Test full workflow on empty project."""
         with tempfile.TemporaryDirectory() as tmpdir:
             project_root = Path(tmpdir)
             docs_reports = project_root / "docs" / REPORTS_DIR
             docs_reports.mkdir(parents=True)
 
-            from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
                 ReportLocationAgent,
             )
 
@@ -219,7 +228,7 @@ class TestE2EDiscoveryToEnforcement:
             (project_root / "RCA_test.md").write_text("RCA")
             (project_root / "test_SUMMARY.md").write_text("Summary")
 
-            from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
                 ReportLocationAgent,
             )
 
@@ -257,7 +266,7 @@ class TestE2EDiscoveryToEnforcement:
             # Create misplaced reports
             (project_root / "misplaced_report.md").write_text("Misplaced")
 
-            from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
                 ReportLocationAgent,
             )
 
@@ -395,7 +404,7 @@ class TestE2EAgentIntegration:
             (docs_reports / "report1.md").write_text("Report 1")
             (project_root / "report2.md").write_text("Report 2")
 
-            from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
                 ReportLocationAgent,
             )
 
@@ -448,10 +457,10 @@ class TestE2ECompleteSystem:
             (project_root / "subdir").mkdir()
             (project_root / "subdir" / "nested_report.md").write_text("Nested")
 
-            from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
                 ReportLocationAgent,
             )
-            from agentic_core.utils.report_location_validator_types_util import (
+#  # MOVED: from agentic_core.utils.report_location_validator_types_util import (
                 ReportLocationValidator,
             )
 

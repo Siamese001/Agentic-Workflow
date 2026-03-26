@@ -20,8 +20,8 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
-from agentic_core.L5_safety.enforcement.layer_sovereignty_enforcer import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+#  # MOVED: from agentic_core.L5_safety.enforcement.layer_sovereignty_enforcer import (
     ALLOWED_UPWARD_EXCEPTIONS,
     LAYER_HIERARCHY,
     SCAN_ROOTS_DEFAULT,
@@ -30,7 +30,7 @@ from agentic_core.L5_safety.enforcement.layer_sovereignty_enforcer import (
     SovereigntyViolation,
     main,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -189,6 +189,12 @@ def tmp_repo(tmp_path: Path) -> Path:
 class TestSuccessPaths:
     @pytest.mark.governance
     def test_extract_layer_from_module_returns_level_when_valid_L2(self):
+        from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+        from agentic_core.L5_safety.enforcement.layer_sovereignty_enforcer import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.enforcement import foo
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         result = LayerSovereigntyEnforcer.extract_layer_from_module(
             "agentic_core.L2_execution.assembly.sandbox"
         )
@@ -325,12 +331,12 @@ class TestBranchPaths:
         src = textwrap.dedent("""\
             import os
             from pathlib import Path
-            from agentic_core.L5_safety.enforcement import foo
+#  # MOVED: from agentic_core.L5_safety.enforcement import foo
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_execution_terminates_at_uwg,
     _emit_writes_through,

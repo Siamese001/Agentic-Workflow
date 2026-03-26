@@ -1,10 +1,11 @@
 """ADG importability contract for agentic_core/L5_safety/static_checks/ptc_invariants.py."""
 from __future__ import annotations
 
-import agentic_core.L5_safety.static_checks.ptc_invariants  # noqa: F401
+#  # MOVED: import agentic_core.L5_safety.static_checks.ptc_invariants  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L5_safety.static_checks.ptc_invariants  # noqa: F401
 """Test module_importable contract compliance."""
 # Arrange
 # TODO: Set up contract test scenario

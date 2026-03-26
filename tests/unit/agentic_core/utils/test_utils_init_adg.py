@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -54,7 +54,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_utils_init_adg", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_utils_init_adg", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_utils_init_adg", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -172,31 +172,41 @@ pytestmark = pytest.mark.unit
 
 class TestUtilsPackagePublicAPI:
     def test_standard_heal_importable(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         from agentic_core.utils import standard_heal
+        from agentic_core.utils import standard_heal_async
+        from agentic_core.utils import timeout
+        from agentic_core.utils import TimeoutError as AgenticTimeoutError
+        from agentic_core.utils import HEAL_RESULT_SCHEMA
+        from agentic_core.utils import HEAL_RESULT_SCHEMA
+        import agentic_core.utils as pkg
+        import agentic_core.utils.security_util as m
+#  # MOVED: from agentic_core.utils import standard_heal
         assert callable(standard_heal)
 
     def test_standard_heal_async_importable(self):
-        from agentic_core.utils import standard_heal_async
+#  # MOVED: from agentic_core.utils import standard_heal_async
         assert callable(standard_heal_async)
 
     def test_timeout_importable(self):
-        from agentic_core.utils import timeout
+#  # MOVED: from agentic_core.utils import timeout
         assert callable(timeout)
 
     def test_timeout_error_importable(self):
-        from agentic_core.utils import TimeoutError as AgenticTimeoutError
+#  # MOVED: from agentic_core.utils import TimeoutError as AgenticTimeoutError
         assert issubclass(AgenticTimeoutError, Exception)
 
     def test_heal_result_schema_importable(self):
-        from agentic_core.utils import HEAL_RESULT_SCHEMA
+#  # MOVED: from agentic_core.utils import HEAL_RESULT_SCHEMA
         assert isinstance(HEAL_RESULT_SCHEMA, dict)
 
     def test_heal_result_schema_has_required_keys(self):
-        from agentic_core.utils import HEAL_RESULT_SCHEMA
+#  # MOVED: from agentic_core.utils import HEAL_RESULT_SCHEMA
         assert "type" in HEAL_RESULT_SCHEMA or len(HEAL_RESULT_SCHEMA) > 0
 
     def test_all_exports_present(self):
-        import agentic_core.utils as pkg
+#  # MOVED: import agentic_core.utils as pkg
         for name in pkg.__all__:
             assert hasattr(pkg, name), f"Missing __all__ member: {name}"
 
@@ -225,7 +235,7 @@ class TestUtilsSecurityUtil:
         assert issubclass(SecurityViolationError, Exception)
 
     def test_all_exports_present(self):
-        import agentic_core.utils.security_util as m
+#  # MOVED: import agentic_core.utils.security_util as m
         for name in m.__all__:
             assert hasattr(m, name), f"Missing __all__ member: {name}"
 

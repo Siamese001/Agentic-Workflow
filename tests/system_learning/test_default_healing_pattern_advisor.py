@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -68,7 +68,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_default_healing_pattern_advisor", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_default_healing_pattern_advisor", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_default_healing_pattern_advisor", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -106,11 +106,11 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.default_healing_pattern_advisor import (
+#  # MOVED: from system_learning.engines.default_healing_pattern_advisor import (
     DefaultHealingPatternAdvisor,
     HealingPattern,
 )
-from system_learning.ports.healing_pattern_advisor import (
+#  # MOVED: from system_learning.ports.healing_pattern_advisor import (
     _MAX_PATTERN_BOOST,
 )
 
@@ -175,6 +175,11 @@ from system_learning.ports.healing_pattern_advisor import (
 
 
 def test_default_advisor_without_ml_client() -> None:
+    from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from system_learning.engines.default_healing_pattern_advisor import (
+    from system_learning.ports.healing_pattern_advisor import (
     """Default advisor falls back to null when no ML client."""
     advisor = DefaultHealingPatternAdvisor(ml_client=None)
 

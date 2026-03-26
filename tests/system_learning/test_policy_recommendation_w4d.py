@@ -8,7 +8,7 @@ import os
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -70,16 +70,16 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_policy_recommendation_w4d", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_policy_recommendation_w4d", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_policy_recommendation_w4d", "exec_snapshot_link")
-from system_learning.engines.policy_recommendation_engine import (
+#  # MOVED: from system_learning.engines.policy_recommendation_engine import (
     PolicyRecommendationEngine,
 )
-from system_learning.engines.retrieval_profile import RetrievalProfile
-from system_learning.engines.shadow_drift_analyzer import DriftSummary
+#  # MOVED: from system_learning.engines.retrieval_profile import RetrievalProfile
+#  # MOVED: from system_learning.engines.shadow_drift_analyzer import DriftSummary
 
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_policy_recommendation_w4d")
 # REMOVED: _emit_applies_guardrail("p0", "test_policy_recommendation_w4d", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_policy_recommendation_w4d", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -187,6 +187,12 @@ class TestPolicyRecommendationW4D:
     """Test W4-D Policy Recommendation Engine functionality."""
 
     def test_policy_recommendation_determinism(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.policy_recommendation_engine import (
+        from system_learning.engines.retrieval_profile import RetrievalProfile
+        from system_learning.engines.shadow_drift_analyzer import DriftSummary
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        import system_learning.engines.policy_recommendation_engine as engine_module
         """Test that policy recommendations produce identical digests for identical inputs."""
         # Create fixed drift summary
         drift_summary = DriftSummary(
@@ -453,7 +459,7 @@ class TestW4DNegativeControl:
         os.environ["W4D_NEGCTRL_TAMPER"] = "1"
 
         # Monkey patch the rounding function to use different precision
-        import system_learning.engines.policy_recommendation_engine as engine_module
+#  # MOVED: import system_learning.engines.policy_recommendation_engine as engine_module
 
         original_round = round
 

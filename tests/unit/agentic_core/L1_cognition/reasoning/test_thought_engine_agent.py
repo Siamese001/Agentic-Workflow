@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L1_COGNITION_DIR,
 )
 
@@ -13,6 +13,7 @@ class TestThoughtEngineAgent:
     """Tests for ThoughtEngineAgent core functionality."""
 
     def test_thought_engine_exists(self):
+        from agentic_core.L0_routing.config.path_constants import (
         """ThoughtEngineAgent module should exist."""
         path = Path("agentic_core/L1_cognition/reasoning")
         assert path.exists(), "L1_cognition/reasoning/ should exist"

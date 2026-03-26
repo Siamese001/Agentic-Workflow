@@ -16,14 +16,14 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
-from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
     ADGStaticScanner,
     _CriticalEdgeVisitor,
     _ImportVisitor,
 )
-from agentic_core.adg.identity.normalizer import IdentityKind, IdentityNormalizer
-from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+#  # MOVED: from agentic_core.adg.identity.normalizer import IdentityKind, IdentityNormalizer
+#  # MOVED: from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
 from tools.generate_full_adg import _generate_standardized_reports, _infer_layer
 
 
@@ -31,6 +31,13 @@ class TestWave1ProvenanceHardening(unittest.TestCase):
     """Test Wave 1: Provenance Hardening implementation."""
 
     def test_commit_sha_capture(self):
+        from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.adg.identity.normalizer import IdentityKind, IdentityNormalizer
+        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.schema import RELATION_TYPES
+        import agentic_core.L0_routing.config
         """Test that git commit SHA is captured during ADG generation."""
         with patch("subprocess.check_output") as mock_subprocess:
             mock_subprocess.return_value = "abc123def456\n"
@@ -77,7 +84,7 @@ class TestWave1ProvenanceHardening(unittest.TestCase):
             artifact = builder.build(result)
 
             # Write snapshot
-            from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
             paths = write_all_artifacts(artifact, out_dir=tmpdir, ts="test_123")
 
@@ -209,7 +216,7 @@ class TestWave4CriticalEdgeDensification(unittest.TestCase):
 
     def test_critical_edge_types_defined(self):
         """Test all critical edge types are defined in schema."""
-        from agentic_core.adg.schema import RELATION_TYPES
+#  # MOVED: from agentic_core.adg.schema import RELATION_TYPES
 
         critical_types = [
             "determinism_seed",
@@ -395,7 +402,7 @@ class TestIntegrationHardening(unittest.TestCase):
             # Create a simple Python file to scan
             test_file = tmpdir / "test_module.py"
             test_file.write_text("""
-import agentic_core.L0_routing.config
+#  # MOVED: import agentic_core.L0_routing.config
 import requests
 import random
 

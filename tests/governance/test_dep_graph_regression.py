@@ -26,7 +26,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -112,14 +112,14 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
     SYSTEM_LEARNING_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -259,6 +259,9 @@ class TestDepGraphRegression:
         self._dg = dep_graph
 
     def test_cycle_count_within_budget(self) -> None:
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """Import cycles must not exceed CYCLE_BUDGET."""
 
         cycles = self._dg.cycles()

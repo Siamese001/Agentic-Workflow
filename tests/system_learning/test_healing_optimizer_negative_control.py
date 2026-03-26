@@ -20,7 +20,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -83,7 +83,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_healing_optimizer_negative_control", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_healing_optimizer_negative_control", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_healing_optimizer_negative_control", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -121,10 +121,10 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.healing_config_optimizer import (
+#  # MOVED: from system_learning.engines.healing_config_optimizer import (
     HealingConfigOptimizer,
 )
-from system_learning.types.healing_outcome_learning_types import (
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import (
     HealingOutcomeAggregate,
     HealingOutcomeAggregateKey,
     HealingOutcomeAggregateSnapshot,
@@ -244,6 +244,10 @@ class TestW2NegativeControl:
     """
 
     def test_embedding_determinism_violation_negative_control(self) -> None:
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.healing_config_optimizer import (
+        from system_learning.types.healing_outcome_learning_types import (
         """Guard: two identical calls must produce identical confidence.
 
         Tamper: injects differing scores; xfail catches the AssertionError

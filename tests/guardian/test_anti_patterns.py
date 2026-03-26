@@ -14,10 +14,10 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -93,7 +93,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L5_safety.validators.base_detector_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.base_detector_validator import (
     AntiPatternCategory,
     AntiPatternDetector,
     AntiPatternViolation,
@@ -101,22 +101,22 @@ from agentic_core.L5_safety.validators.base_detector_validator import (
     DetectionResult,
     EnforcementLevel,
 )
-from agentic_core.L5_safety.validators.global_mutation_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.global_mutation_validator import (
     GlobalMutationDetector,
 )
-from agentic_core.L5_safety.validators.magic_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.magic_validator import (
     MagicConfigDetector,
 )
-from agentic_core.L5_safety.validators.path_fragility_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.path_fragility_validator import (
     PathFragilityDetector,
 )
-from agentic_core.L5_safety.validators.silent_swallower_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.silent_swallower_validator import (
     SilentSwallowerDetector,
 )
-from agentic_core.L5_safety.validators.type_erasure_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.type_erasure_validator import (
     TypeErasureDetector,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -275,6 +275,19 @@ class TestSilentSwallowerDetector:
     """Tests for silent exception swallowing detection."""
 
     def test_detects_bare_except(self, silent_swallower_validator, temp_python_file):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.validators.base_detector_validator import (
+        from agentic_core.L5_safety.validators.global_mutation_validator import (
+        from agentic_core.L5_safety.validators.magic_validator import (
+        from agentic_core.L5_safety.validators.path_fragility_validator import (
+        from agentic_core.L5_safety.validators.silent_swallower_validator import (
+        from agentic_core.L5_safety.validators.type_erasure_validator import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
+        from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
+        from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
+        from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
         """Bare except clauses should be detected."""
         code = """
 def risky_function():
@@ -978,24 +991,24 @@ class TestTypeErasureDetectorABCInheritance:
     """TypeErasureDetector correctly inherits and extends AntiPatternDetector."""
 
     def test_is_subclass_of_anti_pattern_detector(self):
-        from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
+#  # MOVED: from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
 
         assert issubclass(TypeErasureDetector, AntiPatternDetector)
 
     def test_category_returns_type_erasure(self):
-        from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
+#  # MOVED: from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
 
         detector = TypeErasureDetector(check_agent_classes_only=False)
         assert detector.category == AntiPatternCategory.TYPE_ERASURE
 
     def test_category_value_is_string(self):
-        from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
+#  # MOVED: from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
 
         detector = TypeErasureDetector()
         assert isinstance(detector.category.value, str)
 
     def test_allowed_dict_types_are_not_flagged(self, tmp_path):
-        from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
+#  # MOVED: from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
 
         p = tmp_path / "my_agent.py"
         p.write_text(

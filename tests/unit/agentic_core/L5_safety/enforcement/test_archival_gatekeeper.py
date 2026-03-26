@@ -17,13 +17,13 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
-from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
+#  # MOVED: from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import (
     ArchivalGatekeeper,
     ArchivalOperation,
     ArchivalResult,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -196,6 +196,9 @@ class TestSingletonPattern:
     """Test singleton behavior."""
 
     def test_get_instance_returns_same_instance(self, temp_project):
+        from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
+        from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """Verify singleton returns same instance."""
         ArchivalGatekeeper.reset_instance()
         gk1 = ArchivalGatekeeper.get_instance(temp_project)

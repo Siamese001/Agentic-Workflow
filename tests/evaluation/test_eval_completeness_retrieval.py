@@ -68,27 +68,27 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.evaluation.monitoring.completeness_monitors import (
+#  # MOVED: from agentic_core.evaluation.monitoring.completeness_monitors import (
     ConditionLossDriftMonitor,
     HighSimilarityWrongAnswerMonitor,
     ParentExpansionMissMonitor,
     RetrievalCompletenessMonitor,
 )
-from agentic_core.evaluation.retrieval.answer_support import KeywordAnswerSupportValidator
-from agentic_core.evaluation.retrieval.completeness import (
+#  # MOVED: from agentic_core.evaluation.retrieval.answer_support import KeywordAnswerSupportValidator
+#  # MOVED: from agentic_core.evaluation.retrieval.completeness import (
     ContextCompletenessScore,
     GroundedDocument,
     SupportedAnswerCheck,
 )
-from agentic_core.evaluation.retrieval.completeness_reranker import (
+#  # MOVED: from agentic_core.evaluation.retrieval.completeness_reranker import (
     CompletenessReranker,
     CompletenessRerankerConfig,
 )
-from agentic_core.evaluation.retrieval.completeness_scorer import (
+#  # MOVED: from agentic_core.evaluation.retrieval.completeness_scorer import (
     KeywordCompletenessScorer,
 )
-from agentic_core.evaluation.retrieval.interfaces import Document
-from agentic_core.evaluation.retrieval.l4_registries import (
+#  # MOVED: from agentic_core.evaluation.retrieval.interfaces import Document
+#  # MOVED: from agentic_core.evaluation.retrieval.l4_registries import (
     ChunkManifest,
     ChunkManifestRegistry,
     ContextCompletenessSnapshot,
@@ -98,24 +98,24 @@ from agentic_core.evaluation.retrieval.l4_registries import (
     RetrievalEvaluationRecord,
     RetrievalEvaluationRegistry,
 )
-from agentic_core.evaluation.retrieval.late_chunking import (
+#  # MOVED: from agentic_core.evaluation.retrieval.late_chunking import (
     VALID_MODES,
     LateChunkingPipelineConfig,
     LateChunkingProfile,
     build_late_chunk_manifests_for_corpus,
     segment_document,
 )
-from agentic_core.evaluation.retrieval.meta_learning_bridge import (
+#  # MOVED: from agentic_core.evaluation.retrieval.meta_learning_bridge import (
     CompletenessChangePackage,
     CompletenessRAGProposer,
     EvaluationSignals,
 )
-from agentic_core.evaluation.retrieval.parent_child import (
+#  # MOVED: from agentic_core.evaluation.retrieval.parent_child import (
     ChunkEntry,
     ParentChildExpander,
     ParentChildRegistry,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -371,6 +371,17 @@ class TestParentChildExpander:
         return expander, entry
 
     def test_expand_known_chunk_sets_parent_content(self):
+        from agentic_core.evaluation.monitoring.completeness_monitors import (
+        from agentic_core.evaluation.retrieval.answer_support import KeywordAnswerSupportValidator
+        from agentic_core.evaluation.retrieval.completeness import (
+        from agentic_core.evaluation.retrieval.completeness_reranker import (
+        from agentic_core.evaluation.retrieval.completeness_scorer import (
+        from agentic_core.evaluation.retrieval.interfaces import Document
+        from agentic_core.evaluation.retrieval.l4_registries import (
+        from agentic_core.evaluation.retrieval.late_chunking import (
+        from agentic_core.evaluation.retrieval.meta_learning_bridge import (
+        from agentic_core.evaluation.retrieval.parent_child import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         expander, entry = self._build_registry_with_chunk()
         doc = _make_doc("c1", content="chunk one content")
         result = expander.expand(doc)

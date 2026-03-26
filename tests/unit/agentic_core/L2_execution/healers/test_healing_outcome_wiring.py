@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -94,18 +94,18 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L2_execution.healers.healing_tier_config import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_config import (
     load_default_healing_tier_config,
 )
-from agentic_core.L2_execution.healers.healing_tier_dispatcher import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_dispatcher import (
     InvocationRecord,
     dispatch_healing,
 )
-from agentic_core.L2_execution.healers.healing_tier_types import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_types import (
     HealingInput,
     HealingTier,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -143,7 +143,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent
 
 # REMOVED: _emit_emits_metric_event("test_healing_outcome_wiring", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_healing_outcome_wiring", "p4obs", "metric_2")
@@ -301,6 +301,12 @@ class TestOutcomeSinkWiring:
     """Verify emit-only wiring via injected outcome_sink."""
 
     def test_success_emits_exactly_one_event(self) -> None:
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.healers.healing_tier_config import (
+        from agentic_core.L2_execution.healers.healing_tier_dispatcher import (
+        from agentic_core.L2_execution.healers.healing_tier_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
         """On successful invocation, exactly one event with success=True is emitted."""
         sink = FakeOutcomeSink()
         config = load_default_healing_tier_config()

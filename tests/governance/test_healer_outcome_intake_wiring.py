@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -78,16 +78,16 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_healer_outcome_intake_wiring", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_healer_outcome_intake_wiring", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_healer_outcome_intake_wiring", "exec_snapshot_link")
-from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-from system_learning.ports.healing_outcome_intake_store import HealingOutcomeIntakeStore
-from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+#  # MOVED: from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+#  # MOVED: from system_learning.ports.healing_outcome_intake_store import HealingOutcomeIntakeStore
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent
 
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_healer_outcome_intake_wiring")
 # REMOVED: _emit_applies_guardrail("p0", "test_healer_outcome_intake_wiring", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_healer_outcome_intake_wiring", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_healer_outcome_intake_wiring", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -242,11 +242,18 @@ def _populated_aggregator():
 
 class TestAdapterBuildRecord:
     def test_build_record_returns_intake_record(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+        from system_learning.ports.healing_outcome_intake_store import HealingOutcomeIntakeStore
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
         store = InMemoryHealingOutcomeIntakeStore()
         adapter = HealingOutcomeIntakeAdapter(store)
         agg = _populated_aggregator()
         record = adapter.build_record(agg, created_utc=1000)
-        from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
+#  # MOVED: from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
 
         assert isinstance(record, HealingOutcomeIntakeRecord)
 

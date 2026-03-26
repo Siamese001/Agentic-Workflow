@@ -24,7 +24,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -69,7 +69,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_gap_fixes_core")
 # REMOVED: _emit_applies_guardrail("p0", "test_gap_fixes_core", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_gap_fixes_core", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -198,10 +198,10 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 
 def _make_pipeline_config(**overrides):
-    from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
-    from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
-    from system_learning.validators.oscillation_detector import OscillationPolicy
-    from system_learning.validators.shadow_evaluator import ShadowThresholds
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy
+#  # MOVED: from system_learning.validators.shadow_evaluator import ShadowThresholds
 
     defaults = {
         "engine_version": "test",
@@ -232,7 +232,7 @@ def _minimal_package(
     timestamp_utc=1_000_000,
     target_surface="test_surface",
 ):
-    from system_learning.engines.change_package_impl import ChangePackage
+#  # MOVED: from system_learning.engines.change_package_impl import ChangePackage
 
     return ChangePackage(
         source=source,
@@ -247,7 +247,7 @@ def _minimal_package(
 
 def _make_minimal_deps(freeze_reader=None):
     """Build a minimal PipelineDependencies with stubs."""
-    from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
 
     audit_store = MagicMock()
     audit_store.read_audit_slice.return_value = b"line1\nline2\nline3\n"
@@ -293,10 +293,90 @@ def _make_minimal_deps(freeze_reader=None):
 @pytest.mark.unit
 class TestGap007ProposalOnlyDefault:
     def test_default_is_true(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
+        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+        from system_learning.validators.oscillation_detector import OscillationPolicy
+        from system_learning.validators.shadow_evaluator import ShadowThresholds
+        from system_learning.engines.change_package_impl import ChangePackage
+        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+        from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
+        import system_learning.pipelines.meta_learning_pipeline as m
+        from system_learning.engines.rca_engine import CLASSIFICATION_RULES
+        from system_learning.engines.rca_engine import classify_line
+        from system_learning.engines.rca_engine import classify_line
+        from system_learning.engines.rca_engine import classify_line
+        from system_learning.engines.rca_engine import classify_line
+        from system_learning.engines.rca_engine import classify_line
+        from system_learning.engines.rca_engine import classify_line
+        from system_learning.engines.rca_engine import classify_line
+        from system_learning.engines.rca_engine import classify_line
+        from system_learning.engines.rca_engine import analyze_failures
+        from system_learning.engines.rca_engine import analyze_failures
+        from system_learning.validators.dampening import SampleSizePolicy
+        from system_learning.validators.dampening import (
+        from system_learning.validators.dampening import SampleSizePolicy, assert_min_sample_size
+        from system_learning.validators.dampening import SampleSizePolicy, assert_min_sample_size
+        from system_learning.validators.dampening import (
+        from system_learning.validators.dampening import SampleSizePolicy, assert_min_sample_size
+        from system_learning.pipelines.meta_learning_pipeline import PipelineError
+        from system_learning.pipelines.meta_learning_pipeline import PipelineError
+        from system_learning.pipelines.meta_learning_pipeline import PipelineError
+        from system_learning.pipelines.meta_learning_pipeline import PipelineError
+        from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
+        from system_learning.invariants.commit_proof_invariant import (
+        from system_learning.invariants.commit_proof_invariant import (
+        from system_learning.invariants.commit_proof_invariant import (
+        from system_learning.invariants.commit_proof_invariant import (
+        from system_learning.invariants.commit_proof_invariant import (
+        from system_learning.invariants.commit_proof_invariant import (
+        from system_learning.invariants.commit_proof_invariant import (
+        from system_learning.invariants.commit_proof_invariant import (
+        from system_learning.invariants.commit_proof_invariant import verify_commit_proof
+        from system_learning.engines.change_package_impl import ChangePackage
+        from system_learning.invariants.freeze_gate import StaticFreezeReader
+        from system_learning.invariants.freeze_gate import StaticFreezeReader
+        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+        import system_learning.pipelines.meta_learning_pipeline as m
+        import system_learning.pipelines.meta_learning_pipeline as m
+        import system_learning.pipelines.meta_learning_pipeline as m
+        from system_learning.pipelines.meta_learning_pipeline import PipelineError
+        from system_learning.pipelines.meta_learning_pipeline import run_pipeline
+        import system_learning.pipelines.meta_learning_pipeline as m
+        from system_learning.invariants.freeze_gate import StaticFreezeReader
+        from system_learning.pipelines.meta_learning_pipeline import PipelineError
+        from system_learning.pipelines.meta_learning_pipeline import run_pipeline
+        from system_learning.validators.dampening import SampleSizePolicy
+        from system_learning.validators.dampening import SampleSizeViolation
+        from system_learning.validators.dampening import assert_min_sample_size
+        from system_learning.validators.dampening import SampleSizePolicy
+        from system_learning.validators.dampening import assert_min_sample_size
+        import system_learning.pipelines.meta_learning_pipeline as m
+        import system_learning.pipelines.meta_learning_pipeline as m
+        import system_learning.pipelines.meta_learning_pipeline as m
+        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+        from system_learning.pipelines.pipeline_factory import build_pipeline_config
+        from system_learning.pipelines.pipeline_factory import build_pipeline_config
+        import system_learning.pipelines.meta_learning_pipeline as m
+        import system_learning.pipelines.meta_learning_pipeline as m
         """proposal_only must default to True (fail-safe)."""
         import dataclasses
 
-        from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
 
         fields = {f.name: f for f in dataclasses.fields(PipelineConfig)}
         assert "proposal_only" in fields
@@ -313,7 +393,7 @@ class TestGap007ProposalOnlyDefault:
         assert cfg.proposal_only is False
 
     def test_module_docstring_states_true(self):
-        import system_learning.pipelines.meta_learning_pipeline as m
+#  # MOVED: import system_learning.pipelines.meta_learning_pipeline as m
 
         assert "proposal_only=True" in m.__doc__, "Module docstring invariant must state proposal_only=True"
 
@@ -326,48 +406,48 @@ class TestGap007ProposalOnlyDefault:
 @pytest.mark.unit
 class TestGap002RuntimeCategory:
     def test_runtime_category_present(self):
-        from system_learning.engines.rca_engine import CLASSIFICATION_RULES
+#  # MOVED: from system_learning.engines.rca_engine import CLASSIFICATION_RULES
 
         categories = {r[0] for r in CLASSIFICATION_RULES}
         assert "RUNTIME" in categories, "RUNTIME category missing from CLASSIFICATION_RULES"
 
     def test_runtime_error_classified(self):
-        from system_learning.engines.rca_engine import classify_line
+#  # MOVED: from system_learning.engines.rca_engine import classify_line
 
         result = classify_line("RuntimeError: something went wrong")
         assert result is not None, "RuntimeError line should be classified"
         assert result[0] == "RUNTIME"
 
     def test_attribute_error_classified(self):
-        from system_learning.engines.rca_engine import classify_line
+#  # MOVED: from system_learning.engines.rca_engine import classify_line
 
         result = classify_line("AttributeError: 'NoneType' has no attribute 'foo'")
         assert result is not None
         assert result[0] == "RUNTIME"
 
     def test_type_error_classified(self):
-        from system_learning.engines.rca_engine import classify_line
+#  # MOVED: from system_learning.engines.rca_engine import classify_line
 
         result = classify_line("TypeError: unhashable type: 'list'")
         assert result is not None
         assert result[0] == "RUNTIME"
 
     def test_value_error_classified(self):
-        from system_learning.engines.rca_engine import classify_line
+#  # MOVED: from system_learning.engines.rca_engine import classify_line
 
         result = classify_line("ValueError: invalid literal for int()")
         assert result is not None
         assert result[0] == "RUNTIME"
 
     def test_key_error_classified(self):
-        from system_learning.engines.rca_engine import classify_line
+#  # MOVED: from system_learning.engines.rca_engine import classify_line
 
         result = classify_line("KeyError: 'missing_key'")
         assert result is not None
         assert result[0] == "RUNTIME"
 
     def test_index_error_classified(self):
-        from system_learning.engines.rca_engine import classify_line
+#  # MOVED: from system_learning.engines.rca_engine import classify_line
 
         result = classify_line("IndexError: list index out of range")
         assert result is not None
@@ -375,20 +455,20 @@ class TestGap002RuntimeCategory:
 
     def test_runtime_does_not_override_syntax(self):
         """RUNTIME rules must not incorrectly capture SyntaxError lines."""
-        from system_learning.engines.rca_engine import classify_line
+#  # MOVED: from system_learning.engines.rca_engine import classify_line
 
         result = classify_line("SyntaxError: invalid syntax")
         assert result is not None
         assert result[0] == "SYNTAX", f"SYNTAX should take priority, got {result[0]}"
 
     def test_unclassified_line_returns_none(self):
-        from system_learning.engines.rca_engine import classify_line
+#  # MOVED: from system_learning.engines.rca_engine import classify_line
 
         assert classify_line("INFO: Everything is fine") is None
 
     def test_analyze_failures_returns_runtime_category(self):
         """analyze_failures must include RUNTIME category in report for RuntimeError lines."""
-        from system_learning.engines.rca_engine import analyze_failures
+#  # MOVED: from system_learning.engines.rca_engine import analyze_failures
 
         audit_bytes = b"RuntimeError: something exploded\nAttributeError: oops\n"
         report = analyze_failures(
@@ -402,7 +482,7 @@ class TestGap002RuntimeCategory:
 
     def test_analyze_failures_deterministic(self):
         """Same input produces identical report twice (determinism invariant)."""
-        from system_learning.engines.rca_engine import analyze_failures
+#  # MOVED: from system_learning.engines.rca_engine import analyze_failures
 
         audit_bytes = b"RuntimeError: x\nTypeError: y\nKeyError: z\n"
         r1 = analyze_failures(
@@ -431,7 +511,7 @@ class TestGap004NObservations:
 
     def _make_deps_with_audit(self, audit_bytes: bytes, min_observations: int):
         """Build minimal deps that will trigger SampleSizeViolation if line count < min."""
-        from system_learning.validators.dampening import SampleSizePolicy
+#  # MOVED: from system_learning.validators.dampening import SampleSizePolicy
 
         policy = SampleSizePolicy(min_observations=min_observations)
         text = audit_bytes.decode("utf-8", errors="replace")
@@ -439,7 +519,7 @@ class TestGap004NObservations:
         return n, policy
 
     def test_short_audit_below_threshold_raises(self):
-        from system_learning.validators.dampening import (
+#  # MOVED: from system_learning.validators.dampening import (
             SampleSizePolicy,
             SampleSizeViolation,
             assert_min_sample_size,
@@ -453,7 +533,7 @@ class TestGap004NObservations:
             assert_min_sample_size(n_observations=n, sample_policy=SampleSizePolicy(min_observations=100))
 
     def test_sufficient_audit_passes(self):
-        from system_learning.validators.dampening import SampleSizePolicy, assert_min_sample_size
+#  # MOVED: from system_learning.validators.dampening import SampleSizePolicy, assert_min_sample_size
 
         audit = b"\n".join(f"event {i}".encode() for i in range(200))
         text = audit.decode("utf-8", errors="replace")
@@ -476,13 +556,13 @@ class TestGap004NObservations:
         assert n == 1
 
     def test_boundary_exact_min_passes(self):
-        from system_learning.validators.dampening import SampleSizePolicy, assert_min_sample_size
+#  # MOVED: from system_learning.validators.dampening import SampleSizePolicy, assert_min_sample_size
 
         n = 10
         assert_min_sample_size(n_observations=n, sample_policy=SampleSizePolicy(min_observations=10))
 
     def test_boundary_one_below_min_raises(self):
-        from system_learning.validators.dampening import (
+#  # MOVED: from system_learning.validators.dampening import (
             SampleSizePolicy,
             SampleSizeViolation,
             assert_min_sample_size,
@@ -492,7 +572,7 @@ class TestGap004NObservations:
             assert_min_sample_size(n_observations=9, sample_policy=SampleSizePolicy(min_observations=10))
 
     def test_boundary_one_above_min_passes(self):
-        from system_learning.validators.dampening import SampleSizePolicy, assert_min_sample_size
+#  # MOVED: from system_learning.validators.dampening import SampleSizePolicy, assert_min_sample_size
 
         assert_min_sample_size(n_observations=11, sample_policy=SampleSizePolicy(min_observations=10))
 
@@ -508,7 +588,7 @@ class TestGap008DualInjectionGuard:
 
     def test_version_store_without_approval_gate_raises(self):
         """version_store present + approval_gate absent must raise PipelineError."""
-        from system_learning.pipelines.meta_learning_pipeline import PipelineError
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineError
 
         version_store = MagicMock()
         approval_gate = None
@@ -520,7 +600,7 @@ class TestGap008DualInjectionGuard:
                 raise PipelineError("partial injection: version_store provided but approval_gate is None")
 
     def test_approval_gate_without_version_store_raises(self):
-        from system_learning.pipelines.meta_learning_pipeline import PipelineError
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineError
 
         version_store = None
         approval_gate = MagicMock()
@@ -533,7 +613,7 @@ class TestGap008DualInjectionGuard:
 
     def test_both_none_while_proposal_only_false_raises(self):
         """When proposal_only=False and neither store injected, PipelineError raised."""
-        from system_learning.pipelines.meta_learning_pipeline import PipelineError
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineError
 
         version_store = None
         approval_gate = None
@@ -559,7 +639,7 @@ class TestGap008DualInjectionGuard:
 
     def test_guard_message_indicates_partial_injection(self):
         """Error message must mention 'partial injection'."""
-        from system_learning.pipelines.meta_learning_pipeline import PipelineError
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineError
 
         try:
             raise PipelineError(
@@ -618,7 +698,7 @@ class TestGap009ComponentExtraction:
 @pytest.mark.unit
 class TestGap010CommitProofInvariant:
     def test_valid_proof_from_package(self):
-        from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
+#  # MOVED: from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
 
         pkg = _minimal_package()
         impl_hash = hashlib.sha256(pkg.canonical_bytes()).hexdigest()
@@ -628,7 +708,7 @@ class TestGap010CommitProofInvariant:
         proof.verify()
 
     def test_version_id_mismatch_raises(self):
-        from system_learning.invariants.commit_proof_invariant import (
+#  # MOVED: from system_learning.invariants.commit_proof_invariant import (
             CommitProofInvariant,
             CommitProofViolation,
         )
@@ -640,7 +720,7 @@ class TestGap010CommitProofInvariant:
             )
 
     def test_placeholder_hash_raises(self):
-        from system_learning.invariants.commit_proof_invariant import (
+#  # MOVED: from system_learning.invariants.commit_proof_invariant import (
             CommitProofInvariant,
             CommitProofViolation,
         )
@@ -655,7 +735,7 @@ class TestGap010CommitProofInvariant:
             proof.verify()
 
     def test_empty_hash_raises(self):
-        from system_learning.invariants.commit_proof_invariant import (
+#  # MOVED: from system_learning.invariants.commit_proof_invariant import (
             CommitProofInvariant,
             CommitProofViolation,
         )
@@ -670,7 +750,7 @@ class TestGap010CommitProofInvariant:
             proof.verify()
 
     def test_zero_timestamp_raises(self):
-        from system_learning.invariants.commit_proof_invariant import (
+#  # MOVED: from system_learning.invariants.commit_proof_invariant import (
             CommitProofInvariant,
             CommitProofViolation,
         )
@@ -686,7 +766,7 @@ class TestGap010CommitProofInvariant:
             proof.verify()
 
     def test_negative_timestamp_raises(self):
-        from system_learning.invariants.commit_proof_invariant import (
+#  # MOVED: from system_learning.invariants.commit_proof_invariant import (
             CommitProofInvariant,
             CommitProofViolation,
         )
@@ -702,7 +782,7 @@ class TestGap010CommitProofInvariant:
             proof.verify()
 
     def test_short_version_id_raises(self):
-        from system_learning.invariants.commit_proof_invariant import (
+#  # MOVED: from system_learning.invariants.commit_proof_invariant import (
             CommitProofInvariant,
             CommitProofViolation,
         )
@@ -717,7 +797,7 @@ class TestGap010CommitProofInvariant:
             proof.verify()
 
     def test_non_hex_version_id_raises(self):
-        from system_learning.invariants.commit_proof_invariant import (
+#  # MOVED: from system_learning.invariants.commit_proof_invariant import (
             CommitProofInvariant,
             CommitProofViolation,
         )
@@ -732,7 +812,7 @@ class TestGap010CommitProofInvariant:
             proof.verify()
 
     def test_package_without_canonical_bytes_raises(self):
-        from system_learning.invariants.commit_proof_invariant import (
+#  # MOVED: from system_learning.invariants.commit_proof_invariant import (
             CommitProofInvariant,
             CommitProofViolation,
         )
@@ -746,7 +826,7 @@ class TestGap010CommitProofInvariant:
             )
 
     def test_verify_commit_proof_convenience(self):
-        from system_learning.invariants.commit_proof_invariant import verify_commit_proof
+#  # MOVED: from system_learning.invariants.commit_proof_invariant import verify_commit_proof
 
         pkg = _minimal_package()
         impl_hash = hashlib.sha256(pkg.canonical_bytes()).hexdigest()
@@ -765,7 +845,7 @@ class TestGap011EmbeddingMetadataNotInChanges:
         """ChangePackage must have embedding_context_hash field (not in changes bytes)."""
         import dataclasses
 
-        from system_learning.engines.change_package_impl import ChangePackage
+#  # MOVED: from system_learning.engines.change_package_impl import ChangePackage
 
         field_names = {f.name for f in dataclasses.fields(ChangePackage)}
         assert "embedding_context_hash" in field_names
@@ -814,19 +894,19 @@ class TestGap011EmbeddingMetadataNotInChanges:
 @pytest.mark.unit
 class TestGap014FreezeGate:
     def test_static_reader_not_frozen_returns_false(self):
-        from system_learning.invariants.freeze_gate import StaticFreezeReader
+#  # MOVED: from system_learning.invariants.freeze_gate import StaticFreezeReader
 
         r = StaticFreezeReader(frozen=False)
         assert r.is_frozen() is False
 
     def test_static_reader_frozen_returns_true(self):
-        from system_learning.invariants.freeze_gate import StaticFreezeReader
+#  # MOVED: from system_learning.invariants.freeze_gate import StaticFreezeReader
 
         r = StaticFreezeReader(frozen=True)
         assert r.is_frozen() is True
 
     def test_json_reader_no_freeze_key(self, tmp_path):
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+#  # MOVED: from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
 
         p = tmp_path / "runtime_state.json"
         p.write_text(json.dumps({"status": "running"}))
@@ -834,7 +914,7 @@ class TestGap014FreezeGate:
         assert r.is_frozen() is False
 
     def test_json_reader_freeze_true_key(self, tmp_path):
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+#  # MOVED: from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
 
         p = tmp_path / "runtime_state.json"
         p.write_text(json.dumps({"freeze": True}))
@@ -842,7 +922,7 @@ class TestGap014FreezeGate:
         assert r.is_frozen() is True
 
     def test_json_reader_freeze_false_key(self, tmp_path):
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+#  # MOVED: from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
 
         p = tmp_path / "runtime_state.json"
         p.write_text(json.dumps({"freeze": False}))
@@ -850,7 +930,7 @@ class TestGap014FreezeGate:
         assert r.is_frozen() is False
 
     def test_json_reader_status_freez(self, tmp_path):
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+#  # MOVED: from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
 
         p = tmp_path / "runtime_state.json"
         p.write_text(json.dumps({"status": "FREEZ"}))
@@ -858,7 +938,7 @@ class TestGap014FreezeGate:
         assert r.is_frozen() is True
 
     def test_json_reader_status_freez_lowercase(self, tmp_path):
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+#  # MOVED: from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
 
         p = tmp_path / "runtime_state.json"
         p.write_text(json.dumps({"status": "freez"}))
@@ -866,7 +946,7 @@ class TestGap014FreezeGate:
         assert r.is_frozen() is True
 
     def test_json_reader_flags_l2_freeze(self, tmp_path):
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+#  # MOVED: from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
 
         p = tmp_path / "runtime_state.json"
         p.write_text(json.dumps({"flags": {"l2_freeze": True}}))
@@ -874,14 +954,14 @@ class TestGap014FreezeGate:
         assert r.is_frozen() is True
 
     def test_json_reader_missing_file_fails_open(self, tmp_path):
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+#  # MOVED: from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
 
         p = tmp_path / "does_not_exist.json"
         r = JsonFileBackedFreezeReader(p)
         assert r.is_frozen() is False  # fail-open (do not block pipeline)
 
     def test_json_reader_malformed_json_fails_open(self, tmp_path):
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+#  # MOVED: from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
 
         p = tmp_path / "runtime_state.json"
         p.write_text("{not valid json")
@@ -892,7 +972,7 @@ class TestGap014FreezeGate:
         """PipelineDependencies must accept freeze_reader field."""
         import dataclasses
 
-        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
 
         field_names = {f.name for f in dataclasses.fields(PipelineDependencies)}
         assert "freeze_reader" in field_names
@@ -906,19 +986,19 @@ class TestGap014FreezeGate:
 @pytest.mark.unit
 class TestGap015ShadowBatchCleared:
     def test_module_has_shadow_telemetry_batch(self):
-        import system_learning.pipelines.meta_learning_pipeline as m
+#  # MOVED: import system_learning.pipelines.meta_learning_pipeline as m
 
         assert hasattr(m, "_shadow_telemetry_batch"), "_shadow_telemetry_batch global must exist"
 
     def test_shadow_batch_is_list(self):
-        import system_learning.pipelines.meta_learning_pipeline as m
+#  # MOVED: import system_learning.pipelines.meta_learning_pipeline as m
 
         assert isinstance(m._shadow_telemetry_batch, list)
 
     def test_shadow_batch_cleared_on_pipeline_entry_via_invalid_window(self):
         """Pollute the batch, call run_pipeline with bad window, verify batch cleared."""
-        import system_learning.pipelines.meta_learning_pipeline as m
-        from system_learning.pipelines.meta_learning_pipeline import PipelineError
+#  # MOVED: import system_learning.pipelines.meta_learning_pipeline as m
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineError
 
         m._shadow_telemetry_batch = [{"stale": True}]
 
@@ -927,7 +1007,7 @@ class TestGap015ShadowBatchCleared:
 
         # window_start >= window_end triggers PipelineError BEFORE freeze gate
         with pytest.raises(PipelineError):
-            from system_learning.pipelines.meta_learning_pipeline import run_pipeline
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import run_pipeline
 
             run_pipeline(
                 cfg=cfg,
@@ -939,16 +1019,16 @@ class TestGap015ShadowBatchCleared:
 
     def test_shadow_batch_cleared_when_freeze_triggered(self):
         """When freeze is active, batch is NOT cleared (freeze fires before clear)."""
-        import system_learning.pipelines.meta_learning_pipeline as m
-        from system_learning.invariants.freeze_gate import StaticFreezeReader
-        from system_learning.pipelines.meta_learning_pipeline import PipelineError
+#  # MOVED: import system_learning.pipelines.meta_learning_pipeline as m
+#  # MOVED: from system_learning.invariants.freeze_gate import StaticFreezeReader
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineError
 
         m._shadow_telemetry_batch = [{"stale": True}]
         cfg = _make_pipeline_config(proposal_only=True)
         deps = _make_minimal_deps(freeze_reader=StaticFreezeReader(frozen=True))
 
         with pytest.raises(PipelineError, match="freeze"):
-            from system_learning.pipelines.meta_learning_pipeline import run_pipeline
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import run_pipeline
 
             run_pipeline(cfg=cfg, deps=deps, window_start_utc=0, window_end_utc=100, now_utc=50)
 
@@ -966,9 +1046,9 @@ class TestGap016IntakeRecordInitialized:
     def test_intake_record_none_when_adapter_missing(self):
         """Pipeline code initializes intake_record = None; no NameError when adapter absent."""
         """Test system_learning import functionality."""
-        from system_learning.validators.dampening import SampleSizePolicy
-        from system_learning.validators.dampening import SampleSizeViolation
-        from system_learning.validators.dampening import assert_min_sample_size
+#  # MOVED: from system_learning.validators.dampening import SampleSizePolicy
+#  # MOVED: from system_learning.validators.dampening import SampleSizeViolation
+#  # MOVED: from system_learning.validators.dampening import assert_min_sample_size
         # Basic functionality assertion
         assert True  # Replace with meaningful assertion
         healing_config_optimizer = MagicMock()
@@ -986,8 +1066,8 @@ class TestGap016IntakeRecordInitialized:
         import inspect
 
 """Test system_learning import functionality."""
-from system_learning.validators.dampening import SampleSizePolicy
-from system_learning.validators.dampening import assert_min_sample_size
+#  # MOVED: from system_learning.validators.dampening import SampleSizePolicy
+#  # MOVED: from system_learning.validators.dampening import assert_min_sample_size
 # Basic functionality assertion
 assert True  # Replace with meaningful assertion
         )
@@ -996,7 +1076,7 @@ assert True  # Replace with meaningful assertion
         """Guard must include `intake_record is not None`."""
         import inspect
 
-        import system_learning.pipelines.meta_learning_pipeline as m
+#  # MOVED: import system_learning.pipelines.meta_learning_pipeline as m
 
         src = inspect.getsource(m.run_pipeline)
         assert "intake_record is not None" in src, "Stage 8.5 guard must include `intake_record is not None`"
@@ -1013,7 +1093,7 @@ class TestGap005Stage86And87Independent:
         """_analyze_historical_patterns call must be at top level (not nested inside 8.5 if block)."""
         import inspect
 
-        import system_learning.pipelines.meta_learning_pipeline as m
+#  # MOVED: import system_learning.pipelines.meta_learning_pipeline as m
 
         src = inspect.getsource(m.run_pipeline)
         assert "pattern_report" in src
@@ -1025,7 +1105,7 @@ class TestGap005Stage86And87Independent:
         """When healing_config_optimizer is None, pattern analysis still has a path to run."""
         import inspect
 
-        import system_learning.pipelines.meta_learning_pipeline as m
+#  # MOVED: import system_learning.pipelines.meta_learning_pipeline as m
 
         src = inspect.getsource(m.run_pipeline)
         assert "_8_5_aggregate_snapshot = None" in src
@@ -1047,7 +1127,7 @@ class TestGap013FactoryWiring:
         """build_pipeline_deps result must have freeze_reader attribute."""
         import dataclasses
 
-        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
 
         field_names = {f.name for f in dataclasses.fields(PipelineDependencies)}
         assert "freeze_reader" in field_names
@@ -1055,7 +1135,7 @@ class TestGap013FactoryWiring:
     def test_factory_wires_rlhf_optimizer_field(self):
         import dataclasses
 
-        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
 
         field_names = {f.name for f in dataclasses.fields(PipelineDependencies)}
         assert "rlhf_optimizer" in field_names
@@ -1063,7 +1143,7 @@ class TestGap013FactoryWiring:
     def test_factory_wires_arbitration_engine_field(self):
         import dataclasses
 
-        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
 
         field_names = {f.name for f in dataclasses.fields(PipelineDependencies)}
         assert "arbitration_engine" in field_names
@@ -1071,7 +1151,7 @@ class TestGap013FactoryWiring:
     def test_factory_wires_healing_confidence_scorer_field(self):
         import dataclasses
 
-        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
 
         field_names = {f.name for f in dataclasses.fields(PipelineDependencies)}
         assert "healing_confidence_scorer" in field_names
@@ -1079,7 +1159,7 @@ class TestGap013FactoryWiring:
     def test_factory_wires_failure_fingerprinter_field(self):
         import dataclasses
 
-        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
 
         field_names = {f.name for f in dataclasses.fields(PipelineDependencies)}
         assert "failure_fingerprinter" in field_names
@@ -1087,19 +1167,19 @@ class TestGap013FactoryWiring:
     def test_factory_wires_risk_correlator_field(self):
         import dataclasses
 
-        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
 
         field_names = {f.name for f in dataclasses.fields(PipelineDependencies)}
         assert "risk_correlator" in field_names
 
     def test_build_pipeline_config_default_proposal_only_true(self):
-        from system_learning.pipelines.pipeline_factory import build_pipeline_config
+#  # MOVED: from system_learning.pipelines.pipeline_factory import build_pipeline_config
 
         cfg = build_pipeline_config()
         assert cfg.proposal_only is True
 
     def test_build_pipeline_config_explicit_false(self):
-        from system_learning.pipelines.pipeline_factory import build_pipeline_config
+#  # MOVED: from system_learning.pipelines.pipeline_factory import build_pipeline_config
 
         cfg = build_pipeline_config(proposal_only=False)
         assert cfg.proposal_only is False
@@ -1116,7 +1196,7 @@ class TestGap003DpoBeforeStage7:
         """Verify by source inspection that DPO proposals.append occurs before Stage 7 loop."""
         import inspect
 
-        import system_learning.pipelines.meta_learning_pipeline as m
+#  # MOVED: import system_learning.pipelines.meta_learning_pipeline as m
 
         src = inspect.getsource(m.run_pipeline)
 
@@ -1133,7 +1213,7 @@ class TestGap003DpoBeforeStage7:
         """Source comment must indicate DPO enters before Stage 7."""
         import inspect
 
-        import system_learning.pipelines.meta_learning_pipeline as m
+#  # MOVED: import system_learning.pipelines.meta_learning_pipeline as m
 
         src = inspect.getsource(m.run_pipeline)
         assert "before Stage 7" in src or "BEFORE Stage 7" in src, (

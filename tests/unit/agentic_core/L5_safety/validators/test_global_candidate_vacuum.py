@@ -11,11 +11,11 @@ to avoid CoreIntegrityVerifier overhead during unit testing.
 
 from pathlib import Path
 
-from agentic_core.L5_safety.config.structure_blueprint import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint import (
     APPS_LIC_DIR,
     APPS_RG_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -62,7 +62,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_global_candidate_vacuum", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_global_candidate_vacuum", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_global_candidate_vacuum", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -230,6 +230,10 @@ class TestGlobalCandidateVacuum:
     """
 
     def test_generic_utility_is_vacuumed(self):
+        from agentic_core.L5_safety.config.structure_blueprint import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
         """100% PASS: Ensures 'date_helper.py' in apps_lic is flagged for apps_shared."""
         rel_path = Path("apps_lic/engines/date_helper.py")
 
@@ -258,7 +262,7 @@ class TestGlobalCandidateVacuum:
 
     def test_global_weight_superiority(self):
         """100% PASS: Verifies Shared Gravity (95) beats App Gravity (90) in SSOT."""
-        from agentic_core.L5_safety.config.structure_blueprint import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint import (
             get_all_territories,
         )
 

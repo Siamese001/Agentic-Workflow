@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -58,6 +58,7 @@ class TestWave21InventoryPresence:
     """Verify the inventory file exists and is loadable."""
 
     def test_inventory_file_exists(self) -> None:
+        from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
     """Test inventory_file_exists runtime behavior."""
     # Arrange
     # TODO: Set up runtime environment

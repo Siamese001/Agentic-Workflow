@@ -18,7 +18,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -63,7 +63,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_adg_gap_implementations")
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_gap_implementations", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_gap_implementations", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -191,7 +191,7 @@ def _make_edge_stub(
     symbol: str = "",
 ):
     """Create a minimal Edge-like object without importing the full scanner."""
-    from agentic_core.adg.extraction.static_scanner import Edge
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge
 
     return Edge(
         from_name=from_name,
@@ -210,7 +210,7 @@ def _scan_src(src: str, rel_path: str = "test_module.py"):
         f.write(src)
         tmp = Path(f.name)
     try:
-        from agentic_core.adg.extraction.static_scanner import _scan_file
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _scan_file
 
         edges, errored = _scan_file(tmp, tmp.parent)
         return edges, errored
@@ -225,8 +225,71 @@ def _scan_src(src: str, rel_path: str = "test_module.py"):
 
 class TestHealerValidatorVisitor:
     def test_heals_edge_emitted_for_healer_base_class(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.extraction.static_scanner import Edge
+        from agentic_core.adg.extraction.static_scanner import _scan_file
+        from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
+        from agentic_core.adg.analysis.healer_validator_graph_validator import (
+        from agentic_core.adg.analysis.healer_validator_graph_validator import (
+        from agentic_core.adg.analysis.healer_validator_graph_validator import (
+        from agentic_core.adg.analysis.healer_validator_graph_validator import (
+        from agentic_core.adg.analysis.healer_validator_graph_validator import (
+        from agentic_core.adg.analysis.healer_validator_graph_validator import (
+        from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
+        from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
+        from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
+        from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
+        from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
+        from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
+        from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
+        from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
+        from agentic_core.adg.runtime.event_graph import HealerLoopRecorder, RuntimeGraph
+        from agentic_core.adg.runtime.event_graph import HealerLoopRecorder, RuntimeGraph
+        from agentic_core.adg.runtime.event_graph import HealerLoopRecorder, RuntimeGraph
+        from agentic_core.adg.runtime.event_graph import HealerLoopRecorder, RuntimeGraph
+        from agentic_core.adg.runtime.event_graph import HealerLoopRecorder, RuntimeGraph
+        from agentic_core.adg.runtime.event_graph import RuntimeGraph
+        from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
+        from agentic_core.adg.runtime.event_graph import RuntimeGraph
+        from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
+        from agentic_core.adg.runtime.event_graph import RuntimeGraph
+        from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
+        from agentic_core.adg.runtime.event_graph import RuntimeGraph
+        from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
+        from agentic_core.adg.runtime.event_graph import RuntimeGraph
+        from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
+        from agentic_core.adg.runtime.event_graph import RuntimeGraph
+        from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
+        from agentic_core.adg.runtime.event_graph import RuntimeGraph
+        from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
+        from agentic_core.adg.runtime.event_graph import RuntimeGraph
+        from agentic_core.adg.runtime.safety_observer import RuntimeSafetyObserver
+        from agentic_core.adg.runtime.event_graph import RuntimeGraph
+        from agentic_core.adg.runtime.safety_observer import RuntimeSafetyObserver
+        from agentic_core.adg.runtime.event_graph import RuntimeGraph
+        from agentic_core.adg.runtime.safety_observer import RuntimeSafetyObserver
+        from agentic_core.adg.runtime.event_graph import RuntimeGraph
+        from agentic_core.adg.runtime.safety_observer import RuntimeSafetyObserver
+        from agentic_core.adg.runtime.event_graph import RuntimeGraph
+        from agentic_core.adg.runtime.safety_observer import RuntimeSafetyObserver
+        from agentic_core.adg.runtime.event_graph import RuntimeGraph
+        from agentic_core.adg.runtime.safety_observer import RuntimeSafetyObserver
+        from agentic_core.adg.runtime.event_graph import RuntimeGraph
+        from agentic_core.adg.runtime.safety_observer import (
+        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
+        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
+        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
+        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
+        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
+        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
+        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
+        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
+        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
+        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
+        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
         src = """\
-from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
+#  # MOVED: from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
 
 class MyHealer(BaseHealingOrchestrator):
     pass
@@ -316,7 +379,7 @@ class TestHealerValidatorGraphAnalysis:
         return sr
 
     def test_healer_module_detected(self):
-        from agentic_core.adg.analysis.healer_validator_graph_validator import (
+#  # MOVED: from agentic_core.adg.analysis.healer_validator_graph_validator import (
             detect_healer_validator_relationships,
         )
 
@@ -335,7 +398,7 @@ class TestHealerValidatorGraphAnalysis:
         assert "ADG::Module::foo" in report.healer_modules
 
     def test_validator_module_detected(self):
-        from agentic_core.adg.analysis.healer_validator_graph_validator import (
+#  # MOVED: from agentic_core.adg.analysis.healer_validator_graph_validator import (
             detect_healer_validator_relationships,
         )
 
@@ -354,7 +417,7 @@ class TestHealerValidatorGraphAnalysis:
         assert "ADG::Module::bar" in report.validator_modules
 
     def test_unbound_healer_with_no_validator_target(self):
-        from agentic_core.adg.analysis.healer_validator_graph_validator import (
+#  # MOVED: from agentic_core.adg.analysis.healer_validator_graph_validator import (
             detect_healer_validator_relationships,
         )
 
@@ -373,7 +436,7 @@ class TestHealerValidatorGraphAnalysis:
         assert "ADG::Module::healer_mod" in report.unbound_healers
 
     def test_report_to_dict_serializable(self):
-        from agentic_core.adg.analysis.healer_validator_graph_validator import (
+#  # MOVED: from agentic_core.adg.analysis.healer_validator_graph_validator import (
             detect_healer_validator_relationships,
         )
 
@@ -384,7 +447,7 @@ class TestHealerValidatorGraphAnalysis:
         json.dumps(d)  # must be JSON-serializable
 
     def test_summary_string(self):
-        from agentic_core.adg.analysis.healer_validator_graph_validator import (
+#  # MOVED: from agentic_core.adg.analysis.healer_validator_graph_validator import (
             detect_healer_validator_relationships,
         )
 
@@ -394,7 +457,7 @@ class TestHealerValidatorGraphAnalysis:
         assert "Healer/Validator Graph" in s
 
     def test_pair_inferred_from_dispatch_to_validator(self):
-        from agentic_core.adg.analysis.healer_validator_graph_validator import (
+#  # MOVED: from agentic_core.adg.analysis.healer_validator_graph_validator import (
             detect_healer_validator_relationships,
         )
 
@@ -429,7 +492,7 @@ class TestHealerValidatorGraphAnalysis:
 
 class TestAgentLoopRecorder:
     def test_observe_emits_event(self):
-        from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
 
         g = RuntimeGraph()
         r = AgentLoopRecorder(g, agent_id="TestAgent", run_id="run-1")
@@ -439,7 +502,7 @@ class TestAgentLoopRecorder:
         assert g.events[0].phase == "observe"
 
     def test_reason_emits_event(self):
-        from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
 
         g = RuntimeGraph()
         r = AgentLoopRecorder(g, agent_id="TestAgent", run_id="run-1")
@@ -447,7 +510,7 @@ class TestAgentLoopRecorder:
         assert g.events[0].payload["strategy"] == "archetype_routing"
 
     def test_act_emits_event_and_edge(self):
-        from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
 
         g = RuntimeGraph()
         r = AgentLoopRecorder(g, agent_id="TestAgent", run_id="run-1")
@@ -459,7 +522,7 @@ class TestAgentLoopRecorder:
         assert g.edges[0].to_entity == "SovereignLLMGateway"
 
     def test_act_no_tool_emits_no_edge(self):
-        from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
 
         g = RuntimeGraph()
         r = AgentLoopRecorder(g, agent_id="TestAgent", run_id="run-1")
@@ -467,7 +530,7 @@ class TestAgentLoopRecorder:
         assert len(g.edges) == 0
 
     def test_evaluate_emits_event(self):
-        from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
 
         g = RuntimeGraph()
         r = AgentLoopRecorder(g, agent_id="TestAgent", run_id="run-1")
@@ -475,7 +538,7 @@ class TestAgentLoopRecorder:
         assert g.events[0].payload["confidence"] == 0.92
 
     def test_learn_with_delta_emits_learning_edge(self):
-        from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
 
         g = RuntimeGraph()
         r = AgentLoopRecorder(g, agent_id="TestAgent", run_id="run-1")
@@ -483,7 +546,7 @@ class TestAgentLoopRecorder:
         assert any(e.relation_type == "learns_from_decision" for e in g.edges)
 
     def test_learn_without_delta_no_edge(self):
-        from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
 
         g = RuntimeGraph()
         r = AgentLoopRecorder(g, agent_id="TestAgent", run_id="run-1")
@@ -491,7 +554,7 @@ class TestAgentLoopRecorder:
         assert len(g.edges) == 0
 
     def test_full_loop_five_events(self):
-        from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.event_graph import AgentLoopRecorder, RuntimeGraph
 
         g = RuntimeGraph()
         r = AgentLoopRecorder(g, agent_id="TestAgent", run_id="run-1")
@@ -525,7 +588,7 @@ class TestAgentLoopRecorder:
 
 class TestHealerLoopRecorder:
     def test_detect_emits_event_and_edge(self):
-        from agentic_core.adg.runtime.event_graph import HealerLoopRecorder, RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.event_graph import HealerLoopRecorder, RuntimeGraph
 
         g = RuntimeGraph()
         r = HealerLoopRecorder(g, agent_id="LicHealingOrchestrator", run_id="r1")
@@ -535,7 +598,7 @@ class TestHealerLoopRecorder:
         assert len(heal_edge) == 1
 
     def test_heal_emits_orchestrates_healing_edge(self):
-        from agentic_core.adg.runtime.event_graph import HealerLoopRecorder, RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.event_graph import HealerLoopRecorder, RuntimeGraph
 
         g = RuntimeGraph()
         r = HealerLoopRecorder(g, agent_id="LicHealingOrchestrator", run_id="r1")
@@ -543,7 +606,7 @@ class TestHealerLoopRecorder:
         assert any(e.relation_type == "orchestrates_healing" for e in g.edges)
 
     def test_validate_emits_dispatches_to_edge(self):
-        from agentic_core.adg.runtime.event_graph import HealerLoopRecorder, RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.event_graph import HealerLoopRecorder, RuntimeGraph
 
         g = RuntimeGraph()
         r = HealerLoopRecorder(g, agent_id="LicHealingOrchestrator", run_id="r1")
@@ -551,7 +614,7 @@ class TestHealerLoopRecorder:
         assert any(e.relation_type == "dispatches_to" for e in g.edges)
 
     def test_escalate_emits_escalates_to_human_edge(self):
-        from agentic_core.adg.runtime.event_graph import HealerLoopRecorder, RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.event_graph import HealerLoopRecorder, RuntimeGraph
 
         g = RuntimeGraph()
         r = HealerLoopRecorder(g, agent_id="LicHealingOrchestrator", run_id="r1")
@@ -559,7 +622,7 @@ class TestHealerLoopRecorder:
         assert any(e.relation_type == "escalates_to_human" for e in g.edges)
 
     def test_full_healer_loop_events(self):
-        from agentic_core.adg.runtime.event_graph import HealerLoopRecorder, RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.event_graph import HealerLoopRecorder, RuntimeGraph
 
         g = RuntimeGraph()
         r = HealerLoopRecorder(g, agent_id="LicHealingOrchestrator", run_id="r1")
@@ -680,8 +743,8 @@ self.escalate(reason='low_conf')
     # TODO: Add specific execution assertions
 class TestHITLGraph:
     def test_checkpoint_creates_hitl_entry(self):
-        from agentic_core.adg.runtime.event_graph import RuntimeGraph
-        from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
+#  # MOVED: from agentic_core.adg.runtime.event_graph import RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
 
         g = RuntimeGraph()
         hitl = HITLGraph()
@@ -692,8 +755,8 @@ class TestHITLGraph:
         assert hitl.pending_count == 1
 
     def test_checkpoint_emits_escalates_to_human_edge(self):
-        from agentic_core.adg.runtime.event_graph import RuntimeGraph
-        from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
+#  # MOVED: from agentic_core.adg.runtime.event_graph import RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
 
         g = RuntimeGraph()
         hitl = HITLGraph()
@@ -702,8 +765,8 @@ class TestHITLGraph:
         assert any(e.relation_type == "escalates_to_human" for e in g.edges)
 
     def test_decide_marks_checkpoint_resolved(self):
-        from agentic_core.adg.runtime.event_graph import RuntimeGraph
-        from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
+#  # MOVED: from agentic_core.adg.runtime.event_graph import RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
 
         g = RuntimeGraph()
         hitl = HITLGraph()
@@ -714,8 +777,8 @@ class TestHITLGraph:
         assert hitl.resolved_count == 1
 
     def test_decide_emits_awaits_approval_edge(self):
-        from agentic_core.adg.runtime.event_graph import RuntimeGraph
-        from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
+#  # MOVED: from agentic_core.adg.runtime.event_graph import RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
 
         g = RuntimeGraph()
         hitl = HITLGraph()
@@ -725,8 +788,8 @@ class TestHITLGraph:
         assert any(e.relation_type == "awaits_approval" for e in g.edges)
 
     def test_learn_emits_learns_from_decision_edge(self):
-        from agentic_core.adg.runtime.event_graph import RuntimeGraph
-        from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
+#  # MOVED: from agentic_core.adg.runtime.event_graph import RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
 
         g = RuntimeGraph()
         hitl = HITLGraph()
@@ -735,8 +798,8 @@ class TestHITLGraph:
         assert any(e.relation_type == "learns_from_decision" for e in g.edges)
 
     def test_decision_distribution(self):
-        from agentic_core.adg.runtime.event_graph import RuntimeGraph
-        from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
+#  # MOVED: from agentic_core.adg.runtime.event_graph import RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
 
         g = RuntimeGraph()
         hitl = HITLGraph()
@@ -750,8 +813,8 @@ class TestHITLGraph:
         assert dist["reject"] == 1
 
     def test_invalid_decision_type_raises(self):
-        from agentic_core.adg.runtime.event_graph import RuntimeGraph
-        from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
+#  # MOVED: from agentic_core.adg.runtime.event_graph import RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.hitl_graph import HITLGraph, HITLRuntimeRecorder
 
         g = RuntimeGraph()
         hitl = HITLGraph()
@@ -817,8 +880,8 @@ def foo(x):
 
 class TestRuntimeSafetyObserver:
     def test_guardrail_check_pass_emits_event_and_edge(self):
-        from agentic_core.adg.runtime.event_graph import RuntimeGraph
-        from agentic_core.adg.runtime.safety_observer import RuntimeSafetyObserver
+#  # MOVED: from agentic_core.adg.runtime.event_graph import RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.safety_observer import RuntimeSafetyObserver
 
         g = RuntimeGraph()
         obs = RuntimeSafetyObserver(g, agent_id="SovereignLLMGateway")
@@ -828,8 +891,8 @@ class TestRuntimeSafetyObserver:
         assert obs.report.guardrail_pass_rate == 1.0
 
     def test_guardrail_check_fail_creates_violation(self):
-        from agentic_core.adg.runtime.event_graph import RuntimeGraph
-        from agentic_core.adg.runtime.safety_observer import RuntimeSafetyObserver
+#  # MOVED: from agentic_core.adg.runtime.event_graph import RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.safety_observer import RuntimeSafetyObserver
 
         g = RuntimeGraph()
         obs = RuntimeSafetyObserver(g, agent_id="SovereignLLMGateway")
@@ -839,8 +902,8 @@ class TestRuntimeSafetyObserver:
         assert obs.report.guardrail_pass_rate == 0.0
 
     def test_policy_hash_match_returns_true(self):
-        from agentic_core.adg.runtime.event_graph import RuntimeGraph
-        from agentic_core.adg.runtime.safety_observer import RuntimeSafetyObserver
+#  # MOVED: from agentic_core.adg.runtime.event_graph import RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.safety_observer import RuntimeSafetyObserver
 
         g = RuntimeGraph()
         obs = RuntimeSafetyObserver(g, agent_id="PolicyVerifier")
@@ -854,8 +917,8 @@ class TestRuntimeSafetyObserver:
         assert any(e.relation_type == "verifies_policy" for e in g.edges)
 
     def test_policy_hash_mismatch_returns_false_and_creates_violation(self):
-        from agentic_core.adg.runtime.event_graph import RuntimeGraph
-        from agentic_core.adg.runtime.safety_observer import RuntimeSafetyObserver
+#  # MOVED: from agentic_core.adg.runtime.event_graph import RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.safety_observer import RuntimeSafetyObserver
 
         g = RuntimeGraph()
         obs = RuntimeSafetyObserver(g, agent_id="PolicyVerifier")
@@ -870,8 +933,8 @@ class TestRuntimeSafetyObserver:
         assert any(e.relation_type == "enforces_policy_hash" for e in g.edges)
 
     def test_policy_hash_mismatch_pass_rate(self):
-        from agentic_core.adg.runtime.event_graph import RuntimeGraph
-        from agentic_core.adg.runtime.safety_observer import RuntimeSafetyObserver
+#  # MOVED: from agentic_core.adg.runtime.event_graph import RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.safety_observer import RuntimeSafetyObserver
 
         g = RuntimeGraph()
         obs = RuntimeSafetyObserver(g, agent_id="P")
@@ -880,8 +943,8 @@ class TestRuntimeSafetyObserver:
         assert obs.report.policy_pass_rate == pytest.approx(0.5)
 
     def test_violations_by_type(self):
-        from agentic_core.adg.runtime.event_graph import RuntimeGraph
-        from agentic_core.adg.runtime.safety_observer import RuntimeSafetyObserver
+#  # MOVED: from agentic_core.adg.runtime.event_graph import RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.safety_observer import RuntimeSafetyObserver
 
         g = RuntimeGraph()
         obs = RuntimeSafetyObserver(g, agent_id="P")
@@ -893,8 +956,8 @@ class TestRuntimeSafetyObserver:
         assert by_type.get("policy_hash_mismatch", 0) == 1
 
     def test_empty_report_pass_rates_default_to_one(self):
-        from agentic_core.adg.runtime.event_graph import RuntimeGraph
-        from agentic_core.adg.runtime.safety_observer import (
+#  # MOVED: from agentic_core.adg.runtime.event_graph import RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.safety_observer import (
             RuntimeSafetyObserver,
             RuntimeSafetyReport,
         )
@@ -918,7 +981,7 @@ class TestAgentRegistryScanner:
         return d
 
     def test_registered_as_edge_for_each_agent(self):
-        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
+#  # MOVED: from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
 
         d = self._make_spec_dir({"CampaignPlannerAgent": {"model": "gpt-4", "layer": "L3"}})
         result = scan_agent_registry(d)
@@ -927,7 +990,7 @@ class TestAgentRegistryScanner:
         assert result.agent_names == ["CampaignPlannerAgent"]
 
     def test_has_capability_edge_for_each_spec_key(self):
-        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
+#  # MOVED: from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
 
         d = self._make_spec_dir({"MyAgent": {"model": "gpt-4", "max_tokens": 4096, "layer": "L2"}})
         result = scan_agent_registry(d)
@@ -935,7 +998,7 @@ class TestAgentRegistryScanner:
         assert len(cap_edges) == 3  # model, max_tokens, layer
 
     def test_depends_on_agent_edge_for_explicit_dependency(self):
-        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
+#  # MOVED: from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
 
         d = self._make_spec_dir({"AgentA": {"model": "x", "depends_on": ["AgentB", "AgentC"]}})
         result = scan_agent_registry(d)
@@ -943,7 +1006,7 @@ class TestAgentRegistryScanner:
         assert len(dep_edges) == 2
 
     def test_agent_dependencies_key_also_parsed(self):
-        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
+#  # MOVED: from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
 
         d = self._make_spec_dir({"AgentX": {"model": "x", "agent_dependencies": ["AgentY"]}})
         result = scan_agent_registry(d)
@@ -951,7 +1014,7 @@ class TestAgentRegistryScanner:
         assert len(dep_edges) == 1
 
     def test_multiple_agents_in_one_file(self):
-        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
+#  # MOVED: from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
 
         d = self._make_spec_dir(
             {
@@ -964,14 +1027,14 @@ class TestAgentRegistryScanner:
         assert len([e for e in result.edges if e.relation_type == "registered_as"]) == 2
 
     def test_scanned_files_populated(self):
-        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
+#  # MOVED: from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
 
         d = self._make_spec_dir({"A": {}})
         result = scan_agent_registry(d)
         assert len(result.scanned_files) == 1
 
     def test_edge_count_by_relation(self):
-        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
+#  # MOVED: from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
 
         d = self._make_spec_dir({"A": {"x": 1, "y": 2}})
         result = scan_agent_registry(d)
@@ -980,7 +1043,7 @@ class TestAgentRegistryScanner:
         assert counts["has_capability"] == 2
 
     def test_invalid_json_skipped_gracefully(self):
-        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
+#  # MOVED: from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
 
         d = Path(tempfile.mkdtemp())
         (d / "agent_specs.json").write_text("not valid json", encoding="utf-8")
@@ -989,7 +1052,7 @@ class TestAgentRegistryScanner:
         assert result.edge_count == 0
 
     def test_non_dict_json_skipped_gracefully(self):
-        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
+#  # MOVED: from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
 
         d = Path(tempfile.mkdtemp())
         (d / "agent_specs.json").write_text(json.dumps([1, 2, 3]), encoding="utf-8")
@@ -997,7 +1060,7 @@ class TestAgentRegistryScanner:
         assert result.agent_count == 0
 
     def test_agent_config_filename_pattern_matched(self):
-        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
+#  # MOVED: from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
 
         d = Path(tempfile.mkdtemp())
         (d / "agent_config_prod.json").write_text(json.dumps({"AgentZ": {"tier": "prod"}}), encoding="utf-8")
@@ -1005,7 +1068,7 @@ class TestAgentRegistryScanner:
         assert result.agent_count == 1
 
     def test_real_repo_lic_agent_specs(self):
-        from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
+#  # MOVED: from agentic_core.adg.extraction.agent_registry_scanner import scan_agent_registry
 
         repo = Path(__file__).parents[2]
         result = scan_agent_registry(repo)

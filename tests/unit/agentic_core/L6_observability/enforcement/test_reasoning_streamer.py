@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L6_observability.enforcement.reasoning_streamer import (  # noqa: F401
+#  # MOVED: from agentic_core.L6_observability.enforcement.reasoning_streamer import (  # noqa: F401
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,
@@ -26,6 +26,7 @@ from agentic_core.L6_observability.enforcement.reasoning_streamer import (  # no
 
 class TestL5StreamerContract:
     def test_is_class(self):
+        from agentic_core.L6_observability.enforcement.reasoning_streamer import (  # noqa: F401
         assert isinstance(L5Streamer, type)
 
     def test_has_method_start_streamer(self):

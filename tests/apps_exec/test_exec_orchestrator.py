@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from apps_exec.types.exec_types import (
+#  # MOVED: from apps_exec.types.exec_types import (
     AudiencePersona,
     BriefSection,
     BriefStatus,
@@ -21,6 +21,18 @@ from apps_exec.types.exec_types import (
 
 class TestExecTypes:
     def test_audience_persona_values(self) -> None:
+        from apps_exec.types.exec_types import (
+        from apps_exec.validators.style_gate_validator import StyleGateValidator
+        from apps_exec.validators.style_gate_validator import StyleGateValidator
+        from apps_exec.validators.style_gate_validator import StyleGateValidator
+        from apps_exec.validators.style_gate_validator import StyleGateValidator
+        from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
+        from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
+        from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
+        from apps_exec.config.agent_spec_config import load_exec_specs
+        from apps_exec.config.reasoning_toggles_config import DEFAULT_TOGGLES
+        from apps_exec.config.agent_spec_config import load_exec_specs
+        from apps_exec.spine.exec_spine_adapter import ExecSpineAdapter
         assert AudiencePersona.RECRUITER.value == "recruiter"
         assert AudiencePersona.CTO.value == "cto"
         assert AudiencePersona.BOARD.value == "board"
@@ -97,7 +109,7 @@ class TestExecTypes:
         assert len(block_violations) == 0
 
     def test_blocks_unsupported_claim(self) -> None:
-        from apps_exec.validators.style_gate_validator import StyleGateValidator
+#  # MOVED: from apps_exec.validators.style_gate_validator import StyleGateValidator
 
         section = BriefSection(
             section_id="test",
@@ -112,7 +124,7 @@ class TestExecTypes:
         assert "STYLE_UNSUPPORTED_CLAIM" in block_ids
 
     def test_warns_missing_evidence(self) -> None:
-        from apps_exec.validators.style_gate_validator import StyleGateValidator
+#  # MOVED: from apps_exec.validators.style_gate_validator import StyleGateValidator
 
         section = BriefSection(
             section_id="test",
@@ -127,7 +139,7 @@ class TestExecTypes:
         assert "STYLE_EVIDENCE_MISSING" in warn_ids
 
     def test_blocks_empty_body(self) -> None:
-        from apps_exec.validators.style_gate_validator import StyleGateValidator
+#  # MOVED: from apps_exec.validators.style_gate_validator import StyleGateValidator
 
         section = BriefSection(
             section_id="test",
@@ -142,7 +154,7 @@ class TestExecTypes:
         assert "STYLE_EMPTY_BODY" in block_ids
 
     def test_quality_score_range(self) -> None:
-        from apps_exec.validators.style_gate_validator import StyleGateValidator
+#  # MOVED: from apps_exec.validators.style_gate_validator import StyleGateValidator
 
         section = BriefSection(
             section_id="test",
@@ -158,7 +170,7 @@ class TestExecTypes:
 
 class TestExecOrchestratorDryRun:
     def test_dry_run_returns_dry_run_status(self) -> None:
-        from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
+#  # MOVED: from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
 
         req = ExecBriefRequest(audience=AudiencePersona.RECRUITER, dry_run=True)
         orch = ExecOrchestrator(dry_run=True)
@@ -166,7 +178,7 @@ class TestExecOrchestratorDryRun:
         assert result.status == BriefStatus.DRY_RUN
 
     def test_dry_run_no_artifact_paths(self) -> None:
-        from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
+#  # MOVED: from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
 
         req = ExecBriefRequest(audience=AudiencePersona.CTO, dry_run=True)
         orch = ExecOrchestrator(dry_run=True)
@@ -174,7 +186,7 @@ class TestExecOrchestratorDryRun:
         assert result.artifact_paths == []
 
     def test_dry_run_has_sections(self) -> None:
-        from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
+#  # MOVED: from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
 
         req = ExecBriefRequest(audience=AudiencePersona.BOARD, dry_run=True)
         orch = ExecOrchestrator(dry_run=True)
@@ -205,21 +217,21 @@ class TestExecOrchestratorDryRun:
 
 class TestExecConfig:
     def test_load_exec_specs_returns_defaults(self) -> None:
-        from apps_exec.config.agent_spec_config import load_exec_specs
+#  # MOVED: from apps_exec.config.agent_spec_config import load_exec_specs
 
         specs = load_exec_specs()
         assert specs is not None
         assert specs.version == "1.0.0"
 
     def test_reasoning_toggles_defaults(self) -> None:
-        from apps_exec.config.reasoning_toggles_config import DEFAULT_TOGGLES
+#  # MOVED: from apps_exec.config.reasoning_toggles_config import DEFAULT_TOGGLES
 
         assert DEFAULT_TOGGLES.enable_capability_extraction is True
         assert DEFAULT_TOGGLES.enable_style_gate is True
         assert DEFAULT_TOGGLES.llm_narrative_enabled is False
 
     def test_exec_specs_personas_present(self) -> None:
-        from apps_exec.config.agent_spec_config import load_exec_specs
+#  # MOVED: from apps_exec.config.agent_spec_config import load_exec_specs
 
         specs = load_exec_specs()
         assert hasattr(specs, "personas")
@@ -228,7 +240,7 @@ class TestExecConfig:
 
 class TestExecSpineAdapter:
     def test_prefix_is_exec(self) -> None:
-        from apps_exec.spine.exec_spine_adapter import ExecSpineAdapter
+#  # MOVED: from apps_exec.spine.exec_spine_adapter import ExecSpineAdapter
 
         assert ExecSpineAdapter.__module__ == "apps_exec.spine.exec_spine_adapter"
 

@@ -5,11 +5,12 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L2_execution.types.bullet_format_types import BulletFormat, ProvenanceType
+#  # MOVED: from agentic_core.L2_execution.types.bullet_format_types import BulletFormat, ProvenanceType
 
 
 class TestBulletFormat:
     def test_is_enum(self):
+        from agentic_core.L2_execution.types.bullet_format_types import BulletFormat, ProvenanceType
     """Test is_enum runtime behavior."""
     # Arrange
     # TODO: Set up test data for is_enum

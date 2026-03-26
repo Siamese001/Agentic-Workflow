@@ -13,11 +13,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from agentic_core.L2_execution.healers.drift_detection_healer import (
+#  # MOVED: from agentic_core.L2_execution.healers.drift_detection_healer import (
     heal_guardian_drift_detection,
 )
-from agentic_core.L2_execution.types.heal_contract_types import HealStatus
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L2_execution.types.heal_contract_types import HealStatus
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -166,6 +166,9 @@ class TestDriftDetectionHealer:
     """Proves healer produces correct plan-only output."""
 
     def test_planned_actions_sorted(self) -> None:
+        from agentic_core.L2_execution.healers.drift_detection_healer import (
+        from agentic_core.L2_execution.types.heal_contract_types import HealStatus
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         check = {
             "check_id": "guardian_drift_detection",
             "status": "FAIL",

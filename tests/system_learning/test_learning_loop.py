@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -62,7 +62,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_learning_loop", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_learning_loop", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_learning_loop", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -192,7 +192,20 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 def test_fallback_vector_never_none():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
+    from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
+    from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
+    from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
+    from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+    from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+    from system_learning.engines.local_faiss_store import LocalFAISSStore
+    from system_learning.types.index_build_metadata_types import IndexBuildMetadata
+    from system_learning.engines.local_faiss_store import LocalFAISSStore
+    from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+    from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
 
     vec = generate_fallback_vector("IMPORT_BOUNDARY_VIOLATION unknown_agent")
     assert vec is not None
@@ -202,7 +215,7 @@ def test_fallback_vector_never_none():
 @pytest.mark.unit
 @pytest.mark.determinism
 def test_fallback_vector_determinism():
-    from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
 
     text = "LAYER_VIOLATION gate:check DependencyRepairAgent fix yaml"
     v1 = generate_fallback_vector(text)
@@ -214,7 +227,7 @@ def test_fallback_vector_determinism():
 def test_fallback_vector_l2_normalized():
     import math
 
-    from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
 
     vec = generate_fallback_vector("any text here")
     norm = math.sqrt(sum(v * v for v in vec))
@@ -223,7 +236,7 @@ def test_fallback_vector_l2_normalized():
 
 @pytest.mark.unit
 def test_fallback_vector_different_inputs_differ():
-    from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
 
     v1 = generate_fallback_vector("text_a")
     v2 = generate_fallback_vector("text_b")
@@ -237,7 +250,7 @@ def test_fallback_vector_different_inputs_differ():
 
 @pytest.mark.unit
 def test_healing_outcome_event_cluster_id_and_files_touched():
-    from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent
 
     evt = HealingOutcomeEvent(
         healer_id="agent_x",
@@ -254,7 +267,7 @@ def test_healing_outcome_event_cluster_id_and_files_touched():
 
 @pytest.mark.unit
 def test_healing_outcome_event_defaults_none():
-    from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent
 
     evt = HealingOutcomeEvent(
         healer_id="agent_x",
@@ -282,8 +295,8 @@ def built_store(temp_index_dir: Path):
     import hashlib as _hashlib
     import struct as _struct
 
-    from system_learning.engines.local_faiss_store import LocalFAISSStore
-    from system_learning.types.index_build_metadata_types import IndexBuildMetadata
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore
+#  # MOVED: from system_learning.types.index_build_metadata_types import IndexBuildMetadata
 
     store = LocalFAISSStore(base_path=temp_index_dir)
     index_id = "test_idx"
@@ -360,7 +373,7 @@ def test_persist_to_disk_digest_deterministic(built_store, tmp_path, capsys):
 
 @pytest.mark.unit
 def test_load_from_disk_round_trip(built_store, tmp_path):
-    from system_learning.engines.local_faiss_store import LocalFAISSStore
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore
 
     store, index_id = built_store
     dest = tmp_path / "roundtrip"
@@ -377,7 +390,7 @@ def test_load_from_disk_round_trip(built_store, tmp_path):
 @pytest.mark.unit
 @pytest.mark.negative_control
 def test_manifest_tamper_raises_integrity_error(built_store, tmp_path):
-    from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
 
     store, index_id = built_store
     dest = tmp_path / "tamper"
@@ -394,7 +407,7 @@ def test_manifest_tamper_raises_integrity_error(built_store, tmp_path):
 @pytest.mark.unit
 @pytest.mark.negative_control
 def test_load_missing_manifest_raises(tmp_path):
-    from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
 
     store = LocalFAISSStore(base_path=tmp_path)
     with pytest.raises(ManifestIntegrityError, match="manifest.json not found"):

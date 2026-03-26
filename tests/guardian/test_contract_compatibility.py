@@ -20,7 +20,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -105,7 +105,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_routing.types.guardian_contract_types import (
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import (
     ARTIFACT_SCHEMA_KEYS,
     ARTIFACT_TYPE_VALUES,
     CHECK_SCHEMA_KEYS,
@@ -120,7 +120,7 @@ from agentic_core.L0_routing.types.guardian_contract_types import (
     check_schema_compatibility,
     validate_against_json_schema,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -243,6 +243,9 @@ class TestSchemaSnapshot:
     }
 
     def test_snapshot_has_all_required_keys(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.types.guardian_contract_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test snapshot_has_all_required_keys contract compliance."""
     # Arrange
     # TODO: Set up contract parties and terms

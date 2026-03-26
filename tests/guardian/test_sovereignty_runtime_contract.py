@@ -24,10 +24,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -72,7 +72,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_sovereignty_runtime_contract")
 # REMOVED: _emit_applies_guardrail("p0", "test_sovereignty_runtime_contract", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_sovereignty_runtime_contract", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -199,6 +199,10 @@ pytestmark = pytest.mark.guardian
 
 class TestStructuralContract:
     def test_bootstrap_module_exists(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.runtime.sovereignty_bootstrap import SovereigntyBootstrap
     """Test bootstrap_module_exists runtime behavior."""
     # Arrange
     # TODO: Set up runtime environment
@@ -300,7 +304,7 @@ class TestBootstrapSingleUseContract:
     """bootstrap() must raise RuntimeError on a second call."""
 
     def _make_bootstrap(self):
-        from agentic_core.runtime.sovereignty_bootstrap import SovereigntyBootstrap
+#  # MOVED: from agentic_core.runtime.sovereignty_bootstrap import SovereigntyBootstrap
 
         return SovereigntyBootstrap()
 

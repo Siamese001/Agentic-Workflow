@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import asyncio
 
-from agentic_core.L2_execution.apps_qwen.apps_qwen_gateway import (
+#  # MOVED: from agentic_core.L2_execution.apps_qwen.apps_qwen_gateway import (
     AppsQwenGateway,
     AppsQwenRequest,
 )
 
 
 def test_apps_qwen_gateway_health_check() -> None:
+    from agentic_core.L2_execution.apps_qwen.apps_qwen_gateway import (
 """Test apps_qwen_gateway_health_check contract compliance."""
 # Arrange
 # TODO: Set up test data

@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.validators.read_file_args_validator import (  # noqa: F401
+#  # MOVED: from agentic_core.L5_safety.validators.read_file_args_validator import (  # noqa: F401
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,
@@ -27,6 +27,7 @@ from agentic_core.L5_safety.validators.read_file_args_validator import (  # noqa
 
 class TestReadFileArgsContract:
     def test_is_class(self):
+        from agentic_core.L5_safety.validators.read_file_args_validator import (  # noqa: F401
         assert isinstance(ReadFileArgs, type)
 
     def test_has_method_validate_path(self):

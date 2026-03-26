@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -79,8 +79,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.reasoning.GitHygieneAgent import GitHygieneAgent
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.GitHygieneAgent import GitHygieneAgent
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -173,6 +173,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestGitHygieneAgentInit:
     def test_creates(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.reasoning.GitHygieneAgent import GitHygieneAgent
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         ctx = MagicMock()
         agent = GitHygieneAgent(project_root=Path("."), ctx=ctx)
         assert agent is not None

@@ -15,7 +15,7 @@ import ast
 import sys
 from pathlib import Path
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -62,7 +62,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_data_quality", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_data_quality", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_data_quality", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -186,7 +186,7 @@ if str(ROOT) not in sys.path:
 
 
 def _scan_source(source: str, module_adg: str = "ADG::Module::test.py", rel: str = "test.py"):
-    from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
         _AttributeVisitor,
         _CallVisitor,
         _DecoratorVisitor,
@@ -234,6 +234,16 @@ def _scan_source(source: str, module_adg: str = "ADG::Module::test.py", rel: str
 
 class TestG1InvokesDynamic:
     def test_eval_emits_invokes_dynamic(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.adg.schema_util import RelationType
+        from agentic_core.adg.schema_util import RelationType
+        from agentic_core.adg.schema_util import RelationType
+        from agentic_core.adg.schema_util import EntityType
+        from agentic_core.adg.schema_util import WRITE_SIDE_EFFECT_EXCLUSIONS
+        from agentic_core.adg.schema_util import SEAM_MODULE_PATTERNS
+        from agentic_core.adg.schema_util import RULE_ID_PREFIXES
     """Test eval_emits_invokes_dynamic runtime behavior."""
     # Arrange
     # TODO: Set up test data for eval_emits_invokes_dynamic
@@ -415,38 +425,38 @@ class TestSchemaConsistency:
     # TODO: Add specific runtime behavior assertions
 
     def test_reads_env_in_relation_type(self):
-        from agentic_core.adg.schema_util import RelationType
+#  # MOVED: from agentic_core.adg.schema_util import RelationType
 
         assert "reads_env" in RelationType.__args__
 
     def test_reads_secret_in_relation_type(self):
-        from agentic_core.adg.schema_util import RelationType
+#  # MOVED: from agentic_core.adg.schema_util import RelationType
 
         assert "reads_secret" in RelationType.__args__
 
     def test_reads_policy_state_in_relation_type(self):
-        from agentic_core.adg.schema_util import RelationType
+#  # MOVED: from agentic_core.adg.schema_util import RelationType
 
         assert "reads_policy_state" in RelationType.__args__
 
     def test_seam_in_entity_type(self):
-        from agentic_core.adg.schema_util import EntityType
+#  # MOVED: from agentic_core.adg.schema_util import EntityType
 
         assert "seam" in EntityType.__args__
 
     def test_write_side_effect_exclusions_exported(self):
-        from agentic_core.adg.schema_util import WRITE_SIDE_EFFECT_EXCLUSIONS
+#  # MOVED: from agentic_core.adg.schema_util import WRITE_SIDE_EFFECT_EXCLUSIONS
 
         assert "copy" in WRITE_SIDE_EFFECT_EXCLUSIONS
         assert "deepcopy" in WRITE_SIDE_EFFECT_EXCLUSIONS
 
     def test_seam_module_patterns_exported(self):
-        from agentic_core.adg.schema_util import SEAM_MODULE_PATTERNS
+#  # MOVED: from agentic_core.adg.schema_util import SEAM_MODULE_PATTERNS
 
         assert len(SEAM_MODULE_PATTERNS) >= 1
 
     def test_rule_id_prefixes_exported(self):
-        from agentic_core.adg.schema_util import RULE_ID_PREFIXES
+#  # MOVED: from agentic_core.adg.schema_util import RULE_ID_PREFIXES
 
         assert "LAYER_GRAVITY" in RULE_ID_PREFIXES
         assert "UWG_BYPASS" in RULE_ID_PREFIXES

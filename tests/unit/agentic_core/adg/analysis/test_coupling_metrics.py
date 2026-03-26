@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.adg.analysis.coupling_metrics_config import (  # noqa: F401
+#  # MOVED: from agentic_core.adg.analysis.coupling_metrics_config import (  # noqa: F401
     CouplingMetricsReport,
     ModuleMetrics,
     compute_coupling_metrics,
@@ -19,6 +19,7 @@ from agentic_core.adg.analysis.coupling_metrics_config import (  # noqa: F401
 
 class TestModuleMetricsContract:
     def test_is_dataclass(self):
+        from agentic_core.adg.analysis.coupling_metrics_config import (  # noqa: F401
         import dataclasses
         assert dataclasses.is_dataclass(ModuleMetrics)
 

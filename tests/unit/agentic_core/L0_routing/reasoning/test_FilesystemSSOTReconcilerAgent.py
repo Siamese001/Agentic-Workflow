@@ -6,10 +6,12 @@ Generated as part of test structure mirror contract enforcement.
 
 import pytest
 
-import agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler
+#  # MOVED: import agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler
 
 
 def test_FilesystemSSOTReconcilerAgent_can_import():
+    import agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler
+    import agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler
     """Test that the module can be imported successfully."""
     # This is a basic smoke test to ensure the module is importable
     assert agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler is not None
@@ -192,7 +194,7 @@ def test_FORBIDDEN_ROOT_FOLDERS_exists():
 def test_module_has_minimum_coverage():
     """Test that the module has some minimum level of functionality."""
     # This test ensures we're not just importing empty modules
-    import agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler
+#  # MOVED: import agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler
 
     # Check that module has some content
     module_dict = agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler.__dict__

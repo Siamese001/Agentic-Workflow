@@ -31,7 +31,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L6_observability.dashboard.dashboard_aggregate import (
+#  # MOVED: from agentic_core.L6_observability.dashboard.dashboard_aggregate import (
     DashboardAggregate,
     DashboardAggregateRegistry,
     DashboardSnapshot,
@@ -39,13 +39,13 @@ from agentic_core.L6_observability.dashboard.dashboard_aggregate import (
     get_dashboard_registry,
     reset_dashboard_registry,
 )
-from agentic_core.L6_observability.dashboard.dashboard_orchestrator import (
+#  # MOVED: from agentic_core.L6_observability.dashboard.dashboard_orchestrator import (
     DashboardPolicy,
     TelemetryWindow,
     aggregate_runtime_observability,
     aggregate_simple_dashboard,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -213,6 +213,9 @@ class TestBug1NoRecursionFromEmitter:
     """
 
     def test_emit_records_does_not_call_aggregate_simple_dashboard(self):
+        from agentic_core.L6_observability.dashboard.dashboard_aggregate import (
+        from agentic_core.L6_observability.dashboard.dashboard_orchestrator import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """aggregate_simple_dashboard must NOT be called from within _emit_records_execution_trace."""
         call_count = []
 

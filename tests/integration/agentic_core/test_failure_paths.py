@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -61,7 +61,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_failure_paths", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_failure_paths", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_failure_paths", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -187,6 +187,15 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 class TestRedisFailurePath:
     def test_redis_unavailable_raises_or_logs_error(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.interfaces.gateway import SovereignLLMGateway  # noqa: F401
+        from agentic_core.L4_state.commit.two_phase_coordinator import TwoPhaseCoordinator
+        from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
+        from agentic_core.L4_state.commit.two_phase_coordinator import TwoPhaseCoordinator
+        from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
+        from agentic_core.L4_state.commit.two_phase_coordinator import TwoPhaseCoordinator
+        from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
         """When Redis is unavailable, degraded-mode must be explicit and observable."""
         from unittest.mock import patch
 
@@ -271,7 +280,7 @@ class TestLLMGatewayFailurePath:
 
         with patch.dict(sys.modules, {"agentic_core.interfaces.gateway": None}):
             result = None
-            from agentic_core.interfaces.gateway import SovereignLLMGateway  # noqa: F401
+#  # MOVED: from agentic_core.interfaces.gateway import SovereignLLMGateway  # noqa: F401
 
             assert result is None, "Import failure must yield None, not crash"
 
@@ -279,8 +288,8 @@ class TestLLMGatewayFailurePath:
 class TestUWGRejectionPath:
     def test_uwg_rejection_raises_observable_error(self):
         """UWG rejection must raise MutationCommitFailure — not silently skip."""
-        from agentic_core.L4_state.commit.two_phase_coordinator import TwoPhaseCoordinator
-        from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
+#  # MOVED: from agentic_core.L4_state.commit.two_phase_coordinator import TwoPhaseCoordinator
+#  # MOVED: from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
 
         coordinator = TwoPhaseCoordinator()
 
@@ -297,8 +306,8 @@ class TestUWGRejectionPath:
 
     def test_uwg_ledger_failure_raises_observable_error(self):
         """UWG ledger write failure must raise MutationCommitFailure."""
-        from agentic_core.L4_state.commit.two_phase_coordinator import TwoPhaseCoordinator
-        from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
+#  # MOVED: from agentic_core.L4_state.commit.two_phase_coordinator import TwoPhaseCoordinator
+#  # MOVED: from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
 
         coordinator = TwoPhaseCoordinator()
 
@@ -313,8 +322,8 @@ class TestUWGRejectionPath:
 
     def test_both_failures_are_observable(self):
         """Any 2PC failure must produce a non-empty error message."""
-        from agentic_core.L4_state.commit.two_phase_coordinator import TwoPhaseCoordinator
-        from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
+#  # MOVED: from agentic_core.L4_state.commit.two_phase_coordinator import TwoPhaseCoordinator
+#  # MOVED: from agentic_core.L5_safety.types.hardening_errors import MutationCommitFailure
 
         coordinator = TwoPhaseCoordinator()
         try:

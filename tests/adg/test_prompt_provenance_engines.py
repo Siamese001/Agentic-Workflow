@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import hashlib
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -57,7 +57,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_prompt_provenance_engines")
 # REMOVED: _emit_applies_guardrail("p0", "test_prompt_provenance_engines", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_prompt_provenance_engines", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -184,7 +184,7 @@ def _sha256(s: str) -> str:
 
 
 def _make_slot_manifest(total_tokens=512, budget_class="STANDARD"):
-    from system_learning.types.prompt_artifact_types import PromptSlotManifest
+#  # MOVED: from system_learning.types.prompt_artifact_types import PromptSlotManifest
 
     s0 = _sha256("s0_content")
     d0 = _sha256("d0_content")
@@ -214,7 +214,7 @@ def _make_artifact(
     policy_hash=None,
     model_target="gpt-4o",
 ):
-    from system_learning.types.prompt_artifact_types import CompiledPromptArtifact
+#  # MOVED: from system_learning.types.prompt_artifact_types import CompiledPromptArtifact
 
     ph = prompt_hash or _sha256("prompt_content")
     manifest = _make_slot_manifest(total_tokens=total_tokens, budget_class=budget_class)
@@ -245,7 +245,7 @@ def _make_outcome_record(
     failure_slot="NONE",
     prompt_hash=None,
 ):
-    from system_learning.types.prompt_artifact_types import PromptOutcomeRecord
+#  # MOVED: from system_learning.types.prompt_artifact_types import PromptOutcomeRecord
 
     ph = prompt_hash or _sha256("prompt")
     oid = _sha256(trace_id + final_outcome + str(groundedness))
@@ -283,7 +283,7 @@ def _make_build_request(
     model_target="gpt-4o",
     policy_hash=None,
 ):
-    from system_learning.engines.prompt_provenance_builder import (
+#  # MOVED: from system_learning.engines.prompt_provenance_builder import (
         PromptBuildRequest,
         SlotPayload,
     )
@@ -311,7 +311,91 @@ def _make_build_request(
 
 class TestPromptProvenanceBuilder:
     def test_build_produces_artifact_and_relations(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.types.prompt_artifact_types import PromptSlotManifest
+        from system_learning.types.prompt_artifact_types import CompiledPromptArtifact
+        from system_learning.types.prompt_artifact_types import PromptOutcomeRecord
+        from system_learning.engines.prompt_provenance_builder import (
         from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
+        from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
+        from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
+        from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
+        from system_learning.types.prompt_adg_relations import (
+        from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
+        from system_learning.types.prompt_adg_relations import PROVENANCE_TEMPLATE_USED_BY
+        from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
+        from system_learning.types.prompt_adg_relations import PROVENANCE_FEWSHOT_USED_BY
+        from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
+        from system_learning.types.prompt_adg_relations import BUDGET_TOKEN_PROFILE
+        from system_learning.engines.prompt_provenance_builder import (
+        from system_learning.types.prompt_adg_relations import BUDGET_EXCEEDED
+        from system_learning.engines.prompt_provenance_builder import (
+        from system_learning.types.prompt_adg_relations import BUDGET_EXCEEDED, BUDGET_TRUNCATED
+        from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
+        from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
+        from system_learning.engines.prompt_provenance_builder import (
+        from system_learning.engines.prompt_safety_validator import validate_prompt
+        from system_learning.engines.prompt_safety_validator import (
+        from system_learning.engines.prompt_safety_validator import (
+        from system_learning.engines.prompt_safety_validator import (
+        from system_learning.engines.prompt_safety_validator import (
+        from system_learning.types.prompt_adg_relations import (
+        from system_learning.engines.prompt_safety_validator import validate_prompt
+        from system_learning.engines.prompt_safety_validator import validate_prompt
+        from system_learning.engines.prompt_safety_validator import (
+        from system_learning.engines.prompt_execution_tracer import trace_execution
+        from system_learning.engines.prompt_execution_tracer import trace_execution
+        from system_learning.engines.prompt_execution_tracer import trace_execution
+        from system_learning.engines.prompt_execution_tracer import trace_execution
+        from system_learning.engines.prompt_execution_tracer import trace_execution
+        from system_learning.engines.prompt_execution_tracer import trace_execution
+        from system_learning.engines.prompt_execution_tracer import trace_execution
+        from system_learning.types.prompt_adg_relations import OUTCOME_PRODUCED_ANSWER
+        from system_learning.engines.prompt_execution_tracer import trace_execution
+        from system_learning.types.prompt_adg_relations import (
+        from system_learning.engines.prompt_execution_tracer import trace_execution
+        from system_learning.types.prompt_adg_relations import OUTCOME_TRIGGERED_HEALER
+        from system_learning.engines.prompt_execution_tracer import trace_execution
+        from system_learning.types.prompt_adg_relations import (
+        from system_learning.engines.prompt_execution_tracer import trace_execution
+        from system_learning.types.prompt_adg_relations import RETRIEVAL_USES_CHUNK
+        from system_learning.engines.prompt_execution_tracer import trace_execution
+        from system_learning.engines.prompt_execution_tracer import trace_execution
+        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+        from system_learning.types.prompt_adg_relations import DRIFT_VERSION_REPLACED_BY
+        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+        from system_learning.types.prompt_adg_relations import DRIFT_VERSION_REPLACED_BY
+        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+        from system_learning.engines.prompt_drift_detector import PromptDriftDetector
+        from system_learning.types.prompt_adg_relations import DRIFT_TEMPLATE_SUPERSEDED
+        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+        from system_learning.types.prompt_adg_relations import DRIFT_REGRESSION_DETECTED
+        from system_learning.engines.prompt_drift_detector import (
+        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcomes_to_records
+        from system_learning.engines.prompt_outcome_bus_adapter import PromptOutcomeBusAdapter
+#  # MOVED: from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
 
         req = _make_build_request()
         result = build_compiled_prompt(req)
@@ -319,13 +403,13 @@ class TestPromptProvenanceBuilder:
         assert len(result.adg_relations) > 0
 
     def test_artifact_adg_entity_starts_with_adg(self):
-        from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
+#  # MOVED: from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
 
         result = build_compiled_prompt(_make_build_request())
         assert result.artifact.adg_entity_name.startswith("ADG::")
 
     def test_all_relations_have_adg_from_and_to(self):
-        from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
+#  # MOVED: from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
 
         result = build_compiled_prompt(_make_build_request())
         for frm, rel, to in result.adg_relations:
@@ -336,8 +420,8 @@ class TestPromptProvenanceBuilder:
             assert to.startswith("ADG::"), f"To entity {to!r} doesn't start with ADG::"
 
     def test_slot_provenance_relations_emitted(self):
-        from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
-        from system_learning.types.prompt_adg_relations import (
+#  # MOVED: from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
+#  # MOVED: from system_learning.types.prompt_adg_relations import (
             PROVENANCE_CONTAINS_U0_INPUT,
             PROVENANCE_USES_C0_CONTEXT,
             PROVENANCE_USES_D0_FENCE,
@@ -354,8 +438,8 @@ class TestPromptProvenanceBuilder:
         assert PROVENANCE_CONTAINS_U0_INPUT in rel_types
 
     def test_template_used_by_relation_emitted(self):
-        from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
-        from system_learning.types.prompt_adg_relations import PROVENANCE_TEMPLATE_USED_BY
+#  # MOVED: from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
+#  # MOVED: from system_learning.types.prompt_adg_relations import PROVENANCE_TEMPLATE_USED_BY
 
         result = build_compiled_prompt(_make_build_request(template_ids=("tmpl-A",)))
         rels = [(f, r, t) for (f, r, t) in result.adg_relations if r == PROVENANCE_TEMPLATE_USED_BY]
@@ -363,28 +447,28 @@ class TestPromptProvenanceBuilder:
         assert rels[0][0] == "tmpl-A"
 
     def test_fewshot_used_by_relation_emitted_for_each_id(self):
-        from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
-        from system_learning.types.prompt_adg_relations import PROVENANCE_FEWSHOT_USED_BY
+#  # MOVED: from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
+#  # MOVED: from system_learning.types.prompt_adg_relations import PROVENANCE_FEWSHOT_USED_BY
 
         result = build_compiled_prompt(_make_build_request(fewshot_ids=("fs-1", "fs-2", "fs-3")))
         fs_rels = [(f, r, t) for (f, r, t) in result.adg_relations if r == PROVENANCE_FEWSHOT_USED_BY]
         assert len(fs_rels) == 3
 
     def test_budget_token_profile_relation_emitted(self):
-        from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
-        from system_learning.types.prompt_adg_relations import BUDGET_TOKEN_PROFILE
+#  # MOVED: from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
+#  # MOVED: from system_learning.types.prompt_adg_relations import BUDGET_TOKEN_PROFILE
 
         result = build_compiled_prompt(_make_build_request())
         rel_types = {r for (_, r, _) in result.adg_relations}
         assert BUDGET_TOKEN_PROFILE in rel_types
 
     def test_overflow_budget_emits_exceeded_relation(self):
-        from system_learning.engines.prompt_provenance_builder import (
+#  # MOVED: from system_learning.engines.prompt_provenance_builder import (
             PromptBuildRequest,
             PromptProvenanceBuilder,
             SlotPayload,
         )
-        from system_learning.types.prompt_adg_relations import BUDGET_EXCEEDED
+#  # MOVED: from system_learning.types.prompt_adg_relations import BUDGET_EXCEEDED
 
         # Use custom tokenizer that always returns 3000 per slot → total 15000 > 8192
         builder = PromptProvenanceBuilder(tokenizer=lambda _: 3000)
@@ -408,12 +492,12 @@ class TestPromptProvenanceBuilder:
         assert result.artifact.slot_manifest.budget_class == "OVERFLOW"
 
     def test_compact_budget_no_truncated_or_exceeded(self):
-        from system_learning.engines.prompt_provenance_builder import (
+#  # MOVED: from system_learning.engines.prompt_provenance_builder import (
             PromptBuildRequest,
             PromptProvenanceBuilder,
             SlotPayload,
         )
-        from system_learning.types.prompt_adg_relations import BUDGET_EXCEEDED, BUDGET_TRUNCATED
+#  # MOVED: from system_learning.types.prompt_adg_relations import BUDGET_EXCEEDED, BUDGET_TRUNCATED
 
         builder = PromptProvenanceBuilder(tokenizer=lambda _: 10)
         req = PromptBuildRequest(
@@ -437,7 +521,7 @@ class TestPromptProvenanceBuilder:
         assert result.artifact.slot_manifest.budget_class == "COMPACT"
 
     def test_same_request_twice_same_artifact_hash(self):
-        from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
+#  # MOVED: from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
 
         req = _make_build_request()
         r1 = build_compiled_prompt(req)
@@ -445,14 +529,14 @@ class TestPromptProvenanceBuilder:
         assert r1.artifact.stable_hash() == r2.artifact.stable_hash()
 
     def test_different_s0_content_different_prompt_hash(self):
-        from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
+#  # MOVED: from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
 
         r1 = build_compiled_prompt(_make_build_request(s0="Role A"))
         r2 = build_compiled_prompt(_make_build_request(s0="Role B"))
         assert r1.artifact.prompt_hash != r2.artifact.prompt_hash
 
     def test_c0_source_ids_merged_with_c0_hash(self):
-        from system_learning.engines.prompt_provenance_builder import (
+#  # MOVED: from system_learning.engines.prompt_provenance_builder import (
             PromptBuildRequest,
             SlotPayload,
             build_compiled_prompt,
@@ -485,7 +569,7 @@ class TestPromptProvenanceBuilder:
 
 class TestPromptSafetyValidator:
     def test_no_config_allows_any_artifact(self):
-        from system_learning.engines.prompt_safety_validator import validate_prompt
+#  # MOVED: from system_learning.engines.prompt_safety_validator import validate_prompt
 
         artifact = _make_artifact()
         decision, rels = validate_prompt(artifact, _TS)
@@ -493,7 +577,7 @@ class TestPromptSafetyValidator:
         assert decision.adg_relation == "compiled_prompt_allowed"
 
     def test_policy_mismatch_blocks(self):
-        from system_learning.engines.prompt_safety_validator import (
+#  # MOVED: from system_learning.engines.prompt_safety_validator import (
             PromptSafetyValidator,
             SafetyValidatorConfig,
         )
@@ -506,7 +590,7 @@ class TestPromptSafetyValidator:
         assert "POLICY_HASH_MISMATCH" in decision.denial_reasons
 
     def test_policy_match_allows(self):
-        from system_learning.engines.prompt_safety_validator import (
+#  # MOVED: from system_learning.engines.prompt_safety_validator import (
             PromptSafetyValidator,
             SafetyValidatorConfig,
         )
@@ -533,7 +617,7 @@ class TestPromptSafetyValidator:
     # TODO: Add workflow step assertions
 
     def test_extended_budget_blocked_when_configured(self):
-        from system_learning.engines.prompt_safety_validator import (
+#  # MOVED: from system_learning.engines.prompt_safety_validator import (
             PromptSafetyValidator,
             SafetyValidatorConfig,
         )
@@ -545,10 +629,10 @@ class TestPromptSafetyValidator:
         assert "BUDGET_EXTENDED_BLOCKED" in decision.denial_reasons
 
     def test_all_5_safety_relations_emitted(self):
-        from system_learning.engines.prompt_safety_validator import (
+#  # MOVED: from system_learning.engines.prompt_safety_validator import (
             PromptSafetyValidator,
         )
-        from system_learning.types.prompt_adg_relations import (
+#  # MOVED: from system_learning.types.prompt_adg_relations import (
             SAFETY_ALLOWED,
             SAFETY_BLOCKED,
             SAFETY_BUDGET_CHECKED,
@@ -565,7 +649,7 @@ class TestPromptSafetyValidator:
         assert (SAFETY_ALLOWED if decision.allowed else SAFETY_BLOCKED) in rel_types
 
     def test_decision_id_deterministic(self):
-        from system_learning.engines.prompt_safety_validator import validate_prompt
+#  # MOVED: from system_learning.engines.prompt_safety_validator import validate_prompt
 
         artifact = _make_artifact()
         d1, _ = validate_prompt(artifact, _TS)
@@ -573,7 +657,7 @@ class TestPromptSafetyValidator:
         assert d1.decision_id == d2.decision_id
 
     def test_blocked_uses_blocked_adg_relation(self):
-        from system_learning.engines.prompt_safety_validator import validate_prompt
+#  # MOVED: from system_learning.engines.prompt_safety_validator import validate_prompt
 
         artifact = _make_artifact(budget_class="OVERFLOW", total_tokens=9999)
         decision, rels = validate_prompt(artifact, _TS)
@@ -582,7 +666,7 @@ class TestPromptSafetyValidator:
         assert len(blocked_rels) == 1
 
     def test_policy_mismatch_warning_only_when_configured(self):
-        from system_learning.engines.prompt_safety_validator import (
+#  # MOVED: from system_learning.engines.prompt_safety_validator import (
             PromptSafetyValidator,
             SafetyValidatorConfig,
         )
@@ -618,7 +702,7 @@ class TestPromptExecutionTracer:
         return base
 
     def test_trace_produces_execution_and_outcome_record(self):
-        from system_learning.engines.prompt_execution_tracer import trace_execution
+#  # MOVED: from system_learning.engines.prompt_execution_tracer import trace_execution
 
         result = trace_execution(_H64, "tr-001", self._signal(), _TS)
         assert result.execution_record.trace_id == "tr-001"
@@ -626,13 +710,13 @@ class TestPromptExecutionTracer:
         assert result.outcome_record.final_outcome == "SUCCESS"
 
     def test_success_outcome_from_success_signal(self):
-        from system_learning.engines.prompt_execution_tracer import trace_execution
+#  # MOVED: from system_learning.engines.prompt_execution_tracer import trace_execution
 
         result = trace_execution(_H64, "tr-001", self._signal(success=True), _TS)
         assert result.outcome_record.final_outcome == "SUCCESS"
 
     def test_escalated_outcome_from_hitl_flag(self):
-        from system_learning.engines.prompt_execution_tracer import trace_execution
+#  # MOVED: from system_learning.engines.prompt_execution_tracer import trace_execution
 
         result = trace_execution(
             _H64,
@@ -647,7 +731,7 @@ class TestPromptExecutionTracer:
         assert result.outcome_record.hitl_escalation is True
 
     def test_replay_failure_outcome(self):
-        from system_learning.engines.prompt_execution_tracer import trace_execution
+#  # MOVED: from system_learning.engines.prompt_execution_tracer import trace_execution
 
         result = trace_execution(
             _H64,
@@ -662,7 +746,7 @@ class TestPromptExecutionTracer:
         assert result.outcome_record.replay_status == "FAILED"
 
     def test_healed_success_outcome(self):
-        from system_learning.engines.prompt_execution_tracer import trace_execution
+#  # MOVED: from system_learning.engines.prompt_execution_tracer import trace_execution
 
         result = trace_execution(
             _H64,
@@ -678,7 +762,7 @@ class TestPromptExecutionTracer:
         assert result.outcome_record.healer_invoked is True
 
     def test_replay_passed_status(self):
-        from system_learning.engines.prompt_execution_tracer import trace_execution
+#  # MOVED: from system_learning.engines.prompt_execution_tracer import trace_execution
 
         result = trace_execution(
             _H64,
@@ -705,16 +789,16 @@ class TestPromptExecutionTracer:
     assert isinstance(result, object), "Result should be an object"
     # TODO: Add specific runtime behavior assertions
     def test_outcome_produced_answer_for_success(self):
-        from system_learning.engines.prompt_execution_tracer import trace_execution
-        from system_learning.types.prompt_adg_relations import OUTCOME_PRODUCED_ANSWER
+#  # MOVED: from system_learning.engines.prompt_execution_tracer import trace_execution
+#  # MOVED: from system_learning.types.prompt_adg_relations import OUTCOME_PRODUCED_ANSWER
 
         result = trace_execution(_H64, "tr-007", self._signal(success=True), _TS)
         rel_types = {r for (_, r, _) in result.adg_relations}
         assert OUTCOME_PRODUCED_ANSWER in rel_types
 
     def test_hitl_escalation_emits_hitl_relations(self):
-        from system_learning.engines.prompt_execution_tracer import trace_execution
-        from system_learning.types.prompt_adg_relations import (
+#  # MOVED: from system_learning.engines.prompt_execution_tracer import trace_execution
+#  # MOVED: from system_learning.types.prompt_adg_relations import (
             HITL_CAUSED_ESCALATION,
             OUTCOME_ESCALATED_HITL,
         )
@@ -732,8 +816,8 @@ class TestPromptExecutionTracer:
         assert HITL_CAUSED_ESCALATION in rel_types
 
     def test_healer_triggers_healer_relation(self):
-        from system_learning.engines.prompt_execution_tracer import trace_execution
-        from system_learning.types.prompt_adg_relations import OUTCOME_TRIGGERED_HEALER
+#  # MOVED: from system_learning.engines.prompt_execution_tracer import trace_execution
+#  # MOVED: from system_learning.types.prompt_adg_relations import OUTCOME_TRIGGERED_HEALER
 
         result = trace_execution(
             _H64,
@@ -750,8 +834,8 @@ class TestPromptExecutionTracer:
         assert OUTCOME_TRIGGERED_HEALER in rel_types
 
     def test_retrieval_relations_emitted(self):
-        from system_learning.engines.prompt_execution_tracer import trace_execution
-        from system_learning.types.prompt_adg_relations import (
+#  # MOVED: from system_learning.engines.prompt_execution_tracer import trace_execution
+#  # MOVED: from system_learning.types.prompt_adg_relations import (
             RETRIEVAL_RETRIEVES_VIA,
             RETRIEVAL_SCORES_GROUNDEDNESS,
         )
@@ -762,8 +846,8 @@ class TestPromptExecutionTracer:
         assert RETRIEVAL_SCORES_GROUNDEDNESS in rel_types
 
     def test_chunk_ids_emit_uses_chunk_relations(self):
-        from system_learning.engines.prompt_execution_tracer import trace_execution
-        from system_learning.types.prompt_adg_relations import RETRIEVAL_USES_CHUNK
+#  # MOVED: from system_learning.engines.prompt_execution_tracer import trace_execution
+#  # MOVED: from system_learning.types.prompt_adg_relations import RETRIEVAL_USES_CHUNK
 
         result = trace_execution(
             _H64,
@@ -777,13 +861,13 @@ class TestPromptExecutionTracer:
         assert len(chunk_rels) == 3
 
     def test_empty_signal_produces_unknown_outcome(self):
-        from system_learning.engines.prompt_execution_tracer import trace_execution
+#  # MOVED: from system_learning.engines.prompt_execution_tracer import trace_execution
 
         result = trace_execution(_H64, "tr-012", {}, _TS)
         assert result.outcome_record.final_outcome == "UNKNOWN"
 
     def test_failure_slot_guardrail_hits_maps_to_d0(self):
-        from system_learning.engines.prompt_execution_tracer import trace_execution
+#  # MOVED: from system_learning.engines.prompt_execution_tracer import trace_execution
 
         result = trace_execution(
             _H64,
@@ -837,7 +921,7 @@ assert isinstance(result, object), "Result should be an object"
         return records
 
     def test_no_drift_produces_no_signals(self):
-        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+#  # MOVED: from system_learning.engines.prompt_drift_detector import detect_prompt_drift
 
         baseline = self._make_window(20, hitl_rate=0.1, gnd=0.8)
         current = self._make_window(20, hitl_rate=0.1, gnd=0.8)
@@ -848,7 +932,7 @@ assert isinstance(result, object), "Result should be an object"
         assert "GROUNDEDNESS_DROP" not in sig_types
 
     def test_groundedness_drop_detected(self):
-        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+#  # MOVED: from system_learning.engines.prompt_drift_detector import detect_prompt_drift
 
         baseline = self._make_window(20, gnd=0.9)
         current = self._make_window(20, gnd=0.7)
@@ -857,7 +941,7 @@ assert isinstance(result, object), "Result should be an object"
         assert "GROUNDEDNESS_DROP" in drift_types
 
     def test_escalation_increase_detected(self):
-        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+#  # MOVED: from system_learning.engines.prompt_drift_detector import detect_prompt_drift
 
         baseline = self._make_window(20, hitl_rate=0.0)
         current = self._make_window(20, hitl_rate=0.4)
@@ -866,7 +950,7 @@ assert isinstance(result, object), "Result should be an object"
         assert "ESCALATION_RATE_INCREASE" in drift_types
 
     def test_replay_instability_detected(self):
-        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+#  # MOVED: from system_learning.engines.prompt_drift_detector import detect_prompt_drift
 
         baseline = self._make_window(20, replay_fail_rate=0.0)
         current = self._make_window(20, replay_fail_rate=0.4)
@@ -875,7 +959,7 @@ assert isinstance(result, object), "Result should be an object"
         assert "REPLAY_INSTABILITY" in drift_types
 
     def test_guardrail_violation_increase_detected(self):
-        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+#  # MOVED: from system_learning.engines.prompt_drift_detector import detect_prompt_drift
 
         baseline = self._make_window(20, guard_hit_rate=0.0)
         current = self._make_window(20, guard_hit_rate=0.5)
@@ -884,7 +968,7 @@ assert isinstance(result, object), "Result should be an object"
         assert "GUARDRAIL_VIOLATION_INCREASE" in drift_types
 
     def test_improvement_detected_when_groundedness_rises(self):
-        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+#  # MOVED: from system_learning.engines.prompt_drift_detector import detect_prompt_drift
 
         baseline = self._make_window(20, gnd=0.5)
         current = self._make_window(20, gnd=0.9)
@@ -893,15 +977,15 @@ assert isinstance(result, object), "Result should be an object"
         assert "IMPROVEMENT_DETECTED" in drift_types
 
     def test_empty_current_window_produces_no_signals(self):
-        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+#  # MOVED: from system_learning.engines.prompt_drift_detector import detect_prompt_drift
 
         baseline = self._make_window(10)
         signals = detect_prompt_drift(baseline, [], _H64, _H64b, _TS)
         assert signals == []
 
     def test_version_replaced_by_emitted_when_hashes_differ(self):
-        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
-        from system_learning.types.prompt_adg_relations import DRIFT_VERSION_REPLACED_BY
+#  # MOVED: from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+#  # MOVED: from system_learning.types.prompt_adg_relations import DRIFT_VERSION_REPLACED_BY
 
         baseline = self._make_window(5, gnd=0.8)
         current = self._make_window(5, gnd=0.8)
@@ -910,8 +994,8 @@ assert isinstance(result, object), "Result should be an object"
         assert DRIFT_VERSION_REPLACED_BY in rel_types
 
     def test_no_version_replaced_by_when_same_hash(self):
-        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
-        from system_learning.types.prompt_adg_relations import DRIFT_VERSION_REPLACED_BY
+#  # MOVED: from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+#  # MOVED: from system_learning.types.prompt_adg_relations import DRIFT_VERSION_REPLACED_BY
 
         baseline = self._make_window(5, gnd=0.8)
         current = self._make_window(5, gnd=0.8)
@@ -920,7 +1004,7 @@ assert isinstance(result, object), "Result should be an object"
         assert DRIFT_VERSION_REPLACED_BY not in rel_types
 
     def test_signal_ids_deterministic(self):
-        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+#  # MOVED: from system_learning.engines.prompt_drift_detector import detect_prompt_drift
 
         baseline = self._make_window(10, gnd=0.9)
         current = self._make_window(10, gnd=0.7)
@@ -929,16 +1013,16 @@ assert isinstance(result, object), "Result should be an object"
         assert [s.signal_id for s in s1] == [s.signal_id for s in s2]
 
     def test_template_supersession_emits_correct_relation(self):
-        from system_learning.engines.prompt_drift_detector import PromptDriftDetector
-        from system_learning.types.prompt_adg_relations import DRIFT_TEMPLATE_SUPERSEDED
+#  # MOVED: from system_learning.engines.prompt_drift_detector import PromptDriftDetector
+#  # MOVED: from system_learning.types.prompt_adg_relations import DRIFT_TEMPLATE_SUPERSEDED
 
         detector = PromptDriftDetector()
         sig = detector.detect_template_supersession(_H64, _H64b, _TS)
         assert sig.adg_relation == DRIFT_TEMPLATE_SUPERSEDED
 
     def test_regression_signals_use_regression_adg_relation(self):
-        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
-        from system_learning.types.prompt_adg_relations import DRIFT_REGRESSION_DETECTED
+#  # MOVED: from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+#  # MOVED: from system_learning.types.prompt_adg_relations import DRIFT_REGRESSION_DETECTED
 
         baseline = self._make_window(20, gnd=0.9)
         current = self._make_window(20, gnd=0.7)
@@ -947,7 +1031,7 @@ assert isinstance(result, object), "Result should be an object"
         assert len(regression_sigs) >= 1
 
     def test_custom_threshold_filters_small_changes(self):
-        from system_learning.engines.prompt_drift_detector import (
+#  # MOVED: from system_learning.engines.prompt_drift_detector import (
             DriftDetectorConfig,
             PromptDriftDetector,
         )
@@ -969,7 +1053,7 @@ assert isinstance(result, object), "Result should be an object"
 
 class TestPromptOutcomeBusAdapter:
     def test_convert_success_outcome(self):
-        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+#  # MOVED: from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
 
         outcome = _make_outcome_record(final_outcome="SUCCESS", groundedness=0.9)
         record = convert_outcome_to_record(outcome)
@@ -977,77 +1061,77 @@ class TestPromptOutcomeBusAdapter:
         assert record.retrieval_groundedness == 0.9
 
     def test_escalated_maps_to_human_override(self):
-        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+#  # MOVED: from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
 
         outcome = _make_outcome_record(final_outcome="ESCALATED", hitl=True)
         record = convert_outcome_to_record(outcome)
         assert record.outcome_class == "HUMAN_OVERRIDE"
 
     def test_replay_failure_maps_correctly(self):
-        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+#  # MOVED: from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
 
         outcome = _make_outcome_record(final_outcome="REPLAY_FAILURE", replay_status="FAILED")
         record = convert_outcome_to_record(outcome)
         assert record.outcome_class == "REPLAY_FAILURE"
 
     def test_failure_slot_s0_adds_policy_edge(self):
-        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+#  # MOVED: from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
 
         outcome = _make_outcome_record(final_outcome="SAFE_FAILURE", failure_slot="S0")
         record = convert_outcome_to_record(outcome)
         assert "prompt_slot_S0_failure" in record.policy_edges
 
     def test_failure_slot_c0_adds_policy_edge(self):
-        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+#  # MOVED: from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
 
         outcome = _make_outcome_record(final_outcome="SAFE_FAILURE", failure_slot="C0")
         record = convert_outcome_to_record(outcome)
         assert "prompt_slot_C0_failure" in record.policy_edges
 
     def test_failure_slot_none_no_policy_edge(self):
-        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+#  # MOVED: from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
 
         outcome = _make_outcome_record(final_outcome="SUCCESS", failure_slot="NONE")
         record = convert_outcome_to_record(outcome)
         assert len(record.policy_edges) == 0
 
     def test_high_groundedness_maps_to_rag_bge(self):
-        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+#  # MOVED: from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
 
         outcome = _make_outcome_record(groundedness=0.85)
         record = convert_outcome_to_record(outcome)
         assert record.retrieval_pattern == "RAG_BGE"
 
     def test_low_groundedness_maps_to_low_confidence(self):
-        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+#  # MOVED: from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
 
         outcome = _make_outcome_record(groundedness=0.2)
         record = convert_outcome_to_record(outcome)
         assert record.retrieval_pattern == "LOW_CONFIDENCE_RETRIEVAL"
 
     def test_mid_groundedness_maps_to_rag_mixed(self):
-        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+#  # MOVED: from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
 
         outcome = _make_outcome_record(groundedness=0.55)
         record = convert_outcome_to_record(outcome)
         assert record.retrieval_pattern == "RAG_MIXED"
 
     def test_healer_id_propagated(self):
-        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+#  # MOVED: from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
 
         outcome = _make_outcome_record(final_outcome="HEALED_SUCCESS", healer=True, healer_id="healer_X")
         record = convert_outcome_to_record(outcome)
         assert record.healer_used == "healer_X"
 
     def test_hitl_escalation_propagated(self):
-        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+#  # MOVED: from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
 
         outcome = _make_outcome_record(final_outcome="ESCALATED", hitl=True)
         record = convert_outcome_to_record(outcome)
         assert record.hitl_escalation is True
 
     def test_guardrail_hits_propagated(self):
-        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+#  # MOVED: from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
 
         outcome = _make_outcome_record(guardrail_hits=("g1", "g2"))
         record = convert_outcome_to_record(outcome)
@@ -1055,7 +1139,7 @@ class TestPromptOutcomeBusAdapter:
         assert "g2" in record.guardrail_edges
 
     def test_record_id_deterministic(self):
-        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+#  # MOVED: from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
 
         outcome = _make_outcome_record()
         r1 = convert_outcome_to_record(outcome)
@@ -1063,14 +1147,14 @@ class TestPromptOutcomeBusAdapter:
         assert r1.record_id == r2.record_id
 
     def test_feature_bundle_hash_matches_outcome_stable_hash(self):
-        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+#  # MOVED: from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
 
         outcome = _make_outcome_record()
         record = convert_outcome_to_record(outcome)
         assert record.feature_bundle_hash == outcome.stable_hash()
 
     def test_batch_sorted_by_record_id(self):
-        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcomes_to_records
+#  # MOVED: from system_learning.engines.prompt_outcome_bus_adapter import convert_outcomes_to_records
 
         outcomes = [_make_outcome_record(trace_id=f"tr-{i:03d}") for i in range(10)]
         records = convert_outcomes_to_records(outcomes)
@@ -1078,7 +1162,7 @@ class TestPromptOutcomeBusAdapter:
         assert ids == sorted(ids)
 
     def test_batch_skip_conversion_error_silently(self):
-        from system_learning.engines.prompt_outcome_bus_adapter import PromptOutcomeBusAdapter
+#  # MOVED: from system_learning.engines.prompt_outcome_bus_adapter import PromptOutcomeBusAdapter
 
         adapter = PromptOutcomeBusAdapter()
         valid = _make_outcome_record(trace_id="tr-v")

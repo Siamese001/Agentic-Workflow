@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -54,7 +54,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_hardening_mixin_adg", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_hardening_mixin_adg", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_hardening_mixin_adg", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -170,7 +170,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 pytestmark = pytest.mark.unit
 
 try:
-    from agentic_core.mixins.hardening_mixin import HardeningMixin, TokenLimitError
+#  # MOVED: from agentic_core.mixins.hardening_mixin import HardeningMixin, TokenLimitError
 
 except (ValueError, TypeError, RuntimeError) as e:
 
@@ -180,6 +180,9 @@ except (ValueError, TypeError, RuntimeError) as e:
 
 class TestTokenLimitError:
     def test_is_exception(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.mixins.hardening_mixin import HardeningMixin, TokenLimitError
         assert issubclass(TokenLimitError, Exception)
 
     def test_can_be_raised(self):

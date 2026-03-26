@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-import agentic_core.mixins.autonomy_mixin as _autonomy_mixin_mod  # noqa: F401
+#  # MOVED: import agentic_core.mixins.autonomy_mixin as _autonomy_mixin_mod  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.mixins.autonomy_mixin as _autonomy_mixin_mod  # noqa: F401
     """Module must be importable."""
     assert _autonomy_mixin_mod.__name__ == "agentic_core.mixins.autonomy_mixin"
 

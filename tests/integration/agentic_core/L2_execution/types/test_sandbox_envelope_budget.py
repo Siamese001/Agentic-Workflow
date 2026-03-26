@@ -2,7 +2,7 @@
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -86,15 +86,15 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 pytestmark = pytest.mark.unit_min_deps
 
 """Regression: SandboxEnvelope must carry ToolBudget in signable surface."""
-from agentic_core.L2_execution.enforcement.key_source import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.key_source import (
     TestKeySource,
     inject_key_source,
 )
-from agentic_core.L2_execution.types.sandbox_envelope_types import (
+#  # MOVED: from agentic_core.L2_execution.types.sandbox_envelope_types import (
     SandboxEnvelope,
     ToolBudget,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -193,6 +193,10 @@ def _make_env(**kwargs) -> SandboxEnvelope:
 
 
 def test_default_budget_present():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.enforcement.key_source import (
+    from agentic_core.L2_execution.types.sandbox_envelope_types import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test default_budget_present runtime behavior."""
 # Arrange
 # TODO: Set up test data for default_budget_present

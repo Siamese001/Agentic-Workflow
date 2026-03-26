@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -96,7 +96,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L2_execution.types.vllm_serving_profile_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_serving_profile_types import (
     GPU_MEMORY_UTILIZATION,
     GPU_VRAM_GB,
     LOCAL_FAST_7B_MAX_MODEL_LEN,
@@ -115,7 +115,7 @@ from agentic_core.L2_execution.types.vllm_serving_profile_types import (
     assert_no_simultaneous_increase,
     get_profile,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -211,6 +211,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 
 def test_local_fast_7b_model_id():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.types.vllm_serving_profile_types import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test local_fast_7b_model_id runtime behavior."""
 # Arrange
 # TODO: Set up test data for local_fast_7b_model_id

@@ -5,11 +5,12 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L2_execution.types.token_enforcement_types import TokenEnforcementOutcome
+#  # MOVED: from agentic_core.L2_execution.types.token_enforcement_types import TokenEnforcementOutcome
 
 
 class TestTokenEnforcementOutcome:
     def test_is_enum(self):
+        from agentic_core.L2_execution.types.token_enforcement_types import TokenEnforcementOutcome
     """Test is_enum runtime behavior."""
     # Arrange
     # TODO: Set up test data for is_enum

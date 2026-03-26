@@ -13,8 +13,8 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.adg.adapters.ADGMemoryAdapter import ADGMemoryAdapter, _infer_layer
-from agentic_core.cache.namespace_builder import (
+#  # MOVED: from agentic_core.adg.adapters.ADGMemoryAdapter import ADGMemoryAdapter, _infer_layer
+#  # MOVED: from agentic_core.cache.namespace_builder import (
     NS,
     build_global_key,
     build_key,
@@ -22,7 +22,7 @@ from agentic_core.cache.namespace_builder import (
     key_prefix,
     parse_key,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -69,7 +69,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_memory_mcp_adapter", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_memory_mcp_adapter", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_memory_mcp_adapter", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -189,6 +189,13 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestInferLayer:
     def test_l4_path(self):
+        from agentic_core.adg.adapters.ADGMemoryAdapter import ADGMemoryAdapter, _infer_layer
+        from agentic_core.cache.namespace_builder import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+        from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+        from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
         assert _infer_layer("agentic_core/L4_state/memory/semantic_cache_manager.py") == "L4"
 
     def test_l0_path(self):
@@ -441,7 +448,7 @@ class TestADGMemoryAdapter:
         import sqlite3
         from dataclasses import dataclass, field
 
-        from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+#  # MOVED: from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
 
         db = tmp_path / "kg_adapter_test.sqlite"
         monkeypatch.setenv("MEMORY_DB", str(db))
@@ -486,7 +493,7 @@ class TestADGMemoryAdapter:
         import sqlite3
         from dataclasses import dataclass, field
 
-        from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+#  # MOVED: from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
 
         db = tmp_path / "kg_snapshot_test.sqlite"
         monkeypatch.setenv("MEMORY_DB", str(db))
@@ -525,7 +532,7 @@ class TestADGMemoryAdapter:
         Previously the test checked isinstance(adapter.is_available, bool) which
         passes even when is_available=False (i.e. persistence is completely broken).
         """
-        from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+#  # MOVED: from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
 
         db = tmp_path / "kg_avail_test.sqlite"
         monkeypatch.setenv("MEMORY_DB", str(db))

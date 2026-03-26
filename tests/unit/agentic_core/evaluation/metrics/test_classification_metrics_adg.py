@@ -13,13 +13,13 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.evaluation.metrics.classification import (
+#  # MOVED: from agentic_core.evaluation.metrics.classification import (
     BinaryClassificationMetric,
     ConfusionMatrix,
     MultiClassF1Metric,
 )
-from agentic_core.evaluation.metrics.f1_score import F1Score
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.evaluation.metrics.f1_score import F1Score
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -66,7 +66,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_classification_metrics_adg", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_classification_metrics_adg", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_classification_metrics_adg", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -189,6 +189,14 @@ class TestConfusionMatrix:
         return ConfusionMatrix(tp=tp, fp=fp, tn=tn, fn=fn)
 
     def test_precision_all_correct(self):
+        from agentic_core.evaluation.metrics.classification import (
+        from agentic_core.evaluation.metrics.f1_score import F1Score
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.evaluation.metrics.base import ClassificationMetric
+        from agentic_core.evaluation.metrics.base import ClassificationMetric
+        from agentic_core.evaluation.metrics.base import ClassificationMetric
+        from agentic_core.evaluation.metrics.base import EvaluationMetric
         cm = self._cm(tp=5, fp=0, tn=3, fn=2)
         assert cm.precision() == 1.0
 
@@ -511,21 +519,21 @@ class TestMultiClassF1Metric:
 
 class TestClassificationMetricABC:
     def test_binary_metric_is_classification_metric(self):
-        from agentic_core.evaluation.metrics.base import ClassificationMetric
+#  # MOVED: from agentic_core.evaluation.metrics.base import ClassificationMetric
 
         assert isinstance(BinaryClassificationMetric(), ClassificationMetric)
 
     def test_multiclass_metric_is_classification_metric(self):
-        from agentic_core.evaluation.metrics.base import ClassificationMetric
+#  # MOVED: from agentic_core.evaluation.metrics.base import ClassificationMetric
 
         assert isinstance(MultiClassF1Metric(), ClassificationMetric)
 
     def test_f1score_is_classification_metric(self):
-        from agentic_core.evaluation.metrics.base import ClassificationMetric
+#  # MOVED: from agentic_core.evaluation.metrics.base import ClassificationMetric
 
         assert isinstance(F1Score(), ClassificationMetric)
 
     def test_f1score_is_evaluation_metric(self):
-        from agentic_core.evaluation.metrics.base import EvaluationMetric
+#  # MOVED: from agentic_core.evaluation.metrics.base import EvaluationMetric
 
         assert isinstance(F1Score(), EvaluationMetric)

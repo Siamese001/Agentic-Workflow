@@ -26,10 +26,10 @@ import os
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -104,7 +104,7 @@ os.environ.setdefault("AGENTIC_BYPASS_LONGPATHS_CHECK", "1")
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L0_routing.scripts.execute_ssot import (  # noqa: E402
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import (  # noqa: E402
     _QWEN_DISALLOWED,
     _STRUCTURAL_CLASS,
     AutonomousDecisionEngine,
@@ -114,7 +114,7 @@ from agentic_core.L0_routing.scripts.execute_ssot import (  # noqa: E402
     RoutingTier,
     compute_routing_decision,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -229,6 +229,10 @@ def _score(C=0, B=0, A=0, N=0, F=0, playbook_match=False) -> int:
 
 class TestGate0Replay:
     def test_replay_always_deterministic(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.scripts.execute_ssot import (  # noqa: E402
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         ri = _ri(
             failure_type=FailureType.LAYER_VIOLATION, replay_mode=True, C=3, B=3, A=3, F=3, retry_count=5
         )

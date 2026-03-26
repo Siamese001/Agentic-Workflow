@@ -5,12 +5,12 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L2_execution.sandbox.boundary_validator import (
+#  # MOVED: from agentic_core.L2_execution.sandbox.boundary_validator import (
     compute_boundary_diff,
     verify_mutation_replay_integrity,
 )
-from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -157,6 +157,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestComputeBoundaryDiff:
     def test_no_changes_returns_empty_diff(self):
+        from agentic_core.L2_execution.sandbox.boundary_validator import (
+        from agentic_core.L5_safety.types.hardening_errors import MutationReplayIntegrityViolation
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         pre = {"file_a": "v1", "file_b": "v2"}
         post = {"file_a": "v1", "file_b": "v2"}
         diff = compute_boundary_diff(pre, post)

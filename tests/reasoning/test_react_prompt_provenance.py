@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -87,8 +87,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L1_cognition.types.react_trace_types import PromptProvenanceRecord
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L1_cognition.types.react_trace_types import PromptProvenanceRecord
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -197,6 +197,9 @@ class TestPromptProvenanceRecord:
         )
 
     def test_build_sets_prompt_hash(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L1_cognition.types.react_trace_types import PromptProvenanceRecord
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         rec = self._make()
         assert rec.prompt_hash != ""
         assert len(rec.prompt_hash) == 64

@@ -5,7 +5,7 @@ Behavioral tests belong in test_ASTValidatorAgent.py (no _adg suffix).
 """
 from __future__ import annotations
 
-from agentic_core.L1_cognition.reasoning.ASTValidatorAgent import (
+#  # MOVED: from agentic_core.L1_cognition.reasoning.ASTValidatorAgent import (
     DEFAULT_SLEEP,
     MAX_RETRIES,
     ASTValidatorAgent,
@@ -17,6 +17,7 @@ from agentic_core.L1_cognition.reasoning.ASTValidatorAgent import (
 
 class TestAstvalidatoragentImportability:
     def test_module_importable(self) -> None:
+        from agentic_core.L1_cognition.reasoning.ASTValidatorAgent import (
         """ADG contract: ASTValidatorAgent.py must be importable."""
 
         pass  # Import verified at module level

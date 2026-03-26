@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
 )
 
@@ -120,6 +120,7 @@ class TestLayerInventory:
     """Test suite for layer inventory and deterministic scanning."""
 
     def test_exactly_seven_layers_exist(self):
+        from agentic_core.L0_routing.config.path_constants import (
         """Assert exactly 7 layers exist (L0–L6)."""
         layers = discover_layers()
         assert layers == [0, 1, 2, 3, 4, 5, 6], f"Expected L0-L6, got {layers}"

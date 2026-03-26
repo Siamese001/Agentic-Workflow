@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L1_cognition.engines.deterministic_context_optimizer  # noqa: F401
+#  # MOVED: import agentic_core.L1_cognition.engines.deterministic_context_optimizer  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L1_cognition.engines.deterministic_context_optimizer  # noqa: F401
     """Module deterministic_context_optimizer must be importable."""
     assert agentic_core.L1_cognition.engines.deterministic_context_optimizer is not None

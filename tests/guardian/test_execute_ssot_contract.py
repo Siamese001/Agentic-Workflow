@@ -17,7 +17,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     L0_ROUTING_DIR,
 )
@@ -47,6 +47,7 @@ class TestDeterministicRepoRoot:
     """execute_ssot.py must never depend on os.getcwd() / Path.cwd() at runtime."""
 
     def test_no_cwd_calls_in_source(self):
+        from agentic_core.L0_routing.config.path_constants import (
     """Test no_cwd_calls_in_source runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

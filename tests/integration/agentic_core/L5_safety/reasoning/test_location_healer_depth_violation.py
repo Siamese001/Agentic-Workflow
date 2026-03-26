@@ -21,7 +21,7 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     TESTS_DIR,
 )
@@ -32,7 +32,7 @@ from agentic_core.L0_routing.config.path_constants import (
 
 
 def _make_agent(project_root: Path):
-    from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
     agent = object.__new__(LocationHealerAgent)
     agent.project_root = project_root
@@ -73,6 +73,8 @@ def _call(agent, file_path, dry_run=False, affected=None, import_touched=None):
 
 class TestDepthAlreadyCorrect:
     def test_depth_already_correct_returns_skipped(self, tmp_path):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
         """Success path: depth == expected → SKIPPED, no I/O."""
         agent = _make_agent(tmp_path)
         # agentic_core/L0_routing/scripts/file.py → depth 3, expected 3

@@ -15,11 +15,11 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     TESTS_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -93,12 +93,12 @@ repo_root = Path(__file__).resolve().parents[2]
 if str(repo_root) not in sys.path:
     sys.path.insert(0, str(repo_root))
 
-from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.mutation_prohibition import (
     SourceMutationBlocked,
     enforce_protected_root,
     get_default_protected_root_policy,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -194,6 +194,11 @@ class TestProtectedRootEnforcement:
     """Test suite for protected root enforcement."""
 
     def test_protected_root_blocks_write_under_agentic_core(self, tmp_path):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        import agentic_core.L0_routing.enforcement.mutation_prohibition as mp
     """Test protected_root_blocks_write_under_agentic_core runtime behavior."""
     # Arrange
     # TODO: Set up test data for protected_root_blocks_write_under_agentic_core
@@ -276,7 +281,7 @@ class TestStartupFenceSelfTest:
 
             try:
                 # Import the patched version
-                import agentic_core.L0_routing.enforcement.mutation_prohibition as mp
+#  # MOVED: import agentic_core.L0_routing.enforcement.mutation_prohibition as mp
 
                 mp.enforce_protected_root(probe_path, allow_override=False)
                 # If we get here, fence is NOT active

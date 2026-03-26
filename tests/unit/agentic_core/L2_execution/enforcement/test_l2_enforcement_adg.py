@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -81,7 +81,7 @@ pytestmark = pytest.mark.unit
 # ---------------------------------------------------------------------------
 # healer_pipe_order
 # ---------------------------------------------------------------------------
-from agentic_core.L2_execution.enforcement.healer_pipe_order import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.healer_pipe_order import (
     enforce_healer_pipe_order,
 )
 
@@ -101,6 +101,10 @@ _CANONICAL_10 = (
 
 class TestHealerPipeOrder:
     def test_enforce_callable(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.enforcement.healer_pipe_order import (
+        from agentic_core.L2_execution.types.tool_enforcement_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test enforce_callable runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters
@@ -154,10 +158,10 @@ assert result is not None, f"{function_name} should return a result"
 assert isinstance(result, object), "Result should be an object"
 # TODO: Add specific runtime behavior assertions
 )
-from agentic_core.L2_execution.types.tool_enforcement_types import (
+#  # MOVED: from agentic_core.L2_execution.types.tool_enforcement_types import (
     LawSlotOutcome,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

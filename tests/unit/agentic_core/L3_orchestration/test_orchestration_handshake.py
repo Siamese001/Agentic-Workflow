@@ -16,17 +16,17 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L3_orchestration.arbitration.arbitration_contract import (
+#  # MOVED: from agentic_core.L3_orchestration.arbitration.arbitration_contract import (
     AdvisorProposal,
     ArbitrationInput,
 )
-from agentic_core.L3_orchestration.arbitration.arbitrator import Arbitrator
-from agentic_core.L3_orchestration.engines.handshake_state_machine import (
+#  # MOVED: from agentic_core.L3_orchestration.arbitration.arbitrator import Arbitrator
+#  # MOVED: from agentic_core.L3_orchestration.engines.handshake_state_machine import (
     HandshakeState,
     HandshakeStateMachine,
     create_handshake_machine,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -218,6 +218,10 @@ def _input_with(*proposals: AdvisorProposal) -> ArbitrationInput:
 class TestHandshakeSuccessPaths:
     @pytest.mark.governance
     def test_initial_state_is_init(self):
+        from agentic_core.L3_orchestration.arbitration.arbitration_contract import (
+        from agentic_core.L3_orchestration.arbitration.arbitrator import Arbitrator
+        from agentic_core.L3_orchestration.engines.handshake_state_machine import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         m = HandshakeStateMachine()
         assert m.current_state == HandshakeState.INIT
 

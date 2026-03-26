@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L4_state.config.vllm_routing_predicates import (  # noqa: F401
+#  # MOVED: from agentic_core.L4_state.config.vllm_routing_predicates import (  # noqa: F401
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,
@@ -28,6 +28,7 @@ from agentic_core.L4_state.config.vllm_routing_predicates import (  # noqa: F401
 
 class TestProviderContract:
     def test_is_enum(self):
+        from agentic_core.L4_state.config.vllm_routing_predicates import (  # noqa: F401
         import enum
         assert issubclass(Provider, enum.Enum)
 

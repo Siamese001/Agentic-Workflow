@@ -19,6 +19,14 @@ sys.path.insert(0, str(project_root))
 
 
 def test_mro_integrity_and_initialization_order():
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+    from agentic_core.mixins.healer_mixin import HealerMixin
     """
     Verifies that:
     1. Root state is initialized BEFORE Mixins run (avoiding AttributeError).
@@ -29,7 +37,7 @@ def test_mro_integrity_and_initialization_order():
 
     from dataclasses import dataclass
 
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     @dataclass
     class TestAgent(SovereignBaseAgent):
@@ -56,7 +64,7 @@ def test_heal_repository_return_type_consistency():
 
     from dataclasses import dataclass
 
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     @dataclass
     class TestAgent(SovereignBaseAgent):
@@ -82,7 +90,7 @@ def test_diamond_inheritance_stability():
 
     from dataclasses import dataclass
 
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     @dataclass
     class DeepWorker(SovereignBaseAgent):
@@ -106,7 +114,7 @@ def test_double_init_prevention():
 
     from dataclasses import dataclass
 
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     init_count = 0
 
@@ -132,7 +140,7 @@ def test_cycle_detection():
 
     from dataclasses import dataclass
 
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     @dataclass
     class TestAgent(SovereignBaseAgent):
@@ -156,7 +164,7 @@ def test_max_depth_termination():
 
     from dataclasses import dataclass
 
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     @dataclass
     class TestAgent(SovereignBaseAgent):
@@ -178,7 +186,7 @@ def test_mixin_state_access_during_init():
 
     from dataclasses import dataclass
 
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
     @dataclass
     class TestAgent(SovereignBaseAgent):
@@ -199,7 +207,7 @@ def test_healer_mixin_heal_result_type():
     """
     print("\n[TEST 8] HealerMixin HealResult Type...")
 
-    from agentic_core.mixins.healer_mixin import HealerMixin
+#  # MOVED: from agentic_core.mixins.healer_mixin import HealerMixin
 
     class TestMixin(HealerMixin):
         pass

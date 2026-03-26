@@ -53,7 +53,7 @@ from pathlib import Path
 from types import MappingProxyType
 from unittest.mock import MagicMock, patch
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
@@ -68,7 +68,7 @@ from agentic_core.L0_routing.config.path_constants import (
 
 
 def _make_agent(project_root: Path, healing_enabled: bool = True):
-    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
     agent = object.__new__(HierarchyAgent)
     agent.project_root = project_root
@@ -97,6 +97,8 @@ def _write(tmp_path: Path, rel_str: str, content: str = "") -> Path:
 
 class TestLegacyArchiveDepthViolation:
     def test_legacy_archive_success_returns_one(self, tmp_path):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
         """safe_archive success → returns 1."""
         agent = _make_agent(tmp_path)
         file_path = _write(tmp_path, "agentic_core/L0_routing/scripts/extra/f.py")

@@ -5,10 +5,11 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.runtime.config.security_level_config  # noqa: F401
+#  # MOVED: import agentic_core.runtime.config.security_level_config  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.runtime.config.security_level_config  # noqa: F401
 """Test module_importable runtime behavior."""
 # Arrange
 # TODO: Set up runtime environment

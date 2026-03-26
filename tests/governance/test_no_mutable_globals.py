@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L0_ROUTING_DIR,
     L1_COGNITION_DIR,
     L2_EXECUTION_DIR,
@@ -68,6 +68,8 @@ ALLOWED_PATTERNS = {
 
 @pytest.mark.governance
 def test_req129_no_mutable_globals_critical_modules():
+    from agentic_core.L0_routing.config.path_constants import (
+    from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
     """REQ-129: AST scan: no module-level mutable state in L0-L5 sovereignty-critical modules."""
     mutable_global_violations = []
 
@@ -130,7 +132,7 @@ global_set = set()  # Mutable set
 
 # This should also be flagged
 from collections import deque
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 global_deque = deque()  # Mutable deque
 
 # Constants should be OK

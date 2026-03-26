@@ -9,7 +9,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -72,9 +72,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_activation_gate_w4f", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_activation_gate_w4f", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_activation_gate_w4f", "exec_snapshot_link")
-from system_learning.engines.l4_state_writer import L4StateWriter
-from system_learning.engines.retrieval_profile import RetrievalProfile
-from system_learning.engines.retrieval_profile_activation_gate import (
+#  # MOVED: from system_learning.engines.l4_state_writer import L4StateWriter
+#  # MOVED: from system_learning.engines.retrieval_profile import RetrievalProfile
+#  # MOVED: from system_learning.engines.retrieval_profile_activation_gate import (
     RetrievalProfileActivationGate,
 )
 
@@ -82,7 +82,7 @@ from system_learning.engines.retrieval_profile_activation_gate import (
 # REMOVED: _emit_applies_guardrail("p0", "test_activation_gate_w4f", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_activation_gate_w4f", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_activation_gate_w4f", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -181,6 +181,12 @@ class TestActivationGateW4F:
     """Test W4-F Retrieval Profile Activation Gate functionality."""
 
     def test_refuse_without_approval(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.l4_state_writer import L4StateWriter
+        from system_learning.engines.retrieval_profile import RetrievalProfile
+        from system_learning.engines.retrieval_profile_activation_gate import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        import system_learning.engines.retrieval_profile_activation_gate as gate_module
         """Test that activation refuses when proposal exists but no approval."""
         gate = RetrievalProfileActivationGate()
         l4_writer = Mock(spec=L4StateWriter)
@@ -361,7 +367,7 @@ class TestW4FNegativeControl:
         # Monkey patch the json.dumps in activation gate
         import json
 
-        import system_learning.engines.retrieval_profile_activation_gate as gate_module
+#  # MOVED: import system_learning.engines.retrieval_profile_activation_gate as gate_module
 
         original_json_dumps = json.dumps
 

@@ -21,16 +21,16 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import (
     ArchivalGatekeeper,
     ArchivalOperation,
     ArchivalResult,
 )
-from agentic_core.L5_safety.reasoning.HygieneGuardianAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.HygieneGuardianAgent import (
     HygieneGuardianAgent,
     HygieneViolation,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -198,6 +198,9 @@ class TestLegacyHygieneFunctionality:
     """Test Case 1: Verify legacy HygieneGuardian functionality."""
 
     def test_detects_empty_files(self, hygiene_agent, temp_project):
+        from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import (
+        from agentic_core.L5_safety.reasoning.HygieneGuardianAgent import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """Verify HygieneGuardian detects empty Python files."""
         # Create empty Python file
         empty_file = temp_project / "empty_module.py"

@@ -2,7 +2,7 @@
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -82,11 +82,11 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 pytestmark = pytest.mark.unit_min_deps
-from agentic_core.L5_safety.types.human_decision_artifact_types import (
+#  # MOVED: from agentic_core.L5_safety.types.human_decision_artifact_types import (
     HumanDecisionArtifact,
     HumanDecisionViolation,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -192,6 +192,9 @@ def _make(**kwargs) -> HumanDecisionArtifact:
 
 
 def test_approve_roundtrip():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L5_safety.types.human_decision_artifact_types import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     art = _make().sign(SECRET)
     art.verify(SECRET)  # must not raise
     assert art.action == "APPROVE"

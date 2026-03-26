@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L5_safety.config.blueprint_compiler  # noqa: F401
+#  # MOVED: import agentic_core.L5_safety.config.blueprint_compiler  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L5_safety.config.blueprint_compiler  # noqa: F401
     """Module blueprint_compiler must be importable."""
     assert agentic_core.L5_safety.config.blueprint_compiler is not None

@@ -29,12 +29,12 @@ from typing import get_args
 
 import pytest
 
-from agentic_core.L5_safety.core_kernel.classification_kernel import (
+#  # MOVED: from agentic_core.L5_safety.core_kernel.classification_kernel import (
     FileType,
     classify_file_standalone,
     clear_classification_cache,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -184,7 +184,7 @@ def _classify_kernel(tmp_path: Path, name: str, code: str) -> str:
 
 def _make_fca(tmp_path: Path):
     """Create a minimal FileClassificationAgent for testing."""
-    from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
         FileClassificationAgent,
     )
 
@@ -212,6 +212,10 @@ class TestEnforcerClassification:
     """Kernel-level ENFORCER detection."""
 
     def test_guardrail_with_verify_change_block(self, tmp_path):
+        from agentic_core.L5_safety.core_kernel.classification_kernel import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test guardrail_with_verify_change_block contract compliance."""
     # Arrange
     # TODO: Set up contract test scenario
@@ -488,7 +492,7 @@ class TestEnforcementFolderIntegration:
                 "TYPES",
                 textwrap.dedent("""\
                     from typing import TypedDict, Literal
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_execution_terminates_at_uwg,
     _emit_writes_through,

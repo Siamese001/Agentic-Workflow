@@ -5,9 +5,9 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L0_routing.context.c0_guard import guard_c0_payload
-from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L0_routing.context.c0_guard import guard_c0_payload
+#  # MOVED: from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -154,6 +154,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestGuardC0Payload:
     def test_safe_payload_passes(self):
+        from agentic_core.L0_routing.context.c0_guard import guard_c0_payload
+        from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         guard_c0_payload({"query": "find me a job", "context": "software engineering"})
 
     def test_empty_payload_passes(self):

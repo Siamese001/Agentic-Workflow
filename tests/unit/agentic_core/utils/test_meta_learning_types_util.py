@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.utils.meta_learning_types_util as _mod  # noqa: F401
+#  # MOVED: import agentic_core.utils.meta_learning_types_util as _mod  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.utils.meta_learning_types_util as _mod  # noqa: F401
     """Module meta_learning_types_util must be importable."""
     assert _mod is not None

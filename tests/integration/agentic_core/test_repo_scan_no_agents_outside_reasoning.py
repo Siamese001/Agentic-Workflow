@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
 )
 
@@ -68,6 +68,7 @@ class TestNoAgentsOutsideReasoning:
     """Tests for Agent class placement."""
 
     def test_agentic_core_no_agents_in_types(self):
+        from agentic_core.L0_routing.config.path_constants import (
         """No Agent classes should exist in types/ folders."""
         base = Path(__file__).resolve().parents[3] / AGENTIC_CORE_DIR
         if not base.exists():

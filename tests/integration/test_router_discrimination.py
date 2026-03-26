@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -64,7 +64,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_router_discrimination", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_router_discrimination", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_router_discrimination", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -202,7 +202,7 @@ def _make_file(tmp_path: Path, name: str, code: str) -> Path:
 
 
 def _classify(tmp_path: Path, file_path: Path):
-    from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
         FileClassificationAgent,
     )
 
@@ -218,6 +218,10 @@ def _classify(tmp_path: Path, file_path: Path):
 
 class TestRouterSuffix:
     def test_router_suffix_classified_as_engine(self, tmp_path):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
         code = """\
         class RequestRouter:
             def route_to(self, target):
@@ -356,7 +360,7 @@ class TestRouterIntegration:
                     open("x", "w").write("y")
         """),
         )
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 

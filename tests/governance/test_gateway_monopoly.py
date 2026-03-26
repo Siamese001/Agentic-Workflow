@@ -16,7 +16,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     L0_ROUTING_DIR,
     L1_COGNITION_DIR,
@@ -24,7 +24,7 @@ from agentic_core.L0_routing.config.path_constants import (
     L4_STATE_DIR,
     L5_SAFETY_DIR,
 )
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
 
@@ -178,6 +178,8 @@ def _collect_python_files(roots: list[str]) -> list[Path]:
 
 @pytest.mark.governance
 def test_req_p0_zero_sdk_imports_outside_gateway():
+    from agentic_core.L0_routing.config.path_constants import (
+    from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     """P0: Zero direct SDK imports outside gateway-allowlisted paths (AST scan)."""
     files = _collect_python_files(_SCAN_ROOTS)
     assert len(files) > 0, "Should find files to scan"

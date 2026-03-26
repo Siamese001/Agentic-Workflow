@@ -16,7 +16,7 @@ import os
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -61,7 +61,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_case_memory_architecture")
 # REMOVED: _emit_applies_guardrail("p0", "test_case_memory_architecture", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_case_memory_architecture", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -188,19 +188,19 @@ _TS = 1_700_000_000
 
 
 def _policy_ref(ph: str = _FAKE_HASH):
-    from system_learning.types.case_memory_types import PolicyHashRef
+#  # MOVED: from system_learning.types.case_memory_types import PolicyHashRef
 
     return PolicyHashRef(policy_hash=ph, config_version="v1.0")
 
 
 def _outcome(label="SUCCESS", replay_pass=True):
-    from system_learning.types.case_memory_types import OutcomeClass
+#  # MOVED: from system_learning.types.case_memory_types import OutcomeClass
 
     return OutcomeClass(label=label, replay_pass=replay_pass)
 
 
 def _adg_node(name="ADG::Module::foo", layer="L2", family="healing"):
-    from system_learning.types.case_memory_types import ADGNodeRef
+#  # MOVED: from system_learning.types.case_memory_types import ADGNodeRef
 
     return ADGNodeRef(entity_name=name, layer=layer, relation_family=family)
 
@@ -212,7 +212,7 @@ def _adg_node(name="ADG::Module::foo", layer="L2", family="healing"):
 
 class TestCaseRecordInvariants:
     def _make(self, **overrides):
-        from system_learning.types.case_memory_types import CaseRecord
+#  # MOVED: from system_learning.types.case_memory_types import CaseRecord
 
         defaults = {
             "artifact_type": "CASE_RECORD",
@@ -234,6 +234,37 @@ class TestCaseRecordInvariants:
         return CaseRecord(**defaults)
 
     def test_happy_path_creates_record(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.types.case_memory_types import PolicyHashRef
+        from system_learning.types.case_memory_types import OutcomeClass
+        from system_learning.types.case_memory_types import ADGNodeRef
+        from system_learning.types.case_memory_types import CaseRecord
+        from system_learning.types.case_memory_types import HealerBundle
+        from system_learning.types.case_memory_types import GovernancePrecedent
+        from system_learning.types.case_memory_types import PromptBundle
+        from system_learning.types.case_memory_types import HITLPreferenceRecord
+        from agentic_core.L4_state.memory.case_library import CaseLibrary
+        from system_learning.types.case_memory_types import CaseRecord
+        from system_learning.types.case_memory_types import HealerBundle
+        from system_learning.types.case_memory_types import HITLPreferenceRecord
+        from agentic_core.L4_state.memory.graph_neighborhood_memory import (
+        from agentic_core.L4_state.memory.graph_neighborhood_memory import MemoryCard
+        from agentic_core.L4_state.memory.graph_neighborhood_memory import MemoryCard
+        from agentic_core.L4_state.memory.graph_neighborhood_memory import MemoryCard
+        from agentic_core.L4_state.memory.graph_neighborhood_memory import MemoryCard
+        from agentic_core.L4_state.memory.graph_neighborhood_memory import MemoryCard
+        from agentic_core.cache.redis_coordination_fabric import (
+        from agentic_core.L4_state.memory.cache_admission_gate import CacheAdmissionGate
+        from agentic_core.L4_state.memory.cache_admission_gate import CacheAdmissionDecision
+        from agentic_core.L4_state.memory.cache_admission_gate import CacheAdmissionGate
+        from agentic_core.cache.cache_key_builders import build_trace_working_set_key
+        from agentic_core.cache.cache_key_builders import build_team_lock_key
+        from agentic_core.cache.cache_key_builders import build_route_context_key
+        from agentic_core.cache.cache_key_builders import build_replay_fragment_key
+        from agentic_core.cache.cache_key_builders import build_novelty_cluster_key
+        from agentic_core.cache.cache_key_builders import build_rag_admission_key
+        from agentic_core.cache.cache_key_builders import build_trace_working_set_key
         rec = self._make()
         assert rec.artifact_type == "CASE_RECORD"
         assert rec.trace_id == "trace-001"
@@ -282,7 +313,7 @@ class TestCaseRecordInvariants:
 
 class TestHealerBundleInvariants:
     def _make(self, **overrides):
-        from system_learning.types.case_memory_types import HealerBundle
+#  # MOVED: from system_learning.types.case_memory_types import HealerBundle
 
         defaults = {
             "artifact_type": "HEALER_BUNDLE",
@@ -328,7 +359,7 @@ class TestHealerBundleInvariants:
 
 class TestGovernancePrecedentInvariants:
     def _make(self, **overrides):
-        from system_learning.types.case_memory_types import GovernancePrecedent
+#  # MOVED: from system_learning.types.case_memory_types import GovernancePrecedent
 
         defaults = {
             "artifact_type": "GOVERNANCE_PRECEDENT",
@@ -374,7 +405,7 @@ class TestGovernancePrecedentInvariants:
 
 class TestPromptBundleInvariants:
     def _make(self, **overrides):
-        from system_learning.types.case_memory_types import PromptBundle
+#  # MOVED: from system_learning.types.case_memory_types import PromptBundle
 
         defaults = {
             "artifact_type": "PROMPT_BUNDLE",
@@ -410,7 +441,7 @@ class TestPromptBundleInvariants:
 
 class TestHITLPreferenceRecordInvariants:
     def _make(self, **overrides):
-        from system_learning.types.case_memory_types import HITLPreferenceRecord
+#  # MOVED: from system_learning.types.case_memory_types import HITLPreferenceRecord
 
         defaults = {
             "artifact_type": "HITL_PREFERENCE_RECORD",
@@ -485,14 +516,14 @@ class _FakeBridge:
 
 class TestCaseLibrary:
     def _lib(self):
-        from agentic_core.L4_state.memory.case_library import CaseLibrary
+#  # MOVED: from agentic_core.L4_state.memory.case_library import CaseLibrary
 
         bridge = _FakeBridge()
         lib = CaseLibrary(bridge=bridge)
         return lib, bridge
 
     def _case_record(self):
-        from system_learning.types.case_memory_types import CaseRecord
+#  # MOVED: from system_learning.types.case_memory_types import CaseRecord
 
         return CaseRecord(
             artifact_type="CASE_RECORD",
@@ -538,7 +569,7 @@ class TestCaseLibrary:
         assert "sourced_from_adg_node" in rel_types
 
     def test_store_healer_bundle_creates_healer_resolved(self):
-        from system_learning.types.case_memory_types import HealerBundle
+#  # MOVED: from system_learning.types.case_memory_types import HealerBundle
 
         lib, bridge = self._lib()
         bundle = HealerBundle(
@@ -562,7 +593,7 @@ class TestCaseLibrary:
         assert "healer_resolved" in rel_types
 
     def test_store_hitl_approve_creates_hitl_approved(self):
-        from system_learning.types.case_memory_types import HITLPreferenceRecord
+#  # MOVED: from system_learning.types.case_memory_types import HITLPreferenceRecord
 
         lib, bridge = self._lib()
         rec = HITLPreferenceRecord(
@@ -599,7 +630,7 @@ class TestCaseLibrary:
 
 class TestGraphNeighborhoodMemory:
     def _mem(self):
-        from agentic_core.L4_state.memory.graph_neighborhood_memory import (
+#  # MOVED: from agentic_core.L4_state.memory.graph_neighborhood_memory import (
             GraphNeighborhoodMemory,
         )
 
@@ -607,7 +638,7 @@ class TestGraphNeighborhoodMemory:
         return GraphNeighborhoodMemory(bridge=bridge), bridge
 
     def _card(self, name="ADG::Module::foo", layer="L2"):
-        from agentic_core.L4_state.memory.graph_neighborhood_memory import MemoryCard
+#  # MOVED: from agentic_core.L4_state.memory.graph_neighborhood_memory import MemoryCard
 
         return MemoryCard(
             adg_entity_name=name,
@@ -633,7 +664,7 @@ class TestGraphNeighborhoodMemory:
         assert len(bridge.entities) == count_before
 
     def test_upsert_changed_card_writes_again(self):
-        from agentic_core.L4_state.memory.graph_neighborhood_memory import MemoryCard
+#  # MOVED: from agentic_core.L4_state.memory.graph_neighborhood_memory import MemoryCard
 
         mem, bridge = self._mem()
         card = self._card()
@@ -650,7 +681,7 @@ class TestGraphNeighborhoodMemory:
         assert len(bridge.entities) > count_before
 
     def test_empty_entity_name_returns_false(self):
-        from agentic_core.L4_state.memory.graph_neighborhood_memory import MemoryCard
+#  # MOVED: from agentic_core.L4_state.memory.graph_neighborhood_memory import MemoryCard
 
         mem, bridge = self._mem()
         card = MemoryCard(adg_entity_name="", layer="L2", timestamp_utc=_TS)
@@ -691,7 +722,7 @@ class TestGraphNeighborhoodMemory:
         assert _FAKE_HASH in card.policy_touchpoints
 
     def test_memory_card_to_dict_sorted(self):
-        from agentic_core.L4_state.memory.graph_neighborhood_memory import MemoryCard
+#  # MOVED: from agentic_core.L4_state.memory.graph_neighborhood_memory import MemoryCard
 
         card = MemoryCard(
             adg_entity_name="ADG::Module::foo",
@@ -705,7 +736,7 @@ class TestGraphNeighborhoodMemory:
         assert list(d.keys()) == sorted(d.keys())
 
     def test_memory_card_stable_hash_deterministic(self):
-        from agentic_core.L4_state.memory.graph_neighborhood_memory import MemoryCard
+#  # MOVED: from agentic_core.L4_state.memory.graph_neighborhood_memory import MemoryCard
 
         card = MemoryCard(
             adg_entity_name="ADG::Module::foo",
@@ -722,7 +753,7 @@ class TestGraphNeighborhoodMemory:
 
 class TestRedisCoordinationFabric:
     def _fabric(self):
-        from agentic_core.cache.redis_coordination_fabric import (
+#  # MOVED: from agentic_core.cache.redis_coordination_fabric import (
             RedisCoordinationFabric,
         )
 
@@ -823,7 +854,7 @@ class TestRedisCoordinationFabric:
 
 class TestCacheAdmissionGate:
     def _gate(self, support=0.6, completeness=0.5):
-        from agentic_core.L4_state.memory.cache_admission_gate import CacheAdmissionGate
+#  # MOVED: from agentic_core.L4_state.memory.cache_admission_gate import CacheAdmissionGate
 
         return CacheAdmissionGate(
             support_threshold=support,
@@ -878,7 +909,7 @@ class TestCacheAdmissionGate:
         assert len(d.deny_reasons) == 4
 
     def test_decision_is_frozen(self):
-        from agentic_core.L4_state.memory.cache_admission_gate import CacheAdmissionDecision
+#  # MOVED: from agentic_core.L4_state.memory.cache_admission_gate import CacheAdmissionDecision
 
         g = self._gate()
         d = self._eval(g)
@@ -899,7 +930,7 @@ class TestCacheAdmissionGate:
         assert d1.stable_hash() == d2.stable_hash()
 
     def test_invalid_threshold_raises(self):
-        from agentic_core.L4_state.memory.cache_admission_gate import CacheAdmissionGate
+#  # MOVED: from agentic_core.L4_state.memory.cache_admission_gate import CacheAdmissionGate
 
         with pytest.raises(ValueError):
             CacheAdmissionGate(support_threshold=1.5)
@@ -939,37 +970,37 @@ class TestNewCacheKeyBuilders:
         return s * 64
 
     def test_trace_working_set_key(self):
-        from agentic_core.cache.cache_key_builders import build_trace_working_set_key
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_trace_working_set_key
 
         k = build_trace_working_set_key(self._h())
         assert k.startswith("trace_ws:")
 
     def test_team_lock_key(self):
-        from agentic_core.cache.cache_key_builders import build_team_lock_key
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_team_lock_key
 
         k = build_team_lock_key(self._h())
         assert k.startswith("team_lock:")
 
     def test_route_context_key(self):
-        from agentic_core.cache.cache_key_builders import build_route_context_key
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_route_context_key
 
         k = build_route_context_key(self._h())
         assert k.startswith("route_ctx:")
 
     def test_replay_fragment_key(self):
-        from agentic_core.cache.cache_key_builders import build_replay_fragment_key
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_replay_fragment_key
 
         k = build_replay_fragment_key(self._h())
         assert k.startswith("replay_frag:")
 
     def test_novelty_cluster_key(self):
-        from agentic_core.cache.cache_key_builders import build_novelty_cluster_key
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_novelty_cluster_key
 
         k = build_novelty_cluster_key(self._h())
         assert k.startswith("novelty:")
 
     def test_rag_admission_key(self):
-        from agentic_core.cache.cache_key_builders import build_rag_admission_key
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_rag_admission_key
 
         k = build_rag_admission_key(self._h("a"), self._h("b"), "bge-m3-v1")
         assert k.startswith("rag_admit:")
@@ -996,7 +1027,7 @@ class TestNewCacheKeyBuilders:
     assert processed_result is not None, "Processing should produce a result"
     assert len(processed_result) >= 0, "Processed result should be measurable"
     # TODO: Add specific processing assertions
-        from agentic_core.cache.cache_key_builders import build_trace_working_set_key
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_trace_working_set_key
 
         k1 = build_trace_working_set_key(self._h("a"))
         k2 = build_trace_working_set_key(self._h("b"))

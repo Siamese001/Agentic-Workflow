@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -77,7 +77,7 @@ from tools.memory.sqlite_memory_store import SqliteMemoryStore
 # REMOVED: _emit_applies_guardrail("p0", "test_sqlite_memory_store", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_sqlite_memory_store", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_sqlite_memory_store", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -183,6 +183,8 @@ def store(tmp_path):
 
 class TestSchema:
     def test_tables_created_on_init(self, store):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         with store.connection() as conn:
             tables = {
                 r[0]

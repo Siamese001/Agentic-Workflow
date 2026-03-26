@@ -8,8 +8,8 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_routing.scripts.verify_manifest_util import analyze_impact
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L0_routing.scripts.verify_manifest_util import analyze_impact
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -198,6 +198,8 @@ class TestManifestAnalysis:
         }
 
     def test_analysis_passes_safe_run(self, safe_report):
+        from agentic_core.L0_routing.scripts.verify_manifest_util import analyze_impact
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """Scenario: Normal operation should pass analysis."""
         with patch("logging.info") as mock_info:
             result = analyze_impact(safe_report)

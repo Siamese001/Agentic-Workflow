@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.reasoning.SovereignActionPlaneAgent import (  # noqa: F401
+#  # MOVED: from agentic_core.L5_safety.reasoning.SovereignActionPlaneAgent import (  # noqa: F401
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,
@@ -26,6 +26,7 @@ from agentic_core.L5_safety.reasoning.SovereignActionPlaneAgent import (  # noqa
 
 class TestSovereignToolsmithContract:
     def test_is_class(self):
+        from agentic_core.L5_safety.reasoning.SovereignActionPlaneAgent import (  # noqa: F401
     """Test is_class runtime behavior."""
     # Arrange
     # TODO: Set up test data for is_class

@@ -23,10 +23,10 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L5_safety.enforcement.SurgicalHealingAdapter import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.SurgicalHealingAdapter import (
     SurgicalHealingAdapter,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -175,6 +175,8 @@ class TestAgentPermissionIntegration:
     """Tests for AgentPermission surgical healing."""
 
     def test_adapter_with_restore_checkpoint(self):
+        from agentic_core.L5_safety.enforcement.SurgicalHealingAdapter import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test adapter_with_restore_checkpoint contract compliance."""
     # Arrange
     # TODO: Set up test data

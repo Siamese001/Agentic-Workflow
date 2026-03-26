@@ -28,8 +28,8 @@ from datetime import datetime, timezone
 
 import pytest
 
-from agentic_core.L5_safety.enforcement.import_guard import get_import_guard
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.import_guard import get_import_guard
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -96,7 +96,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_creative_cross_context", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_creative_cross_context", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_creative_cross_context", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -183,12 +183,68 @@ class TestW1MutationRecordCreative:
     """Wave 1: properties the unit tests don't cover."""
 
     def _make_uwg(self, actor='test-actor', run_id='run-001'):
-        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+#  # MOVED: from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
         return UniversalWriteGateway(actor_id=actor, run_id=run_id)
 
     def test_mutation_hash_is_collision_resistant(self):
-        """Two records that differ in only one field must have different hashes."""
+        from agentic_core.L5_safety.enforcement.import_guard import get_import_guard
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
         from agentic_core.L2_execution.UniversalWriteGateway import MutationRecord
+        from agentic_core.L2_execution.UniversalWriteGateway import MutationRecord, UniversalWriteGateway
+        from agentic_core.L2_execution.UniversalWriteGateway import SimulationResult, UniversalWriteGateway
+        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
+        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import _extract_token_id
+        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+        from agentic_core.L3_orchestration.registry.agent_capability_registry import (
+        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import (
+        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
+        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
+        from agentic_core.L2_execution.enforcement.guardrail_gate import (
+        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
+        from agentic_core.L2_execution.enforcement.guardrail_gate import (
+        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+        from agentic_core.L2_execution.providers import reset_providers
+        from agentic_core.L2_execution.providers import reset_providers
+        from agentic_core.L2_execution.providers import SeededRandom
+        from agentic_core.L2_execution.providers import FrozenClock
+        from agentic_core.L2_execution.providers import FrozenClock, get_clock, set_clock
+        from agentic_core.L2_execution.providers import MonotonicSequenceClock
+        from agentic_core.L2_execution.providers import OsRandom
+        from agentic_core.L2_execution.providers import FrozenClock
+        from agentic_core.L2_execution.trace_context import TraceContext
+        from agentic_core.L2_execution.trace_context import TraceContext
+        from agentic_core.L2_execution.trace_context import TraceContext
+        from agentic_core.L2_execution.trace_context import TraceContext
+        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+        from agentic_core.L2_execution.trace_context import TraceContext
+        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
+        from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
+        from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
+        from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
+        from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
+        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+        from agentic_core.L2_execution.providers import FrozenClock, SeededRandom, set_clock, set_random
+        from agentic_core.L2_execution.trace_context import TraceContext
+        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
+        from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
+        from agentic_core.L2_execution.providers import get_clock, reset_providers
+        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
+        from agentic_core.L2_execution.providers import FrozenClock
+        from agentic_core.L2_execution.UniversalWriteGateway import MutationRecord, UniversalWriteGateway
+        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+        from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
+        """Two records that differ in only one field must have different hashes."""
+#  # MOVED: from agentic_core.L2_execution.UniversalWriteGateway import MutationRecord
         base_kwargs = dict(actor_id='a', run_id='r', operation='write', path='artifacts/x.json', data='hello', replay_key='k1')
         r1 = MutationRecord.build(**base_kwargs)
         for field_name, new_val in [('actor_id', 'b'), ('run_id', 's'), ('operation', 'delete'), ('path', 'artifacts/y.json'), ('data', 'world'), ('replay_key', 'k2')]:
@@ -201,7 +257,7 @@ class TestW1MutationRecordCreative:
         """verify_mutation_record must return False for any field mutation."""
         from dataclasses import replace
 
-        from agentic_core.L2_execution.UniversalWriteGateway import MutationRecord, UniversalWriteGateway
+#  # MOVED: from agentic_core.L2_execution.UniversalWriteGateway import MutationRecord, UniversalWriteGateway
         r = MutationRecord.build(actor_id='actor', run_id='r1', operation='write', path='artifacts/out.json', data='payload')
         assert UniversalWriteGateway.verify_mutation_record(r)
         tampered = replace(r, actor_id='evil-actor')
@@ -226,7 +282,7 @@ class TestW1MutationRecordCreative:
 
     def test_replay_mode_returns_simulation_result_not_mutation_record(self):
         """In replay mode, write_through returns SimulationResult, not MutationRecord."""
-        from agentic_core.L2_execution.UniversalWriteGateway import SimulationResult, UniversalWriteGateway
+#  # MOVED: from agentic_core.L2_execution.UniversalWriteGateway import SimulationResult, UniversalWriteGateway
         uwg = UniversalWriteGateway(replay_mode=True, actor_id='a', run_id='r')
         result = uwg.write_through('artifacts/test.json', 'data')
         assert isinstance(result, SimulationResult)
@@ -241,7 +297,7 @@ class TestW1MutationRecordCreative:
 
     def test_mutation_ledger_is_append_only_under_concurrent_access(self):
         """Concurrent record_mutation calls from threads must all appear in the ledger."""
-        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+#  # MOVED: from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
         uwg = UniversalWriteGateway(actor_id='actor', run_id='concurrent-run')
         results = []
         errors = []
@@ -266,8 +322,8 @@ class TestW2DispatchRegistryCreative:
     """Wave 2: dispatch ledger completeness and mode transition properties."""
 
     def _make_registry(self, shim=True):
-        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
-        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
+#  # MOVED: from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+#  # MOVED: from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
         gate = GuardrailGate(strict_mode=True)
         return AgentDispatchRegistry(shim_mode=shim, guardrail_gate=gate)
 
@@ -289,7 +345,7 @@ class TestW2DispatchRegistryCreative:
 
     def test_dispatch_with_object_capability_token_extracts_token_id(self):
         """Token objects with .token_id attribute are handled without error."""
-        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import _extract_token_id
+#  # MOVED: from agentic_core.L3_orchestration.registry.agent_dispatch_registry import _extract_token_id
 
         class TokenObj:
             token_id = 'tok-abc123'
@@ -300,12 +356,12 @@ class TestW2DispatchRegistryCreative:
 
     def test_mode_transition_shim_to_enforce_blocks_new_dispatches(self):
         """After set_enforce_mode(), unregistered callers must be blocked."""
-        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
-        from agentic_core.L3_orchestration.registry.agent_capability_registry import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+#  # MOVED: from agentic_core.L3_orchestration.registry.agent_capability_registry import (
             AgentCapabilityRegistry,
             AgentCapabilitySpec,
         )
-        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import (
+#  # MOVED: from agentic_core.L3_orchestration.registry.agent_dispatch_registry import (
             AgentDispatchRegistry,
             DispatchDeniedError,
         )
@@ -327,8 +383,8 @@ class TestW2DispatchRegistryCreative:
 
     def test_dispatch_by_name_round_trips_through_ledger(self):
         """dispatch_by_name() must produce a ledger entry identical to direct dispatch."""
-        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
-        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
+#  # MOVED: from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+#  # MOVED: from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
         gate = GuardrailGate(strict_mode=True)
         reg = AgentDispatchRegistry(shim_mode=True, guardrail_gate=gate)
 
@@ -355,8 +411,8 @@ class TestW2DispatchRegistryCreative:
 
     def test_stats_reflect_blocked_plus_permitted(self):
         """get_stats() counts must equal len(ledger)."""
-        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
-        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
+#  # MOVED: from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+#  # MOVED: from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
         gate = GuardrailGate(strict_mode=False)
         gate.block_operation('dispatch:bad->Target.run')
         reg = AgentDispatchRegistry(shim_mode=True, guardrail_gate=gate, guardrail_mode='warn')
@@ -377,7 +433,7 @@ class TestW3GuardrailCreative:
 
     def test_guardrail_flapping_block_then_unblock(self):
         """Block an operation, verify deny, remove block, verify allow — same gate instance."""
-        from agentic_core.L2_execution.enforcement.guardrail_gate import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.guardrail_gate import (
             GuardrailGate,
             GuardrailViolationError,
         )
@@ -391,7 +447,7 @@ class TestW3GuardrailCreative:
 
     def test_audit_log_captures_every_check(self):
         """Every check() call must append to audit_log regardless of verdict."""
-        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+#  # MOVED: from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
         gate = GuardrailGate(strict_mode=False)
         gate.block_operation('op_b')
         gate.check('op_a', 'tgt')
@@ -404,8 +460,8 @@ class TestW3GuardrailCreative:
 
     def test_guardrail_deny_propagates_verdict_into_dispatch_record(self):
         """When guardrail denies in warn mode, DispatchRecord.guardrail_verdict == 'deny'."""
-        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
-        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
+#  # MOVED: from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+#  # MOVED: from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
         gate = GuardrailGate(strict_mode=False)
         gate.block_operation('dispatch:Caller->Worker.run')
         reg = AgentDispatchRegistry(shim_mode=True, guardrail_gate=gate, guardrail_mode='warn')
@@ -419,7 +475,7 @@ class TestW3GuardrailCreative:
 
     def test_applies_guardrail_context_manager_blocks_body_on_deny(self):
         """applies_guardrail() context manager must NOT execute body when denied (strict mode)."""
-        from agentic_core.L2_execution.enforcement.guardrail_gate import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.guardrail_gate import (
             GuardrailGate,
             GuardrailViolationError,
         )
@@ -433,7 +489,7 @@ class TestW3GuardrailCreative:
 
     def test_guardrail_decorator_wraps_method_transparently(self):
         """guardrail_check decorator must not alter return value on ALLOW."""
-        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+#  # MOVED: from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
         gate = GuardrailGate(strict_mode=True)
 
         class Service:
@@ -446,7 +502,7 @@ class TestW3GuardrailCreative:
 
     def test_concurrent_guardrail_checks_are_thread_safe(self):
         """Multiple threads checking the same gate must not corrupt audit_log."""
-        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+#  # MOVED: from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
         gate = GuardrailGate(strict_mode=False)
         errors = []
 
@@ -468,11 +524,11 @@ class TestW4ProvidersCreative:
     """Wave 4: determinism provider properties."""
 
     def setup_method(self):
-        from agentic_core.L2_execution.providers import reset_providers
+#  # MOVED: from agentic_core.L2_execution.providers import reset_providers
         reset_providers()
 
     def teardown_method(self):
-        from agentic_core.L2_execution.providers import reset_providers
+#  # MOVED: from agentic_core.L2_execution.providers import reset_providers
         reset_providers()
 
     def test_frozen_clock_replay_key_is_stable_across_process_restarts(self):
@@ -491,7 +547,7 @@ class TestW4ProvidersCreative:
     # TODO: Add specific processing assertions
 
     def test_seeded_random_choice_is_reproducible(self):
-        from agentic_core.L2_execution.providers import SeededRandom
+#  # MOVED: from agentic_core.L2_execution.providers import SeededRandom
         items = list('ABCDEFGHIJKLMNOP')
         r1 = SeededRandom(seed=100)
         r2 = SeededRandom(seed=100)
@@ -501,7 +557,7 @@ class TestW4ProvidersCreative:
 
     def test_determinism_digest_covers_inputs(self):
         """emit_determinism_digest must change when inputs change."""
-        from agentic_core.L2_execution.providers import FrozenClock
+#  # MOVED: from agentic_core.L2_execution.providers import FrozenClock
         c = FrozenClock('2026-01-01T00:00:00')
         d1 = c.emit_determinism_digest({'agent': 'A', 'phase': '1'})
         d2 = c.emit_determinism_digest({'agent': 'A', 'phase': '2'})
@@ -512,7 +568,7 @@ class TestW4ProvidersCreative:
 
     def test_set_clock_scopes_to_process_not_thread_global(self):
         """set_clock injection must affect get_clock() in all threads (process-level)."""
-        from agentic_core.L2_execution.providers import FrozenClock, get_clock, set_clock
+#  # MOVED: from agentic_core.L2_execution.providers import FrozenClock, get_clock, set_clock
         set_clock(FrozenClock('2026-03-14T08:00:00'))
         results = []
 
@@ -526,19 +582,19 @@ class TestW4ProvidersCreative:
         assert all(r == '2026-03-14T08:00:00+00:00' for r in results), f'Got: {results}'
 
     def test_monotonic_clock_never_goes_backwards(self):
-        from agentic_core.L2_execution.providers import MonotonicSequenceClock
+#  # MOVED: from agentic_core.L2_execution.providers import MonotonicSequenceClock
         clock = MonotonicSequenceClock('2026-01-01T00:00:00', step_seconds=5.0)
         readings = [clock.now() for _ in range(20)]
         for i in range(1, len(readings)):
             assert readings[i] > readings[i - 1], f'Clock went backwards at index {i}: {readings[i - 1]} -> {readings[i]}'
 
     def test_os_random_seed_value_is_none(self):
-        from agentic_core.L2_execution.providers import OsRandom
+#  # MOVED: from agentic_core.L2_execution.providers import OsRandom
         r = OsRandom()
         assert r.seed_value() is None
 
     def test_frozen_clock_epoch_round_trips(self):
-        from agentic_core.L2_execution.providers import FrozenClock
+#  # MOVED: from agentic_core.L2_execution.providers import FrozenClock
         ts = '2026-01-15T10:30:00'
         c = FrozenClock(ts)
         epoch = c.now_epoch()
@@ -565,7 +621,7 @@ class TestW5TraceContextCreative:
     # TODO: Add specific execution assertions
     def test_sign_changes_when_entries_change(self):
         """Two TraceContexts with different entries must have different sign() digests."""
-        from agentic_core.L2_execution.trace_context import TraceContext
+#  # MOVED: from agentic_core.L2_execution.trace_context import TraceContext
         with TraceContext.run_frame('run-A') as ctx_a:
             ctx_a.record(layer='L3', module='M', operation='op_1')
             d_a = ctx_a.sign()
@@ -576,7 +632,7 @@ class TestW5TraceContextCreative:
 
     def test_sign_is_idempotent(self):
         """Calling sign() multiple times on the same context returns the same digest."""
-        from agentic_core.L2_execution.trace_context import TraceContext
+#  # MOVED: from agentic_core.L2_execution.trace_context import TraceContext
         with TraceContext.run_frame('run-idem') as ctx:
             ctx.record(layer='L3', module='M', operation='op')
             d1 = ctx.sign()
@@ -585,14 +641,14 @@ class TestW5TraceContextCreative:
         assert d1 == d2 == d3
 
     def test_assert_transcripted_passes_when_entry_exists(self):
-        from agentic_core.L2_execution.trace_context import TraceContext
+#  # MOVED: from agentic_core.L2_execution.trace_context import TraceContext
         with TraceContext.run_frame('run-cov') as ctx:
             ctx.record(layer='L1', module='CognitiveEngine', operation='reason')
             ctx.assert_transcripted('reason')
 
     def test_concurrent_record_calls_all_appear_in_entries(self):
         """Concurrent record() calls must all be captured without races."""
-        from agentic_core.L2_execution.trace_context import TraceContext
+#  # MOVED: from agentic_core.L2_execution.trace_context import TraceContext
         with TraceContext.run_frame('run-concurrent') as ctx:
             errors = []
 
@@ -612,9 +668,9 @@ class TestW5TraceContextCreative:
 
     def test_dispatch_entries_in_trace_match_dispatch_ledger(self):
         """Number of TraceContext entries must equal number of permitted dispatch ledger entries."""
-        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
-        from agentic_core.L2_execution.trace_context import TraceContext
-        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
+#  # MOVED: from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+#  # MOVED: from agentic_core.L2_execution.trace_context import TraceContext
+#  # MOVED: from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
         gate = GuardrailGate(strict_mode=True)
         reg = AgentDispatchRegistry(shim_mode=True, guardrail_gate=gate)
 
@@ -652,7 +708,7 @@ class TestW5TraceContextCreative:
 
     def test_conflict_detection_prevents_stale_read_overwrite(self):
         """Simulates optimistic-concurrency: read v1, another writer commits, detect conflict."""
-        from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
+#  # MOVED: from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
         rsa = RunStateAuthority(run_id='conflict-run')
         rsa.commit('slot', 'initial')
         _, version_at_read = rsa.read('slot')
@@ -662,7 +718,7 @@ class TestW5TraceContextCreative:
         assert rsa.detect_conflict('slot', 2) is False
 
     def test_snapshot_content_hash_changes_when_state_changes(self):
-        from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
+#  # MOVED: from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
         rsa = RunStateAuthority(run_id='snap-change')
         rsa.commit('a', 1)
         snap1 = rsa.snapshot('s1')
@@ -672,7 +728,7 @@ class TestW5TraceContextCreative:
 
     def test_concurrent_commits_all_appear_in_ledger(self):
         """Thread-safe: all concurrent commits must be in the ledger without duplicates."""
-        from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
+#  # MOVED: from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
         rsa = RunStateAuthority(run_id='concurrent-commits')
         errors = []
 
@@ -713,7 +769,7 @@ class TestW5TraceContextCreative:
 
     def test_backend_fallback_does_not_overwrite_committed_value(self):
         """Local committed value must take precedence over backend value."""
-        from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
+#  # MOVED: from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
 
         class StubBackend:
 
@@ -776,12 +832,12 @@ class TestXWaveFullPipeline:
           W5: TraceContext records all events; sign() produces stable digest
           Assert: all waves produced observable artifacts without conflicts
         """
-        from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
-        from agentic_core.L2_execution.providers import FrozenClock, SeededRandom, set_clock, set_random
-        from agentic_core.L2_execution.trace_context import TraceContext
-        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
-        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
-        from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
+#  # MOVED: from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+#  # MOVED: from agentic_core.L2_execution.providers import FrozenClock, SeededRandom, set_clock, set_random
+#  # MOVED: from agentic_core.L2_execution.trace_context import TraceContext
+#  # MOVED: from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+#  # MOVED: from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
+#  # MOVED: from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
         RUN_ID = 'xwave-full-pipeline-001'
         set_clock(FrozenClock('2026-03-14T08:07:00'))
         set_random(SeededRandom(seed=2026))
@@ -809,7 +865,7 @@ class TestXWaveFullPipeline:
             snap = uwg.snapshot_state('xwave-checkpoint', {'phases': phases, 'run_id': RUN_ID})
             rsa_snap = rsa.snapshot('final-checkpoint')
             trace_digest = ctx.sign()
-        from agentic_core.L2_execution.providers import get_clock, reset_providers
+#  # MOVED: from agentic_core.L2_execution.providers import get_clock, reset_providers
         assert get_clock().now_iso() == '2026-03-14T08:07:00+00:00'
         reset_providers()
         assert len(results) == 6
@@ -840,7 +896,7 @@ class TestXWaveFullPipeline:
     assert result is not None, f"{function_name} should return a result"
     assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
     # TODO: Add specific execution assertions
-        from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
+#  # MOVED: from agentic_core.L3_orchestration.registry.agent_dispatch_registry import AgentDispatchRegistry
 
         class Echo:
 
@@ -894,8 +950,8 @@ class TestXWaveFullPipeline:
         must match when re-derived with the same clock state.
         Proves W1+W4 are compatible for deterministic replay.
         """
-        from agentic_core.L2_execution.providers import FrozenClock
-        from agentic_core.L2_execution.UniversalWriteGateway import MutationRecord, UniversalWriteGateway
+#  # MOVED: from agentic_core.L2_execution.providers import FrozenClock
+#  # MOVED: from agentic_core.L2_execution.UniversalWriteGateway import MutationRecord, UniversalWriteGateway
         clock = FrozenClock('2026-03-14T08:07:00')
         ctx = 'run-replay-001:artifacts/output.json'
         replay_key = clock.emit_replay_key(ctx)
@@ -914,8 +970,8 @@ class TestXWaveFullPipeline:
         import hashlib as _hashlib
         import json as _json
 
-        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
-        from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
+#  # MOVED: from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+#  # MOVED: from agentic_core.L4_state.authority.run_state_authority import RunStateAuthority
         state = {'agent': 'Orch', 'phase': 'wave6', 'score': 99}
         uwg = UniversalWriteGateway(actor_id='orch', run_id='r1')
         uwg_snap = uwg.snapshot_state('test', state)

@@ -23,11 +23,11 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L2_execution.types.heal_contract_types import (
+#  # MOVED: from agentic_core.L2_execution.types.heal_contract_types import (
     HealCheckResult,
     HealStatus,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -74,7 +74,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_remediation_dispatcher_robust", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_remediation_dispatcher_robust", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_remediation_dispatcher_robust", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -221,7 +221,24 @@ class TestTierEscalateGuard1StatusNotFailed:
 
     @pytest.mark.parametrize("status", [HealStatus.HEALED, HealStatus.PARTIAL, HealStatus.SKIPPED])
     def test_non_failed_status_returns_skip_note(self, status):
+        from agentic_core.L2_execution.types.heal_contract_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         from agentic_core.L2_execution.scripts.remediation_dispatcher import _tier_escalate
+        from agentic_core.L2_execution.scripts.remediation_dispatcher import _tier_escalate
+        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+#  # MOVED: from agentic_core.L2_execution.scripts.remediation_dispatcher import _tier_escalate
 
         result = _make_result(status=status, needs_llm_escalation=True)
         note = _tier_escalate("test_check", result, retry_count=0)
@@ -231,7 +248,7 @@ class TestTierEscalateGuard1StatusNotFailed:
 
     def test_failed_status_does_not_trigger_guard1(self):
         """FAILED status must NOT be blocked by guard 1 (it should proceed to guard 2)."""
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _tier_escalate
+#  # MOVED: from agentic_core.L2_execution.scripts.remediation_dispatcher import _tier_escalate
 
         result = _make_result(status=HealStatus.FAILED, needs_llm_escalation=False)
         note = _tier_escalate("test_check", result, retry_count=0)
@@ -362,7 +379,7 @@ class TestInvokeHealerExceptionMatrix:
         ],
     )
     def test_exception_produces_failed_result(self, exc_type, exc_msg):
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+#  # MOVED: from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
 
         def _bad_healer(check_dict, repo_root=None, apply=False):
             raise exc_type(exc_msg)
@@ -379,7 +396,7 @@ class TestInvokeHealerExceptionMatrix:
 
     def test_exception_sets_needs_llm_escalation_true(self):
         """Exceptions from healers must set needs_llm_escalation=True."""
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+#  # MOVED: from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
 
         def _bad(*_, **__):
             raise RuntimeError("boom")
@@ -393,7 +410,7 @@ class TestInvokeHealerExceptionMatrix:
 
     def test_exception_sets_escalation_hint_healer_error(self):
         """Exception result must carry escalation_hint='failure_type=healer_error'."""
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+#  # MOVED: from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
 
         def _bad(*_, **__):
             raise ValueError("bad value")
@@ -407,7 +424,7 @@ class TestInvokeHealerExceptionMatrix:
 
     def test_exception_check_id_preserved_in_result(self):
         """The check_id in the FAILED result must match the input check_id."""
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+#  # MOVED: from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
 
         cid = "my_specific_check"
 
@@ -430,7 +447,7 @@ class TestInvokeHealerSuccessPassthrough:
 
     @pytest.mark.parametrize("status", [HealStatus.HEALED, HealStatus.PARTIAL, HealStatus.SKIPPED])
     def test_non_failed_result_returned_unmodified(self, status):
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+#  # MOVED: from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
 
         expected = HealCheckResult(
             check_id="ok_check",
@@ -458,7 +475,7 @@ class TestInvokeHealerSuccessPassthrough:
 
     def test_success_does_not_append_escalation_note(self):
         """Non-FAILED results must NOT have escalation note appended."""
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+#  # MOVED: from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
 
         def _good(*_, **__):
             return HealCheckResult(
@@ -487,7 +504,7 @@ class TestInvokeHealerFailedEscalation:
 
     def test_failed_result_gets_escalation_note_appended(self):
         """A FAILED result from a healer must get the _tier_escalate note appended."""
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+#  # MOVED: from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
 
         def _failing(*_, **__):
             return _make_result(check_id="fail_check", status=HealStatus.FAILED, needs_llm_escalation=True)
@@ -504,7 +521,7 @@ class TestInvokeHealerFailedEscalation:
 
     def test_failed_result_notes_concatenated_with_pipe(self):
         """Original notes + escalation note must be joined with ' | '."""
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+#  # MOVED: from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
 
         def _failing(*_, **__):
             return _make_result(
@@ -526,7 +543,7 @@ class TestInvokeHealerFailedEscalation:
 
     def test_failed_result_with_no_escalation_opt_in(self):
         """FAILED + needs_llm_escalation=False must NOT get escalation note."""
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+#  # MOVED: from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
 
         def _failing(*_, **__):
             return _make_result(
@@ -561,7 +578,7 @@ class TestNoDeadCodeAfterRaiseRegression:
 
     def test_exception_does_not_propagate_out_of_invoke_healer(self):
         """ANY Exception from a healer MUST be caught — must NOT propagate to caller."""
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+#  # MOVED: from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
 
         def _explosive(*_, **__):
             raise RuntimeError("BOOM — this must be caught")
@@ -583,7 +600,7 @@ class TestNoDeadCodeAfterRaiseRegression:
         Mutation-sensitive: re-introducing the raise would break the previous test,
         and this test would also fail.
         """
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+#  # MOVED: from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
 
         source = inspect.getsource(_invoke_healer)
         lines = source.splitlines()
@@ -660,7 +677,7 @@ class TestRepeatedFailureStateTransitions:
     def test_multiple_exceptions_each_produce_distinct_failed_result(self):
         """Each call to _invoke_healer with a failing healer must produce
         an independent FAILED result — no shared state between calls."""
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+#  # MOVED: from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
 
         call_count = 0
 

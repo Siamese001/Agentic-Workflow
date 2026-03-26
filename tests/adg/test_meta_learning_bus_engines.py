@@ -14,7 +14,7 @@ import hashlib
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -59,7 +59,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_meta_learning_bus_engines")
 # REMOVED: _emit_applies_guardrail("p0", "test_meta_learning_bus_engines", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_meta_learning_bus_engines", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -199,7 +199,7 @@ def _make_record(
     guardrails=(),
     policies=(),
 ):
-    from system_learning.types.trace_feature_types import TraceFeatureRecord
+#  # MOVED: from system_learning.types.trace_feature_types import TraceFeatureRecord
 
     bh = _sha256(trace_id)
     return TraceFeatureRecord(
@@ -229,7 +229,7 @@ def _make_cluster(
     agents=("ADG::Module::alpha",),
     trace_ids=None,
 ):
-    from system_learning.types.trace_feature_types import RCACluster
+#  # MOVED: from system_learning.types.trace_feature_types import RCACluster
 
     if trace_ids is None:
         trace_ids = tuple(f"t{i}" for i in range(member_count))
@@ -260,7 +260,7 @@ def _make_proposal(
     affected_component="ADG::Module::router",
     evidence=(),
 ):
-    from system_learning.types.optimization_types import OptimizationProposal
+#  # MOVED: from system_learning.types.optimization_types import OptimizationProposal
 
     pid = _sha256(change_type + risk_class + affected_component)
     cid = _sha256("cluster")
@@ -289,7 +289,7 @@ def _make_proposal(
 
 
 def _make_signal(trace_id, gnd=0.9, policy=0.95, replay=1.0, guard=1.0, mut=1.0, approval=None):
-    from system_learning.types.optimization_types import GovernanceRewardSignal
+#  # MOVED: from system_learning.types.optimization_types import GovernanceRewardSignal
 
     sid = _sha256(trace_id)
     return GovernanceRewardSignal(
@@ -312,7 +312,7 @@ def _make_signal(trace_id, gnd=0.9, policy=0.95, replay=1.0, guard=1.0, mut=1.0,
 
 class TestTraceFeatureExtractor:
     def _extractor(self):
-        from system_learning.engines.trace_feature_extractor import TraceFeatureExtractor
+#  # MOVED: from system_learning.engines.trace_feature_extractor import TraceFeatureExtractor
 
         return TraceFeatureExtractor()
 
@@ -337,6 +337,27 @@ class TestTraceFeatureExtractor:
         return defaults
 
     def test_success_outcome_extracted(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.types.trace_feature_types import TraceFeatureRecord
+        from system_learning.types.trace_feature_types import RCACluster
+        from system_learning.types.optimization_types import OptimizationProposal
+        from system_learning.types.optimization_types import GovernanceRewardSignal
+        from system_learning.engines.trace_feature_extractor import TraceFeatureExtractor
+        from system_learning.types.trace_feature_types import TraceFeatureRecord
+        from system_learning.engines.trace_feature_extractor import (
+        from system_learning.engines.rca_cluster_engine import (
+        from system_learning.types.trace_feature_types import FailurePattern
+        from system_learning.engines.rca_cluster_engine import cluster_records
+        from system_learning.engines.optimization_proposal_engine import (
+        from system_learning.engines.optimization_proposal_engine import generate_proposals
+        from system_learning.engines.proposal_validation_engine import (
+        from system_learning.types.optimization_types import OptimizationProposal
+        from system_learning.types.optimization_types import OptimizationProposal
+        from system_learning.engines.governance_reward_model import (
+        from system_learning.types.optimization_types import GovernanceRewardSignal
+        from system_learning.engines.governance_reward_model import RewardModelConfig
+        from system_learning.engines.governance_reward_model import score_proposal
         b = self._extractor().extract("tr-001", self._signal(success=True), _TS)
         assert b.final_outcome_class == "SUCCESS"
 
@@ -414,14 +435,14 @@ class TestTraceFeatureExtractor:
         assert len(bundles) == 2
 
     def test_extract_record_returns_trace_feature_record(self):
-        from system_learning.types.trace_feature_types import TraceFeatureRecord
+#  # MOVED: from system_learning.types.trace_feature_types import TraceFeatureRecord
 
         rec = self._extractor().extract_record("tr-r", self._signal(), _TS)
         assert isinstance(rec, TraceFeatureRecord)
         assert rec.trace_id == "tr-r"
 
     def test_module_level_helpers(self):
-        from system_learning.engines.trace_feature_extractor import (
+#  # MOVED: from system_learning.engines.trace_feature_extractor import (
             build_feature_bundle,
             build_trace_record,
         )
@@ -439,7 +460,7 @@ class TestTraceFeatureExtractor:
 
 class TestRCAClusterEngine:
     def _engine(self, **kw):
-        from system_learning.engines.rca_cluster_engine import (
+#  # MOVED: from system_learning.engines.rca_cluster_engine import (
             RCAClusterConfig,
             RCAClusterEngine,
         )
@@ -473,7 +494,7 @@ class TestRCAClusterEngine:
         assert all(c.failure_pattern != "SINGLETON_RESIDUAL" for c in clusters)
 
     def test_negative_seed_produces_cluster(self):
-        from system_learning.types.trace_feature_types import FailurePattern
+#  # MOVED: from system_learning.types.trace_feature_types import FailurePattern
 
         seed = FailurePattern(
             pattern_id=_HASH64,
@@ -538,7 +559,7 @@ class TestRCAClusterEngine:
         assert ids == sorted(ids)
 
     def test_module_level_cluster_records(self):
-        from system_learning.engines.rca_cluster_engine import cluster_records
+#  # MOVED: from system_learning.engines.rca_cluster_engine import cluster_records
 
         records = [_make_record(f"t{i}", groundedness=0.2) for i in range(2)]
         clusters = cluster_records(records, _TS)
@@ -552,7 +573,7 @@ class TestRCAClusterEngine:
 
 class TestOptimizationProposalEngine:
     def _engine(self, **kw):
-        from system_learning.engines.optimization_proposal_engine import (
+#  # MOVED: from system_learning.engines.optimization_proposal_engine import (
             OptimizationProposalEngine,
             ProposalEngineConfig,
         )
@@ -627,7 +648,7 @@ class TestOptimizationProposalEngine:
         assert all(cluster.stable_hash() in p.evidence_bundle_hashes for p in proposals)
 
     def test_module_level_generate_proposals(self):
-        from system_learning.engines.optimization_proposal_engine import generate_proposals
+#  # MOVED: from system_learning.engines.optimization_proposal_engine import generate_proposals
 
         cluster = _make_cluster("HEALER_REQUIRED")
         proposals = generate_proposals([cluster], _TS)
@@ -641,7 +662,7 @@ class TestOptimizationProposalEngine:
 
 class TestProposalValidationEngine:
     def _engine(self, **kw):
-        from system_learning.engines.proposal_validation_engine import (
+#  # MOVED: from system_learning.engines.proposal_validation_engine import (
             ProposalValidationEngine,
             ValidationConfig,
         )
@@ -661,7 +682,7 @@ class TestProposalValidationEngine:
         assert "UNKNOWN_AFFECTED_COMPONENT" in result.denial_reasons
 
     def test_embedding_expansion_with_no_evidence_fails_replay_gate(self):
-        from system_learning.types.optimization_types import OptimizationProposal
+#  # MOVED: from system_learning.types.optimization_types import OptimizationProposal
 
         cid = _sha256("cluster")
         pid = _sha256("EMBEDDING_CORPUS_EXPANSION_LOW_ADG::Module::router")
@@ -723,7 +744,7 @@ class TestProposalValidationEngine:
 
     def test_gate_exception_counts_as_failure(self):
         # Force a determinism gate failure by using a non-hash proposal_id
-        from system_learning.types.optimization_types import OptimizationProposal
+#  # MOVED: from system_learning.types.optimization_types import OptimizationProposal
 
         cid = _sha256("cluster")
         p = OptimizationProposal(
@@ -758,7 +779,7 @@ class TestProposalValidationEngine:
     assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
     # TODO: Add specific schema validation assertions
     # assert validation_result.get("valid", False), "Data should conform to schema"
-        from system_learning.engines.governance_reward_model import (
+#  # MOVED: from system_learning.engines.governance_reward_model import (
             GovernanceRewardModel,
             RewardModelConfig,
         )
@@ -810,7 +831,7 @@ class TestProposalValidationEngine:
         assert score.human_approval_rate == 1.0
 
     def test_invalid_signal_empty_trace_id_skipped(self):
-        from system_learning.types.optimization_types import GovernanceRewardSignal
+#  # MOVED: from system_learning.types.optimization_types import GovernanceRewardSignal
 
         p = _make_proposal()
         bad_signal = GovernanceRewardSignal(
@@ -828,7 +849,7 @@ class TestProposalValidationEngine:
         assert score.signal_count == 0  # invalid signal was rejected
 
     def test_weights_must_sum_to_1(self):
-        from system_learning.engines.governance_reward_model import RewardModelConfig
+#  # MOVED: from system_learning.engines.governance_reward_model import RewardModelConfig
 
         with pytest.raises(ValueError, match="sum to 1.0"):
             RewardModelConfig(
@@ -850,7 +871,7 @@ class TestProposalValidationEngine:
         assert 0.0 <= annotated[0].reward_score <= 1.0
 
     def test_module_level_score_proposal(self):
-        from system_learning.engines.governance_reward_model import score_proposal
+#  # MOVED: from system_learning.engines.governance_reward_model import score_proposal
 
         p = _make_proposal()
         signals = [_make_signal("t1")]

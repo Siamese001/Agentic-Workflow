@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.mixins.mcp_hardened_mixin import (  # noqa: F401
+#  # MOVED: from agentic_core.mixins.mcp_hardened_mixin import (  # noqa: F401
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,
@@ -22,6 +22,7 @@ from agentic_core.mixins.mcp_hardened_mixin import (  # noqa: F401
 
 class TestMCPHardenedMixinContract:
     def test_is_class(self):
+        from agentic_core.mixins.mcp_hardened_mixin import (  # noqa: F401
         assert isinstance(MCPHardenedMixin, type)
 
     def test_instantiable_or_abstract(self):

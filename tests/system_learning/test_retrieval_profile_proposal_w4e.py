@@ -8,7 +8,7 @@ import os
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -70,16 +70,16 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_retrieval_profile_proposal_w4e", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_retrieval_profile_proposal_w4e", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_retrieval_profile_proposal_w4e", "exec_snapshot_link")
-from system_learning.engines.policy_recommendation_engine import (
+#  # MOVED: from system_learning.engines.policy_recommendation_engine import (
     PolicyRecommendation,
 )
-from system_learning.engines.retrieval_profile import RetrievalProfile
-from system_learning.engines.retrieval_profile_proposal_manager import RetrievalProfileProposalManager
+#  # MOVED: from system_learning.engines.retrieval_profile import RetrievalProfile
+#  # MOVED: from system_learning.engines.retrieval_profile_proposal_manager import RetrievalProfileProposalManager
 
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_retrieval_profile_proposal_w4e")
 # REMOVED: _emit_applies_guardrail("p0", "test_retrieval_profile_proposal_w4e", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_retrieval_profile_proposal_w4e", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -178,6 +178,12 @@ class TestW4EProposalDeterminism:
     """Test W4-E proposal digest determinism."""
 
     def test_proposal_digest_stable(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.policy_recommendation_engine import (
+        from system_learning.engines.retrieval_profile import RetrievalProfile
+        from system_learning.engines.retrieval_profile_proposal_manager import RetrievalProfileProposalManager
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        import system_learning.engines.retrieval_profile_proposal as proposal_module
         """Test that proposal digests are stable across runs."""
         # Create fixed policy recommendation
         recommendation = PolicyRecommendation(
@@ -415,7 +421,7 @@ class TestW4ENegativeControl:
         os.environ["W4E_NEGCTRL_TAMPER"] = "1"
 
         # Monkey patch the json.dumps to use different separator order
-        import system_learning.engines.retrieval_profile_proposal as proposal_module
+#  # MOVED: import system_learning.engines.retrieval_profile_proposal as proposal_module
 
         original_json_dumps = proposal_module.json.dumps
 

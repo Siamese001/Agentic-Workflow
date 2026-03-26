@@ -27,8 +27,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.evaluation.judges.llm_judge import GeminiJudge, JudgeScore
-from agentic_core.evaluation.judges.llm_judges import (
+#  # MOVED: from agentic_core.evaluation.judges.llm_judge import GeminiJudge, JudgeScore
+#  # MOVED: from agentic_core.evaluation.judges.llm_judges import (
     LLM_JUDGES,
     _compute_weighted_score,
     _outcome_from_score,
@@ -36,14 +36,14 @@ from agentic_core.evaluation.judges.llm_judges import (
     judge_sec_001,
     run_llm_judge,
 )
-from agentic_core.evaluation.judges.orchestrator import JudgeOrchestrator
-from agentic_core.evaluation.judges.provider_registry import (
+#  # MOVED: from agentic_core.evaluation.judges.orchestrator import JudgeOrchestrator
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import (
     GeminiJudgeProvider,
     JudgeProviderRegistry,
     NullJudgeProvider,
 )
-from agentic_core.evaluation.judges.rubric_engine import RubricEngine
-from agentic_core.evaluation.judges.types import (
+#  # MOVED: from agentic_core.evaluation.judges.rubric_engine import RubricEngine
+#  # MOVED: from agentic_core.evaluation.judges.types import (
     EvidenceBundle,
     EvidenceItem,
     JudgeReport,
@@ -52,7 +52,7 @@ from agentic_core.evaluation.judges.types import (
     SourceSnippet,
     VerdictOutcome,
 )
-from agentic_core.evaluation.judges.verdict_store import VerdictStore
+#  # MOVED: from agentic_core.evaluation.judges.verdict_store import VerdictStore
 
 _log = logging.getLogger(__name__)
 
@@ -243,6 +243,13 @@ class TestChaosEngineering:
     """Verify the system is resilient to random provider failures."""
 
     def test_orchestrator_survives_chaos_provider(self, tmp_path):
+        from agentic_core.evaluation.judges.llm_judge import GeminiJudge, JudgeScore
+        from agentic_core.evaluation.judges.llm_judges import (
+        from agentic_core.evaluation.judges.orchestrator import JudgeOrchestrator
+        from agentic_core.evaluation.judges.provider_registry import (
+        from agentic_core.evaluation.judges.rubric_engine import RubricEngine
+        from agentic_core.evaluation.judges.types import (
+        from agentic_core.evaluation.judges.verdict_store import VerdictStore
         chaos = ChaosProvider(fail_rate=0.5, seed=42)
         registry = JudgeProviderRegistry()
         registry.register(NullJudgeProvider())

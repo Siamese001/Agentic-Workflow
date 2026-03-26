@@ -10,10 +10,10 @@ Validates:
 
 import pytest
 
-from agentic_core.L0_routing.seams.learning_seam import (
+#  # MOVED: from agentic_core.L0_routing.seams.learning_seam import (
     LearningArtifactIntent,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -166,6 +166,8 @@ class TestFrozenImmutability:
     """LearningArtifactIntent must be frozen — no field mutation."""
 
     def test_cannot_set_field_after_construction(self):
+        from agentic_core.L0_routing.seams.learning_seam import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         intent = LearningArtifactIntent.create(
             agent_id="agent-1",
             execution_id="exec-1",

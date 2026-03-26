@@ -26,7 +26,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -73,7 +73,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_output_robustness", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_output_robustness", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_output_robustness", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -204,7 +204,7 @@ def _make_entity(
     confidence="HIGH",
     resolved_path="",
 ):
-    from agentic_core.adg.artifact.builder_types import EntityRecord
+#  # MOVED: from agentic_core.adg.artifact.builder_types import EntityRecord
 
     return EntityRecord(
         adg_name=adg_name,
@@ -219,7 +219,7 @@ def _make_entity(
 def _make_relation(
     from_name, rel_type, to_name, edge_kind="import", source_file="foo.py", line_no=1, symbol=""
 ):
-    from agentic_core.adg.artifact.builder_types import RelationRecord
+#  # MOVED: from agentic_core.adg.artifact.builder_types import RelationRecord
 
     return RelationRecord(
         from_name=from_name,
@@ -234,7 +234,7 @@ def _make_relation(
 
 def _empty_artifact():
     """ADGArtifact with no entities and no relations."""
-    from agentic_core.adg.artifact.builder_types import ADGArtifact, BlindSpotReport, StructuralMetrics
+#  # MOVED: from agentic_core.adg.artifact.builder_types import ADGArtifact, BlindSpotReport, StructuralMetrics
 
     a = ADGArtifact()
     a.commit_sha = "empty000"
@@ -252,7 +252,7 @@ def _empty_artifact():
 
 def _minimal_artifact():
     """ADGArtifact with one module, one imports edge — minimal valid input."""
-    from agentic_core.adg.artifact.builder_types import ADGArtifact, BlindSpotReport, StructuralMetrics
+#  # MOVED: from agentic_core.adg.artifact.builder_types import ADGArtifact, BlindSpotReport, StructuralMetrics
 
     a = ADGArtifact()
     a.commit_sha = "min001"
@@ -275,7 +275,7 @@ def _minimal_artifact():
 
 def _full_artifact():
     """Artifact with one edge per plane — file, symbol, governance, plus covers."""
-    from agentic_core.adg.artifact.builder_types import ADGArtifact, BlindSpotReport, StructuralMetrics
+#  # MOVED: from agentic_core.adg.artifact.builder_types import ADGArtifact, BlindSpotReport, StructuralMetrics
 
     a = ADGArtifact()
     a.commit_sha = "full001"
@@ -318,8 +318,77 @@ class TestLayerSplitterEdgeCases:
     """Edge cases for _build_plane / split_artifact."""
 
     def test_empty_artifact_produces_empty_planes(self):
-        """Empty ADGArtifact → all three planes are empty but well-formed."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.artifact.builder_types import EntityRecord
+        from agentic_core.adg.artifact.builder_types import RelationRecord
+        from agentic_core.adg.artifact.builder_types import ADGArtifact, BlindSpotReport, StructuralMetrics
+        from agentic_core.adg.artifact.builder_types import ADGArtifact, BlindSpotReport, StructuralMetrics
+        from agentic_core.adg.artifact.builder_types import ADGArtifact, BlindSpotReport, StructuralMetrics
         from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import (
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import (
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import (
+        from agentic_core.adg.artifact.SplitArtifact import (
+        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import (
+        import agentic_core.adg.artifact.SplitArtifact as ls
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.SplitArtifact import _TEST_GRAPH_RELS  # noqa: F401
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.SplitArtifact import SplitArtifact
+        import agentic_core.adg.artifact.SplitArtifact as ls
+        from agentic_core.adg.cli import main
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        """Empty ADGArtifact → all three planes are empty but well-formed."""
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         planes = split_artifact(_empty_artifact())
         assert planes.file_graph.nodes == {}
@@ -330,14 +399,14 @@ class TestLayerSplitterEdgeCases:
         assert planes.governance_graph.edges == []
 
     def test_empty_artifact_planes_have_schema_version(self):
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         planes = split_artifact(_empty_artifact())
         for plane in (planes.file_graph, planes.symbol_graph, planes.governance_graph):
             assert plane.schema_version == "4.0.0"
 
     def test_empty_artifact_plane_meta_total_zero(self):
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         planes = split_artifact(_empty_artifact())
         assert planes.file_graph.meta["total_edges"] == 0
@@ -345,7 +414,7 @@ class TestLayerSplitterEdgeCases:
 
     def test_unknown_rel_type_dropped_from_all_planes(self):
         """An edge with an unrecognised relation_type is silently dropped (not routed anywhere)."""
-        from agentic_core.adg.artifact.SplitArtifact import (
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import (
             _FILE_GRAPH_RELS,
             _GOVERNANCE_GRAPH_RELS,
             _SYMBOL_GRAPH_RELS,
@@ -366,7 +435,7 @@ class TestLayerSplitterEdgeCases:
 
     def test_dangling_node_reference_creates_stub(self):
         """An edge referencing a node not in entities → dangling stub with type='symbol'."""
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         a = _minimal_artifact()
         # Add edge to a name that does NOT exist in entities
@@ -380,7 +449,7 @@ class TestLayerSplitterEdgeCases:
 
     def test_duplicate_edges_both_appear(self):
         """Duplicate relation records both survive — splitter does not deduplicate."""
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         a = _minimal_artifact()
         # Add the same edge a second time
@@ -391,7 +460,7 @@ class TestLayerSplitterEdgeCases:
 
     def test_artifact_with_only_unknown_rels_produces_empty_planes(self):
         """Artifact whose relations are all unknown → all planes empty."""
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         a = _minimal_artifact()
         a.relations = [
@@ -405,7 +474,7 @@ class TestLayerSplitterEdgeCases:
 
     def test_node_type_filter_module_excludes_symbols(self):
         """file_graph uses node_type_filter={'module'}: symbol-only nodes not pre-registered."""
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         a = _full_artifact()
         planes = split_artifact(a)
@@ -416,7 +485,7 @@ class TestLayerSplitterEdgeCases:
 
     def test_covers_route_to_file_graph_not_symbol_not_gov(self):
         """covers must land in file_graph only — not symbol_graph or governance_graph."""
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         a = _full_artifact()
         planes = split_artifact(a)
@@ -429,7 +498,7 @@ class TestLayerSplitterEdgeCases:
 
     def test_in_cycle_route_to_file_graph_not_gov(self):
         """in_cycle canonical home is file_graph — must not appear in governance_graph."""
-        from agentic_core.adg.artifact.SplitArtifact import (
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import (
             _FILE_GRAPH_RELS,
             _GOVERNANCE_GRAPH_RELS,
             _SYMBOL_GRAPH_RELS,
@@ -441,7 +510,7 @@ class TestLayerSplitterEdgeCases:
 
     def test_violates_route_to_gov_not_file_not_symbol(self):
         """violates must land in governance_graph only."""
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         a = _full_artifact()
         planes = split_artifact(a)
@@ -458,7 +527,7 @@ class TestLayerSplitterDeterminism:
 
     def test_split_artifact_is_deterministic(self):
         """Calling split_artifact twice on the same artifact yields identical digests."""
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         a = _full_artifact()
         p1 = split_artifact(a)
@@ -469,7 +538,7 @@ class TestLayerSplitterDeterminism:
 
     def test_split_artifact_digest_changes_on_different_input(self):
         """Different artifacts produce different digests (no hash collision on trivial inputs)."""
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         p1 = split_artifact(_minimal_artifact())
         p2 = split_artifact(_full_artifact())
@@ -478,7 +547,7 @@ class TestLayerSplitterDeterminism:
 
     def test_plane_edge_count_matches_meta(self):
         """meta['total_edges'] must equal len(edges) for every plane."""
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         a = _full_artifact()
         planes = split_artifact(a)
@@ -488,7 +557,7 @@ class TestLayerSplitterDeterminism:
 
     def test_by_relation_type_in_meta_sums_to_total_edges(self):
         """sum(meta['by_relation_type'].values()) == total_edges for each plane."""
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         a = _full_artifact()
         planes = split_artifact(a)
@@ -501,7 +570,7 @@ class TestLayerSplitterZeroOverlapInvariant:
     """Mutation-sensitive: zero overlap between any two plane rel-type sets."""
 
     def test_all_three_rel_sets_pairwise_disjoint(self):
-        from agentic_core.adg.artifact.SplitArtifact import (
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import (
             _FILE_GRAPH_RELS,
             _GOVERNANCE_GRAPH_RELS,
             _SYMBOL_GRAPH_RELS,
@@ -519,7 +588,7 @@ class TestLayerSplitterZeroOverlapInvariant:
 
     def test_rel_sets_are_frozensets(self):
         """Constants must be frozensets — immutable, not accidentally mutated."""
-        from agentic_core.adg.artifact.SplitArtifact import (
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import (
             _FILE_GRAPH_RELS,
             _GOVERNANCE_GRAPH_RELS,
             _SYMBOL_GRAPH_RELS,
@@ -531,14 +600,14 @@ class TestLayerSplitterZeroOverlapInvariant:
 
     def test_rel_sets_cannot_be_mutated(self):
         """frozensets raise TypeError on attempted mutation."""
-        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS
 
         with pytest.raises((TypeError, AttributeError)):
             _FILE_GRAPH_RELS.add("should_fail")  # type: ignore[attr-defined]
 
     def test_no_edge_type_in_zero_planes(self):
         """Every relation type found in a live split must be assigned to exactly one plane."""
-        from agentic_core.adg.artifact.SplitArtifact import (
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import (
             _FILE_GRAPH_RELS,
             _GOVERNANCE_GRAPH_RELS,
             _SYMBOL_GRAPH_RELS,
@@ -556,7 +625,7 @@ class TestLayerSplitterZeroOverlapInvariant:
 
     def test_test_graph_rels_constant_does_not_exist(self):
         """_TEST_GRAPH_RELS must be removed — accessing it is a regression."""
-        import agentic_core.adg.artifact.SplitArtifact as ls
+#  # MOVED: import agentic_core.adg.artifact.SplitArtifact as ls
 
         assert not hasattr(ls, "_TEST_GRAPH_RELS"), (
             "_TEST_GRAPH_RELS was removed in the ADG redesign; covers lives in file_graph"
@@ -564,21 +633,21 @@ class TestLayerSplitterZeroOverlapInvariant:
 
     def test_split_artifact_has_no_test_graph_attribute(self):
         """SplitArtifact must not expose a .test_graph attribute."""
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         planes = split_artifact(_minimal_artifact())
         assert not hasattr(planes, "test_graph"), "SplitArtifact.test_graph was removed in the ADG redesign"
 
     def test_size_summary_has_exactly_three_keys(self):
         """size_summary() must return exactly three plane keys."""
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         sizes = split_artifact(_full_artifact()).size_summary()
         assert set(sizes.keys()) == {"file_graph", "symbol_graph", "governance_graph"}
 
     def test_write_all_creates_exactly_three_files(self, tmp_path):
         """write_all() must create exactly three JSON files, no extras."""
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         planes = split_artifact(_full_artifact())
         paths = planes.write_all(tmp_path)
@@ -600,7 +669,7 @@ class TestMultiWriterStateTransitions:
 
     def test_write_split_planes_false_skips_plane_files(self, tmp_path):
         """write_split_planes=False: plane JSON files must NOT be created."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(
             _full_artifact(),
@@ -617,7 +686,7 @@ class TestMultiWriterStateTransitions:
 
     def test_write_sqlite_false_skips_sqlite_file(self, tmp_path):
         """write_sqlite=False: SQLite file must NOT be created."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(
             _full_artifact(),
@@ -632,7 +701,7 @@ class TestMultiWriterStateTransitions:
 
     def test_create_latest_symlinks_false_creates_no_latest_files(self, tmp_path):
         """create_latest_symlinks=False: no adg_LATEST* files."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         write_all_artifacts(
             _full_artifact(),
@@ -645,7 +714,7 @@ class TestMultiWriterStateTransitions:
 
     def test_create_latest_symlinks_true_creates_latest_files(self, tmp_path):
         """create_latest_symlinks=True with ts: adg_LATEST* files must be created."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         write_all_artifacts(
             _full_artifact(),
@@ -678,7 +747,7 @@ class TestMultiWriterStateTransitions:
 
     def test_no_ts_creates_no_latest_files(self, tmp_path):
         """ts='' → create_latest_symlinks path is skipped (guard: `if ts`)."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         write_all_artifacts(
             _full_artifact(),
@@ -691,7 +760,7 @@ class TestMultiWriterStateTransitions:
 
     def test_both_flags_false_only_snapshot_written(self, tmp_path):
         """write_split_planes=False + write_sqlite=False → only snapshot written."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(
             _full_artifact(),
@@ -712,14 +781,14 @@ class TestMultiWriterSnapshotEdgeCases:
 
     def test_snapshot_never_contains_entities_key(self, tmp_path):
         """Tier-1 snapshot must never embed the entities array."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(_empty_artifact(), out_dir=tmp_path, ts="")
         snap = json.loads(paths.snapshot.read_text())
         assert "entities" not in snap
 
     def test_snapshot_never_contains_relations_key(self, tmp_path):
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(_empty_artifact(), out_dir=tmp_path, ts="")
         snap = json.loads(paths.snapshot.read_text())
@@ -727,7 +796,7 @@ class TestMultiWriterSnapshotEdgeCases:
 
     def test_snapshot_zero_counts_on_empty_artifact(self, tmp_path):
         """Empty artifact → all count fields are 0, not missing or None."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(_empty_artifact(), out_dir=tmp_path, ts="")
         snap = json.loads(paths.snapshot.read_text())
@@ -737,14 +806,14 @@ class TestMultiWriterSnapshotEdgeCases:
         assert counts["module_count"] == 0
 
     def test_snapshot_schema_version_constant(self, tmp_path):
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(_minimal_artifact(), out_dir=tmp_path, ts="")
         snap = json.loads(paths.snapshot.read_text())
         assert snap["schema_version"] == "snapshot-1.0"
 
     def test_snapshot_has_all_required_top_level_keys(self, tmp_path):
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(_full_artifact(), out_dir=tmp_path, ts="")
         snap = json.loads(paths.snapshot.read_text())
@@ -764,7 +833,7 @@ class TestMultiWriterSnapshotEdgeCases:
         assert not missing, f"Snapshot missing keys: {missing}"
 
     def test_snapshot_blind_spots_all_zero_on_empty(self, tmp_path):
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(_empty_artifact(), out_dir=tmp_path, ts="")
         snap = json.loads(paths.snapshot.read_text())
@@ -779,7 +848,7 @@ class TestSQLiteWriterEdgeCases:
 
     def test_sqlite_recreated_if_already_exists(self, tmp_path):
         """If DB already exists it must be deleted and recreated cleanly (no dup-key errors)."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(_full_artifact(), out_dir=tmp_path, ts="run1", write_sqlite=True)
         mtime_1 = paths.sqlite.stat().st_mtime_ns
@@ -793,7 +862,7 @@ class TestSQLiteWriterEdgeCases:
         assert node_count == 2  # _minimal_artifact has 2 entities
 
     def test_sqlite_empty_artifact_produces_zero_rows(self, tmp_path):
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(_empty_artifact(), out_dir=tmp_path, ts="", write_sqlite=True)
         conn = sqlite3.connect(str(paths.sqlite))
@@ -804,7 +873,7 @@ class TestSQLiteWriterEdgeCases:
         assert edges == 0
 
     def test_sqlite_meta_schema_version_is_v4(self, tmp_path):
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(_minimal_artifact(), out_dir=tmp_path, ts="", write_sqlite=True)
         conn = sqlite3.connect(str(paths.sqlite))
@@ -814,7 +883,7 @@ class TestSQLiteWriterEdgeCases:
 
     def test_sqlite_meta_total_rows_consistent(self, tmp_path):
         """meta total_nodes/total_edges must match actual table counts."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(_full_artifact(), out_dir=tmp_path, ts="", write_sqlite=True)
         conn = sqlite3.connect(str(paths.sqlite))
@@ -828,7 +897,7 @@ class TestSQLiteWriterEdgeCases:
 
     def test_sqlite_symbol_column_empty_string_by_default(self, tmp_path):
         """Edges without a symbol field must have '' in the symbol column (not NULL)."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(_minimal_artifact(), out_dir=tmp_path, ts="", write_sqlite=True)
         conn = sqlite3.connect(str(paths.sqlite))
@@ -838,7 +907,7 @@ class TestSQLiteWriterEdgeCases:
 
     def test_sqlite_foreign_key_src_dst_reference_valid_nodes(self, tmp_path):
         """Every edge src_id and dst_id must exist in the nodes table."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(_full_artifact(), out_dir=tmp_path, ts="", write_sqlite=True)
         conn = sqlite3.connect(str(paths.sqlite))
@@ -854,7 +923,7 @@ class TestSQLiteWriterEdgeCases:
 
     def test_sqlite_all_indexes_present(self, tmp_path):
         """Required indexes must exist for query performance."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(_minimal_artifact(), out_dir=tmp_path, ts="", write_sqlite=True)
         conn = sqlite3.connect(str(paths.sqlite))
@@ -872,20 +941,20 @@ class TestArtifactPathsContract:
 
     def test_artifact_paths_has_no_full_attribute(self, tmp_path):
         """paths.full must not exist — regression guard for removed adg_full.json."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(_minimal_artifact(), out_dir=tmp_path, ts="")
         assert not hasattr(paths, "full"), "ArtifactPaths.full was removed; SQLite is now the canonical store"
 
     def test_artifact_paths_has_no_test_graph_attribute(self, tmp_path):
         """paths.test_graph must not exist — regression guard for removed plane."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(_minimal_artifact(), out_dir=tmp_path, ts="")
         assert not hasattr(paths, "test_graph"), "ArtifactPaths.test_graph was removed in the ADG redesign"
 
     def test_size_report_has_no_full_key(self, tmp_path):
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(_minimal_artifact(), out_dir=tmp_path, ts="")
         sizes = paths.size_report()
@@ -894,7 +963,7 @@ class TestArtifactPathsContract:
 
     def test_size_report_missing_file_shows_missing(self, tmp_path):
         """size_report() returns 'missing' for files not written (write_sqlite=False)."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(
             _minimal_artifact(),
@@ -908,7 +977,7 @@ class TestArtifactPathsContract:
     def test_size_report_five_keys_exactly(self, tmp_path):
         """size_report() must return exactly 5 keys: snapshot, sqlite, file_graph,
         symbol_graph, governance_graph."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(_full_artifact(), out_dir=tmp_path, ts="")
         sizes = paths.size_report()
@@ -926,11 +995,11 @@ class TestRegressionGuards:
     def test_importing_test_graph_rels_raises_import_error(self):
         """_TEST_GRAPH_RELS must not be importable — hard regression guard."""
         with pytest.raises(ImportError):
-            from agentic_core.adg.artifact.SplitArtifact import _TEST_GRAPH_RELS  # noqa: F401
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import _TEST_GRAPH_RELS  # noqa: F401
 
     def test_adg_full_file_not_created_by_write_all(self, tmp_path):
         """adg_full*.json must never be created by write_all_artifacts."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         write_all_artifacts(_full_artifact(), out_dir=tmp_path, ts="20260312T000000Z")
         assert not list(tmp_path.glob("adg_full*.json")), (
@@ -939,7 +1008,7 @@ class TestRegressionGuards:
 
     def test_adg_test_graph_file_not_created_by_write_all(self, tmp_path):
         """adg_test_graph*.json must never be created by write_all_artifacts."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         write_all_artifacts(_full_artifact(), out_dir=tmp_path, ts="20260312T000000Z")
         assert not list(tmp_path.glob("adg_test_graph*.json")), (
@@ -948,7 +1017,7 @@ class TestRegressionGuards:
 
     def test_artifact_paths_full_attr_raises_attribute_error(self, tmp_path):
         """Direct attribute access on paths.full must raise AttributeError."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(_minimal_artifact(), out_dir=tmp_path, ts="")
         with pytest.raises(AttributeError):
@@ -956,7 +1025,7 @@ class TestRegressionGuards:
 
     def test_artifact_paths_test_graph_attr_raises_attribute_error(self, tmp_path):
         """Direct attribute access on paths.test_graph must raise AttributeError."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(_minimal_artifact(), out_dir=tmp_path, ts="")
         with pytest.raises(AttributeError):
@@ -966,7 +1035,7 @@ class TestRegressionGuards:
         """SplitArtifact.__dataclass_fields__ must not contain 'test_graph'."""
         import dataclasses
 
-        from agentic_core.adg.artifact.SplitArtifact import SplitArtifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import SplitArtifact
 
         field_names = {f.name for f in dataclasses.fields(SplitArtifact)}
         assert "test_graph" not in field_names
@@ -976,13 +1045,13 @@ class TestRegressionGuards:
 
     def test_layer_splitter_all_export_list_no_test_graph(self):
         """__all__ in layer_splitter must not export _TEST_GRAPH_RELS."""
-        import agentic_core.adg.artifact.SplitArtifact as ls
+#  # MOVED: import agentic_core.adg.artifact.SplitArtifact as ls
 
         assert "_TEST_GRAPH_RELS" not in ls.__all__
 
     def test_cli_report_dict_no_full_key(self, tmp_path, capsys):
         """CLI build-artifacts JSON report must not contain 'full' or 'test_graph' keys."""
-        from agentic_core.adg.cli import main
+#  # MOVED: from agentic_core.adg.cli import main
 
         rc = main(["--repo-root", str(ROOT), "build-artifacts", "--output-dir", str(tmp_path)])
         assert rc == 0
@@ -1005,7 +1074,7 @@ class TestFailClosed:
 
     def test_write_all_creates_out_dir_if_missing(self, tmp_path):
         """out_dir is created automatically — no pre-creation required."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         nested = tmp_path / "a" / "b" / "c"
         assert not nested.exists()
@@ -1014,7 +1083,7 @@ class TestFailClosed:
         assert paths.snapshot.exists()
 
     def test_split_artifact_write_all_creates_dir_if_missing(self, tmp_path):
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         nested = tmp_path / "planes"
         planes = split_artifact(_full_artifact())
@@ -1046,7 +1115,7 @@ class TestFailClosed:
 
     def test_sqlite_edges_relation_type_never_null(self, tmp_path):
         """relation_type column in SQLite must never be NULL or empty string."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(_full_artifact(), out_dir=tmp_path, ts="", write_sqlite=True)
         conn = sqlite3.connect(str(paths.sqlite))
@@ -1058,7 +1127,7 @@ class TestFailClosed:
 
     def test_plane_json_has_schema_version_field(self, tmp_path):
         """Every plane JSON file must carry schema_version at top level."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         paths = write_all_artifacts(_full_artifact(), out_dir=tmp_path, ts="", write_split_planes=True)
         for path in (paths.file_graph, paths.symbol_graph, paths.governance_graph):
@@ -1080,7 +1149,7 @@ class TestMatrixWriteFlags:
     )
     def test_flag_matrix_snapshot_always_written(self, tmp_path, write_planes, write_sq):
         """Snapshot is always written regardless of other flags."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         sub = tmp_path / f"p{write_planes}_s{write_sq}"
         paths = write_all_artifacts(
@@ -1103,7 +1172,7 @@ class TestMatrixWriteFlags:
     )
     def test_flag_matrix_adg_full_never_written(self, tmp_path, write_planes, write_sq):
         """adg_full.json must never be written regardless of flags."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         sub = tmp_path / f"p{write_planes}_s{write_sq}"
         write_all_artifacts(
@@ -1128,7 +1197,7 @@ class TestMatrixWriteFlags:
     )
     def test_flag_matrix_test_graph_never_written(self, tmp_path, write_planes, write_sq):
         """adg_test_graph.json must never be written regardless of flags."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         sub = tmp_path / f"tp{write_planes}_s{write_sq}"
         write_all_artifacts(

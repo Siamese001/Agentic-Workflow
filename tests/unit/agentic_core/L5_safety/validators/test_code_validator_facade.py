@@ -14,11 +14,11 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
+#  # MOVED: from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     CodeValidatorStrategy,
     ValidationResult,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -63,7 +63,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_code_validator_facade")
 # REMOVED: _emit_applies_guardrail("p0", "test_code_validator_facade", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_code_validator_facade", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -197,6 +197,20 @@ class TestCodeValidatorStrategy:
         return CodeValidatorStrategy(config)
 
     def test_initialization(self, strategy, config):
+        from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import RuleSet
+        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import __all__
         """Test strategy initialization."""
         assert strategy.check_syntax is True
         assert strategy.check_canon is True
@@ -252,7 +266,7 @@ class TestCodeValidatorAgentFacade:
     def agent(self):
         """Create CodeValidatorAgent instance."""
         with patch("agentic_core.base_agents.SovereignBaseAgent.SovereignBaseAgent.__init__"):
-            from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
                 CodeValidatorAgent,
             )
 
@@ -310,7 +324,7 @@ class TestValidationTypes:
 
     def test_violation_type_enum(self):
         """Test ViolationType enum exists."""
-        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
             ViolationType,
         )
 
@@ -321,7 +335,7 @@ class TestValidationTypes:
 
     def test_violation_dataclass(self):
         """Test Violation dataclass exists."""
-        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
             Violation,
             ViolationType,
         )
@@ -339,7 +353,7 @@ class TestValidationTypes:
 
     def test_ruleset_dataclass(self):
         """Test RuleSet dataclass exists."""
-        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import RuleSet
+#  # MOVED: from agentic_core.L5_safety.reasoning.CodeValidatorAgent import RuleSet
 
         ruleset = RuleSet()
 
@@ -351,7 +365,7 @@ class TestValidationTypes:
 
     def test_validation_report_dataclass(self):
         """Test ValidationReport dataclass exists."""
-        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
             ValidationReport,
         )
 
@@ -372,7 +386,7 @@ class TestLegacyCompatibility:
 
     def test_import_compatibility(self):
         """Test original import still works."""
-        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
             CodeValidatorAgent,
         )
 
@@ -380,8 +394,8 @@ class TestLegacyCompatibility:
 
     def test_inherits_from_sovereign_base(self):
         """Test class still inherits from SovereignBaseAgent."""
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
             CodeValidatorAgent,
         )
 
@@ -404,7 +418,7 @@ class TestLegacyCompatibility:
     def test_factory_syntax_validator(self):
         """Test create_legacy_syntax_validator creates correct config."""
         with patch("agentic_core.base_agents.SovereignBaseAgent.SovereignBaseAgent.__init__"):
-            from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
                 create_legacy_syntax_validator,
             )
 
@@ -415,7 +429,7 @@ class TestLegacyCompatibility:
     def test_factory_canon_validator(self):
         """Test create_legacy_canon_validator creates correct config."""
         with patch("agentic_core.base_agents.SovereignBaseAgent.SovereignBaseAgent.__init__"):
-            from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.CodeValidatorAgent import (
                 create_legacy_canon_validator,
             )
 
@@ -425,7 +439,7 @@ class TestLegacyCompatibility:
 
     def test_all_exports(self):
         """Test __all__ exports are correct."""
-        from agentic_core.L5_safety.reasoning.CodeValidatorAgent import __all__
+#  # MOVED: from agentic_core.L5_safety.reasoning.CodeValidatorAgent import __all__
 
         expected = [
             "CodeValidatorAgent",

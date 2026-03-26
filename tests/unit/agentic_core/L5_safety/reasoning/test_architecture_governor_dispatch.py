@@ -11,7 +11,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -84,8 +84,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.reasoning.StructuralValidatorAgent import StructureViolation
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.StructuralValidatorAgent import StructureViolation
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -197,6 +197,15 @@ class TestStructureViolationDirectAccess:
     """StructureViolation.violation_type is a plain str — no getattr/hasattr needed."""
 
     def test_violation_type_is_str(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.reasoning.StructuralValidatorAgent import StructureViolation
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
         v = _make_violation("GRAVITY")
         assert isinstance(v.violation_type, str)
 
@@ -221,7 +230,7 @@ class TestLogCategoricalDrift:
     """_log_categorical_drift now uses str(raw_vt) instead of hasattr(v_type,'name')."""
 
     def test_gravity_violation_counted(self):
-        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
 
         agent = ArchitectureGovernorAgent.__new__(ArchitectureGovernorAgent)
         agent.project_root = Path(".")
@@ -239,7 +248,7 @@ class TestLogCategoricalDrift:
         assert report["DUPLICATE"] == 1
 
     def test_unknown_type_goes_to_other(self):
-        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
 
         agent = ArchitectureGovernorAgent.__new__(ArchitectureGovernorAgent)
         agent.project_root = Path(".")
@@ -247,7 +256,7 @@ class TestLogCategoricalDrift:
         assert report["OTHER"] == 1
 
     def test_dict_violations_counted(self):
-        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
 
         agent = ArchitectureGovernorAgent.__new__(ArchitectureGovernorAgent)
         agent.project_root = Path(".")
@@ -261,7 +270,7 @@ class TestLogCategoricalDrift:
         assert report["NAMING"] == 1
 
     def test_lowercase_violation_type_normalized(self):
-        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
 
         agent = ArchitectureGovernorAgent.__new__(ArchitectureGovernorAgent)
         agent.project_root = Path(".")
@@ -269,7 +278,7 @@ class TestLogCategoricalDrift:
         assert report["GRAVITY"] == 1
 
     def test_empty_violations_all_zero(self):
-        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
 
         agent = ArchitectureGovernorAgent.__new__(ArchitectureGovernorAgent)
         agent.project_root = Path(".")
@@ -277,7 +286,7 @@ class TestLogCategoricalDrift:
         assert all(v == 0 for v in report.values())
 
     def test_violation_with_none_type_goes_to_other(self):
-        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
 
         agent = ArchitectureGovernorAgent.__new__(ArchitectureGovernorAgent)
         agent.project_root = Path(".")

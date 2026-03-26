@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L3_orchestration.engines.context_curator_engine  # noqa: F401
+#  # MOVED: import agentic_core.L3_orchestration.engines.context_curator_engine  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L3_orchestration.engines.context_curator_engine  # noqa: F401
     """Module context_curator_engine must be importable."""
     assert agentic_core.L3_orchestration.engines.context_curator_engine is not None

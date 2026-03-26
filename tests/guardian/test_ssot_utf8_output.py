@@ -26,13 +26,13 @@ pytestmark = pytest.mark.guardian
 
 
 def _import_console_fn():
-    from agentic_core.L0_routing.scripts.execute_ssot import _maybe_force_utf8_console
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import _maybe_force_utf8_console
 
     return _maybe_force_utf8_console
 
 
 def _import_handlers_fn():
-    from agentic_core.L0_routing.scripts.execute_ssot import (
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import (
         _maybe_force_utf8_logging_handlers,
     )
 
@@ -42,6 +42,8 @@ def _import_handlers_fn():
 class TestMaybeForceUtf8Console:
     @pytest.mark.skip(reason="UTF-8 console reconfiguration path changed — needs investigation")
     def test_reconfigures_stdout_on_windows(self, monkeypatch):
+        from agentic_core.L0_routing.scripts.execute_ssot import _maybe_force_utf8_console
+        from agentic_core.L0_routing.scripts.execute_ssot import (
         """stdout.reconfigure(encoding='utf-8') is called on win32."""
         monkeypatch.setattr(sys, "platform", "win32")
         reconfigured = {}

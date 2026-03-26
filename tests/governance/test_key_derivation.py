@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -91,13 +91,13 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.governance
 
-from agentic_core.L2_execution.enforcement.key_derivation import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.key_derivation import (
     derive_hmac_key,
     get_kdf_salt_hash,
     get_key_version,
     verify_key_version,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -190,6 +190,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestDeriveHmacKey:
     def test_returns_tuple_of_three(self) -> None:
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.enforcement.key_derivation import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         key, version, salt_hash = derive_hmac_key(b"master-secret")
         assert isinstance(key, bytes)
         assert isinstance(version, str)

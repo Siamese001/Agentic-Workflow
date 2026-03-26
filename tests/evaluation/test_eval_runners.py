@@ -10,19 +10,19 @@ Branch coverage:
 
 import pytest
 
-from agentic_core.evaluation.runners.offline_eval_runner import (
+#  # MOVED: from agentic_core.evaluation.runners.offline_eval_runner import (
     OfflineEvaluationRunner,
     _default_metrics,
 )
-from agentic_core.evaluation.runners.replay_eval_runner import (
+#  # MOVED: from agentic_core.evaluation.runners.replay_eval_runner import (
     ReplayEvaluationRunner,
     SystemConfig,
 )
-from agentic_core.evaluation.schemas.evaluation_dataset_schema import (
+#  # MOVED: from agentic_core.evaluation.schemas.evaluation_dataset_schema import (
     EvaluationDataset,
     EvaluationExample,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -69,7 +69,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_eval_runners", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_eval_runners", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_eval_runners", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -226,6 +226,11 @@ def _bad_generation(query, docs):
 
 class TestDefaultMetrics:
     def test_returns_list(self):
+        from agentic_core.evaluation.runners.offline_eval_runner import (
+        from agentic_core.evaluation.runners.replay_eval_runner import (
+        from agentic_core.evaluation.schemas.evaluation_dataset_schema import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test returns_list runtime behavior."""
     # Arrange
     # TODO: Set up test data for returns_list

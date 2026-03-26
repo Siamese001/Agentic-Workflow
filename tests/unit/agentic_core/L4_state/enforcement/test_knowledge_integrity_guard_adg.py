@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L4_state.enforcement.knowledge_integrity_guard  # noqa: F401
+#  # MOVED: import agentic_core.L4_state.enforcement.knowledge_integrity_guard  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L4_state.enforcement.knowledge_integrity_guard  # noqa: F401
     """Module knowledge_integrity_guard must be importable."""
     assert agentic_core.L4_state.enforcement.knowledge_integrity_guard is not None

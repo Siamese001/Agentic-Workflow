@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.enforcement.hardcoded_path_refactorer_enforcer import (  # noqa: F401
+#  # MOVED: from agentic_core.L5_safety.enforcement.hardcoded_path_refactorer_enforcer import (  # noqa: F401
     EXCLUDED_DIRS,
     EXCLUDED_FILES,
     PATH_CONSTRUCTOR_MAP,
@@ -25,6 +25,7 @@ from agentic_core.L5_safety.enforcement.hardcoded_path_refactorer_enforcer impor
 
 class TestShouldExcludePathFunction:
     def test_is_callable(self):
+        from agentic_core.L5_safety.enforcement.hardcoded_path_refactorer_enforcer import (  # noqa: F401
     """Test is_callable runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

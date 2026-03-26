@@ -15,7 +15,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from agentic_core.L0_routing.config.path_constants import L0_ROUTING_DIR
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import L0_ROUTING_DIR
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -49,6 +49,7 @@ class BoundaryStressTest:
         return all_exist
 
     def test_a_structural_realignment(self) -> dict:
+        from agentic_core.L0_routing.config.path_constants import L0_ROUTING_DIR
         """
         Test Case A: Structural Re-alignment (Automatic)
 

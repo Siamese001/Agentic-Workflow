@@ -6,14 +6,14 @@ Rationale:
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     L0_ROUTING_DIR,
     OPS_SCRIPTS_DIR,
 )
-from agentic_core.L0_routing.scripts.root_hygiene_util import enforce_root_hygiene
-from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L0_routing.scripts.root_hygiene_util import enforce_root_hygiene
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -180,6 +180,10 @@ def dirty_repo(tmp_path):
 
 
 def test_hygiene_enforcement(dirty_repo, monkeypatch):
+    from agentic_core.L0_routing.config.path_constants import (
+    from agentic_core.L0_routing.scripts.root_hygiene_util import enforce_root_hygiene
+    from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test that scripts are moved to correct locations and root is cleaned."""
     monkeypatch.chdir(dirty_repo)
     monkeypatch.setenv("AGENTIC_ALLOW_MUTATION_FOR_TESTS", "1")

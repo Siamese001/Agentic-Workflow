@@ -25,8 +25,18 @@ class TestToSmartSnakeCase:
     """Test _to_smart_snake_case method - acronym-preserving snake_case conversion."""
 
     def test_to_smart_snake_case_simple_pascal(self):
-        """Test simple PascalCase to snake_case conversion."""
         from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+        """Test simple PascalCase to snake_case conversion."""
+#  # MOVED: from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -46,7 +56,7 @@ class TestToSmartSnakeCase:
 
     def test_to_smart_snake_case_acronym_preservation(self):
         """Test that acronyms are preserved during conversion."""
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -77,7 +87,7 @@ class TestToSmartSnakeCase:
 
     def test_to_smart_snake_case_mixed_patterns(self):
         """Test mixed patterns with acronyms and regular words."""
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -102,7 +112,7 @@ class TestToSmartSnakeCase:
 
     def test_to_smart_snake_case_numbers(self):
         """Test handling of numbers in names."""
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -123,7 +133,7 @@ class TestToSmartSnakeCase:
 
     def test_to_smart_snake_case_already_snake_case(self):
         """Test that already snake_case input remains unchanged."""
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -144,7 +154,7 @@ class TestToSmartSnakeCase:
 
     def test_to_smart_snake_case_already_lowercase(self):
         """Test that already lowercase input remains unchanged."""
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -164,7 +174,7 @@ class TestToSmartSnakeCase:
 
     def test_to_smart_snake_case_edge_cases(self):
         """Test edge cases and boundary conditions."""
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -192,7 +202,7 @@ class TestToSmartSnakeCase:
 
     def test_to_smart_snake_case_consecutive_acronyms(self):
         """Test consecutive acronyms in name."""
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -212,7 +222,7 @@ class TestToSmartSnakeCase:
 
     def test_to_smart_snake_case_underscores_in_input(self):
         """Test handling of underscores in input."""
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 
@@ -250,7 +260,7 @@ class TestToSmartSnakeCase:
 
     def test_to_smart_snake_case_real_world_examples(self):
         """Test real-world class name examples."""
-        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
 

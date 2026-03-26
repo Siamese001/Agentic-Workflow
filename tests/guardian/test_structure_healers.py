@@ -17,11 +17,11 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     L1_COGNITION_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -96,24 +96,24 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L2_execution.healers.architecture_governance_healer import (
+#  # MOVED: from agentic_core.L2_execution.healers.architecture_governance_healer import (
     heal_import_compliance,
     heal_layer_gravity,
 )
-from agentic_core.L2_execution.healers.classification_compliance_healer import (
+#  # MOVED: from agentic_core.L2_execution.healers.classification_compliance_healer import (
     heal_naming_compliance,
     heal_territory_compliance,
 )
-from agentic_core.L2_execution.healers.hierarchy_compliance_healer import (
+#  # MOVED: from agentic_core.L2_execution.healers.hierarchy_compliance_healer import (
     heal_missing_structure,
     heal_subfolder_compliance,
 )
-from agentic_core.L2_execution.types.heal_contract_types import (
+#  # MOVED: from agentic_core.L2_execution.types.heal_contract_types import (
     HealCheckResult,
     HealStatus,
 )
-from agentic_core.L2_execution.types.healer_registry_types import HEALER_REGISTRY
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L2_execution.types.healer_registry_types import HEALER_REGISTRY
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -331,6 +331,14 @@ class TestHealerRegistry:
     }
 
     def test_all_healers_registered(self) -> None:
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.healers.architecture_governance_healer import (
+        from agentic_core.L2_execution.healers.classification_compliance_healer import (
+        from agentic_core.L2_execution.healers.hierarchy_compliance_healer import (
+        from agentic_core.L2_execution.types.heal_contract_types import (
+        from agentic_core.L2_execution.types.healer_registry_types import HEALER_REGISTRY
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         for cid in self.EXPECTED_IDS:
             assert cid in HEALER_REGISTRY, f"{cid} not in HEALER_REGISTRY"
 

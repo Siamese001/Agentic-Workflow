@@ -18,14 +18,14 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L5_safety.validators.base_detector_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.base_detector_validator import (
     AntiPatternCategory,
     EnforcementLevel,
 )
-from agentic_core.L5_safety.validators.silent_degradation_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.silent_degradation_validator import (
     SilentDegradationDetector,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -72,7 +72,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_silent_degradation_detector", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_silent_degradation_detector", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_silent_degradation_detector", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -221,6 +221,11 @@ class TestAvailabilityGuardSkip:
     """if not self._X_available: return None/[]/{}"""
 
     def test_detects_mcp_available_guard(self, det, tmp_py):
+        from agentic_core.L5_safety.validators.base_detector_validator import (
+        from agentic_core.L5_safety.validators.silent_degradation_validator import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import AntiPatternScanner
         code = """\
 class Bridge:
     def push(self, op):
@@ -862,7 +867,7 @@ class TestScannerRegistration:
     """SilentDegradationDetector must be wired into AntiPatternScanner."""
 
     def test_scanner_includes_silent_degradation_detector(self):
-        from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import AntiPatternScanner
+#  # MOVED: from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import AntiPatternScanner
 
         scanner = AntiPatternScanner(project_root=Path("."))
         categories = {d.category for d in scanner.composite.detectors}

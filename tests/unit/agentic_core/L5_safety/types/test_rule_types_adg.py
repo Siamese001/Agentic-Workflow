@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -74,14 +74,14 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_rule_types_adg", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_rule_types_adg", "exec_snapshot_link")
 pytestmark = pytest.mark.unit
-from agentic_core.L5_safety.types.rule_types import (
+#  # MOVED: from agentic_core.L5_safety.types.rule_types import (
     ConstitutionalRule,
     RuleSeverity,
     RuleType,
     ViolationReport,
     ViolationType,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -174,6 +174,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestRuleType:
     def test_is_enum(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.types.rule_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         import enum; assert issubclass(RuleType, enum.Enum)
     def test_has_safety(self): assert RuleType.SAFETY.value == "safety"
 

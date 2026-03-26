@@ -17,10 +17,10 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -67,7 +67,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_execution_gateway_bugfixes", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_execution_gateway_bugfixes", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_execution_gateway_bugfixes", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -189,26 +189,43 @@ class TestEnforcementModeSemantics:
     """is_v15_enforced() must return True for log/soft/1; is_v15_hard_fail() only for 1."""
 
     def test_is_v15_enforced_accepts_log(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_hard_fail
+        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_hard_fail
+        from agentic_core.L0_routing.enforcement.runtime_guard import (
+        from agentic_core.L0_routing.enforcement.runtime_guard import (
+        from agentic_core.L0_routing.types.guardian_contract_types import (
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.L0_routing.utils.core_integrity_util import (
+        from agentic_core.L0_routing.types.traceability_types import validate_trace_id
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 
         with patch.dict(os.environ, {"V15_ENFORCEMENT": "log"}):
             assert is_v15_enforced(), "V15_ENFORCEMENT=log must enter V15 path"
 
     def test_is_v15_enforced_accepts_soft(self):
-        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 
         with patch.dict(os.environ, {"V15_ENFORCEMENT": "soft"}):
             assert is_v15_enforced(), "V15_ENFORCEMENT=soft must enter V15 path"
 
     def test_is_v15_enforced_accepts_hard(self):
-        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 
         for val in ("1", "true", "yes", "TRUE", "True"):
             with patch.dict(os.environ, {"V15_ENFORCEMENT": val}):
                 assert is_v15_enforced(), f"V15_ENFORCEMENT={val} must enter V15 path"
 
     def test_is_v15_enforced_rejects_disabled(self):
-        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 
         for val in ("0", "false", "no", "off"):
             with patch.dict(os.environ, {"V15_ENFORCEMENT": val}):
@@ -217,7 +234,7 @@ class TestEnforcementModeSemantics:
     def test_is_v15_enforced_raises_on_invalid(self):
         import pytest
 
-        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 
         for val in ("", "something"):
             with patch.dict(os.environ, {"V15_ENFORCEMENT": val}):
@@ -227,14 +244,14 @@ class TestEnforcementModeSemantics:
                     is_v15_enforced()
 
     def test_is_v15_hard_fail_only_for_hard_values(self):
-        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_hard_fail
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import is_v15_hard_fail
 
         for val in ("1", "true", "yes"):
             with patch.dict(os.environ, {"V15_ENFORCEMENT": val}):
                 assert is_v15_hard_fail(), f"V15_ENFORCEMENT={val} must be hard-fail"
 
     def test_is_v15_hard_fail_false_for_log_soft(self):
-        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_hard_fail
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import is_v15_hard_fail
 
         for val in ("log", "soft"):
             with patch.dict(os.environ, {"V15_ENFORCEMENT": val}):
@@ -242,7 +259,7 @@ class TestEnforcementModeSemantics:
 
     def test_assert_v15_guarded_does_not_raise_in_log_mode(self):
         """In LOG_ONLY mode, assert_v15_guarded logs instead of raising."""
-        from agentic_core.L0_routing.enforcement.runtime_guard import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.runtime_guard import (
             assert_v15_guarded,
         )
 
@@ -252,10 +269,10 @@ class TestEnforcementModeSemantics:
 
     def test_assert_v15_guarded_raises_in_hard_mode(self):
         """In HARD_FAIL mode, assert_v15_guarded raises V15EnforcementError."""
-        from agentic_core.L0_routing.enforcement.runtime_guard import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.runtime_guard import (
             assert_v15_guarded,
         )
-        from agentic_core.L0_routing.types.guardian_contract_types import (
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import (
             V15EnforcementError,
         )
 
@@ -273,8 +290,8 @@ class TestEnforcementModeSemantics:
 
 def _make_agent(env_val: str):
     """Helper: instantiate SovereignBaseAgent under a given V15_ENFORCEMENT value."""
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    from agentic_core.L0_routing.utils.core_integrity_util import (
+#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+#  # MOVED: from agentic_core.L0_routing.utils.core_integrity_util import (
         CoreIntegrityVerifier,
     )
 
@@ -405,7 +422,7 @@ class TestTraceIdFormat:
 
     def test_validate_trace_id_does_not_raise(self):
         """validate_trace_id() must accept the trace_id produced by heal()."""
-        from agentic_core.L0_routing.types.traceability_types import validate_trace_id
+#  # MOVED: from agentic_core.L0_routing.types.traceability_types import validate_trace_id
 
         agent = _make_agent("log")
         with patch.dict(os.environ, {"V15_ENFORCEMENT": "log"}):
@@ -428,7 +445,7 @@ class TestStateHashReal:
         """Call state_hash_fn via a heal() and intercept the hashes."""
         captured: list[tuple[str, str, str]] = []
 
-        from agentic_core.L0_routing.enforcement.execution_gateway import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
 

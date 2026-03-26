@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.prompt_governance.scripts.import_violation_visitor import (  # noqa: F401
+#  # MOVED: from agentic_core.prompt_governance.scripts.import_violation_visitor import (  # noqa: F401
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,
@@ -26,6 +26,7 @@ from agentic_core.prompt_governance.scripts.import_violation_visitor import (  #
 
 class TestImportViolationVisitorContract:
     def test_is_class(self):
+        from agentic_core.prompt_governance.scripts.import_violation_visitor import (  # noqa: F401
         assert isinstance(ImportViolationVisitor, type)
 
     def test_has_method_visit_Import(self):

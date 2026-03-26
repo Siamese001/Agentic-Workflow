@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     OPS_SCRIPTS_DIR,
 )
@@ -18,7 +18,7 @@ from agentic_core.L0_routing.config.path_constants import (
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 # Import the agent directly without SovereignBaseAgent to avoid integrity checks
-from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
 
 
 class TestPascalHardening:
@@ -56,6 +56,8 @@ class TestPascalHardening:
         return agent
 
     def test_ops_script_protection(self, agent, tmp_path):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
         """Verify scripts in ops_scripts with classes are classified by AST content."""
         script_path = tmp_path / OPS_SCRIPTS_DIR / "DatabaseFixer.py"
         script_path.parent.mkdir()

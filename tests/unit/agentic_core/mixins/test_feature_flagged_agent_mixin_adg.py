@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.mixins.feature_flagged_agent_mixin  # noqa: F401
+#  # MOVED: import agentic_core.mixins.feature_flagged_agent_mixin  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.mixins.feature_flagged_agent_mixin  # noqa: F401
     """Module feature_flagged_agent_mixin must be importable."""
     assert agentic_core.mixins.feature_flagged_agent_mixin is not None

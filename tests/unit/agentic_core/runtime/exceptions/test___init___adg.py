@@ -6,11 +6,12 @@ Behavioral tests belong in test___init__.py (no _adg suffix).
 
 from __future__ import annotations
 
-import agentic_core.runtime.exceptions.__init__ as _mod  # noqa: F401
+#  # MOVED: import agentic_core.runtime.exceptions.__init__ as _mod  # noqa: F401
 
 
 class TestInitImportability:
     def test_module_importable(self) -> None:
+        import agentic_core.runtime.exceptions.__init__ as _mod  # noqa: F401
         """ADG contract: __init__.py must be importable."""
         assert _mod.__name__ == "agentic_core.runtime.exceptions.__init__"
 

@@ -49,7 +49,7 @@ from pathlib import Path
 from types import MappingProxyType
 from unittest.mock import MagicMock, patch
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
@@ -63,7 +63,7 @@ from agentic_core.L0_routing.config.path_constants import (
 
 
 def _make_agent(project_root: Path, healing_enabled: bool = True):
-    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
     agent = object.__new__(HierarchyAgent)
     agent.project_root = project_root
@@ -104,6 +104,8 @@ def _write(tmp_path, rel_str, content=""):
 
 class TestDeepCollisionDelegation:
     def test_deep_collision_legacy_returns_one_propagated(self, tmp_path):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
         """Collision + legacy archive succeeds → _heal_depth_violation returns 1."""
         agent = _make_agent(tmp_path)
         agent._legacy_archive_depth_violation.return_value = 1

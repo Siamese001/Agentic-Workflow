@@ -5,7 +5,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L1_cognition.types.capability_types import (
+#  # MOVED: from agentic_core.L1_cognition.types.capability_types import (
     AgentCapability,
     AgentStatus,
 )
@@ -13,6 +13,7 @@ from agentic_core.L1_cognition.types.capability_types import (
 
 class TestAgentCapability:
     def test_is_enum(self):
+        from agentic_core.L1_cognition.types.capability_types import (
         import enum
         assert issubclass(AgentCapability, enum.Enum)
 

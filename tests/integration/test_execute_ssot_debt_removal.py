@@ -15,7 +15,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -62,7 +62,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_execute_ssot_debt_removal", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_execute_ssot_debt_removal", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_execute_ssot_debt_removal", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -192,7 +192,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 def _make_engine(recent_vecs=None):
     """Return a SovereignDecisionEngine with optional L4 state."""
-    from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
 
     state_mgr = MagicMock()
     state_mgr.state = {"meta_learning": {"recent_failure_vectors": recent_vecs or []}}
@@ -202,7 +202,7 @@ def _make_engine(recent_vecs=None):
 
 
 def _dummy_confidence(value=0.8, reasoning=""):
-    from agentic_core.L0_routing.scripts.execute_ssot import ConfidenceScore
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import ConfidenceScore
 
     return ConfidenceScore(value=value, reasoning=reasoning)
 
@@ -214,6 +214,10 @@ def _dummy_confidence(value=0.8, reasoning=""):
 
 @pytest.mark.unit
 def test_novelty_score_no_vectors_returns_1():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
+    from agentic_core.L0_routing.scripts.execute_ssot import ConfidenceScore
 """Test novelty_score_no_vectors_returns_1 runtime behavior."""
 # Arrange
 # TODO: Set up test data for novelty_score_no_vectors_returns_1

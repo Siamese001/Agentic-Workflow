@@ -5,7 +5,7 @@ Validates: Unified eviction, domain population, semantic registry alignment
 [ULTRA-DIFF] RECONCILIATION: Updated to match authoritative SSOT structure
 from structure_blueprint_config.py (2026-02-05)
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
@@ -17,7 +17,7 @@ from agentic_core.L0_routing.config.path_constants import (
 import sys
 from pathlib import Path
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -90,23 +90,23 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
-from agentic_core.L5_safety.config.structure_blueprint import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint import (
     APPS_LIC_SUBFOLDER_MAP,
     APPS_RG_SUBFOLDER_MAP,
     APPS_SHARED_SUBFOLDER_MAP,
     CORE_SUBFOLDER_MAP,
     SEMANTIC_L2_REGISTRY,
 )
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -198,6 +198,12 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 
 def test_unified_eviction():
+    from agentic_core.L0_routing.config.path_constants import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L0_routing.config.path_constants import (
+    from agentic_core.L5_safety.config.structure_blueprint import (
+    from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """
     Edge Case: Verify 'unified' is completely removed from all CORE_SUBFOLDER_MAP lists.
     It is an anti-pattern that obscures domain responsibility.

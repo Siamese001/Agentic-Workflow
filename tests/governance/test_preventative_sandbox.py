@@ -13,11 +13,11 @@ import subprocess
 
 import pytest
 
-from agentic_core.L2_execution.enforcement.preventative_sandbox import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.preventative_sandbox import (
     PreventativeSandbox,
     SandboxViolationError,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -168,6 +168,8 @@ class TestSandboxBlocking:
     """Write vectors must raise SandboxViolationError when active."""
 
     def test_os_remove_blocked(self):
+        from agentic_core.L2_execution.enforcement.preventative_sandbox import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         sandbox = PreventativeSandbox()
         with sandbox.activated():
             with pytest.raises(SandboxViolationError) as exc:

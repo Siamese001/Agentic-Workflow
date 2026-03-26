@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -65,7 +65,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_memory_persistence_e2e", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_memory_persistence_e2e", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_memory_persistence_e2e", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -234,13 +234,13 @@ def _make_scan_result(n_modules: int = 10, n_edges: int = 5) -> _MockScanResult:
 @pytest.fixture()
 def memory_env(tmp_path, monkeypatch):
     """Provide (adapter, db_path) with a fresh temp SQLite store."""
-    from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+#  # MOVED: from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
 
     db = tmp_path / "kg_e2e.sqlite"
     monkeypatch.setenv("MEMORY_DB", str(db))
     GraphMemoryBridge.reset_instance()
 
-    from agentic_core.adg.adapters.ADGMemoryAdapter import ADGMemoryAdapter
+#  # MOVED: from agentic_core.adg.adapters.ADGMemoryAdapter import ADGMemoryAdapter
 
     adapter = ADGMemoryAdapter()
 
@@ -265,6 +265,12 @@ def _counts(db):
 
 class TestFullPersistencePipeline:
     def test_ingest_populates_sqlite(self, memory_env):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+        from agentic_core.adg.adapters.ADGMemoryAdapter import ADGMemoryAdapter
+        from agentic_core.adg.adapters.ADGMemoryAdapter import ADGMemoryAdapter
+        from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
         """Full pipeline: ingest_snapshot must produce non-zero entity count in SQLite."""
         adapter, db = memory_env
         scan = _make_scan_result(n_modules=10, n_edges=5)
@@ -316,8 +322,8 @@ class TestFullPersistencePipeline:
 
         This proves durability: data is in SQLite, not RAM.
         """
-        from agentic_core.adg.adapters.ADGMemoryAdapter import ADGMemoryAdapter
-        from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
+#  # MOVED: from agentic_core.adg.adapters.ADGMemoryAdapter import ADGMemoryAdapter
+#  # MOVED: from agentic_core.L4_state.enforcement.graph_memory_bridge import GraphMemoryBridge
 
         db = tmp_path / "kg_durable.sqlite"
         monkeypatch.setenv("MEMORY_DB", str(db))

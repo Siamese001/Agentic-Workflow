@@ -20,14 +20,14 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L3_ORCHESTRATION_DIR,
 )
-from agentic_core.L0_routing.types.determinism_types import (
+#  # MOVED: from agentic_core.L0_routing.types.determinism_types import (
     FixConstraint,
     SurgicalManifest,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -74,7 +74,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_mission_runner_wiring", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_mission_runner_wiring", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_mission_runner_wiring", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -233,6 +233,12 @@ class TestStructuralMissionRunner:
 
     @pytest.mark.parametrize("mode", list(MODE_SPECS.keys()))
     def test_mode_function_exists(self, mode):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L0_routing.types.determinism_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced as _check
+        from agentic_core.L0_routing.enforcement.traceability_contracts import generate_trace_id
     """Test mode_function_exists runtime behavior."""
     # Arrange
     # TODO: Set up test data for mode_function_exists
@@ -298,12 +304,12 @@ assert isinstance(result, (dict, list, str, int, float, bool)), "Result should b
 
     Same logic as mission_runner.py but without importing the heavy module.
     """
-    from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced as _check
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced as _check
 
     if not _check():
         return None
 
-    from agentic_core.L0_routing.enforcement.traceability_contracts import generate_trace_id
+#  # MOVED: from agentic_core.L0_routing.enforcement.traceability_contracts import generate_trace_id
 
     _hex8 = hashlib.sha256(f"mission_runner.{mode_name}".encode()).hexdigest()[:8].upper()
     trace_id = generate_trace_id(_hex8)

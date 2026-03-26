@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -77,7 +77,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_seed_pack_full_build_b5", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_seed_pack_full_build_b5", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_seed_pack_full_build_b5", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -115,12 +115,12 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.openai_embedder import OpenAIEmbedder
-from system_learning.engines.seed_embedding_pack_builder import (
+#  # MOVED: from system_learning.engines.openai_embedder import OpenAIEmbedder
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import (
     DeterministicHashEmbedder,
     build_seed_embedding_pack,
 )
-from system_learning.types.seed_embedding_pack_types import (
+#  # MOVED: from system_learning.types.seed_embedding_pack_types import (
     SeedEmbeddingPackConfig,
 )
 
@@ -209,6 +209,11 @@ class TestSeedPackContractBuild:
 
     @pytest.mark.integration_full_deps
     def test_contract_file_structure(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.openai_embedder import OpenAIEmbedder
+        from system_learning.engines.seed_embedding_pack_builder import (
+        from system_learning.types.seed_embedding_pack_types import (
     """Test contract_file_structure contract compliance."""
     # Arrange
     # TODO: Set up contract scenario

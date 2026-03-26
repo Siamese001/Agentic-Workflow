@@ -11,12 +11,12 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
     ADGStaticScanner,
     Edge,
     _AttributeVisitor,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -174,6 +174,8 @@ class TestConfigReadVisitor:
     """Unit-level: _AttributeVisitor correctly classifies reads."""
 
     def test_os_getenv_is_reads_env(self):
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         edges = _visit("x = os.getenv('KEY')\n")
         assert any(e.edge_kind == "reads_env" for e in edges)
 

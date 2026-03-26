@@ -10,7 +10,7 @@ import hashlib
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -57,7 +57,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_prompt_provenance_integration", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_prompt_provenance_integration", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_prompt_provenance_integration", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -195,7 +195,7 @@ def _make_outcome_record(
     failure_slot="NONE",
     prompt_hash=None,
 ):
-    from system_learning.types.prompt_artifact_types import PromptOutcomeRecord
+#  # MOVED: from system_learning.types.prompt_artifact_types import PromptOutcomeRecord
 
     ph = prompt_hash or _sha256("prompt")
     oid = _sha256(trace_id + final_outcome + str(groundedness))
@@ -233,7 +233,7 @@ def _make_build_request(
     model_target="gpt-4o",
     policy_hash=None,
 ):
-    from system_learning.engines.prompt_provenance_builder import (
+#  # MOVED: from system_learning.engines.prompt_provenance_builder import (
         PromptBuildRequest,
         SlotPayload,
     )
@@ -263,13 +263,29 @@ class TestFullPromptLifecycleIntegration:
     """End-to-end: build → validate → execute → drift → adapt → bus."""
 
     def _build_artifact(self):
-        from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
+#  # MOVED: from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
 
         req = _make_build_request(policy_hash=_sha256("policy_v1"))
         result = build_compiled_prompt(req)
         return result.artifact, result.adg_relations
 
     def test_build_to_validate_pipeline(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.types.prompt_artifact_types import PromptOutcomeRecord
+        from system_learning.engines.prompt_provenance_builder import (
+        from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
+        from system_learning.engines.prompt_execution_tracer import trace_execution
+        from system_learning.engines.prompt_execution_tracer import trace_execution
+        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcomes_to_records
+        from system_learning.engines.rca_cluster_engine import cluster_records
+        from system_learning.engines.prompt_execution_tracer import trace_execution
+        from system_learning.engines.prompt_safety_validator import validate_prompt
+        from system_learning.types.prompt_adg_relations import ALL_PROMPT_RELATIONS
+        from system_learning.engines.prompt_execution_tracer import trace_execution
+        from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
     """Test build_to_validate_pipeline runtime behavior."""
     # Arrange
     # TODO: Set up workflow context
@@ -291,7 +307,7 @@ class TestFullPromptLifecycleIntegration:
         assert SAFETY_ALLOWED in rel_types
 
     def test_execute_produces_outcome_record(self):
-        from system_learning.engines.prompt_execution_tracer import trace_execution
+#  # MOVED: from system_learning.engines.prompt_execution_tracer import trace_execution
 
         artifact, _ = self._build_artifact()
         result = trace_execution(
@@ -312,8 +328,8 @@ class TestFullPromptLifecycleIntegration:
         assert result.outcome_record.groundedness_score == pytest.approx(0.88, abs=1e-5)
 
     def test_adapt_outcome_to_bus_record(self):
-        from system_learning.engines.prompt_execution_tracer import trace_execution
-        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
+#  # MOVED: from system_learning.engines.prompt_execution_tracer import trace_execution
+#  # MOVED: from system_learning.engines.prompt_outcome_bus_adapter import convert_outcome_to_record
 
         artifact, _ = self._build_artifact()
         exec_result = trace_execution(
@@ -327,7 +343,7 @@ class TestFullPromptLifecycleIntegration:
         assert bus_record.retrieval_groundedness == pytest.approx(0.9, abs=1e-5)
 
     def test_drift_detected_after_groundedness_drop(self):
-        from system_learning.engines.prompt_drift_detector import detect_prompt_drift
+#  # MOVED: from system_learning.engines.prompt_drift_detector import detect_prompt_drift
 
         baseline = [_make_outcome_record(trace_id=f"b{i}", groundedness=0.9) for i in range(20)]
         current = [_make_outcome_record(trace_id=f"c{i}", groundedness=0.7) for i in range(20)]
@@ -335,8 +351,8 @@ class TestFullPromptLifecycleIntegration:
         assert any(s.drift_type == "GROUNDEDNESS_DROP" for s in signals)
 
     def test_bus_adapter_feeds_meta_learning_cluster(self):
-        from system_learning.engines.prompt_outcome_bus_adapter import convert_outcomes_to_records
-        from system_learning.engines.rca_cluster_engine import cluster_records
+#  # MOVED: from system_learning.engines.prompt_outcome_bus_adapter import convert_outcomes_to_records
+#  # MOVED: from system_learning.engines.rca_cluster_engine import cluster_records
 
         outcomes = [
             _make_outcome_record(trace_id=f"tr-{i}", groundedness=0.2, final_outcome="SAFE_FAILURE")
@@ -350,9 +366,9 @@ class TestFullPromptLifecycleIntegration:
         assert "LOW_GROUNDEDNESS" in patterns
 
     def test_all_adg_relations_use_known_relation_types(self):
-        from system_learning.engines.prompt_execution_tracer import trace_execution
-        from system_learning.engines.prompt_safety_validator import validate_prompt
-        from system_learning.types.prompt_adg_relations import ALL_PROMPT_RELATIONS
+#  # MOVED: from system_learning.engines.prompt_execution_tracer import trace_execution
+#  # MOVED: from system_learning.engines.prompt_safety_validator import validate_prompt
+#  # MOVED: from system_learning.types.prompt_adg_relations import ALL_PROMPT_RELATIONS
 
         artifact, prov_rels = self._build_artifact()
         _, safety_rels = validate_prompt(artifact, _TS)
@@ -362,8 +378,8 @@ class TestFullPromptLifecycleIntegration:
             assert rel in ALL_PROMPT_RELATIONS, f"Unknown relation type emitted: {rel!r}"
 
     def test_provenance_chain_prompt_hash_consistent(self):
-        from system_learning.engines.prompt_execution_tracer import trace_execution
-        from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
+#  # MOVED: from system_learning.engines.prompt_execution_tracer import trace_execution
+#  # MOVED: from system_learning.engines.prompt_provenance_builder import build_compiled_prompt
 
         req = _make_build_request()
         build_result = build_compiled_prompt(req)

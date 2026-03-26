@@ -7,13 +7,13 @@ All tests are deterministic and use in-memory fixtures.
 
 import pytest
 
-from agentic_core.L5_safety.security.injection_regression_gate import (
+#  # MOVED: from agentic_core.L5_safety.security.injection_regression_gate import (
     InjectionRegressionError,
     RegressionThresholds,
     check_regression_compliance,
     evaluate_against_baseline,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -162,6 +162,8 @@ class TestInjectionRegressionGate:
     """Test injection regression gate functionality."""
 
     def test_regression_triggers_fail_closed_attack_success_rate(self):
+        from agentic_core.L5_safety.security.injection_regression_gate import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """Test that attack success rate regression triggers fail-closed."""
         baseline = {
             "total_samples": 100,

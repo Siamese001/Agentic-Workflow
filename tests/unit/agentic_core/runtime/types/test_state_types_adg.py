@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.runtime.types.state_types  # noqa: F401
+#  # MOVED: import agentic_core.runtime.types.state_types  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.runtime.types.state_types  # noqa: F401
     """Module state_types must be importable."""
     assert agentic_core.runtime.types.state_types is not None

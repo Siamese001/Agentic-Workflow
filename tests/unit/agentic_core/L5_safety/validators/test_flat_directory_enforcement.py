@@ -10,12 +10,12 @@ validator enforced the "flat" flag in SOVEREIGN_TERRITORIES.
 
 from __future__ import annotations
 
-from agentic_core.L5_safety.config.structure_blueprint import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint import (
     AGENTIC_CORE_DIR,
     FLAT_DIRECTORIES,
     validate_flat_directory,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -164,6 +164,8 @@ class TestFlatDirectories:
     """FLAT_DIRECTORIES constant is correctly defined."""
 
     def test_mixins_is_flat(self):
+        from agentic_core.L5_safety.config.structure_blueprint import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         assert "mixins" in FLAT_DIRECTORIES
 
     def test_base_agents_is_flat(self):

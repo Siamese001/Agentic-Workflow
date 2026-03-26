@@ -20,11 +20,11 @@ from typing import Any
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     L3_ORCHESTRATION_DIR,
 )
-from agentic_core.mixins.inspection_capability_mixin import InspectionCapability, InspectionResult
+#  # MOVED: from agentic_core.mixins.inspection_capability_mixin import InspectionCapability, InspectionResult
 
 ROOT = Path(__file__).resolve().parents[5]
 # Post-consolidation: DagRuntimeInspectorAgent shimmed to InspectorExecutor
@@ -66,6 +66,8 @@ class TestDagRuntimeInspectorStructuralContract:
     """AST structural contract: agent shape, inheritance, method presence."""
 
     def test_correct_import_path(self) -> None:
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.mixins.inspection_capability_mixin import InspectionCapability, InspectionResult
     """Test correct_import_path runtime behavior."""
     # Arrange
     # TODO: Set up runtime environment

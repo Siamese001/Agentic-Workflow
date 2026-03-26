@@ -19,7 +19,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
@@ -54,6 +54,7 @@ class TestCodeQualityMetrics:
 
     @pytest.mark.guardian
     def test_file_size_validation(self):
+        from agentic_core.L0_routing.config.path_constants import (
         """
         Test that no files exceed maximum size limits (monolith detection).
 

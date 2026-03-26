@@ -12,12 +12,12 @@ Validates:
 
 import pytest
 
-from agentic_core.L5_safety.types.shift_report_types import (
+#  # MOVED: from agentic_core.L5_safety.types.shift_report_types import (
     MIN_SAMPLE_SIZE,
     CovariateShiftDetector,
     ShiftReport,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -188,6 +188,8 @@ class TestShiftReportImmutability:
     """ShiftReport must be frozen."""
 
     def test_cannot_mutate_field(self):
+        from agentic_core.L5_safety.types.shift_report_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         report = ShiftReport.create(
             joint_shift=False,
             per_feature={},

@@ -10,13 +10,13 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L5_safety.types.surgical_context_types import (
+#  # MOVED: from agentic_core.L5_safety.types.surgical_context_types import (
     ASTCoordinate,
     SurgicalContext,
     SurgicalContextBuilder,
     ViolationConstraint,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -165,6 +165,8 @@ class TestASTCoordinate:
     """Tests for ASTCoordinate dataclass."""
 
     def test_create_coordinate(self):
+        from agentic_core.L5_safety.types.surgical_context_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """Test creating an AST coordinate."""
         coord = ASTCoordinate(
             node_id="func_1",

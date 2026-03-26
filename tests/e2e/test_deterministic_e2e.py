@@ -14,28 +14,28 @@ from __future__ import annotations
 
 import time
 
-from agentic_core.L5_safety.validators.ats_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.ats_validator import (
     AtsValidator,
 )
-from agentic_core.L5_safety.validators.campaign_balance_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.campaign_balance_validator import (
     CampaignBalanceValidator,
 )
-from agentic_core.L5_safety.validators.content_quality_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.content_quality_validator import (
     ContentQualityValidator,
 )
-from agentic_core.L5_safety.validators.deliverability_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.deliverability_validator import (
     DeliverabilityValidator,
 )
-from agentic_core.L5_safety.validators.governance_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.governance_validator import (
     GovernanceShieldValidator,
 )
-from agentic_core.L5_safety.validators.hop_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.hop_validator import (
     HOP1ProfileDeterministic,
 )
-from agentic_core.L5_safety.validators.intelligence_query_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.intelligence_query_validator import (
     IntelligenceQueryValidator,
 )
-from agentic_core.L5_safety.validators.lead_quality_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.lead_quality_validator import (
     LeadQualityValidator,
 )
 
@@ -54,6 +54,14 @@ class TestFullPipelineE2E:
     """End-to-end tests for full validation pipeline."""
 
     def test_resume_generation_pipeline(self) -> None:
+        from agentic_core.L5_safety.validators.ats_validator import (
+        from agentic_core.L5_safety.validators.campaign_balance_validator import (
+        from agentic_core.L5_safety.validators.content_quality_validator import (
+        from agentic_core.L5_safety.validators.deliverability_validator import (
+        from agentic_core.L5_safety.validators.governance_validator import (
+        from agentic_core.L5_safety.validators.hop_validator import (
+        from agentic_core.L5_safety.validators.intelligence_query_validator import (
+        from agentic_core.L5_safety.validators.lead_quality_validator import (
         """E2E Test 1: Complete resume generation pipeline."""
         # Initialize all validators
         ats = ATSValidationDeterministic(

@@ -30,7 +30,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     L0_ROUTING_DIR,
 )
@@ -144,6 +144,7 @@ class TestRosterUsesDirectImports:
     Shims deleted in Phase 1 of agent-script refactor."""
 
     def test_roster_imports_direct_class_names(self, roster_func_node):
+        from agentic_core.L0_routing.config.path_constants import (
         imported = _import_names_in_function(roster_func_node)
         for name in CANONICAL_ROSTER_IMPORTS:
             assert name in imported, (

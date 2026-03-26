@@ -16,7 +16,7 @@ import threading
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -61,7 +61,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_bge_embedding_registry")
 # REMOVED: _emit_applies_guardrail("p0", "test_bge_embedding_registry", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_bge_embedding_registry", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -206,7 +206,7 @@ def _rfr(
     trace_id: str = _TID,
     ts: int = _TS,
 ):
-    from system_learning.types.semantic_memory_types import ReplayFailureRecord
+#  # MOVED: from system_learning.types.semantic_memory_types import ReplayFailureRecord
 
     return ReplayFailureRecord(
         failure_id=failure_id,
@@ -241,7 +241,7 @@ def _poem(
     trace_id: str = _TID,
     ts: int = _TS,
 ):
-    from system_learning.types.semantic_memory_types import PromptOutcomeEmbeddingRecord
+#  # MOVED: from system_learning.types.semantic_memory_types import PromptOutcomeEmbeddingRecord
 
     return PromptOutcomeEmbeddingRecord(
         record_id=record_id,
@@ -280,7 +280,7 @@ def _rcr(
     trace_id: str = _TID,
     ts: int = _TS,
 ):
-    from system_learning.types.semantic_memory_types import RetrievalCaseRecord
+#  # MOVED: from system_learning.types.semantic_memory_types import RetrievalCaseRecord
 
     return RetrievalCaseRecord(
         case_id=case_id,
@@ -301,7 +301,7 @@ def _rcr(
 
 
 def _registry(**kwargs):
-    from system_learning.engines.semantic_index_registry import SemanticIndexRegistry
+#  # MOVED: from system_learning.engines.semantic_index_registry import SemanticIndexRegistry
 
     return SemanticIndexRegistry(**kwargs)
 
@@ -313,12 +313,52 @@ def _registry(**kwargs):
 
 class TestSemanticIndexRegistry:
     def test_construction_with_defaults(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.types.semantic_memory_types import ReplayFailureRecord
+        from system_learning.types.semantic_memory_types import PromptOutcomeEmbeddingRecord
+        from system_learning.types.semantic_memory_types import RetrievalCaseRecord
+        from system_learning.engines.semantic_index_registry import SemanticIndexRegistry
+        from system_learning.types.semantic_memory_types import IncidentBundle
+        from system_learning.engines.semantic_index_registry import INDEX_INCIDENT
+        from system_learning.engines.semantic_index_registry import INDEX_GRAPH
+        from system_learning.types.semantic_memory_types import GraphNeighborhood
+        from system_learning.engines.semantic_index_registry import INDEX_MUTATION
+        from system_learning.types.semantic_memory_types import MutationDiffRecord
+        from system_learning.engines.semantic_index_registry import INDEX_PROMPT
+        from system_learning.engines.semantic_index_registry import INDEX_RETRIEVAL
+        from system_learning.engines.semantic_index_registry import INDEX_REPLAY
+        from system_learning.engines.semantic_index_registry import INDEX_PREFERENCE
+        from system_learning.types.semantic_memory_types import PathDPreferencePair
+        from system_learning.engines.semantic_index_registry import INDEX_GUARDRAIL
+        from system_learning.types.semantic_memory_types import PolicyGuardrailCase
+        from system_learning.engines.semantic_index_registry import ALL_INDEXES
+        from system_learning.types.semantic_memory_types import PolicyGuardrailCase
+        from system_learning.types.semantic_memory_types import IncidentBundle
+        from system_learning.engines.semantic_index_registry import ALL_INDEXES
+        from system_learning.engines.semantic_index_registry import ALL_INDEXES
+        from system_learning.engines.semantic_index_registry import INDEX_PROMPT
+        from system_learning.engines.semantic_index_registry import ALL_INDEXES
+        from system_learning.types.semantic_memory_types import PolicyGuardrailCase
+        from system_learning.engines.semantic_index_registry import ALL_INDEXES
+        from system_learning.engines.semantic_index_registry import INDEX_PROMPT
+        from system_learning.engines.semantic_index_registry import (
+        from system_learning.engines.semantic_index_registry import INDEX_PROMPT
+        from system_learning.engines.semantic_index_registry import ALL_INDEXES
+        from system_learning.engines.semantic_index_registry import (
+        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+        from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
+        from system_learning.types.semantic_memory_types import (
+        from system_learning.engines.semantic_index_registry import INDEX_PROMPT
+        from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
+        from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
+        from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
         r = _registry()
         snap = r.buffer_snapshot()
         assert snap.total == 0
 
     def test_ingest_incident(self):
-        from system_learning.types.semantic_memory_types import IncidentBundle
+#  # MOVED: from system_learning.types.semantic_memory_types import IncidentBundle
 
         r = _registry()
         bundle = IncidentBundle(
@@ -334,14 +374,14 @@ class TestSemanticIndexRegistry:
             timestamp_utc=_TS,
         )
         result = r.ingest_incident(bundle)
-        from system_learning.engines.semantic_index_registry import INDEX_INCIDENT
+#  # MOVED: from system_learning.engines.semantic_index_registry import INDEX_INCIDENT
 
         assert result.index_name == INDEX_INCIDENT
         assert r.buffer_snapshot().incident_index == 1
 
     def test_ingest_graph_neighborhood(self):
-        from system_learning.engines.semantic_index_registry import INDEX_GRAPH
-        from system_learning.types.semantic_memory_types import GraphNeighborhood
+#  # MOVED: from system_learning.engines.semantic_index_registry import INDEX_GRAPH
+#  # MOVED: from system_learning.types.semantic_memory_types import GraphNeighborhood
 
         r = _registry()
         n = GraphNeighborhood(
@@ -360,8 +400,8 @@ class TestSemanticIndexRegistry:
         assert r.buffer_snapshot().graph_index == 1
 
     def test_ingest_mutation(self):
-        from system_learning.engines.semantic_index_registry import INDEX_MUTATION
-        from system_learning.types.semantic_memory_types import MutationDiffRecord
+#  # MOVED: from system_learning.engines.semantic_index_registry import INDEX_MUTATION
+#  # MOVED: from system_learning.types.semantic_memory_types import MutationDiffRecord
 
         r = _registry()
         m = MutationDiffRecord(
@@ -380,7 +420,7 @@ class TestSemanticIndexRegistry:
         assert r.buffer_snapshot().mutation_index == 1
 
     def test_ingest_prompt_outcome(self):
-        from system_learning.engines.semantic_index_registry import INDEX_PROMPT
+#  # MOVED: from system_learning.engines.semantic_index_registry import INDEX_PROMPT
 
         r = _registry()
         res = r.ingest_prompt_outcome(_poem())
@@ -388,7 +428,7 @@ class TestSemanticIndexRegistry:
         assert r.buffer_snapshot().prompt_index == 1
 
     def test_ingest_retrieval_case(self):
-        from system_learning.engines.semantic_index_registry import INDEX_RETRIEVAL
+#  # MOVED: from system_learning.engines.semantic_index_registry import INDEX_RETRIEVAL
 
         r = _registry()
         res = r.ingest_retrieval_case(_rcr())
@@ -396,7 +436,7 @@ class TestSemanticIndexRegistry:
         assert r.buffer_snapshot().retrieval_index == 1
 
     def test_ingest_replay_failure(self):
-        from system_learning.engines.semantic_index_registry import INDEX_REPLAY
+#  # MOVED: from system_learning.engines.semantic_index_registry import INDEX_REPLAY
 
         r = _registry()
         res = r.ingest_replay_failure(_rfr())
@@ -404,8 +444,8 @@ class TestSemanticIndexRegistry:
         assert r.buffer_snapshot().replay_index == 1
 
     def test_ingest_preference(self):
-        from system_learning.engines.semantic_index_registry import INDEX_PREFERENCE
-        from system_learning.types.semantic_memory_types import PathDPreferencePair
+#  # MOVED: from system_learning.engines.semantic_index_registry import INDEX_PREFERENCE
+#  # MOVED: from system_learning.types.semantic_memory_types import PathDPreferencePair
 
         r = _registry()
         p = PathDPreferencePair(
@@ -424,8 +464,8 @@ class TestSemanticIndexRegistry:
         assert r.buffer_snapshot().preference_index == 1
 
     def test_ingest_guardrail_case(self):
-        from system_learning.engines.semantic_index_registry import INDEX_GUARDRAIL
-        from system_learning.types.semantic_memory_types import PolicyGuardrailCase
+#  # MOVED: from system_learning.engines.semantic_index_registry import INDEX_GUARDRAIL
+#  # MOVED: from system_learning.types.semantic_memory_types import PolicyGuardrailCase
 
         r = _registry()
         c = PolicyGuardrailCase(
@@ -452,7 +492,7 @@ class TestSemanticIndexRegistry:
         assert snap.total == 3
 
     def test_export_all_corpus_records_returns_all_index_keys(self):
-        from system_learning.engines.semantic_index_registry import ALL_INDEXES
+#  # MOVED: from system_learning.engines.semantic_index_registry import ALL_INDEXES
 
         r = _registry()
         r.ingest_prompt_outcome(_poem())
@@ -491,7 +531,7 @@ class TestSemanticIndexRegistry:
         assert stats.get("TIMING_DEPENDENCY", 0) == 1
 
     def test_guardrail_verdict_stats_delegates(self):
-        from system_learning.types.semantic_memory_types import PolicyGuardrailCase
+#  # MOVED: from system_learning.types.semantic_memory_types import PolicyGuardrailCase
 
         r = _registry()
         r.ingest_guardrail_case(
@@ -513,7 +553,7 @@ class TestSemanticIndexRegistry:
     def test_custom_buffer_sizes_respected(self):
         r = _registry(incident_buffer=5, prompt_buffer=3)
         for i in range(6):
-            from system_learning.types.semantic_memory_types import IncidentBundle
+#  # MOVED: from system_learning.types.semantic_memory_types import IncidentBundle
 
             b = IncidentBundle(
                 trace_id=f"tr{i}",
@@ -548,7 +588,7 @@ class TestSemanticIndexRegistry:
 
 class TestTotalBufferUtilization:
     def test_all_indexes_present(self):
-        from system_learning.engines.semantic_index_registry import ALL_INDEXES
+#  # MOVED: from system_learning.engines.semantic_index_registry import ALL_INDEXES
 
         r = _registry()
         util = r.total_buffer_utilization()
@@ -564,7 +604,7 @@ class TestTotalBufferUtilization:
     def test_utilization_zero_on_empty(self):
         r = _registry()
         util = r.total_buffer_utilization()
-        from system_learning.engines.semantic_index_registry import ALL_INDEXES
+#  # MOVED: from system_learning.engines.semantic_index_registry import ALL_INDEXES
 
         for idx in ALL_INDEXES:
             assert util[idx]["used"] == 0
@@ -574,7 +614,7 @@ class TestTotalBufferUtilization:
         r = _registry(prompt_buffer=100)
         for i in range(10):
             r.ingest_prompt_outcome(_poem(record_id=f"r{i}", trace_id=f"t{i}", task=f"task{i}"))
-        from system_learning.engines.semantic_index_registry import INDEX_PROMPT
+#  # MOVED: from system_learning.engines.semantic_index_registry import INDEX_PROMPT
 
         util = r.total_buffer_utilization()
         assert util[INDEX_PROMPT]["used"] == 10
@@ -587,7 +627,7 @@ class TestTotalBufferUtilization:
         r.ingest_replay_failure(_rfr())
         r.ingest_retrieval_case(_rcr())
         util = r.total_buffer_utilization()
-        from system_learning.engines.semantic_index_registry import ALL_INDEXES
+#  # MOVED: from system_learning.engines.semantic_index_registry import ALL_INDEXES
 
         manual_sum = sum(util[idx]["used"] for idx in ALL_INDEXES)
         assert util["total_used"] == manual_sum == 3
@@ -665,7 +705,7 @@ class TestCrossIndexHealthReport:
         assert report["prompt_blocked_count"] == 3
 
     def test_guardrail_false_positive_count_correct(self):
-        from system_learning.types.semantic_memory_types import PolicyGuardrailCase
+#  # MOVED: from system_learning.types.semantic_memory_types import PolicyGuardrailCase
 
         r = _registry()
         r.ingest_guardrail_case(
@@ -732,7 +772,7 @@ class TestBulkEvictByTraceId:
             r.bulk_evict_by_trace_id("")
 
     def test_returns_dict_with_all_8_indexes(self):
-        from system_learning.engines.semantic_index_registry import ALL_INDEXES
+#  # MOVED: from system_learning.engines.semantic_index_registry import ALL_INDEXES
 
         r = _registry()
         result = r.bulk_evict_by_trace_id("tr-nobody")
@@ -746,7 +786,7 @@ class TestBulkEvictByTraceId:
         assert r.buffer_snapshot().total == 1
 
     def test_evicts_from_correct_index(self):
-        from system_learning.engines.semantic_index_registry import INDEX_PROMPT
+#  # MOVED: from system_learning.engines.semantic_index_registry import INDEX_PROMPT
 
         r = _registry()
         r.ingest_prompt_outcome(_poem(trace_id="tr-target"))
@@ -756,7 +796,7 @@ class TestBulkEvictByTraceId:
         assert r.buffer_snapshot().prompt_index == 1
 
     def test_evicts_across_multiple_indexes(self):
-        from system_learning.engines.semantic_index_registry import (
+#  # MOVED: from system_learning.engines.semantic_index_registry import (
             INDEX_PROMPT,
             INDEX_REPLAY,
             INDEX_RETRIEVAL,
@@ -783,7 +823,7 @@ class TestBulkEvictByTraceId:
     def test_idempotent(self):
         r = _registry()
         r.ingest_prompt_outcome(_poem(trace_id="tr-once"))
-        from system_learning.engines.semantic_index_registry import INDEX_PROMPT
+#  # MOVED: from system_learning.engines.semantic_index_registry import INDEX_PROMPT
 
         r1 = r.bulk_evict_by_trace_id("tr-once")
         r2 = r.bulk_evict_by_trace_id("tr-once")
@@ -818,7 +858,7 @@ class TestBulkEvictByTraceId:
 
 class TestIndexNamespaceMap:
     def test_returns_all_8_indexes(self):
-        from system_learning.engines.semantic_index_registry import ALL_INDEXES
+#  # MOVED: from system_learning.engines.semantic_index_registry import ALL_INDEXES
 
         nm = _registry().index_namespace_map()
         assert set(nm.keys()) == ALL_INDEXES
@@ -834,7 +874,7 @@ class TestIndexNamespaceMap:
         assert len(namespaces) == len(set(namespaces))
 
     def test_known_namespaces_correct(self):
-        from system_learning.engines.semantic_index_registry import (
+#  # MOVED: from system_learning.engines.semantic_index_registry import (
             INDEX_PROMPT,
             INDEX_REPLAY,
             INDEX_RETRIEVAL,
@@ -859,7 +899,7 @@ class TestIndexNamespaceMap:
     assert result is not None, f"{function_name} should return a result"
     assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
     # TODO: Add specific execution assertions
-        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+#  # MOVED: from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
 
         e = ReplayFailureEmbedder()
         rk2 = "rk2-" + "y" * 59
@@ -889,7 +929,7 @@ class TestIndexNamespaceMap:
         assert e.nondeterminism_type_stats()["ORDERING_INSTABILITY"] == 3
 
     def test_prompt_ingest_evict_stats_consistent(self):
-        from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
+#  # MOVED: from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
 
         e = PromptOutcomeEmbedder()
         for i in range(4):
@@ -947,7 +987,7 @@ class TestIndexNamespaceMap:
         assert sig["count"] == 10
 
     def test_registry_all_indexes_ingest_export_round_trip(self):
-        from system_learning.types.semantic_memory_types import (
+#  # MOVED: from system_learning.types.semantic_memory_types import (
             GraphNeighborhood,
             IncidentBundle,
             MutationDiffRecord,
@@ -1033,7 +1073,7 @@ class TestIndexNamespaceMap:
     def test_multiindex_ingest_result_fields(self):
         r = _registry()
         res = r.ingest_prompt_outcome(_poem(trace_id="tr-field-test"))
-        from system_learning.engines.semantic_index_registry import INDEX_PROMPT
+#  # MOVED: from system_learning.engines.semantic_index_registry import INDEX_PROMPT
 
         assert res.index_name == INDEX_PROMPT
         assert len(res.content_hash) == 64
@@ -1080,7 +1120,7 @@ class TestCreativeIntegration:
         assert dict(top_after).get("L1", 0) == 2
 
     def test_prompt_model_stats_then_evict_before_ts(self):
-        from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
+#  # MOVED: from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
 
         e = PromptOutcomeEmbedder(max_buffer=10_000)
         e.ingest(
@@ -1100,7 +1140,7 @@ class TestCreativeIntegration:
         assert stats_after["gpt-4o"].get("ALLOWED", 0) == 0
 
     def test_retrieval_expansion_report_then_evict_bad_queries(self):
-        from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
+#  # MOVED: from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
 
         e = RetrievalCaseEmbedder(max_buffer=10_000)
         for i in range(6):
@@ -1177,7 +1217,7 @@ class TestCreativeIntegration:
         assert report["health"] == "OK"
 
     def test_score_buckets_plus_quality_summary_consistent(self):
-        from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
+#  # MOVED: from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
 
         e = RetrievalCaseEmbedder(max_buffer=10_000)
         for i in range(4):

@@ -21,7 +21,7 @@ import threading
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -83,7 +83,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_semantic_memory_embedders", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_semantic_memory_embedders", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_semantic_memory_embedders", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -121,22 +121,22 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.graph_neighborhood_embedder import GraphNeighborhoodEmbedder
-from system_learning.engines.healer_outcome_embedder import HealerOutcomeEmbedder
+#  # MOVED: from system_learning.engines.graph_neighborhood_embedder import GraphNeighborhoodEmbedder
+#  # MOVED: from system_learning.engines.healer_outcome_embedder import HealerOutcomeEmbedder
 
 # ---------------------------------------------------------------------------
 # Engines
 # ---------------------------------------------------------------------------
-from system_learning.engines.incident_bundle_embedder import IncidentBundleEmbedder
-from system_learning.engines.mutation_diff_embedder import MutationDiffEmbedder
-from system_learning.engines.path_d_preference_embedder import PathDPreferenceEmbedder
-from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
-from system_learning.engines.semantic_memory_registry import SemanticMemoryRegistry
+#  # MOVED: from system_learning.engines.incident_bundle_embedder import IncidentBundleEmbedder
+#  # MOVED: from system_learning.engines.mutation_diff_embedder import MutationDiffEmbedder
+#  # MOVED: from system_learning.engines.path_d_preference_embedder import PathDPreferenceEmbedder
+#  # MOVED: from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+#  # MOVED: from system_learning.engines.semantic_memory_registry import SemanticMemoryRegistry
 
 # ---------------------------------------------------------------------------
 # Types
 # ---------------------------------------------------------------------------
-from system_learning.types.semantic_memory_types import (
+#  # MOVED: from system_learning.types.semantic_memory_types import (
     GraphNeighborhood,
     HealerOutcomeRecord,
     IncidentBundle,
@@ -326,6 +326,16 @@ def _make_guardrail_case(
 
 class TestIncidentBundle:
     def test_construction_sets_bundle_hash(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.graph_neighborhood_embedder import GraphNeighborhoodEmbedder
+        from system_learning.engines.healer_outcome_embedder import HealerOutcomeEmbedder
+        from system_learning.engines.incident_bundle_embedder import IncidentBundleEmbedder
+        from system_learning.engines.mutation_diff_embedder import MutationDiffEmbedder
+        from system_learning.engines.path_d_preference_embedder import PathDPreferenceEmbedder
+        from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+        from system_learning.engines.semantic_memory_registry import SemanticMemoryRegistry
+        from system_learning.types.semantic_memory_types import (
         b = _make_incident()
         assert len(b.bundle_hash) == 64
         assert b.influence_class == "C0_INFORMATIONAL"

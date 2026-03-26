@@ -7,7 +7,7 @@ Any failure MUST be fail-closed.
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -90,7 +90,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.governance
 
-from agentic_core.L2_execution.enforcement.provider_substitution_prohibition import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.provider_substitution_prohibition import (
     ProviderRequest,
     ProviderSubstitutionGuard,
     ProviderSubstitutionViolation,
@@ -99,7 +99,7 @@ from agentic_core.L2_execution.enforcement.provider_substitution_prohibition imp
     test_provider_substitution_prohibition,
     validate_provider_request,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -194,6 +194,9 @@ class TestREQ415ProviderSubstitutionProhibition:
     """Test suite for REQ-415 Provider Substitution Prohibition."""
 
     def test_validate_provider_request_success(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.enforcement.provider_substitution_prohibition import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """Test successful validation when provider/model match."""
         # Given
         original_request = ProviderRequest(

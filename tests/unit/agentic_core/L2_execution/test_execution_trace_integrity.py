@@ -5,9 +5,9 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L2_execution.types.execution_trace_types import ExecutionTrace, ExecutionTraceBuilder
-from agentic_core.L5_safety.types.hardening_errors import ExecutionTraceIntegrityError
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L2_execution.types.execution_trace_types import ExecutionTrace, ExecutionTraceBuilder
+#  # MOVED: from agentic_core.L5_safety.types.hardening_errors import ExecutionTraceIntegrityError
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -164,6 +164,9 @@ def _complete_trace() -> ExecutionTrace:
 
 class TestValidateCompleteness:
     def test_complete_trace_passes(self):
+        from agentic_core.L2_execution.types.execution_trace_types import ExecutionTrace, ExecutionTraceBuilder
+        from agentic_core.L5_safety.types.hardening_errors import ExecutionTraceIntegrityError
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         trace = _complete_trace()
         trace.validate_completeness()
 

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -54,7 +54,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_l1_cognition_init_adg", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_l1_cognition_init_adg", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_l1_cognition_init_adg", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -172,7 +172,12 @@ pytestmark = pytest.mark.unit
 
 class TestL1CognitionPublicAPI:
     def test_all_exports_present(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         import agentic_core.L1_cognition as m
+        import agentic_core.L1_cognition as m
+        import agentic_core.L1_cognition as m
+#  # MOVED: import agentic_core.L1_cognition as m
         for name in m.__all__:
             assert hasattr(m, name), f"Missing __all__ member: {name}"
 
@@ -226,7 +231,7 @@ class TestL1CognitionSovereigntyContract:
 
     def test_no_write_gateway_import(self):
         """L1 must not import write_gateway (L2 execution module)."""
-        import agentic_core.L1_cognition as m
+#  # MOVED: import agentic_core.L1_cognition as m
         source = getattr(m, "__file__", "") or ""
         # Verify by checking the package's __init__ doesn't import write_gateway
         from pathlib import Path
@@ -236,6 +241,6 @@ class TestL1CognitionSovereigntyContract:
     def test_reasoning_subpackage_exists(self):
         from pathlib import Path
 
-        import agentic_core.L1_cognition as m
+#  # MOVED: import agentic_core.L1_cognition as m
         pkg_dir = Path(m.__file__).parent
         assert (pkg_dir / "reasoning").is_dir()

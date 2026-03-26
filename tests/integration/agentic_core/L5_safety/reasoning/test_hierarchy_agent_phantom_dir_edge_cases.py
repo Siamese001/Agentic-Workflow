@@ -50,14 +50,14 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_RG_DIR,
     L0_ROUTING_DIR,
     OPS_SCRIPTS_DIR,
     TESTS_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -104,7 +104,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_hierarchy_agent_phantom_dir_edge_cases", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_hierarchy_agent_phantom_dir_edge_cases", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_hierarchy_agent_phantom_dir_edge_cases", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -227,7 +227,7 @@ _Mapping = (dict, MappingProxyType)
 
 def _make_agent(project_root: Path, healing_enabled: bool = True):
     """Construct a minimal HierarchyAgent without triggering __init__ chain."""
-    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
     agent = object.__new__(HierarchyAgent)
     agent.project_root = project_root
@@ -264,6 +264,16 @@ class TestFileInsideDepthAlignedDir:
     """
 
     def test_file_in_depth_aligned_correct_depth_returns_zero(self, tmp_path):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+        from agentic_core.L5_safety.config.structure_blueprint import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
         """
         Silent bypass: agentic_core/cache/depth_aligned/schema_cache.py
         depth=3, expected=3 → falls through all branches → returns 0, no gk call.
@@ -597,7 +607,7 @@ class TestSovereignTerritoriesDepthAlignedInvariants:
 
     def test_no_depth_aligned_in_any_required_subfolders(self):
         """HARD INVARIANT: depth_aligned absent from required_subfolders of every territory."""
-        from agentic_core.L5_safety.config.structure_blueprint import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint import (
             get_all_territories,
         )
 
@@ -612,7 +622,7 @@ class TestSovereignTerritoriesDepthAlignedInvariants:
 
     def test_no_l_layer_pattern_in_tests_required_subfolders(self):
         """HARD INVARIANT: no l[0-9]_* names in tests.required_subfolders."""
-        from agentic_core.L5_safety.config.structure_blueprint import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint import (
             get_all_territories,
         )
 
@@ -627,7 +637,7 @@ class TestSovereignTerritoriesDepthAlignedInvariants:
 
         tests/support/ must remain flat — no nested subdirectory structure declared in blueprint.
         """
-        from agentic_core.L5_safety.config.structure_blueprint import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint import (
             get_all_territories,
         )
 
@@ -645,7 +655,7 @@ class TestSovereignTerritoriesDepthAlignedInvariants:
 
     def test_support_in_approved_tests_subfolders(self):
         """'support' must be a canonical tests/ subfolder (approved by SOVEREIGN_TERRITORIES)."""
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         approved = HierarchyAgent._get_approved_tests_subfolders()
         assert "support" in approved, (
@@ -655,7 +665,7 @@ class TestSovereignTerritoriesDepthAlignedInvariants:
 
     def test_depth_aligned_not_in_approved_tests_subfolders(self):
         """'depth_aligned' must NEVER appear in the approved tests/ subfolders set."""
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         approved = HierarchyAgent._get_approved_tests_subfolders()
         assert "depth_aligned" not in approved, (
@@ -665,7 +675,7 @@ class TestSovereignTerritoriesDepthAlignedInvariants:
 
     def test_no_l_layer_in_approved_tests_subfolders(self):
         """No l[0-9]_* names in the top-level approved tests/ subfolders."""
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         approved = HierarchyAgent._get_approved_tests_subfolders()
         l_pattern = re.compile(r"^l[0-9]_[a-z]+$")

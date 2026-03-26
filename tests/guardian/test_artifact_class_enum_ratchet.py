@@ -3,7 +3,7 @@
 import ast
 import pathlib
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L0_ROUTING_DIR,
     TESTS_DIR,
 )
@@ -113,6 +113,10 @@ def _check_ast_context_allowed(node: ast.AST, allowed_contexts: set[str]) -> boo
 
 
 def test_no_artifact_class_value_usage_in_construction():
+    from agentic_core.L0_routing.config.path_constants import (
+    from agentic_core.L0_routing.types.guardian_contract_types import GuardianResult, ArtifactClass
+    from agentic_core.L0_routing.types.guardian_contract_types import GuardianResult, ArtifactClass
+    from agentic_core.L0_routing.types.guardian_contract_types import GuardianResult, ArtifactClass
     """Ratchet: GuardianResult construction must use enum, not .value strings."""
     repo_root = pathlib.Path(__file__).parent.parent.parent
 
@@ -146,7 +150,7 @@ def test_synthetic_value_usage_detected():
     import textwrap
 
     synthetic_code = textwrap.dedent("""
-        from agentic_core.L0_routing.types.guardian_contract_types import GuardianResult, ArtifactClass
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import GuardianResult, ArtifactClass
 
         # This should be flagged
         result = GuardianResult(
@@ -176,7 +180,7 @@ def test_synthetic_value_usage_allowed_in_to_dict():
     import textwrap
 
     synthetic_code = textwrap.dedent("""
-        from agentic_core.L0_routing.types.guardian_contract_types import GuardianResult, ArtifactClass
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import GuardianResult, ArtifactClass
 
         class GuardianResult:
             def to_dict(self):
@@ -203,7 +207,7 @@ def test_synthetic_value_usage_rejected_in_construction():
     import textwrap
 
     synthetic_code = textwrap.dedent("""
-        from agentic_core.L0_routing.types.guardian_contract_types import GuardianResult, ArtifactClass
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import GuardianResult, ArtifactClass
 
         def run_all_guardians():
             # This should be flagged - not in allowed context

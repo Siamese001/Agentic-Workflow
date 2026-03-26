@@ -17,7 +17,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_records_execution_trace,
     _emit_signs_execution_trace,
@@ -40,8 +40,20 @@ class TestExecutionContextSignatureLock:
     """Ensure ExecutionContext.create() rejects stale kwargs."""
 
     def test_create_accepted_params(self):
-        """create() must accept only the canonical param set — no execution_request_id."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         from agentic_core.L2_execution.context.execution_context import ExecutionContext
+        from agentic_core.L2_execution.context.execution_context import ExecutionContext
+        from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import DispositionDecision
+        from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import DispositionDecision
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyHealerAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyHealerAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyHealerAgent
+        from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+        from agentic_core.utils.decorators_util import _warn_non_canonical_keys
+        from agentic_core.utils.decorators_util import _warn_non_canonical_keys
+        """create() must accept only the canonical param set — no execution_request_id."""
+#  # MOVED: from agentic_core.L2_execution.context.execution_context import ExecutionContext
 
         sig = inspect.signature(ExecutionContext.create)
         accepted = set(sig.parameters.keys()) - {"cls"}
@@ -59,7 +71,7 @@ class TestExecutionContextSignatureLock:
 
     def test_create_required_params_present(self):
         """create() must require the canonical fields."""
-        from agentic_core.L2_execution.context.execution_context import ExecutionContext
+#  # MOVED: from agentic_core.L2_execution.context.execution_context import ExecutionContext
 
         sig = inspect.signature(ExecutionContext.create)
         params = sig.parameters
@@ -78,14 +90,14 @@ class TestDispositionDecisionSchemaStrict:
 
     def test_tuple_rejected(self):
         """Passing a tuple as **kwargs must raise TypeError."""
-        from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import DispositionDecision
+#  # MOVED: from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import DispositionDecision
 
         with pytest.raises(TypeError):
             DispositionDecision(**("ARCHIVE", "/tmp", "reason", 0.9))  # type: ignore[arg-type]
 
     def test_dict_accepted(self):
         """Passing a dict with valid keys must succeed."""
-        from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import DispositionDecision
+#  # MOVED: from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import DispositionDecision
 
         d = DispositionDecision(**{"action": "KEEP", "reason": "test"})
         assert d.action == "KEEP"
@@ -101,7 +113,7 @@ class TestHealerInputTypes:
 
     def test_heal_rejects_frozenset_with_error_dict(self):
         """heal() must not crash on frozenset input."""
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyHealerAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyHealerAgent
 
         agent = HierarchyHealerAgent.__new__(HierarchyHealerAgent)
         # frozenset has no .get() — must return error dict, not raise
@@ -112,7 +124,7 @@ class TestHealerInputTypes:
 
     def test_heal_rejects_frozenset(self):
         """heal() must not crash on frozenset input."""
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyHealerAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyHealerAgent
 
         agent = HierarchyHealerAgent.__new__(HierarchyHealerAgent)
         result = agent.heal(frozenset({"type", "file"}))
@@ -121,7 +133,7 @@ class TestHealerInputTypes:
 
     def test_heal_accepts_dict(self):
         """heal() must work with a valid dict."""
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyHealerAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyHealerAgent
 
         agent = HierarchyHealerAgent.__new__(HierarchyHealerAgent)
         # Missing file path → returns skipped, but doesn't crash
@@ -139,7 +151,7 @@ class TestTerritoryPathResolution:
 
     def test_l_layer_resolves_under_agentic_core(self):
         """L0_routing must resolve to project_root/agentic_core/L0_routing, not project_root/L0_routing."""
-        from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 
         project_root = Path(__file__).resolve().parents[2]
         for layer in ("L0_routing", "L1_cognition", "L2_execution",
@@ -165,7 +177,7 @@ class TestArtifactWriteIntegrity:
 
     def test_post_validation_mkdir(self, tmp_path):
         """_write_post_validation_json must create output_dir if missing."""
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
             _write_post_validation_json,
         )
 
@@ -195,7 +207,7 @@ class TestTelemetrySchemaDedup:
 
     def test_single_warning_for_multiple_keys(self):
         """_warn_non_canonical_keys must emit at most 1 warning regardless of key count."""
-        from agentic_core.utils.decorators_util import _warn_non_canonical_keys
+#  # MOVED: from agentic_core.utils.decorators_util import _warn_non_canonical_keys
 
         result = {
             "violations_found": 0,
@@ -213,7 +225,7 @@ class TestTelemetrySchemaDedup:
 
     def test_no_warning_for_canonical_keys(self):
         """No warning when all keys are canonical."""
-        from agentic_core.utils.decorators_util import _warn_non_canonical_keys
+#  # MOVED: from agentic_core.utils.decorators_util import _warn_non_canonical_keys
 
         result = {"violations_found": 5, "violations_fixed": 3, "errors": 0}
         with patch("agentic_core.utils.decorators_util.Logger") as mock_logger:

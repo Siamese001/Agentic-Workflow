@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
@@ -75,6 +75,7 @@ def get_module_layer(module_path: str) -> int | None:
 
 @pytest.mark.governance
 def test_no_upward_mutations():
+    from agentic_core.L0_routing.config.path_constants import (
     """
     Verifies that no module imports from a strictly lower layer.
 

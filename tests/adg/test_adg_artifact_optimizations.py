@@ -18,7 +18,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -65,7 +65,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_artifact_optimizations", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_artifact_optimizations", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_artifact_optimizations", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -195,7 +195,7 @@ def _make_entity(
     confidence="HIGH",
     resolved_path="",
 ):
-    from agentic_core.adg.artifact.builder_types import EntityRecord
+#  # MOVED: from agentic_core.adg.artifact.builder_types import EntityRecord
 
     return EntityRecord(
         adg_name=adg_name,
@@ -210,7 +210,7 @@ def _make_entity(
 def _make_relation(
     from_name, rel_type, to_name, edge_kind="import", source_file="foo.py", line_no=1, symbol=""
 ):
-    from agentic_core.adg.artifact.builder_types import RelationRecord
+#  # MOVED: from agentic_core.adg.artifact.builder_types import RelationRecord
 
     return RelationRecord(
         from_name=from_name,
@@ -224,7 +224,7 @@ def _make_relation(
 
 
 def _make_artifact():
-    from agentic_core.adg.artifact.builder_types import ADGArtifact, BlindSpotReport, StructuralMetrics
+#  # MOVED: from agentic_core.adg.artifact.builder_types import ADGArtifact, BlindSpotReport, StructuralMetrics
 
     a = ADGArtifact()
     a.commit_sha = "abc123"
@@ -312,7 +312,68 @@ def _make_artifact():
 
 class TestArtifactNormalizer:
     def test_normalize_produces_compact_nodes(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.artifact.builder_types import EntityRecord
+        from agentic_core.adg.artifact.builder_types import RelationRecord
+        from agentic_core.adg.artifact.builder_types import ADGArtifact, BlindSpotReport, StructuralMetrics
         from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
+        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
+        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
+        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
+        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
+        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
+        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer, size_comparison
+        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
+        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
+        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
+        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer, NormalizedGraph
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.normalizer_config import NormalizedGraph
+        from agentic_core.adg.extraction.incremental import compute_affected_modules
+        from agentic_core.adg.artifact.normalizer_config import NormalizedGraph
+        from agentic_core.adg.extraction.incremental import compute_affected_modules
+        from agentic_core.adg.artifact.normalizer_config import NormalizedGraph
+        from agentic_core.adg.extraction.incremental import compute_affected_modules
+        from agentic_core.adg.artifact.normalizer_config import NormalizedGraph
+        from agentic_core.adg.extraction.incremental import compute_affected_modules
+        from agentic_core.adg.extraction.incremental import IncrementalScanStats
+        from agentic_core.adg.extraction.incremental import IncrementalScanStats
+        from agentic_core.adg.extraction.incremental import IncrementalScanStats
+        from agentic_core.adg.cli import main
+        from agentic_core.adg.cli import main
+        from agentic_core.adg.cli import main
+        from agentic_core.adg.cli import main
+        from agentic_core.adg.artifact.normalizer_config import _SCHEMA_VERSION_NORMALIZED
+        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS
+        import agentic_core.adg.artifact.SplitArtifact as ls
+        from agentic_core.adg.artifact.SplitArtifact import _GOVERNANCE_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _SYMBOL_GRAPH_RELS
+        from agentic_core.adg.extraction.incremental import _DEFAULT_AFFECT_DEPTH
+        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
+        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
 
         a = _make_artifact()
         ng = ArtifactNormalizer().normalize(a)
@@ -325,7 +386,7 @@ class TestArtifactNormalizer:
             assert "t" in node
 
     def test_normalize_compact_edges_use_integer_ids(self):
-        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
+#  # MOVED: from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
 
         a = _make_artifact()
         ng = ArtifactNormalizer().normalize(a)
@@ -338,28 +399,28 @@ class TestArtifactNormalizer:
             assert "k" in edge
 
     def test_normalize_schema_version_is_v4(self):
-        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
+#  # MOVED: from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
 
         a = _make_artifact()
         ng = ArtifactNormalizer().normalize(a)
         assert ng.schema_version == "4.0.0"
 
     def test_normalize_preserves_commit_sha(self):
-        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
+#  # MOVED: from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
 
         a = _make_artifact()
         ng = ArtifactNormalizer().normalize(a)
         assert ng.commit_sha == "abc123"
 
     def test_normalize_computes_digest(self):
-        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
+#  # MOVED: from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
 
         a = _make_artifact()
         ng = ArtifactNormalizer().normalize(a)
         assert len(ng.artifact_digest) == 64  # SHA256 hex
 
     def test_normalize_is_deterministic(self):
-        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
+#  # MOVED: from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
 
         a = _make_artifact()
         ng1 = ArtifactNormalizer().normalize(a)
@@ -367,7 +428,7 @@ class TestArtifactNormalizer:
         assert ng1.artifact_digest == ng2.artifact_digest
 
     def test_size_comparison_shows_reduction(self):
-        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer, size_comparison
+#  # MOVED: from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer, size_comparison
 
         a = _make_artifact()
         ng = ArtifactNormalizer().normalize(a)
@@ -379,7 +440,7 @@ class TestArtifactNormalizer:
         assert sc["compact_bytes"] < sc["verbose_bytes"] * 10
 
     def test_denormalize_round_trip(self):
-        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
+#  # MOVED: from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
 
         a = _make_artifact()
         normalizer = ArtifactNormalizer()
@@ -392,7 +453,7 @@ class TestArtifactNormalizer:
         assert original_names <= restored_names
 
     def test_denormalize_preserves_relation_types(self):
-        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
+#  # MOVED: from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
 
         a = _make_artifact()
         normalizer = ArtifactNormalizer()
@@ -404,7 +465,7 @@ class TestArtifactNormalizer:
         assert original_rel_types == restored_rel_types
 
     def test_symbol_field_only_when_nonempty(self):
-        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
+#  # MOVED: from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
 
         a = _make_artifact()
         # Add a relation with a non-empty symbol
@@ -422,7 +483,7 @@ class TestArtifactNormalizer:
         assert edges_with_sym[0]["sym"] == "os.path.join"
 
     def test_write_and_load_roundtrip(self, tmp_path):
-        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer, NormalizedGraph
+#  # MOVED: from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer, NormalizedGraph
 
         a = _make_artifact()
         ng = ArtifactNormalizer().normalize(a)
@@ -443,7 +504,7 @@ class TestArtifactNormalizer:
 class TestLayerSplitter:
     def test_split_produces_three_planes(self):
         """Three non-overlapping planes: file_graph, symbol_graph, governance_graph."""
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         a = _make_artifact()
         planes = split_artifact(a)
@@ -453,7 +514,7 @@ class TestLayerSplitter:
         assert not hasattr(planes, "test_graph"), "test_graph must not exist (removed)"
 
     def test_file_graph_contains_imports(self):
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         a = _make_artifact()
         planes = split_artifact(a)
@@ -487,7 +548,7 @@ class TestLayerSplitter:
         assert "covers" in rel_types
 
     def test_governance_graph_contains_violates(self):
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         a = _make_artifact()
         planes = split_artifact(a)
@@ -495,7 +556,7 @@ class TestLayerSplitter:
         assert "violates" in rel_types
 
     def test_planes_have_independent_node_sets(self):
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         a = _make_artifact()
         planes = split_artifact(a)
@@ -504,7 +565,7 @@ class TestLayerSplitter:
         assert file_node_types <= {"module", "symbol"}  # may have stubs
 
     def test_split_planes_have_schema_version(self):
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         a = _make_artifact()
         planes = split_artifact(a)
@@ -512,7 +573,7 @@ class TestLayerSplitter:
             assert plane.schema_version == "4.0.0"
 
     def test_write_all_creates_files(self, tmp_path):
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         a = _make_artifact()
         planes = split_artifact(a)
@@ -521,7 +582,7 @@ class TestLayerSplitter:
             assert path.exists(), f"{plane_name} file missing: {path}"
 
     def test_size_summary_returns_bytes(self):
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         a = _make_artifact()
         planes = split_artifact(a)
@@ -531,7 +592,7 @@ class TestLayerSplitter:
             assert sz > 0
 
     def test_plane_meta_contains_plane_name(self):
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         a = _make_artifact()
         planes = split_artifact(a)
@@ -548,7 +609,7 @@ class TestLayerSplitter:
 class TestMultiWriter:
     def test_write_all_artifacts_creates_all_files(self, tmp_path):
         """Five non-redundant files: snapshot + sqlite + 3 planes. No adg_full, no test_graph."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         a = _make_artifact()
         paths = write_all_artifacts(a, out_dir=tmp_path, ts="20260101T000000Z")
@@ -562,14 +623,14 @@ class TestMultiWriter:
         assert not (tmp_path / "adg_test_graph_20260101T000000Z.json").exists(), "test_graph must not exist"
 
     def test_sqlite_created_by_default(self, tmp_path):
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         a = _make_artifact()
         paths = write_all_artifacts(a, out_dir=tmp_path, ts="20260101T000000Z", write_sqlite=True)
         assert paths.sqlite.exists()
 
     def test_sqlite_has_nodes_and_edges_tables(self, tmp_path):
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         a = _make_artifact()
         paths = write_all_artifacts(a, out_dir=tmp_path, ts="20260101T000000Z", write_sqlite=True)
@@ -583,8 +644,8 @@ class TestMultiWriter:
             conn.close()
 
     def test_sqlite_nodes_match_normalized_count(self, tmp_path):
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
-        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
 
         a = _make_artifact()
         paths = write_all_artifacts(a, out_dir=tmp_path, ts="20260101T000000Z", write_sqlite=True)
@@ -601,7 +662,7 @@ class TestMultiWriter:
         assert edge_count == len(ng.edges)
 
     def test_sqlite_queryable_by_layer(self, tmp_path):
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         a = _make_artifact()
         paths = write_all_artifacts(a, out_dir=tmp_path, ts="20260101T000000Z", write_sqlite=True)
@@ -615,7 +676,7 @@ class TestMultiWriter:
         assert len(rows) >= 1
 
     def test_snapshot_tier1_is_lightweight(self, tmp_path):
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         a = _make_artifact()
         paths = write_all_artifacts(a, out_dir=tmp_path, ts="20260101T000000Z")
@@ -627,7 +688,7 @@ class TestMultiWriter:
         assert snap["schema_version"] == "snapshot-1.0"
 
     def test_snapshot_has_commit_sha(self, tmp_path):
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         a = _make_artifact()
         paths = write_all_artifacts(a, out_dir=tmp_path, ts="20260101T000000Z")
@@ -636,7 +697,7 @@ class TestMultiWriter:
 
     def test_sqlite_tier2_has_schema_v4(self, tmp_path):
         """SQLite is the canonical complete store (replaces adg_full.json)."""
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         a = _make_artifact()
         paths = write_all_artifacts(a, out_dir=tmp_path, ts="20260101T000000Z", write_sqlite=True)
@@ -649,7 +710,7 @@ class TestMultiWriter:
         assert row[0] == "4.0.0"
 
     def test_size_report_returns_all_keys(self, tmp_path):
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         a = _make_artifact()
         paths = write_all_artifacts(a, out_dir=tmp_path, ts="20260101T000000Z")
@@ -663,7 +724,7 @@ class TestMultiWriter:
         assert "test_graph" not in sizes, "test_graph must not appear in size_report"
 
     def test_timestamped_filenames(self, tmp_path):
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         a = _make_artifact()
         paths = write_all_artifacts(a, out_dir=tmp_path, ts="20260311T154637Z")
@@ -672,7 +733,7 @@ class TestMultiWriter:
         assert "20260311T154637Z" in paths.file_graph.name
 
     def test_no_timestamp_gives_clean_names(self, tmp_path):
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         a = _make_artifact()
         paths = write_all_artifacts(a, out_dir=tmp_path, ts="")
@@ -687,8 +748,8 @@ class TestMultiWriter:
 
 class TestIncrementalScan:
     def test_compute_affected_modules_direct_only(self):
-        from agentic_core.adg.artifact.normalizer_config import NormalizedGraph
-        from agentic_core.adg.extraction.incremental import compute_affected_modules
+#  # MOVED: from agentic_core.adg.artifact.normalizer_config import NormalizedGraph
+#  # MOVED: from agentic_core.adg.extraction.incremental import compute_affected_modules
 
         # Build a minimal NormalizedGraph with one import edge
         ng = NormalizedGraph(
@@ -704,8 +765,8 @@ class TestIncrementalScan:
         assert "ADG::Module::b.py" in affected
 
     def test_compute_affected_modules_no_importers(self):
-        from agentic_core.adg.artifact.normalizer_config import NormalizedGraph
-        from agentic_core.adg.extraction.incremental import compute_affected_modules
+#  # MOVED: from agentic_core.adg.artifact.normalizer_config import NormalizedGraph
+#  # MOVED: from agentic_core.adg.extraction.incremental import compute_affected_modules
 
         ng = NormalizedGraph(
             nodes={
@@ -717,8 +778,8 @@ class TestIncrementalScan:
         assert affected == {"ADG::Module::a.py"}
 
     def test_compute_affected_modules_transitive(self):
-        from agentic_core.adg.artifact.normalizer_config import NormalizedGraph
-        from agentic_core.adg.extraction.incremental import compute_affected_modules
+#  # MOVED: from agentic_core.adg.artifact.normalizer_config import NormalizedGraph
+#  # MOVED: from agentic_core.adg.extraction.incremental import compute_affected_modules
 
         # a → b → c (b imports a, c imports b)
         ng = NormalizedGraph(
@@ -738,8 +799,8 @@ class TestIncrementalScan:
         assert "ADG::Module::c.py" in affected
 
     def test_compute_affected_modules_depth_limit(self):
-        from agentic_core.adg.artifact.normalizer_config import NormalizedGraph
-        from agentic_core.adg.extraction.incremental import compute_affected_modules
+#  # MOVED: from agentic_core.adg.artifact.normalizer_config import NormalizedGraph
+#  # MOVED: from agentic_core.adg.extraction.incremental import compute_affected_modules
 
         # a → b → c but depth=1 should not reach c
         ng = NormalizedGraph(
@@ -759,7 +820,7 @@ class TestIncrementalScan:
         assert "ADG::Module::c.py" not in affected
 
     def test_incremental_scan_stats_summary(self):
-        from agentic_core.adg.extraction.incremental import IncrementalScanStats
+#  # MOVED: from agentic_core.adg.extraction.incremental import IncrementalScanStats
 
         stats = IncrementalScanStats()
         stats.total_modules = 100
@@ -773,7 +834,7 @@ class TestIncrementalScan:
 
     def test_incremental_scan_stats_skipped_count(self):
         """skipped = total_modules - rescanned."""
-        from agentic_core.adg.extraction.incremental import IncrementalScanStats
+#  # MOVED: from agentic_core.adg.extraction.incremental import IncrementalScanStats
 
         stats = IncrementalScanStats()
         stats.total_modules = 200
@@ -781,7 +842,7 @@ class TestIncrementalScan:
         assert stats.skipped == 185
 
     def test_incremental_scan_stats_zero_hit_rate(self):
-        from agentic_core.adg.extraction.incremental import IncrementalScanStats
+#  # MOVED: from agentic_core.adg.extraction.incremental import IncrementalScanStats
 
         stats = IncrementalScanStats()
         stats.total_modules = 0
@@ -797,14 +858,14 @@ class TestIncrementalScan:
 
 class TestCLIBuildArtifacts:
     def test_build_artifacts_help(self):
-        from agentic_core.adg.cli import main
+#  # MOVED: from agentic_core.adg.cli import main
 
         with pytest.raises(SystemExit) as exc_info:
             main(["build-artifacts", "--help"])
         assert exc_info.value.code == 0
 
     def test_incremental_scan_help(self):
-        from agentic_core.adg.cli import main
+#  # MOVED: from agentic_core.adg.cli import main
 
         with pytest.raises(SystemExit) as exc_info:
             main(["incremental-scan", "--help"])
@@ -812,14 +873,14 @@ class TestCLIBuildArtifacts:
 
     def test_build_artifacts_command_registered(self):
         """Verify build-artifacts is a registered subcommand."""
-        from agentic_core.adg.cli import main
+#  # MOVED: from agentic_core.adg.cli import main
 
         with pytest.raises(SystemExit) as exc_info:
             main(["build-artifacts", "--help"])
         assert exc_info.value.code == 0
 
     def test_incremental_scan_command_registered(self):
-        from agentic_core.adg.cli import main
+#  # MOVED: from agentic_core.adg.cli import main
 
         with pytest.raises(SystemExit) as exc_info:
             main(["incremental-scan", "--help"])
@@ -833,12 +894,12 @@ class TestCLIBuildArtifacts:
 
 class TestSchemaConstants:
     def test_normalized_schema_version_constant(self):
-        from agentic_core.adg.artifact.normalizer_config import _SCHEMA_VERSION_NORMALIZED
+#  # MOVED: from agentic_core.adg.artifact.normalizer_config import _SCHEMA_VERSION_NORMALIZED
 
         assert _SCHEMA_VERSION_NORMALIZED == "4.0.0"
 
     def test_file_graph_rels_contains_imports(self):
-        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS
 
         assert "imports" in _FILE_GRAPH_RELS
 
@@ -857,25 +918,25 @@ class TestSchemaConstants:
     assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
     # TODO: Add specific execution assertions
         """_TEST_GRAPH_RELS must not exist in layer_splitter."""
-        import agentic_core.adg.artifact.SplitArtifact as ls
+#  # MOVED: import agentic_core.adg.artifact.SplitArtifact as ls
 
         assert not hasattr(ls, "_TEST_GRAPH_RELS"), "_TEST_GRAPH_RELS was removed; covers lives in file_graph"
 
     def test_governance_rels_contains_violates_and_uwg(self):
-        from agentic_core.adg.artifact.SplitArtifact import _GOVERNANCE_GRAPH_RELS
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import _GOVERNANCE_GRAPH_RELS
 
         assert "violates" in _GOVERNANCE_GRAPH_RELS
         assert "bypasses_uwg" in _GOVERNANCE_GRAPH_RELS
         assert "layer_authority_violation" in _GOVERNANCE_GRAPH_RELS
 
     def test_no_overlap_between_file_and_symbol_graph_rels(self):
-        from agentic_core.adg.artifact.SplitArtifact import _SYMBOL_GRAPH_RELS
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import _SYMBOL_GRAPH_RELS
 
         # imports should ONLY be in file_graph, not symbol_graph
         assert "imports" not in _SYMBOL_GRAPH_RELS
 
     def test_incremental_default_depth(self):
-        from agentic_core.adg.extraction.incremental import _DEFAULT_AFFECT_DEPTH
+#  # MOVED: from agentic_core.adg.extraction.incremental import _DEFAULT_AFFECT_DEPTH
 
         assert _DEFAULT_AFFECT_DEPTH >= 1
 
@@ -887,7 +948,7 @@ class TestSchemaConstants:
 
 class TestEndToEnd:
     def test_normalized_graph_to_dict_is_json_serializable(self):
-        from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
+#  # MOVED: from agentic_core.adg.artifact.normalizer_config import ArtifactNormalizer
 
         a = _make_artifact()
         ng = ArtifactNormalizer().normalize(a)
@@ -897,7 +958,7 @@ class TestEndToEnd:
         assert len(raw) > 0
 
     def test_split_artifact_all_digests_nonempty(self):
-        from agentic_core.adg.artifact.SplitArtifact import split_artifact
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import split_artifact
 
         a = _make_artifact()
         planes = split_artifact(a)
@@ -905,7 +966,7 @@ class TestEndToEnd:
             assert len(plane.artifact_digest) == 64
 
     def test_multi_write_then_sqlite_query_by_relation(self, tmp_path):
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         a = _make_artifact()
         paths = write_all_artifacts(a, out_dir=tmp_path, ts="test", write_sqlite=True)
@@ -917,7 +978,7 @@ class TestEndToEnd:
         assert rows[0] >= 1
 
     def test_multi_write_then_sqlite_query_by_module_name(self, tmp_path):
-        from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
+#  # MOVED: from agentic_core.adg.artifact.ArtifactPaths import write_all_artifacts
 
         a = _make_artifact()
         paths = write_all_artifacts(a, out_dir=tmp_path, ts="test", write_sqlite=True)

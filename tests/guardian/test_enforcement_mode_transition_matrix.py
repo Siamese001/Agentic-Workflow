@@ -15,12 +15,12 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L0_routing.types.guardian_contract_types import (
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import (
     is_v15_enforced,
     is_v15_hard_fail,
     is_v15_soft_fail,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -253,6 +253,8 @@ class TestModeMatrix:
         ids=[c[4] for c in ALL_CASES],
     )
     def test_mode_selection(self, monkeypatch, env_val, exp_enforced, exp_soft, exp_hard, label):
+        from agentic_core.L0_routing.types.guardian_contract_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         _set_env(monkeypatch, env_val)
         enforced = is_v15_enforced()
         soft = is_v15_soft_fail()

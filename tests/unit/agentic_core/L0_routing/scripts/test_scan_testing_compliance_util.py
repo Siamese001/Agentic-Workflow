@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L0_routing.scripts.scan_testing_compliance_util import (  # noqa: F401
+#  # MOVED: from agentic_core.L0_routing.scripts.scan_testing_compliance_util import (  # noqa: F401
     AGENTIC_CORE,
     DISCOVERY_JSON,
     DISCOVERY_SCRIPT,
@@ -25,6 +25,7 @@ from agentic_core.L0_routing.scripts.scan_testing_compliance_util import (  # no
 
 class TestExtractBasesFunction:
     def test_is_callable(self):
+        from agentic_core.L0_routing.scripts.scan_testing_compliance_util import (  # noqa: F401
     """Test is_callable runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

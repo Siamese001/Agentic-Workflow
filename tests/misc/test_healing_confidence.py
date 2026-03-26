@@ -7,7 +7,7 @@ import json
 import sys
 from pathlib import Path
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -54,7 +54,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_healing_confidence", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_healing_confidence", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_healing_confidence", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -183,6 +183,11 @@ sys.path.insert(0, str(project_root))
 
 
 def test_high_confidence_healing():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L0_routing.scripts.execute_ssot import (
+    from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+    from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
     """Test healing when confidence is high enough for autonomous execution"""
 
     print("=== High Confidence Healing Test ===\n")
@@ -200,7 +205,7 @@ class HighConfidenceTestAgent:
 """)
 
     try:
-        from agentic_core.L0_routing.scripts.execute_ssot import (
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import (
             RuntimeStateManager,
             SovereignDecisionEngine,
             execute_phase2_reconciliation,
@@ -213,7 +218,7 @@ class HighConfidenceTestAgent:
         decision_engine = SovereignDecisionEngine(enable_llm=False)
 
         # Create agents dict
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
         agents = {"LocationAgent": LocationHealerAgent(project_root)}
 
@@ -297,7 +302,7 @@ assert isinstance(result, (dict, list, str, int, float, bool)), "Result should b
 """)
 
     try:
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
         agent = LocationHealerAgent(project_root)
 

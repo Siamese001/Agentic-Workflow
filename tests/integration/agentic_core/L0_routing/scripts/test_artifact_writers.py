@@ -12,8 +12,8 @@ import json
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import APPS_SHARED_DIR
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import APPS_SHARED_DIR
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -60,7 +60,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_artifact_writers", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_artifact_writers", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_artifact_writers", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -175,6 +175,16 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 
 def test_write_run_manifest_json_structure(tmp_path):
+    from agentic_core.L0_routing.config.path_constants import APPS_SHARED_DIR
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L0_routing.scripts.execute_ssot import _write_decision_summary_json
+    from agentic_core.L0_routing.scripts.execute_ssot import _write_decision_summary_json
+    from agentic_core.L0_routing.scripts.execute_ssot import _write_artifact_integrity_json
+    from agentic_core.L0_routing.scripts.execute_ssot import _write_artifact_integrity_json
+    from agentic_core.L0_routing.scripts.execute_ssot import _write_artifact_integrity_json
+    from agentic_core.L0_routing.scripts.execute_ssot import (
+    from agentic_core.L0_routing.scripts.execute_ssot import (
 """Test write_run_manifest_json_structure runtime behavior."""
 # Arrange
 # TODO: Set up execution parameters
@@ -251,7 +261,7 @@ def test_write_decision_summary_json_structure(tmp_path):
     Per .windsurfrules §1.7: Deterministic decision surfaces.
     Per hostile audit Section E6: decision_summary provides routing audit trail.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import _write_decision_summary_json
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import _write_decision_summary_json
 
     trace_id = "TEST-TRACE-003"
     decisions = [
@@ -299,7 +309,7 @@ def test_write_decision_summary_json_empty_decisions(tmp_path):
 
     Per .windsurfrules §1.5: Edge cases - empty input.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import _write_decision_summary_json
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import _write_decision_summary_json
 
     _write_decision_summary_json(
         trace_id="TEST-TRACE-004",
@@ -325,7 +335,7 @@ def test_write_artifact_integrity_json_structure(tmp_path):
     Per .windsurfrules §1.7: Deterministic decision surfaces.
     Per hostile audit Section E7: artifact_integrity provides cryptographic proof.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import _write_artifact_integrity_json
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import _write_artifact_integrity_json
 
     # Create some test artifacts
     artifact1 = tmp_path / "test_artifact_1.json"
@@ -375,7 +385,7 @@ def test_write_artifact_integrity_json_no_artifacts(tmp_path):
 
     Per .windsurfrules §1.5: Edge cases - empty input.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import _write_artifact_integrity_json
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import _write_artifact_integrity_json
 
     _write_artifact_integrity_json(
         trace_id="TEST-TRACE-006",
@@ -397,7 +407,7 @@ def test_write_artifact_integrity_json_deterministic_hash(tmp_path):
 
     Per .windsurfrules §1.7: Deterministic decision surfaces - identical input → identical output.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import _write_artifact_integrity_json
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import _write_artifact_integrity_json
 
     # Create artifact with known content
     artifact = tmp_path / "test.json"
@@ -432,7 +442,7 @@ def test_artifact_writers_trace_id_correlation(tmp_path):
     Per .windsurfrules §1.7: Deterministic decision surfaces.
     Per hostile audit Section E1: trace_id must correlate all artifacts.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import (
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import (
         _write_artifact_integrity_json,
         _write_decision_summary_json,
         _write_run_manifest_json,
@@ -465,7 +475,7 @@ def test_artifact_writers_ascii_only(tmp_path):
 
     Per .windsurfrules §2.2: Evidence is deterministic, ASCII-only.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import (
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import (
         _write_artifact_integrity_json,
         _write_decision_summary_json,
         _write_run_manifest_json,

@@ -6,7 +6,7 @@ import pytest
 pytestmark = pytest.mark.unit
 
 try:
-    from agentic_core.L3_orchestration.engines.dag_manager import (  # noqa: F401
+#  # MOVED: from agentic_core.L3_orchestration.engines.dag_manager import (  # noqa: F401
         BATCH_SIZE,
         BUFFER_SIZE,
         DEFAULT_SLEEP,
@@ -29,6 +29,7 @@ except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swa
 
 class TestDAGManager:
     def test_is_class(self):
+        from agentic_core.L3_orchestration.engines.dag_manager import (  # noqa: F401
         assert isinstance(DAGManager, type)
     def test_importable(self):
         assert DAGManager is not None

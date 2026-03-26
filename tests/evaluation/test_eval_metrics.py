@@ -12,13 +12,13 @@ Branch coverage for all 6 metrics:
 
 import pytest
 
-from agentic_core.evaluation.metrics.answer_correctness import AnswerCorrectness
-from agentic_core.evaluation.metrics.groundedness import Groundedness, _token_f1, _tokenize
-from agentic_core.evaluation.metrics.mrr import MeanReciprocalRank
-from agentic_core.evaluation.metrics.ndcg import NDCG
-from agentic_core.evaluation.metrics.precision_at_k import PrecisionAtK
-from agentic_core.evaluation.metrics.recall_at_k import RecallAtK
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.evaluation.metrics.answer_correctness import AnswerCorrectness
+#  # MOVED: from agentic_core.evaluation.metrics.groundedness import Groundedness, _token_f1, _tokenize
+#  # MOVED: from agentic_core.evaluation.metrics.mrr import MeanReciprocalRank
+#  # MOVED: from agentic_core.evaluation.metrics.ndcg import NDCG
+#  # MOVED: from agentic_core.evaluation.metrics.precision_at_k import PrecisionAtK
+#  # MOVED: from agentic_core.evaluation.metrics.recall_at_k import RecallAtK
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -179,6 +179,13 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 class TestPrecisionAtK:
     def test_invalid_k_raises(self):
+        from agentic_core.evaluation.metrics.answer_correctness import AnswerCorrectness
+        from agentic_core.evaluation.metrics.groundedness import Groundedness, _token_f1, _tokenize
+        from agentic_core.evaluation.metrics.mrr import MeanReciprocalRank
+        from agentic_core.evaluation.metrics.ndcg import NDCG
+        from agentic_core.evaluation.metrics.precision_at_k import PrecisionAtK
+        from agentic_core.evaluation.metrics.recall_at_k import RecallAtK
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         with pytest.raises(ValueError):
             PrecisionAtK(k=0)
         with pytest.raises(ValueError):

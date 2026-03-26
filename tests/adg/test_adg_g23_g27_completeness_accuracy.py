@@ -18,7 +18,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -92,8 +92,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from agentic_core.adg.artifact.SplitArtifact import _GOVERNANCE_GRAPH_RELS
-from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import _GOVERNANCE_GRAPH_RELS
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
     _AgentDispatchVisitor,
     _ExternalHttpVisitor,
     _L5ValidationProofVisitor,
@@ -101,7 +101,7 @@ from agentic_core.adg.extraction.static_scanner import (
     _NondeterminismVisitor,
     _scan_file,
 )
-from agentic_core.adg.schema_util import (
+#  # MOVED: from agentic_core.adg.schema_util import (
     # G25
     AGENT_DISPATCH_CLASSES,
     AGENT_DISPATCH_METHODS,
@@ -127,7 +127,7 @@ from agentic_core.adg.schema_util import (
     # Literals
     RelationType,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -245,6 +245,11 @@ def _syms(edges):
 
 class TestSchemaCompleteness:
     def test_g23_relation_types_present(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.artifact.SplitArtifact import _GOVERNANCE_GRAPH_RELS
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.adg.schema_util import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         args = RelationType.__args__
         for rel in ("uses_wall_clock", "uses_random", "uses_uuid"):
             assert rel in args, f"{rel} missing from RelationType"

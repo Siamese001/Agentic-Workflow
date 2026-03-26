@@ -33,7 +33,7 @@ import asyncio
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -118,18 +118,18 @@ pytestmark = pytest.mark.guardian
 # Imports
 # ---------------------------------------------------------------------------
 
-from agentic_core.agents.agent_registry import (
+#  # MOVED: from agentic_core.agents.agent_registry import (
     AGENT_REGISTRY,
     get_execution_profile,
     get_profile,
     registry_digest,
 )
-from agentic_core.agents.types.agent_execution_profile_types import (
+#  # MOVED: from agentic_core.agents.types.agent_execution_profile_types import (
     AgentExecutionProfile,
     ExecutionMode,
     ReasoningIntensity,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -226,6 +226,12 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestGetProfileHardFail:
     def test_unregistered_agent_raises_key_error(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.agents.agent_registry import (
+        from agentic_core.agents.types.agent_execution_profile_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
+        from agentic_core.L2_execution.types.gateway_types import GenerationRequest
         with pytest.raises(KeyError):
             get_profile("__totally_nonexistent_agent__")
 
@@ -365,7 +371,7 @@ class TestGatewayTransitiveEnforcement:
     """
 
     def _make_gateway(self):
-        from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
             SovereignLLMGateway,
             SovereigntyViolation,
         )
@@ -441,7 +447,7 @@ class TestGatewayTransitiveEnforcement:
 
 
 def _make_request(agent_id: str, model: str | None = None):
-    from agentic_core.L2_execution.types.gateway_types import GenerationRequest
+#  # MOVED: from agentic_core.L2_execution.types.gateway_types import GenerationRequest
 
     return GenerationRequest(
         prompt="test prompt",

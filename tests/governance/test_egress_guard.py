@@ -11,7 +11,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -56,7 +56,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_egress_guard")
 # REMOVED: _emit_reads_policy_state("p0", "test_egress_guard", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_egress_guard", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -183,9 +183,17 @@ pytestmark = pytest.mark.governance
 
 
 def test_gateway_has_egress_audit_log():
-    """Gateway must expose a HashChainAuditLog as _egress_audit_log."""
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     from agentic_core.L2_execution.audit.hash_chain_audit_log import HashChainAuditLog
     from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
+    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
+    from agentic_core.L2_execution.types.gateway_types import GenerationRequest
+    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
+    from agentic_core.L2_execution.types.gateway_types import GenerationRequest
+    """Gateway must expose a HashChainAuditLog as _egress_audit_log."""
+#  # MOVED: from agentic_core.L2_execution.audit.hash_chain_audit_log import HashChainAuditLog
+#  # MOVED: from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
         SovereignLLMGateway,
     )
 
@@ -200,10 +208,10 @@ def test_gateway_has_egress_audit_log():
 
 def test_route_generation_writes_egress_audit():
     """route_generation must append to the egress audit log on each call."""
-    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
         SovereignLLMGateway,
     )
-    from agentic_core.L2_execution.types.gateway_types import GenerationRequest
+#  # MOVED: from agentic_core.L2_execution.types.gateway_types import GenerationRequest
 
     SovereignLLMGateway.reset_instance()
     gw = SovereignLLMGateway()
@@ -249,10 +257,10 @@ def test_route_generation_writes_egress_audit():
 
 def test_route_generation_egress_payload_contains_agent_id():
     """Egress audit payload must include agent_id and provider."""
-    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
         SovereignLLMGateway,
     )
-    from agentic_core.L2_execution.types.gateway_types import GenerationRequest
+#  # MOVED: from agentic_core.L2_execution.types.gateway_types import GenerationRequest
 
     SovereignLLMGateway.reset_instance()
     gw = SovereignLLMGateway()

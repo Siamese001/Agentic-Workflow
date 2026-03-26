@@ -15,15 +15,15 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L0_routing.enforcement.governance_contracts import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.governance_contracts import (
     build_hil_policy_proposal,
 )
-from agentic_core.L0_routing.types.governance_types import (
+#  # MOVED: from agentic_core.L0_routing.types.governance_types import (
     ChangeAction,
     HILOutcome,
     PolicyUpdateProposal,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -68,7 +68,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_hil_policy_proposal_emission")
 # REMOVED: _emit_applies_guardrail("p0", "test_hil_policy_proposal_emission", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_hil_policy_proposal_emission", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -190,6 +190,12 @@ class TestPolicyProposalConstruction:
     """Unit: build_hil_policy_proposal produces valid, typed PolicyUpdateProposal."""
 
     def test_approved_proposal_has_required_fields(self):
+        from agentic_core.L0_routing.enforcement.governance_contracts import (
+        from agentic_core.L0_routing.types.governance_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.enforcement.human_review_queue_enforcer import (
+        from agentic_core.L5_safety.enforcement.human_review_queue_enforcer import (
         proposal = build_hil_policy_proposal(
             trace_id="t1",
             evidence_pack_id="ep-001",
@@ -359,7 +365,7 @@ class TestDeterministicMapping:
 
 def _make_queue_and_request():
     """Build a HumanReviewQueue with one pending request that has context."""
-    from agentic_core.L5_safety.enforcement.human_review_queue_enforcer import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.human_review_queue_enforcer import (
         ContextBundle,
         HumanReviewQueue,
         ProposedDiff,
@@ -478,7 +484,7 @@ class TestNonFinalizationNoProposal:
     """Negative: non-finalization paths emit no PolicyUpdateProposal."""
 
     def test_submit_only_no_proposal(self):
-        from agentic_core.L5_safety.enforcement.human_review_queue_enforcer import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.human_review_queue_enforcer import (
             ContextBundle,
             HumanReviewQueue,
             ProposedDiff,

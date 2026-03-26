@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -76,15 +76,15 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.enforcement.registry_verification_enforcer import AgentInfo
-from agentic_core.L5_safety.enforcement.three_tier_compliance_enforcer import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.registry_verification_enforcer import AgentInfo
+#  # MOVED: from agentic_core.L5_safety.enforcement.three_tier_compliance_enforcer import (
     CONTRACT_HOOKS,
     GUARDIAN_TEST_PATTERNS,
     AgentCompliance,
     ComplianceResult,
     TierStatus,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -177,6 +177,10 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestConstants:
     def test_guardian_test_patterns_list(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.enforcement.registry_verification_enforcer import AgentInfo
+        from agentic_core.L5_safety.enforcement.three_tier_compliance_enforcer import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         assert isinstance(GUARDIAN_TEST_PATTERNS, list)
         assert len(GUARDIAN_TEST_PATTERNS) > 0
 

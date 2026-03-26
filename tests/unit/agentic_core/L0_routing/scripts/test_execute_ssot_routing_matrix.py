@@ -21,7 +21,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -68,7 +68,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_execute_ssot_routing_matrix", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_execute_ssot_routing_matrix", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_execute_ssot_routing_matrix", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -208,7 +208,7 @@ def _fresh_agent() -> str:
 
 
 def _make_engine(*, enable_llm: bool = True, auto_approve: bool = False):
-    from agentic_core.L0_routing.scripts.execute_ssot import AutonomousDecisionEngine
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import AutonomousDecisionEngine
 
     return AutonomousDecisionEngine(enable_llm=enable_llm, auto_approve=auto_approve)
 
@@ -231,6 +231,9 @@ class TestRoutingTierStateTransitions:
     """Every tier transition path must be reachable and produce a distinct, deterministic result."""
 
     def test_deterministic_tier_returns_true(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.scripts.execute_ssot import AutonomousDecisionEngine
     """Test deterministic_tier_returns_true runtime behavior."""
     # Arrange
     # TODO: Set up test data for deterministic_tier_returns_true

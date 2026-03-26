@@ -12,11 +12,11 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     OPS_SCRIPTS_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -63,7 +63,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_no_uuid4_determinism", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_no_uuid4_determinism", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_no_uuid4_determinism", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -182,6 +182,11 @@ CI_SCRIPT = REPO_ROOT / OPS_SCRIPTS_DIR / "ci" / "check_determinism_violations.p
 
 @pytest.mark.governance
 def test_req111_no_uuid4_determinism_critical_paths():
+    from agentic_core.L0_routing.config.path_constants import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.determinism.determinism_guard import assert_no_uuid4
+    from agentic_core.L2_execution.determinism.determinism_guard import assert_deterministic_context
     """REQ-111: AST scan proves uuid4 absent from determinism-critical artifact classes."""
     # Run the CI script to check for uuid4 usage
     result = subprocess.run(
@@ -250,7 +255,7 @@ def test_req111_determinism_guard_context_manager():
     """REQ-111: Test that assert_no_uuid4 context manager works."""
     import uuid
 
-    from agentic_core.L2_execution.determinism.determinism_guard import assert_no_uuid4
+#  # MOVED: from agentic_core.L2_execution.determinism.determinism_guard import assert_no_uuid4
 
     # Should work normally outside context
     normal_uuid = uuid.uuid4()
@@ -308,7 +313,7 @@ def test_req111_combined_deterministic_context():
     """REQ-111: Test combined deterministic context manager."""
     import uuid
 
-    from agentic_core.L2_execution.determinism.determinism_guard import assert_deterministic_context
+#  # MOVED: from agentic_core.L2_execution.determinism.determinism_guard import assert_deterministic_context
 
     # Should raise error for uuid4
     with pytest.raises(RuntimeError, match="uuid.uuid4\\(\\) called in determinism-critical context"):

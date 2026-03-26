@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L4_state.engines.error_context_preserver  # noqa: F401
+#  # MOVED: import agentic_core.L4_state.engines.error_context_preserver  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L4_state.engines.error_context_preserver  # noqa: F401
     """Module error_context_preserver must be importable."""
     assert agentic_core.L4_state.engines.error_context_preserver is not None

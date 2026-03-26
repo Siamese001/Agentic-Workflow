@@ -18,7 +18,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -65,7 +65,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_type_check", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_type_check", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_type_check", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -233,6 +233,8 @@ def _make_checker(nodes_by_file, fan_in_imports, nodes):
 
 class TestMypyResult:
     def test_passed_true_when_exit_code_zero(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         from tools.adg.adg_type_check import MypyResult
 
         r = MypyResult(exit_code=0, stdout="", stderr="")

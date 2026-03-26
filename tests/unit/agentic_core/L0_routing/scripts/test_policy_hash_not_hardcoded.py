@@ -12,12 +12,13 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L0_ROUTING_DIR,
 )
 
 
 def test_policy_hash_computed_from_actual_file():
+    from agentic_core.L0_routing.config.path_constants import (
     """
     PASS: policy_hash is SHA256 of v15_policy_pack.json file content.
     FAIL: policy_hash equals hardcoded sentinel sha256("sovereign-policy-v1.0").

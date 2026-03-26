@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -76,8 +76,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.reasoning.GravityLeakHealerAgent import GravityLeakHealerAgent
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.GravityLeakHealerAgent import GravityLeakHealerAgent
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -170,6 +170,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestGravityLeakHealerAgent:
     def test_importable(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.reasoning.GravityLeakHealerAgent import GravityLeakHealerAgent
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         assert callable(GravityLeakHealerAgent)
 
     def test_is_class(self):

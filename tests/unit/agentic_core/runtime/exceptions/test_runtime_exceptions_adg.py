@@ -5,7 +5,7 @@ Behavioral tests belong in test_runtime_exceptions.py (no _adg suffix).
 """
 from __future__ import annotations
 
-from agentic_core.runtime.exceptions.runtime_exceptions import (
+#  # MOVED: from agentic_core.runtime.exceptions.runtime_exceptions import (
     AgentRuntimeError,
     HealExecutionError,
     MaxTurnsExceededError,
@@ -17,6 +17,7 @@ from agentic_core.runtime.exceptions.runtime_exceptions import (
 
 class TestRuntimeExceptionsImportability:
     def test_module_importable(self) -> None:
+        from agentic_core.runtime.exceptions.runtime_exceptions import (
     """Test module_importable runtime behavior."""
     # Arrange
     # TODO: Set up runtime environment

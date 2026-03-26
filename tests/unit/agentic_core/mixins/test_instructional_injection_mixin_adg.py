@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -79,12 +79,12 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.mixins.instructional_injection_mixin import (
+#  # MOVED: from agentic_core.mixins.instructional_injection_mixin import (
     InstructionalInjectionMixin,
     get_instructional_injection_mixin,
     instructional_injection_mixin,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -181,6 +181,11 @@ class ConcreteAgent(InstructionalInjectionMixin):
 
 class TestInstructionalInjectionMixinImport:
     def test_class_importable(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.mixins.instructional_injection_mixin import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.config.core.injection_layer_config import InjectionLayer
+        from agentic_core.config.core.injection_layer_config import InjectionLayer
         assert callable(InstructionalInjectionMixin)
 
     def test_alias_same_as_class(self):
@@ -215,13 +220,13 @@ class TestInstructionalInjectionMixinImport:
 
 class TestGetPatternsByLayer:
     def test_returns_list(self):
-        from agentic_core.config.core.injection_layer_config import InjectionLayer
+#  # MOVED: from agentic_core.config.core.injection_layer_config import InjectionLayer
         agent = ConcreteAgent()
         result = agent.get_patterns_by_layer(InjectionLayer.SAFETY)
         assert isinstance(result, list)
 
     def test_safety_layer_has_patterns(self):
-        from agentic_core.config.core.injection_layer_config import InjectionLayer
+#  # MOVED: from agentic_core.config.core.injection_layer_config import InjectionLayer
         agent = ConcreteAgent()
         patterns = agent.get_patterns_by_layer(InjectionLayer.SAFETY)
         assert len(patterns) > 0

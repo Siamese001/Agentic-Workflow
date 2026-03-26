@@ -18,14 +18,14 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L0_ROUTING_DIR,
 )
-from agentic_core.L0_routing.types.determinism_types import (
+#  # MOVED: from agentic_core.L0_routing.types.determinism_types import (
     FixConstraint,
     SurgicalManifest,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -72,7 +72,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_ssot_bootstrap_wiring", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_ssot_bootstrap_wiring", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_ssot_bootstrap_wiring", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -222,6 +222,13 @@ class TestStructuralSSOTBootstrap:
     """AST-level proof of SSOT bootstrap wiring."""
 
     def test_legacy_main_exists(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L0_routing.types.determinism_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+        from agentic_core.L0_routing.enforcement.traceability_contracts import generate_trace_id
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
         node = _find_function_node(SSOT_AST, "_legacy_main")
         assert node is not None
 
@@ -298,12 +305,12 @@ class TestStructuralSSOTBootstrap:
 
 def _local_build_ssot_manifest():
     """Locally extracted replica of _v15_build_ssot_manifest for testing."""
-    from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 
     if not is_v15_enforced():
         return None
 
-    from agentic_core.L0_routing.enforcement.traceability_contracts import generate_trace_id
+#  # MOVED: from agentic_core.L0_routing.enforcement.traceability_contracts import generate_trace_id
 
     _hex8 = hashlib.sha256(b"execute_ssot._legacy_main").hexdigest()[:8].upper()
     trace_id = generate_trace_id(_hex8)
@@ -355,7 +362,7 @@ class TestRuntimeSSOTManifest:
 
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_gateway_receives_manifest(self):
-        from agentic_core.L0_routing.enforcement.execution_gateway import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
 

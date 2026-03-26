@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L1_cognition.types.cache_types import (  # noqa: F401
+#  # MOVED: from agentic_core.L1_cognition.types.cache_types import (  # noqa: F401
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,
@@ -23,6 +23,7 @@ from agentic_core.L1_cognition.types.cache_types import (  # noqa: F401
 
 class TestEvictionPolicyContract:
     def test_is_enum(self):
+        from agentic_core.L1_cognition.types.cache_types import (  # noqa: F401
         import enum
         assert issubclass(EvictionPolicy, enum.Enum)
 

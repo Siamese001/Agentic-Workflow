@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -83,17 +83,28 @@ pytestmark = pytest.mark.unit
 # ---------------------------------------------------------------------------
 # architecture_governor_healer
 # ---------------------------------------------------------------------------
-from agentic_core.L2_execution.healers.architecture_governor_healer import (
+#  # MOVED: from agentic_core.L2_execution.healers.architecture_governor_healer import (
     CHECK_ID as ARCH_CHECK_ID,
 )
-from agentic_core.L2_execution.healers.architecture_governor_healer import (
+#  # MOVED: from agentic_core.L2_execution.healers.architecture_governor_healer import (
     heal_architecture_governance,
 )
-from agentic_core.L2_execution.types.heal_contract_types import HealCheckResult, HealStatus
+#  # MOVED: from agentic_core.L2_execution.types.heal_contract_types import HealCheckResult, HealStatus
 
 
 class TestArchitectureGovernorHealer:
     def test_check_id_string(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.healers.architecture_governor_healer import (
+        from agentic_core.L2_execution.healers.architecture_governor_healer import (
+        from agentic_core.L2_execution.types.heal_contract_types import HealCheckResult, HealStatus
+        from agentic_core.L2_execution.healers.file_classification_healer import (
+        from agentic_core.L2_execution.healers.file_classification_healer import (
+        from agentic_core.L2_execution.healers.filesystem_ssot_healer import (
+        from agentic_core.L2_execution.healers.filesystem_ssot_healer import (
+        from agentic_core.L2_execution.healers.gravity_leak_healer import (
+        from agentic_core.L2_execution.healers.gravity_leak_healer import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test check_id_string runtime behavior."""
     # Arrange
     # TODO: Set up test data for check_id_string
@@ -122,10 +133,10 @@ class TestArchitectureGovernorHealer:
 # ---------------------------------------------------------------------------
 # file_classification_healer
 # ---------------------------------------------------------------------------
-from agentic_core.L2_execution.healers.file_classification_healer import (
+#  # MOVED: from agentic_core.L2_execution.healers.file_classification_healer import (
     CHECK_ID as FILE_CLASS_CHECK_ID,
 )
-from agentic_core.L2_execution.healers.file_classification_healer import (
+#  # MOVED: from agentic_core.L2_execution.healers.file_classification_healer import (
     heal_file_classification,
 )
 
@@ -159,10 +170,10 @@ class TestFileClassificationHealer:
 # ---------------------------------------------------------------------------
 # filesystem_ssot_healer
 # ---------------------------------------------------------------------------
-from agentic_core.L2_execution.healers.filesystem_ssot_healer import (
+#  # MOVED: from agentic_core.L2_execution.healers.filesystem_ssot_healer import (
     CHECK_ID as FS_CHECK_ID,
 )
-from agentic_core.L2_execution.healers.filesystem_ssot_healer import (
+#  # MOVED: from agentic_core.L2_execution.healers.filesystem_ssot_healer import (
     heal_filesystem_ssot_drift,
 )
 
@@ -194,13 +205,13 @@ class TestFilesystemSSOTHealer:
 # ---------------------------------------------------------------------------
 # gravity_leak_healer
 # ---------------------------------------------------------------------------
-from agentic_core.L2_execution.healers.gravity_leak_healer import (
+#  # MOVED: from agentic_core.L2_execution.healers.gravity_leak_healer import (
     CHECK_ID as GRAVITY_CHECK_ID,
 )
-from agentic_core.L2_execution.healers.gravity_leak_healer import (
+#  # MOVED: from agentic_core.L2_execution.healers.gravity_leak_healer import (
     heal_gravity_violations,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

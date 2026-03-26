@@ -18,7 +18,7 @@ import hashlib
 
 import pytest
 
-from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
     EscalationRequiredError,
     ReplayDetectedError,
     ReplayGuardStore,
@@ -32,7 +32,7 @@ from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
     sign_artifact,
     verify_signature,
 )
-from agentic_core.L0_routing.types.crypto_trust_types import (
+#  # MOVED: from agentic_core.L0_routing.types.crypto_trust_types import (
     DeterministicTestEnclave,
     HashMismatchTracker,
     HumanResolution,
@@ -45,7 +45,7 @@ from agentic_core.L0_routing.types.crypto_trust_types import (
     SigningAlgorithm,
     TrustRoot,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -233,6 +233,9 @@ class TestP5_741_SignatureEnclave:
     """§7.4.1: Enclave is deterministic, no wall-clock, no env reads."""
 
     def test_sign_deterministic(self):
+        from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
+        from agentic_core.L0_routing.types.crypto_trust_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         sig1 = TEST_ENCLAVE.sign(SAMPLE_BYTES, FIXED_KEY_ID)
         sig2 = TEST_ENCLAVE.sign(SAMPLE_BYTES, FIXED_KEY_ID)
         assert sig1 == sig2

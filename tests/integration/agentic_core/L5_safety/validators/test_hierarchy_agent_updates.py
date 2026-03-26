@@ -2,8 +2,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -164,6 +164,8 @@ class TestHierarchyAgentUpdates:
         return HierarchyAgent(project_root=tmp_path)
 
     def test_scripts_allowed_at_root(self, mock_agent):
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """
         CRITICAL: scripts/ should NOT be in FORBIDDEN_ROOT_FOLDERS anymore.
         """

@@ -17,26 +17,26 @@ import json
 
 import pytest
 
-from agentic_core.L0_routing.engines.assembly_stage import (
+#  # MOVED: from agentic_core.L0_routing.engines.assembly_stage import (
     AirlockAssembler,
     GovernedPayload,
     canonical_bytes,
 )
-from agentic_core.L0_routing.engines.path_router import Path, PathRouter
-from agentic_core.L0_routing.engines.reasoning_policy_engine import (
+#  # MOVED: from agentic_core.L0_routing.engines.path_router import Path, PathRouter
+#  # MOVED: from agentic_core.L0_routing.engines.reasoning_policy_engine import (
     ReasoningPolicyEngine,
     RequestStructureFeatures,
     compute_complexity_score,
     compute_policy_config_hash,
     select_tier,
 )
-from agentic_core.L0_routing.types.reasoning_intensity_types import ReasoningTier
-from agentic_core.L0_routing.types.routing_artifact_types import (
+#  # MOVED: from agentic_core.L0_routing.types.reasoning_intensity_types import ReasoningTier
+#  # MOVED: from agentic_core.L0_routing.types.routing_artifact_types import (
     RouteDecisionArtifact,
     RoutePath,
     RoutingRationale,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -239,6 +239,12 @@ def _make_payload(
 class TestPathRouterSuccess:
     @pytest.mark.governance
     def test_select_path_returns_A_when_check_ids_empty(self):
+        from agentic_core.L0_routing.engines.assembly_stage import (
+        from agentic_core.L0_routing.engines.path_router import Path, PathRouter
+        from agentic_core.L0_routing.engines.reasoning_policy_engine import (
+        from agentic_core.L0_routing.types.reasoning_intensity_types import ReasoningTier
+        from agentic_core.L0_routing.types.routing_artifact_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         router = PathRouter()
         payload = _make_payload(check_ids=(), sanitized=False)
         assert router.select_path(payload) == Path.A

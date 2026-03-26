@@ -27,13 +27,13 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
     Edge,
     ScanManifest,
     ScanResult,
 )
-from agentic_core.adg.schema_util import canonical_name
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -80,7 +80,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_visitors_rigorous", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_visitors_rigorous", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_visitors_rigorous", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -206,7 +206,7 @@ def _scan_src(src: str, source_file: str = "pkg/mod.py") -> list[Edge]:
     """Run _scan_file on in-memory source via tmp_path."""
     import tempfile
 
-    from agentic_core.adg.extraction.static_scanner import _scan_file
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _scan_file
 
     with tempfile.TemporaryDirectory() as td:
         repo = Path(td)
@@ -250,6 +250,40 @@ class TestScanResultSerialisation:
         return r
 
     def test_to_dict_roundtrip(self):
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.extraction.static_scanner import _scan_file
+        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+        from agentic_core.adg.extraction.static_scanner import _GOVERNANCE_WRITE_SYMBOLS
+        from agentic_core.adg.extraction.static_scanner import _GOVERNANCE_ROUTE_SYMBOLS
+        from agentic_core.adg.extraction.static_scanner import _GOVERNANCE_WRITE_SYMBOLS
+        from agentic_core.adg.schema_util import PROMPT_FIELD_TO_SLOT
+        from agentic_core.adg.schema_util import PROMPT_FIELD_TO_SLOT
+        from agentic_core.adg.artifact.builder_types import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
+        from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder, build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
+        from agentic_core.adg.schema_util import GATEWAY_ALLOWLIST
+        from agentic_core.adg.artifact.builder_types import build_artifact
+        from agentic_core.adg.artifact.builder_types import build_artifact
+        from agentic_core.adg.schema_util import SEAM_MODULE_PATTERNS
+        from agentic_core.adg.artifact.builder_types import build_artifact
+        from agentic_core.adg.extraction.graph_persister import _infer_entity_type
+        from agentic_core.adg.schema_util import SEAM_MODULE_PATTERNS
+        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
         r = self._make_result()
         d = r.to_dict()
         assert len(d["edges"]) == 1
@@ -413,7 +447,7 @@ class TestImportVisitorContexts:
     """Test _ImportVisitor context tracking directly (bypassing _tag_dead_imports)."""
 
     def _visit_src(self, src: str, source_file: str = "pkg/mod.py") -> list:
-        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _ImportVisitor
 
         tree = _parse(src)
         module_adg = canonical_name("Module", source_file)
@@ -498,7 +532,7 @@ class TestImportVisitorContexts:
 
     def test_star_import_with_all_registry(self, tmp_path):
         """When all_registry resolves __all__, individual edges are emitted."""
-        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _ImportVisitor
 
         src = "from mymod import *\n"
         tree = _parse(src)
@@ -583,7 +617,7 @@ class TestGovernancePlaneVisitor:
     def test_writes_through_edge(self, tmp_path):
         # UniversalWriteGateway is in _GOVERNANCE_WRITE_SYMBOLS
         src = "uwg.write(data)\n"
-        from agentic_core.adg.extraction.static_scanner import _GOVERNANCE_WRITE_SYMBOLS
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _GOVERNANCE_WRITE_SYMBOLS
 
         # Use a known governance write symbol
         sym = next(iter(_GOVERNANCE_WRITE_SYMBOLS))
@@ -593,7 +627,7 @@ class TestGovernancePlaneVisitor:
         assert wt, f"Expected writes_through for governance write symbol '{sym}'"
 
     def test_routes_through_edge(self, tmp_path):
-        from agentic_core.adg.extraction.static_scanner import _GOVERNANCE_ROUTE_SYMBOLS
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _GOVERNANCE_ROUTE_SYMBOLS
 
         sym = next(iter(_GOVERNANCE_ROUTE_SYMBOLS))
         src = f"{sym}(payload)\n"
@@ -602,7 +636,7 @@ class TestGovernancePlaneVisitor:
         assert rt, f"Expected routes_through for governance route symbol '{sym}'"
 
     def test_governance_write_via_attribute(self, tmp_path):
-        from agentic_core.adg.extraction.static_scanner import _GOVERNANCE_WRITE_SYMBOLS
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _GOVERNANCE_WRITE_SYMBOLS
 
         sym = next(iter(_GOVERNANCE_WRITE_SYMBOLS))
         src = f"obj.{sym}(data)\n"
@@ -785,7 +819,7 @@ class TestAntipatternVisitor:
 
 class TestPromptSlotVisitor:
     def test_generates_prompt_slot(self, tmp_path):
-        from agentic_core.adg.schema_util import PROMPT_FIELD_TO_SLOT
+#  # MOVED: from agentic_core.adg.schema_util import PROMPT_FIELD_TO_SLOT
 
         if not PROMPT_FIELD_TO_SLOT:
 
@@ -813,7 +847,7 @@ class TestPromptSlotVisitor:
         assert "CONSTITUTION" in cp[0].to_name
 
     def test_assembler_via_method_call(self, tmp_path):
-        from agentic_core.adg.schema_util import PROMPT_FIELD_TO_SLOT
+#  # MOVED: from agentic_core.adg.schema_util import PROMPT_FIELD_TO_SLOT
 
         if not PROMPT_FIELD_TO_SLOT:
 
@@ -899,7 +933,7 @@ class TestCollectBlindSpots:
         return ScanResult(edges=edges, modules=["mod.py"])
 
     def _build(self, result: ScanResult):
-        from agentic_core.adg.artifact.builder_types import build_artifact
+#  # MOVED: from agentic_core.adg.artifact.builder_types import build_artifact
 
         return build_artifact(result)
 
@@ -1004,7 +1038,7 @@ class TestComputeStructuralMetrics:
 
     def test_layer_violation_counted(self):
         """L5 importing from L0 is a violation (downward is allowed, upward is not)."""
-        from agentic_core.adg.artifact.builder_types import build_artifact
+#  # MOVED: from agentic_core.adg.artifact.builder_types import build_artifact
 
         # L3 -> L0 is a downward violation in typical layered arch
         edge = self._make_module_edge(
@@ -1027,7 +1061,7 @@ class TestComputeStructuralMetrics:
         Since belongs_to_layer is emitted from the module node, no module is truly
         relation-free after our G12 fix — so orphan_modules will be empty for any
         module that has a belongs_to_layer edge.  Verify this is correctly zero."""
-        from agentic_core.adg.artifact.builder_types import build_artifact
+#  # MOVED: from agentic_core.adg.artifact.builder_types import build_artifact
 
         result = ScanResult(
             edges=[],
@@ -1041,7 +1075,7 @@ class TestComputeStructuralMetrics:
         )
 
     def test_high_fan_in_detected(self):
-        from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder, build_artifact
+#  # MOVED: from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder, build_artifact
 
         # Create many edges pointing TO the same module
         target = "agentic_core/L0_routing/popular.py"
@@ -1056,7 +1090,7 @@ class TestComputeStructuralMetrics:
         assert any(canonical_name("Module", target) in h["module"] for h in hot)
 
     def test_by_relation_type_counts(self):
-        from agentic_core.adg.artifact.builder_types import build_artifact
+#  # MOVED: from agentic_core.adg.artifact.builder_types import build_artifact
 
         edge = self._make_module_edge(
             "agentic_core/L0_routing/a.py",
@@ -1069,7 +1103,7 @@ class TestComputeStructuralMetrics:
         assert "imports" in art.structural_metrics.by_relation_type
 
     def test_by_layer_counts_module_entities(self):
-        from agentic_core.adg.artifact.builder_types import build_artifact
+#  # MOVED: from agentic_core.adg.artifact.builder_types import build_artifact
 
         result = ScanResult(
             edges=[],
@@ -1087,7 +1121,7 @@ class TestComputeStructuralMetrics:
 class TestBuilderNewEntityPaths:
     def test_gateway_prefix_materializes_gateway_entity(self):
         """ADG::Gateway:: prefixed to_name should get entity_type=gateway."""
-        from agentic_core.adg.artifact.builder_types import build_artifact
+#  # MOVED: from agentic_core.adg.artifact.builder_types import build_artifact
 
         edge = Edge(
             from_name=canonical_name("Module", "agentic_core/L2_execution/foo.py"),
@@ -1108,8 +1142,8 @@ class TestBuilderNewEntityPaths:
 
     def test_symbol_gateway_allowlist_materializes_gateway(self):
         """ADG::Symbol::<name> in GATEWAY_ALLOWLIST should get entity_type=gateway."""
-        from agentic_core.adg.artifact.builder_types import build_artifact
-        from agentic_core.adg.schema_util import GATEWAY_ALLOWLIST
+#  # MOVED: from agentic_core.adg.artifact.builder_types import build_artifact
+#  # MOVED: from agentic_core.adg.schema_util import GATEWAY_ALLOWLIST
 
         gw_name = next(iter(GATEWAY_ALLOWLIST))
         edge = Edge(
@@ -1132,7 +1166,7 @@ class TestBuilderNewEntityPaths:
 
     def test_belongs_to_layer_relations_emitted(self):
         """Every module should have a belongs_to_layer RelationRecord."""
-        from agentic_core.adg.artifact.builder_types import build_artifact
+#  # MOVED: from agentic_core.adg.artifact.builder_types import build_artifact
 
         result = ScanResult(
             edges=[],
@@ -1150,8 +1184,8 @@ class TestBuilderNewEntityPaths:
 
     def test_seam_module_in_edge_gets_seam_type(self):
         """A seam module referenced as edge to_name gets entity_type=seam."""
-        from agentic_core.adg.artifact.builder_types import build_artifact
-        from agentic_core.adg.schema_util import SEAM_MODULE_PATTERNS
+#  # MOVED: from agentic_core.adg.artifact.builder_types import build_artifact
+#  # MOVED: from agentic_core.adg.schema_util import SEAM_MODULE_PATTERNS
 
         seam_path = SEAM_MODULE_PATTERNS[0] + "some_seam.py"
         edge = Edge(
@@ -1172,7 +1206,7 @@ class TestBuilderNewEntityPaths:
         assert seam_ents, "Seam module referenced in edge should get entity_type=seam"
 
     def test_identity_health_populated(self):
-        from agentic_core.adg.artifact.builder_types import build_artifact
+#  # MOVED: from agentic_core.adg.artifact.builder_types import build_artifact
 
         result = ScanResult(
             edges=[],
@@ -1192,7 +1226,7 @@ class TestBuilderNewEntityPaths:
 
 class TestInferEntityType:
     def _infer(self, adg_name: str) -> str:
-        from agentic_core.adg.extraction.graph_persister import _infer_entity_type
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _infer_entity_type
 
         return _infer_entity_type(adg_name)
 
@@ -1212,7 +1246,7 @@ class TestInferEntityType:
         # _infer_entity_type uses ADG:: prefix splitting — seam modules have
         # ADG::Module:: prefix so they return "module" from this function.
         # The seam promotion happens in builder._populate_symbol_entities.
-        from agentic_core.adg.schema_util import SEAM_MODULE_PATTERNS
+#  # MOVED: from agentic_core.adg.schema_util import SEAM_MODULE_PATTERNS
 
         seam_path = SEAM_MODULE_PATTERNS[0] + "my_seam.py"
         adg = canonical_name("Module", seam_path)
@@ -1241,43 +1275,43 @@ class TestGraphPersisterRuleId:
     """_derive_rule_id(relation_type, symbol) -> str (empty string = no rule)."""
 
     def test_violates_gets_rule_id(self):
-        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _derive_rule_id
 
         result = _derive_rule_id("violates", "LAYER_VIOLATION")
         assert result != ""
         assert "LAYER_GRAVITY" in result
 
     def test_violates_with_symbol_appended(self):
-        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _derive_rule_id
 
         result = _derive_rule_id("violates", "some.module")
         assert result == "LAYER_GRAVITY:some.module"
 
     def test_violates_without_symbol(self):
-        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _derive_rule_id
 
         result = _derive_rule_id("violates", "")
         assert result == "LAYER_GRAVITY"
 
     def test_bypasses_uwg_gets_rule_id(self):
-        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _derive_rule_id
 
         result = _derive_rule_id("bypasses_uwg", "")
         assert result == "UWG_BYPASS"
 
     def test_seam_bypass_gets_rule_id(self):
-        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _derive_rule_id
 
         result = _derive_rule_id("seam_bypass", "my.seam")
         assert result == "SEAM_BYPASS:my.seam"
 
     def test_non_violation_returns_empty(self):
-        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _derive_rule_id
 
         result = _derive_rule_id("imports", "")
         assert result == ""
 
     def test_calls_not_a_violation(self):
-        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _derive_rule_id
 
         assert _derive_rule_id("calls", "some.func") == ""

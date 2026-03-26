@@ -19,7 +19,7 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -100,18 +100,18 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L2_execution.enforcement.boundary_verifier import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.boundary_verifier import (
     L2BoundaryVerifier,
 )
-from agentic_core.L2_execution.enforcement.key_source import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.key_source import (
     TestKeySource,
     inject_key_source,
 )
-from agentic_core.L2_execution.types.instruction_packet_types import (
+#  # MOVED: from agentic_core.L2_execution.types.instruction_packet_types import (
     InstructionPacket,
     SignatureVerificationError,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -245,6 +245,11 @@ def verifier_no_l5():
 
 
 def test_l5_certification_creation(base_packet):
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.enforcement.boundary_verifier import (
+    from agentic_core.L2_execution.enforcement.key_source import (
+    from agentic_core.L2_execution.types.instruction_packet_types import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test L5 certification can be applied to InstructionPacket."""
     agent_registry_hash = hashlib.sha256(b"agent-registry-data").hexdigest()
     execution_profile_hash = hashlib.sha256(b"execution-profile-data").hexdigest()

@@ -19,13 +19,13 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -98,26 +98,26 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L2_execution.healers.healing_tier_config import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_config import (
     HealingTierConfig,
     load_default_healing_tier_config,
 )
-from agentic_core.L2_execution.healers.healing_tier_router import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_router import (
     clear_historical_success_rates,
     compute_heal_confidence,
     route_healing_tier,
 )
-from agentic_core.L2_execution.healers.healing_tier_types import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_types import (
     FailureSignal,
     HealingInput,
     HealingTier,
 )
-from agentic_core.L2_execution.healers.tiering_allowlist import (
+#  # MOVED: from agentic_core.L2_execution.healers.tiering_allowlist import (
     TIERING_ALLOWLIST_FILE_PATHS,
     is_tiering_allowed,
     is_tiering_allowed_by_path,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -266,6 +266,13 @@ def _make_input(
 
 class TestConfidenceBands:
     def test_above_x_routes_local_agent(self, default_config):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.healers.healing_tier_config import (
+        from agentic_core.L2_execution.healers.healing_tier_router import (
+        from agentic_core.L2_execution.healers.healing_tier_types import (
+        from agentic_core.L2_execution.healers.tiering_allowlist import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test above_x_routes_local_agent runtime behavior."""
     # Arrange
     # TODO: Set up test data for above_x_routes_local_agent

@@ -2,17 +2,17 @@
 
 from __future__ import annotations
 
-from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
-from agentic_core.L2_execution.healers.healing_tier_router import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_router import (
     compute_heal_confidence,
     get_historical_success_rate,
     route_healing_tier,
 )
-from agentic_core.L2_execution.healers.healing_tier_types import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_types import (
     HealingInput,
     HealingTier,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -75,7 +75,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_healing_tier_router_meta_integration", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_healing_tier_router_meta_integration", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_healing_tier_router_meta_integration", "exec_snapshot_link")
-from system_learning.ports.meta_prior_provider import (
+#  # MOVED: from system_learning.ports.meta_prior_provider import (
     NeutralMetaPriorProvider,
 )
 
@@ -83,7 +83,7 @@ from system_learning.ports.meta_prior_provider import (
 # REMOVED: _emit_applies_guardrail("p0", "test_healing_tier_router_meta_integration", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_healing_tier_router_meta_integration", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_healing_tier_router_meta_integration", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -188,6 +188,12 @@ class MockMetaPriorProvider:
 
 
 def test_get_historical_success_rate_with_provider() -> None:
+    from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
+    from agentic_core.L2_execution.healers.healing_tier_router import (
+    from agentic_core.L2_execution.healers.healing_tier_types import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from system_learning.ports.meta_prior_provider import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test get_historical_success_rate_with_provider runtime behavior."""
 # Arrange
 # TODO: Set up test data for get_historical_success_rate_with_provider

@@ -49,7 +49,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -96,7 +96,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_stack_defect_hunt", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_stack_defect_hunt", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_stack_defect_hunt", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -226,7 +226,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 def _make_cache_in_fallback():
     """Construct a DeterministicRedisCache already in fallback mode (no TCP I/O)."""
-    from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+#  # MOVED: from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
 
     c = DeterministicRedisCache(db=CacheDB.HOT, redis_url="redis://localhost:1")
     c._use_fallback = True
@@ -242,6 +242,46 @@ class TestRedisKeyValidation:
 
     @pytest.mark.unit_min_deps
     def test_empty_key_raises(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+        from agentic_core.cache.redis_cache_client import (
+        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+        from agentic_core.cache.redis_cache_client import DeterministicRedisCache
+        from agentic_core.cache.redis_cache_client import DeterministicRedisCache
+        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+        import agentic_core.cache.redis_cache_client as m
+        from agentic_core.cache.redis_cache_client import (
+        from agentic_core.cache.redis_cache_client import _REDIS_SOCKET_TIMEOUT_S, check_redis_health
+        from system_learning.engines.local_faiss_store import LocalFAISSStore
+        from system_learning.engines.local_faiss_store import LocalFAISSStore
+        from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+        from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+        from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+        from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+        from system_learning.engines.local_faiss_store import EmbedderMismatchError, LocalFAISSStore
+        from system_learning.engines.local_faiss_store import LocalFAISSStore
+        from system_learning.engines.local_faiss_store import LocalFAISSStore
+        from system_learning.engines.local_faiss_store import LocalFAISSStore
+        from system_learning.engines.local_faiss_store import LocalFAISSStore
+        from agentic_core.L2_execution.healers.vllm_process_manager import get_model_config
+        from agentic_core.L2_execution.healers.vllm_process_manager import get_model_config
+        from agentic_core.L2_execution.healers.vllm_process_manager import get_model_config
+        from system_learning.engines.embedding_service_factory import (
+        from system_learning.engines.embedding_service_factory import (
+        from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
+        from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
+        from system_learning.engines.embedding_service_factory import (
+        from system_learning.engines.embedding_service_factory import (
         c = self._cache()
         with pytest.raises(ValueError, match="non-empty"):
             c._validate_key("")
@@ -340,7 +380,7 @@ class TestRedisFallbackBehaviour:
 
     def _fallback_cache(self):
         """Returns a cache pre-set to fallback mode (no TCP I/O — direct injection)."""
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+#  # MOVED: from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
 
         c = DeterministicRedisCache(db=CacheDB.HOT, redis_url="redis://localhost:1")
         # Inject fallback directly — avoids real TCP connect overhead in unit tests.
@@ -427,7 +467,7 @@ class TestRedisFallbackBehaviour:
 
     @pytest.mark.unit_min_deps
     def test_db_namespace_in_stats_matches_enum(self):
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+#  # MOVED: from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
 
         c0 = DeterministicRedisCache(db=CacheDB.HOT, redis_url="redis://localhost:1")
         c1 = DeterministicRedisCache(db=CacheDB.COORDINATION, redis_url="redis://localhost:1")
@@ -445,7 +485,7 @@ class TestRedisMidSessionFailure:
 
     @pytest.mark.unit_min_deps
     def test_mark_failed_sets_use_fallback(self):
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+#  # MOVED: from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
 
         c = DeterministicRedisCache(db=CacheDB.HOT, redis_url="redis://localhost:1")
         c._use_fallback = False  # pretend we connected
@@ -457,7 +497,7 @@ class TestRedisMidSessionFailure:
     @pytest.mark.unit_min_deps
     def test_get_falls_back_after_mark_failed(self):
         """After _mark_failed, get() reads from LRU fallback."""
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+#  # MOVED: from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
 
         c = DeterministicRedisCache(db=CacheDB.HOT, redis_url="redis://localhost:1")
         key = "i" * 64
@@ -476,13 +516,13 @@ class TestCanonicalJsonBytes:
 
     @pytest.mark.unit_min_deps
     def test_output_is_bytes(self):
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+#  # MOVED: from agentic_core.cache.redis_cache_client import canonical_json_bytes
 
         assert isinstance(canonical_json_bytes({"a": 1}), bytes)
 
     @pytest.mark.unit_min_deps
     def test_output_is_ascii_decodable(self):
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+#  # MOVED: from agentic_core.cache.redis_cache_client import canonical_json_bytes
 
         canonical_json_bytes({"key": "value"}).decode("ascii")  # must not raise
 
@@ -503,14 +543,14 @@ class TestCanonicalJsonBytes:
     # TODO: Add specific execution assertions
     @pytest.mark.unit_min_deps
     def test_non_ascii_unicode_is_escaped(self):
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+#  # MOVED: from agentic_core.cache.redis_cache_client import canonical_json_bytes
 
         result = canonical_json_bytes({"k": "\u00e9"})
         result.decode("ascii")  # must be ASCII-safe (escaped)
 
     @pytest.mark.unit_min_deps
     def test_nested_structure(self):
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+#  # MOVED: from agentic_core.cache.redis_cache_client import canonical_json_bytes
 
         obj = {"outer": {"inner": [1, 2, 3]}, "flag": True}
         result = canonical_json_bytes(obj)
@@ -527,7 +567,7 @@ class TestRedisDatabaseNamespaceIsolation:
 
     @pytest.mark.unit_min_deps
     def test_hot_and_coord_are_separate_instances(self):
-        from agentic_core.cache.redis_cache_client import (
+#  # MOVED: from agentic_core.cache.redis_cache_client import (
             CacheDB,
             get_coordination_cache,
             get_hot_cache,
@@ -545,7 +585,7 @@ class TestRedisDatabaseNamespaceIsolation:
     @pytest.mark.unit_min_deps
     def test_hot_key_not_visible_in_coord_fallback(self):
         """In fallback mode, HOT and COORD have independent LRU stores."""
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+#  # MOVED: from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
 
         hot = DeterministicRedisCache(db=CacheDB.HOT, redis_url="redis://localhost:1")
         coord = DeterministicRedisCache(db=CacheDB.COORDINATION, redis_url="redis://localhost:1")
@@ -568,7 +608,7 @@ class TestRedisTCPPreCheck:
     @pytest.mark.unit_min_deps
     def test_tcp_reachable_returns_false_for_unreachable_port(self):
         """Mock OSError from socket to verify False return without TCP overhead."""
-        from agentic_core.cache.redis_cache_client import DeterministicRedisCache
+#  # MOVED: from agentic_core.cache.redis_cache_client import DeterministicRedisCache
 
         with patch("socket.create_connection", side_effect=OSError("refused")):
             assert DeterministicRedisCache._tcp_reachable("localhost", 1) is False
@@ -576,7 +616,7 @@ class TestRedisTCPPreCheck:
     @pytest.mark.unit_min_deps
     def test_tcp_reachable_returns_true_for_reachable_port(self):
         """Mock successful socket connection to verify True return."""
-        from agentic_core.cache.redis_cache_client import DeterministicRedisCache
+#  # MOVED: from agentic_core.cache.redis_cache_client import DeterministicRedisCache
 
         mock_sock = MagicMock()
         mock_sock.__enter__ = MagicMock(return_value=mock_sock)
@@ -587,7 +627,7 @@ class TestRedisTCPPreCheck:
     @pytest.mark.unit_min_deps
     def test_connect_skips_redis_py_when_tcp_precheck_fails(self):
         """When _tcp_reachable returns False, redis.Redis must never be instantiated."""
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+#  # MOVED: from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
 
         c = DeterministicRedisCache(db=CacheDB.HOT, redis_url="redis://localhost:6379")
         mock_redis_mod = MagicMock()
@@ -603,7 +643,7 @@ class TestRedisTCPPreCheck:
     @pytest.mark.unit_min_deps
     def test_connect_proceeds_to_redis_when_tcp_precheck_passes(self):
         """When _tcp_reachable returns True, redis.Redis must be instantiated."""
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+#  # MOVED: from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
 
         c = DeterministicRedisCache(db=CacheDB.HOT, redis_url="redis://localhost:6379")
         mock_redis_instance = MagicMock()
@@ -630,7 +670,7 @@ class TestRedisSocketTimeout:
 
     @pytest.mark.unit_min_deps
     def test_constant_value_is_0_3(self):
-        import agentic_core.cache.redis_cache_client as m
+#  # MOVED: import agentic_core.cache.redis_cache_client as m
 
         assert m._REDIS_SOCKET_TIMEOUT_S == 0.3, (
             f"_REDIS_SOCKET_TIMEOUT_S must be 0.3 to prevent hangs, got {m._REDIS_SOCKET_TIMEOUT_S}"
@@ -653,7 +693,7 @@ class TestRedisSocketTimeout:
     @pytest.mark.unit_min_deps
     def test_connect_passes_timeout_to_redis_constructor(self):
         """_connect() must pass socket_timeout=_REDIS_SOCKET_TIMEOUT_S to redis.Redis."""
-        from agentic_core.cache.redis_cache_client import (
+#  # MOVED: from agentic_core.cache.redis_cache_client import (
             _REDIS_SOCKET_TIMEOUT_S,
             CacheDB,
             DeterministicRedisCache,
@@ -680,7 +720,7 @@ class TestRedisSocketTimeout:
     @pytest.mark.unit_min_deps
     def test_check_redis_health_passes_timeout(self):
         """check_redis_health must pass socket_timeout=_REDIS_SOCKET_TIMEOUT_S."""
-        from agentic_core.cache.redis_cache_client import _REDIS_SOCKET_TIMEOUT_S, check_redis_health
+#  # MOVED: from agentic_core.cache.redis_cache_client import _REDIS_SOCKET_TIMEOUT_S, check_redis_health
 
         captured = {}
 
@@ -705,7 +745,7 @@ class TestRedisSocketTimeout:
 
 def _build_faiss_artifact(base: Path, index_id: str, n: int = 4, dim: int = 8) -> Path:
     """Helper: build and persist a valid FAISS artifact, return artifact dir."""
-    from system_learning.engines.local_faiss_store import LocalFAISSStore
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore
 
     vecs = [_det_vec(f"v{i}", dim) for i in range(n)]
     metas = [{"content_hash": f"hash_{i:04d}", "trace_id": f"t{i}"} for i in range(n)]
@@ -744,7 +784,7 @@ class TestFAISSLoadFromDisk:
 
     @pytest.mark.unit_min_deps
     def test_valid_artifact_loads_without_error(self, tmp_path):
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore
 
         art = _build_faiss_artifact(tmp_path, "idx")
         store2 = LocalFAISSStore(base_path=tmp_path / "load")
@@ -752,7 +792,7 @@ class TestFAISSLoadFromDisk:
 
     @pytest.mark.unit_min_deps
     def test_tampered_index_json_raises(self, tmp_path):
-        from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
 
         art = _build_faiss_artifact(tmp_path, "idx")
         (art / "index.json").write_bytes(b'{"tampered":true}')
@@ -763,7 +803,7 @@ class TestFAISSLoadFromDisk:
 
     @pytest.mark.unit_min_deps
     def test_tampered_meta_json_raises(self, tmp_path):
-        from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
 
         art = _build_faiss_artifact(tmp_path, "idx")
         (art / "meta.json").write_bytes(b'{"tampered":true}')
@@ -774,7 +814,7 @@ class TestFAISSLoadFromDisk:
 
     @pytest.mark.unit_min_deps
     def test_missing_manifest_raises(self, tmp_path):
-        from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
 
         art = _build_faiss_artifact(tmp_path, "idx")
         (art / "manifest.json").unlink()
@@ -785,7 +825,7 @@ class TestFAISSLoadFromDisk:
 
     @pytest.mark.unit_min_deps
     def test_missing_index_json_raises(self, tmp_path):
-        from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
 
         art = _build_faiss_artifact(tmp_path, "idx")
         (art / "index.json").unlink()
@@ -796,7 +836,7 @@ class TestFAISSLoadFromDisk:
 
     @pytest.mark.unit_min_deps
     def test_wrong_embedder_id_raises(self, tmp_path):
-        from system_learning.engines.local_faiss_store import EmbedderMismatchError, LocalFAISSStore
+#  # MOVED: from system_learning.engines.local_faiss_store import EmbedderMismatchError, LocalFAISSStore
 
         art = _build_faiss_artifact(tmp_path, "idx")
         store2 = LocalFAISSStore(base_path=tmp_path / "load")
@@ -805,7 +845,7 @@ class TestFAISSLoadFromDisk:
 
     @pytest.mark.unit_min_deps
     def test_correct_embedder_id_passes(self, tmp_path):
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore
 
         art = _build_faiss_artifact(tmp_path, "idx")
         store2 = LocalFAISSStore(base_path=tmp_path / "load")
@@ -821,7 +861,7 @@ class TestFAISSSearch:
     """search() must return sorted results and respect cutoff."""
 
     def _store_with_vectors(self, n: int = 4, dim: int = 8):
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore
 
         vecs = [_det_vec(f"v{i}", dim) for i in range(n)]
         metas = [{"content_hash": f"hash_{i:04d}", "trace_id": f"t{i}"} for i in range(n)]
@@ -865,7 +905,7 @@ class TestFAISSSearch:
 
     @pytest.mark.unit_min_deps
     def test_search_empty_index_returns_empty_list(self):
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore
 
         store = LocalFAISSStore(base_path=Path("."))
         store.begin_build("empty", 8, seed=0)
@@ -895,7 +935,7 @@ class TestFAISSSearch:
     @pytest.mark.unit_min_deps
     def test_persist_load_search_round_trip(self, tmp_path):
         """persist_to_disk -> load_from_disk -> search must return consistent results."""
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore
 
         dim = 8
         vecs = [_det_vec(f"rt{i}", dim) for i in range(4)]
@@ -932,14 +972,14 @@ class TestVLLMGetModelConfig:
 
     @pytest.mark.unit_min_deps
     def test_unknown_size_falls_back_to_7b(self):
-        from agentic_core.L2_execution.healers.vllm_process_manager import get_model_config
+#  # MOVED: from agentic_core.L2_execution.healers.vllm_process_manager import get_model_config
 
         cfg = get_model_config("99B")
         assert cfg["model_id"] == "Qwen/Qwen2.5-7B-Instruct", "Unknown model size must fall back to 7B config"
 
     @pytest.mark.unit_min_deps
     def test_7b_config_has_required_keys(self):
-        from agentic_core.L2_execution.healers.vllm_process_manager import get_model_config
+#  # MOVED: from agentic_core.L2_execution.healers.vllm_process_manager import get_model_config
 
         cfg = get_model_config("7B")
         for k in ("model_id", "max_model_len", "gpu_memory_utilization"):
@@ -947,7 +987,7 @@ class TestVLLMGetModelConfig:
 
     @pytest.mark.unit_min_deps
     def test_14b_config_has_required_keys(self):
-        from agentic_core.L2_execution.healers.vllm_process_manager import get_model_config
+#  # MOVED: from agentic_core.L2_execution.healers.vllm_process_manager import get_model_config
 
         cfg = get_model_config("14B")
         for k in ("model_id", "max_model_len", "gpu_memory_utilization"):
@@ -1040,7 +1080,7 @@ class TestEmbeddingKillSwitch:
 
     @pytest.mark.unit_min_deps
     def test_get_or_disabled_returns_disabled_when_flag_false(self):
-        from system_learning.engines.embedding_service_factory import (
+#  # MOVED: from system_learning.engines.embedding_service_factory import (
             EmbeddingServiceFactory,
             _DisabledEmbeddingService,
         )
@@ -1052,7 +1092,7 @@ class TestEmbeddingKillSwitch:
 
     @pytest.mark.unit_min_deps
     def test_get_or_disabled_returns_disabled_when_flag_not_set(self):
-        from system_learning.engines.embedding_service_factory import (
+#  # MOVED: from system_learning.engines.embedding_service_factory import (
             EmbeddingServiceFactory,
             _DisabledEmbeddingService,
         )
@@ -1065,7 +1105,7 @@ class TestEmbeddingKillSwitch:
 
     @pytest.mark.unit_min_deps
     def test_is_embedding_enabled_requires_exact_true(self):
-        from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
+#  # MOVED: from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
 
         for val in ("True", "TRUE", "1", "yes", "on", ""):
             with patch.dict("os.environ", {"EMBEDDING_ENABLED": val}):
@@ -1080,14 +1120,14 @@ class TestEmbeddingKillSwitch:
 
     @pytest.mark.unit_min_deps
     def test_is_embedding_enabled_true_lowercase(self):
-        from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
+#  # MOVED: from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
 
         with patch.dict("os.environ", {"EMBEDDING_ENABLED": "true"}):
             assert EmbeddingServiceFactory._is_embedding_enabled() is True
 
     @pytest.mark.unit_min_deps
     def test_construction_raises_when_disabled(self):
-        from system_learning.engines.embedding_service_factory import (
+#  # MOVED: from system_learning.engines.embedding_service_factory import (
             EmbeddingDisabledError,
             EmbeddingServiceFactory,
         )
@@ -1100,7 +1140,7 @@ class TestEmbeddingKillSwitch:
     @pytest.mark.unit_min_deps
     def test_kill_switch_raises_if_instance_exists_while_disabled(self):
         """get_or_disabled raises EmbeddingIntegrityError if _INSTANCE != None while disabled."""
-        from system_learning.engines.embedding_service_factory import (
+#  # MOVED: from system_learning.engines.embedding_service_factory import (
             EmbeddingIntegrityError,
             EmbeddingServiceFactory,
         )

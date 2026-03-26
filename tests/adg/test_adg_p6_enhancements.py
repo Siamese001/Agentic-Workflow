@@ -14,7 +14,7 @@ import ast
 import json
 from dataclasses import dataclass, field
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -61,7 +61,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_p6_enhancements", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_p6_enhancements", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_p6_enhancements", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -230,8 +230,8 @@ class TestPromptSlotVisitor:
     """Tests for _PromptSlotVisitor AST visitor."""
 
     def _run_visitor(self, code: str, source_file: str = "test_module.py") -> list:
-        from agentic_core.adg.extraction.static_scanner import _PromptSlotVisitor
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _PromptSlotVisitor
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         module_adg = canonical_name("Module", source_file)
         tree = ast.parse(code)
@@ -240,6 +240,47 @@ class TestPromptSlotVisitor:
         return visitor.edges
 
     def test_assemble_call_with_slot_kwargs_emits_generates_prompt(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.extraction.static_scanner import _PromptSlotVisitor
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
+        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
+        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
+        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
+        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
+        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
+        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
+        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
+        from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
+        from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
+        from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
+        from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
+        from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
+        from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
+        from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
+        from agentic_core.adg.analysis.prompt_drift import detect_prompt_drift
+        from agentic_core.adg.analysis.prompt_drift import detect_prompt_drift
+        from agentic_core.adg.analysis.prompt_drift import detect_prompt_drift
+        from agentic_core.adg.analysis.prompt_drift import detect_prompt_drift
+        from agentic_core.adg.analysis.prompt_drift import detect_prompt_drift
+        from agentic_core.adg.analysis.prompt_drift import detect_prompt_drift
+        from agentic_core.adg.analysis.prompt_drift import detect_prompt_drift
+        from agentic_core.adg import schema
+        from agentic_core.adg import schema
+        from agentic_core.adg import schema
+        from agentic_core.adg.schema_util import PROMPT_SLOT_AUTHORITY
+        from agentic_core.adg.schema_util import PROMPT_AUTHORITY_RULES, PROMPT_SLOT_AUTHORITY
+        from agentic_core.adg.schema_util import PROMPT_FIELD_TO_SLOT, PROMPT_SLOT_TYPES
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.extraction.static_scanner import _ExecutionTraceVisitor
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg import schema
+        from agentic_core.adg.analysis.prompt_authority_types import _violation_type_for
+        from agentic_core.adg.schema_util import PROMPT_AUTHORITY_RULES
+        from agentic_core.adg.analysis.prompt_authority_types import _suggested_fix
+        from agentic_core.adg.schema_util import PROMPT_AUTHORITY_RULES
     """Test assemble_call_with_slot_kwargs_emits_generates_prompt runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters
@@ -331,7 +372,7 @@ class TestPromptAuthorityDetector:
         return _ScanResult(edges=edges)  # type: ignore[arg-type]
 
     def test_clean_assembly_no_violations(self):
-        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
+#  # MOVED: from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
 
         # Each module generates only ONE slot type → no cross-authority violations
         result = self._make_result(
@@ -354,7 +395,7 @@ class TestPromptAuthorityDetector:
         assert report.violation_count == 0
 
     def test_u0_also_generates_s0_is_violation(self):
-        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
+#  # MOVED: from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
 
         # One module generates BOTH S0 and U0 → U0_MUTATES_S0
         result = self._make_result(
@@ -381,7 +422,7 @@ class TestPromptAuthorityDetector:
         assert "U0_MUTATES_S0" in vtypes
 
     def test_c0_generates_s0_is_violation(self):
-        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
+#  # MOVED: from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
 
         result = self._make_result(
             [
@@ -405,7 +446,7 @@ class TestPromptAuthorityDetector:
         assert "C0_MUTATES_S0" in vtypes
 
     def test_missing_d0_fence_detected(self):
-        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
+#  # MOVED: from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
 
         # Assembles S0 + U0 but no D0
         result = self._make_result(
@@ -428,7 +469,7 @@ class TestPromptAuthorityDetector:
         assert "agentic_core/L0_routing/no_fence.py" in report.missing_fences
 
     def test_slot_generators_index_populated(self):
-        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
+#  # MOVED: from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
 
         result = self._make_result(
             [
@@ -444,7 +485,7 @@ class TestPromptAuthorityDetector:
         assert "agentic_core/prompt_governance/constitution.py" in report.slot_generators.get("S0", [])
 
     def test_severity_critical_for_s0_violations(self):
-        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
+#  # MOVED: from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
 
         result = self._make_result(
             [
@@ -469,7 +510,7 @@ class TestPromptAuthorityDetector:
         assert all(v.severity == "critical" for v in authority_inversion_violations)
 
     def test_report_to_dict_serializable(self):
-        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
+#  # MOVED: from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
 
         result = self._make_result([])
         report = detect_prompt_authority_violations(result)  # type: ignore[arg-type]
@@ -481,7 +522,7 @@ class TestPromptAuthorityDetector:
         json.dumps(d)
 
     def test_report_summary_string(self):
-        from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
+#  # MOVED: from agentic_core.adg.analysis.prompt_authority_types import detect_prompt_authority_violations
 
         result = self._make_result([])
         report = detect_prompt_authority_violations(result)  # type: ignore[arg-type]
@@ -501,7 +542,7 @@ class TestPromptImpactAnalyzer:
         return _ScanResult(edges=edges)  # type: ignore[arg-type]
 
     def test_empty_changed_files_no_impact(self):
-        from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
+#  # MOVED: from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
 
         result = self._make_result([])
         report = analyze_prompt_impact(result, changed_files=[])  # type: ignore[arg-type]
@@ -509,7 +550,7 @@ class TestPromptImpactAnalyzer:
         assert report.risk_label == "LOW"
 
     def test_changed_generator_module_shows_impact(self):
-        from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
+#  # MOVED: from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
 
         edges = [
             _make_edge(
@@ -528,7 +569,7 @@ class TestPromptImpactAnalyzer:
         assert report.impacted_count >= 1
 
     def test_s0_slot_gives_high_risk_score(self):
-        from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
+#  # MOVED: from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
 
         edges = [
             _make_edge(
@@ -547,7 +588,7 @@ class TestPromptImpactAnalyzer:
         assert report.risk_score > 0.5
 
     def test_u0_slot_lower_risk_than_s0(self):
-        from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
+#  # MOVED: from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
 
         edges_s0 = [
             _make_edge(
@@ -578,7 +619,7 @@ class TestPromptImpactAnalyzer:
         assert r_s0.risk_score > r_u0.risk_score
 
     def test_consumers_traced_through_edges(self):
-        from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
+#  # MOVED: from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
 
         tmpl_node = "ADG::PromptTemplate::TITANIUM_RESEARCHER_SYSTEM"
         edges = [
@@ -606,14 +647,14 @@ class TestPromptImpactAnalyzer:
         assert "apps_rg/agents/titanium_agent.py" in impacted_mods
 
     def test_report_to_dict_json_serializable(self):
-        from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
+#  # MOVED: from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
 
         result = self._make_result([])
         report = analyze_prompt_impact(result, changed_files=[])  # type: ignore[arg-type]
         json.dumps(report.to_dict())
 
     def test_affected_slot_types_ordered_by_authority(self):
-        from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
+#  # MOVED: from agentic_core.adg.applications.prompt_impact_config import analyze_prompt_impact
 
         edges = [
             _make_edge(
@@ -649,7 +690,7 @@ class TestPromptDriftDetector:
     """Tests for detect_prompt_drift."""
 
     def test_identical_scans_no_drift(self):
-        from agentic_core.adg.analysis.prompt_drift import detect_prompt_drift
+#  # MOVED: from agentic_core.adg.analysis.prompt_drift import detect_prompt_drift
 
         edge = _make_edge(
             "agentic_core/prompt_governance/core/prompt_entry_types.py",
@@ -664,7 +705,7 @@ class TestPromptDriftDetector:
         assert report.total_removed == 0
 
     def test_added_generator_detected(self):
-        from agentic_core.adg.analysis.prompt_drift import detect_prompt_drift
+#  # MOVED: from agentic_core.adg.analysis.prompt_drift import detect_prompt_drift
 
         old_edge = _make_edge(
             "mod_a.py", "generates_prompt", "ADG::PromptSlot::S0::mod_a.py", symbol="S0:s0_system"
@@ -680,7 +721,7 @@ class TestPromptDriftDetector:
         assert report.added_generators[0].from_module == "mod_b.py"
 
     def test_removed_generator_detected(self):
-        from agentic_core.adg.analysis.prompt_drift import detect_prompt_drift
+#  # MOVED: from agentic_core.adg.analysis.prompt_drift import detect_prompt_drift
 
         edge = _make_edge(
             "mod_a.py", "generates_prompt", "ADG::PromptSlot::S0::mod_a.py", symbol="S0:s0_system"
@@ -692,7 +733,7 @@ class TestPromptDriftDetector:
         assert len(report.removed_generators) == 1
 
     def test_s0_removal_is_high_risk(self):
-        from agentic_core.adg.analysis.prompt_drift import detect_prompt_drift
+#  # MOVED: from agentic_core.adg.analysis.prompt_drift import detect_prompt_drift
 
         edge = _make_edge(
             "agentic_core/constitution.py",
@@ -706,7 +747,7 @@ class TestPromptDriftDetector:
         assert len(report.high_risk_changes) >= 1
 
     def test_consumer_added_detected(self):
-        from agentic_core.adg.analysis.prompt_drift import detect_prompt_drift
+#  # MOVED: from agentic_core.adg.analysis.prompt_drift import detect_prompt_drift
 
         old_edge = _make_edge(
             "agent_a.py",
@@ -727,7 +768,7 @@ class TestPromptDriftDetector:
         assert report.added_consumers[0].from_module == "agent_b.py"
 
     def test_summary_string_contains_counts(self):
-        from agentic_core.adg.analysis.prompt_drift import detect_prompt_drift
+#  # MOVED: from agentic_core.adg.analysis.prompt_drift import detect_prompt_drift
 
         r1 = _ScanResult(edges=[])
         r2 = _ScanResult(edges=[])
@@ -736,7 +777,7 @@ class TestPromptDriftDetector:
         assert "consumers" in report.summary
 
     def test_report_to_dict_json_serializable(self):
-        from agentic_core.adg.analysis.prompt_drift import detect_prompt_drift
+#  # MOVED: from agentic_core.adg.analysis.prompt_drift import detect_prompt_drift
 
         r1 = _ScanResult(edges=[])
         r2 = _ScanResult(edges=[])
@@ -756,7 +797,7 @@ class TestSchemaExtensions:
         # Get the type args from the Literal
         import typing
 
-        from agentic_core.adg import schema
+#  # MOVED: from agentic_core.adg import schema
 
         entity_args = typing.get_args(schema.EntityType)
         assert "prompt_slot" in entity_args
@@ -767,7 +808,7 @@ class TestSchemaExtensions:
     def test_prompt_relation_types_in_schema(self):
         import typing
 
-        from agentic_core.adg import schema
+#  # MOVED: from agentic_core.adg import schema
 
         rel_args = typing.get_args(schema.RelationType)
         assert "generates_prompt" in rel_args
@@ -780,7 +821,7 @@ class TestSchemaExtensions:
     def test_prompt_edge_kinds_in_schema(self):
         import typing
 
-        from agentic_core.adg import schema
+#  # MOVED: from agentic_core.adg import schema
 
         ek_args = typing.get_args(schema.EdgeKind)
         assert "prompt_generation" in ek_args
@@ -790,7 +831,7 @@ class TestSchemaExtensions:
         assert "prompt_authority_violation" in ek_args
 
     def test_prompt_slot_authority_ordering(self):
-        from agentic_core.adg.schema_util import PROMPT_SLOT_AUTHORITY
+#  # MOVED: from agentic_core.adg.schema_util import PROMPT_SLOT_AUTHORITY
 
         # S0 must be highest authority (lowest rank number)
         assert PROMPT_SLOT_AUTHORITY["S0"] < PROMPT_SLOT_AUTHORITY["D0"]
@@ -799,7 +840,7 @@ class TestSchemaExtensions:
         assert PROMPT_SLOT_AUTHORITY["C0"] < PROMPT_SLOT_AUTHORITY["U0"]
 
     def test_prompt_authority_rules_correct_direction(self):
-        from agentic_core.adg.schema_util import PROMPT_AUTHORITY_RULES, PROMPT_SLOT_AUTHORITY
+#  # MOVED: from agentic_core.adg.schema_util import PROMPT_AUTHORITY_RULES, PROMPT_SLOT_AUTHORITY
 
         for low_slot, high_slot in PROMPT_AUTHORITY_RULES:
             low_rank = PROMPT_SLOT_AUTHORITY[low_slot]
@@ -810,20 +851,20 @@ class TestSchemaExtensions:
             )
 
     def test_prompt_field_to_slot_complete(self):
-        from agentic_core.adg.schema_util import PROMPT_FIELD_TO_SLOT, PROMPT_SLOT_TYPES
+#  # MOVED: from agentic_core.adg.schema_util import PROMPT_FIELD_TO_SLOT, PROMPT_SLOT_TYPES
 
         mapped_slots = set(PROMPT_FIELD_TO_SLOT.values())
         for slot in PROMPT_SLOT_TYPES:
             assert slot in mapped_slots, f"Slot {slot} not mapped in PROMPT_FIELD_TO_SLOT"
 
     def test_canonical_name_prompt_slot(self):
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         name = canonical_name("PromptSlot", "S0", "agentic_core/test.py")
         assert name == "ADG::PromptSlot::S0::agentic_core/test.py"
 
     def test_canonical_name_prompt_template(self):
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         name = canonical_name("PromptTemplate", "SOVEREIGN_SYSTEM_CORE")
         assert name == "ADG::PromptTemplate::SOVEREIGN_SYSTEM_CORE"
@@ -838,8 +879,8 @@ class TestExecutionTraceVisitor:
     """Tests for _ExecutionTraceVisitor AST visitor."""
 
     def _run_visitor(self, code: str, source_file: str = "test_trace.py") -> list:
-        from agentic_core.adg.extraction.static_scanner import _ExecutionTraceVisitor
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _ExecutionTraceVisitor
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         module_adg = canonical_name("Module", source_file)
         tree = ast.parse(code)
@@ -915,7 +956,7 @@ assert isinstance(result, object), "Result should be an object"
     def test_trace_prompt_link_edge_kind_in_schema(self):
         import typing
 
-        from agentic_core.adg import schema
+#  # MOVED: from agentic_core.adg import schema
 
         ek_args = typing.get_args(schema.EdgeKind)
         assert "trace_prompt_link" in ek_args
@@ -930,16 +971,16 @@ class TestAuthorityRulesCompleteness:
     """Verify that all authority violation type strings are valid."""
 
     def test_all_authority_rules_have_violation_type(self):
-        from agentic_core.adg.analysis.prompt_authority_types import _violation_type_for
-        from agentic_core.adg.schema_util import PROMPT_AUTHORITY_RULES
+#  # MOVED: from agentic_core.adg.analysis.prompt_authority_types import _violation_type_for
+#  # MOVED: from agentic_core.adg.schema_util import PROMPT_AUTHORITY_RULES
 
         for low_slot, high_slot in PROMPT_AUTHORITY_RULES:
             vtype = _violation_type_for(low_slot, high_slot)
             assert vtype is not None, f"No violation type defined for ({low_slot}, {high_slot})"
 
     def test_suggested_fixes_non_empty(self):
-        from agentic_core.adg.analysis.prompt_authority_types import _suggested_fix
-        from agentic_core.adg.schema_util import PROMPT_AUTHORITY_RULES
+#  # MOVED: from agentic_core.adg.analysis.prompt_authority_types import _suggested_fix
+#  # MOVED: from agentic_core.adg.schema_util import PROMPT_AUTHORITY_RULES
 
         for low_slot, high_slot in PROMPT_AUTHORITY_RULES:
             fix = _suggested_fix(low_slot, high_slot)

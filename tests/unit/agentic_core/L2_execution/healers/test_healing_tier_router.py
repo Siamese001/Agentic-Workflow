@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -97,28 +97,28 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L2_execution.healers.healing_tier_config import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_config import (
     HealingTierConfig,
     load_default_healing_tier_config,
 )
-from agentic_core.L2_execution.healers.healing_tier_router import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_router import (
     clear_historical_success_rates,
     compute_heal_confidence,
     route_healing_tier,
     set_historical_success_rate,
 )
-from agentic_core.L2_execution.healers.healing_tier_types import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_types import (
     FailureSignal,
     HealingDecision,
     HealingInput,
     HealingTier,
 )
-from agentic_core.L2_execution.healers.tiering_allowlist import (
+#  # MOVED: from agentic_core.L2_execution.healers.tiering_allowlist import (
     TIERING_ALLOWLIST,
     is_tiering_allowed,
     is_tiering_allowed_by_path,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -249,6 +249,12 @@ class TestHealingTierConfig:
     """Config validation tests."""
 
     def test_valid_config(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.healers.healing_tier_config import (
+        from agentic_core.L2_execution.healers.healing_tier_router import (
+        from agentic_core.L2_execution.healers.healing_tier_types import (
+        from agentic_core.L2_execution.healers.tiering_allowlist import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test valid_config runtime behavior."""
     # Arrange
     # TODO: Set up test data for valid_config

@@ -5,11 +5,12 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.interfaces.orchestration as m
+#  # MOVED: import agentic_core.interfaces.orchestration as m
 
 
 class TestOrchestrationInterface:
     def test_importable(self):
+        import agentic_core.interfaces.orchestration as m
         assert m is not None
 
     def test_action_router_present(self):

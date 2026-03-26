@@ -11,7 +11,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 try:
-    import agentic_core.L1_cognition.engines.capability_analyzer as _mod  # noqa: F401  # ADG covers
+#  # MOVED: import agentic_core.L1_cognition.engines.capability_analyzer as _mod  # noqa: F401  # ADG covers
 except (ValueError, TypeError, RuntimeError) as e:
     _mod = None
 
@@ -44,6 +44,7 @@ def _src_text():
 
 class TestCapabilityAnalyzerSource:
     def test_source_exists(self):
+        import agentic_core.L1_cognition.engines.capability_analyzer as _mod  # noqa: F401  # ADG covers
         assert _SRC.exists()
 
     def test_parses_without_error(self):

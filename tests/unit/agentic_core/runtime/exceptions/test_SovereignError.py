@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.runtime.exceptions.SovereignError import (  # noqa: F401
+#  # MOVED: from agentic_core.runtime.exceptions.SovereignError import (  # noqa: F401
     CircularDependencyError,
     ConfigurationError,
     HealerError,
@@ -22,6 +22,7 @@ from agentic_core.runtime.exceptions.SovereignError import (  # noqa: F401
 
 class TestSovereignErrorContract:
     def test_is_class(self):
+        from agentic_core.runtime.exceptions.SovereignError import (  # noqa: F401
     """Test is_class runtime behavior."""
     # Arrange
     # TODO: Set up runtime environment

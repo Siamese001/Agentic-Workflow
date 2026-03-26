@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L4_state.memory.reasoning_memory  # noqa: F401
+#  # MOVED: import agentic_core.L4_state.memory.reasoning_memory  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L4_state.memory.reasoning_memory  # noqa: F401
     """Module reasoning_memory must be importable."""
     assert agentic_core.L4_state.memory.reasoning_memory is not None

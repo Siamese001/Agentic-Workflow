@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L0_ROUTING_DIR,
 )
 
@@ -13,6 +13,7 @@ class TestHealingAgent:
     """Tests for healing agent functionality."""
 
     def test_healing_agent_exists(self):
+        from agentic_core.L0_routing.config.path_constants import (
         """Healing agent module should exist."""
         path = Path("agentic_core/L0_routing/reasoning")
         assert path.exists(), "L0_routing/reasoning/ should exist"

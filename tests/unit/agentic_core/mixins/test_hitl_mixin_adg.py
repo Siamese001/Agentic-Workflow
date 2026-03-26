@@ -5,11 +5,12 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.mixins.hitl_mixin import ApprovalStatus, HITLMixin, RiskLevel
+#  # MOVED: from agentic_core.mixins.hitl_mixin import ApprovalStatus, HITLMixin, RiskLevel
 
 
 class TestApprovalStatus:
     def test_pending_value(self):
+        from agentic_core.mixins.hitl_mixin import ApprovalStatus, HITLMixin, RiskLevel
         assert ApprovalStatus.PENDING.value == "pending"
 
     def test_approved_value(self):

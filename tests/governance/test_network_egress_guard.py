@@ -11,7 +11,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -94,7 +94,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.governance
 
-from agentic_core.L2_execution.enforcement.network_egress_guard import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.network_egress_guard import (
     NetworkEgressViolation,
     check_network_egress_allowed,
     install_egress_guard,
@@ -103,7 +103,7 @@ from agentic_core.L2_execution.enforcement.network_egress_guard import (
     test_egress_guard,
     uninstall_egress_guard,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -198,6 +198,9 @@ class TestREQ414NetworkEgressGuard:
     """Test suite for REQ-414 Network Egress Guard."""
 
     def test_is_llm_endpoint_openai(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.enforcement.network_egress_guard import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """Test detection of OpenAI endpoints."""
         assert is_llm_endpoint("api.openai.com")
         assert is_llm_endpoint("api.openai.com", 443)

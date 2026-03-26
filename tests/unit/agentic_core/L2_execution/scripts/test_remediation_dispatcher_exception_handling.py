@@ -11,7 +11,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -58,7 +58,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_remediation_dispatcher_exception_handling", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_remediation_dispatcher_exception_handling", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_remediation_dispatcher_exception_handling", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -176,8 +176,14 @@ class TestHealerExceptionHandling:
     """Test that healer exceptions are properly caught and converted to FAILED results."""
 
     def test_healer_exception_caught_and_converted_to_failed_result(self):
-        """When healer raises exception, should catch it and return HealCheckResult with FAILED status."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         from agentic_core.L2_execution.scripts.remediation_dispatcher import (
+        from agentic_core.L2_execution.scripts.remediation_dispatcher import (
+        from agentic_core.L2_execution.scripts.remediation_dispatcher import (
+        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+        """When healer raises exception, should catch it and return HealCheckResult with FAILED status."""
+#  # MOVED: from agentic_core.L2_execution.scripts.remediation_dispatcher import (
             HealCheckResult,
             HealStatus,
             _invoke_healer,
@@ -215,7 +221,7 @@ class TestHealerExceptionHandling:
 
     def test_healer_exception_triggers_llm_escalation_when_in_allowlist(self):
         """When healer raises exception and check_id is in allowlist, should trigger LLM escalation."""
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import (
+#  # MOVED: from agentic_core.L2_execution.scripts.remediation_dispatcher import (
             _invoke_healer,
         )
 
@@ -255,7 +261,7 @@ class TestHealerExceptionHandling:
 
     def test_healer_success_does_not_trigger_exception_path(self):
         """When healer succeeds, should return its result without exception handling."""
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import (
+#  # MOVED: from agentic_core.L2_execution.scripts.remediation_dispatcher import (
             HealCheckResult,
             HealStatus,
             _invoke_healer,
@@ -301,7 +307,7 @@ class TestNoDeadCodeAfterRaise:
         """The except block should construct HealCheckResult, not have dead code after raise."""
         import inspect
 
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
+#  # MOVED: from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer
 
         # Get the source code of the function
         source = inspect.getsource(_invoke_healer)

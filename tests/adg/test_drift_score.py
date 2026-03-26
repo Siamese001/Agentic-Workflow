@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -72,7 +72,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_drift_score", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_drift_score", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_drift_score", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -218,6 +218,8 @@ def _make_redis(smembers_map: dict = None, scard_map: dict = None, scan_results:
 
 class TestIsStubOnly:
     def test_init_is_stub(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         assert _is_stub_only("agentic_core/L0_routing/__init__.py") is True
 
     def test_shim_is_stub(self):

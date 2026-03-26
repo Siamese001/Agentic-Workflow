@@ -37,7 +37,7 @@ from typing import Any
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
@@ -50,7 +50,7 @@ from agentic_core.L0_routing.config.path_constants import (
     L4_STATE_DIR,
     L6_OBSERVABILITY_DIR,
 )
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     DISCOVERY_EXCLUDED_TERRITORIES,
     GLOBAL_EXCLUDED_DIRS,
     REPORTS_DIR,
@@ -171,6 +171,8 @@ class TestSSOTAlignment:
         self.project_root = PROJECT_ROOT
 
     def test_blueprint_reality_check(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     """Test blueprint_reality_check contract compliance."""
     # Arrange
     # TODO: Set up test data

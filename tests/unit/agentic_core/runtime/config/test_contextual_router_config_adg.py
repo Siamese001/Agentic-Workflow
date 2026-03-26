@@ -11,7 +11,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 try:
-    import agentic_core.runtime.config.contextual_router_config as _mod  # noqa: F401  # ADG covers
+#  # MOVED: import agentic_core.runtime.config.contextual_router_config as _mod  # noqa: F401  # ADG covers
 except (ValueError, TypeError, RuntimeError) as e:
     _mod = None
 
@@ -36,6 +36,7 @@ def _src_text():
 
 class TestContextualRouterConfigSource:
     def test_source_exists(self):
+        import agentic_core.runtime.config.contextual_router_config as _mod  # noqa: F401  # ADG covers
     """Test source_exists runtime behavior."""
     # Arrange
     # TODO: Set up runtime environment

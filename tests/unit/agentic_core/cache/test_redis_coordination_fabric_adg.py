@@ -7,7 +7,7 @@ Behavioral tests belong in test_redis_coordination_fabric.py (no _adg suffix).
 from __future__ import annotations
 
 try:
-    from agentic_core.cache.redis_coordination_fabric import (  # noqa: F401
+#  # MOVED: from agentic_core.cache.redis_coordination_fabric import (  # noqa: F401
         RedisCoordinationFabric,
         get_coordination_fabric,
         reset_coordination_fabric,
@@ -22,6 +22,7 @@ except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swa
 
 class TestRedisCoordinationFabricImportability:
     def test_module_importable(self) -> None:
+        from agentic_core.cache.redis_coordination_fabric import (  # noqa: F401
         """ADG contract: agentic_core/cache/redis_coordination_fabric.py must be importable."""
 
         pass  # Import verified at module level

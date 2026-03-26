@@ -5,11 +5,12 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.mixins.validator_mixin import ValidatorMixin
+#  # MOVED: from agentic_core.mixins.validator_mixin import ValidatorMixin
 
 
 class TestValidatorMixin:
     def test_importable(self):
+        from agentic_core.mixins.validator_mixin import ValidatorMixin
         assert callable(ValidatorMixin)
 
     def test_validator_orchestrator_default_none(self):

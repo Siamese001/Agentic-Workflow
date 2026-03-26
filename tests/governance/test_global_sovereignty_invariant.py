@@ -24,7 +24,7 @@ from typing import Any
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L0_MAINTENANCE_DIR,
     L1_COGNITION_DIR,
     L2_EXECUTION_DIR,
@@ -76,6 +76,7 @@ class _MockInterceptor:
 
 @pytest.mark.governance
 def test_inv_no_upward_mutation_runtime_interceptor():
+    from agentic_core.L0_routing.config.path_constants import (
     """Invariant: runtime interceptor blocks direct writes in replay mode."""
     ic = _MockInterceptor()
     ic.enable()

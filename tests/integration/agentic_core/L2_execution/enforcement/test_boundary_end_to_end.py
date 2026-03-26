@@ -10,7 +10,7 @@ import os
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -93,18 +93,18 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L2_execution.enforcement.boundary_verifier import L2BoundaryVerifier
-from agentic_core.L2_execution.enforcement.key_source import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.boundary_verifier import L2BoundaryVerifier
+#  # MOVED: from agentic_core.L2_execution.enforcement.key_source import (
     TestKeySource,
     get_key_source,
     inject_key_source,
 )
-from agentic_core.L2_execution.types.instruction_packet_types import (
+#  # MOVED: from agentic_core.L2_execution.types.instruction_packet_types import (
     InstructionPacket,
     SignatureVerificationError,
 )
-from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -225,6 +225,12 @@ def compute_w2_determinism_digest() -> str:
 
 
 def test_end_to_end_construct_verify_execute():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.enforcement.boundary_verifier import L2BoundaryVerifier
+    from agentic_core.L2_execution.enforcement.key_source import (
+    from agentic_core.L2_execution.types.instruction_packet_types import (
+    from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test end_to_end_construct_verify_execute runtime behavior."""
 # Arrange
 # TODO: Set up execution parameters

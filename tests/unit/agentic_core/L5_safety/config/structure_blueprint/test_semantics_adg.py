@@ -5,13 +5,14 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.config.structure_blueprint.semantics import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.semantics import (
     NAMING_CONVENTIONS,
 )
 
 
 class TestNamingConventions:
     def test_is_mapping(self):
+        from agentic_core.L5_safety.config.structure_blueprint.semantics import (
         assert hasattr(NAMING_CONVENTIONS, "__getitem__")
 
     def test_has_agent_convention(self):

@@ -12,7 +12,7 @@ import os
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -75,7 +75,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_pattern_analysis_negative_control", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_pattern_analysis_negative_control", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_pattern_analysis_negative_control", "exec_snapshot_link")
-from system_learning.engines.pattern_analysis_engine import (
+#  # MOVED: from system_learning.engines.pattern_analysis_engine import (
     PatternAnalysisEngine,
 )
 
@@ -83,7 +83,7 @@ from system_learning.engines.pattern_analysis_engine import (
 # REMOVED: _emit_applies_guardrail("p0", "test_pattern_analysis_negative_control", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_pattern_analysis_negative_control", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_pattern_analysis_negative_control", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -185,6 +185,9 @@ class TestW3NegativeControl:
     """Negative control tests for W3 pattern analysis determinism."""
 
     def test_pattern_determinism_violation_negative_control(self) -> None:
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.pattern_analysis_engine import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """NC1: Pattern analysis should detect non-deterministic tampering."""
         engine = PatternAnalysisEngine()
 

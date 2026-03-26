@@ -6,7 +6,7 @@ import pytest
 pytestmark = pytest.mark.unit
 
 try:
-    from agentic_core.runtime.config.model_tier_config import (  # noqa: F401
+#  # MOVED: from agentic_core.runtime.config.model_tier_config import (  # noqa: F401
         BATCH_SIZE,
         BUFFER_SIZE,
         DEFAULT_SLEEP,
@@ -34,6 +34,7 @@ except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swa
 
 class TestModelTier:
     def test_is_enum(self):
+        from agentic_core.runtime.config.model_tier_config import (  # noqa: F401
     """Test is_enum runtime behavior."""
     # Arrange
     # TODO: Set up runtime environment

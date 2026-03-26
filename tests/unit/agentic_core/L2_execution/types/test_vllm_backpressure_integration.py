@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -96,22 +96,22 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L2_execution.types.vllm_backpressure_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_backpressure_types import (
     CIRCUIT_BREAKER_FAILURE_THRESHOLD,
     MAX_QUEUE_DEPTH,
     QUEUE_WAIT_TIMEOUT_SECONDS,
     CircuitBreakerState,
 )
-from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
     VLLMCircuitBreakerRegistry,
     VLLMQueueController,
     evaluate_gateway_call,
 )
-from agentic_core.L2_execution.types.vllm_token_budget_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_token_budget_types import (
     TaskClass,
     VLLMFailureType,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -223,6 +223,11 @@ TASK = TaskClass.PATCH_SUGGESTION.value
 
 
 def test_queue_controller_starts_empty():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.types.vllm_backpressure_types import (
+    from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
+    from agentic_core.L2_execution.types.vllm_token_budget_types import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test queue_controller_starts_empty runtime behavior."""
 # Arrange
 # TODO: Set up test data for queue_controller_starts_empty

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -76,13 +76,13 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.prompt_governance.security.utils.normalization_util import (
+#  # MOVED: from agentic_core.prompt_governance.security.utils.normalization_util import (
     _ZERO_WIDTH_CHARS,
     MAX_DECODED_CHARS,
     MAX_INPUT_CHARS,
     MAX_URL_DECODE_PASSES,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -175,6 +175,12 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestConstants:
     def test_max_input_chars(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.prompt_governance.security.utils.normalization_util import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
+        from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
+        from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
         assert MAX_INPUT_CHARS == 100_000
 
     def test_max_decoded_chars(self):
@@ -192,17 +198,17 @@ class TestConstants:
 
 class TestNormalizeAndDecode:
     def test_importable(self):
-        from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
+#  # MOVED: from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
         assert callable(normalize_and_decode)
 
     def test_plain_text_passthrough(self):
-        from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
+#  # MOVED: from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
         result = normalize_and_decode("hello world")
         text = result[0] if isinstance(result, tuple) else result
         assert isinstance(text, str)
         assert "hello" in text
 
     def test_returns_tuple_or_string(self):
-        from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
+#  # MOVED: from agentic_core.prompt_governance.security.utils.normalization_util import normalize_and_decode
         result = normalize_and_decode("test input")
         assert isinstance(result, (str, tuple))

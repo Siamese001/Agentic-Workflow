@@ -12,7 +12,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -59,7 +59,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_confidence", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_confidence", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_confidence", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -185,7 +185,7 @@ if str(ROOT) not in sys.path:
 def _make_edge(
     from_name, relation_type, to_name, edge_kind="import", source_file="test.py", line_no=1, symbol=""
 ):
-    from agentic_core.adg.extraction.static_scanner import Edge
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge
 
     return Edge(
         from_name=from_name,
@@ -199,8 +199,8 @@ def _make_edge(
 
 
 def _build_artifact(edges, modules=None):
-    from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
-    from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
     result = ScanResult(commit_sha="test_sha")
     result.edges = edges
@@ -218,6 +218,11 @@ def _build_artifact(edges, modules=None):
 
 class TestG17ConfidenceScoring:
     def test_repo_module_confidence_is_high(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.extraction.static_scanner import Edge
+        from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
+        from agentic_core.adg.extraction.static_scanner import ScanResult
         artifact = _build_artifact(
             edges=[],
             modules=["agentic_core/L2_execution/SomeAgent.py"],

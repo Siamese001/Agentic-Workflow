@@ -15,14 +15,14 @@ import json
 
 import pytest
 
-from agentic_core.L3_orchestration.types.approval_contract_types import (
+#  # MOVED: from agentic_core.L3_orchestration.types.approval_contract_types import (
     ApprovalBundle,
     ApprovalDecision,
     ApprovalRecord,
     check_schema_compatibility,
     validate_against_json_schema,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -200,6 +200,8 @@ def _minimal_bundle(**overrides: object) -> ApprovalBundle:
 
 class TestApprovalContractValidation:
     def test_validate_minimal(self) -> None:
+        from agentic_core.L3_orchestration.types.approval_contract_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         bundle = _minimal_bundle()
         assert bundle.validate() == []
 

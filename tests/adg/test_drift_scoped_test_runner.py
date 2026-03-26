@@ -9,7 +9,7 @@ from __future__ import annotations
 from unittest.mock import MagicMock, patch
 
 import ops_scripts.ci.drift_scoped_test_runner as runner
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -84,7 +84,7 @@ from ops_scripts.ci.drift_scoped_test_runner import (
 # REMOVED: _emit_applies_guardrail("p0", "test_drift_scoped_test_runner", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_drift_scoped_test_runner", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_drift_scoped_test_runner", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -226,6 +226,8 @@ def _mock_redis(covers_map: dict[str, list[str]] | None = None):
 
 class TestChangedProdFiles:
     def test_returns_only_python_prod_files(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test returns_only_python_prod_files runtime behavior."""
     # Arrange
     # TODO: Set up test data for returns_only_python_prod_files

@@ -7,16 +7,16 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L0_routing.enforcement.trace_id_generator import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.trace_id_generator import (
     TraceIdGenerator,
     generate_trace_id,
     validate_trace_id,
 )
-from agentic_core.L0_routing.types.determinism_types import (
+#  # MOVED: from agentic_core.L0_routing.types.determinism_types import (
     ForensicTraceBuffer,
     SemanticClockSnapshot,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -63,7 +63,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_forensic_determinism", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_forensic_determinism", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_forensic_determinism", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -179,6 +179,11 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 @pytest.mark.governance
 def test_req378_forensic_buffer_uses_semantic_clock():
+    from agentic_core.L0_routing.enforcement.trace_id_generator import (
+    from agentic_core.L0_routing.types.determinism_types import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L0_routing.types.determinism_types import TRACE_BUFFER_VELOCITY_THRESHOLD
     """REQ-378: ForensicTraceBuffer uses semantic clock only."""
     # Create buffer with semantic clock
     clock = SemanticClockSnapshot(tick=42)
@@ -205,7 +210,7 @@ def test_req378_forensic_buffer_uses_semantic_clock():
 @pytest.mark.governance
 def test_req378_forensic_buffer_velocity_threshold():
     """REQ-378: ForensicTraceBuffer enforces velocity threshold."""
-    from agentic_core.L0_routing.types.determinism_types import TRACE_BUFFER_VELOCITY_THRESHOLD
+#  # MOVED: from agentic_core.L0_routing.types.determinism_types import TRACE_BUFFER_VELOCITY_THRESHOLD
 
     # Verify default threshold
     buffer = ForensicTraceBuffer(trace_id="test-trace", semantic_clock_tick=42)

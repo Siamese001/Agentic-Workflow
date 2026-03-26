@@ -16,7 +16,7 @@ from typing import Any
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -174,9 +174,17 @@ class TestArchitectureGovernance:
         return file_path
 
     def test_compliant_file_passes(self, validator, temp_agentic_core):
+        from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.L5_safety.validators.SomeValidator import SomeValidator
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.L1_cognition.engines.CognitiveNode import CognitiveNode
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.L6_observability.dashboard import Dashboard
+        from agentic_core.L0_routing.config.path_constants import (
         """TC-AG-01: Compliant file with no violations passes."""
         agent_code = """
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 class TestAgent(SovereignBaseAgent):
     def run(self):
@@ -190,7 +198,7 @@ class TestAgent(SovereignBaseAgent):
     def test_gravity_violation_detected(self, validator, temp_agentic_core):
         """TC-AG-02: Gravity violation (lower layer importing higher) detected."""
         agent_code = """
-from agentic_core.L5_safety.validators.SomeValidator import SomeValidator
+#  # MOVED: from agentic_core.L5_safety.validators.SomeValidator import SomeValidator
 
 class CognitionAgent:
     def run(self):
@@ -210,7 +218,7 @@ class CognitionAgent:
     def test_naming_convention_violation(self, validator, temp_agentic_core):
         """TC-AG-03: Agent class in file not ending with Agent.py."""
         agent_code = """
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 class TestAgent(SovereignBaseAgent):
     def run(self):
@@ -231,7 +239,7 @@ class TestAgent(SovereignBaseAgent):
     def test_valid_upward_import(self, validator, temp_agentic_core):
         """TC-AG-05: Valid upward import (higher layer importing lower) passes."""
         agent_code = """
-from agentic_core.L1_cognition.engines.CognitiveNode import CognitiveNode
+#  # MOVED: from agentic_core.L1_cognition.engines.CognitiveNode import CognitiveNode
 
 class SafetyAgent:
     def run(self):
@@ -259,7 +267,7 @@ class UtilityClass:
     def test_syntax_error_handling(self, validator, temp_agentic_core):
         """TC-AG-07: Syntax errors handled gracefully."""
         agent_code = """
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 class TestAgent(SovereignBaseAgent):
     def run(self):
@@ -274,8 +282,8 @@ class TestAgent(SovereignBaseAgent):
     def test_multiple_violations(self, validator, temp_agentic_core):
         """TC-AG-08: Multiple violations detected in single file."""
         agent_code = """
-from agentic_core.L6_observability.dashboard import Dashboard
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L6_observability.dashboard import Dashboard
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     AGENTIC_CORE_DIR,
 )

@@ -7,7 +7,6 @@ Less sophisticated than AST approach but more robust against syntax errors.
 import pathlib
 import re
 import sys
-from typing import List, Dict, Set, Tuple, Optional
 
 # Target import patterns to migrate
 TARGET_IMPORT_RE = re.compile(
@@ -30,7 +29,7 @@ class SimpleImportMigrator:
             'imports_moved': 0,
         }
 
-    def migrate_directory(self, test_dir: str) -> Dict:
+    def migrate_directory(self, test_dir: str) -> dict:
         """Migrate all test files in a directory."""
         test_path = self.repo_root / test_dir
         if not test_path.exists():
@@ -70,7 +69,7 @@ class SimpleImportMigrator:
             return True  # No migration needed
 
         print(f"  🔄 Migrating {len(import_lines)} top-level imports in {file_path.name}")
-        
+
         # Find test functions
         func_positions = []
         for i, line in enumerate(lines):
@@ -86,11 +85,11 @@ class SimpleImportMigrator:
 
         # Simple strategy: move all imports to the first test function
         first_func_idx, first_func_indent, first_func_name = func_positions[0]
-        
+
         # Build new content
         new_lines = []
         moved_imports = []
-        
+
         for i, line in enumerate(lines):
             is_import_line = any(i == import_idx for import_idx, _ in import_lines)
             if is_import_line:
@@ -99,16 +98,16 @@ class SimpleImportMigrator:
                 moved_imports.append(line)
             else:
                 new_lines.append(line)
-        
+
         # Insert imports after first test function definition
         insert_pos = first_func_idx + 1
         for import_line in moved_imports:
             indented_import = ' ' * (first_func_indent + 4) + import_line.strip()
             new_lines.insert(insert_pos, indented_import)
             insert_pos += 1
-        
+
         new_content = '\n'.join(new_lines) + '\n'
-        
+
         # Write back
         try:
             file_path.write_text(new_content, encoding='utf-8')
@@ -122,14 +121,14 @@ class SimpleImportMigrator:
 
     def print_summary(self):
         """Print migration summary."""
-        print(f"\n=== Migration Summary ===")
+        print("\n=== Migration Summary ===")
         print(f"Total files processed: {self.stats['total_files']}")
         print(f"Successfully migrated: {self.stats['migrated']}")
         print(f"Failed: {self.stats['failed']}")
         print(f"Imports moved: {self.stats['imports_moved']}")
-        
+
         if self.failed_files:
-            print(f"\nFailed files:")
+            print("\nFailed files:")
             for path, error in self.failed_files[:10]:
                 print(f"  {path}: {error}")
             if len(self.failed_files) > 10:
@@ -139,10 +138,10 @@ def main():
     if len(sys.argv) != 2:
         print("Usage: python simple_import_migrator.py <test_directory>")
         sys.exit(1)
-    
+
     repo_root = pathlib.Path(__file__).parent.parent
     test_dir = sys.argv[1]
-    
+
     migrator = SimpleImportMigrator(repo_root)
     migrator.migrate_directory(test_dir)
     migrator.print_summary()

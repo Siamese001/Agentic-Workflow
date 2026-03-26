@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -74,12 +74,12 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_artifact_validators_types_adg", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_artifact_validators_types_adg", "exec_snapshot_link")
 pytestmark = pytest.mark.unit
-from agentic_core.L0_routing.types.artifact_validators_types import (
+#  # MOVED: from agentic_core.L0_routing.types.artifact_validators_types import (
     validate_healing_plan,
     validate_incident_artifact,
     validate_result_artifact,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -172,6 +172,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestValidateResultArtifact:
     def test_valid_dict(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.types.artifact_validators_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         d = {"trace_id": "t1", "execution_outcome": "ok", "final_state_hash": "h1", "artifact_class": "ac"}
         r = validate_result_artifact(d); assert r["trace_id"] == "t1"
     def test_missing_field_raises(self):

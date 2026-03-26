@@ -14,7 +14,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -61,7 +61,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_seam_contracts", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_seam_contracts", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_seam_contracts", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -194,6 +194,25 @@ pytestmark = pytest.mark.governance
 
 class TestForwardRollingContractImportParity:
     def test_execution_mode_importable(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.seams.contracts.forward_rolling import HealthStatus
+        from agentic_core.L3_orchestration.types.forward_rolling_types import (
+        from agentic_core.seams.contracts.forward_rolling import (
+        from agentic_core.seams.contracts.activation import assert_activation_allowed
+        from agentic_core.L5_safety.enforcement.activation_gate import (
+        from agentic_core.seams.contracts.activation import (
+        from agentic_core.seams.contracts.mcp import MCPConnectionManager
+        from agentic_core.seams.contracts.mcp import MCPConnectionManager
+        from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+        from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+        from agentic_core.seams.contracts.safety_agents import HealingAgentProtocol
+        from agentic_core.L3_orchestration.enforcement.safety_strategy import (
+        from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+        from agentic_core.L3_orchestration.enforcement.safety_strategy import (
+        from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+        from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+        from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
     """Test execution_mode_importable runtime behavior."""
     # Arrange
     # TODO: Set up test data for execution_mode_importable
@@ -209,15 +228,15 @@ class TestForwardRollingContractImportParity:
     # TODO: Add specific runtime behavior assertions
 
     def test_health_status_importable(self):
-        from agentic_core.seams.contracts.forward_rolling import HealthStatus
+#  # MOVED: from agentic_core.seams.contracts.forward_rolling import HealthStatus
 
         assert HealthStatus is not None
 
     def test_contract_symbols_match_originals(self):
-        from agentic_core.L3_orchestration.types.forward_rolling_types import (
+#  # MOVED: from agentic_core.L3_orchestration.types.forward_rolling_types import (
             ExecutionMode as OriginalMode,
         )
-        from agentic_core.seams.contracts.forward_rolling import (
+#  # MOVED: from agentic_core.seams.contracts.forward_rolling import (
             ExecutionMode as ContractMode,
         )
 
@@ -226,15 +245,15 @@ class TestForwardRollingContractImportParity:
 
 class TestActivationContractImportParity:
     def test_assert_activation_allowed_importable(self):
-        from agentic_core.seams.contracts.activation import assert_activation_allowed
+#  # MOVED: from agentic_core.seams.contracts.activation import assert_activation_allowed
 
         assert callable(assert_activation_allowed)
 
     def test_contract_symbol_matches_original(self):
-        from agentic_core.L5_safety.enforcement.activation_gate import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.activation_gate import (
             assert_activation_allowed as original_fn,
         )
-        from agentic_core.seams.contracts.activation import (
+#  # MOVED: from agentic_core.seams.contracts.activation import (
             assert_activation_allowed as contract_fn,
         )
 
@@ -243,14 +262,14 @@ class TestActivationContractImportParity:
 
 class TestMcpContractImportParity:
     def test_mcp_connection_manager_importable(self):
-        from agentic_core.seams.contracts.mcp import MCPConnectionManager
+#  # MOVED: from agentic_core.seams.contracts.mcp import MCPConnectionManager
 
         assert MCPConnectionManager is not None
 
     def test_mcp_connection_manager_is_protocol(self):
         from typing import Protocol
 
-        from agentic_core.seams.contracts.mcp import MCPConnectionManager
+#  # MOVED: from agentic_core.seams.contracts.mcp import MCPConnectionManager
 
         assert issubclass(MCPConnectionManager, Protocol)
 
@@ -262,13 +281,13 @@ class TestMcpContractImportParity:
 
 class TestSafetyAgentProtocolDefaultWiring:
     def test_safety_agent_factory_instantiates(self):
-        from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+#  # MOVED: from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
 
         factory = SafetyAgentFactory(project_root=Path.cwd())
         assert factory is not None
 
     def test_unknown_agent_returns_none(self):
-        from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+#  # MOVED: from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
 
         factory = SafetyAgentFactory(project_root=Path.cwd())
         result = factory.get("NonExistentAgent")
@@ -289,7 +308,7 @@ class TestSafetyAgentProtocolDefaultWiring:
     assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
     # TODO: Add specific execution assertions
     def test_object_without_heal_repository_fails_protocol(self):
-        from agentic_core.seams.contracts.safety_agents import HealingAgentProtocol
+#  # MOVED: from agentic_core.seams.contracts.safety_agents import HealingAgentProtocol
 
         class NotAnAgent:
             pass
@@ -299,10 +318,10 @@ class TestSafetyAgentProtocolDefaultWiring:
 
 class TestSafetyAgentProtocolFakeInjection:
     def test_safety_strategy_accepts_injected_factory(self):
-        from agentic_core.L3_orchestration.enforcement.safety_strategy import (
+#  # MOVED: from agentic_core.L3_orchestration.enforcement.safety_strategy import (
             SafetyStrategy,
         )
-        from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+#  # MOVED: from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
 
         fake_factory = MagicMock(spec=SafetyAgentFactory)
         fake_agent = MagicMock()
@@ -316,10 +335,10 @@ class TestSafetyAgentProtocolFakeInjection:
         assert agent is fake_agent
 
     def test_safety_strategy_default_factory_created_when_none(self):
-        from agentic_core.L3_orchestration.enforcement.safety_strategy import (
+#  # MOVED: from agentic_core.L3_orchestration.enforcement.safety_strategy import (
             SafetyStrategy,
         )
-        from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+#  # MOVED: from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
 
         strategy = SafetyStrategy()
         assert isinstance(strategy._agent_factory, SafetyAgentFactory)
@@ -327,13 +346,13 @@ class TestSafetyAgentProtocolFakeInjection:
 
 class TestNervousSystemAgentProtocolDefaultWiring:
     def test_safety_agent_factory_used_in_nervous_system(self):
-        from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+#  # MOVED: from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
 
         factory = SafetyAgentFactory(project_root=Path.cwd())
         assert factory is not None
 
     def test_nervous_system_agent_protocol_fake_injection(self):
-        from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
+#  # MOVED: from agentic_core.seams.contracts.safety_agents import SafetyAgentFactory
 
         fake_factory = MagicMock(spec=SafetyAgentFactory)
         fake_factory.get.return_value = None

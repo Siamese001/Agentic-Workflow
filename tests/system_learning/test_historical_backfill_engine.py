@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_authorize_and_execute,
@@ -207,13 +207,28 @@ def repo(tmp_path):
 
 class TestBackfillProtectedRootBlocks:
     def test_writes_correct_number_of_records(self, repo):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         from system_learning.engines.historical_backfill_engine import backfill_protected_root_blocks
+        from system_learning.engines.historical_backfill_engine import backfill_protected_root_blocks
+        from system_learning.engines.historical_backfill_engine import backfill_protected_root_blocks
+        from system_learning.engines.historical_backfill_engine import backfill_protected_root_blocks
+        from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+        from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
+        from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
+        from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
+        from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
+        from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
+        from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+        from system_learning.engines.historical_backfill_engine import run_backfill
+        from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+        from system_learning.engines.historical_backfill_engine import run_backfill
+#  # MOVED: from system_learning.engines.historical_backfill_engine import backfill_protected_root_blocks
 
         count = backfill_protected_root_blocks(repo)
         assert count == 3
 
     def test_corpus_has_expected_entries(self, repo):
-        from system_learning.engines.historical_backfill_engine import backfill_protected_root_blocks
+#  # MOVED: from system_learning.engines.historical_backfill_engine import backfill_protected_root_blocks
 
         backfill_protected_root_blocks(repo)
         corpus = (repo / "data/corpus/healing_contexts_corpus.jsonl").read_text(encoding="utf-8")
@@ -224,7 +239,7 @@ class TestBackfillProtectedRootBlocks:
         assert "tests" in territories
 
     def test_entry_schema_correct(self, repo):
-        from system_learning.engines.historical_backfill_engine import backfill_protected_root_blocks
+#  # MOVED: from system_learning.engines.historical_backfill_engine import backfill_protected_root_blocks
 
         backfill_protected_root_blocks(repo)
         corpus = (repo / "data/corpus/healing_contexts_corpus.jsonl").read_text(encoding="utf-8")
@@ -260,7 +275,7 @@ class TestBackfillProtectedRootBlocks:
     # TODO: Add specific execution assertions
 
     def test_content_hash_stable(self, repo):
-        from system_learning.engines.historical_backfill_engine import backfill_protected_root_blocks
+#  # MOVED: from system_learning.engines.historical_backfill_engine import backfill_protected_root_blocks
 
         backfill_protected_root_blocks(repo)
         corpus = (repo / "data/corpus/healing_contexts_corpus.jsonl").read_text(encoding="utf-8")
@@ -276,12 +291,12 @@ class TestBackfillProtectedRootBlocks:
 
 class TestBackfillComplianceSuccessRates:
     def _make_store(self):
-        from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+#  # MOVED: from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
 
         return HealingSuccessRateStore()
 
     def test_returns_territories_dict(self, repo):
-        from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
+#  # MOVED: from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
 
         store = self._make_store()
         result = backfill_compliance_success_rates(repo, store=store)
@@ -289,7 +304,7 @@ class TestBackfillComplianceSuccessRates:
         assert "tests" in result
 
     def test_zero_violation_territory_skipped(self, repo):
-        from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
+#  # MOVED: from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
 
         store = self._make_store()
         result = backfill_compliance_success_rates(repo, store=store)
@@ -297,14 +312,14 @@ class TestBackfillComplianceSuccessRates:
         assert "apps_lic" not in result
 
     def test_aggregate_report_skipped(self, repo):
-        from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
+#  # MOVED: from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
 
         store = self._make_store()
         result = backfill_compliance_success_rates(repo, store=store)
         assert "ALL" not in result
 
     def test_rates_correct(self, repo):
-        from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
+#  # MOVED: from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
 
         store = self._make_store()
         result = backfill_compliance_success_rates(repo, store=store)
@@ -312,7 +327,7 @@ class TestBackfillComplianceSuccessRates:
         assert abs(result["tests"] - 0.20) < 1e-9
 
     def test_store_has_priors_after_seeding(self, repo):
-        from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
+#  # MOVED: from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
 
         store = self._make_store()
         backfill_compliance_success_rates(repo, store=store)
@@ -341,8 +356,8 @@ class TestBackfillComplianceSuccessRates:
 
 class TestRunBackfill:
     def test_first_run_not_skipped(self, repo):
-        from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
-        from system_learning.engines.historical_backfill_engine import run_backfill
+#  # MOVED: from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+#  # MOVED: from system_learning.engines.historical_backfill_engine import run_backfill
 
         store = HealingSuccessRateStore()
         result = run_backfill(repo, store=store)
@@ -366,8 +381,8 @@ class TestRunBackfill:
     # TODO: Add specific execution assertions
 
     def test_force_reruns_despite_sentinel(self, repo):
-        from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
-        from system_learning.engines.historical_backfill_engine import run_backfill
+#  # MOVED: from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+#  # MOVED: from system_learning.engines.historical_backfill_engine import run_backfill
 
         run_backfill(repo)
         # Force re-run — corpus already has all records so count = 0

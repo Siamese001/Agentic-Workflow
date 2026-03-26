@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L4_state.config.memory_store_config  # noqa: F401
+#  # MOVED: import agentic_core.L4_state.config.memory_store_config  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L4_state.config.memory_store_config  # noqa: F401
     """Module memory_store_config must be importable."""
     assert agentic_core.L4_state.config.memory_store_config is not None

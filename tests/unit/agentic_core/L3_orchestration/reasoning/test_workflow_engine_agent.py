@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L3_ORCHESTRATION_DIR,
 )
 
@@ -13,6 +13,7 @@ class TestWorkflowEngineAgent:
     """Tests for workflow engine functionality."""
 
     def test_workflow_engine_exists(self):
+        from agentic_core.L0_routing.config.path_constants import (
     """Test workflow_engine_exists runtime behavior."""
     # Arrange
     # TODO: Set up workflow context

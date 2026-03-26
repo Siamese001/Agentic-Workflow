@@ -11,7 +11,7 @@ import json
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -58,7 +58,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_validation_artifacts", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_validation_artifacts", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_validation_artifacts", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -183,6 +183,17 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 def test_normalize_finding_id_deterministic():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L0_routing.scripts.execute_ssot import _normalize_finding_id
+    from agentic_core.L0_routing.scripts.execute_ssot import _normalize_finding_id
+    from agentic_core.L0_routing.scripts.execute_ssot import _write_pre_validation_json
+    from agentic_core.L0_routing.scripts.execute_ssot import _write_pre_validation_json
+    from agentic_core.L0_routing.scripts.execute_ssot import _write_pre_validation_json
+    from agentic_core.L0_routing.scripts.execute_ssot import (
+    from agentic_core.L0_routing.scripts.execute_ssot import _write_post_validation_json
+    from agentic_core.L0_routing.scripts.execute_ssot import (
+    from agentic_core.L0_routing.scripts.execute_ssot import (
     """
     PASS: Same finding produces same ID on repeated calls.
     FAIL: ID changes between calls despite identical input.
@@ -190,7 +201,7 @@ def test_normalize_finding_id_deterministic():
     Per .windsurfrules §1.7: Deterministic decision surfaces - replay must be stable.
     Per hostile audit Section B3: Finding IDs must be normalized and deterministic.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import _normalize_finding_id
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import _normalize_finding_id
 
     finding = {"file": "agentic_core/test.py", "type": "FORBIDDEN_FOLDER"}
 
@@ -209,7 +220,7 @@ def test_normalize_finding_id_cross_platform():
     Per .windsurfrules §1.7: Deterministic decision surfaces across platforms.
     Per hostile audit Section B3: Cross-platform determinism required.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import _normalize_finding_id
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import _normalize_finding_id
 
     finding_unix = {"file": "agentic_core/test.py", "type": "FORBIDDEN"}
     finding_win = {"file": "agentic_core\\test.py", "type": "FORBIDDEN"}
@@ -229,7 +240,7 @@ def test_write_pre_validation_json_structure(tmp_path):
     Per hostile audit Section C2: Pre-heal state artifact contract.
     Per .windsurfrules §1.1: All changed logic MUST have tests.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import _write_pre_validation_json
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import _write_pre_validation_json
 
     violations = [
         {"file": "test1.py", "type": "FORBIDDEN_FOLDER", "suggested_agent": "reconciler"},
@@ -277,7 +288,7 @@ def test_write_pre_validation_json_severity_inference(tmp_path):
     Per hostile audit Section C2: Severity must be inferred from violation type.
     Per .windsurfrules §1.5: Edge cases - different violation types.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import _write_pre_validation_json
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import _write_pre_validation_json
 
     violations = [
         {"file": "f1.py", "type": "FORBIDDEN_FOLDER", "suggested_agent": "reconciler"},
@@ -311,7 +322,7 @@ def test_write_pre_validation_json_ascii_only(tmp_path):
 
     Per .windsurfrules §2.2: Evidence must be ASCII-only.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import _write_pre_validation_json
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import _write_pre_validation_json
 
     violations = [{"file": "test.py", "type": "TEST", "suggested_agent": "validator"}]
 
@@ -338,7 +349,7 @@ def test_write_post_validation_json_resolution_tracking(tmp_path):
     Per hostile audit Section C4: Post-heal proof with resolved/residual/regression breakdown.
     Per hostile audit Section B5: Must show resolved, remaining, and newly introduced findings.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import (
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import (
         _write_post_validation_json,
         _write_pre_validation_json,
     )
@@ -404,7 +415,7 @@ def test_write_post_validation_json_no_pre_validation(tmp_path):
     Per .windsurfrules §1.5: Edge cases - missing file.
     Per .windsurfrules §1.8: Fail-closed - invalid preconditions must not crash.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import _write_post_validation_json
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import _write_post_validation_json
 
     phase3_result = {
         "remaining_violations": [{"file": "f1.py", "type": "TEST", "suggested_agent": "validator"}]
@@ -437,7 +448,7 @@ def test_write_post_validation_json_perfect_resolution(tmp_path):
     Per hostile audit Section B5: Resolution rate must be accurate.
     Per .windsurfrules §1.7: Deterministic decision surfaces.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import (
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import (
         _write_post_validation_json,
         _write_pre_validation_json,
     )
@@ -482,7 +493,7 @@ def test_validation_artifacts_trace_id_correlation(tmp_path):
     Per hostile audit Section B1: trace_id must appear in every artifact.
     Per hostile audit Section F6: trace_id correlation test.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import (
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import (
         _write_post_validation_json,
         _write_pre_validation_json,
     )

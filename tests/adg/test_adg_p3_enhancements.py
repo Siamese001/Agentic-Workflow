@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from agentic_core.adg.schema_util import (
+#  # MOVED: from agentic_core.adg.schema_util import (
     L1_WRITE_ALLOWLIST,
     LAYER_AUTHORITY_FORBIDDEN,
     PROMPT_AUTHORITY_RULES,
@@ -26,7 +26,7 @@ from agentic_core.adg.schema_util import (
     UWG_MODULE_PATH,
     UWG_WRITE_SYMBOLS,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -71,7 +71,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_adg_p3_enhancements")
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_p3_enhancements", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_p3_enhancements", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -229,6 +229,60 @@ class TestRuntimeGraph:
         return _ScanResult(edges=edges)
 
     def test_agent_action_node_detected(self):
+        from agentic_core.adg.schema_util import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.applications.runtime_graph_types import build_runtime_graph
+        from agentic_core.adg.applications.runtime_graph_types import build_runtime_graph
+        from agentic_core.adg.applications.runtime_graph_types import build_runtime_graph
+        from agentic_core.adg.applications.runtime_graph_types import build_runtime_graph
+        from agentic_core.adg.applications.runtime_graph_types import build_runtime_graph
+        from agentic_core.adg.applications.runtime_graph_types import build_runtime_graph
+        from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
+        from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
+        from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
+        from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
+        from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
+        from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
+        from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
+        from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
+        from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
+        from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
+        from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
+        from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
+        from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
+        from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
+        from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
+        from agentic_core.adg.applications.state_lineage_types import build_lineage_index
+        from agentic_core.adg.applications.state_lineage_types import build_lineage_index
+        from agentic_core.adg.applications.state_lineage_types import build_lineage_index
+        from agentic_core.adg.applications.state_lineage_types import build_lineage_index
+        from agentic_core.adg.applications.state_lineage_types import build_lineage_index
+        from agentic_core.adg.applications.state_lineage_types import query_mutations_for_state
+        from agentic_core.adg.applications.state_lineage_types import build_lineage_index
+        from agentic_core.adg.applications.state_lineage_types import build_lineage_index
+        from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
+        from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
+        from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
+        from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
+        from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
+        from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
+        from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
+        from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
+        from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
+        from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
+        from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
+        from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
+        from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
+        from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
+        from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
+        from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
+        from agentic_core.adg.cli import main
+        from agentic_core.adg.cli import main
+        from agentic_core.adg.cli import main
+        from agentic_core.adg.cli import main
+        from agentic_core.adg.cli import main
+        from agentic_core.adg.cli import main
     """Test agent_action_node_detected runtime behavior."""
     # Arrange
     # TODO: Set up test data for agent_action_node_detected
@@ -247,7 +301,7 @@ class TestRuntimeGraph:
         assert node.layer == "L3"
 
     def test_tool_invocation_node_detected(self):
-        from agentic_core.adg.applications.runtime_graph_types import build_runtime_graph
+#  # MOVED: from agentic_core.adg.applications.runtime_graph_types import build_runtime_graph
 
         result = self._make_result(
             [
@@ -265,7 +319,7 @@ class TestRuntimeGraph:
         assert node.layer == "L2"
 
     def test_layer_transition_cross_layer_detected(self):
-        from agentic_core.adg.applications.runtime_graph_types import build_runtime_graph
+#  # MOVED: from agentic_core.adg.applications.runtime_graph_types import build_runtime_graph
 
         # L3 calling something in L1 (downward = allowed)
         result = self._make_result(
@@ -281,7 +335,7 @@ class TestRuntimeGraph:
         assert report.total_cross_layer_calls >= 1
 
     def test_upward_layer_violation_detected(self):
-        from agentic_core.adg.applications.runtime_graph_types import build_runtime_graph
+#  # MOVED: from agentic_core.adg.applications.runtime_graph_types import build_runtime_graph
 
         # L1 calling L3 — upward violation
         result = self._make_result(
@@ -318,7 +372,7 @@ class TestRuntimeGraph:
         assert len(downward) >= 1
 
     def test_report_summary_string(self):
-        from agentic_core.adg.applications.runtime_graph_types import build_runtime_graph
+#  # MOVED: from agentic_core.adg.applications.runtime_graph_types import build_runtime_graph
 
         result = self._make_result([])
         report = build_runtime_graph(result)
@@ -327,7 +381,7 @@ class TestRuntimeGraph:
         assert "cross-layer" in s
 
     def test_to_dict_structure(self):
-        from agentic_core.adg.applications.runtime_graph_types import build_runtime_graph
+#  # MOVED: from agentic_core.adg.applications.runtime_graph_types import build_runtime_graph
 
         result = self._make_result([])
         d = build_runtime_graph(result).to_dict()
@@ -352,7 +406,7 @@ class TestRuntimeGraph:
     # TODO: Add specific execution assertions
         import json
 
-        from agentic_core.adg.applications.runtime_graph_types import build_runtime_graph
+#  # MOVED: from agentic_core.adg.applications.runtime_graph_types import build_runtime_graph
 
         result = self._make_result([])
         json.loads(build_runtime_graph(result).to_json())
@@ -370,7 +424,7 @@ class TestLayerAuthority:
         return _ScanResult(edges=edges)
 
     def test_l1_writes_to_is_violation(self):
-        from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
+#  # MOVED: from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
 
         result = self._make_result(
             [
@@ -445,7 +499,7 @@ class TestLayerAuthority:
         assert v.violation_type == "L4_CONTAINS_LOGIC"
 
     def test_l6_routes_through_is_violation(self):
-        from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
+#  # MOVED: from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
 
         result = self._make_result(
             [
@@ -464,7 +518,7 @@ class TestLayerAuthority:
 
     def test_l2_writes_to_is_not_violation(self):
         """L2 is the execution layer — it is allowed to write."""
-        from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
+#  # MOVED: from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
 
         result = self._make_result(
             [
@@ -479,14 +533,14 @@ class TestLayerAuthority:
         assert report.violation_count == 0
 
     def test_report_summary_contains_counts(self):
-        from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
+#  # MOVED: from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
 
         result = self._make_result([])
         s = detect_layer_authority_violations(result).summary
         assert "Layer authority violations" in s
 
     def test_critical_violations_filter(self):
-        from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
+#  # MOVED: from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
 
         result = self._make_result(
             [
@@ -500,7 +554,7 @@ class TestLayerAuthority:
         assert any(v.layer == "L1" for v in critical)
 
     def test_to_dict_has_violation_list(self):
-        from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
+#  # MOVED: from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
 
         result = self._make_result(
             [
@@ -513,7 +567,7 @@ class TestLayerAuthority:
         assert d["violation_count"] == 1
 
     def test_suggested_fix_present(self):
-        from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
+#  # MOVED: from agentic_core.adg.analysis.layer_authority_types import detect_layer_authority_violations
 
         result = self._make_result(
             [
@@ -536,7 +590,7 @@ class TestMutationAuthority:
         return _ScanResult(edges=edges)
 
     def test_writes_to_without_uwg_is_violation(self):
-        from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
+#  # MOVED: from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
 
         result = self._make_result(
             [
@@ -552,7 +606,7 @@ class TestMutationAuthority:
         assert report.total_writes_to >= 1
 
     def test_writes_through_uwg_is_compliant(self):
-        from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
+#  # MOVED: from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
 
         # Module has both writes_to AND writes_through UWG → classified as compliant
         result = self._make_result(
@@ -574,7 +628,7 @@ class TestMutationAuthority:
         assert len(report.compliant_modules) >= 1
 
     def test_test_modules_are_allowlisted(self):
-        from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
+#  # MOVED: from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
 
         result = self._make_result(
             [
@@ -590,7 +644,7 @@ class TestMutationAuthority:
         assert len(report.allowlisted_modules) == 1
 
     def test_uwg_module_itself_is_allowlisted(self):
-        from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
+#  # MOVED: from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
 
         result = self._make_result(
             [
@@ -605,7 +659,7 @@ class TestMutationAuthority:
         assert report.violation_count == 0
 
     def test_l1_bypass_is_critical(self):
-        from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
+#  # MOVED: from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
 
         result = self._make_result(
             [
@@ -622,7 +676,7 @@ class TestMutationAuthority:
         assert critical[0].risk_level == "critical"
 
     def test_compliance_rate_calculation(self):
-        from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
+#  # MOVED: from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
 
         result = self._make_result(
             [
@@ -635,7 +689,7 @@ class TestMutationAuthority:
         assert 0.0 <= report.compliance_rate <= 1.0
 
     def test_report_summary_has_compliance(self):
-        from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
+#  # MOVED: from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
 
         result = self._make_result([])
         s = verify_mutation_paths(result).summary
@@ -643,7 +697,7 @@ class TestMutationAuthority:
         assert "compliance=" in s
 
     def test_to_dict_structure(self):
-        from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
+#  # MOVED: from agentic_core.adg.analysis.mutation_authority_validator import verify_mutation_paths
 
         result = self._make_result([])
         d = verify_mutation_paths(result).to_dict()
@@ -664,7 +718,7 @@ class TestStateLineage:
         return _ScanResult(edges=edges)
 
     def test_mutations_for_state_returns_matching_records(self):
-        from agentic_core.adg.applications.state_lineage_types import build_lineage_index
+#  # MOVED: from agentic_core.adg.applications.state_lineage_types import build_lineage_index
 
         result = self._make_result(
             [
@@ -681,7 +735,7 @@ class TestStateLineage:
         assert records[0].module_path == "agentic_core/L2_execution/executor.py"
 
     def test_mutations_by_layer_groups_correctly(self):
-        from agentic_core.adg.applications.state_lineage_types import build_lineage_index
+#  # MOVED: from agentic_core.adg.applications.state_lineage_types import build_lineage_index
 
         result = self._make_result(
             [
@@ -697,7 +751,7 @@ class TestStateLineage:
         assert len(l3) == 1
 
     def test_via_uwg_flag_set_for_writes_through(self):
-        from agentic_core.adg.applications.state_lineage_types import build_lineage_index
+#  # MOVED: from agentic_core.adg.applications.state_lineage_types import build_lineage_index
 
         result = self._make_result(
             [
@@ -712,7 +766,7 @@ class TestStateLineage:
         assert idx.uwg_covered >= 1
 
     def test_uwg_bypass_modules_detected(self):
-        from agentic_core.adg.applications.state_lineage_types import build_lineage_index
+#  # MOVED: from agentic_core.adg.applications.state_lineage_types import build_lineage_index
 
         result = self._make_result(
             [
@@ -724,7 +778,7 @@ class TestStateLineage:
         assert "agentic_core/L3_orchestration/p.py" in bypasses
 
     def test_coverage_summary_structure(self):
-        from agentic_core.adg.applications.state_lineage_types import build_lineage_index
+#  # MOVED: from agentic_core.adg.applications.state_lineage_types import build_lineage_index
 
         result = self._make_result([])
         summary = build_lineage_index(result).coverage_summary()
@@ -734,7 +788,7 @@ class TestStateLineage:
         assert "top_writers" in summary
 
     def test_query_mutations_for_state_convenience(self):
-        from agentic_core.adg.applications.state_lineage_types import query_mutations_for_state
+#  # MOVED: from agentic_core.adg.applications.state_lineage_types import query_mutations_for_state
 
         result = self._make_result(
             [
@@ -745,7 +799,7 @@ class TestStateLineage:
         assert len(records) == 1
 
     def test_total_records_counts_both_write_types(self):
-        from agentic_core.adg.applications.state_lineage_types import build_lineage_index
+#  # MOVED: from agentic_core.adg.applications.state_lineage_types import build_lineage_index
 
         result = self._make_result(
             [
@@ -761,7 +815,7 @@ class TestStateLineage:
     def test_to_json_serializable(self):
         import json
 
-        from agentic_core.adg.applications.state_lineage_types import build_lineage_index
+#  # MOVED: from agentic_core.adg.applications.state_lineage_types import build_lineage_index
 
         result = self._make_result([])
         json.loads(build_lineage_index(result).to_json())
@@ -779,7 +833,7 @@ class TestArchitectureVerifier:
         return _ScanResult(edges=[])
 
     def test_clean_result_passes(self):
-        from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
+#  # MOVED: from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
 
         result = self._make_clean_result()
         report = verify_architecture(result)
@@ -787,7 +841,7 @@ class TestArchitectureVerifier:
         assert report.exit_code() == 0
 
     def test_report_has_all_four_planes(self):
-        from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
+#  # MOVED: from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
 
         result = self._make_clean_result()
         report = verify_architecture(result)
@@ -798,7 +852,7 @@ class TestArchitectureVerifier:
         assert "policy_hash" in plane_names
 
     def test_skip_planes_reduces_plane_count(self):
-        from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
+#  # MOVED: from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
 
         result = self._make_clean_result()
         report = verify_architecture(result, skip_planes=frozenset({"runtime_graph", "policy_hash"}))
@@ -809,7 +863,7 @@ class TestArchitectureVerifier:
         assert "mutation_paths" in plane_names
 
     def test_l1_write_violation_fails_architecture(self):
-        from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
+#  # MOVED: from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
 
         result = _ScanResult(
             edges=[
@@ -827,7 +881,7 @@ class TestArchitectureVerifier:
         assert report.exit_code() == 1
 
     def test_summary_contains_pass_fail(self):
-        from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
+#  # MOVED: from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
 
         result = self._make_clean_result()
         report = verify_architecture(result)
@@ -835,7 +889,7 @@ class TestArchitectureVerifier:
         assert "PASS" in s or "FAIL" in s
 
     def test_to_dict_structure(self):
-        from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
+#  # MOVED: from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
 
         result = self._make_clean_result()
         d = verify_architecture(result).to_dict()
@@ -846,13 +900,13 @@ class TestArchitectureVerifier:
     def test_to_json_serializable(self):
         import json
 
-        from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
+#  # MOVED: from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
 
         result = self._make_clean_result()
         json.loads(verify_architecture(result).to_json())
 
     def test_plane_result_passed_flag(self):
-        from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
+#  # MOVED: from agentic_core.adg.applications.architecture_verifier_validator import verify_architecture
 
         result = self._make_clean_result()
         report = verify_architecture(result)
@@ -873,7 +927,7 @@ class TestPolicyHashValidator:
         return _ScanResult(edges=edges)
 
     def test_instruction_module_without_policy_hash_is_violation(self):
-        from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
+#  # MOVED: from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
 
         result = self._make_result(
             [
@@ -892,7 +946,7 @@ class TestPolicyHashValidator:
         assert not v.has_policy_hash_ref
 
     def test_instruction_module_with_policy_hash_is_coupled(self):
-        from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
+#  # MOVED: from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
 
         result = self._make_result(
             [
@@ -906,7 +960,7 @@ class TestPolicyHashValidator:
 
     def test_non_required_layer_skipped(self):
         """L5 safety modules using instruction symbols are not required to carry policy hash."""
-        from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
+#  # MOVED: from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
 
         result = self._make_result(
             [
@@ -921,7 +975,7 @@ class TestPolicyHashValidator:
         assert report.violation_count == 0
 
     def test_l1_instruction_without_policy_is_high_severity(self):
-        from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
+#  # MOVED: from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
 
         result = self._make_result(
             [
@@ -937,14 +991,14 @@ class TestPolicyHashValidator:
             assert report.violations[0].severity in ("high", "medium")
 
     def test_coupling_rate_is_one_when_all_coupled(self):
-        from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
+#  # MOVED: from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
 
         result = self._make_result([])
         report = validate_policy_hash_coupling(result)
         assert report.coupling_rate == 1.0
 
     def test_summary_contains_coupling_rate(self):
-        from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
+#  # MOVED: from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
 
         result = self._make_result([])
         s = validate_policy_hash_coupling(result).summary
@@ -952,7 +1006,7 @@ class TestPolicyHashValidator:
         assert "coupling=" in s
 
     def test_to_dict_structure(self):
-        from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
+#  # MOVED: from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
 
         result = self._make_result([])
         d = validate_policy_hash_coupling(result).to_dict()
@@ -963,7 +1017,7 @@ class TestPolicyHashValidator:
     def test_to_json_serializable(self):
         import json
 
-        from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
+#  # MOVED: from agentic_core.adg.analysis.policy_hash_validator import validate_policy_hash_coupling
 
         result = self._make_result([])
         json.loads(validate_policy_hash_coupling(result).to_json())
@@ -1052,7 +1106,7 @@ class TestCLIIntegration:
         import contextlib
         import io
 
-        from agentic_core.adg.cli import main
+#  # MOVED: from agentic_core.adg.cli import main
 
         buf = io.StringIO()
         with contextlib.suppress(SystemExit):
@@ -1065,7 +1119,7 @@ class TestCLIIntegration:
         import contextlib
         import io
 
-        from agentic_core.adg.cli import main
+#  # MOVED: from agentic_core.adg.cli import main
 
         buf = io.StringIO()
         with contextlib.suppress(SystemExit):
@@ -1078,7 +1132,7 @@ class TestCLIIntegration:
         import contextlib
         import io
 
-        from agentic_core.adg.cli import main
+#  # MOVED: from agentic_core.adg.cli import main
 
         buf = io.StringIO()
         with contextlib.suppress(SystemExit):
@@ -1091,7 +1145,7 @@ class TestCLIIntegration:
         import contextlib
         import io
 
-        from agentic_core.adg.cli import main
+#  # MOVED: from agentic_core.adg.cli import main
 
         buf = io.StringIO()
         with contextlib.suppress(SystemExit):
@@ -1104,7 +1158,7 @@ class TestCLIIntegration:
         import contextlib
         import io
 
-        from agentic_core.adg.cli import main
+#  # MOVED: from agentic_core.adg.cli import main
 
         buf = io.StringIO()
         with contextlib.suppress(SystemExit):
@@ -1116,7 +1170,7 @@ class TestCLIIntegration:
     def test_no_command_returns_1(self):
         import contextlib
 
-        from agentic_core.adg.cli import main
+#  # MOVED: from agentic_core.adg.cli import main
 
         with contextlib.suppress(SystemExit):
             code = main([])

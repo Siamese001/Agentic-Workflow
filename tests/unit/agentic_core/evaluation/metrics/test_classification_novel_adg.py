@@ -28,13 +28,13 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.evaluation.metrics.classification import (
+#  # MOVED: from agentic_core.evaluation.metrics.classification import (
     BinaryClassificationMetric,
     MultiClassF1Metric,
     _build_binary_confusion,
 )
-from agentic_core.evaluation.metrics.f1_score import F1Score
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.evaluation.metrics.f1_score import F1Score
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -81,7 +81,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_classification_novel_adg", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_classification_novel_adg", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_classification_novel_adg", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -209,7 +209,7 @@ def _load_golden():
 
 def _make_report(**overrides):
     """Build a minimal EvaluationReport with sane defaults."""
-    from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationReport
+#  # MOVED: from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationReport
 
     defaults = {
         "report_id": "r1",
@@ -251,6 +251,20 @@ class TestGoldenDataset:
         return _load_golden()
 
     def test_golden_file_exists(self):
+        from agentic_core.evaluation.metrics.classification import (
+        from agentic_core.evaluation.metrics.f1_score import F1Score
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationReport
+        from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
+        from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
+        from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
+        from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
+        from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
+        import agentic_core.evaluation.metrics as pkg
+        import agentic_core.evaluation.metrics as pkg
+        from agentic_core.evaluation.metrics import F1Score as _F1Score
+        from agentic_core.evaluation.metrics import ConfusionMatrix as _CM
         assert _GOLDEN_PATH.exists(), f"Golden dataset not found: {_GOLDEN_PATH}"
 
     def test_golden_has_examples(self, examples):
@@ -543,7 +557,7 @@ class TestEvaluationDeltaReport:
     """from_reports() correctly computes deltas for new classification fields."""
 
     def test_delta_classification_f1_is_difference(self):
-        from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
+#  # MOVED: from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
 
         baseline = _make_report(report_id="b1", configuration_id="base", classification_f1=0.7)
         candidate = _make_report(report_id="c1", configuration_id="cand", classification_f1=0.85)
@@ -551,7 +565,7 @@ class TestEvaluationDeltaReport:
         assert abs(delta.delta_classification_f1 - 0.15) < 1e-5
 
     def test_delta_classification_precision_is_difference(self):
-        from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
+#  # MOVED: from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
 
         baseline = _make_report(report_id="b2", configuration_id="base", classification_precision=0.6)
         candidate = _make_report(report_id="c2", configuration_id="cand", classification_precision=0.9)
@@ -559,7 +573,7 @@ class TestEvaluationDeltaReport:
         assert abs(delta.delta_classification_precision - 0.3) < 1e-5
 
     def test_delta_classification_recall_is_difference(self):
-        from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
+#  # MOVED: from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
 
         baseline = _make_report(report_id="b3", configuration_id="base", classification_recall=0.5)
         candidate = _make_report(report_id="c3", configuration_id="cand", classification_recall=0.75)
@@ -567,7 +581,7 @@ class TestEvaluationDeltaReport:
         assert abs(delta.delta_classification_recall - 0.25) < 1e-5
 
     def test_delta_negative_when_candidate_is_worse(self):
-        from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
+#  # MOVED: from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
 
         baseline = _make_report(report_id="b4", configuration_id="base", classification_f1=0.9)
         candidate = _make_report(report_id="c4", configuration_id="cand", classification_f1=0.7)
@@ -575,7 +589,7 @@ class TestEvaluationDeltaReport:
         assert delta.delta_classification_f1 < 0.0
 
     def test_delta_to_dict_contains_classification_keys(self):
-        from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
+#  # MOVED: from agentic_core.utils.workflow_engines.completeness_metrics import EvaluationDeltaReport
 
         baseline = _make_report(report_id="b5", configuration_id="base")
         candidate = _make_report(report_id="c5", configuration_id="cand")
@@ -838,24 +852,24 @@ class TestInitExportCompleteness:
     ]
 
     def test_all_symbols_importable_from_package(self):
-        import agentic_core.evaluation.metrics as pkg
+#  # MOVED: import agentic_core.evaluation.metrics as pkg
 
         for sym in self._EXPECTED_SYMBOLS:
             assert hasattr(pkg, sym), f"Symbol '{sym}' missing from agentic_core.evaluation.metrics"
 
     def test_all_symbols_in_dunder_all(self):
-        import agentic_core.evaluation.metrics as pkg
+#  # MOVED: import agentic_core.evaluation.metrics as pkg
 
         for sym in self._EXPECTED_SYMBOLS:
             assert sym in pkg.__all__, f"'{sym}' not in __all__"
 
     def test_f1score_importable_direct(self):
-        from agentic_core.evaluation.metrics import F1Score as _F1Score
+#  # MOVED: from agentic_core.evaluation.metrics import F1Score as _F1Score
 
         assert _F1Score is not None
 
     def test_confusion_matrix_importable_direct(self):
-        from agentic_core.evaluation.metrics import ConfusionMatrix as _CM
+#  # MOVED: from agentic_core.evaluation.metrics import ConfusionMatrix as _CM
 
         assert _CM is not None
 

@@ -67,7 +67,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_records_execution_trace,
 )
@@ -231,6 +231,7 @@ def env():
 class TestEdgeCardinality:
 
     def test_fanout_cardinality_exact(self, env):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """Sum of all adg:edge:<src>:<rel> SET sizes == total SQLite edge count."""
         r = env["r"]
         conn = sqlite3.connect(env["sqlite_path"])

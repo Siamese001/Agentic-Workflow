@@ -12,13 +12,13 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L5_safety.enforcement.SurgicalHealingAdapter import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.SurgicalHealingAdapter import (
     SurgicalHealingAdapter,
 )
-from agentic_core.mixins.cst_healer_mixin import (
+#  # MOVED: from agentic_core.mixins.cst_healer_mixin import (
     SurgicalCSTHealerMixin,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -152,6 +152,10 @@ class TestCSTCanaryNamingAgent:
     """Canary test for CST-based healing using NamingAgent scenario."""
 
     def test_preserves_comments_and_formatting(self):
+        from agentic_core.L5_safety.enforcement.SurgicalHealingAdapter import (
+        from agentic_core.mixins.cst_healer_mixin import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """
         Critical test: Verify CST preserves comments and weird formatting.
 
@@ -293,7 +297,7 @@ def test():
         source = """# Module comment
 import os  # OS import comment
 import sys  # System import comment
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_execution_terminates_at_uwg,
     _emit_writes_through,

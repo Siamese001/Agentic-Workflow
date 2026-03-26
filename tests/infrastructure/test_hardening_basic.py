@@ -7,23 +7,29 @@ import asyncio
 import unittest
 from datetime import datetime
 
-from infrastructure.hardening.adaptive_optimizer import AdaptiveOptimizer, OptimizationStrategy
-from infrastructure.hardening.cross_layer_coherence import CrossLayerCoherenceManager
-from infrastructure.hardening.distributed_state_manager import DistributedStateManager, Region
-from infrastructure.hardening.implementation_plan import LayerType, QueryRequest
-from infrastructure.hardening.security_framework import (
+#  # MOVED: from infrastructure.hardening.adaptive_optimizer import AdaptiveOptimizer, OptimizationStrategy
+#  # MOVED: from infrastructure.hardening.cross_layer_coherence import CrossLayerCoherenceManager
+#  # MOVED: from infrastructure.hardening.distributed_state_manager import DistributedStateManager, Region
+#  # MOVED: from infrastructure.hardening.implementation_plan import LayerType, QueryRequest
+#  # MOVED: from infrastructure.hardening.security_framework import (
     AccessLevel,
     DataClassification,
     SecurityContext,
     SecurityGateway,
 )
-from infrastructure.hardening.unified_query_router import UnifiedQueryRouter
+#  # MOVED: from infrastructure.hardening.unified_query_router import UnifiedQueryRouter
 
 
 class TestInfrastructureBasics(unittest.TestCase):
     """Basic infrastructure component tests."""
 
     def test_unified_query_router_setup(self):
+        from infrastructure.hardening.adaptive_optimizer import AdaptiveOptimizer, OptimizationStrategy
+        from infrastructure.hardening.cross_layer_coherence import CrossLayerCoherenceManager
+        from infrastructure.hardening.distributed_state_manager import DistributedStateManager, Region
+        from infrastructure.hardening.implementation_plan import LayerType, QueryRequest
+        from infrastructure.hardening.security_framework import (
+        from infrastructure.hardening.unified_query_router import UnifiedQueryRouter
         """Test unified query router basic setup."""
         router = UnifiedQueryRouter()
 

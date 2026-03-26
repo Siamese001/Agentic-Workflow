@@ -9,12 +9,13 @@ import pytest
 
 pytestmark = pytest.mark.unit
 try:
-    import agentic_core.L2_execution.engines.validation_orchestrator as _mod  # noqa: F401  # ADG covers
+#  # MOVED: import agentic_core.L2_execution.engines.validation_orchestrator as _mod  # noqa: F401  # ADG covers
 except (ValueError, TypeError, RuntimeError) as e:
     _mod = None
 
 
 def test_module_syntax():
+    import agentic_core.L2_execution.engines.validation_orchestrator as _mod  # noqa: F401  # ADG covers
 """Test module_syntax runtime behavior."""
 # Arrange
 # TODO: Set up test data for module_syntax

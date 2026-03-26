@@ -14,7 +14,7 @@ import re
 import sys
 from pathlib import Path
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -88,8 +88,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
-from agentic_core.L3_orchestration.reasoning.mcp_manager import _TOOL_DISPATCH, _resolve_tool  # noqa: E402
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L3_orchestration.reasoning.mcp_manager import _TOOL_DISPATCH, _resolve_tool  # noqa: E402
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -205,6 +205,9 @@ MCP_FUNCTION_PATTERN = re.compile(r"^mcp\d+_[a-z]")
 
 class TestToolDispatch:
     def test_all_required_logical_tools_present(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L3_orchestration.reasoning.mcp_manager import _TOOL_DISPATCH, _resolve_tool  # noqa: E402
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         missing = REQUIRED_LOGICAL_TOOLS - set(_TOOL_DISPATCH.keys())
         assert not missing, f"Missing logical tool keys: {missing}"
 

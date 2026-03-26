@@ -14,13 +14,13 @@ Branch coverage:
 
 import pytest
 
-from agentic_core.evaluation.retrieval.fusion import ReciprocalRankFusion, ScoreFusion
-from agentic_core.evaluation.retrieval.interfaces import (
+#  # MOVED: from agentic_core.evaluation.retrieval.fusion import ReciprocalRankFusion, ScoreFusion
+#  # MOVED: from agentic_core.evaluation.retrieval.interfaces import (
     Document,
     IRetrieverLexical,
     IRetrieverVector,
 )
-from agentic_core.evaluation.retrieval.profiles import (
+#  # MOVED: from agentic_core.evaluation.retrieval.profiles import (
     PROFILE_HYBRID,
     PROFILE_HYBRID_RERANKED,
     PROFILE_VECTOR_ONLY,
@@ -28,8 +28,8 @@ from agentic_core.evaluation.retrieval.profiles import (
     RetrievalProfileConfig,
     make_profile,
 )
-from agentic_core.evaluation.retrieval.reranker import HeuristicReranker, PassthroughReranker
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.evaluation.retrieval.reranker import HeuristicReranker, PassthroughReranker
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -208,6 +208,11 @@ def _make_doc(doc_id, score=1.0, content="content"):
 
 class TestDocument:
     def test_to_dict_keys(self):
+        from agentic_core.evaluation.retrieval.fusion import ReciprocalRankFusion, ScoreFusion
+        from agentic_core.evaluation.retrieval.interfaces import (
+        from agentic_core.evaluation.retrieval.profiles import (
+        from agentic_core.evaluation.retrieval.reranker import HeuristicReranker, PassthroughReranker
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         d = _make_doc("doc_1", 0.8).to_dict()
         assert set(d.keys()) == {"doc_id", "content", "score", "metadata"}
 

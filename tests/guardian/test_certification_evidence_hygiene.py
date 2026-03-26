@@ -18,7 +18,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -103,14 +103,14 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_routing.types.guardian_contract_types import (
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import (
     CONTRACT_JSON_SCHEMA,
     ArtifactType,
     CheckStatus,
     GuardianResult,
     validate_against_json_schema,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -235,6 +235,9 @@ class TestSchemaLock:
     """CONTRACT_JSON_SCHEMA rejects extra/missing fields."""
 
     def test_extra_field_rejected(self, certification_result: GuardianResult):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.types.guardian_contract_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         d = certification_result.to_dict()
         d["rogue_field"] = "should_not_exist"
         errors = validate_against_json_schema(d)

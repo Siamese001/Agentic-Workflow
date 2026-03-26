@@ -5,7 +5,7 @@ Behavioral tests belong in test_workflow_exceptions.py (no _adg suffix).
 """
 from __future__ import annotations
 
-from agentic_core.runtime.exceptions.workflow_exceptions import (
+#  # MOVED: from agentic_core.runtime.exceptions.workflow_exceptions import (
     AgenticWorkflowError,
     ApiError,
     CircuitBreakerOpenError,
@@ -16,6 +16,7 @@ from agentic_core.runtime.exceptions.workflow_exceptions import (
 
 class TestWorkflowExceptionsImportability:
     def test_module_importable(self) -> None:
+        from agentic_core.runtime.exceptions.workflow_exceptions import (
     """Test module_importable runtime behavior."""
     # Arrange
     # TODO: Set up runtime environment

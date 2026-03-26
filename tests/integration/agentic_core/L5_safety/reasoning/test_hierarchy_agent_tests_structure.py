@@ -25,7 +25,7 @@ from pathlib import Path
 from types import MappingProxyType
 from unittest.mock import MagicMock, patch
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -72,7 +72,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_hierarchy_agent_tests_structure", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_hierarchy_agent_tests_structure", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_hierarchy_agent_tests_structure", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -202,7 +202,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 def _make_agent(healing_enabled: bool = False):
     """Construct a minimal HierarchyAgent with mocked dependencies."""
-    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
     agent = object.__new__(HierarchyAgent)
     agent.project_root = Path("/fake/root")
@@ -241,8 +241,17 @@ def _run_enforce(agent, tmp_path, files: list[tuple[str, str]]) -> dict:
 
 class TestGetApprovedTestsSubfolders:
     def test_derives_from_sovereign_territories(self):
-        """Success path: returns frozenset of subfolders declared in SOVEREIGN_TERRITORIES."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+        """Success path: returns frozenset of subfolders declared in SOVEREIGN_TERRITORIES."""
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         fake_map = {"unit": {}, "support": {}, "integration": {}}
         with patch(
@@ -258,7 +267,7 @@ class TestGetApprovedTestsSubfolders:
 
     def test_missing_tests_key_returns_empty(self):
         """Branch: empty TESTS_SUBFOLDER_MAP → frozenset()."""
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         with patch(
             "agentic_core.L5_safety.config.structure_blueprint.TESTS_SUBFOLDER_MAP",
@@ -270,7 +279,7 @@ class TestGetApprovedTestsSubfolders:
 
     def test_missing_subfolders_key_returns_empty(self):
         """Branch: empty TESTS_SUBFOLDER_MAP → frozenset()."""
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         with patch(
             "agentic_core.L5_safety.config.structure_blueprint.TESTS_SUBFOLDER_MAP",
@@ -282,7 +291,7 @@ class TestGetApprovedTestsSubfolders:
 
     def test_subfolders_is_not_dict_returns_empty(self):
         """Branch: TESTS_SUBFOLDER_MAP is empty → frozenset()."""
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         with patch(
             "agentic_core.L5_safety.config.structure_blueprint.TESTS_SUBFOLDER_MAP",
@@ -294,7 +303,7 @@ class TestGetApprovedTestsSubfolders:
 
     def test_reflects_live_ssot_not_hardcoded(self):
         """Metamorphic: adding a new subfolder to TESTS_SUBFOLDER_MAP is immediately reflected."""
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         fake_map = {"unit": {}, "brand_new_folder": {}}
         with patch(
@@ -594,7 +603,7 @@ class TestEnforceTestsStructureDeterminism:
 
     def test_approved_subfolders_is_frozenset(self):
         """Invariant: _get_approved_tests_subfolders always returns a frozenset."""
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         result = HierarchyAgent._get_approved_tests_subfolders()
         assert isinstance(result, frozenset)

@@ -26,7 +26,7 @@ from datetime import datetime, timezone
 
 import pytest
 
-from agentic_core.evaluation.judges.types import (
+#  # MOVED: from agentic_core.evaluation.judges.types import (
     EvidenceBundle,
     JudgeReport,
     JudgeVerdict,
@@ -83,7 +83,70 @@ def _report(target="mod.py", verdicts=None, overall=1.0, passed=True) -> JudgeRe
 
 class TestJudgeProviderRegistry:
     def test_register_and_get(self):
+        from agentic_core.evaluation.judges.types import (
         from agentic_core.evaluation.judges.provider_registry import (
+        from agentic_core.evaluation.judges.provider_registry import (
+        from agentic_core.evaluation.judges.provider_registry import JudgeProviderRegistry
+        from agentic_core.evaluation.judges.provider_registry import (
+        from agentic_core.evaluation.judges.provider_registry import JudgeProviderRegistry
+        from agentic_core.evaluation.judges.provider_registry import (
+        from agentic_core.evaluation.judges.provider_registry import (
+        from agentic_core.evaluation.judges.provider_registry import create_default_registry
+        from agentic_core.evaluation.judges.provider_registry import NullJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import NullJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import NullJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import NullJudgeProvider
+        from agentic_core.evaluation.judges.rubric_engine import RubricEngine
+        from agentic_core.evaluation.judges.llm_judges import judge_gov_001
+        from agentic_core.evaluation.judges.llm_judges import judge_gov_003
+        from agentic_core.evaluation.judges.llm_judges import judge_sec_001
+        from agentic_core.evaluation.judges.llm_judges import judge_sec_001
+        from agentic_core.evaluation.judges.llm_judges import judge_gov_001
+        from agentic_core.evaluation.judges.rubric_engine import RubricEngine
+        from agentic_core.evaluation.judges.orchestrator import JudgeOrchestrator
+        from agentic_core.evaluation.judges.provider_registry import create_default_registry
+        from agentic_core.evaluation.judges.scorecard import JudgeScorecard
+        from agentic_core.evaluation.judges.scorecard import JudgeScorecard
+        from agentic_core.evaluation.judges.scorecard import JudgeScorecard
+        from agentic_core.evaluation.judges.scorecard import JudgeScorecard
+        from agentic_core.evaluation.judges.scorecard import JudgeScorecard
+        from agentic_core.evaluation.judges.scorecard import JudgeScorecard
+        from agentic_core.evaluation.judges.scorecard import JudgeScorecard
+        from agentic_core.evaluation.judges.scorecard import JudgeScorecard
+        from agentic_core.evaluation.judges.scorecard import JudgeScorecard
+        from agentic_core.evaluation.judges.verdict_store import VerdictStore
+        from agentic_core.evaluation.judges.scorecard import RegressionAnalyzer
+        from agentic_core.evaluation.judges.scorecard import RegressionAnalyzer
+        from agentic_core.evaluation.judges.scorecard import RegressionAnalyzer
+        from agentic_core.evaluation.judges.scorecard import RegressionAnalyzer
+        from agentic_core.evaluation.judges.verdict_store import VerdictStore
+        from agentic_core.evaluation.judges.scorecard import RegressionAnalyzer
+        from agentic_core.evaluation.judges.verdict_store import VerdictStore
+        from agentic_core.evaluation.judges.scorecard import RegressionAnalyzer
+        from agentic_core.evaluation.judges.deterministic_judges import judge_arch_001
+        from agentic_core.evaluation.judges.deterministic_judges import judge_arch_001
+        from agentic_core.evaluation.judges.deterministic_judges import judge_qual_001
+        from agentic_core.evaluation.judges.deterministic_judges import judge_qual_001
+        from agentic_core.evaluation.judges.deterministic_judges import judge_cov_001
+        from agentic_core.evaluation.judges.deterministic_judges import judge_gov_002
+        from agentic_core.evaluation.judges.deterministic_judges import judge_qual_002
+        from agentic_core.evaluation.judges.rubric_engine import RubricEngine
+        from agentic_core.evaluation.judges.rubric_engine import RubricEngine
+        from agentic_core.evaluation.judges.rubric_engine import RubricEngine
+        from agentic_core.evaluation.judges.rubric_engine import RubricEngine
+        from agentic_core.evaluation.judges.verdict_store import VerdictStore
+        from agentic_core.evaluation.judges.verdict_store import VerdictStore
+        from agentic_core.evaluation.judges.verdict_store import VerdictStore
+        from agentic_core.evaluation.judges.verdict_store import VerdictStore
+        from agentic_core.evaluation.judges.deterministic_judges import judge_sec_002
+        from agentic_core.evaluation.judges.deterministic_judges import judge_sec_002
+        from agentic_core.evaluation.judges.deterministic_judges import judge_sec_002
+        from agentic_core.evaluation.judges.deterministic_judges import judge_sec_002
+        from agentic_core.evaluation.judges.deterministic_judges import judge_arch_001
+        from agentic_core.evaluation.judges.deterministic_judges import judge_arch_001
+        from agentic_core.evaluation.judges.deterministic_judges import judge_arch_001
+        from agentic_core.evaluation.judges.deterministic_judges import judge_arch_001
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import (
             JudgeProviderRegistry,
             NullJudgeProvider,
         )
@@ -94,7 +157,7 @@ class TestJudgeProviderRegistry:
         assert reg.get("null") is p
 
     def test_default_set_on_first_register(self):
-        from agentic_core.evaluation.judges.provider_registry import (
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import (
             JudgeProviderRegistry,
             NullJudgeProvider,
         )
@@ -105,13 +168,13 @@ class TestJudgeProviderRegistry:
         assert reg.default.provider_id == "null"
 
     def test_get_nonexistent_returns_none(self):
-        from agentic_core.evaluation.judges.provider_registry import JudgeProviderRegistry
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import JudgeProviderRegistry
 
         reg = JudgeProviderRegistry()
         assert reg.get("nonexistent") is None
 
     def test_set_default(self):
-        from agentic_core.evaluation.judges.provider_registry import (
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import (
             JudgeProviderRegistry,
             NullJudgeProvider,
         )
@@ -128,13 +191,13 @@ class TestJudgeProviderRegistry:
         assert reg.default.provider_id == "fake"
 
     def test_set_default_missing_returns_false(self):
-        from agentic_core.evaluation.judges.provider_registry import JudgeProviderRegistry
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import JudgeProviderRegistry
 
         reg = JudgeProviderRegistry()
         assert reg.set_default("ghost") is False
 
     def test_provider_ids(self):
-        from agentic_core.evaluation.judges.provider_registry import (
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import (
             JudgeProviderRegistry,
             NullJudgeProvider,
         )
@@ -144,7 +207,7 @@ class TestJudgeProviderRegistry:
         assert "null" in reg.provider_ids
 
     def test_summary(self):
-        from agentic_core.evaluation.judges.provider_registry import (
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import (
             create_default_registry,
         )
 
@@ -155,7 +218,7 @@ class TestJudgeProviderRegistry:
         assert any(p["provider_id"] == "null" for p in s["providers"])
 
     def test_create_default_registry(self):
-        from agentic_core.evaluation.judges.provider_registry import create_default_registry
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import create_default_registry
 
         reg = create_default_registry()
         assert reg.default is not None
@@ -170,7 +233,7 @@ class TestJudgeProviderRegistry:
 
 class TestNullJudgeProvider:
     def test_judge_returns_dict(self):
-        from agentic_core.evaluation.judges.provider_registry import NullJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import NullJudgeProvider
 
         p = NullJudgeProvider()
         result = asyncio.get_event_loop().run_until_complete(
@@ -183,12 +246,12 @@ class TestNullJudgeProvider:
         assert result["provider"] == "null"
 
     def test_provider_id(self):
-        from agentic_core.evaluation.judges.provider_registry import NullJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import NullJudgeProvider
 
         assert NullJudgeProvider().provider_id == "null"
 
     def test_cost_per_eval_zero(self):
-        from agentic_core.evaluation.judges.provider_registry import NullJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import NullJudgeProvider
 
         assert NullJudgeProvider().cost_per_eval == 0.0
 
@@ -203,16 +266,16 @@ class TestLLMJudgesNullProvider:
 
     @pytest.fixture()
     def provider(self):
-        from agentic_core.evaluation.judges.provider_registry import NullJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import NullJudgeProvider
         return NullJudgeProvider()
 
     @pytest.fixture()
     def engine(self):
-        from agentic_core.evaluation.judges.rubric_engine import RubricEngine
+#  # MOVED: from agentic_core.evaluation.judges.rubric_engine import RubricEngine
         return RubricEngine()
 
     def test_gov_001_returns_verdict(self, provider, engine):
-        from agentic_core.evaluation.judges.llm_judges import judge_gov_001
+#  # MOVED: from agentic_core.evaluation.judges.llm_judges import judge_gov_001
 
         bundle = EvidenceBundle(
             target="agentic_core/L2_execution/x.py",
@@ -227,7 +290,7 @@ class TestLLMJudgesNullProvider:
         assert 0.0 <= verdict.score <= 1.0
 
     def test_gov_003_returns_verdict(self, provider, engine):
-        from agentic_core.evaluation.judges.llm_judges import judge_gov_003
+#  # MOVED: from agentic_core.evaluation.judges.llm_judges import judge_gov_003
 
         bundle = EvidenceBundle(
             target="agentic_core/L3_orchestration/orch.py",
@@ -240,7 +303,7 @@ class TestLLMJudgesNullProvider:
         assert verdict.outcome in {o.value for o in VerdictOutcome}
 
     def test_sec_001_skip_no_dynamic_edges(self, provider, engine):
-        from agentic_core.evaluation.judges.llm_judges import judge_sec_001
+#  # MOVED: from agentic_core.evaluation.judges.llm_judges import judge_sec_001
 
         bundle = EvidenceBundle(
             target="agentic_core/clean.py",
@@ -254,7 +317,7 @@ class TestLLMJudgesNullProvider:
         assert verdict.score == 1.0
 
     def test_sec_001_with_dynamic_edges(self, provider, engine):
-        from agentic_core.evaluation.judges.llm_judges import judge_sec_001
+#  # MOVED: from agentic_core.evaluation.judges.llm_judges import judge_sec_001
 
         bundle = EvidenceBundle(
             target="agentic_core/risky.py",
@@ -291,8 +354,8 @@ class TestLLMJudgesNullProvider:
         assert result is None
 
     def test_gov_001_missing_rubric_returns_error(self, provider):
-        from agentic_core.evaluation.judges.llm_judges import judge_gov_001
-        from agentic_core.evaluation.judges.rubric_engine import RubricEngine
+#  # MOVED: from agentic_core.evaluation.judges.llm_judges import judge_gov_001
+#  # MOVED: from agentic_core.evaluation.judges.rubric_engine import RubricEngine
 
         empty_engine = RubricEngine.__new__(RubricEngine)
         empty_engine._rubrics = {}
@@ -313,8 +376,8 @@ class TestLLMJudgesNullProvider:
 class TestJudgeOrchestrator:
     @pytest.fixture()
     def orch(self, tmp_path):
-        from agentic_core.evaluation.judges.orchestrator import JudgeOrchestrator
-        from agentic_core.evaluation.judges.provider_registry import create_default_registry
+#  # MOVED: from agentic_core.evaluation.judges.orchestrator import JudgeOrchestrator
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import create_default_registry
 
         return JudgeOrchestrator(
             verdict_db_path=str(tmp_path / "verdicts.sqlite"),
@@ -416,7 +479,7 @@ class TestJudgeOrchestrator:
 
 class TestJudgeScorecardWeighting:
     def test_empty_reports(self):
-        from agentic_core.evaluation.judges.scorecard import JudgeScorecard
+#  # MOVED: from agentic_core.evaluation.judges.scorecard import JudgeScorecard
 
         sc = JudgeScorecard()
         result = sc.compute([])
@@ -425,7 +488,7 @@ class TestJudgeScorecardWeighting:
         assert result["dimension_scores"] == {}
 
     def test_single_pass_report(self):
-        from agentic_core.evaluation.judges.scorecard import JudgeScorecard
+#  # MOVED: from agentic_core.evaluation.judges.scorecard import JudgeScorecard
 
         v = _verdict(dimension="security", score=1.0)
         report = _report(verdicts=[v])
@@ -435,7 +498,7 @@ class TestJudgeScorecardWeighting:
         assert result["passed"] is True
 
     def test_security_weight_dominates(self):
-        from agentic_core.evaluation.judges.scorecard import JudgeScorecard
+#  # MOVED: from agentic_core.evaluation.judges.scorecard import JudgeScorecard
 
         reports = [
             _report(
@@ -451,7 +514,7 @@ class TestJudgeScorecardWeighting:
         assert result["overall_score"] < 0.5
 
     def test_custom_weights_applied(self):
-        from agentic_core.evaluation.judges.scorecard import JudgeScorecard
+#  # MOVED: from agentic_core.evaluation.judges.scorecard import JudgeScorecard
 
         reports = [
             _report(
@@ -467,7 +530,7 @@ class TestJudgeScorecardWeighting:
         assert result["overall_score"] > 0.95
 
     def test_fail_summary_sorted_by_severity(self):
-        from agentic_core.evaluation.judges.scorecard import JudgeScorecard
+#  # MOVED: from agentic_core.evaluation.judges.scorecard import JudgeScorecard
 
         reports = [
             _report(
@@ -485,7 +548,7 @@ class TestJudgeScorecardWeighting:
         assert severities[-1] == "LOW"
 
     def test_skip_verdicts_not_counted(self):
-        from agentic_core.evaluation.judges.scorecard import JudgeScorecard
+#  # MOVED: from agentic_core.evaluation.judges.scorecard import JudgeScorecard
 
         reports = [
             _report(
@@ -501,7 +564,7 @@ class TestJudgeScorecardWeighting:
         assert result["dimension_scores"] == {}
 
     def test_module_scores_sorted(self):
-        from agentic_core.evaluation.judges.scorecard import JudgeScorecard
+#  # MOVED: from agentic_core.evaluation.judges.scorecard import JudgeScorecard
 
         sc = JudgeScorecard()
         reports = [
@@ -514,7 +577,7 @@ class TestJudgeScorecardWeighting:
         assert scores == sorted(scores)
 
     def test_render_text_contains_score(self):
-        from agentic_core.evaluation.judges.scorecard import JudgeScorecard
+#  # MOVED: from agentic_core.evaluation.judges.scorecard import JudgeScorecard
 
         sc = JudgeScorecard()
         v = _verdict(dimension="security", score=0.8, outcome=VerdictOutcome.PASS.value)
@@ -524,7 +587,7 @@ class TestJudgeScorecardWeighting:
         assert "Scorecard" in text
 
     def test_dimension_worst_outcome_fail(self):
-        from agentic_core.evaluation.judges.scorecard import JudgeScorecard
+#  # MOVED: from agentic_core.evaluation.judges.scorecard import JudgeScorecard
 
         sc = JudgeScorecard()
         reports = [
@@ -547,7 +610,7 @@ class TestJudgeScorecardWeighting:
 class TestRegressionAnalyzer:
     @pytest.fixture()
     def store_with_data(self, tmp_path):
-        from agentic_core.evaluation.judges.verdict_store import VerdictStore
+#  # MOVED: from agentic_core.evaluation.judges.verdict_store import VerdictStore
 
         store = VerdictStore(str(tmp_path / "regs.sqlite"))
         # Old digest verdicts
@@ -566,7 +629,7 @@ class TestRegressionAnalyzer:
         return store
 
     def test_regression_detected(self, store_with_data):
-        from agentic_core.evaluation.judges.scorecard import RegressionAnalyzer
+#  # MOVED: from agentic_core.evaluation.judges.scorecard import RegressionAnalyzer
 
         analyzer = RegressionAnalyzer(store_with_data, regression_threshold=0.1)
         result = analyzer.compare("new", "old")
@@ -574,7 +637,7 @@ class TestRegressionAnalyzer:
         assert result["regression_count"] >= 1
 
     def test_regression_mod_a(self, store_with_data):
-        from agentic_core.evaluation.judges.scorecard import RegressionAnalyzer
+#  # MOVED: from agentic_core.evaluation.judges.scorecard import RegressionAnalyzer
 
         analyzer = RegressionAnalyzer(store_with_data, regression_threshold=0.1)
         result = analyzer.compare("new", "old")
@@ -582,7 +645,7 @@ class TestRegressionAnalyzer:
         assert "mod_a.py" in reg_targets
 
     def test_new_failures_identified(self, store_with_data):
-        from agentic_core.evaluation.judges.scorecard import RegressionAnalyzer
+#  # MOVED: from agentic_core.evaluation.judges.scorecard import RegressionAnalyzer
 
         analyzer = RegressionAnalyzer(store_with_data, regression_threshold=0.05)
         result = analyzer.compare("new", "old")
@@ -591,8 +654,8 @@ class TestRegressionAnalyzer:
         assert "mod_c.py" in new_fail_targets
 
     def test_no_regressions_when_stable(self, tmp_path):
-        from agentic_core.evaluation.judges.scorecard import RegressionAnalyzer
-        from agentic_core.evaluation.judges.verdict_store import VerdictStore
+#  # MOVED: from agentic_core.evaluation.judges.scorecard import RegressionAnalyzer
+#  # MOVED: from agentic_core.evaluation.judges.verdict_store import VerdictStore
 
         store = VerdictStore(str(tmp_path / "stable.sqlite"))
         # Same score old and new
@@ -606,8 +669,8 @@ class TestRegressionAnalyzer:
         assert result["has_regressions"] is False
 
     def test_threshold_filters_small_deltas(self, tmp_path):
-        from agentic_core.evaluation.judges.scorecard import RegressionAnalyzer
-        from agentic_core.evaluation.judges.verdict_store import VerdictStore
+#  # MOVED: from agentic_core.evaluation.judges.scorecard import RegressionAnalyzer
+#  # MOVED: from agentic_core.evaluation.judges.verdict_store import VerdictStore
 
         store = VerdictStore(str(tmp_path / "tiny.sqlite"))
         store.store_verdicts([
@@ -620,7 +683,7 @@ class TestRegressionAnalyzer:
         assert result["regression_count"] == 0
 
     def test_render_text_contains_counts(self, store_with_data):
-        from agentic_core.evaluation.judges.scorecard import RegressionAnalyzer
+#  # MOVED: from agentic_core.evaluation.judges.scorecard import RegressionAnalyzer
 
         analyzer = RegressionAnalyzer(store_with_data, regression_threshold=0.05)
         result = analyzer.compare("new", "old")
@@ -746,7 +809,7 @@ class TestScoreBoundaryTransitions:
 
     def test_arch_001_warn_zone(self):
         """96% compliance → WARN (between 0.95 and 1.0)."""
-        from agentic_core.evaluation.judges.deterministic_judges import judge_arch_001
+#  # MOVED: from agentic_core.evaluation.judges.deterministic_judges import judge_arch_001
 
         # 25 imports, 1 violation → 24/25 = 0.96 → WARN
         edges = [{"target_layer": "L0", "target_name": f"n{i}", "source_file": "f.py", "line_no": i}
@@ -763,7 +826,7 @@ class TestScoreBoundaryTransitions:
 
     def test_arch_001_fail_zone(self):
         """50% compliance → FAIL (< 0.95)."""
-        from agentic_core.evaluation.judges.deterministic_judges import judge_arch_001
+#  # MOVED: from agentic_core.evaluation.judges.deterministic_judges import judge_arch_001
 
         edges = [{"target_layer": "L0", "target_name": f"n{i}", "source_file": "f.py", "line_no": i}
                  for i in range(5)]
@@ -780,7 +843,7 @@ class TestScoreBoundaryTransitions:
 
     def test_qual_001_boundary_at_threshold(self):
         """5 violations → score=0.0 → FAIL."""
-        from agentic_core.evaluation.judges.deterministic_judges import judge_qual_001
+#  # MOVED: from agentic_core.evaluation.judges.deterministic_judges import judge_qual_001
 
         bundle = EvidenceBundle(
             target="mod.py",
@@ -792,7 +855,7 @@ class TestScoreBoundaryTransitions:
 
     def test_qual_001_just_below_threshold(self):
         """4 violations → score=0.2 → FAIL (< 0.6 threshold)."""
-        from agentic_core.evaluation.judges.deterministic_judges import judge_qual_001
+#  # MOVED: from agentic_core.evaluation.judges.deterministic_judges import judge_qual_001
 
         bundle = EvidenceBundle(
             target="mod.py",
@@ -804,7 +867,7 @@ class TestScoreBoundaryTransitions:
 
     def test_cov_001_warn_at_6_of_7(self):
         """6/7 governance dims → score=6/7≈0.857 → WARN (0.85-1.0)."""
-        from agentic_core.evaluation.judges.deterministic_judges import judge_cov_001
+#  # MOVED: from agentic_core.evaluation.judges.deterministic_judges import judge_cov_001
 
         bundle = EvidenceBundle(
             target="partial.py",
@@ -824,7 +887,7 @@ class TestScoreBoundaryTransitions:
 
     def test_gov_002_warn_zone(self):
         """9/10 writes governed → score=0.9 → WARN (0.9-1.0)."""
-        from agentic_core.evaluation.judges.deterministic_judges import judge_gov_002
+#  # MOVED: from agentic_core.evaluation.judges.deterministic_judges import judge_gov_002
 
         bundle = EvidenceBundle(
             target="writer.py",
@@ -839,7 +902,7 @@ class TestScoreBoundaryTransitions:
 
     def test_qual_002_warn_zone(self):
         """30/50 = 0.4 fanout → WARN (0.4-0.6)."""
-        from agentic_core.evaluation.judges.deterministic_judges import judge_qual_002
+#  # MOVED: from agentic_core.evaluation.judges.deterministic_judges import judge_qual_002
 
         bundle = EvidenceBundle(
             target="med.py",
@@ -852,13 +915,13 @@ class TestScoreBoundaryTransitions:
 
 class TestRubricEngineRobustness:
     def test_missing_rubrics_file(self, tmp_path):
-        from agentic_core.evaluation.judges.rubric_engine import RubricEngine
+#  # MOVED: from agentic_core.evaluation.judges.rubric_engine import RubricEngine
 
         engine = RubricEngine(str(tmp_path / "nonexistent.json"))
         assert engine.all_rubrics == []
 
     def test_malformed_json_does_not_crash(self, tmp_path):
-        from agentic_core.evaluation.judges.rubric_engine import RubricEngine
+#  # MOVED: from agentic_core.evaluation.judges.rubric_engine import RubricEngine
 
         bad = tmp_path / "bad.json"
         bad.write_text("{this is not valid json", encoding="utf-8")
@@ -866,7 +929,7 @@ class TestRubricEngineRobustness:
         assert engine.all_rubrics == []
 
     def test_custom_rubrics_json(self, tmp_path):
-        from agentic_core.evaluation.judges.rubric_engine import RubricEngine
+#  # MOVED: from agentic_core.evaluation.judges.rubric_engine import RubricEngine
 
         custom = {
             "rubrics": [
@@ -894,7 +957,7 @@ class TestRubricEngineRobustness:
         assert r.is_deterministic is True
 
     def test_reload_picks_up_new_rubric(self, tmp_path):
-        from agentic_core.evaluation.judges.rubric_engine import RubricEngine
+#  # MOVED: from agentic_core.evaluation.judges.rubric_engine import RubricEngine
 
         initial = {"rubrics": []}
         p = tmp_path / "evolving.json"
@@ -924,7 +987,7 @@ class TestRubricEngineRobustness:
 
 class TestVerdictStoreIdempotency:
     def test_store_same_verdict_twice_does_not_duplicate_query(self, tmp_path):
-        from agentic_core.evaluation.judges.verdict_store import VerdictStore
+#  # MOVED: from agentic_core.evaluation.judges.verdict_store import VerdictStore
 
         store = VerdictStore(str(tmp_path / "idem.sqlite"))
         v = _verdict("x.py", adg_digest="d1")
@@ -936,7 +999,7 @@ class TestVerdictStoreIdempotency:
         assert len(results) >= 1
 
     def test_batch_returns_correct_count(self, tmp_path):
-        from agentic_core.evaluation.judges.verdict_store import VerdictStore
+#  # MOVED: from agentic_core.evaluation.judges.verdict_store import VerdictStore
 
         store = VerdictStore(str(tmp_path / "batch_idem.sqlite"))
         verdicts = [_verdict(f"mod_{i}.py") for i in range(20)]
@@ -944,7 +1007,7 @@ class TestVerdictStoreIdempotency:
         assert count == 20
 
     def test_query_by_digest_filters_correctly(self, tmp_path):
-        from agentic_core.evaluation.judges.verdict_store import VerdictStore
+#  # MOVED: from agentic_core.evaluation.judges.verdict_store import VerdictStore
 
         store = VerdictStore(str(tmp_path / "digest_filter.sqlite"))
         store.store_verdicts([_verdict("a.py", adg_digest="digest_A") for _ in range(3)])
@@ -957,7 +1020,7 @@ class TestVerdictStoreIdempotency:
         assert all(v.adg_digest == "digest_A" for v in results_a)
 
     def test_query_failures_excludes_pass_warn_skip(self, tmp_path):
-        from agentic_core.evaluation.judges.verdict_store import VerdictStore
+#  # MOVED: from agentic_core.evaluation.judges.verdict_store import VerdictStore
 
         store = VerdictStore(str(tmp_path / "fails_only.sqlite"))
         store.store_verdicts([
@@ -977,7 +1040,7 @@ class TestSec002Boundaries:
 
     @pytest.mark.parametrize("forbidden", ["subprocess", "ctypes", "pickle", "os.system"])
     def test_each_forbidden_import_triggers_fail(self, forbidden):
-        from agentic_core.evaluation.judges.deterministic_judges import judge_sec_002
+#  # MOVED: from agentic_core.evaluation.judges.deterministic_judges import judge_sec_002
 
         bundle = EvidenceBundle(
             target="agentic_core/risky.py",
@@ -989,7 +1052,7 @@ class TestSec002Boundaries:
 
     @pytest.mark.parametrize("allowed_path", ["ops_scripts/migrate.py", "tools/gen.py", "tests/unit_test.py"])
     def test_allowlisted_paths_skip(self, allowed_path):
-        from agentic_core.evaluation.judges.deterministic_judges import judge_sec_002
+#  # MOVED: from agentic_core.evaluation.judges.deterministic_judges import judge_sec_002
 
         bundle = EvidenceBundle(
             target=allowed_path,
@@ -999,14 +1062,14 @@ class TestSec002Boundaries:
         assert verdict.outcome == VerdictOutcome.SKIP.value
 
     def test_no_imports_is_pass(self):
-        from agentic_core.evaluation.judges.deterministic_judges import judge_sec_002
+#  # MOVED: from agentic_core.evaluation.judges.deterministic_judges import judge_sec_002
 
         bundle = EvidenceBundle(target="agentic_core/empty.py", adg_edges={})
         verdict = judge_sec_002(bundle)
         assert verdict.outcome == VerdictOutcome.PASS.value
 
     def test_safe_import_is_pass(self):
-        from agentic_core.evaluation.judges.deterministic_judges import judge_sec_002
+#  # MOVED: from agentic_core.evaluation.judges.deterministic_judges import judge_sec_002
 
         bundle = EvidenceBundle(
             target="agentic_core/mod.py",
@@ -1020,7 +1083,7 @@ class TestArch001LayerEdgeCases:
     """ARCH-001 with unusual layer combinations."""
 
     def test_same_layer_import_is_always_ok(self):
-        from agentic_core.evaluation.judges.deterministic_judges import judge_arch_001
+#  # MOVED: from agentic_core.evaluation.judges.deterministic_judges import judge_arch_001
 
         bundle = EvidenceBundle(
             target="agentic_core/L3_orchestration/a.py",
@@ -1031,7 +1094,7 @@ class TestArch001LayerEdgeCases:
         assert verdict.outcome == VerdictOutcome.PASS.value
 
     def test_unknown_target_layer_skipped_not_penalized(self):
-        from agentic_core.evaluation.judges.deterministic_judges import judge_arch_001
+#  # MOVED: from agentic_core.evaluation.judges.deterministic_judges import judge_arch_001
 
         bundle = EvidenceBundle(
             target="agentic_core/L2_execution/a.py",
@@ -1043,7 +1106,7 @@ class TestArch001LayerEdgeCases:
         assert verdict.outcome in {VerdictOutcome.PASS.value, VerdictOutcome.SKIP.value}
 
     def test_l0_can_only_import_l0(self):
-        from agentic_core.evaluation.judges.deterministic_judges import judge_arch_001
+#  # MOVED: from agentic_core.evaluation.judges.deterministic_judges import judge_arch_001
 
         bundle = EvidenceBundle(
             target="agentic_core/L0_routing/a.py",
@@ -1055,7 +1118,7 @@ class TestArch001LayerEdgeCases:
         assert len(verdict.evidence_items) == 1
 
     def test_l6_can_import_all_layers(self):
-        from agentic_core.evaluation.judges.deterministic_judges import judge_arch_001
+#  # MOVED: from agentic_core.evaluation.judges.deterministic_judges import judge_arch_001
 
         edges = [
             {"target_layer": f"L{i}", "target_name": f"n{i}", "source_file": "a.py", "line_no": i}

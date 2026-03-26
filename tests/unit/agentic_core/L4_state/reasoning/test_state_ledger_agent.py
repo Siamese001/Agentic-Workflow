@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L4_STATE_DIR,
 )
 
@@ -13,6 +13,7 @@ class TestStateLedgerAgent:
     """Tests for state ledger functionality."""
 
     def test_state_ledger_exists(self):
+        from agentic_core.L0_routing.config.path_constants import (
         """State ledger module should exist."""
         path = Path("agentic_core/L4_state/reasoning")
         assert path.exists(), "L4_state/reasoning/ should exist"

@@ -5,7 +5,7 @@ Behavioral tests belong in test_governance_contracts.py (no _adg suffix).
 """
 from __future__ import annotations
 
-from agentic_core.L0_routing.enforcement.governance_contracts import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.governance_contracts import (
     EvidencePackError,
     PolicyExceptionError,
 )  # noqa: F401
@@ -13,6 +13,7 @@ from agentic_core.L0_routing.enforcement.governance_contracts import (
 
 class TestGovernanceContractsImportability:
     def test_module_importable(self) -> None:
+        from agentic_core.L0_routing.enforcement.governance_contracts import (
     """Test module_importable contract compliance."""
     # Arrange
     # TODO: Set up contract parties and terms

@@ -10,7 +10,7 @@ import ast
 import pathlib
 import re
 import sys
-from typing import List, Set, Dict
+from typing import Dict, List, Set
 
 # Target import patterns to block
 TARGET_IMPORT_PATTERNS = {
@@ -34,14 +34,7 @@ SAFE_PATTERNS = {
     r'^if\s+TYPE_CHECKING:',
 }
 
-# Allowlist of existing files (will be reduced over time)
-# This tracks files that were migrated in Waves 1-3 and should be clean
-MIGRATED_DIRS = {
-    'tests/unit_min_deps',
-    'tests/smoke',
-    'tests/architecture',
-    'tests/sovereign_hardening',
-}
+# All test directories have been migrated in Waves 1-7
 
 class ImportGateChecker:
     def __init__(self, repo_root: pathlib.Path):
@@ -53,7 +46,7 @@ class ImportGateChecker:
             'allowed': 0,
         }
 
-    def check_directory(self, test_dir: str) -> Dict:
+    def check_directory(self, test_dir: str) -> dict:
         """Check all test files in a directory."""
         test_path = self.repo_root / test_dir
         if not test_path.exists():
@@ -90,9 +83,9 @@ class ImportGateChecker:
             self.stats['violations'] += 1
             return False
 
-        # Check if file is in migrated directories (should be clean)
+        # Check if file is in migrated directories (all directories now migrated)
         relative_path = str(file_path.relative_to(self.repo_root))
-        is_in_migrated_dir = any(relative_path.startswith(dir_path) for dir_path in MIGRATED_DIRS)
+        is_in_migrated_dir = True  # All directories have been migrated in Waves 1-7
 
         # Find top-level target imports
         violations = []
@@ -147,7 +140,7 @@ class ImportGateChecker:
             self.stats['allowed'] += 1
             return True
 
-    def _is_inside_type_checking(self, lines: List[str], line_idx: int) -> bool:
+    def _is_inside_type_checking(self, lines: list[str], line_idx: int) -> bool:
         """Check if a line is inside a TYPE_CHECKING conditional block."""
         # Look backwards for TYPE_CHECKING pattern
         indent_level = len(lines[line_idx]) - len(lines[line_idx].lstrip())
@@ -167,13 +160,13 @@ class ImportGateChecker:
 
     def print_report(self):
         """Print violation report."""
-        print(f"\n=== Import Gate Report ===")
+        print("\n=== Import Gate Report ===")
         print(f"Files checked: {self.stats['files_checked']}")
         print(f"Files passed: {self.stats['allowed']}")
         print(f"Violations: {self.stats['violations']}")
 
         if self.violations:
-            print(f"\n🚨 VIOLATIONS FOUND:")
+            print("\n🚨 VIOLATIONS FOUND:")
             for violation in self.violations:
                 if 'error' in violation:
                     print(f"  {violation['file']}:{violation['line']} - {violation['error']}")
@@ -182,10 +175,10 @@ class ImportGateChecker:
                     for v in violation['violations']:
                         print(f"    Line {v['line']}: {v['content']}")
                         print(f"      → {v['reason']}")
-            print(f"\n💡 Fix: Move imports inside test functions or use pytest.importorskip()")
+            print("\n💡 Fix: Move imports inside test functions or use pytest.importorskip()")
             return False
         else:
-            print(f"✅ All files passed - no top-level app imports detected")
+            print("✅ All files passed - no top-level app imports detected")
             return True
 
 def main():

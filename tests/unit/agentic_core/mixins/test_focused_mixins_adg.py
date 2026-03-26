@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -83,7 +83,7 @@ pytestmark = pytest.mark.unit
 # ---------------------------------------------------------------------------
 # context_management_mixin
 # ---------------------------------------------------------------------------
-from agentic_core.mixins.context_management_mixin import (
+#  # MOVED: from agentic_core.mixins.context_management_mixin import (
     ContextItem,
     ContextManagementMixin,
     ContextPriority,
@@ -92,6 +92,12 @@ from agentic_core.mixins.context_management_mixin import (
 
 class TestContextPriority:
     def test_all_levels_present(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.mixins.context_management_mixin import (
+        from agentic_core.mixins.cost_mixin import (
+        from agentic_core.mixins.metrics_mixin import MetricsMixin, PerformanceMetrics
+        from agentic_core.mixins.tracing_mixin import SpanContext, TracingMixin
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         names = {e.name for e in ContextPriority}
         assert {"CRITICAL", "HIGH", "MEDIUM", "LOW"} == names
 
@@ -146,7 +152,7 @@ class TestContextManagementMixinInterface:
 # ---------------------------------------------------------------------------
 # cost_mixin
 # ---------------------------------------------------------------------------
-from agentic_core.mixins.cost_mixin import (
+#  # MOVED: from agentic_core.mixins.cost_mixin import (
     BudgetConfig,
     BudgetExceededError,
     CostGuardrailMixin,
@@ -204,7 +210,7 @@ class TestCostGuardrailMixinInterface:
 # ---------------------------------------------------------------------------
 # metrics_mixin
 # ---------------------------------------------------------------------------
-from agentic_core.mixins.metrics_mixin import MetricsMixin, PerformanceMetrics
+#  # MOVED: from agentic_core.mixins.metrics_mixin import MetricsMixin, PerformanceMetrics
 
 
 class TestPerformanceMetrics:
@@ -257,8 +263,8 @@ class TestMetricsMixinInterface:
 # ---------------------------------------------------------------------------
 # tracing_mixin
 # ---------------------------------------------------------------------------
-from agentic_core.mixins.tracing_mixin import SpanContext, TracingMixin
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.mixins.tracing_mixin import SpanContext, TracingMixin
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

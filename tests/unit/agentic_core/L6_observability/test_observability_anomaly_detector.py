@@ -13,21 +13,21 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L6_observability.engines.detection_signal_emitter import (
+#  # MOVED: from agentic_core.L6_observability.engines.detection_signal_emitter import (
     emit_detection_signal,
     emit_signal_from_gateway_result,
 )
-from agentic_core.L6_observability.engines.drift_detector import (
+#  # MOVED: from agentic_core.L6_observability.engines.drift_detector import (
     DriftDetector,
     get_drift_detector,
     reset_drift_detector,
 )
-from agentic_core.L6_observability.engines.replay_key_computer import (
+#  # MOVED: from agentic_core.L6_observability.engines.replay_key_computer import (
     ReplayKeyComponents,
     compute_replay_key,
 )
-from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -214,6 +214,11 @@ def _components(**overrides) -> ReplayKeyComponents:
 class TestDetectionSignal:
     @pytest.mark.governance
     def test_build_returns_detection_signal(self):
+        from agentic_core.L6_observability.engines.detection_signal_emitter import (
+        from agentic_core.L6_observability.engines.drift_detector import (
+        from agentic_core.L6_observability.engines.replay_key_computer import (
+        from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         s = _signal()
         assert isinstance(s, DetectionSignal)
 

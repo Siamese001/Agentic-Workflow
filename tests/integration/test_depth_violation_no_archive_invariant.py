@@ -13,13 +13,13 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -66,7 +66,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_depth_violation_no_archive_invariant", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_depth_violation_no_archive_invariant", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_depth_violation_no_archive_invariant", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -198,7 +198,7 @@ DEPTH_VIOLATION_MESSAGES = [
 @pytest.fixture
 def healer(tmp_path):
     """Minimal LocationHealerAgent configured against tmp_path as project root."""
-    from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
     agent = LocationHealerAgent.__new__(LocationHealerAgent)
     agent.project_root = tmp_path
@@ -209,6 +209,13 @@ def healer(tmp_path):
 @pytest.mark.parametrize("violation_msg", DEPTH_VIOLATION_MESSAGES)
 @pytest.mark.parametrize("sovereign_root", SOVEREIGN_ROOTS)
 def test_depth_violation_never_archived(healer, sovereign_root, violation_msg):
+    from agentic_core.L0_routing.config.path_constants import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+    from agentic_core.L5_safety.utils.location_constants_util import HEALING_STRATEGY_MAP
+    from agentic_core.L5_safety.utils.location_constants_util import HEALING_STRATEGY_MAP
+    from agentic_core.L5_safety.config.structure_blueprint import (
     """
     Invariant: _apply_healing_strategy must never return ARCHIVED for any
     DEEP VIOLATION or SHALLOW VIOLATION message under a sovereign root.
@@ -289,7 +296,7 @@ def test_identity_path_guard_returns_skipped(healer):
 
 def test_shallow_violation_in_strategy_map():
     """Bug 2 guard: SHALLOW VIOLATION must be in HEALING_STRATEGY_MAP."""
-    from agentic_core.L5_safety.utils.location_constants_util import HEALING_STRATEGY_MAP
+#  # MOVED: from agentic_core.L5_safety.utils.location_constants_util import HEALING_STRATEGY_MAP
 
     assert "SHALLOW VIOLATION" in HEALING_STRATEGY_MAP, (
         "SHALLOW VIOLATION missing from HEALING_STRATEGY_MAP — shallow files will fall to archive fallback"
@@ -298,7 +305,7 @@ def test_shallow_violation_in_strategy_map():
 
 def test_pascal_in_non_agent_folder_in_strategy_map():
     """Bug 5 guard: PASCAL_IN_NON_AGENT_FOLDER must be in HEALING_STRATEGY_MAP."""
-    from agentic_core.L5_safety.utils.location_constants_util import HEALING_STRATEGY_MAP
+#  # MOVED: from agentic_core.L5_safety.utils.location_constants_util import HEALING_STRATEGY_MAP
 
     assert "PASCAL_IN_NON_AGENT_FOLDER" in HEALING_STRATEGY_MAP, (
         "PASCAL_IN_NON_AGENT_FOLDER missing from HEALING_STRATEGY_MAP — "
@@ -308,7 +315,7 @@ def test_pascal_in_non_agent_folder_in_strategy_map():
 
 def test_apps_rg_apps_lic_depth_is_two():
     """Bug 1 guard: apps_rg and apps_lic must have depth=2 in get_all_territories()."""
-    from agentic_core.L5_safety.config.structure_blueprint import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint import (
         get_all_territories,
     )
 

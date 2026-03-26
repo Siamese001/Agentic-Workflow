@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -77,8 +77,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-from agentic_core.L4_state.enforcement.elevator_shaft_consistency_enforcer import (
+#  # MOVED: from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+#  # MOVED: from agentic_core.L4_state.enforcement.elevator_shaft_consistency_enforcer import (
     ClockSyncViolation,
     ElevatorShaftConsistencyEnforcer,
     MonotonicityViolation,
@@ -88,7 +88,7 @@ from agentic_core.L4_state.enforcement.elevator_shaft_consistency_enforcer impor
     get_enforcer,
     reset_enforcer,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -185,6 +185,10 @@ def _snap(tick: int) -> SemanticClockSnapshot:
 
 class TestAssertClockSynchronized:
     def test_identical_ticks_passes(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+        from agentic_core.L4_state.enforcement.elevator_shaft_consistency_enforcer import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         assert_clock_synchronized(_snap(10), _snap(10))
 
     def test_within_tolerance_passes(self):

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from apps_research.types.research_types import (
+#  # MOVED: from apps_research.types.research_types import (
     ArtifactMode,
     AudienceStyle,
     ClaimType,
@@ -23,6 +23,21 @@ from apps_research.types.research_types import (
 
 class TestResearchTypes:
     def test_research_status_values(self) -> None:
+        from apps_research.types.research_types import (
+        from apps_research.validators.research_gate_validator import ResearchGateValidator
+        from apps_research.validators.research_gate_validator import ResearchGateValidator
+        from apps_research.validators.research_gate_validator import ResearchGateValidator
+        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+        from apps_research.config.agent_spec_config import load_research_specs
+        from apps_research.config.agent_spec_config import load_research_specs
+        from apps_research.config.reasoning_toggles_config import DEFAULT_TOGGLES
+        from apps_research.config.agent_spec_config import load_research_specs
         assert ResearchStatus.COMPLETE.value == "complete"
         assert ResearchStatus.DRY_RUN.value == "dry_run"
         assert ResearchStatus.FAILED.value == "failed"
@@ -85,7 +100,7 @@ class TestResearchTypes:
 
 class TestResearchGateValidator:
     def test_passes_valid_sections_with_sources(self) -> None:
-        from apps_research.validators.research_gate_validator import ResearchGateValidator
+#  # MOVED: from apps_research.validators.research_gate_validator import ResearchGateValidator
 
         sections = [
             ResearchSection(
@@ -117,14 +132,14 @@ class TestResearchGateValidator:
         assert result.passed is True
 
     def test_fails_empty_sections(self) -> None:
-        from apps_research.validators.research_gate_validator import ResearchGateValidator
+#  # MOVED: from apps_research.validators.research_gate_validator import ResearchGateValidator
 
         validator = ResearchGateValidator()
         result = validator.validate([], [], ["executive_summary"])
         assert result.passed is False
 
     def test_quality_score_in_range(self) -> None:
-        from apps_research.validators.research_gate_validator import ResearchGateValidator
+#  # MOVED: from apps_research.validators.research_gate_validator import ResearchGateValidator
 
         sections = [
             ResearchSection(
@@ -149,7 +164,7 @@ class TestResearchGateValidator:
 
 class TestResearchOrchestratorDryRun:
     def test_dry_run_returns_dry_run_status(self) -> None:
-        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+#  # MOVED: from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
 
         req = ResearchRequest(topic="AI governance", dry_run=True)
         orch = ResearchOrchestrator(dry_run=True)
@@ -157,7 +172,7 @@ class TestResearchOrchestratorDryRun:
         assert result.status == ResearchStatus.DRY_RUN
 
     def test_dry_run_no_artifact_paths(self) -> None:
-        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+#  # MOVED: from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
 
         req = ResearchRequest(topic="AI governance", dry_run=True)
         orch = ResearchOrchestrator(dry_run=True)
@@ -165,7 +180,7 @@ class TestResearchOrchestratorDryRun:
         assert result.artifact_paths == []
 
     def test_dry_run_has_sections(self) -> None:
-        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+#  # MOVED: from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
 
         req = ResearchRequest(topic="AI governance", mode=ArtifactMode.BRIEF, dry_run=True)
         orch = ResearchOrchestrator(dry_run=True)
@@ -173,7 +188,7 @@ class TestResearchOrchestratorDryRun:
         assert len(result.sections) > 0
 
     def test_trace_id_deterministic(self) -> None:
-        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+#  # MOVED: from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
 
         req1 = ResearchRequest(topic="AI governance", mode=ArtifactMode.BRIEF)
         req2 = ResearchRequest(topic="AI governance", mode=ArtifactMode.BRIEF)
@@ -182,7 +197,7 @@ class TestResearchOrchestratorDryRun:
         assert t1 == t2
 
     def test_different_modes_different_trace_ids(self) -> None:
-        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+#  # MOVED: from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
 
         req1 = ResearchRequest(topic="AI governance", mode=ArtifactMode.BRIEF)
         req2 = ResearchRequest(topic="AI governance", mode=ArtifactMode.TREND)
@@ -191,7 +206,7 @@ class TestResearchOrchestratorDryRun:
         assert t1 != t2
 
     def test_all_modes_complete_dry_run(self) -> None:
-        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+#  # MOVED: from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
 
         for mode in ArtifactMode:
             req = ResearchRequest(topic="AI governance", mode=mode, dry_run=True)
@@ -202,7 +217,7 @@ class TestResearchOrchestratorDryRun:
             )
 
     def test_comparison_mode_has_matrix_or_sections(self) -> None:
-        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+#  # MOVED: from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
 
         req = ResearchRequest(
             topic="RAG vs fine-tuning",
@@ -217,28 +232,28 @@ class TestResearchOrchestratorDryRun:
 
 class TestResearchConfig:
     def test_load_research_specs_returns_defaults(self) -> None:
-        from apps_research.config.agent_spec_config import load_research_specs
+#  # MOVED: from apps_research.config.agent_spec_config import load_research_specs
 
         specs = load_research_specs()
         assert specs is not None
         assert specs.version == "1.0.0"
 
     def test_all_artifact_modes_configured(self) -> None:
-        from apps_research.config.agent_spec_config import load_research_specs
+#  # MOVED: from apps_research.config.agent_spec_config import load_research_specs
 
         specs = load_research_specs()
         expected_modes = {"brief", "comparison", "trend", "position", "thought_leadership"}
         assert expected_modes.issubset(set(specs.artifact_modes.keys()))
 
     def test_reasoning_toggles_defaults(self) -> None:
-        from apps_research.config.reasoning_toggles_config import DEFAULT_TOGGLES
+#  # MOVED: from apps_research.config.reasoning_toggles_config import DEFAULT_TOGGLES
 
         assert DEFAULT_TOGGLES.enable_source_register is True
         assert DEFAULT_TOGGLES.enable_epistemic_labeling is True
         assert DEFAULT_TOGGLES.llm_narrative_enabled is False
 
     def test_gate_config_min_quality_score(self) -> None:
-        from apps_research.config.agent_spec_config import load_research_specs
+#  # MOVED: from apps_research.config.agent_spec_config import load_research_specs
 
         specs = load_research_specs()
         assert specs.gate.min_quality_score >= 0.0

@@ -10,7 +10,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -93,8 +93,8 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 sys.path.append(".")
 
-from agentic_core.L5_safety.enforcement.verification_gate import VerificationGate
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.verification_gate import VerificationGate
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -186,6 +186,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 
 def test_verification_gate_basic():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L5_safety.enforcement.verification_gate import VerificationGate
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test basic verification gate functionality."""
     print("=== Testing Verification Gate Basic Functionality ===")
 

@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     L0_ROUTING_DIR,
     L1_COGNITION_DIR,
@@ -291,6 +291,7 @@ class TestSeamDynamicEnforcement:
     """Test suite for seam and dynamic import enforcement."""
 
     def test_seam_file_detection(self):
+        from agentic_core.L0_routing.config.path_constants import (
         """Test seam file classification."""
         seam_path = Path("agentic_core/L0_routing/seams/loader_seam.py")
         assert is_seam_file(seam_path)

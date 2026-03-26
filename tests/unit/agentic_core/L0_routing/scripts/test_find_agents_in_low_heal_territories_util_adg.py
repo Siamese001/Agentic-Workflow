@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L0_routing.scripts.find_agents_in_low_heal_territories_util  # noqa: F401
+#  # MOVED: import agentic_core.L0_routing.scripts.find_agents_in_low_heal_territories_util  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L0_routing.scripts.find_agents_in_low_heal_territories_util  # noqa: F401
     """Module find_agents_in_low_heal_territories_util must be importable."""
     assert agentic_core.L0_routing.scripts.find_agents_in_low_heal_territories_util is not None

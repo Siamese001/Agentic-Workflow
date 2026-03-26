@@ -5,7 +5,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L0_routing.config.structure_blueprint_data import (
+#  # MOVED: from agentic_core.L0_routing.config.structure_blueprint_data import (
     FOLDER_PURITY_RULES,
     L5_SUBPROCESS_ALLOWLIST,
     L6_HYBRID_ALLOWLIST,
@@ -15,6 +15,7 @@ from agentic_core.L0_routing.config.structure_blueprint_data import (
 
 class TestScriptsForbiddenPatterns:
     def test_is_sequence(self):
+        from agentic_core.L0_routing.config.structure_blueprint_data import (
         assert hasattr(SCRIPTS_FORBIDDEN_PATTERNS, "__len__")
 
     def test_contains_patterns(self):

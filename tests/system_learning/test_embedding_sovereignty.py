@@ -16,7 +16,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -99,7 +99,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -137,7 +137,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.embedding_service_factory import (
+#  # MOVED: from system_learning.engines.embedding_service_factory import (
     EmbeddingResult,
     EmbeddingServiceFactory,
 )
@@ -211,9 +211,16 @@ def compute_w3_determinism_digest() -> str:
 
 
 def test_single_entrypoint_enforced():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from system_learning.engines.embedding_service_factory import (
+    from system_learning.engines.embedding_service_factory import _DisabledEmbeddingService
+    from system_learning.engines.embedding_service_factory import EmbeddingIntegrityError
+    from system_learning.engines.embedding_service_factory import _DisabledEmbeddingService
+    from system_learning.engines.embedding_service_factory import EmbeddingResult
     """Test that only EmbeddingServiceFactory.get_or_disabled() is used."""
     # This test verifies no direct instantiation exists
-    from system_learning.engines.embedding_service_factory import _DisabledEmbeddingService
+#  # MOVED: from system_learning.engines.embedding_service_factory import _DisabledEmbeddingService
 
     # Kill-switch enabled - should return disabled service
     with patch.dict(os.environ, {"EMBEDDING_ENABLED": "false"}):
@@ -226,7 +233,7 @@ def test_single_entrypoint_enforced():
 def test_defensive_assertion_duplicate_construction():
     """Test defensive assertion prevents duplicate construction with different packs."""
     # This test requires actual pack files, so we'll test the assertion logic
-    from system_learning.engines.embedding_service_factory import EmbeddingIntegrityError
+#  # MOVED: from system_learning.engines.embedding_service_factory import EmbeddingIntegrityError
 
     # Reset singleton for test
     EmbeddingServiceFactory._INSTANCE = None
@@ -257,7 +264,7 @@ def test_defensive_assertion_duplicate_construction():
 
 def test_kill_switch_hard_fail():
     """Test that EMBEDDING_ENABLED=false causes hard fail."""
-    from system_learning.engines.embedding_service_factory import _DisabledEmbeddingService
+#  # MOVED: from system_learning.engines.embedding_service_factory import _DisabledEmbeddingService
 
     with patch.dict(os.environ, {"EMBEDDING_ENABLED": "false"}):
         service = EmbeddingServiceFactory.get_or_disabled()
@@ -300,7 +307,7 @@ def test_kill_switch_no_instantiation():
 def test_c0_only_protection():
     """Test that embedding metadata cannot alter routing/safety/tier logic."""
     # This test verifies embedding outputs are C0-only (informational)
-    from system_learning.engines.embedding_service_factory import EmbeddingResult
+#  # MOVED: from system_learning.engines.embedding_service_factory import EmbeddingResult
 
     # EmbeddingResult contains only informational fields
     result = EmbeddingResult(

@@ -27,7 +27,7 @@ from unittest.mock import patch
 import pytest
 import yaml
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -105,7 +105,7 @@ if str(ROOT) not in sys.path:
 # ---------------------------------------------------------------------------
 # Import subjects under test
 # ---------------------------------------------------------------------------
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -227,6 +227,14 @@ class TestHitlDiffParser:
     """Synthetic-diff injection tests for _diff_adds_guardian_exemptions."""
 
     def test_detects_allow_in_production_dir(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from apps_lic.engines import control_plane
+        import apps_rg.reasoning.FooAgent
+        from apps_shared.reasoning.BaseDispatchAgent import BaseDispatchAgent
+        from apps_lic.engines import control_plane
+        import apps_rg.reasoning.FooAgent
+        from apps_lic.engines import control_plane
         diff = _make_diff(
             "agentic_core/L2_execution/foo.py",
             ["    x = 1  # guardian: allow-global-mutation -- bootstrap only"],
@@ -391,7 +399,7 @@ class TestToolingAppsBoundaryChecker:
 
     def test_from_apps_lic_import_detected(self, tmp_path):
         self._write_py(tmp_path, "ops_scripts/ci/bad.py", """
-            from apps_lic.engines import control_plane
+#  # MOVED: from apps_lic.engines import control_plane
             def main(): pass
         """)
         checker = self._checker_with_fake_root(tmp_path)
@@ -401,7 +409,7 @@ class TestToolingAppsBoundaryChecker:
 
     def test_import_apps_rg_detected(self, tmp_path):
         self._write_py(tmp_path, "ops_scripts/ci/bad2.py", """
-            import apps_rg.reasoning.FooAgent
+#  # MOVED: import apps_rg.reasoning.FooAgent
             def main(): pass
         """)
         checker = self._checker_with_fake_root(tmp_path)
@@ -410,7 +418,7 @@ class TestToolingAppsBoundaryChecker:
 
     def test_import_apps_shared_detected(self, tmp_path):
         self._write_py(tmp_path, "ops_scripts/ci/bad3.py", """
-            from apps_shared.reasoning.BaseDispatchAgent import BaseDispatchAgent
+#  # MOVED: from apps_shared.reasoning.BaseDispatchAgent import BaseDispatchAgent
         """)
         checker = self._checker_with_fake_root(tmp_path)
         violations = checker.check()
@@ -418,8 +426,8 @@ class TestToolingAppsBoundaryChecker:
 
     def test_multiple_violations_all_reported(self, tmp_path):
         self._write_py(tmp_path, "ops_scripts/ci/multi.py", """
-            from apps_lic.engines import control_plane
-            import apps_rg.reasoning.FooAgent
+#  # MOVED: from apps_lic.engines import control_plane
+#  # MOVED: import apps_rg.reasoning.FooAgent
         """)
         checker = self._checker_with_fake_root(tmp_path)
         violations = checker.check()
@@ -428,7 +436,7 @@ class TestToolingAppsBoundaryChecker:
     def test_underscore_prefixed_files_skipped(self, tmp_path):
         """Files beginning with _ are excluded by the checker."""
         self._write_py(tmp_path, "ops_scripts/ci/_private.py", """
-            from apps_lic.engines import control_plane
+#  # MOVED: from apps_lic.engines import control_plane
         """)
         checker = self._checker_with_fake_root(tmp_path)
         assert checker.check() == []

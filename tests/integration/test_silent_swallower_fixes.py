@@ -11,16 +11,16 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L0_routing.enforcement.execution_gateway import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.execution_gateway import (
     ExecutionGatewayError,
     V15ExecutionGateway,
 )
-from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
-from agentic_core.L0_routing.types.determinism_types import (
+#  # MOVED: from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+#  # MOVED: from agentic_core.L0_routing.types.determinism_types import (
     FixConstraint,
     SurgicalManifest,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -67,7 +67,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_silent_swallower_fixes", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_silent_swallower_fixes", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_silent_swallower_fixes", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -206,6 +206,13 @@ def create_test_manifest():
 
 @pytest.mark.unit
 def test_execution_gateway_healing_error_specific_exceptions():
+    from agentic_core.L0_routing.enforcement.execution_gateway import (
+    from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+    from agentic_core.L0_routing.types.determinism_types import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.engines.tool_registry import ast_analysis
+    from apps_rg.engines.base_rg_engine import _OUTPUT_CONTRACT_AVAILABLE, MIXINS_AVAILABLE
     """Test that healing errors are properly categorized and logged."""
     gateway = V15ExecutionGateway()
 
@@ -434,7 +441,7 @@ def test_execution_orchestrator_no_l3_orchestrator():
 @pytest.mark.unit
 def test_tool_registry_syntax_error_handling():
     """Test that syntax errors are properly handled in ast_analysis."""
-    from agentic_core.L2_execution.engines.tool_registry import ast_analysis
+#  # MOVED: from agentic_core.L2_execution.engines.tool_registry import ast_analysis
 
     # Test with invalid Python code
     invalid_code = "def invalid_function(\n    # Missing closing parenthesis"
@@ -454,7 +461,7 @@ def test_base_rg_engine_import_error_handling():
     """Test that base RG engine properly handles missing imports."""
     # The ImportError handlers are tested at module import time
     # They should not raise exceptions and should set flags correctly
-    from apps_rg.engines.base_rg_engine import _OUTPUT_CONTRACT_AVAILABLE, MIXINS_AVAILABLE
+#  # MOVED: from apps_rg.engines.base_rg_engine import _OUTPUT_CONTRACT_AVAILABLE, MIXINS_AVAILABLE
 
     # These should be boolean values (not raise exceptions)
     assert isinstance(_OUTPUT_CONTRACT_AVAILABLE, bool)

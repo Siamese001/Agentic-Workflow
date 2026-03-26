@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.utils.workflow_engines.policies import (  # noqa: F401
+#  # MOVED: from agentic_core.utils.workflow_engines.policies import (  # noqa: F401
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,
@@ -27,6 +27,7 @@ from agentic_core.utils.workflow_engines.policies import (  # noqa: F401
 
 class TestChunkContract:
     def test_is_dataclass(self):
+        from agentic_core.utils.workflow_engines.policies import (  # noqa: F401
     """Test is_dataclass runtime behavior."""
     # Arrange
     # TODO: Set up test data for is_dataclass

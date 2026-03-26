@@ -22,7 +22,7 @@ from typing import get_args
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -73,7 +73,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_adg_g17_g22_completeness_accuracy")
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_g17_g22_completeness_accuracy", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_g17_g22_completeness_accuracy", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -228,7 +228,79 @@ class TestSchemaCompleteness:
         ],
     )
     def test_entity_type_literal_exists(self, et: str) -> None:
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         from agentic_core.adg.schema_util import EntityType
+        from agentic_core.adg.schema_util import RelationType
+        from agentic_core.adg.schema_util import EdgeKind
+        import agentic_core.adg.schema_util as sch
+        import agentic_core.adg.schema_util as sch
+        import agentic_core.adg.schema_util as sch
+        import agentic_core.adg.schema_util as sch
+        from agentic_core.adg.extraction.static_scanner import _SecretAccessVisitor
+        from agentic_core.adg.extraction.static_scanner import _ConfigGovernanceVisitor
+        from agentic_core.adg.extraction.static_scanner import _PolicyStateObserverVisitor
+        from agentic_core.adg.extraction.static_scanner import _PolicyStateObserverVisitor
+        from agentic_core.adg.extraction.static_scanner import _PolicyStateObserverVisitor
+        from agentic_core.adg.extraction.static_scanner import _PolicyStateObserverVisitor
+        from agentic_core.adg.extraction.static_scanner import _AntipatternRegistryVisitor
+        from agentic_core.adg.extraction.static_scanner import _AntipatternRegistryVisitor
+        from agentic_core.adg.extraction.static_scanner import _HealingOrchestratorVisitor
+        from agentic_core.adg.extraction import static_scanner
+        from agentic_core.adg.runtime.secret_access import SecretAccessRecorder, SecretKind
+        import agentic_core.adg.schema_util
+        from agentic_core.adg.runtime.secret_access import (
+        from agentic_core.adg.runtime.secret_access import SecretAccessRecorder
+        from agentic_core.adg.runtime.secret_access import SecretAccessRecorder
+        from agentic_core.adg.runtime.secret_access import SecretAccessRecorder, SecretKind
+        from agentic_core.adg.runtime.secret_access import SecretAccessRecorder, SecretKind
+        from agentic_core.adg.runtime.secret_access import SecretAccessRecorder
+        from agentic_core.adg.runtime.secret_access import SecretAccessRecorder, SecretKind
+        from agentic_core.adg.runtime.config_governance import ConfigGovernor, ConfigReadOutcome
+        from agentic_core.adg.runtime.config_governance import ConfigGovernor, ConfigReadOutcome
+        from agentic_core.adg.runtime.config_governance import ConfigGovernor, ConfigSchemaStatus
+        from agentic_core.adg.runtime.config_governance import ConfigGovernor, ConfigSchemaStatus
+        from agentic_core.adg.runtime.config_governance import ConfigGovernor
+        from agentic_core.adg.runtime.config_governance import ConfigGovernor
+        from agentic_core.adg.runtime.config_governance import ConfigGovernor
+        from agentic_core.adg.runtime.config_governance import ConfigGovernor
+        from agentic_core.adg.runtime.dynamic_invocation import (
+        from agentic_core.adg.runtime.dynamic_invocation import (
+        from agentic_core.adg.runtime.dynamic_invocation import (
+        from agentic_core.adg.runtime.dynamic_invocation import (
+        from agentic_core.adg.runtime.dynamic_invocation import DynamicInvocationTracker
+        from agentic_core.adg.runtime.dynamic_invocation import DynamicInvocationTracker
+        from agentic_core.adg.runtime.dynamic_invocation import DynamicInvocationTracker
+        from agentic_core.adg.runtime.policy_state_observer import (
+        from agentic_core.adg.runtime.policy_state_observer import (
+        from agentic_core.adg.runtime.policy_state_observer import (
+        from agentic_core.adg.runtime.policy_state_observer import (
+        from agentic_core.adg.runtime.policy_state_observer import (
+        from agentic_core.adg.runtime.policy_state_observer import PolicyStateObserver
+        from agentic_core.adg.runtime.policy_state_observer import PolicyStateObserver
+        from agentic_core.adg.runtime.antipattern_registry import (
+        from agentic_core.adg.runtime.antipattern_registry import (
+        from agentic_core.adg.runtime.antipattern_registry import (
+        from agentic_core.adg.runtime.antipattern_registry import (
+        from agentic_core.adg.runtime.antipattern_registry import AntipatternRegistry
+        from agentic_core.adg.runtime.antipattern_registry import (
+        from agentic_core.adg.runtime.antipattern_registry import AntipatternRegistry
+        from agentic_core.adg.runtime.antipattern_registry import (
+        from agentic_core.adg.runtime.antipattern_registry import (
+        from agentic_core.adg.runtime.healing_orchestrator import (
+        from agentic_core.adg.runtime.healing_orchestrator import (
+        from agentic_core.adg.runtime.healing_orchestrator import (
+        from agentic_core.adg.runtime.healing_orchestrator import (
+        from agentic_core.adg.runtime.healing_orchestrator import (
+        from agentic_core.adg.runtime.healing_orchestrator import (
+        from agentic_core.adg.runtime.healing_orchestrator import (
+        from agentic_core.adg.runtime.healing_orchestrator import (
+        from agentic_core.adg.runtime.healing_orchestrator import (
+        from agentic_core.adg.artifact.SplitArtifact import _GOVERNANCE_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _SYMBOL_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import (
+#  # MOVED: from agentic_core.adg.schema_util import EntityType
 
         assert et in get_args(EntityType), f"EntityType missing: {et!r}"
 
@@ -263,7 +335,7 @@ class TestSchemaCompleteness:
         ],
     )
     def test_relation_type_literal_exists(self, rt: str) -> None:
-        from agentic_core.adg.schema_util import RelationType
+#  # MOVED: from agentic_core.adg.schema_util import RelationType
 
         assert rt in get_args(RelationType), f"RelationType missing: {rt!r}"
 
@@ -292,7 +364,7 @@ class TestSchemaCompleteness:
         ],
     )
     def test_edge_kind_literal_exists(self, ek: str) -> None:
-        from agentic_core.adg.schema_util import EdgeKind
+#  # MOVED: from agentic_core.adg.schema_util import EdgeKind
 
         assert ek in get_args(EdgeKind), f"EdgeKind missing: {ek!r}"
 
@@ -333,7 +405,7 @@ class TestDetectionConstants:
         ],
     )
     def test_constant_contains_expected_members(self, const_name: str, expected_members: list[str]) -> None:
-        import agentic_core.adg.schema_util as sch
+#  # MOVED: import agentic_core.adg.schema_util as sch
 
         fs = getattr(sch, const_name)
         for m in expected_members:
@@ -358,13 +430,13 @@ class TestDetectionConstants:
         ],
     )
     def test_constant_exported_in_all(self, const_name: str) -> None:
-        import agentic_core.adg.schema_util as sch
+#  # MOVED: import agentic_core.adg.schema_util as sch
 
         assert const_name in sch.__all__, f"{const_name} missing from schema.__all__"
 
     def test_no_cross_constant_overlap(self) -> None:
         """No symbol string should appear in two different G17-G22 frozensets."""
-        import agentic_core.adg.schema_util as sch
+#  # MOVED: import agentic_core.adg.schema_util as sch
 
         g17_g22_consts = [
             "SECRET_VAULT_CLASSES",
@@ -406,7 +478,7 @@ class TestDetectionConstants:
         ],
     )
     def test_no_empty_or_whitespace_members(self, const_name: str) -> None:
-        import agentic_core.adg.schema_util as sch
+#  # MOVED: import agentic_core.adg.schema_util as sch
 
         for m in getattr(sch, const_name):
             assert isinstance(m, str) and m.strip(), f"{const_name}: invalid member {m!r}"
@@ -616,7 +688,7 @@ class TestInitExports:
     # TODO: Add specific execution assertions
 
     def test_rotate_secret_emits_rotates_secret(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import _SecretAccessVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SecretAccessVisitor
 
         src = "vault.rotate_secret('API_KEY')"
         edges = _edges_for(src, _SecretAccessVisitor)
@@ -644,7 +716,7 @@ class TestInitExports:
     assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
     # TODO: Add specific execution assertions
     def test_load_config_emits_reads_governed_config(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import _ConfigGovernanceVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _ConfigGovernanceVisitor
 
         src = "cfg.load_config('settings.yaml')"
         edges = _edges_for(src, _ConfigGovernanceVisitor)
@@ -686,28 +758,28 @@ class TestInitExports:
     assert isinstance(result, object), "Result should be an object"
     # TODO: Add specific runtime behavior assertions
     def test_runtime_state_observer_emits_observes_runtime_state(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import _PolicyStateObserverVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _PolicyStateObserverVisitor
 
         src = "RuntimeStateObserver()"
         edges = _edges_for(src, _PolicyStateObserverVisitor)
         assert ("observes_runtime_state", "runtime_state_snapshot") in edges
 
     def test_state_snapshot_emits_snapshots_state(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import _PolicyStateObserverVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _PolicyStateObserverVisitor
 
         src = "StateSnapshot()"
         edges = _edges_for(src, _PolicyStateObserverVisitor)
         assert ("snapshots_state", "runtime_state_snapshot") in edges
 
     def test_read_policy_state_method_emits_observes_policy_state(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import _PolicyStateObserverVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _PolicyStateObserverVisitor
 
         src = "observer.read_policy_state('hash_v3')"
         edges = _edges_for(src, _PolicyStateObserverVisitor)
         assert ("observes_policy_state", "policy_state_observation") in edges
 
     def test_snapshot_runtime_method_emits_observes_runtime_state(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import _PolicyStateObserverVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _PolicyStateObserverVisitor
 
         src = "observer.snapshot_runtime()"
         edges = _edges_for(src, _PolicyStateObserverVisitor)
@@ -715,14 +787,14 @@ class TestInitExports:
         assert ("observes_runtime_state", "runtime_state_snapshot") in edges
 
     def test_antipattern_registry_class_emits_registers_antipattern(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import _AntipatternRegistryVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _AntipatternRegistryVisitor
 
         src = "AntipatternRegistry()"
         edges = _edges_for(src, _AntipatternRegistryVisitor)
         assert ("registers_antipattern", "antipattern_classification") in edges
 
     def test_pattern_classifier_emits_classifies_antipattern(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import _AntipatternRegistryVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _AntipatternRegistryVisitor
 
         src = "PatternClassifier()"
         edges = _edges_for(src, _AntipatternRegistryVisitor)
@@ -750,7 +822,7 @@ class TestInitExports:
     assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
     # TODO: Add specific execution assertions
     def test_abort_heal_method_emits_aborts_heal(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import _HealingOrchestratorVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _HealingOrchestratorVisitor
 
         src = "orch.abort_heal(run, 'timeout')"
         edges = _edges_for(src, _HealingOrchestratorVisitor)
@@ -792,7 +864,7 @@ data = json.dumps({"key": "value"})
         ],
     )
     def test_unrelated_code_produces_zero_edges(self, visitor_name: str) -> None:
-        from agentic_core.adg.extraction import static_scanner
+#  # MOVED: from agentic_core.adg.extraction import static_scanner
 
         visitor_cls = getattr(static_scanner, visitor_name)
         edges = _scan_src(self.UNRELATED_SRC, visitor_cls)
@@ -810,15 +882,15 @@ class TestRuntimeStateMachines:
     # --- G17: SecretAccessRecorder ---
 
     def test_secret_recorder_record_access_increments_total(self) -> None:
-        from agentic_core.adg.runtime.secret_access import SecretAccessRecorder, SecretKind
+#  # MOVED: from agentic_core.adg.runtime.secret_access import SecretAccessRecorder, SecretKind
 
         r = SecretAccessRecorder("a", "r1")
         """Test agentic_core import functionality."""
-        import agentic_core.adg.schema_util
+#  # MOVED: import agentic_core.adg.schema_util
         # Basic functionality assertion
         assert True  # Replace with meaningful assertion
     def test_secret_recorder_record_env_read(self) -> None:
-        from agentic_core.adg.runtime.secret_access import (
+#  # MOVED: from agentic_core.adg.runtime.secret_access import (
             SecretAccessOutcome,
             SecretAccessRecorder,
             SecretKind,
@@ -831,7 +903,7 @@ class TestRuntimeStateMachines:
         assert ev.outcome == SecretAccessOutcome.SUCCESS
 
     def test_secret_recorder_record_rotation(self) -> None:
-        from agentic_core.adg.runtime.secret_access import SecretAccessRecorder
+#  # MOVED: from agentic_core.adg.runtime.secret_access import SecretAccessRecorder
 
         r = SecretAccessRecorder("a", "r1")
         ev = r.record_rotation("OLD_KEY")
@@ -839,14 +911,14 @@ class TestRuntimeStateMachines:
         assert r.report.rotation_count == 1
 
     def test_secret_recorder_denied_increments_denied_count(self) -> None:
-        from agentic_core.adg.runtime.secret_access import SecretAccessRecorder
+#  # MOVED: from agentic_core.adg.runtime.secret_access import SecretAccessRecorder
 
         r = SecretAccessRecorder("a", "r1")
         r.record_denied("RESTRICTED_KEY")
         assert r.report.denied_count == 1
 
     def test_secret_recorder_masks_value(self) -> None:
-        from agentic_core.adg.runtime.secret_access import SecretAccessRecorder, SecretKind
+#  # MOVED: from agentic_core.adg.runtime.secret_access import SecretAccessRecorder, SecretKind
 
         r = SecretAccessRecorder("a", "r1")
         ev = r.record_access("MY_KEY", SecretKind.API_KEY, raw_value="super_secret")
@@ -854,7 +926,7 @@ class TestRuntimeStateMachines:
         assert "super_secret" not in ev.masked_value_hash
 
     def test_secret_recorder_report_to_dict_json_serializable(self) -> None:
-        from agentic_core.adg.runtime.secret_access import SecretAccessRecorder, SecretKind
+#  # MOVED: from agentic_core.adg.runtime.secret_access import SecretAccessRecorder, SecretKind
 
         r = SecretAccessRecorder("a", "r1")
         r.record_access("KEY1", SecretKind.API_KEY)
@@ -863,7 +935,7 @@ class TestRuntimeStateMachines:
         assert json.loads(json.dumps(d)) == d
 
     def test_secret_recorders_are_isolated(self) -> None:
-        from agentic_core.adg.runtime.secret_access import SecretAccessRecorder
+#  # MOVED: from agentic_core.adg.runtime.secret_access import SecretAccessRecorder
 
         r1 = SecretAccessRecorder("a", "r1")
         r2 = SecretAccessRecorder("a", "r2")
@@ -871,7 +943,7 @@ class TestRuntimeStateMachines:
         assert r2.report.total_accesses == 0
 
     def test_secret_recorder_by_kind(self) -> None:
-        from agentic_core.adg.runtime.secret_access import SecretAccessRecorder, SecretKind
+#  # MOVED: from agentic_core.adg.runtime.secret_access import SecretAccessRecorder, SecretKind
 
         r = SecretAccessRecorder("a", "r1")
         r.record_access("K1", SecretKind.API_KEY)
@@ -884,7 +956,7 @@ class TestRuntimeStateMachines:
     # --- G18: ConfigGovernor ---
 
     def test_config_governor_first_read_is_not_cached(self) -> None:
-        from agentic_core.adg.runtime.config_governance import ConfigGovernor, ConfigReadOutcome
+#  # MOVED: from agentic_core.adg.runtime.config_governance import ConfigGovernor, ConfigReadOutcome
 
         g = ConfigGovernor("a", "r1")
         ev = g.read_config("db.host")
@@ -892,7 +964,7 @@ class TestRuntimeStateMachines:
         assert ev.outcome == ConfigReadOutcome.HIT
 
     def test_config_governor_second_read_is_cached(self) -> None:
-        from agentic_core.adg.runtime.config_governance import ConfigGovernor, ConfigReadOutcome
+#  # MOVED: from agentic_core.adg.runtime.config_governance import ConfigGovernor, ConfigReadOutcome
 
         g = ConfigGovernor("a", "r1")
         g.read_config("db.host")
@@ -901,14 +973,14 @@ class TestRuntimeStateMachines:
         assert ev2.outcome == ConfigReadOutcome.CACHED
 
     def test_config_governor_validate_valid(self) -> None:
-        from agentic_core.adg.runtime.config_governance import ConfigGovernor, ConfigSchemaStatus
+#  # MOVED: from agentic_core.adg.runtime.config_governance import ConfigGovernor, ConfigSchemaStatus
 
         g = ConfigGovernor("a", "r1")
         ev = g.validate_config("db.port", errors=[])
         assert ev.schema_status == ConfigSchemaStatus.VALID
 
     def test_config_governor_validate_invalid(self) -> None:
-        from agentic_core.adg.runtime.config_governance import ConfigGovernor, ConfigSchemaStatus
+#  # MOVED: from agentic_core.adg.runtime.config_governance import ConfigGovernor, ConfigSchemaStatus
 
         g = ConfigGovernor("a", "r1")
         ev = g.validate_config("db.port", errors=["type_mismatch"])
@@ -916,7 +988,7 @@ class TestRuntimeStateMachines:
         assert ev.validation_errors == ["type_mismatch"]
 
     def test_config_governor_schema_fail_count(self) -> None:
-        from agentic_core.adg.runtime.config_governance import ConfigGovernor
+#  # MOVED: from agentic_core.adg.runtime.config_governance import ConfigGovernor
 
         g = ConfigGovernor("a", "r1")
         g.validate_config("k1", errors=[])
@@ -924,7 +996,7 @@ class TestRuntimeStateMachines:
         assert g.report.schema_fail_count == 1
 
     def test_config_governor_invalidate_cache(self) -> None:
-        from agentic_core.adg.runtime.config_governance import ConfigGovernor
+#  # MOVED: from agentic_core.adg.runtime.config_governance import ConfigGovernor
 
         g = ConfigGovernor("a", "r1")
         g.read_config("a")
@@ -935,7 +1007,7 @@ class TestRuntimeStateMachines:
         assert ev.cached is False
 
     def test_config_governor_report_to_dict_json_serializable(self) -> None:
-        from agentic_core.adg.runtime.config_governance import ConfigGovernor
+#  # MOVED: from agentic_core.adg.runtime.config_governance import ConfigGovernor
 
         g = ConfigGovernor("a", "r1")
         g.read_config("x")
@@ -944,7 +1016,7 @@ class TestRuntimeStateMachines:
         assert json.loads(json.dumps(d)) == d
 
     def test_config_governors_are_isolated(self) -> None:
-        from agentic_core.adg.runtime.config_governance import ConfigGovernor
+#  # MOVED: from agentic_core.adg.runtime.config_governance import ConfigGovernor
 
         g1 = ConfigGovernor("a", "r1")
         g2 = ConfigGovernor("a", "r2")
@@ -954,7 +1026,7 @@ class TestRuntimeStateMachines:
     # --- G19: DynamicInvocationTracker ---
 
     def test_tracker_record_eval(self) -> None:
-        from agentic_core.adg.runtime.dynamic_invocation import (
+#  # MOVED: from agentic_core.adg.runtime.dynamic_invocation import (
             DynamicInvocationKind,
             DynamicInvocationRisk,
             DynamicInvocationTracker,
@@ -967,7 +1039,7 @@ class TestRuntimeStateMachines:
         assert t.report.critical_count == 1
 
     def test_tracker_record_exec(self) -> None:
-        from agentic_core.adg.runtime.dynamic_invocation import (
+#  # MOVED: from agentic_core.adg.runtime.dynamic_invocation import (
             DynamicInvocationKind,
             DynamicInvocationRisk,
             DynamicInvocationTracker,
@@ -979,7 +1051,7 @@ class TestRuntimeStateMachines:
         assert rec.risk == DynamicInvocationRisk.CRITICAL
 
     def test_tracker_record_importlib(self) -> None:
-        from agentic_core.adg.runtime.dynamic_invocation import (
+#  # MOVED: from agentic_core.adg.runtime.dynamic_invocation import (
             DynamicInvocationKind,
             DynamicInvocationRisk,
             DynamicInvocationTracker,
@@ -991,7 +1063,7 @@ class TestRuntimeStateMachines:
         assert rec.risk == DynamicInvocationRisk.HIGH
 
     def test_tracker_record_getattr(self) -> None:
-        from agentic_core.adg.runtime.dynamic_invocation import (
+#  # MOVED: from agentic_core.adg.runtime.dynamic_invocation import (
             DynamicInvocationKind,
             DynamicInvocationRisk,
             DynamicInvocationTracker,
@@ -1003,7 +1075,7 @@ class TestRuntimeStateMachines:
         assert rec.risk == DynamicInvocationRisk.LOW
 
     def test_tracker_suppress(self) -> None:
-        from agentic_core.adg.runtime.dynamic_invocation import DynamicInvocationTracker
+#  # MOVED: from agentic_core.adg.runtime.dynamic_invocation import DynamicInvocationTracker
 
         t = DynamicInvocationTracker("a", "r1")
         rec = t.record_eval("foo.py", 5)
@@ -1013,7 +1085,7 @@ class TestRuntimeStateMachines:
         assert t.report.suppressed_count == 1
 
     def test_tracker_report_to_dict_json_serializable(self) -> None:
-        from agentic_core.adg.runtime.dynamic_invocation import DynamicInvocationTracker
+#  # MOVED: from agentic_core.adg.runtime.dynamic_invocation import DynamicInvocationTracker
 
         t = DynamicInvocationTracker("a", "r1")
         t.record_eval("a.py", 1)
@@ -1022,7 +1094,7 @@ class TestRuntimeStateMachines:
         assert json.loads(json.dumps(d)) == d
 
     def test_trackers_are_isolated(self) -> None:
-        from agentic_core.adg.runtime.dynamic_invocation import DynamicInvocationTracker
+#  # MOVED: from agentic_core.adg.runtime.dynamic_invocation import DynamicInvocationTracker
 
         t1 = DynamicInvocationTracker("a", "r1")
         t2 = DynamicInvocationTracker("a", "r2")
@@ -1032,7 +1104,7 @@ class TestRuntimeStateMachines:
     # --- G20: PolicyStateObserver ---
 
     def test_observer_observe_policy(self) -> None:
-        from agentic_core.adg.runtime.policy_state_observer import (
+#  # MOVED: from agentic_core.adg.runtime.policy_state_observer import (
             PolicyStateObserver,
             StateObservationKind,
         )
@@ -1043,7 +1115,7 @@ class TestRuntimeStateMachines:
         assert obs.report.policy_state_count == 1
 
     def test_observer_observe_runtime(self) -> None:
-        from agentic_core.adg.runtime.policy_state_observer import (
+#  # MOVED: from agentic_core.adg.runtime.policy_state_observer import (
             PolicyStateObserver,
             StateObservationKind,
         )
@@ -1054,7 +1126,7 @@ class TestRuntimeStateMachines:
         assert obs.report.runtime_state_count == 1
 
     def test_observer_probe_health(self) -> None:
-        from agentic_core.adg.runtime.policy_state_observer import (
+#  # MOVED: from agentic_core.adg.runtime.policy_state_observer import (
             PolicyStateObserver,
             StateObservationKind,
         )
@@ -1064,7 +1136,7 @@ class TestRuntimeStateMachines:
         assert ev.kind == StateObservationKind.HEALTH_PROBE
 
     def test_observer_snapshot(self) -> None:
-        from agentic_core.adg.runtime.policy_state_observer import (
+#  # MOVED: from agentic_core.adg.runtime.policy_state_observer import (
             PolicyStateObserver,
             StateObservationKind,
         )
@@ -1076,7 +1148,7 @@ class TestRuntimeStateMachines:
         assert obs.report.snapshot_count == 1
 
     def test_observer_stale_count(self) -> None:
-        from agentic_core.adg.runtime.policy_state_observer import (
+#  # MOVED: from agentic_core.adg.runtime.policy_state_observer import (
             PolicyStateObserver,
             StateReadOutcome,
         )
@@ -1087,7 +1159,7 @@ class TestRuntimeStateMachines:
         assert obs.report.stale_count == 1
 
     def test_observer_report_to_dict_json_serializable(self) -> None:
-        from agentic_core.adg.runtime.policy_state_observer import PolicyStateObserver
+#  # MOVED: from agentic_core.adg.runtime.policy_state_observer import PolicyStateObserver
 
         obs = PolicyStateObserver("a", "r1")
         obs.observe_policy("k1")
@@ -1097,7 +1169,7 @@ class TestRuntimeStateMachines:
         assert json.loads(json.dumps(d)) == d
 
     def test_observers_are_isolated(self) -> None:
-        from agentic_core.adg.runtime.policy_state_observer import PolicyStateObserver
+#  # MOVED: from agentic_core.adg.runtime.policy_state_observer import PolicyStateObserver
 
         obs1 = PolicyStateObserver("a", "r1")
         obs2 = PolicyStateObserver("a", "r2")
@@ -1107,7 +1179,7 @@ class TestRuntimeStateMachines:
     # --- G21: AntipatternRegistry ---
 
     def test_registry_register(self) -> None:
-        from agentic_core.adg.runtime.antipattern_registry import (
+#  # MOVED: from agentic_core.adg.runtime.antipattern_registry import (
             AntipatternCategory,
             AntipatternRegistry,
             AntipatternSeverity,
@@ -1120,7 +1192,7 @@ class TestRuntimeStateMachines:
         assert reg.report.total_count == 1
 
     def test_registry_hardcoded_secret_is_critical(self) -> None:
-        from agentic_core.adg.runtime.antipattern_registry import (
+#  # MOVED: from agentic_core.adg.runtime.antipattern_registry import (
             AntipatternCategory,
             AntipatternRegistry,
             AntipatternSeverity,
@@ -1132,7 +1204,7 @@ class TestRuntimeStateMachines:
         assert reg.report.critical_count == 1
 
     def test_registry_suppress(self) -> None:
-        from agentic_core.adg.runtime.antipattern_registry import (
+#  # MOVED: from agentic_core.adg.runtime.antipattern_registry import (
             AntipatternCategory,
             AntipatternRegistry,
         )
@@ -1145,7 +1217,7 @@ class TestRuntimeStateMachines:
         assert reg.report.active_count == 0
 
     def test_registry_classify_valid_edge_kind(self) -> None:
-        from agentic_core.adg.runtime.antipattern_registry import (
+#  # MOVED: from agentic_core.adg.runtime.antipattern_registry import (
             AntipatternCategory,
             AntipatternRegistry,
         )
@@ -1155,13 +1227,13 @@ class TestRuntimeStateMachines:
         assert cat == AntipatternCategory.SILENT_EXCEPTION_SWALLOW
 
     def test_registry_classify_unknown_returns_none(self) -> None:
-        from agentic_core.adg.runtime.antipattern_registry import AntipatternRegistry
+#  # MOVED: from agentic_core.adg.runtime.antipattern_registry import AntipatternRegistry
 
         reg = AntipatternRegistry("a", "r1")
         assert reg.classify("completely_unknown_pattern") is None
 
     def test_registry_register_from_edge_kind(self) -> None:
-        from agentic_core.adg.runtime.antipattern_registry import (
+#  # MOVED: from agentic_core.adg.runtime.antipattern_registry import (
             AntipatternCategory,
             AntipatternRegistry,
         )
@@ -1172,14 +1244,14 @@ class TestRuntimeStateMachines:
         assert rec.category == AntipatternCategory.BLOCKING_CALL_IN_ASYNC
 
     def test_registry_register_from_unknown_edge_kind_returns_none(self) -> None:
-        from agentic_core.adg.runtime.antipattern_registry import AntipatternRegistry
+#  # MOVED: from agentic_core.adg.runtime.antipattern_registry import AntipatternRegistry
 
         reg = AntipatternRegistry("a", "r1")
         result = reg.register_from_edge_kind("not_a_pattern")
         assert result is None
 
     def test_registry_report_to_dict_json_serializable(self) -> None:
-        from agentic_core.adg.runtime.antipattern_registry import (
+#  # MOVED: from agentic_core.adg.runtime.antipattern_registry import (
             AntipatternCategory,
             AntipatternRegistry,
         )
@@ -1190,7 +1262,7 @@ class TestRuntimeStateMachines:
         assert json.loads(json.dumps(d)) == d
 
     def test_registries_are_isolated(self) -> None:
-        from agentic_core.adg.runtime.antipattern_registry import (
+#  # MOVED: from agentic_core.adg.runtime.antipattern_registry import (
             AntipatternCategory,
             AntipatternRegistry,
         )
@@ -1228,7 +1300,7 @@ class TestRuntimeStateMachines:
         assert run.step_count == 1
 
     def test_orchestrator_confirm(self) -> None:
-        from agentic_core.adg.runtime.healing_orchestrator import (
+#  # MOVED: from agentic_core.adg.runtime.healing_orchestrator import (
             HealingOrchestrator,
             HealingRunPhase,
             HealingTrigger,
@@ -1243,7 +1315,7 @@ class TestRuntimeStateMachines:
         assert orch.report.confirmed_count == 1
 
     def test_orchestrator_abort(self) -> None:
-        from agentic_core.adg.runtime.healing_orchestrator import (
+#  # MOVED: from agentic_core.adg.runtime.healing_orchestrator import (
             HealingOrchestrator,
             HealingRunPhase,
             HealingTrigger,
@@ -1257,7 +1329,7 @@ class TestRuntimeStateMachines:
         assert orch.report.aborted_count == 1
 
     def test_orchestrator_confirm_is_terminal(self) -> None:
-        from agentic_core.adg.runtime.healing_orchestrator import (
+#  # MOVED: from agentic_core.adg.runtime.healing_orchestrator import (
             HealingOrchestrator,
             HealingTrigger,
         )
@@ -1269,7 +1341,7 @@ class TestRuntimeStateMachines:
         assert run.succeeded is True
 
     def test_orchestrator_abort_is_terminal(self) -> None:
-        from agentic_core.adg.runtime.healing_orchestrator import (
+#  # MOVED: from agentic_core.adg.runtime.healing_orchestrator import (
             HealingOrchestrator,
             HealingTrigger,
         )
@@ -1281,7 +1353,7 @@ class TestRuntimeStateMachines:
         assert run.succeeded is False
 
     def test_orchestrator_timeout(self) -> None:
-        from agentic_core.adg.runtime.healing_orchestrator import (
+#  # MOVED: from agentic_core.adg.runtime.healing_orchestrator import (
             HealingOrchestrator,
             HealingRunPhase,
             HealingTrigger,
@@ -1294,7 +1366,7 @@ class TestRuntimeStateMachines:
         assert run.abort_reason == "timeout"
 
     def test_orchestrator_confirm_noop_on_terminal(self) -> None:
-        from agentic_core.adg.runtime.healing_orchestrator import (
+#  # MOVED: from agentic_core.adg.runtime.healing_orchestrator import (
             HealingOrchestrator,
             HealingRunPhase,
             HealingTrigger,
@@ -1307,7 +1379,7 @@ class TestRuntimeStateMachines:
         assert run.phase == HealingRunPhase.ABORTED
 
     def test_orchestrator_success_rate(self) -> None:
-        from agentic_core.adg.runtime.healing_orchestrator import (
+#  # MOVED: from agentic_core.adg.runtime.healing_orchestrator import (
             HealingOrchestrator,
             HealingTrigger,
         )
@@ -1320,7 +1392,7 @@ class TestRuntimeStateMachines:
         assert orch.report.success_rate == pytest.approx(0.5)
 
     def test_orchestrator_report_to_dict_json_serializable(self) -> None:
-        from agentic_core.adg.runtime.healing_orchestrator import (
+#  # MOVED: from agentic_core.adg.runtime.healing_orchestrator import (
             HealingOrchestrator,
             HealingTrigger,
         )
@@ -1333,7 +1405,7 @@ class TestRuntimeStateMachines:
         assert json.loads(json.dumps(d)) == d
 
     def test_orchestrators_are_isolated(self) -> None:
-        from agentic_core.adg.runtime.healing_orchestrator import (
+#  # MOVED: from agentic_core.adg.runtime.healing_orchestrator import (
             HealingOrchestrator,
             HealingTrigger,
         )
@@ -1412,7 +1484,7 @@ class TestLayerSplitterAccuracy:
         ],
     )
     def test_relation_in_governance_plane(self, relation: str) -> None:
-        from agentic_core.adg.artifact.SplitArtifact import _GOVERNANCE_GRAPH_RELS
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import _GOVERNANCE_GRAPH_RELS
 
         assert relation in _GOVERNANCE_GRAPH_RELS, f"{relation!r} not in _GOVERNANCE_GRAPH_RELS"
 
@@ -1440,7 +1512,7 @@ class TestLayerSplitterAccuracy:
         ],
     )
     def test_relation_not_in_file_plane(self, relation: str) -> None:
-        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS
 
         assert relation not in _FILE_GRAPH_RELS
 
@@ -1468,13 +1540,13 @@ class TestLayerSplitterAccuracy:
         ],
     )
     def test_relation_not_in_symbol_plane(self, relation: str) -> None:
-        from agentic_core.adg.artifact.SplitArtifact import _SYMBOL_GRAPH_RELS
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import _SYMBOL_GRAPH_RELS
 
         assert relation not in _SYMBOL_GRAPH_RELS
 
     def test_no_three_plane_overlap(self) -> None:
         """Every relation type must appear in exactly one plane."""
-        from agentic_core.adg.artifact.SplitArtifact import (
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import (
             _FILE_GRAPH_RELS,
             _GOVERNANCE_GRAPH_RELS,
             _SYMBOL_GRAPH_RELS,

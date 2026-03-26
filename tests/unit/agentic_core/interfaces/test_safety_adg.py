@@ -5,11 +5,12 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.interfaces.safety as m
+#  # MOVED: import agentic_core.interfaces.safety as m
 
 
 class TestSafetyInterface:
     def test_importable(self):
+        import agentic_core.interfaces.safety as m
     """Test importable contract compliance."""
     # Arrange
     # TODO: Set up contract test scenario

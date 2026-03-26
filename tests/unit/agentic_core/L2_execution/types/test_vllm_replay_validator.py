@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -92,16 +92,16 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
     VLLMCircuitBreakerRegistry,
     VLLMQueueController,
     evaluate_gateway_call,
 )
-from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
     VLLMInfrastructureFingerprint,
     sha256_hex,
 )
-from agentic_core.L2_execution.types.vllm_replay_validator_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_replay_validator_types import (
     VLLMReplayArtifact,
     VLLMReplayValidator,
     canonical_local_request_hash,
@@ -109,8 +109,8 @@ from agentic_core.L2_execution.types.vllm_replay_validator_types import (
     canonical_response_hash,
     compute_replay_hash,
 )
-from agentic_core.L2_execution.types.vllm_token_budget_types import TaskClass
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_token_budget_types import TaskClass
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -210,6 +210,14 @@ def make_clean():
 
 
 def test_replay_hash_deterministic_two_runs():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
+    from agentic_core.L2_execution.types.vllm_replay_validator_types import (
+    from agentic_core.L2_execution.types.vllm_token_budget_types import TaskClass
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.types.vllm_serving_profile_types import LOCAL_FAST_7B_MAX_MODEL_LEN
+    from agentic_core.L2_execution.types.vllm_token_budget_types import (
 """Test replay_hash_deterministic_two_runs runtime behavior."""
 # Arrange
 # TODO: Set up execution parameters
@@ -391,8 +399,8 @@ assert isinstance(result, object), "Result should be an object"
     ctrl, reg = make_clean()
 
     # Force token budget exceed to get None local_request
-    from agentic_core.L2_execution.types.vllm_serving_profile_types import LOCAL_FAST_7B_MAX_MODEL_LEN
-    from agentic_core.L2_execution.types.vllm_token_budget_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_serving_profile_types import LOCAL_FAST_7B_MAX_MODEL_LEN
+#  # MOVED: from agentic_core.L2_execution.types.vllm_token_budget_types import (
         SAFETY_MARGIN_TOKENS,
         TASK_CLASS_OUTPUT_CAPS,
     )

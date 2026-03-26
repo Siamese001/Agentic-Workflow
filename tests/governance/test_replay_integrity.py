@@ -11,11 +11,11 @@ Validates:
 
 import pytest
 
-from agentic_core.L2_execution.types.llm_replay_types import (
+#  # MOVED: from agentic_core.L2_execution.types.llm_replay_types import (
     ReplayBundle,
     verify_replay_integrity,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -169,6 +169,8 @@ class TestReplayHashComputed:
     """replay_hash must be set on create."""
 
     def test_replay_hash_is_sha256(self):
+        from agentic_core.L2_execution.types.llm_replay_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         bundle = ReplayBundle.create(
             model_version="v1",
             tokenizer_version="t1",

@@ -6,7 +6,7 @@ import pytest
 pytestmark = pytest.mark.unit
 
 try:
-    from agentic_core.L0_routing.scripts.compare_autonomy_guardian_files_util import (  # noqa: F401
+#  # MOVED: from agentic_core.L0_routing.scripts.compare_autonomy_guardian_files_util import (  # noqa: F401
         BATCH_SIZE,
         BUFFER_SIZE,
         DEFAULT_SLEEP,
@@ -27,6 +27,7 @@ except (ValueError, TypeError, RuntimeError) as e:  # guardian: allow-silent-swa
 
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
+        from agentic_core.L0_routing.scripts.compare_autonomy_guardian_files_util import (  # noqa: F401
         assert MAX_RETRIES is not None
 
 class TestDefaultSleepConstant:

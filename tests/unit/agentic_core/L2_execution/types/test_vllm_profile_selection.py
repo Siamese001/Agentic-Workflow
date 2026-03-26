@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -95,24 +95,24 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
     VLLM_SEED,
     VLLM_TEMPERATURE,
     VLLM_TOP_P,
     select_serving_profile,
     shape_local_request,
 )
-from agentic_core.L2_execution.types.vllm_serving_profile_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_serving_profile_types import (
     LOCAL_FAST_7B_MAX_MODEL_LEN,
     LOCAL_STRONG_14B_MAX_MODEL_LEN,
     PROFILE_LOCAL_FAST_7B,
     PROFILE_LOCAL_STRONG_14B,
 )
-from agentic_core.L2_execution.types.vllm_token_budget_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_token_budget_types import (
     TASK_CLASS_OUTPUT_CAPS,
     TaskClass,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -208,6 +208,11 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 
 def test_low_severity_selects_fast_7b():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
+    from agentic_core.L2_execution.types.vllm_serving_profile_types import (
+    from agentic_core.L2_execution.types.vllm_token_budget_types import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test low_severity_selects_fast_7b runtime behavior."""
 # Arrange
 # TODO: Set up test data for low_severity_selects_fast_7b

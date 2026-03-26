@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (  # noqa: F401
+#  # MOVED: from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (  # noqa: F401
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,
@@ -22,6 +22,7 @@ from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (  # noqa
 
 class TestArchitectureGovernorAgentContract:
     def test_is_dataclass(self):
+        from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (  # noqa: F401
         import dataclasses
         assert dataclasses.is_dataclass(ArchitectureGovernorAgent)
 

@@ -55,10 +55,10 @@ import pytest
 # Force-register the SL bridge submodule so patch() can resolve
 # "system_learning.adapters.system_learning_memory_bridge.get_sl_memory_bridge"
 # regardless of test-suite import order.
-import system_learning.adapters.system_learning_memory_bridge as _sl_bridge_mod  # noqa: F401
-from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
-from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: import system_learning.adapters.system_learning_memory_bridge as _sl_bridge_mod  # noqa: F401
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
+#  # MOVED: from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -105,7 +105,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_execute_ssot_e2e_healing", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_execute_ssot_e2e_healing", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_execute_ssot_e2e_healing", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -273,8 +273,16 @@ def _mock_bridge():
 
 class TestRecordHealingActionWiring:
     def test_module_is_ssot_validation_artifacts(self):
-        """execute_ssot must use the wired version, not a stale local copy."""
+        import system_learning.adapters.system_learning_memory_bridge as _sl_bridge_mod  # noqa: F401
+        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
+        from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         import agentic_core.L0_routing.scripts.execute_ssot as mod
+        from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate, HitlRequest, HitlRequiredError
+        from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate, HitlRequest, HitlRequiredError
+        """execute_ssot must use the wired version, not a stale local copy."""
+#  # MOVED: import agentic_core.L0_routing.scripts.execute_ssot as mod
 
         assert mod._record_healing_action.__module__ == (
             "agentic_core.L0_routing.scripts._ssot_validation_artifacts"
@@ -928,7 +936,7 @@ class TestSLBridgeValues:
 
 class TestNoTtyRaisesHitlRequired:
     def test_no_tty_raises_for_protected_path(self, tmp_path):
-        from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate, HitlRequest, HitlRequiredError
+#  # MOVED: from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate, HitlRequest, HitlRequiredError
 
         gate = HitlGate(tmp_path)  # no _tty_override
         with patch("sys.stdin") as mock_stdin:
@@ -944,7 +952,7 @@ class TestNoTtyRaisesHitlRequired:
                 )
 
     def test_no_tty_raises_for_non_protected_path(self, tmp_path):
-        from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate, HitlRequest, HitlRequiredError
+#  # MOVED: from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate, HitlRequest, HitlRequiredError
 
         gate = HitlGate(tmp_path)
         with patch("sys.stdin") as mock_stdin:

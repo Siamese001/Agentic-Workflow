@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.utils.decorators_shim_util as _mod  # noqa: F401
+#  # MOVED: import agentic_core.utils.decorators_shim_util as _mod  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.utils.decorators_shim_util as _mod  # noqa: F401
     """Module decorators_shim_util must be importable."""
     assert _mod is not None

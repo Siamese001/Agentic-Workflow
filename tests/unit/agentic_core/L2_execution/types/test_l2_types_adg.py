@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -83,7 +83,7 @@ pytestmark = pytest.mark.unit
 # ---------------------------------------------------------------------------
 # l2_phase_spec
 # ---------------------------------------------------------------------------
-from agentic_core.L2_execution.types.l2_phase_spec import (
+#  # MOVED: from agentic_core.L2_execution.types.l2_phase_spec import (
     LEGACY_MIRROR_PLAN,
     L2ExecutionPlan,
     PhaseSpec,
@@ -92,6 +92,9 @@ from agentic_core.L2_execution.types.l2_phase_spec import (
 
 class TestPhaseSpec:
     def test_creates_with_name_only(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.l2_phase_spec import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test creates_with_name_only runtime behavior."""
     # Arrange
     # TODO: Set up test data for creates_with_name_only
@@ -210,7 +213,7 @@ assert isinstance(result, object), "Result should be an object"
     ReadFileArgs,
     WriteFileArgs,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,

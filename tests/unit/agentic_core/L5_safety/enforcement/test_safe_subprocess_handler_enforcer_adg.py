@@ -9,7 +9,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -82,13 +82,13 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.enforcement.process_guardrail import SecurityViolation
-from agentic_core.L5_safety.enforcement.safe_subprocess_handler_enforcer import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.process_guardrail import SecurityViolation
+#  # MOVED: from agentic_core.L5_safety.enforcement.safe_subprocess_handler_enforcer import (
     safe_communicate,
     safe_popen,
     safe_run,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -185,6 +185,10 @@ def _make_completed(returncode: int = 0, stdout: str = "", stderr: str = "") -> 
 
 class TestSafeRunImport:
     def test_callable(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.enforcement.process_guardrail import SecurityViolation
+        from agentic_core.L5_safety.enforcement.safe_subprocess_handler_enforcer import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test callable runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

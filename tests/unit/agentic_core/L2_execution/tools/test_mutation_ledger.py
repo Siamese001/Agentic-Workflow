@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -61,7 +61,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_mutation_ledger", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_mutation_ledger", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_mutation_ledger", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -186,6 +186,17 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 def test_mutation_ledger_records_write_text_success(tmp_path):
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
+    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
+    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
+    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
+    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
+    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
+    from agentic_core.L2_execution.tools.write_gateway import write_text
+    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_bytes
+    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
     """
     PASS: write_text appends JSONL entry with before/after hashes.
     FAIL: No ledger entry or missing required fields.
@@ -193,7 +204,7 @@ def test_mutation_ledger_records_write_text_success(tmp_path):
     Per .windsurfrules §1.1: Changed logic (ledger append) MUST have tests.
     Per .windsurfrules §1.8: Side-effect safety - verify ledger write occurred.
     """
-    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
+#  # MOVED: from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
 
     ledger_path = tmp_path / "mutation_ledger.jsonl"
     trace_id = "TEST-TRACE-001"
@@ -228,7 +239,7 @@ def test_mutation_ledger_records_before_after_hash_on_update(tmp_path):
     Per .windsurfrules §1.7: Deterministic decision surfaces - distinct input must not collapse.
     Per .windsurfrules §1.11: Mutation-sensitive tests - hash must change when content changes.
     """
-    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
+#  # MOVED: from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
 
     ledger_path = tmp_path / "mutation_ledger.jsonl"
     set_mutation_ledger_path(ledger_path, "TEST-TRACE-002")
@@ -262,7 +273,7 @@ def test_mutation_ledger_detects_no_op_write(tmp_path):
     Per hostile audit Section D14: No-op patch detection.
     Per .windsurfrules §1.7: Identical input → identical output.
     """
-    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
+#  # MOVED: from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
 
     ledger_path = tmp_path / "mutation_ledger.jsonl"
     set_mutation_ledger_path(ledger_path, "TEST-TRACE-003")
@@ -294,7 +305,7 @@ def test_mutation_ledger_records_write_failure(tmp_path):
     Per .windsurfrules §1.8: Fail-closed - failures must be recorded.
     Per hostile audit Section B4: failed writes must appear in ledger.
     """
-    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
+#  # MOVED: from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
 
     ledger_path = tmp_path / "mutation_ledger.jsonl"
     set_mutation_ledger_path(ledger_path, "TEST-TRACE-004")
@@ -342,7 +353,7 @@ def test_mutation_ledger_sequence_numbers_monotonic(tmp_path):
     Per hostile audit Section C3: sequence_number must be monotonically increasing per-run.
     Per .windsurfrules §1.7: Deterministic decision surfaces.
     """
-    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
+#  # MOVED: from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
 
     ledger_path = tmp_path / "mutation_ledger.jsonl"
     set_mutation_ledger_path(ledger_path, "TEST-TRACE-005")
@@ -368,7 +379,7 @@ def test_mutation_ledger_trace_id_correlation(tmp_path):
     Per hostile audit Section B1: trace_id must appear in every artifact.
     Per hostile audit Section F6: trace_id correlation test.
     """
-    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
+#  # MOVED: from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
 
     ledger_path = tmp_path / "mutation_ledger.jsonl"
     trace_id = "TEST-TRACE-CORRELATION"
@@ -393,7 +404,7 @@ def test_mutation_ledger_disabled_when_not_configured(tmp_path):
     Per .windsurfrules §1.5: Edge cases - missing configuration.
     Per hostile audit Section A9: execution_mode marker required.
     """
-    from agentic_core.L2_execution.tools.write_gateway import write_text
+#  # MOVED: from agentic_core.L2_execution.tools.write_gateway import write_text
 
     # Do NOT call set_mutation_ledger_path
     target = tmp_path / "test.txt"
@@ -415,7 +426,7 @@ def test_mutation_ledger_write_bytes_records_entry(tmp_path):
 
     Per .windsurfrules §1.1: All changed logic MUST have tests.
     """
-    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_bytes
+#  # MOVED: from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_bytes
 
     ledger_path = tmp_path / "mutation_ledger.jsonl"
     set_mutation_ledger_path(ledger_path, "TEST-TRACE-BYTES")
@@ -443,7 +454,7 @@ def test_mutation_ledger_ascii_only_output(tmp_path):
     Per .windsurfrules §2.2: Evidence must be ASCII-only.
     Per hostile audit Section C3: ensure_ascii=True required.
     """
-    from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
+#  # MOVED: from agentic_core.L2_execution.tools.write_gateway import set_mutation_ledger_path, write_text
 
     ledger_path = tmp_path / "mutation_ledger.jsonl"
     set_mutation_ledger_path(ledger_path, "TEST-TRACE-UNICODE")

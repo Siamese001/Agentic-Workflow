@@ -51,7 +51,7 @@ from typing import Any
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -113,7 +113,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_adg_g7_g16_creative_extensions", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_adg_g7_g16_creative_extensions", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_adg_g7_g16_creative_extensions", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -224,7 +224,7 @@ _ALL_G7_G16_VISITORS = [
 
 
 def _import_visitor(name: str):
-    from agentic_core.adg.extraction import static_scanner
+#  # MOVED: from agentic_core.adg.extraction import static_scanner
 
     return getattr(static_scanner, name)
 
@@ -357,8 +357,86 @@ class TestD1DeadRelationAudit:
         return {e.relation_type for e in _scan_src(_FULL_DETECTION_CORPUS)}
 
     def test_known_dead_relations_are_in_schema(self) -> None:
-        """Every catalogued dead relation must exist in RelationType (it's a real schema value)."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.extraction import static_scanner
         from agentic_core.adg.schema_util import RelationType
+        from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
+        from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
+        from agentic_core.adg.extraction.static_scanner import _sym_of
+        from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
+        from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
+        import agentic_core.adg.schema_util as sch
+        import agentic_core.adg.schema_util as sch
+        from agentic_core.adg.runtime.sandbox_airlock import SandboxAirlockRecorder
+        from agentic_core.adg.runtime.sandbox_airlock import WorkContract
+        from agentic_core.adg.runtime.sandbox_airlock import CapabilityToken
+        from agentic_core.adg.runtime.sandbox_airlock import SandboxEnvelope
+        from agentic_core.adg.runtime.capability_budget import ResourceGrant
+        from agentic_core.adg.runtime.capability_budget import ResourceGovernor, ToolBudget
+        from agentic_core.adg.runtime.jit_context import JITContextSynchronizer
+        from agentic_core.adg.runtime.jit_context import ContextSnapshot
+        from agentic_core.adg.runtime.boundary_verifier import BoundaryPacket
+        from agentic_core.adg.runtime.boundary_verifier import L2BoundaryVerifier
+        from agentic_core.adg.runtime.determinism_control import DeterminismController
+        from agentic_core.adg.runtime.determinism_control import DeterminismController
+        from agentic_core.adg.runtime.io_interception import NetworkTranscript
+        from agentic_core.adg.runtime.io_interception import IOInterceptor
+        from agentic_core.adg.runtime.mutation_transport import MutationTransport
+        from agentic_core.adg.runtime.mutation_transport import MutationTransport
+        from agentic_core.adg.runtime.execution_proof import ExecutionTrace
+        from agentic_core.adg.runtime.execution_proof import ExecutionProofRecorder
+        from agentic_core.adg.runtime.path_control import ExecutionPath, ExecutionPathController
+        from agentic_core.adg.runtime.eval_spine import EvalMetricResult
+        from agentic_core.adg.runtime.eval_spine import DriftAlert
+        from agentic_core.adg.runtime.eval_spine import EvalSpine
+        from agentic_core.adg.runtime.sandbox_airlock import AirlockPhase
+        from agentic_core.adg.runtime.capability_budget import BudgetStatus
+        from agentic_core.adg.runtime.boundary_verifier import VerificationOutcome
+        from agentic_core.adg.runtime.eval_spine import OptimizationStage
+        from agentic_core.adg.schema_util import (
+        from agentic_core.adg.schema_util import (
+        from agentic_core.adg.runtime.sandbox_airlock import SandboxAirlockRecorder
+        from agentic_core.adg.runtime.capability_budget import ResourceGovernor, ToolBudget
+        from agentic_core.adg.runtime.jit_context import JITContextSynchronizer
+        from agentic_core.adg.runtime.io_interception import IOInterceptor
+        from agentic_core.adg.runtime.eval_spine import EvalSpine
+        from agentic_core.adg.runtime.path_control import ExecutionPathController
+        from agentic_core.adg.runtime.determinism_control import (
+        from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
+        from agentic_core.adg.extraction.static_scanner import _EvalSpineVisitor
+        from agentic_core.adg.extraction.static_scanner import _DeterminismControlVisitor
+        from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
+        from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
+        from agentic_core.adg.runtime.mutation_transport import MutationTransport
+        from agentic_core.adg.runtime.mutation_transport import MutationTransport
+        from agentic_core.adg.runtime.mutation_transport import CommitPhase, MutationTransport
+        from agentic_core.adg.runtime.mutation_transport import CommitPhase, MutationTransport
+        from agentic_core.adg.runtime.mutation_transport import CommitPhase, MutationTransport
+        from agentic_core.adg.runtime.mutation_transport import MutationTransport
+        from agentic_core.adg.runtime.mutation_transport import MutationTransport
+        from agentic_core.adg.runtime.eval_spine import EvalSpine
+        from agentic_core.adg.runtime.eval_spine import EvalSpine
+        from agentic_core.adg.runtime.eval_spine import EvalSpine
+        from agentic_core.adg.runtime.eval_spine import EvalSpine
+        from agentic_core.adg.runtime.eval_spine import EvalSpine
+        from agentic_core.adg.schema_util import RelationType
+        from agentic_core.adg.schema_util import EdgeKind
+        from agentic_core.adg.schema_util import RelationType
+        from agentic_core.adg.schema_util import EdgeKind
+        from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
+        from agentic_core.adg.extraction.static_scanner import _EvalSpineVisitor
+        from agentic_core.adg.extraction.static_scanner import _DeterminismControlVisitor
+        from agentic_core.adg.extraction.static_scanner import _IOInterceptionVisitor
+        from agentic_core.adg.extraction.static_scanner import _PathControlVisitor
+        from agentic_core.adg.extraction.static_scanner import _MutationTransportVisitor
+        from agentic_core.adg.extraction.static_scanner import _JITContextVisitor
+        from agentic_core.adg.extraction.static_scanner import _BoundaryVerifierVisitor
+        from agentic_core.adg.extraction.static_scanner import _ExecutionProofVisitor
+        from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
+        import agentic_core.adg.schema_util as sch
+        """Every catalogued dead relation must exist in RelationType (it's a real schema value)."""
+#  # MOVED: from agentic_core.adg.schema_util import RelationType
 
         schema_rels = set(typing.get_args(RelationType))
         missing = _KNOWN_DEAD_RELATIONS - schema_rels
@@ -435,7 +513,7 @@ class TestD3VisitorStatesfulness:
 
     def test_new_instance_does_not_inherit_edges_from_prior(self) -> None:
         """Two independent instances of the same visitor class are truly independent."""
-        from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
 
         src = "SandboxEnvelope()"
         tree = ast.parse(src)
@@ -454,7 +532,7 @@ class TestD3VisitorStatesfulness:
 
     def test_reusing_same_instance_accumulates_edges(self) -> None:
         """Calling .visit() on the same instance twice accumulates edges."""
-        from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
 
         src = "SandboxEnvelope()"
         tree = ast.parse(src)
@@ -502,7 +580,7 @@ class TestD4SymOfAccuracy:
     """D4: _sym_of handles deep chains, subscripts, lambdas, constants without crashing."""
 
     def _sym_of(self):
-        from agentic_core.adg.extraction.static_scanner import _sym_of
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _sym_of
 
         return _sym_of
 
@@ -549,7 +627,7 @@ class TestD4SymOfAccuracy:
 
     def test_tail_extraction_is_correct_for_deep_chain(self) -> None:
         """tail = sym.split('.')[-1] is the actual class/method name for deep chains."""
-        from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
 
         edges = _edges_for("module.sub.SandboxEnvelope()", _SandboxAirlockVisitor)
         assert len(edges) == 1
@@ -558,7 +636,7 @@ class TestD4SymOfAccuracy:
 
     def test_base_extraction_catches_instance_class(self) -> None:
         """base = sym.split('.')[0] catches patterns like SandboxEnvelope.method()."""
-        from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
 
         edges = _edges_for("SandboxEnvelope.from_contract(c)", _SandboxAirlockVisitor)
         assert len(edges) == 1
@@ -600,7 +678,7 @@ class TestD5SchemaAllCoverage:
     ]
 
     def test_all_g7_g16_constants_in_schema_all(self) -> None:
-        import agentic_core.adg.schema_util as sch
+#  # MOVED: import agentic_core.adg.schema_util as sch
 
         if not hasattr(sch, "__all__"):
 
@@ -609,7 +687,7 @@ class TestD5SchemaAllCoverage:
 
     def test_all_constants_resolvable_after_star_import(self) -> None:
         """Every constant can be resolved via getattr(schema_module, name)."""
-        import agentic_core.adg.schema_util as sch
+#  # MOVED: import agentic_core.adg.schema_util as sch
 
         for name in self._G7_G16_CONSTANT_NAMES:
             obj = getattr(sch, name, None)
@@ -636,7 +714,7 @@ class TestD6JSONSerializability:
         return json.loads(json.dumps(d))
 
     def test_airlock_session_to_dict(self) -> None:
-        from agentic_core.adg.runtime.sandbox_airlock import SandboxAirlockRecorder
+#  # MOVED: from agentic_core.adg.runtime.sandbox_airlock import SandboxAirlockRecorder
 
         rec = SandboxAirlockRecorder("a", "r")
         c = rec.stamp_contract()
@@ -648,7 +726,7 @@ class TestD6JSONSerializability:
         assert rt["envelope_count"] == d["envelope_count"]
 
     def test_work_contract_to_dict(self) -> None:
-        from agentic_core.adg.runtime.sandbox_airlock import WorkContract
+#  # MOVED: from agentic_core.adg.runtime.sandbox_airlock import WorkContract
 
         c = WorkContract(agent_id="a", run_id="r")
         d = c.to_dict()
@@ -656,7 +734,7 @@ class TestD6JSONSerializability:
         assert rt["agent_id"] == "a"
 
     def test_capability_token_to_dict(self) -> None:
-        from agentic_core.adg.runtime.sandbox_airlock import CapabilityToken
+#  # MOVED: from agentic_core.adg.runtime.sandbox_airlock import CapabilityToken
 
         t = CapabilityToken(contract_id="c", agent_id="a", scope="read")
         d = t.to_dict()
@@ -664,7 +742,7 @@ class TestD6JSONSerializability:
         assert rt["agent_id"] == "a"
 
     def test_sandbox_envelope_to_dict(self) -> None:
-        from agentic_core.adg.runtime.sandbox_airlock import SandboxEnvelope
+#  # MOVED: from agentic_core.adg.runtime.sandbox_airlock import SandboxEnvelope
 
         e = SandboxEnvelope()
         d = e.to_dict()
@@ -672,7 +750,7 @@ class TestD6JSONSerializability:
         assert rt["phase"] == e.phase.value
 
     def test_resource_grant_to_dict(self) -> None:
-        from agentic_core.adg.runtime.capability_budget import ResourceGrant
+#  # MOVED: from agentic_core.adg.runtime.capability_budget import ResourceGrant
 
         g = ResourceGrant("tool_calls", 100.0)
         d = g.to_dict()
@@ -680,7 +758,7 @@ class TestD6JSONSerializability:
         assert rt["limit"] == 100.0
 
     def test_budget_governor_report_to_dict(self) -> None:
-        from agentic_core.adg.runtime.capability_budget import ResourceGovernor, ToolBudget
+#  # MOVED: from agentic_core.adg.runtime.capability_budget import ResourceGovernor, ToolBudget
 
         gov = ResourceGovernor("a", "r")
         gov.activate_budget(ToolBudget.default())
@@ -690,7 +768,7 @@ class TestD6JSONSerializability:
         assert "exceeded_count" in rt
 
     def test_jit_context_session_to_dict(self) -> None:
-        from agentic_core.adg.runtime.jit_context import JITContextSynchronizer
+#  # MOVED: from agentic_core.adg.runtime.jit_context import JITContextSynchronizer
 
         sync = JITContextSynchronizer("a", "r")
         sync.sync_context()
@@ -699,7 +777,7 @@ class TestD6JSONSerializability:
         assert rt["snapshot_count"] == 1
 
     def test_context_snapshot_to_dict(self) -> None:
-        from agentic_core.adg.runtime.jit_context import ContextSnapshot
+#  # MOVED: from agentic_core.adg.runtime.jit_context import ContextSnapshot
 
         s = ContextSnapshot(run_id="r", agent_id="a")
         d = s.to_dict()
@@ -707,7 +785,7 @@ class TestD6JSONSerializability:
         assert rt["agent_id"] == "a"
 
     def test_boundary_packet_to_dict(self) -> None:
-        from agentic_core.adg.runtime.boundary_verifier import BoundaryPacket
+#  # MOVED: from agentic_core.adg.runtime.boundary_verifier import BoundaryPacket
 
         p = BoundaryPacket(envelope_id="e", token_id="t", l5_cert_hash="c")
         d = p.to_dict()
@@ -715,7 +793,7 @@ class TestD6JSONSerializability:
         assert rt["envelope_id"] == "e"
 
     def test_boundary_verifier_report_to_dict(self) -> None:
-        from agentic_core.adg.runtime.boundary_verifier import L2BoundaryVerifier
+#  # MOVED: from agentic_core.adg.runtime.boundary_verifier import L2BoundaryVerifier
 
         v = L2BoundaryVerifier("a", "r")
         v.certify_envelope("e", "t", "c")
@@ -724,7 +802,7 @@ class TestD6JSONSerializability:
         assert "accepted_count" in rt
 
     def test_determinism_digest_to_dict(self) -> None:
-        from agentic_core.adg.runtime.determinism_control import DeterminismController
+#  # MOVED: from agentic_core.adg.runtime.determinism_control import DeterminismController
 
         ctrl = DeterminismController("a", "r")
         ctrl.seed_rng(42)
@@ -734,7 +812,7 @@ class TestD6JSONSerializability:
         assert rt["rng_seed"] == 42
 
     def test_determinism_control_report_to_dict(self) -> None:
-        from agentic_core.adg.runtime.determinism_control import DeterminismController
+#  # MOVED: from agentic_core.adg.runtime.determinism_control import DeterminismController
 
         ctrl = DeterminismController("a", "r")
         ctrl.seed_rng(1)
@@ -743,7 +821,7 @@ class TestD6JSONSerializability:
         assert "violation_count" in rt
 
     def test_network_transcript_to_dict(self) -> None:
-        from agentic_core.adg.runtime.io_interception import NetworkTranscript
+#  # MOVED: from agentic_core.adg.runtime.io_interception import NetworkTranscript
 
         t = NetworkTranscript()
         t.capture("https://a.com", "GET", "req", "resp", 200)
@@ -752,7 +830,7 @@ class TestD6JSONSerializability:
         assert rt["url"] == "https://a.com"
 
     def test_io_interception_report_to_dict(self) -> None:
-        from agentic_core.adg.runtime.io_interception import IOInterceptor
+#  # MOVED: from agentic_core.adg.runtime.io_interception import IOInterceptor
 
         ic = IOInterceptor("a", "r")
         ic.intercept_io("https://a.com")
@@ -761,7 +839,7 @@ class TestD6JSONSerializability:
         assert "total_events" in rt
 
     def test_mutation_packet_to_dict(self) -> None:
-        from agentic_core.adg.runtime.mutation_transport import MutationTransport
+#  # MOVED: from agentic_core.adg.runtime.mutation_transport import MutationTransport
 
         mt = MutationTransport("a", "r")
         p = mt.package_diff([{"op": "add", "path": "/x", "value": 1}])
@@ -770,7 +848,7 @@ class TestD6JSONSerializability:
         assert "diff_hash" in rt
 
     def test_mutation_transport_report_to_dict(self) -> None:
-        from agentic_core.adg.runtime.mutation_transport import MutationTransport
+#  # MOVED: from agentic_core.adg.runtime.mutation_transport import MutationTransport
 
         mt = MutationTransport("a", "r")
         d = mt.report.to_dict()
@@ -778,7 +856,7 @@ class TestD6JSONSerializability:
         assert "committed_count" in rt
 
     def test_execution_trace_to_dict(self) -> None:
-        from agentic_core.adg.runtime.execution_proof import ExecutionTrace
+#  # MOVED: from agentic_core.adg.runtime.execution_proof import ExecutionTrace
 
         t = ExecutionTrace(run_id="r", agent_id="a")
         t.record_event("e1")
@@ -788,7 +866,7 @@ class TestD6JSONSerializability:
         assert rt["agent_id"] == "a"
 
     def test_execution_proof_report_to_dict(self) -> None:
-        from agentic_core.adg.runtime.execution_proof import ExecutionProofRecorder
+#  # MOVED: from agentic_core.adg.runtime.execution_proof import ExecutionProofRecorder
 
         rec = ExecutionProofRecorder("a", "r")
         rec.start_trace()
@@ -797,7 +875,7 @@ class TestD6JSONSerializability:
         assert "trace_count" in rt
 
     def test_path_transition_to_dict(self) -> None:
-        from agentic_core.adg.runtime.path_control import ExecutionPath, ExecutionPathController
+#  # MOVED: from agentic_core.adg.runtime.path_control import ExecutionPath, ExecutionPathController
 
         ctrl = ExecutionPathController("a", "r")
         ctrl.route_path(ExecutionPath.PATH_B)
@@ -806,7 +884,7 @@ class TestD6JSONSerializability:
         assert "total_transitions" in rt
 
     def test_eval_metric_result_to_dict(self) -> None:
-        from agentic_core.adg.runtime.eval_spine import EvalMetricResult
+#  # MOVED: from agentic_core.adg.runtime.eval_spine import EvalMetricResult
 
         m = EvalMetricResult(metric_name="groundedness", value=0.9, run_id="r", agent_id="a")
         d = m.to_dict()
@@ -814,7 +892,7 @@ class TestD6JSONSerializability:
         assert rt["value"] == pytest.approx(0.9)
 
     def test_drift_alert_to_dict(self) -> None:
-        from agentic_core.adg.runtime.eval_spine import DriftAlert
+#  # MOVED: from agentic_core.adg.runtime.eval_spine import DriftAlert
 
         a = DriftAlert(
             metric_name="G", current_value=0.1, baseline_value=0.9, drift_magnitude=0.8, threshold=0.05
@@ -825,7 +903,7 @@ class TestD6JSONSerializability:
         assert rt["is_critical"] is True
 
     def test_eval_spine_report_to_dict(self) -> None:
-        from agentic_core.adg.runtime.eval_spine import EvalSpine
+#  # MOVED: from agentic_core.adg.runtime.eval_spine import EvalSpine
 
         spine = EvalSpine("a", "r")
         spine.score_groundedness(0.8)
@@ -873,7 +951,7 @@ class TestD7EnumValueFormat:
         assert not violations, f"Enum values not lowercase snake_case: {violations}"
 
     def test_airlock_phase_values_lowercase(self) -> None:
-        from agentic_core.adg.runtime.sandbox_airlock import AirlockPhase
+#  # MOVED: from agentic_core.adg.runtime.sandbox_airlock import AirlockPhase
 
         for member in AirlockPhase:
             assert member.value == member.value.lower(), (
@@ -881,19 +959,19 @@ class TestD7EnumValueFormat:
             )
 
     def test_budget_status_values_lowercase(self) -> None:
-        from agentic_core.adg.runtime.capability_budget import BudgetStatus
+#  # MOVED: from agentic_core.adg.runtime.capability_budget import BudgetStatus
 
         for member in BudgetStatus:
             assert member.value == member.value.lower()
 
     def test_verification_outcome_values_lowercase(self) -> None:
-        from agentic_core.adg.runtime.boundary_verifier import VerificationOutcome
+#  # MOVED: from agentic_core.adg.runtime.boundary_verifier import VerificationOutcome
 
         for member in VerificationOutcome:
             assert member.value == member.value.lower()
 
     def test_optimization_stage_values_lowercase(self) -> None:
-        from agentic_core.adg.runtime.eval_spine import OptimizationStage
+#  # MOVED: from agentic_core.adg.runtime.eval_spine import OptimizationStage
 
         for member in OptimizationStage:
             assert member.value == member.value.lower()
@@ -913,7 +991,7 @@ class TestD8CrossConstantNonOverlap:
     def _get_constants(cls) -> list[tuple[str, frozenset]]:
         if cls._CONST_NAMES_AND_VALUES:
             return cls._CONST_NAMES_AND_VALUES
-        from agentic_core.adg.schema_util import (
+#  # MOVED: from agentic_core.adg.schema_util import (
             BOUNDARY_VERIFIER_CLASSES,
             BUDGET_EXCEEDED_EXCEPTIONS,
             CAPABILITY_CHOKEPOINT_CLASSES,
@@ -985,7 +1063,7 @@ class TestD8CrossConstantNonOverlap:
 
     def test_class_names_and_method_names_do_not_overlap(self) -> None:
         """CamelCase class names never appear in method-name frozensets and vice versa."""
-        from agentic_core.adg.schema_util import (
+#  # MOVED: from agentic_core.adg.schema_util import (
             BOUNDARY_VERIFIER_CLASSES,
             BUDGET_EXCEEDED_EXCEPTIONS,
             CAPABILITY_CHOKEPOINT_CLASSES,
@@ -1051,7 +1129,7 @@ class TestD9ReportIsolation:
     """D9: Two independently created recorders share no mutable state."""
 
     def test_sandbox_recorders_are_isolated(self) -> None:
-        from agentic_core.adg.runtime.sandbox_airlock import SandboxAirlockRecorder
+#  # MOVED: from agentic_core.adg.runtime.sandbox_airlock import SandboxAirlockRecorder
 
         r1 = SandboxAirlockRecorder("a", "r1")
         r2 = SandboxAirlockRecorder("a", "r2")
@@ -1061,7 +1139,7 @@ class TestD9ReportIsolation:
         assert r2.session_summary["envelope_count"] == 0, "r2 must be unaffected by r1's state mutations"
 
     def test_resource_governors_are_isolated(self) -> None:
-        from agentic_core.adg.runtime.capability_budget import ResourceGovernor, ToolBudget
+#  # MOVED: from agentic_core.adg.runtime.capability_budget import ResourceGovernor, ToolBudget
 
         g1 = ResourceGovernor("a", "r1")
         g2 = ResourceGovernor("a", "r2")
@@ -1071,7 +1149,7 @@ class TestD9ReportIsolation:
         assert not hasattr(g2, "_active_budget") or g2._active_budget is None  # type: ignore[attr-defined]
 
     def test_jit_synchronisers_are_isolated(self) -> None:
-        from agentic_core.adg.runtime.jit_context import JITContextSynchronizer
+#  # MOVED: from agentic_core.adg.runtime.jit_context import JITContextSynchronizer
 
         s1 = JITContextSynchronizer("a", "r1")
         s2 = JITContextSynchronizer("a", "r2")
@@ -1080,7 +1158,7 @@ class TestD9ReportIsolation:
         assert s2.session_summary["snapshot_count"] == 0
 
     def test_io_interceptors_are_isolated(self) -> None:
-        from agentic_core.adg.runtime.io_interception import IOInterceptor
+#  # MOVED: from agentic_core.adg.runtime.io_interception import IOInterceptor
 
         ic1 = IOInterceptor("a", "r1")
         ic2 = IOInterceptor("a", "r2")
@@ -1089,7 +1167,7 @@ class TestD9ReportIsolation:
         assert ic2.report.total_events == 0
 
     def test_eval_spines_are_isolated(self) -> None:
-        from agentic_core.adg.runtime.eval_spine import EvalSpine
+#  # MOVED: from agentic_core.adg.runtime.eval_spine import EvalSpine
 
         sp1 = EvalSpine("a", "r1")
         sp2 = EvalSpine("a", "r2")
@@ -1097,7 +1175,7 @@ class TestD9ReportIsolation:
         assert len(sp2.report.metrics) == 0
 
     def test_path_controllers_are_isolated(self) -> None:
-        from agentic_core.adg.runtime.path_control import ExecutionPathController
+#  # MOVED: from agentic_core.adg.runtime.path_control import ExecutionPathController
 
         c1 = ExecutionPathController("a", "r1")
         c2 = ExecutionPathController("a", "r2")
@@ -1107,7 +1185,7 @@ class TestD9ReportIsolation:
         assert c2.report.stall_count == 0
 
     def test_determinism_controllers_are_isolated(self) -> None:
-        from agentic_core.adg.runtime.determinism_control import (
+#  # MOVED: from agentic_core.adg.runtime.determinism_control import (
             DeterminismController,
             DeterminismViolationType,
         )
@@ -1129,7 +1207,7 @@ class TestD10LineNumberTracking:
     """D10: Visitor line_no reflects the actual call line, not line 1."""
 
     def test_call_on_line_5_inside_function(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
 
         src = textwrap.dedent("""\
             def setup():
@@ -1143,7 +1221,7 @@ class TestD10LineNumberTracking:
         assert edges[0].line_no == 5, f"Expected line 5, got {edges[0].line_no}"
 
     def test_call_on_line_3_inside_class_method(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import _EvalSpineVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _EvalSpineVisitor
 
         src = textwrap.dedent("""\
             class Runner:
@@ -1156,7 +1234,7 @@ class TestD10LineNumberTracking:
         )
 
     def test_multiple_calls_at_different_lines(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import _DeterminismControlVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _DeterminismControlVisitor
 
         src = textwrap.dedent("""\
             pass
@@ -1172,7 +1250,7 @@ class TestD10LineNumberTracking:
 
     def test_nested_call_in_comprehension_detected(self) -> None:
         """Calls inside list comprehensions are detected (generic_visit propagates)."""
-        from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
 
         src = "[SandboxEnvelope() for _ in range(3)]"
         edges = _edges_for(src, _SandboxAirlockVisitor)
@@ -1314,7 +1392,7 @@ class TestD14ToNameCanonicalFormat:
 
     def test_to_name_contains_detected_symbol(self) -> None:
         """to_name must encode the detected symbol name in the canonical path."""
-        from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
 
         edges = _edges_for("SandboxEnvelope()", _SandboxAirlockVisitor)
         assert any("SandboxEnvelope" in e.to_name for e in edges)
@@ -1335,7 +1413,7 @@ class TestD15BlastRadiusBoundary:
     """D15: MutationTransport uses 0.8 as exact commit/abort threshold."""
 
     def test_blast_radius_exactly_zero_allows_commit(self) -> None:
-        from agentic_core.adg.runtime.mutation_transport import MutationTransport
+#  # MOVED: from agentic_core.adg.runtime.mutation_transport import MutationTransport
 
         mt = MutationTransport("a", "r")
         p = mt.package_diff([])
@@ -1344,7 +1422,7 @@ class TestD15BlastRadiusBoundary:
         assert mt.commit_mutation(p) is True
 
     def test_blast_radius_clearly_below_threshold_allows_commit(self) -> None:
-        from agentic_core.adg.runtime.mutation_transport import MutationTransport
+#  # MOVED: from agentic_core.adg.runtime.mutation_transport import MutationTransport
 
         mt = MutationTransport("a", "r")
         p = mt.package_diff([])
@@ -1354,7 +1432,7 @@ class TestD15BlastRadiusBoundary:
 
     def test_blast_radius_at_threshold_commits(self) -> None:
         """At exactly 0.8 the threshold is strict (> 0.8 aborts), so 0.8 still commits."""
-        from agentic_core.adg.runtime.mutation_transport import CommitPhase, MutationTransport
+#  # MOVED: from agentic_core.adg.runtime.mutation_transport import CommitPhase, MutationTransport
 
         mt = MutationTransport("a", "r")
         p = mt.package_diff([])
@@ -1365,7 +1443,7 @@ class TestD15BlastRadiusBoundary:
 
     def test_blast_radius_just_above_threshold_aborts(self) -> None:
         """At 0.801 (> 0.8 strict threshold), commit must be aborted."""
-        from agentic_core.adg.runtime.mutation_transport import CommitPhase, MutationTransport
+#  # MOVED: from agentic_core.adg.runtime.mutation_transport import CommitPhase, MutationTransport
 
         mt = MutationTransport("a", "r")
         p = mt.package_diff([])
@@ -1376,7 +1454,7 @@ class TestD15BlastRadiusBoundary:
         assert p.abort_reason == "blast_radius_exceeded"
 
     def test_blast_radius_above_threshold_aborts(self) -> None:
-        from agentic_core.adg.runtime.mutation_transport import CommitPhase, MutationTransport
+#  # MOVED: from agentic_core.adg.runtime.mutation_transport import CommitPhase, MutationTransport
 
         mt = MutationTransport("a", "r")
         p = mt.package_diff([])
@@ -1386,7 +1464,7 @@ class TestD15BlastRadiusBoundary:
         assert p.phase == CommitPhase.ABORTED
 
     def test_blast_radius_stored_on_packet(self) -> None:
-        from agentic_core.adg.runtime.mutation_transport import MutationTransport
+#  # MOVED: from agentic_core.adg.runtime.mutation_transport import MutationTransport
 
         mt = MutationTransport("a", "r")
         p = mt.package_diff([])
@@ -1394,7 +1472,7 @@ class TestD15BlastRadiusBoundary:
         assert p.blast_radius_score == pytest.approx(0.35)
 
     def test_multiple_packets_have_independent_blast_radii(self) -> None:
-        from agentic_core.adg.runtime.mutation_transport import MutationTransport
+#  # MOVED: from agentic_core.adg.runtime.mutation_transport import MutationTransport
 
         mt = MutationTransport("a", "r")
         p1 = mt.package_diff([])
@@ -1415,14 +1493,14 @@ class TestD16EvalSpineMissingMetric:
     """D16: EvalSpine.report.average_metric returns 0.0 for unseen metric, not KeyError."""
 
     def test_average_metric_returns_zero_for_unseen_metric(self) -> None:
-        from agentic_core.adg.runtime.eval_spine import EvalSpine
+#  # MOVED: from agentic_core.adg.runtime.eval_spine import EvalSpine
 
         spine = EvalSpine("a", "r")
         result = spine.report.average_metric("nonexistent_metric_xyz")
         assert result == pytest.approx(0.0), f"Expected 0.0 for missing metric, got {result}"
 
     def test_average_metric_after_one_score(self) -> None:
-        from agentic_core.adg.runtime.eval_spine import EvalSpine
+#  # MOVED: from agentic_core.adg.runtime.eval_spine import EvalSpine
 
         spine = EvalSpine("a", "r")
         spine.score_groundedness(0.6)
@@ -1430,7 +1508,7 @@ class TestD16EvalSpineMissingMetric:
         assert avg == pytest.approx(0.6)
 
     def test_average_metric_after_many_scores(self) -> None:
-        from agentic_core.adg.runtime.eval_spine import EvalSpine
+#  # MOVED: from agentic_core.adg.runtime.eval_spine import EvalSpine
 
         spine = EvalSpine("a", "r")
         values = [0.2, 0.4, 0.6, 0.8, 1.0]
@@ -1440,13 +1518,13 @@ class TestD16EvalSpineMissingMetric:
         assert avg == pytest.approx(sum(values) / len(values))
 
     def test_metric_count_zero_for_fresh_spine(self) -> None:
-        from agentic_core.adg.runtime.eval_spine import EvalSpine
+#  # MOVED: from agentic_core.adg.runtime.eval_spine import EvalSpine
 
         spine = EvalSpine("a", "r")
         assert len(spine.report.metrics) == 0
 
     def test_drift_alert_count_correct_after_mixed_alerts(self) -> None:
-        from agentic_core.adg.runtime.eval_spine import EvalSpine
+#  # MOVED: from agentic_core.adg.runtime.eval_spine import EvalSpine
 
         spine = EvalSpine("a", "r")
         spine.emit_drift_alert("G", 0.1, 0.9, threshold=0.05)  # critical
@@ -1530,7 +1608,7 @@ class TestD18SchemaValueFormat:
     def test_all_relation_types_lowercase_snake_case(self) -> None:
         import re
 
-        from agentic_core.adg.schema_util import RelationType
+#  # MOVED: from agentic_core.adg.schema_util import RelationType
 
         snake_re = re.compile(r"^[a-z][a-z0-9_]*$")
         bad = [r for r in typing.get_args(RelationType) if not snake_re.match(r)]
@@ -1539,7 +1617,7 @@ class TestD18SchemaValueFormat:
     def test_all_edge_kinds_lowercase_snake_case(self) -> None:
         import re
 
-        from agentic_core.adg.schema_util import EdgeKind
+#  # MOVED: from agentic_core.adg.schema_util import EdgeKind
 
         snake_re = re.compile(r"^[a-z][a-z0-9_]*$")
         bad = [k for k in typing.get_args(EdgeKind) if not snake_re.match(k)]
@@ -1553,13 +1631,13 @@ class TestD18SchemaValueFormat:
         assert not bad, f"G7-G16 RelationType values not lowercase snake_case: {bad}"
 
     def test_no_camelcase_leaks_into_relation_types(self) -> None:
-        from agentic_core.adg.schema_util import RelationType
+#  # MOVED: from agentic_core.adg.schema_util import RelationType
 
         camel = [r for r in typing.get_args(RelationType) if any(c.isupper() for c in r)]
         assert not camel, f"CamelCase leaked into RelationType: {camel}"
 
     def test_no_camelcase_leaks_into_edge_kinds(self) -> None:
-        from agentic_core.adg.schema_util import EdgeKind
+#  # MOVED: from agentic_core.adg.schema_util import EdgeKind
 
         camel = [k for k in typing.get_args(EdgeKind) if any(c.isupper() for c in k)]
         assert not camel, f"CamelCase leaked into EdgeKind: {camel}"
@@ -1574,7 +1652,7 @@ class TestD19VisitorPropagationDepth:
     """D19: Calls nested in comprehensions, lambdas, classes, decorators are all detected."""
 
     def test_call_inside_list_comprehension(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
 
         src = "envs = [SandboxEnvelope() for _ in range(3)]"
         edges = _edges_for(src, _SandboxAirlockVisitor)
@@ -1582,14 +1660,14 @@ class TestD19VisitorPropagationDepth:
         assert edges[0].relation_type == "enters_sandbox"
 
     def test_call_inside_dict_comprehension(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import _EvalSpineVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _EvalSpineVisitor
 
         src = "m = {i: EvalSpine('a', str(i)) for i in range(2)}"
         edges = _edges_for(src, _EvalSpineVisitor)
         assert len(edges) >= 1
 
     def test_call_inside_generator_expression(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import _DeterminismControlVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _DeterminismControlVisitor
 
         src = "results = list(seed_rng(s) for s in [1, 2, 3])"
         edges = _edges_for(src, _DeterminismControlVisitor)
@@ -1597,7 +1675,7 @@ class TestD19VisitorPropagationDepth:
         assert any(e.relation_type == "seeds_rng" for e in edges)
 
     def test_call_inside_lambda(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import _IOInterceptionVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _IOInterceptionVisitor
 
         src = "fn = lambda u: IOInterceptor('a', 'r')"
         edges = _edges_for(src, _IOInterceptionVisitor)
@@ -1605,7 +1683,7 @@ class TestD19VisitorPropagationDepth:
         assert edges[0].relation_type == "intercepts_io"
 
     def test_call_inside_nested_function(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import _PathControlVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _PathControlVisitor
 
         src = textwrap.dedent("""\
             def outer():
@@ -1617,7 +1695,7 @@ class TestD19VisitorPropagationDepth:
         assert any(e.relation_type == "routes_path" for e in edges)
 
     def test_call_inside_class_body(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import _MutationTransportVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _MutationTransportVisitor
 
         src = textwrap.dedent("""\
             class Deployer:
@@ -1627,7 +1705,7 @@ class TestD19VisitorPropagationDepth:
         assert len(edges) >= 1
 
     def test_call_inside_ternary_expression(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import _JITContextVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _JITContextVisitor
 
         src = "ctx = JITContext() if flag else None"
         edges = _edges_for(src, _JITContextVisitor)
@@ -1635,7 +1713,7 @@ class TestD19VisitorPropagationDepth:
         assert edges[0].relation_type == "pulls_context"
 
     def test_call_inside_assert_statement(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import _BoundaryVerifierVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _BoundaryVerifierVisitor
 
         src = "assert L2BoundaryVerifier('a', 'r') is not None"
         edges = _edges_for(src, _BoundaryVerifierVisitor)
@@ -1643,7 +1721,7 @@ class TestD19VisitorPropagationDepth:
         assert edges[0].relation_type == "verifies_boundary"
 
     def test_call_inside_with_statement(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import _ExecutionProofVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _ExecutionProofVisitor
 
         src = textwrap.dedent("""\
             with open('f') as f:
@@ -1654,7 +1732,7 @@ class TestD19VisitorPropagationDepth:
 
     def test_multiple_nested_levels_all_detected(self) -> None:
         """Calls at three levels of nesting all produce edges."""
-        from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
 
         src = textwrap.dedent("""\
             class Outer:
@@ -1727,7 +1805,7 @@ class TestD20SchemaConstantTotalCount:
         assert len(self._G7_G16_CONSTANT_NAMES) == len(set(self._G7_G16_CONSTANT_NAMES))
 
     def test_all_catalogued_constants_are_importable(self) -> None:
-        import agentic_core.adg.schema_util as sch
+#  # MOVED: import agentic_core.adg.schema_util as sch
 
         for name in self._G7_G16_CONSTANT_NAMES:
             obj = getattr(sch, name, None)

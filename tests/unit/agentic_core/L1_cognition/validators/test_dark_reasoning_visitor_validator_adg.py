@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -76,10 +76,10 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L1_cognition.validators.dark_reasoning_visitor_validator import (
+#  # MOVED: from agentic_core.L1_cognition.validators.dark_reasoning_visitor_validator import (
     check_dark_reasoning,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -172,6 +172,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestCheckDarkReasoning:
     def test_returns_list(self, tmp_path):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L1_cognition.validators.dark_reasoning_visitor_validator import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         dummy = tmp_path / "dummy.py"
         dummy.write_text("x = 1\n")
         result = check_dark_reasoning(dummy)

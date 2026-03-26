@@ -15,29 +15,29 @@ import datetime
 
 import pytest
 
-from agentic_core.L4_state.enforcement.violation_event_store import ViolationEventStore
-from agentic_core.L4_state.engines.fresh_data_validator import (
+#  # MOVED: from agentic_core.L4_state.enforcement.violation_event_store import ViolationEventStore
+#  # MOVED: from agentic_core.L4_state.engines.fresh_data_validator import (
     FreshnessPolicy,
     StaleDataViolation,
     VersionedData,
     validate_freshness,
 )
-from agentic_core.L4_state.engines.ghost_mutation_detector import (
+#  # MOVED: from agentic_core.L4_state.engines.ghost_mutation_detector import (
     GhostMutationViolation,
     _deep_diff,
     detect_ghost_mutations,
 )
-from agentic_core.L4_state.engines.memory_collision_detector import (
+#  # MOVED: from agentic_core.L4_state.engines.memory_collision_detector import (
     LockAcquisitionResult,
     LockPolicy,
     MemoryCollisionDetector,
     MemoryDeadlockViolation,
 )
-from agentic_core.L4_state.types.violation_event_types import (
+#  # MOVED: from agentic_core.L4_state.types.violation_event_types import (
     ViolationEvent,
     emit_violation_event,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -218,6 +218,12 @@ def _fresh_data(content: object = "data", age_seconds: float = 0) -> VersionedDa
 class TestViolationEventConstruction:
     @pytest.mark.governance
     def test_valid_event_constructs_without_error(self):
+        from agentic_core.L4_state.enforcement.violation_event_store import ViolationEventStore
+        from agentic_core.L4_state.engines.fresh_data_validator import (
+        from agentic_core.L4_state.engines.ghost_mutation_detector import (
+        from agentic_core.L4_state.engines.memory_collision_detector import (
+        from agentic_core.L4_state.types.violation_event_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         e = _event()
         assert e.mission_id == "mission-1"
 

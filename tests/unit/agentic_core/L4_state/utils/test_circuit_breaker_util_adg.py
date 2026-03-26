@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -74,12 +74,12 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L4_state.utils.circuit_breaker_util import (
+#  # MOVED: from agentic_core.L4_state.utils.circuit_breaker_util import (
     CircuitBreaker,
     CircuitBreakerOpenError,
     CircuitBreakerState,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -172,6 +172,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestCircuitBreakerState:
     def test_closed_state(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L4_state.utils.circuit_breaker_util import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         assert CircuitBreakerState.CLOSED.value == "CLOSED"
 
     def test_open_state(self):

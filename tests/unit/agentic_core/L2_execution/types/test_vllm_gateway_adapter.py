@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -102,31 +102,31 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L2_execution.types.vllm_backpressure_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_backpressure_types import (
     CIRCUIT_BREAKER_FAILURE_THRESHOLD,
     MAX_QUEUE_DEPTH,
 )
-from agentic_core.L2_execution.types.vllm_gateway_adapter_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_gateway_adapter_types import (
     SEAM_PROOF_MARKER,
     VLLMGatewayAdapter,
     emit_seam_proof,
     reset_singletons,
 )
-from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
     VLLMCircuitBreakerRegistry,
     VLLMQueueController,
 )
-from agentic_core.L2_execution.types.vllm_serving_profile_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_serving_profile_types import (
     LOCAL_FAST_7B_MAX_MODEL_LEN,
 )
-from agentic_core.L2_execution.types.vllm_token_budget_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_token_budget_types import (
     GEMINI_25_PRO_MODEL_ID,
     SAFETY_MARGIN_TOKENS,
     TASK_CLASS_OUTPUT_CAPS,
     TaskClass,
     VLLMFailureType,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -237,6 +237,13 @@ def fresh_adapter() -> VLLMGatewayAdapter:
 
 
 def test_seam_proof_marker_present():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.types.vllm_backpressure_types import (
+    from agentic_core.L2_execution.types.vllm_gateway_adapter_types import (
+    from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
+    from agentic_core.L2_execution.types.vllm_serving_profile_types import (
+    from agentic_core.L2_execution.types.vllm_token_budget_types import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test seam_proof_marker_present runtime behavior."""
 # Arrange
 # TODO: Set up test data for seam_proof_marker_present

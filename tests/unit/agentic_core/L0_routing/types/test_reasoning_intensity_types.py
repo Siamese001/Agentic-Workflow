@@ -19,7 +19,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -102,13 +102,13 @@ PROJECT_ROOT = Path(__file__).resolve().parents[5]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_routing.engines.reasoning_policy_engine import (
+#  # MOVED: from agentic_core.L0_routing.engines.reasoning_policy_engine import (
     ReasoningPolicyEngine,
     RequestStructureFeatures,
     compute_complexity_score,
     select_tier,
 )
-from agentic_core.L0_routing.types.reasoning_intensity_types import (
+#  # MOVED: from agentic_core.L0_routing.types.reasoning_intensity_types import (
     TIER_PARAMETER_TABLE,
     ReasoningIntensityProfile,
     ReasoningTier,
@@ -116,18 +116,18 @@ from agentic_core.L0_routing.types.reasoning_intensity_types import (
     build_envelope_hash,
     build_profile_hash,
 )
-from agentic_core.L0_routing.types.routing_artifact_types import (
+#  # MOVED: from agentic_core.L0_routing.types.routing_artifact_types import (
     RouteDecisionArtifact,
     RoutePath,
     RoutingRationale,
 )
-from agentic_core.L3_orchestration.engines.reasoning_intensity_enforcer import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.reasoning_intensity_enforcer import (
     ReasoningBudgetExceeded,
     ReasoningIntensityEnforcer,
     ReasoningModeViolation,
     StageExecutionMetrics,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -272,6 +272,12 @@ def _make_profile(
 
 @pytest.mark.governance
 def test_all_tiers_have_parameters():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L0_routing.engines.reasoning_policy_engine import (
+    from agentic_core.L0_routing.types.reasoning_intensity_types import (
+    from agentic_core.L0_routing.types.routing_artifact_types import (
+    from agentic_core.L3_orchestration.engines.reasoning_intensity_enforcer import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     for tier in ReasoningTier:
         assert tier in TIER_PARAMETER_TABLE, f"Missing tier: {tier}"
         params = TIER_PARAMETER_TABLE[tier]

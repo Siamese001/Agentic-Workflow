@@ -37,7 +37,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -100,11 +100,11 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_cross_agent_meta_learning_hardening", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_cross_agent_meta_learning_hardening", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_cross_agent_meta_learning_hardening", "exec_snapshot_link")
-from system_learning.config.embedding_storage_layout import EmbeddingStorageLayout
-from system_learning.engines.embedding_retention_scheduler import (
+#  # MOVED: from system_learning.config.embedding_storage_layout import EmbeddingStorageLayout
+#  # MOVED: from system_learning.engines.embedding_retention_scheduler import (
     EmbeddingRetentionScheduler,
 )
-from system_learning.engines.local_faiss_store import (
+#  # MOVED: from system_learning.engines.local_faiss_store import (
     LocalFAISSStore,
 )
 
@@ -112,7 +112,7 @@ from system_learning.engines.local_faiss_store import (
 # REMOVED: _emit_applies_guardrail("p0", "test_cross_agent_meta_learning_hardening", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_cross_agent_meta_learning_hardening", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_cross_agent_meta_learning_hardening", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -259,6 +259,62 @@ class TestEmbeddingRetentionSchedulerPersist:
 
     @pytest.mark.unit_min_deps
     def test_run_once_rolling_window_persists_to_disk(self, tmp_path):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.config.embedding_storage_layout import EmbeddingStorageLayout
+        from system_learning.engines.embedding_retention_scheduler import (
+        from system_learning.engines.local_faiss_store import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.historical_ingestion_orchestrator import (
+        from system_learning.engines.historical_ingestion_orchestrator import (
+        from system_learning.engines.historical_ingestion_orchestrator import (
+        from system_learning.engines.historical_ingestion_orchestrator import (
+        from system_learning.engines.historical_ingestion_orchestrator import (
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
+        from system_learning.engines.local_faiss_store import (
+        from system_learning.engines.local_faiss_store import LocalFAISSStore
+        from system_learning.engines.local_faiss_store import LocalFAISSStore
+        from system_learning.engines.meta_learning_state_digest import (
+        from system_learning.engines.meta_learning_state_digest import (
+        from system_learning.engines.meta_learning_state_digest import (
+        from system_learning.engines.meta_learning_state_digest import (
+        from system_learning.engines.meta_learning_state_digest import (
+        from system_learning.engines.meta_learning_state_digest import (
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
+        from system_learning.engines.meta_learning_state_digest import (
+        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
+        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+        from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
+        from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
+        from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
+        from system_learning.engines.faiss_startup_integrity import (
+        from system_learning.engines.faiss_startup_integrity import (
+        from system_learning.engines.faiss_startup_integrity import (
+        from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
+        from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
+        from system_learning.engines.local_faiss_store import LocalFAISSStore
+        from system_learning.engines.local_faiss_store import LocalFAISSStore
+        from system_learning.engines.local_faiss_store import LocalFAISSStore
+        from system_learning.engines.local_faiss_store import LocalFAISSStore
     """Test run_once_rolling_window_persists_to_disk runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters
@@ -448,7 +504,7 @@ class TestHistoricalIngestionOrchestratorPersist:
         self, tmp_path, healing_source, telemetry_source, dpo_source
     ):
         """healing_contexts_v1 must be written to EmbeddingStorageLayout path."""
-        from system_learning.engines.historical_ingestion_orchestrator import (
+#  # MOVED: from system_learning.engines.historical_ingestion_orchestrator import (
             ingest_and_build_indexes_with_embedder,
         )
 
@@ -476,7 +532,7 @@ class TestHistoricalIngestionOrchestratorPersist:
         self, tmp_path, healing_source, telemetry_source, dpo_source
     ):
         """telemetry_events_v1 must be written to EmbeddingStorageLayout path."""
-        from system_learning.engines.historical_ingestion_orchestrator import (
+#  # MOVED: from system_learning.engines.historical_ingestion_orchestrator import (
             ingest_and_build_indexes_with_embedder,
         )
 
@@ -502,7 +558,7 @@ class TestHistoricalIngestionOrchestratorPersist:
         self, tmp_path, healing_source, telemetry_source, dpo_source
     ):
         """dpo_pairs_v1 must be written to EmbeddingStorageLayout path."""
-        from system_learning.engines.historical_ingestion_orchestrator import (
+#  # MOVED: from system_learning.engines.historical_ingestion_orchestrator import (
             ingest_and_build_indexes_with_embedder,
         )
 
@@ -528,7 +584,7 @@ class TestHistoricalIngestionOrchestratorPersist:
         self, tmp_path, healing_source, telemetry_source, dpo_source
     ):
         """All three persisted indexes must be loadable by LocalFAISSStore."""
-        from system_learning.engines.historical_ingestion_orchestrator import (
+#  # MOVED: from system_learning.engines.historical_ingestion_orchestrator import (
             ingest_and_build_indexes_with_embedder,
         )
 
@@ -567,7 +623,7 @@ class TestHistoricalIngestionOrchestratorPersist:
         """Manifests written by orchestrator must have valid sha256 fields."""
         import hashlib
 
-        from system_learning.engines.historical_ingestion_orchestrator import (
+#  # MOVED: from system_learning.engines.historical_ingestion_orchestrator import (
             ingest_and_build_indexes_with_embedder,
         )
 
@@ -608,8 +664,8 @@ class TestMetaLearningAgentPersistence:
     @staticmethod
     def _make_agent(weights_file: Path):
         """Construct MetaLearningAgent with SovereignBaseAgent.__init__ patched out."""
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
+#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+#  # MOVED: from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
 
         with patch.object(SovereignBaseAgent, "__init__", return_value=None):
             return MetaLearningAgent(strategy_weights_file=weights_file)
@@ -680,8 +736,8 @@ class TestMetaLearningAgentPersistence:
     @pytest.mark.unit
     def test_no_persistence_when_file_not_provided(self, tmp_path):
         """When strategy_weights_file=None, no file is written after update."""
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
+#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+#  # MOVED: from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
 
         with patch.object(SovereignBaseAgent, "__init__", return_value=None):
             agent = MetaLearningAgent(strategy_weights_file=None)
@@ -726,7 +782,7 @@ class TestEmbedderCompatibilityCheck:
     @pytest.mark.unit_min_deps
     def test_load_rejects_mismatched_embedder_id(self, tmp_path):
         """load_from_disk with wrong expected_embedder_id must raise EmbedderMismatchError."""
-        from system_learning.engines.local_faiss_store import (
+#  # MOVED: from system_learning.engines.local_faiss_store import (
             EmbedderMismatchError,
             LocalFAISSStore,
         )
@@ -750,7 +806,7 @@ class TestEmbedderCompatibilityCheck:
     @pytest.mark.unit_min_deps
     def test_load_accepts_matching_embedder_id(self, tmp_path):
         """load_from_disk must succeed when expected_embedder_id matches manifest."""
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore
 
         store = _build_store(tmp_path, "hc_v1", n=3)
         store.persist_to_disk(
@@ -771,7 +827,7 @@ class TestEmbedderCompatibilityCheck:
     @pytest.mark.unit_min_deps
     def test_load_skips_compat_check_when_none(self, tmp_path):
         """load_from_disk without expected_embedder_id must load without error."""
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore
 
         store = _build_store(tmp_path, "hc_v1", n=3)
         store.persist_to_disk(
@@ -797,7 +853,7 @@ class TestMetaLearningStateDigest:
     @pytest.mark.unit_min_deps
     def test_digest_is_64_hex(self):
         """compute_meta_learning_state_digest must return 64-char hex string."""
-        from system_learning.engines.meta_learning_state_digest import (
+#  # MOVED: from system_learning.engines.meta_learning_state_digest import (
             compute_meta_learning_state_digest,
         )
 
@@ -812,7 +868,7 @@ class TestMetaLearningStateDigest:
     @pytest.mark.unit_min_deps
     def test_digest_is_deterministic(self):
         """Same inputs must always produce the same digest."""
-        from system_learning.engines.meta_learning_state_digest import (
+#  # MOVED: from system_learning.engines.meta_learning_state_digest import (
             compute_meta_learning_state_digest,
         )
 
@@ -826,7 +882,7 @@ class TestMetaLearningStateDigest:
     @pytest.mark.unit_min_deps
     def test_digest_changes_on_different_weights(self):
         """Changing strategy_weights_digest must change the output."""
-        from system_learning.engines.meta_learning_state_digest import (
+#  # MOVED: from system_learning.engines.meta_learning_state_digest import (
             compute_meta_learning_state_digest,
         )
 
@@ -841,7 +897,7 @@ class TestMetaLearningStateDigest:
     @pytest.mark.unit_min_deps
     def test_digest_changes_on_different_model(self):
         """Changing embedding_model_version must change the output."""
-        from system_learning.engines.meta_learning_state_digest import (
+#  # MOVED: from system_learning.engines.meta_learning_state_digest import (
             compute_meta_learning_state_digest,
         )
 
@@ -856,7 +912,7 @@ class TestMetaLearningStateDigest:
     @pytest.mark.unit_min_deps
     def test_digest_raises_on_empty_faiss_dict(self):
         """Empty faiss_index_digests must raise ValueError."""
-        from system_learning.engines.meta_learning_state_digest import (
+#  # MOVED: from system_learning.engines.meta_learning_state_digest import (
             compute_meta_learning_state_digest,
         )
 
@@ -870,7 +926,7 @@ class TestMetaLearningStateDigest:
     @pytest.mark.unit_min_deps
     def test_emit_prints_digest(self, capsys):
         """emit_meta_learning_state_digest must print META_LEARNING_STATE_DIGEST line."""
-        from system_learning.engines.meta_learning_state_digest import (
+#  # MOVED: from system_learning.engines.meta_learning_state_digest import (
             emit_meta_learning_state_digest,
         )
 
@@ -950,8 +1006,8 @@ class TestStrategyWeightsHardening:
 
     @staticmethod
     def _make_agent(weights_file: Path):
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
+#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+#  # MOVED: from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
 
         with patch.object(SovereignBaseAgent, "__init__", return_value=None):
             return MetaLearningAgent(strategy_weights_file=weights_file)
@@ -1069,8 +1125,8 @@ class TestStrictWeightsMode:
 
     @staticmethod
     def _make_agent(weights_file, telemetry_callback=None):
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
+#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+#  # MOVED: from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
 
         with patch.object(SovereignBaseAgent, "__init__", return_value=None):
             return MetaLearningAgent(
@@ -1209,7 +1265,7 @@ class TestDeterminismProof:
     @pytest.mark.unit_min_deps
     def test_digest_changes_when_faiss_content_changes(self, tmp_path):
         """Different FAISS content must yield different META_LEARNING_STATE_DIGEST."""
-        from system_learning.engines.meta_learning_state_digest import (
+#  # MOVED: from system_learning.engines.meta_learning_state_digest import (
             compute_meta_learning_state_digest,
         )
 
@@ -1243,7 +1299,7 @@ class TestReplayBinding:
     @pytest.mark.unit_min_deps
     def test_binding_has_all_three_keys(self):
         """to_dict() must contain faiss_index_digests, strategy_weights_digest, embedding_model_version."""
-        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+#  # MOVED: from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
 
         b = MetaLearningReplayBinding(
             faiss_index_digests={"hc_v1": "a" * 64},
@@ -1258,7 +1314,7 @@ class TestReplayBinding:
     @pytest.mark.unit_min_deps
     def test_binding_emit_prints_replay_binding_line(self, capsys):
         """emit() must print exactly one REPLAY-BINDING: line."""
-        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+#  # MOVED: from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
 
         b = MetaLearningReplayBinding(
             faiss_index_digests={"hc_v1": "a" * 64},
@@ -1273,7 +1329,7 @@ class TestReplayBinding:
     @pytest.mark.unit_min_deps
     def test_binding_round_trips_via_from_line(self):
         """from_line(to_line()) must reproduce an equal binding."""
-        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+#  # MOVED: from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
 
         original = MetaLearningReplayBinding(
             faiss_index_digests={"hc_v1": "a" * 64, "tel_v1": "b" * 64},
@@ -1288,7 +1344,7 @@ class TestReplayBinding:
     @pytest.mark.unit_min_deps
     def test_binding_digest_changes_when_weights_change(self):
         """Binding with different strategy_weights_digest must not equal original."""
-        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+#  # MOVED: from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
 
         b1 = MetaLearningReplayBinding(
             faiss_index_digests={"hc_v1": "a" * 64},
@@ -1305,7 +1361,7 @@ class TestReplayBinding:
     @pytest.mark.unit_min_deps
     def test_binding_raises_on_empty_faiss_dict(self):
         """Empty faiss_index_digests must raise ValueError."""
-        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+#  # MOVED: from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
 
         with pytest.raises(ValueError, match="faiss_index_digests must contain at least one entry"):
             MetaLearningReplayBinding(
@@ -1317,7 +1373,7 @@ class TestReplayBinding:
     @pytest.mark.unit_min_deps
     def test_binding_raises_on_short_digest(self):
         """strategy_weights_digest shorter than 64 chars must raise ValueError."""
-        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+#  # MOVED: from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
 
         with pytest.raises(ValueError, match="strategy_weights_digest must be 64-hex chars"):
             MetaLearningReplayBinding(
@@ -1329,9 +1385,9 @@ class TestReplayBinding:
     @pytest.mark.unit
     def test_binding_built_from_live_agent(self, tmp_path):
         """Binding constructed from a live MetaLearningAgent must include its live digest."""
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
-        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+#  # MOVED: from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
+#  # MOVED: from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
 
         with patch.object(SovereignBaseAgent, "__init__", return_value=None):
             agent = MetaLearningAgent(strategy_weights_file=tmp_path / "w.json")
@@ -1474,7 +1530,7 @@ class TestComputeReplayKey:
     @pytest.mark.unit_min_deps
     def test_replay_key_is_64_hex(self):
         """compute_replay_key() must return a 64-char lowercase hex string."""
-        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+#  # MOVED: from system_learning.engines.meta_learning_replay_binding import compute_replay_key
 
         key = compute_replay_key(
             trace_id="run-001",
@@ -1488,7 +1544,7 @@ class TestComputeReplayKey:
     @pytest.mark.unit_min_deps
     def test_replay_key_is_deterministic(self):
         """Two calls with identical inputs must produce identical replay keys."""
-        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+#  # MOVED: from system_learning.engines.meta_learning_replay_binding import compute_replay_key
 
         kwargs = {
             "trace_id": "run-abc",
@@ -1501,7 +1557,7 @@ class TestComputeReplayKey:
     @pytest.mark.unit_min_deps
     def test_replay_key_changes_on_different_trace_id(self):
         """Different trace_id must produce different replay key."""
-        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+#  # MOVED: from system_learning.engines.meta_learning_replay_binding import compute_replay_key
 
         common = {
             "transcript_hash": "a" * 64,
@@ -1515,7 +1571,7 @@ class TestComputeReplayKey:
     @pytest.mark.unit_min_deps
     def test_replay_key_changes_on_different_weights(self):
         """Different strategy_weights_digest must produce different replay key."""
-        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+#  # MOVED: from system_learning.engines.meta_learning_replay_binding import compute_replay_key
 
         common = {
             "trace_id": "run-x",
@@ -1529,7 +1585,7 @@ class TestComputeReplayKey:
     @pytest.mark.unit_min_deps
     def test_replay_key_independent_of_faiss_dict_insertion_order(self):
         """Replay key must be identical regardless of faiss_index_digests dict ordering."""
-        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+#  # MOVED: from system_learning.engines.meta_learning_replay_binding import compute_replay_key
 
         base = {
             "trace_id": "run-order",
@@ -1543,7 +1599,7 @@ class TestComputeReplayKey:
     @pytest.mark.unit_min_deps
     def test_replay_key_raises_on_empty_faiss_dict(self):
         """Empty faiss_index_digests must raise ValueError."""
-        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+#  # MOVED: from system_learning.engines.meta_learning_replay_binding import compute_replay_key
 
         with pytest.raises(ValueError, match="faiss_index_digests must contain at least one entry"):
             compute_replay_key(
@@ -1556,7 +1612,7 @@ class TestComputeReplayKey:
     @pytest.mark.unit_min_deps
     def test_replay_key_raises_on_short_weights_digest(self):
         """strategy_weights_digest shorter than 64 chars must raise ValueError."""
-        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+#  # MOVED: from system_learning.engines.meta_learning_replay_binding import compute_replay_key
 
         with pytest.raises(ValueError, match="strategy_weights_digest must be 64-hex chars"):
             compute_replay_key(
@@ -1626,7 +1682,7 @@ class TestStartupIntegritySweep:
     @pytest.mark.unit_min_deps
     def test_sweep_empty_dir_returns_empty_dict(self, tmp_path):
         """Empty base_dir must return empty dict (no indexes present)."""
-        from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
+#  # MOVED: from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
 
         result = verify_all_indexes_in_dir(tmp_path)
         assert result == {}
@@ -1634,7 +1690,7 @@ class TestStartupIntegritySweep:
     @pytest.mark.unit_min_deps
     def test_sweep_valid_index_returns_digest(self, tmp_path):
         """Valid persisted index must appear in returned dict with a 64-hex digest."""
-        from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
+#  # MOVED: from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
 
         self._build_valid_index_dir(tmp_path, "hc_v1")
         result = verify_all_indexes_in_dir(tmp_path)
@@ -1644,7 +1700,7 @@ class TestStartupIntegritySweep:
     @pytest.mark.unit_min_deps
     def test_sweep_multiple_valid_indexes(self, tmp_path):
         """Multiple valid indexes must all appear in result."""
-        from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
+#  # MOVED: from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
 
         for name in ("hc_v1", "tel_v1", "dpo_v1"):
             self._build_valid_index_dir(tmp_path, name)
@@ -1654,7 +1710,7 @@ class TestStartupIntegritySweep:
     @pytest.mark.unit_min_deps
     def test_sweep_raises_on_corrupted_index(self, tmp_path):
         """Corrupted index.json (wrong bytes) must raise StartupIntegrityError."""
-        from system_learning.engines.faiss_startup_integrity import (
+#  # MOVED: from system_learning.engines.faiss_startup_integrity import (
             StartupIntegrityError,
             verify_all_indexes_in_dir,
         )
@@ -1667,7 +1723,7 @@ class TestStartupIntegritySweep:
     @pytest.mark.unit_min_deps
     def test_sweep_raises_on_missing_manifest(self, tmp_path):
         """Missing manifest.json must raise StartupIntegrityError."""
-        from system_learning.engines.faiss_startup_integrity import (
+#  # MOVED: from system_learning.engines.faiss_startup_integrity import (
             StartupIntegrityError,
             verify_all_indexes_in_dir,
         )
@@ -1683,7 +1739,7 @@ class TestStartupIntegritySweep:
     @pytest.mark.unit_min_deps
     def test_sweep_raises_on_embedder_mismatch(self, tmp_path):
         """Wrong expected_embedder_id must raise StartupIntegrityError."""
-        from system_learning.engines.faiss_startup_integrity import (
+#  # MOVED: from system_learning.engines.faiss_startup_integrity import (
             StartupIntegrityError,
             verify_all_indexes_in_dir,
         )
@@ -1695,7 +1751,7 @@ class TestStartupIntegritySweep:
     @pytest.mark.unit_min_deps
     def test_sweep_accepts_correct_embedder_id(self, tmp_path):
         """Correct expected_embedder_id must not raise."""
-        from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
+#  # MOVED: from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
 
         self._build_valid_index_dir(tmp_path, "hc_v1")
         result = verify_all_indexes_in_dir(tmp_path, expected_embedder_id="test-embedder")
@@ -1704,7 +1760,7 @@ class TestStartupIntegritySweep:
     @pytest.mark.unit_min_deps
     def test_sweep_raises_on_nonexistent_base_dir(self, tmp_path):
         """Non-existent base_dir must raise ValueError."""
-        from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
+#  # MOVED: from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
 
         with pytest.raises(ValueError, match="does not exist"):
             verify_all_indexes_in_dir(tmp_path / "nonexistent")
@@ -1721,7 +1777,7 @@ class TestFaissTelemetryEvents:
     @pytest.mark.unit_min_deps
     def test_finalize_build_emits_rebuilt_event(self, tmp_path):
         """finalize_build() must emit faiss_index_rebuilt telemetry event."""
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore
 
         events: list[tuple[str, dict]] = []
         store = LocalFAISSStore(tmp_path, telemetry_callback=lambda e, d: events.append((e, d)))
@@ -1748,7 +1804,7 @@ class TestFaissTelemetryEvents:
     @pytest.mark.unit_min_deps
     def test_persist_to_disk_emits_persisted_event(self, tmp_path):
         """persist_to_disk() must emit faiss_index_persisted telemetry event."""
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore
 
         events: list[tuple[str, dict]] = []
         store = LocalFAISSStore(tmp_path, telemetry_callback=lambda e, d: events.append((e, d)))
@@ -1775,7 +1831,7 @@ class TestFaissTelemetryEvents:
     @pytest.mark.unit_min_deps
     def test_load_from_disk_emits_manifest_verified_event(self, tmp_path):
         """load_from_disk() must emit faiss_manifest_verified telemetry event."""
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore
 
         events: list[tuple[str, dict]] = []
         store = LocalFAISSStore(tmp_path, telemetry_callback=lambda e, d: events.append((e, d)))
@@ -1823,7 +1879,7 @@ class TestFaissTelemetryEvents:
     @pytest.mark.unit_min_deps
     def test_rebuild_emits_rebuilt_event(self, tmp_path):
         """rebuild() must emit faiss_index_rebuilt telemetry event."""
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
+#  # MOVED: from system_learning.engines.local_faiss_store import LocalFAISSStore
 
         events: list[tuple[str, dict]] = []
         store = LocalFAISSStore(tmp_path, telemetry_callback=lambda e, d: events.append((e, d)))

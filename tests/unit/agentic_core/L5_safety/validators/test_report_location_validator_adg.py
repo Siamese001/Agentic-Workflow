@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -76,11 +76,11 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.validators.report_location_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.report_location_validator import (
     REPORT_FILE_PATTERNS,
     SSOT_REPORTS_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -173,6 +173,11 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestConstants:
     def test_ssot_reports_dir_value(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.validators.report_location_validator import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.validators.report_location_validator import (
+        from agentic_core.L5_safety.validators.report_location_validator import (
         assert SSOT_REPORTS_DIR == "docs/reports"
 
     def test_report_file_patterns_tuple(self):
@@ -188,13 +193,13 @@ class TestConstants:
 
 class TestReportLocationValidator:
     def test_importable(self):
-        from agentic_core.L5_safety.validators.report_location_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.report_location_validator import (
             ReportLocationValidator,
         )
         assert callable(ReportLocationValidator)
 
     def test_creates(self, tmp_path):
-        from agentic_core.L5_safety.validators.report_location_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.report_location_validator import (
             ReportLocationValidator,
         )
         validator = ReportLocationValidator(project_root=tmp_path)

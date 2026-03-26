@@ -17,10 +17,10 @@ import re
 from pathlib import Path
 from unittest.mock import patch
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.L0_routing.types.determinism_types import (
+#  # MOVED: from agentic_core.L0_routing.types.determinism_types import (
     SurgicalManifest,
 )
 
@@ -65,6 +65,11 @@ class TestStructuralRetryMixin:
     """AST-level proof of retry mixin wiring."""
 
     def test_build_retry_manifest_exists(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L0_routing.types.determinism_types import (
+        from agentic_core.mixins.tool_reliability_mixin import ToolReliabilityMixin
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
+        from agentic_core.L0_routing.enforcement.execution_gateway import (
         node = _find_method_node(MIXIN_AST, "ToolReliabilityMixin", "_v15_build_retry_manifest")
         assert node is not None
 
@@ -143,7 +148,7 @@ class _TestableReliabilityMixin(_StubMixin):
     """Combine stub with the real mixin methods for isolated testing."""
     pass
 # Dynamically attach mixin methods to the testable class
-from agentic_core.mixins.tool_reliability_mixin import ToolReliabilityMixin
+#  # MOVED: from agentic_core.mixins.tool_reliability_mixin import ToolReliabilityMixin
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -190,7 +195,7 @@ class TestRuntimeRetryManifest:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_manifest_survives_multiple_retries_sync(self):
         """Prove manifest + trace_id are stable across >=2 retries."""
-        from agentic_core.L0_routing.enforcement.execution_gateway import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
         mixin = _TestableReliabilityMixin()
@@ -239,7 +244,7 @@ class TestRuntimeRetryManifest:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_gateway_receives_manifest_instance(self):
         """Gateway.execute must receive the exact manifest instance."""
-        from agentic_core.L0_routing.enforcement.execution_gateway import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.execution_gateway import (
             V15ExecutionGateway,
         )
         mixin = _TestableReliabilityMixin()

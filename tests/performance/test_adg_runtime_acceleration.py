@@ -14,13 +14,13 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
     ADGStaticScanner,
     ScanResult,
 )
-from agentic_core.adg.runtime.query_engine import ADGRuntimeQueryEngine
-from agentic_core.cache.graph_aware_cache import GraphAwareCache
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.adg.runtime.query_engine import ADGRuntimeQueryEngine
+#  # MOVED: from agentic_core.cache.graph_aware_cache import GraphAwareCache
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -190,6 +190,10 @@ def cache(qe: ADGRuntimeQueryEngine) -> GraphAwareCache:
 
 class TestADGQueryEngineCorrectness:
     def test_find_agents_by_base_class_returns_list(self, qe):
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.adg.runtime.query_engine import ADGRuntimeQueryEngine
+        from agentic_core.cache.graph_aware_cache import GraphAwareCache
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         agents = qe.find_agents_by_base_class("SovereignBaseAgent")
         assert isinstance(agents, list)
 

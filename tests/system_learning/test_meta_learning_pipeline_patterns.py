@@ -13,7 +13,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -76,7 +76,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_meta_learning_pipeline_patterns", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_meta_learning_pipeline_patterns", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_meta_learning_pipeline_patterns", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -114,12 +114,12 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
-from system_learning.engines.pattern_analysis_engine import (
+#  # MOVED: from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
+#  # MOVED: from system_learning.engines.pattern_analysis_engine import (
     PatternAnalysisEngine,
     PatternSummary,
 )
-from system_learning.pipelines.meta_learning_pipeline import (
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import (
     _analyze_historical_patterns,
 )
 
@@ -188,6 +188,11 @@ class TestMetaLearningPipelinePatterns:
     """Test pattern analysis integration in meta-learning pipeline."""
 
     def test_pattern_analysis_disabled_when_embedding_disabled(self) -> None:
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
+        from system_learning.engines.pattern_analysis_engine import (
+        from system_learning.pipelines.meta_learning_pipeline import (
         """T1: Pattern analysis should be disabled when embeddings are disabled."""
         engine = PatternAnalysisEngine()
 

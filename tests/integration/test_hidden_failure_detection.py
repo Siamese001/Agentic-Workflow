@@ -27,6 +27,19 @@ class TestSilentDegradation(unittest.TestCase):
     """Test cases for silent failure modes that don't raise errors."""
 
     def test_kubernetes_import_silency_degrades(self):
+        from agentic_core.cloud_native.cloud_native_manager import CloudNativeManager
+        from system_learning.ml_integration.anomaly_detection import MLAnomalyDetector
+        from agentic_core.gateway.api_gateway_integration import APIGatewayIntegration, GatewayType, GatewayConfig
+        from system_learning.ml_integration.anomaly_detection import MLAnomalyDetector
+        from agentic_core.visualization.trace_3d_visualizer import Trace3DVisualizer
+        from system_learning.ml_integration.anomaly_detection import MLAnomalyDetector, get_global_ml_detector
+        import system_learning.ml_integration.anomaly_detection as ml_module
+        from agentic_core.visualization.trace_3d_visualizer import get_global_3d_visualizer
+        from system_learning.ml_integration.anomaly_detection import MLAnomalyDetector
+        from agentic_core.visualization.trace_3d_visualizer import Trace3DVisualizer
+        from agentic_core.gateway.api_gateway_integration import APIGatewayIntegration, GatewayType, GatewayConfig
+        from agentic_core.cloud_native.cloud_native_manager import CloudNativeManager, AutoScalingConfig
+        from agentic_core.cloud_native.cloud_native_manager import ResourceMetrics, ResourceType, HealthStatus
         """CRITICAL: Test that Kubernetes features disappear silently when package missing."""
         Logger.info("Testing Kubernetes silent degradation...")
 
@@ -37,7 +50,7 @@ class TestSilentDegradation(unittest.TestCase):
                 mock_config.load_incluster_config.side_effect = ImportError("No module named 'kubernetes'")
                 mock_config.load_kube_config.side_effect = ImportError("No module named 'kubernetes'")
 
-                from agentic_core.cloud_native.cloud_native_manager import CloudNativeManager
+#  # MOVED: from agentic_core.cloud_native.cloud_native_manager import CloudNativeManager
 
                 manager = CloudNativeManager()
                 manager._initialize_kubernetes_client()
@@ -61,7 +74,7 @@ class TestSilentDegradation(unittest.TestCase):
             with patch('system_learning.ml_integration.anomaly_detection.pickle') as mock_pickle:
                 mock_pickle.dump.side_effect = ImportError("No module named 'sklearn'")
 
-                from system_learning.ml_integration.anomaly_detection import MLAnomalyDetector
+#  # MOVED: from system_learning.ml_integration.anomaly_detection import MLAnomalyDetector
 
                 detector = MLAnomalyDetector()
 
@@ -86,7 +99,7 @@ class TestErrorPathCoverage(unittest.TestCase):
         """Test gateway behavior when backend unreachable."""
         Logger.info("Testing API gateway connection failure...")
 
-        from agentic_core.gateway.api_gateway_integration import APIGatewayIntegration, GatewayType, GatewayConfig
+#  # MOVED: from agentic_core.gateway.api_gateway_integration import APIGatewayIntegration, GatewayType, GatewayConfig
 
         gateway = APIGatewayIntegration(GatewayType.KONG)
         config = GatewayConfig(gateway_type=GatewayType.KONG, host="nonexistent-host", port=9999)
@@ -110,7 +123,7 @@ class TestErrorPathCoverage(unittest.TestCase):
         """Test behavior when model files are corrupted."""
         Logger.info("Testing ML model corruption handling...")
 
-        from system_learning.ml_integration.anomaly_detection import MLAnomalyDetector
+#  # MOVED: from system_learning.ml_integration.anomaly_detection import MLAnomalyDetector
         import tempfile
         import os
 
@@ -138,7 +151,7 @@ class TestErrorPathCoverage(unittest.TestCase):
         """Test 3D visualizer when port already in use."""
         Logger.info("Testing visualization server port conflict...")
 
-        from agentic_core.visualization.trace_3d_visualizer import Trace3DVisualizer
+#  # MOVED: from agentic_core.visualization.trace_3d_visualizer import Trace3DVisualizer
 
         visualizer = Trace3DVisualizer()
 
@@ -161,10 +174,10 @@ class TestStateIsolation(unittest.TestCase):
         """Verify ML detector instances don't share state."""
         Logger.info("Testing ML detector state isolation...")
 
-        from system_learning.ml_integration.anomaly_detection import MLAnomalyDetector, get_global_ml_detector
+#  # MOVED: from system_learning.ml_integration.anomaly_detection import MLAnomalyDetector, get_global_ml_detector
 
         # Clear global state
-        import system_learning.ml_integration.anomaly_detection as ml_module
+#  # MOVED: import system_learning.ml_integration.anomaly_detection as ml_module
         ml_module._global_detector = None
 
         # Create first detector and add data
@@ -192,7 +205,7 @@ class TestStateIsolation(unittest.TestCase):
         """Verify 3D visualizer instances don't share graphs."""
         Logger.info("Testing visualizer graph isolation...")
 
-        from agentic_core.visualization.trace_3d_visualizer import get_global_3d_visualizer
+#  # MOVED: from agentic_core.visualization.trace_3d_visualizer import get_global_3d_visualizer
 
         visualizer1 = get_global_3d_visualizer()
         visualizer1._graphs.clear()  # Start clean
@@ -224,7 +237,7 @@ class TestDeterminismIssues(unittest.TestCase):
         """Verify anomaly detection depends on execution time."""
         Logger.info("Testing anomaly detection time dependency...")
 
-        from system_learning.ml_integration.anomaly_detection import MLAnomalyDetector
+#  # MOVED: from system_learning.ml_integration.anomaly_detection import MLAnomalyDetector
 
         detector = MLAnomalyDetector()
         detector.initialize_models()
@@ -255,7 +268,7 @@ class TestDeterminismIssues(unittest.TestCase):
         """Test 3D visualizer random physics initialization."""
         Logger.info("Testing visualizer random initialization...")
 
-        from agentic_core.visualization.trace_3d_visualizer import Trace3DVisualizer
+#  # MOVED: from agentic_core.visualization.trace_3d_visualizer import Trace3DVisualizer
 
         visualizer = Trace3DVisualizer()
 
@@ -299,7 +312,7 @@ class TestWeakAssertionReplacements(unittest.TestCase):
         """STRONG: Validate gateway metrics meaningfully."""
         Logger.info("Testing strong gateway metrics validation...")
 
-        from agentic_core.gateway.api_gateway_integration import APIGatewayIntegration, GatewayType, GatewayConfig
+#  # MOVED: from agentic_core.gateway.api_gateway_integration import APIGatewayIntegration, GatewayType, GatewayConfig
 
         gateway = APIGatewayIntegration(GatewayType.CUSTOM)
         config = GatewayConfig(gateway_type=GatewayType.CUSTOM)
@@ -327,7 +340,7 @@ class TestWeakAssertionReplacements(unittest.TestCase):
         """STRONG: Test actual cloud native functionality, not just object existence."""
         Logger.info("Testing strong cloud native validation...")
 
-        from agentic_core.cloud_native.cloud_native_manager import CloudNativeManager, AutoScalingConfig
+#  # MOVED: from agentic_core.cloud_native.cloud_native_manager import CloudNativeManager, AutoScalingConfig
 
         manager = CloudNativeManager()
 
@@ -350,7 +363,7 @@ class TestWeakAssertionReplacements(unittest.TestCase):
                           "Scale up threshold should be greater than scale down")
 
         # STRONG: Test resource metrics creation, not just manager existence
-        from agentic_core.cloud_native.cloud_native_manager import ResourceMetrics, ResourceType, HealthStatus
+#  # MOVED: from agentic_core.cloud_native.cloud_native_manager import ResourceMetrics, ResourceType, HealthStatus
 
         metrics = ResourceMetrics(
             name="test-deployment",

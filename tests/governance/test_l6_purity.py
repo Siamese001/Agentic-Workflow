@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L6_OBSERVABILITY_DIR,
 )
 
@@ -135,6 +135,7 @@ class TestL6WritePrimitiveRatchet:
     """L6 write-primitive count must not exceed ceiling."""
 
     def test_l6_does_not_exceed_write_ceiling(self):
+        from agentic_core.L0_routing.config.path_constants import (
         if not _L6_ROOT.exists():
             pytest.fail("L6_observability not found")
         hits = _scan_write_primitives(_L6_ROOT)

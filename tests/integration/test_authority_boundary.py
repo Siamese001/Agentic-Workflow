@@ -15,10 +15,10 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L3_ORCHESTRATION_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -162,7 +162,7 @@ def _make_file(tmp_path: Path, name: str, code: str) -> Path:
 
 
 def _classify(tmp_path: Path, file_path: Path):
-    from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
         FileClassificationAgent,
     )
 
@@ -181,6 +181,11 @@ def _classify(tmp_path: Path, file_path: Path):
 
 class TestEnforcerBoundary:
     def test_enforcer_suffix_not_orchestrator(self, tmp_path):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+        from agentic_core.L3_orchestration.reasoning import AgentA
+        from agentic_core.L5_safety.enforcement import GuardB
         code = """\
         class PolicyEnforcer:
             GATE_POLICY = True
@@ -231,8 +236,8 @@ class TestOrchestratorBoundary:
         o_dir = tmp_path / L3_ORCHESTRATION_DIR / "reasoning"
         o_dir.mkdir(parents=True, exist_ok=True)
         code = """\
-        from agentic_core.L3_orchestration.reasoning import AgentA
-        from agentic_core.L5_safety.enforcement import GuardB
+#  # MOVED: from agentic_core.L3_orchestration.reasoning import AgentA
+#  # MOVED: from agentic_core.L5_safety.enforcement import GuardB
         class WorkflowOrchestrator:
             def run_pipeline(self):
                 self.stage_1()

@@ -32,7 +32,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_applies_guardrail,
     _emit_records_execution_trace,
 )
@@ -115,6 +115,7 @@ _FIXTURE_SNAPSHOT = {
 
 @pytest.fixture(scope="module")
 def fixture_env():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Create a test ADG directory with fixture SQLite + snapshot, run ingest."""
     if not _REDIS_OK:
 

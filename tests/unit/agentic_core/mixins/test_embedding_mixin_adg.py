@@ -5,11 +5,12 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.mixins.embedding_mixin import EmbeddingMixin, EmbeddingProvider
+#  # MOVED: from agentic_core.mixins.embedding_mixin import EmbeddingMixin, EmbeddingProvider
 
 
 class TestEmbeddingMixin:
     def test_importable(self):
+        from agentic_core.mixins.embedding_mixin import EmbeddingMixin, EmbeddingProvider
         assert callable(EmbeddingMixin)
 
     def test_embedding_gateway_default_none(self):

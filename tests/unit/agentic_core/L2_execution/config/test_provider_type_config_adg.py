@@ -5,7 +5,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L2_execution.config.provider_type_config import (
+#  # MOVED: from agentic_core.L2_execution.config.provider_type_config import (
     DEFAULT_PROVIDER_CLASSES,
     DEFAULT_PROVIDER_MODULES,
     ProviderType,
@@ -14,6 +14,7 @@ from agentic_core.L2_execution.config.provider_type_config import (
 
 class TestProviderType:
     def test_is_enum(self):
+        from agentic_core.L2_execution.config.provider_type_config import (
     """Test is_enum runtime behavior."""
     # Arrange
     # TODO: Set up test data for is_enum

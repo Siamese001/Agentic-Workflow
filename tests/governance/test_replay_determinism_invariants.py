@@ -12,7 +12,7 @@ import os
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -95,7 +95,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.governance
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -133,8 +133,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.deterministic_replay_engine import DeterministicReplayEngine
-from system_learning.engines.retrieval_profile import RetrievalProfile
+#  # MOVED: from system_learning.engines.deterministic_replay_engine import DeterministicReplayEngine
+#  # MOVED: from system_learning.engines.retrieval_profile import RetrievalProfile
 
 # REMOVED: _emit_emits_metric_event("test_replay_determinism_invariants", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_replay_determinism_invariants", "p4obs", "metric_2")
@@ -202,6 +202,10 @@ def _make_profile(profile_id: str, top_k: int = 10, cutoff: float = 0.85) -> Ret
 
 
 def test_replay_artifacts_stable_across_two_runs():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from system_learning.engines.deterministic_replay_engine import DeterministicReplayEngine
+    from system_learning.engines.retrieval_profile import RetrievalProfile
     """INV-RPL-1: Same inputs produce identical replay digest on two consecutive runs."""
     tamper = os.environ.get("SPRAWL_NEGCTRL_TAMPER", "0")
 

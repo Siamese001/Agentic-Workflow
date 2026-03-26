@@ -10,11 +10,11 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_SHARED_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -77,7 +77,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_pascal_sovereignty_acronyms", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_pascal_sovereignty_acronyms", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_pascal_sovereignty_acronyms", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -192,6 +192,9 @@ class TestSovereigntyAcronyms(unittest.TestCase):
         self.fixer = PascalSovereigntyFixer(dry_run=True)
 
     def test_acronym_snake_case_conversion(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """
         Verify that complex acronyms in Mixins are converted to clean snake_case.
         Expected: LLMProviderMixin -> llm_provider_mixin.py (NOT l_l_m_provider...)

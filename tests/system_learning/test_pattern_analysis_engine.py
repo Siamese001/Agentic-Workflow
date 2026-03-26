@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -73,7 +73,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_pattern_analysis_engine", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_pattern_analysis_engine", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_pattern_analysis_engine", "exec_snapshot_link")
-from system_learning.engines.pattern_analysis_engine import (
+#  # MOVED: from system_learning.engines.pattern_analysis_engine import (
     PatternAnalysisEngine,
     PatternSummary,
 )
@@ -82,7 +82,7 @@ from system_learning.engines.pattern_analysis_engine import (
 # REMOVED: _emit_applies_guardrail("p0", "test_pattern_analysis_engine", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_pattern_analysis_engine", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_pattern_analysis_engine", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -181,6 +181,9 @@ class TestPatternAnalysisEngine:
     """Test suite for PatternAnalysisEngine."""
 
     def test_empty_input_returns_empty_summary(self) -> None:
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.pattern_analysis_engine import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """T1: Empty input should return empty summary with deterministic digest."""
         engine = PatternAnalysisEngine()
 

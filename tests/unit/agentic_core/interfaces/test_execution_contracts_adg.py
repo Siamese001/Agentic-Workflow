@@ -5,7 +5,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.interfaces.execution_contracts import (
+#  # MOVED: from agentic_core.interfaces.execution_contracts import (
     _AVAILABLE,
     AgentOutputContract,
     wrap_output,
@@ -14,6 +14,7 @@ from agentic_core.interfaces.execution_contracts import (
 
 class TestExecutionContracts:
     def test_module_importable(self):
+        from agentic_core.interfaces.execution_contracts import (
     """Test module_importable runtime behavior."""
     # Arrange
     # TODO: Set up test data for module_importable

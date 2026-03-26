@@ -11,7 +11,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -86,14 +86,14 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_routing.scripts.execute_ssot import (
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import (
     AutonomousDecisionEngine,
     ConfidenceScore,
     ReconciliationViolation,
     RuntimeStateManager,
     execute_phase1_discovery,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -205,6 +205,10 @@ class TestSSOTE2EReporting:
     # CASE 1: Dry Run Integrity (The "Look but Don't Touch" Test)
     # =========================================================================
     def test_e2e_01_dry_run_integrity(self, tmp_path, state_mgr, engine):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.scripts.execute_ssot import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.scripts.execute_ssot import validate_territory_input
         """
         Scenario: Execute a dry run on a directory with known violations.
         Expected: Violations are reported, but NO files are modified.
@@ -325,7 +329,7 @@ class TestSSOTE2EReporting:
         # This test validates the input validator/logic we added respects boundaries
 
         # Verify validate_territory_input allows strictly "A"
-        from agentic_core.L0_routing.scripts.execute_ssot import validate_territory_input
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import validate_territory_input
 
         valid, _ = validate_territory_input("A")
         assert valid

@@ -11,7 +11,7 @@ import hashlib
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -58,7 +58,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_meta_learning_bus_types", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_meta_learning_bus_types", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_meta_learning_bus_types", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -195,7 +195,7 @@ def _sha256(text: str) -> str:
 
 class TestFeatureBundle:
     def _make(self, **kw):
-        from system_learning.types.trace_feature_types import FeatureBundle
+#  # MOVED: from system_learning.types.trace_feature_types import FeatureBundle
 
         defaults = {
             "trace_id": "tr-001",
@@ -219,6 +219,23 @@ class TestFeatureBundle:
         return FeatureBundle(**defaults)
 
     def test_frozen(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.types.trace_feature_types import FeatureBundle
+        from system_learning.types.trace_feature_types import FeatureBundle
+        from system_learning.types.trace_feature_types import TraceFeatureRecord
+        from system_learning.types.trace_feature_types import TraceFeatureRecord
+        from system_learning.types.trace_feature_types import TraceFeatureRecord
+        from system_learning.types.trace_feature_types import TraceFeatureRecord
+        from system_learning.types.trace_feature_types import TraceFeatureRecord
+        from system_learning.types.trace_feature_types import RCACluster
+        from system_learning.types.trace_feature_types import FailurePattern
+        from system_learning.types.optimization_types import OptimizationProposal
+        from system_learning.types.optimization_types import ValidationResult
+        from system_learning.types.optimization_types import OptimizationCommit
+        from system_learning.types.optimization_types import GovernanceRewardSignal
+        from system_learning.types.trace_feature_types import TraceFeatureRecord
+        from system_learning.types.optimization_types import GovernanceRewardScore
         b = self._make()
         with pytest.raises((AttributeError, TypeError)):
             b.route_selected = "NEW"  # type: ignore[misc]
@@ -272,7 +289,7 @@ class TestFeatureBundle:
 
 class TestTraceFeatureRecord:
     def _make_bundle(self, trace_id="tr-001", outcome="SUCCESS"):
-        from system_learning.types.trace_feature_types import FeatureBundle
+#  # MOVED: from system_learning.types.trace_feature_types import FeatureBundle
 
         return FeatureBundle(
             trace_id=trace_id,
@@ -294,14 +311,14 @@ class TestTraceFeatureRecord:
         )
 
     def test_from_bundle_sets_record_id(self):
-        from system_learning.types.trace_feature_types import TraceFeatureRecord
+#  # MOVED: from system_learning.types.trace_feature_types import TraceFeatureRecord
 
         bundle = self._make_bundle()
         record = TraceFeatureRecord.from_bundle(bundle)
         assert record.record_id == bundle.stable_hash()
 
     def test_from_bundle_maps_fields(self):
-        from system_learning.types.trace_feature_types import TraceFeatureRecord
+#  # MOVED: from system_learning.types.trace_feature_types import TraceFeatureRecord
 
         bundle = self._make_bundle()
         record = TraceFeatureRecord.from_bundle(bundle)
@@ -312,14 +329,14 @@ class TestTraceFeatureRecord:
         assert record.adg_node_id == bundle.adg_entity_name
 
     def test_stable_hash_deterministic(self):
-        from system_learning.types.trace_feature_types import TraceFeatureRecord
+#  # MOVED: from system_learning.types.trace_feature_types import TraceFeatureRecord
 
         bundle = self._make_bundle()
         r = TraceFeatureRecord.from_bundle(bundle)
         assert r.stable_hash() == r.stable_hash()
 
     def test_invalid_outcome_raises(self):
-        from system_learning.types.trace_feature_types import TraceFeatureRecord
+#  # MOVED: from system_learning.types.trace_feature_types import TraceFeatureRecord
 
         with pytest.raises(ValueError, match="outcome_class"):
             TraceFeatureRecord(
@@ -341,7 +358,7 @@ class TestTraceFeatureRecord:
             )
 
     def test_empty_trace_id_raises(self):
-        from system_learning.types.trace_feature_types import TraceFeatureRecord
+#  # MOVED: from system_learning.types.trace_feature_types import TraceFeatureRecord
 
         with pytest.raises(ValueError, match="trace_id"):
             TraceFeatureRecord(
@@ -365,7 +382,7 @@ class TestTraceFeatureRecord:
 
 class TestRCACluster:
     def _make(self, **kw):
-        from system_learning.types.trace_feature_types import RCACluster
+#  # MOVED: from system_learning.types.trace_feature_types import RCACluster
 
         defaults = {
             "cluster_id": _HASH64,
@@ -416,7 +433,7 @@ class TestRCACluster:
 
 class TestFailurePattern:
     def _make(self, **kw):
-        from system_learning.types.trace_feature_types import FailurePattern
+#  # MOVED: from system_learning.types.trace_feature_types import FailurePattern
 
         defaults = {
             "pattern_id": _HASH64,
@@ -463,7 +480,7 @@ class TestFailurePattern:
 
 class TestOptimizationProposal:
     def _make(self, **kw):
-        from system_learning.types.optimization_types import OptimizationProposal
+#  # MOVED: from system_learning.types.optimization_types import OptimizationProposal
 
         defaults = {
             "proposal_id": _HASH64,
@@ -519,7 +536,7 @@ class TestOptimizationProposal:
 
 class TestValidationResult:
     def _make(self, **kw):
-        from system_learning.types.optimization_types import ValidationResult
+#  # MOVED: from system_learning.types.optimization_types import ValidationResult
 
         defaults = {
             "result_id": _HASH64,
@@ -567,7 +584,7 @@ class TestValidationResult:
 
 class TestOptimizationCommit:
     def _make(self, **kw):
-        from system_learning.types.optimization_types import OptimizationCommit
+#  # MOVED: from system_learning.types.optimization_types import OptimizationCommit
 
         defaults = {
             "commit_id": _HASH64,
@@ -607,7 +624,7 @@ class TestOptimizationCommit:
 
 class TestGovernanceRewardSignal:
     def _make(self, **kw):
-        from system_learning.types.optimization_types import GovernanceRewardSignal
+#  # MOVED: from system_learning.types.optimization_types import GovernanceRewardSignal
 
         defaults = {
             "signal_id": _HASH64,
@@ -640,13 +657,13 @@ class TestGovernanceRewardSignal:
             assert 0.0 <= val <= 1.0
 
 """Test system_learning import functionality."""
-from system_learning.types.trace_feature_types import TraceFeatureRecord
+#  # MOVED: from system_learning.types.trace_feature_types import TraceFeatureRecord
 # Basic functionality assertion
 assert True  # Replace with meaningful assertion
 
 class TestGovernanceRewardScore:
     def _make(self, **kw):
-        from system_learning.types.optimization_types import GovernanceRewardScore
+#  # MOVED: from system_learning.types.optimization_types import GovernanceRewardScore
 
         defaults = {
             "score_id": _HASH64,

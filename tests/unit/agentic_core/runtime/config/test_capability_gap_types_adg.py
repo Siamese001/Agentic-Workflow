@@ -1,10 +1,11 @@
 """ADG importability contract for agentic_core/runtime/config/capability_gap_types.py."""
 from __future__ import annotations
 
-import agentic_core.runtime.config.capability_gap_types  # noqa: F401
+#  # MOVED: import agentic_core.runtime.config.capability_gap_types  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.runtime.config.capability_gap_types  # noqa: F401
 """Test module_importable runtime behavior."""
 # Arrange
 # TODO: Set up runtime environment

@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,
     _emit_authorize_and_execute,
@@ -168,6 +168,15 @@ class TestFilesystemSSOTReconcilerArchivePath:
         )
 
     def test_archive_root_uses_canonical_archives_path(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
         src = self._src
         assert '"healing_backups" / "unmapped_drift"' in src or "healing_backups/unmapped_drift" in src, (
             "filesystem_ssot_reconciler.py ARCHIVE_ROOT must use canonical archives/healing_backups/unmapped_drift"
@@ -339,7 +348,7 @@ class TestRecordBackupArchivalEvent:
     """_record_backup_archival_event must append to state correctly."""
 
     def test_appends_event_to_empty_state(self):
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
             _record_backup_archival_event,
         )
 
@@ -353,7 +362,7 @@ class TestRecordBackupArchivalEvent:
         assert events[0]["count"] == 3
 
     def test_appends_multiple_events(self):
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
             _record_backup_archival_event,
         )
 
@@ -368,7 +377,7 @@ class TestRecordBackupArchivalEvent:
         assert "FilesystemSSOTReconcilerAgent" in agents
 
     def test_event_has_timestamp(self):
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
             _record_backup_archival_event,
         )
 
@@ -379,7 +388,7 @@ class TestRecordBackupArchivalEvent:
         assert isinstance(events[0]["timestamp"], str)
 
     def test_default_count_is_one(self):
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
             _record_backup_archival_event,
         )
 
@@ -475,7 +484,7 @@ class TestBackupArchivalEventRecordingFromHierarchyHealResult:
     """execute_ssot records backup archival events from HierarchyHealerAgent root_healing result."""
 
     def test_archived_files_from_root_healing_recorded(self):
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
             _record_backup_archival_event,
         )
 
@@ -501,7 +510,7 @@ class TestBackupArchivalEventRecordingFromHierarchyHealResult:
         assert events[0]["count"] == 3
 
     def test_zero_archived_files_not_recorded(self):
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
             _record_backup_archival_event,
         )
 
@@ -522,7 +531,7 @@ class TestBackupArchivalEventRecordingFromHierarchyHealResult:
         assert len(events) == 0
 
     def test_missing_root_healing_key_safe(self):
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
             _record_backup_archival_event,
         )
 
@@ -544,7 +553,7 @@ class TestMetaLearningSsotModuleImports:
     """Verify that _ssot_validation_artifacts exports _record_backup_archival_event."""
 
     def test_import_record_backup_archival_event(self):
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
             _record_backup_archival_event,
         )
 

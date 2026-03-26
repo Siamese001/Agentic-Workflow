@@ -16,7 +16,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -63,7 +63,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_analysis_modules", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_analysis_modules", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_analysis_modules", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -234,7 +234,64 @@ class TestDetectTestGaps:
         return _ScanResult(edges=edges, modules=modules)  # type: ignore[arg-type]
 
     def test_no_modules_no_gaps(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+        from agentic_core.adg.analysis.CanonicalSnapshot import CanonicalSnapshot, build_snapshot
+        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+        from agentic_core.adg.analysis.CanonicalSnapshot import CanonicalSnapshot, build_snapshot
+        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+        from agentic_core.adg.analysis.CanonicalSnapshot import CanonicalSnapshot
+        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edges
+        from agentic_core.adg.analysis.EdgeConfidence import confidence_summary, score_edges
+        from agentic_core.adg.analysis.EdgeConfidence import confidence_summary, score_edges
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+        from agentic_core.adg.analysis.RepairRoute import route_violations
+        from agentic_core.adg.analysis.RepairRoute import route_violations
+        from agentic_core.adg.analysis.RepairRoute import route_violations
+        from agentic_core.adg.analysis.RepairRoute import route_violations
+        from agentic_core.adg.analysis.RepairRoute import route_violations
+        from agentic_core.adg.analysis.RepairRoute import route_violations
+        from agentic_core.adg.analysis.RepairRoute import repair_routing_summary, route_violations
+        from agentic_core.adg.analysis.RepairRoute import route_violations
+        from agentic_core.adg.analysis.ModuleOwnership import _infer_ownership
+        from agentic_core.adg.analysis.ModuleOwnership import _infer_ownership
+        from agentic_core.adg.analysis.ModuleOwnership import _infer_ownership
+        from agentic_core.adg.analysis.ModuleOwnership import _infer_ownership
+        from agentic_core.adg.analysis.ModuleOwnership import _infer_ownership
+        from agentic_core.adg.analysis.ModuleOwnership import _infer_ownership
+        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
+        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
+        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
+#  # MOVED: from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 
         result = self._make_result(modules=[])
         report = detect_test_gaps(result)  # type: ignore[arg-type]
@@ -243,7 +300,7 @@ class TestDetectTestGaps:
         assert report.uncovered_modules == []
 
     def test_single_uncovered_module(self):
-        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+#  # MOVED: from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 
         result = self._make_result(
             modules=["agentic_core/L0_routing/foo.py"],
@@ -256,7 +313,7 @@ class TestDetectTestGaps:
         assert report.uncovered_modules[0].module_path == "agentic_core/L0_routing/foo.py"
 
     def test_covered_module_excluded_from_gaps(self):
-        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+#  # MOVED: from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 
         result = self._make_result(
             modules=["agentic_core/L0_routing/foo.py"],
@@ -268,7 +325,7 @@ class TestDetectTestGaps:
         assert "agentic_core/L0_routing/foo.py" in report.covered_modules
 
     def test_test_files_excluded_from_production(self):
-        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+#  # MOVED: from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 
         result = self._make_result(
             modules=["tests/test_foo.py", "agentic_core/bar.py"],
@@ -277,7 +334,7 @@ class TestDetectTestGaps:
         assert report.total_production_modules == 1
 
     def test_tools_and_ops_excluded(self):
-        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+#  # MOVED: from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 
         result = self._make_result(
             modules=["tools/gen.py", "ops_scripts/deploy.py", "agentic_core/core.py"],
@@ -286,7 +343,7 @@ class TestDetectTestGaps:
         assert report.total_production_modules == 1
 
     def test_coverage_rate_partial(self):
-        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+#  # MOVED: from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 
         result = self._make_result(
             modules=["agentic_core/a.py", "agentic_core/b.py"],
@@ -296,7 +353,7 @@ class TestDetectTestGaps:
         assert report.coverage_rate == pytest_approx(0.5, abs=0.01)
 
     def test_gap_by_layer_populated(self):
-        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+#  # MOVED: from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 
         result = self._make_result(
             modules=["agentic_core/L0_routing/foo.py", "agentic_core/L5_safety/bar.py"],
@@ -305,7 +362,7 @@ class TestDetectTestGaps:
         assert "L0" in report.gap_by_layer or "L5" in report.gap_by_layer
 
     def test_to_json_round_trip(self):
-        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+#  # MOVED: from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 
         result = self._make_result(
             modules=["agentic_core/L0_routing/foo.py"],
@@ -314,7 +371,7 @@ class TestDetectTestGaps:
         json.loads(report.to_json())
 
     def test_summary_string_format(self):
-        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+#  # MOVED: from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 
         result = self._make_result(modules=[])
         report = detect_test_gaps(result)  # type: ignore[arg-type]
@@ -323,7 +380,7 @@ class TestDetectTestGaps:
         assert "uncovered=" in report.summary
 
     def test_include_layers_filter(self):
-        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+#  # MOVED: from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 
         result = self._make_result(
             modules=["agentic_core/L0_routing/foo.py", "agentic_core/L5_safety/bar.py"],
@@ -355,21 +412,21 @@ class TestCanonicalSnapshot:
         )
 
     def test_build_snapshot_returns_canonical_snapshot(self):
-        from agentic_core.adg.analysis.CanonicalSnapshot import CanonicalSnapshot, build_snapshot
+#  # MOVED: from agentic_core.adg.analysis.CanonicalSnapshot import CanonicalSnapshot, build_snapshot
 
         result = self._make_scan_result()
         snap = build_snapshot(result)  # type: ignore[arg-type]
         assert isinstance(snap, CanonicalSnapshot)
 
     def test_graph_hash_is_64_hex_chars(self):
-        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+#  # MOVED: from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
 
         snap = build_snapshot(self._make_scan_result())  # type: ignore[arg-type]
         assert len(snap.graph_hash) == 64
         assert all(c in "0123456789abcdef" for c in snap.graph_hash)
 
     def test_deterministic_same_input(self):
-        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+#  # MOVED: from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
 
         r = self._make_scan_result()
         snap1 = build_snapshot(r)  # type: ignore[arg-type]
@@ -377,34 +434,34 @@ class TestCanonicalSnapshot:
         assert snap1.graph_hash == snap2.graph_hash
 
     def test_edge_count_matches(self):
-        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+#  # MOVED: from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
 
         r = self._make_scan_result()
         snap = build_snapshot(r)  # type: ignore[arg-type]
         assert snap.edge_count == 3
 
     def test_violation_count_extracted(self):
-        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+#  # MOVED: from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
 
         r = self._make_scan_result()
         snap = build_snapshot(r)  # type: ignore[arg-type]
         assert snap.violation_count == 1
 
     def test_coverage_count_extracted(self):
-        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+#  # MOVED: from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
 
         r = self._make_scan_result()
         snap = build_snapshot(r)  # type: ignore[arg-type]
         assert snap.coverage_count == 1
 
     def test_to_dict_json_serializable(self):
-        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+#  # MOVED: from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
 
         snap = build_snapshot(self._make_scan_result())  # type: ignore[arg-type]
         json.dumps(snap.to_dict())
 
     def test_from_dict_round_trip(self):
-        from agentic_core.adg.analysis.CanonicalSnapshot import CanonicalSnapshot, build_snapshot
+#  # MOVED: from agentic_core.adg.analysis.CanonicalSnapshot import CanonicalSnapshot, build_snapshot
 
         snap = build_snapshot(self._make_scan_result())  # type: ignore[arg-type]
         restored = CanonicalSnapshot.from_dict(snap.to_dict())
@@ -413,7 +470,7 @@ class TestCanonicalSnapshot:
         assert restored.violation_count == snap.violation_count
 
     def test_different_edges_different_hash(self):
-        from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
+#  # MOVED: from agentic_core.adg.analysis.CanonicalSnapshot import build_snapshot
 
         r1 = _ScanResult(
             edges=[_Edge("ADG::Module::a.py", "imports", "ADG::Module::b.py")],  # type: ignore[arg-type]
@@ -437,7 +494,7 @@ class TestGraphDiff:
     def _snap(self, edges: list[tuple[str, str, str]], violations: int = 0) -> object:
         import hashlib
 
-        from agentic_core.adg.analysis.CanonicalSnapshot import CanonicalSnapshot
+#  # MOVED: from agentic_core.adg.analysis.CanonicalSnapshot import CanonicalSnapshot
 
         edge_text = "\n".join(f"{f}|{r}|{t}" for f, r, t in sorted(edges))
         h = hashlib.sha256(edge_text.encode()).hexdigest()
@@ -457,7 +514,7 @@ class TestGraphDiff:
         )
 
     def test_identical_snapshots_is_identical(self):
-        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+#  # MOVED: from agentic_core.adg.analysis.GraphDiff import diff_snapshots
 
         edges = [("A", "imports", "B"), ("C", "covers", "D")]
         snap = self._snap(edges)
@@ -465,7 +522,7 @@ class TestGraphDiff:
         assert result.is_identical is True
 
     def test_added_edge_detected(self):
-        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+#  # MOVED: from agentic_core.adg.analysis.GraphDiff import diff_snapshots
 
         snap1 = self._snap([("A", "imports", "B")])
         snap2 = self._snap([("A", "imports", "B"), ("C", "imports", "D")])
@@ -474,7 +531,7 @@ class TestGraphDiff:
         assert diff.new_edges[0] == ("C", "imports", "D")
 
     def test_removed_edge_detected(self):
-        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+#  # MOVED: from agentic_core.adg.analysis.GraphDiff import diff_snapshots
 
         snap1 = self._snap([("A", "imports", "B"), ("C", "imports", "D")])
         snap2 = self._snap([("A", "imports", "B")])
@@ -482,7 +539,7 @@ class TestGraphDiff:
         assert len(diff.removed_edges) == 1
 
     def test_new_violation_increases_risk_delta(self):
-        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+#  # MOVED: from agentic_core.adg.analysis.GraphDiff import diff_snapshots
 
         snap1 = self._snap([("A", "imports", "B")], violations=0)
         snap2 = self._snap([("A", "imports", "B"), ("X", "violates", "Y")], violations=1)
@@ -490,7 +547,7 @@ class TestGraphDiff:
         assert diff.risk_delta > 0
 
     def test_resolved_violation_decreases_risk_delta(self):
-        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+#  # MOVED: from agentic_core.adg.analysis.GraphDiff import diff_snapshots
 
         snap1 = self._snap([("X", "violates", "Y")], violations=1)
         snap2 = self._snap([], violations=0)
@@ -498,7 +555,7 @@ class TestGraphDiff:
         assert diff.risk_delta < 0
 
     def test_summary_contains_edge_counts(self):
-        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+#  # MOVED: from agentic_core.adg.analysis.GraphDiff import diff_snapshots
 
         snap1 = self._snap([])
         snap2 = self._snap([("A", "imports", "B")])
@@ -506,14 +563,14 @@ class TestGraphDiff:
         assert "edge" in diff.summary.lower() or "ADG" in diff.summary
 
     def test_to_dict_json_serializable(self):
-        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+#  # MOVED: from agentic_core.adg.analysis.GraphDiff import diff_snapshots
 
         snap = self._snap([("A", "imports", "B")])
         diff = diff_snapshots(snap, snap)  # type: ignore[arg-type]
         json.dumps(diff.to_dict())
 
     def test_edge_delta_correct(self):
-        from agentic_core.adg.analysis.GraphDiff import diff_snapshots
+#  # MOVED: from agentic_core.adg.analysis.GraphDiff import diff_snapshots
 
         snap1 = self._snap([("A", "imports", "B")])
         snap2 = self._snap([("A", "imports", "B"), ("C", "imports", "D"), ("E", "imports", "F")])
@@ -530,7 +587,7 @@ class TestEdgeConfidence:
     """Unit tests for score_edge, score_edges, confidence_summary."""
 
     def test_imports_get_highest_confidence(self):
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+#  # MOVED: from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         e = _Edge("A", "imports", "B", edge_kind="import")
         ec = score_edge(e)  # type: ignore[arg-type]
@@ -538,14 +595,14 @@ class TestEdgeConfidence:
         assert ec.provenance == "ast_import"
 
     def test_violates_gets_low_confidence(self):
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+#  # MOVED: from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         e = _Edge("A", "violates", "B", edge_kind="call")
         ec = score_edge(e)  # type: ignore[arg-type]
         assert ec.confidence < 0.80
 
     def test_star_import_reduces_confidence(self):
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+#  # MOVED: from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         e_normal = _Edge("A", "imports", "B", edge_kind="import")
         e_star = _Edge("A", "imports", "B", edge_kind="star_import")
@@ -554,7 +611,7 @@ class TestEdgeConfidence:
         assert ec_star.confidence < ec_normal.confidence
 
     def test_dynamic_exec_reduces_confidence(self):
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+#  # MOVED: from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         e_norm = _Edge("A", "imports", "B", edge_kind="import")
         e_dyn = _Edge("A", "dynamic_exec", "B", edge_kind="dynamic_exec")
@@ -563,7 +620,7 @@ class TestEdgeConfidence:
         assert ec_dyn.confidence < ec_norm.confidence
 
     def test_score_edge_preserves_from_to_names(self):
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+#  # MOVED: from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         e = _Edge("from_mod", "imports", "to_mod", edge_kind="import")
         ec = score_edge(e)  # type: ignore[arg-type]
@@ -571,7 +628,7 @@ class TestEdgeConfidence:
         assert ec.to_name == "to_mod"
 
     def test_confidence_clamped_between_0_and_1(self):
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+#  # MOVED: from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         for rel in ["imports", "violates", "covers", "dynamic_exec"]:
             e = _Edge("A", rel, "B", edge_kind="import")
@@ -579,7 +636,7 @@ class TestEdgeConfidence:
             assert 0.0 <= ec.confidence <= 1.0
 
     def test_score_edges_sorted(self):
-        from agentic_core.adg.analysis.EdgeConfidence import score_edges
+#  # MOVED: from agentic_core.adg.analysis.EdgeConfidence import score_edges
 
         edges = [
             _Edge("Z", "imports", "A"),
@@ -591,7 +648,7 @@ class TestEdgeConfidence:
         assert names == sorted(names)
 
     def test_confidence_summary_tier_breakdown(self):
-        from agentic_core.adg.analysis.EdgeConfidence import confidence_summary, score_edges
+#  # MOVED: from agentic_core.adg.analysis.EdgeConfidence import confidence_summary, score_edges
 
         edges = [
             _Edge("A", "imports", "B", edge_kind="import"),  # 1.00 → high
@@ -605,14 +662,14 @@ class TestEdgeConfidence:
         assert 0.0 < summary["average_confidence"] <= 1.0
 
     def test_confidence_summary_json_serializable(self):
-        from agentic_core.adg.analysis.EdgeConfidence import confidence_summary, score_edges
+#  # MOVED: from agentic_core.adg.analysis.EdgeConfidence import confidence_summary, score_edges
 
         edges = [_Edge("A", "imports", "B")]
         scored = score_edges(edges)  # type: ignore[arg-type]
         json.dumps(confidence_summary(scored))
 
     def test_unknown_relation_uses_fallback_provenance(self):
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+#  # MOVED: from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         e = _Edge("A", "unknown_relation_type_xyz", "B", edge_kind="import")
         ec = score_edge(e)  # type: ignore[arg-type]
@@ -635,7 +692,7 @@ class TestRepairRouting:
         ]
 
     def test_violates_routes_to_architecture_governor(self):
-        from agentic_core.adg.analysis.RepairRoute import route_violations
+#  # MOVED: from agentic_core.adg.analysis.RepairRoute import route_violations
 
         edges = self._make_edges(["violates"])
         routes = route_violations(edges)  # type: ignore[arg-type]
@@ -644,42 +701,42 @@ class TestRepairRouting:
         assert routes[0].ci_lane == "layer_guard"
 
     def test_dynamic_exec_routes_to_dynamic_exec_agent(self):
-        from agentic_core.adg.analysis.RepairRoute import route_violations
+#  # MOVED: from agentic_core.adg.analysis.RepairRoute import route_violations
 
         edges = self._make_edges(["dynamic_exec"])
         routes = route_violations(edges)  # type: ignore[arg-type]
         assert any(r.recommended_agent == "DynamicExecReviewAgent" for r in routes)
 
     def test_non_violation_edges_not_routed(self):
-        from agentic_core.adg.analysis.RepairRoute import route_violations
+#  # MOVED: from agentic_core.adg.analysis.RepairRoute import route_violations
 
         edges = self._make_edges(["imports", "calls", "instantiates"])
         routes = route_violations(edges)  # type: ignore[arg-type]
         assert routes == []
 
     def test_multiple_violations_produce_multiple_routes(self):
-        from agentic_core.adg.analysis.RepairRoute import route_violations
+#  # MOVED: from agentic_core.adg.analysis.RepairRoute import route_violations
 
         edges = self._make_edges(["violates", "violates", "dynamic_exec"])
         routes = route_violations(edges)  # type: ignore[arg-type]
         assert len(routes) == 3
 
     def test_repair_route_to_dict_json_serializable(self):
-        from agentic_core.adg.analysis.RepairRoute import route_violations
+#  # MOVED: from agentic_core.adg.analysis.RepairRoute import route_violations
 
         edges = self._make_edges(["violates"])
         routes = route_violations(edges)  # type: ignore[arg-type]
         json.dumps(routes[0].to_dict())
 
     def test_violates_severity_is_critical(self):
-        from agentic_core.adg.analysis.RepairRoute import route_violations
+#  # MOVED: from agentic_core.adg.analysis.RepairRoute import route_violations
 
         edges = self._make_edges(["violates"])
         routes = route_violations(edges)  # type: ignore[arg-type]
         assert routes[0].severity == "critical"
 
     def test_route_summary_groups_by_severity(self):
-        from agentic_core.adg.analysis.RepairRoute import repair_routing_summary, route_violations
+#  # MOVED: from agentic_core.adg.analysis.RepairRoute import repair_routing_summary, route_violations
 
         edges = self._make_edges(["violates", "dynamic_exec"])
         routes = route_violations(edges)  # type: ignore[arg-type]
@@ -688,7 +745,7 @@ class TestRepairRouting:
         assert "total_routes" in summary
 
     def test_repair_route_preserves_source_file(self):
-        from agentic_core.adg.analysis.RepairRoute import route_violations
+#  # MOVED: from agentic_core.adg.analysis.RepairRoute import route_violations
 
         edge = _Edge("mymodule.py", "violates", "other.py", source_file="mymodule.py")
         routes = route_violations([edge])  # type: ignore[arg-type]
@@ -704,52 +761,52 @@ class TestOwnership:
     """Unit tests for _infer_ownership and OwnershipRegistry."""
 
     def test_l0_routing_is_platform_high(self):
-        from agentic_core.adg.analysis.ModuleOwnership import _infer_ownership
+#  # MOVED: from agentic_core.adg.analysis.ModuleOwnership import _infer_ownership
 
         o = _infer_ownership("agentic_core/L0_routing/foo.py")
         assert o.owner == "platform"
         assert o.criticality == "high"
 
     def test_l5_safety_is_safety_governance(self):
-        from agentic_core.adg.analysis.ModuleOwnership import _infer_ownership
+#  # MOVED: from agentic_core.adg.analysis.ModuleOwnership import _infer_ownership
 
         o = _infer_ownership("agentic_core/L5_safety/bar.py")
         assert o.owner == "safety"
         assert o.runtime_surface == "governance"
 
     def test_apps_rg_is_apps_rg(self):
-        from agentic_core.adg.analysis.ModuleOwnership import _infer_ownership
+#  # MOVED: from agentic_core.adg.analysis.ModuleOwnership import _infer_ownership
 
         o = _infer_ownership("apps_rg/agents/my_agent.py")
         assert o.owner == "apps_rg"
 
     def test_unknown_path_gets_unknown_owner(self):
-        from agentic_core.adg.analysis.ModuleOwnership import _infer_ownership
+#  # MOVED: from agentic_core.adg.analysis.ModuleOwnership import _infer_ownership
 
         o = _infer_ownership("some/external/dep.py")
         assert o.owner == "unknown"
 
     def test_adg_module_prefix_stripped(self):
-        from agentic_core.adg.analysis.ModuleOwnership import _infer_ownership
+#  # MOVED: from agentic_core.adg.analysis.ModuleOwnership import _infer_ownership
 
         o = _infer_ownership("ADG::Module::agentic_core/L0_routing/foo.py")
         assert o.owner == "platform"
 
     def test_to_dict_json_serializable(self):
-        from agentic_core.adg.analysis.ModuleOwnership import _infer_ownership
+#  # MOVED: from agentic_core.adg.analysis.ModuleOwnership import _infer_ownership
 
         o = _infer_ownership("agentic_core/L0_routing/foo.py")
         json.dumps(o.to_dict())
 
     def test_registry_lookup_returns_ownership(self):
-        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
+#  # MOVED: from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
 
         reg = OwnershipRegistry.from_module_list(["agentic_core/L0_routing/foo.py", "apps_rg/bar.py"])
         o = reg.get("agentic_core/L0_routing/foo.py")
         assert o.owner == "platform"
 
     def test_blast_radius_report_aggregate_risk(self):
-        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
+#  # MOVED: from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
 
         modules = [
             "agentic_core/L0_routing/foo.py",
@@ -762,7 +819,7 @@ class TestOwnership:
         assert report["impacted_module_count"] == 1
 
     def test_registry_all_modules_registered(self):
-        from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
+#  # MOVED: from agentic_core.adg.analysis.ModuleOwnership import OwnershipRegistry
 
         modules = [
             "agentic_core/L0_routing/a.py",

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -76,10 +76,10 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.config.structure_blueprint.classification import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.classification import (
     CLASSIFICATION_SUFFIX_PATTERNS,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -172,6 +172,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestClassificationSuffixPatterns:
     def test_is_mapping(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.config.structure_blueprint.classification import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         assert isinstance(CLASSIFICATION_SUFFIX_PATTERNS, dict | type(CLASSIFICATION_SUFFIX_PATTERNS))
 
     def test_agent_pattern_present(self):

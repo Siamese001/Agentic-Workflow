@@ -10,7 +10,7 @@ import time
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -93,16 +93,16 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L2_execution.enforcement.budget_enforcer import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.budget_enforcer import (
     BudgetEnforcer,
     BudgetExceeded,
     _wall_clock_cap_threading,
 )
-from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
-from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope, ToolBudget
+#  # MOVED: from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
+#  # MOVED: from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope, ToolBudget
 
 inject_key_source(TestKeySource())
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -206,6 +206,11 @@ def _make_envelope(compute_ms: int = 5000, memory_mb: int = 256, stdout_bytes: i
 
 class TestBudgetEnforcerStdoutCap:
     def test_stdout_within_cap_succeeds(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.enforcement.budget_enforcer import (
+        from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
+        from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope, ToolBudget
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test stdout_within_cap_succeeds runtime behavior."""
     # Arrange
     # TODO: Set up test data for stdout_within_cap_succeeds

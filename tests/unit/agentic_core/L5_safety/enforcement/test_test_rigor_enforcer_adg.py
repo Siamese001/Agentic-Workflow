@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L5_safety.enforcement.test_rigor_enforcer  # noqa: F401
+#  # MOVED: import agentic_core.L5_safety.enforcement.test_rigor_enforcer  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L5_safety.enforcement.test_rigor_enforcer  # noqa: F401
     """Module test_rigor_enforcer must be importable."""
     assert agentic_core.L5_safety.enforcement.test_rigor_enforcer is not None

@@ -18,10 +18,10 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L2_EXECUTION_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -68,7 +68,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_deterministic_loop_detector", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_deterministic_loop_detector", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_deterministic_loop_detector", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -197,6 +197,18 @@ class TestStructuralContract:
     REQUIRED_METHODS = {"increment_and_check", "get_current_step_count", "reset_trace"}
 
     def test_module_exists(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import ToolBudget
+        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
         assert MODULE_PATH.exists(), "deterministic_loop_detector.py must exist in L2_execution/enforcement"
 
     def test_required_classes_present(self):
@@ -260,7 +272,7 @@ class TestStructuralContract:
 
 class TestToolBudgetExceededError:
     def test_error_has_reason_code(self):
-        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
             ToolBudgetExceededError,
         )
 
@@ -268,7 +280,7 @@ class TestToolBudgetExceededError:
         assert exc.reason_code == "TOOL_BUDGET_EXCEEDED"
 
     def test_error_carries_tool_name_and_budget(self):
-        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
             ToolBudgetExceededError,
         )
 
@@ -277,7 +289,7 @@ class TestToolBudgetExceededError:
         assert exc.budget == 10
 
     def test_error_message_contains_tool_name(self):
-        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
             ToolBudgetExceededError,
         )
 
@@ -293,7 +305,7 @@ class TestToolBudgetExceededError:
 class TestIncrementAndCheck:
     @pytest.fixture
     def detector(self):
-        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
             DeterministicLoopDetector,
         )
 
@@ -301,7 +313,7 @@ class TestIncrementAndCheck:
 
     @pytest.fixture
     def budget_3(self):
-        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import ToolBudget
+#  # MOVED: from agentic_core.L2_execution.enforcement.deterministic_loop_detector import ToolBudget
 
         return ToolBudget(max_steps=3)
 
@@ -332,7 +344,7 @@ class TestIncrementAndCheck:
 
 class TestTraceIsolation:
     def test_separate_traces_independent(self):
-        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
             DeterministicLoopDetector,
             ToolBudget,
             ToolBudgetExceededError,
@@ -352,7 +364,7 @@ class TestTraceIsolation:
         detector.increment_and_check("trace-beta", "tool", budget)
 
     def test_unrelated_tool_names_independent(self):
-        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
             DeterministicLoopDetector,
             ToolBudget,
             ToolBudgetExceededError,
@@ -375,7 +387,7 @@ class TestTraceIsolation:
 
 class TestResetTrace:
     def test_reset_clears_counts(self):
-        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
             DeterministicLoopDetector,
             ToolBudget,
         )
@@ -391,7 +403,7 @@ class TestResetTrace:
         assert detector.get_current_step_count("trace-r", "tool") == 0
 
     def test_reset_does_not_affect_other_traces(self):
-        from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
             DeterministicLoopDetector,
             ToolBudget,
         )

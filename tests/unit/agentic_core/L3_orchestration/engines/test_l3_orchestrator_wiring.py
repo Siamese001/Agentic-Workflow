@@ -56,22 +56,30 @@ def _src_text():
 class TestIOrchestratorProtocol:
     def test_protocol_is_importable(self):
         from agentic_core.seams.orchestration_protocols import IOrchestrator
+        from agentic_core.seams.orchestration_protocols import IOrchestrator
+        from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
+        from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
+        from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
+        from agentic_core.seams.orchestration_protocols import IOrchestrator
+        from agentic_core.seams.orchestration_protocols import GovernedPayload
+        from agentic_core.seams.orchestration_protocols import OrchestrationResult
+#  # MOVED: from agentic_core.seams.orchestration_protocols import IOrchestrator
         assert IOrchestrator is not None
 
     def test_orchestrate_method_in_protocol(self):
-        from agentic_core.seams.orchestration_protocols import IOrchestrator
+#  # MOVED: from agentic_core.seams.orchestration_protocols import IOrchestrator
         assert hasattr(IOrchestrator, "orchestrate")
 
     def test_iorchestratorprotocol_is_importable(self):
-        from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
+#  # MOVED: from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
         assert IOrchestratorProtocol is not None
 
     def test_iorchestratorprotocol_has_orchestrate(self):
-        from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
+#  # MOVED: from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
         assert hasattr(IOrchestratorProtocol, "orchestrate")
 
     def test_iorchestratorprotocol_has_dispatch(self):
-        from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
+#  # MOVED: from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
         assert hasattr(IOrchestratorProtocol, "dispatch")
 
 
@@ -142,15 +150,15 @@ class TestGetConsolidatedOrchestrator:
 
 class TestIOrchestratorsSeamContract:
     def test_canonical_seam_protocol_has_orchestrate(self):
-        from agentic_core.seams.orchestration_protocols import IOrchestrator
+#  # MOVED: from agentic_core.seams.orchestration_protocols import IOrchestrator
         assert callable(getattr(IOrchestrator, "orchestrate", None)) or hasattr(IOrchestrator, "orchestrate")
 
     def test_governed_payload_importable(self):
-        from agentic_core.seams.orchestration_protocols import GovernedPayload
+#  # MOVED: from agentic_core.seams.orchestration_protocols import GovernedPayload
         assert GovernedPayload is not None
 
     def test_orchestration_result_importable_from_seams(self):
-        from agentic_core.seams.orchestration_protocols import OrchestrationResult
+#  # MOVED: from agentic_core.seams.orchestration_protocols import OrchestrationResult
         assert OrchestrationResult is not None
 
 

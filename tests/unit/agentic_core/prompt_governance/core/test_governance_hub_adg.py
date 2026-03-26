@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.prompt_governance.core.governance_hub  # noqa: F401
+#  # MOVED: import agentic_core.prompt_governance.core.governance_hub  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.prompt_governance.core.governance_hub  # noqa: F401
     """Module governance_hub must be importable."""
     assert agentic_core.prompt_governance.core.governance_hub is not None

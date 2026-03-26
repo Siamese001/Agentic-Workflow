@@ -11,7 +11,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 try:
-    import agentic_core.L2_execution.types.mcp_client_types as _mod  # noqa: F401  # ADG covers
+#  # MOVED: import agentic_core.L2_execution.types.mcp_client_types as _mod  # noqa: F401  # ADG covers
 except (ValueError, TypeError, RuntimeError) as e:
     _mod = None
 
@@ -33,6 +33,7 @@ def _func_names():
 
 class TestMCPClientTypesSource:
     def test_source_exists(self):
+        import agentic_core.L2_execution.types.mcp_client_types as _mod  # noqa: F401  # ADG covers
     """Test source_exists runtime behavior."""
     # Arrange
     # TODO: Set up test data for source_exists

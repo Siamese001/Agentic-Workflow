@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.interfaces.spine import (  # noqa: F401
+#  # MOVED: from agentic_core.interfaces.spine import (  # noqa: F401
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,
@@ -21,6 +21,7 @@ from agentic_core.interfaces.spine import (  # noqa: F401
 
 class TestMaxRetriesConstant:
     def test_is_not_none(self):
+        from agentic_core.interfaces.spine import (  # noqa: F401
     """Test is_not_none contract compliance."""
     # Arrange
     # TODO: Set up contract test scenario

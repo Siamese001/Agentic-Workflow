@@ -6,7 +6,7 @@ force mode, and sentinel-based user content preservation.
 
 from __future__ import annotations
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -69,7 +69,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_incident_bundle_generator", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_incident_bundle_generator", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_incident_bundle_generator", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -184,6 +184,8 @@ class TestFirstRun:
     """First run on empty dir creates the full bundle."""
 
     def test_exit_zero(self, tmp_path):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         out = tmp_path / "bundle"
         code, msgs = create_bundle(out, INCIDENT_ID)
         assert code == 0

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from apps_eval.types.eval_types import (
+#  # MOVED: from apps_eval.types.eval_types import (
     EvalRequest,
     EvalResult,
     EvalRunSummary,
@@ -24,6 +24,30 @@ from apps_eval.types.eval_types import (
 
 class TestEvalTypes:
     def test_eval_status_values(self) -> None:
+        from apps_eval.types.eval_types import (
+        from apps_eval.engines.scorecard_engine import ScorecardEngine
+        from apps_eval.types.eval_types import SuiteResult
+        from apps_eval.engines.scorecard_engine import ScorecardEngine
+        from apps_eval.engines.scorecard_engine import ScorecardEngine
+        from apps_eval.types.eval_types import SuiteResult
+        from apps_eval.engines.regression_detector import RegressionDetector
+        from apps_eval.types.eval_types import ScorecardRow
+        from apps_eval.engines.regression_detector import RegressionDetector
+        from apps_eval.types.eval_types import ScorecardRow
+        from apps_eval.engines.regression_detector import RegressionDetector
+        from apps_eval.types.eval_types import ScorecardRow
+        from apps_eval.validators.eval_gate_validator import EvalGateValidator
+        from apps_eval.validators.eval_gate_validator import EvalGateValidator
+        from apps_eval.validators.eval_gate_validator import EvalGateValidator
+        from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
+        from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
+        from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
+        from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
+        from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
+        from apps_eval.config.agent_spec_config import load_eval_specs
+        from apps_eval.config.agent_spec_config import load_eval_specs
+        from apps_eval.config.agent_spec_config import load_eval_specs
+        from apps_eval.config.reasoning_toggles_config import DEFAULT_TOGGLES
         assert EvalStatus.COMPLETE.value == "complete"
         assert EvalStatus.DRY_RUN.value == "dry_run"
         assert EvalStatus.REGRESSION.value == "regression"
@@ -131,8 +155,8 @@ class TestEvalTypes:
         assert result.total_weight > 0
 
     def test_compute_produces_rows(self) -> None:
-        from apps_eval.engines.scorecard_engine import ScorecardEngine
-        from apps_eval.types.eval_types import SuiteResult
+#  # MOVED: from apps_eval.engines.scorecard_engine import ScorecardEngine
+#  # MOVED: from apps_eval.types.eval_types import SuiteResult
 
         suites = [SuiteResult(suite_id="exec_brief_generation", display_name="Exec", pass_rate=1.0)]
         engine = ScorecardEngine()
@@ -140,15 +164,15 @@ class TestEvalTypes:
         assert len(result.rows) > 0
 
     def test_compute_empty_suites(self) -> None:
-        from apps_eval.engines.scorecard_engine import ScorecardEngine
+#  # MOVED: from apps_eval.engines.scorecard_engine import ScorecardEngine
 
         engine = ScorecardEngine()
         result = engine.compute([])
         assert result.overall_score == 0.0
 
     def test_verdict_pass_threshold(self) -> None:
-        from apps_eval.engines.scorecard_engine import ScorecardEngine
-        from apps_eval.types.eval_types import SuiteResult
+#  # MOVED: from apps_eval.engines.scorecard_engine import ScorecardEngine
+#  # MOVED: from apps_eval.types.eval_types import SuiteResult
 
         suites = [SuiteResult(suite_id="routing_enforcement", display_name="Routing", pass_rate=1.0)]
         engine = ScorecardEngine()
@@ -160,8 +184,8 @@ class TestEvalTypes:
 
 class TestRegressionDetector:
     def test_no_baseline_all_no_baseline_verdict(self, tmp_path) -> None:
-        from apps_eval.engines.regression_detector import RegressionDetector
-        from apps_eval.types.eval_types import ScorecardRow
+#  # MOVED: from apps_eval.engines.regression_detector import RegressionDetector
+#  # MOVED: from apps_eval.types.eval_types import ScorecardRow
 
         rows = [
             ScorecardRow("correctness", "Correctness", 0.85, 3.0, 2.55, "PASS"),
@@ -176,8 +200,8 @@ class TestRegressionDetector:
     def test_regression_detected_on_score_drop(self, tmp_path) -> None:
         import json
 
-        from apps_eval.engines.regression_detector import RegressionDetector
-        from apps_eval.types.eval_types import ScorecardRow
+#  # MOVED: from apps_eval.engines.regression_detector import RegressionDetector
+#  # MOVED: from apps_eval.types.eval_types import ScorecardRow
 
         baseline = {"scores": {"correctness": 0.90, "determinism": 0.90}}
         baseline_file = tmp_path / "eval_baseline.json"
@@ -195,8 +219,8 @@ class TestRegressionDetector:
         assert regressions[0].dimension_id == "correctness"
 
     def test_auto_update_baseline_writes_file(self, tmp_path) -> None:
-        from apps_eval.engines.regression_detector import RegressionDetector
-        from apps_eval.types.eval_types import ScorecardRow
+#  # MOVED: from apps_eval.engines.regression_detector import RegressionDetector
+#  # MOVED: from apps_eval.types.eval_types import ScorecardRow
 
         rows = [ScorecardRow("correctness", "Correctness", 0.85, 3.0, 2.55, "PASS")]
         detector = RegressionDetector(baseline_dir=str(tmp_path))
@@ -207,7 +231,7 @@ class TestRegressionDetector:
 
 class TestEvalGateValidator:
     def test_passes_all_suites_above_threshold(self) -> None:
-        from apps_eval.validators.eval_gate_validator import EvalGateValidator
+#  # MOVED: from apps_eval.validators.eval_gate_validator import EvalGateValidator
 
         suites = [
             SuiteResult(suite_id="routing_enforcement", display_name="Routing", pass_rate=0.90),
@@ -218,7 +242,7 @@ class TestEvalGateValidator:
         assert result.passed is True
 
     def test_fails_low_overall_score(self) -> None:
-        from apps_eval.validators.eval_gate_validator import EvalGateValidator
+#  # MOVED: from apps_eval.validators.eval_gate_validator import EvalGateValidator
 
         suites = [SuiteResult(suite_id="s1", display_name="S1", pass_rate=0.50)]
         validator = EvalGateValidator(min_overall_score=0.70)
@@ -226,7 +250,7 @@ class TestEvalGateValidator:
         assert result.passed is False
 
     def test_fails_on_regression(self) -> None:
-        from apps_eval.validators.eval_gate_validator import EvalGateValidator
+#  # MOVED: from apps_eval.validators.eval_gate_validator import EvalGateValidator
 
         regressions = [
             RegressionRecord(
@@ -246,7 +270,7 @@ class TestEvalGateValidator:
 
 class TestEvalOrchestratorDryRun:
     def test_dry_run_returns_dry_run_status(self) -> None:
-        from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
+#  # MOVED: from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
 
         req = EvalRequest(suite_ids=["exec_brief_generation"], dry_run=True)
         orch = EvalOrchestrator(dry_run=True)
@@ -254,7 +278,7 @@ class TestEvalOrchestratorDryRun:
         assert result.status == EvalStatus.DRY_RUN
 
     def test_dry_run_no_artifact_paths(self) -> None:
-        from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
+#  # MOVED: from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
 
         req = EvalRequest(suite_ids=["exec_brief_generation"], dry_run=True)
         orch = EvalOrchestrator(dry_run=True)
@@ -262,7 +286,7 @@ class TestEvalOrchestratorDryRun:
         assert result.artifact_paths == []
 
     def test_dry_run_has_scorecard(self) -> None:
-        from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
+#  # MOVED: from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
 
         req = EvalRequest(suite_ids=["exec_brief_generation"], dry_run=True)
         orch = EvalOrchestrator(dry_run=True)
@@ -270,7 +294,7 @@ class TestEvalOrchestratorDryRun:
         assert len(result.scorecard) > 0
 
     def test_trace_id_deterministic(self) -> None:
-        from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
+#  # MOVED: from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
 
         req1 = EvalRequest(suite_ids=["exec_brief_generation", "routing_enforcement"])
         req2 = EvalRequest(suite_ids=["exec_brief_generation", "routing_enforcement"])
@@ -279,7 +303,7 @@ class TestEvalOrchestratorDryRun:
         assert t1 == t2
 
     def test_overall_score_in_range(self) -> None:
-        from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
+#  # MOVED: from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
 
         req = EvalRequest(suite_ids=["exec_brief_generation"], dry_run=True)
         orch = EvalOrchestrator(dry_run=True)
@@ -289,28 +313,28 @@ class TestEvalOrchestratorDryRun:
 
 class TestEvalConfig:
     def test_load_eval_specs_returns_defaults(self) -> None:
-        from apps_eval.config.agent_spec_config import load_eval_specs
+#  # MOVED: from apps_eval.config.agent_spec_config import load_eval_specs
 
         specs = load_eval_specs()
         assert specs is not None
         assert specs.version == "1.0.0"
 
     def test_benchmark_suites_configured(self) -> None:
-        from apps_eval.config.agent_spec_config import load_eval_specs
+#  # MOVED: from apps_eval.config.agent_spec_config import load_eval_specs
 
         specs = load_eval_specs()
         assert len(specs.benchmark_suites) > 0
         assert "exec_brief_generation" in specs.benchmark_suites
 
     def test_scorecard_dimensions_weights_positive(self) -> None:
-        from apps_eval.config.agent_spec_config import load_eval_specs
+#  # MOVED: from apps_eval.config.agent_spec_config import load_eval_specs
 
         specs = load_eval_specs()
         total_weight = sum(d.weight for d in specs.scorecard_dimensions)
         assert total_weight > 0
 
     def test_reasoning_toggles_defaults(self) -> None:
-        from apps_eval.config.reasoning_toggles_config import DEFAULT_TOGGLES
+#  # MOVED: from apps_eval.config.reasoning_toggles_config import DEFAULT_TOGGLES
 
         assert DEFAULT_TOGGLES.enable_scorecard is True
         assert DEFAULT_TOGGLES.enable_regression_detection is True

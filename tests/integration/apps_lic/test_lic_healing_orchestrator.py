@@ -5,7 +5,7 @@ from __future__ import annotations
 import sys
 from types import ModuleType
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -52,7 +52,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_lic_healing_orchestrator", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_lic_healing_orchestrator", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_lic_healing_orchestrator", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -227,7 +227,7 @@ class TestLicHealingOrchestratorExecuteHealing:
     def _get_orchestrator(self):
         if "apps_lic.reasoning.LicHealingOrchestrator" in sys.modules:
             del sys.modules["apps_lic.reasoning.LicHealingOrchestrator"]
-        from apps_lic.reasoning.LicHealingOrchestrator import LicHealingOrchestrator
+#  # MOVED: from apps_lic.reasoning.LicHealingOrchestrator import LicHealingOrchestrator
 
         orch = LicHealingOrchestrator.__new__(LicHealingOrchestrator)
         orch.recovery_playbooks = {
@@ -240,6 +240,9 @@ class TestLicHealingOrchestratorExecuteHealing:
         return orch
 
     def test_unknown_incident_returns_resolved(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from apps_lic.reasoning.LicHealingOrchestrator import LicHealingOrchestrator
         orch = self._get_orchestrator()
         result = orch._execute_healing({"type": "unknown_xyz"})
         assert result["status"] in ("resolved", "error")

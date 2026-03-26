@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -96,21 +96,21 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L2_execution.types.vllm_concurrency_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_concurrency_types import (
     VLLMStressRequest,
     build_worst_case_prompt,
     validate_concurrency_headroom,
 )
-from agentic_core.L2_execution.types.vllm_serving_profile_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_serving_profile_types import (
     PROFILE_LOCAL_FAST_7B,
     PROFILE_LOCAL_STRONG_14B,
 )
-from agentic_core.L2_execution.types.vllm_token_budget_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_token_budget_types import (
     TASK_CLASS_OUTPUT_CAPS,
     VLLM_MAX_TOKENS_ABSOLUTE,
     TaskClass,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -225,6 +225,11 @@ def make_requests(profile, task_class: str, n: int) -> list[VLLMStressRequest]:
 
 
 def test_7b_worst_case_prompt_passes_preflight():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.types.vllm_concurrency_types import (
+    from agentic_core.L2_execution.types.vllm_serving_profile_types import (
+    from agentic_core.L2_execution.types.vllm_token_budget_types import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     requests = make_requests(PROFILE_LOCAL_FAST_7B, TaskClass.PATCH_SUGGESTION.value, 1)
     result = validate_concurrency_headroom(PROFILE_LOCAL_FAST_7B, requests)
     assert result.all_within_budget, "Worst-case prompt should pass preflight on 7B"

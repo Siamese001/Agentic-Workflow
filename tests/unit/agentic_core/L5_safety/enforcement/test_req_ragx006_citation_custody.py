@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -58,7 +58,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_req_ragx006_citation_custody", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_req_ragx006_citation_custody", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_req_ragx006_citation_custody", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -190,7 +190,21 @@ pytestmark = pytest.mark.unit_min_deps
 
 
 def test_no_context_passes_without_citations():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     from agentic_core.L5_safety.enforcement.rag_guardrail import (
+    from agentic_core.L5_safety.enforcement.rag_guardrail import (
+    from agentic_core.L5_safety.enforcement.rag_guardrail import (
+    from agentic_core.L5_safety.enforcement.rag_guardrail import (
+    from agentic_core.L5_safety.enforcement.rag_guardrail import (
+    from agentic_core.L5_safety.enforcement.rag_guardrail import (
+    from agentic_core.L5_safety.enforcement.rag_guardrail import (
+    from agentic_core.L5_safety.enforcement.rag_guardrail import (
+    from agentic_core.L5_safety.enforcement.rag_guardrail import CitationBundle
+    from agentic_core.L5_safety.enforcement.rag_guardrail import CitationBundle
+    from agentic_core.L5_safety.enforcement.rag_guardrail import (
+    from agentic_core.L5_safety.enforcement.rag_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.rag_guardrail import (
         validate_citation_custody,
     )
 
@@ -198,7 +212,7 @@ def test_no_context_passes_without_citations():
 
 
 def test_empty_context_passes_without_citations():
-    from agentic_core.L5_safety.enforcement.rag_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.rag_guardrail import (
         validate_citation_custody,
     )
 
@@ -206,7 +220,7 @@ def test_empty_context_passes_without_citations():
 
 
 def test_single_chunk_with_matching_citation_passes():
-    from agentic_core.L5_safety.enforcement.rag_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.rag_guardrail import (
         CitationBundle,
         validate_citation_custody,
     )
@@ -225,7 +239,7 @@ def test_single_chunk_with_matching_citation_passes():
 
 
 def test_multiple_chunks_all_cited_passes():
-    from agentic_core.L5_safety.enforcement.rag_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.rag_guardrail import (
         CitationBundle,
         validate_citation_custody,
     )
@@ -249,7 +263,7 @@ def test_multiple_chunks_all_cited_passes():
 
 
 def test_context_without_citations_raises():
-    from agentic_core.L5_safety.enforcement.rag_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.rag_guardrail import (
         ExternalKnowledgeAccessViolation,
         validate_citation_custody,
     )
@@ -260,7 +274,7 @@ def test_context_without_citations_raises():
 
 
 def test_context_with_empty_citations_raises():
-    from agentic_core.L5_safety.enforcement.rag_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.rag_guardrail import (
         ExternalKnowledgeAccessViolation,
         validate_citation_custody,
     )
@@ -271,7 +285,7 @@ def test_context_with_empty_citations_raises():
 
 
 def test_partial_citations_raises_gap():
-    from agentic_core.L5_safety.enforcement.rag_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.rag_guardrail import (
         CitationBundle,
         ExternalKnowledgeAccessViolation,
         validate_citation_custody,
@@ -289,7 +303,7 @@ def test_partial_citations_raises_gap():
 
 
 def test_chunk_missing_chunk_id_field_raises():
-    from agentic_core.L5_safety.enforcement.rag_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.rag_guardrail import (
         CitationBundle,
         ExternalKnowledgeAccessViolation,
         validate_citation_custody,
@@ -309,7 +323,7 @@ def test_chunk_missing_chunk_id_field_raises():
 
 
 def test_citation_bundle_is_frozen():
-    from agentic_core.L5_safety.enforcement.rag_guardrail import CitationBundle
+#  # MOVED: from agentic_core.L5_safety.enforcement.rag_guardrail import CitationBundle
 
     cb = CitationBundle(chunk_id="c1", source_ref="a.md", byte_sha256="a" * 64, byte_range=(0, 10), score=0.9)
     with pytest.raises((AttributeError, TypeError)):
@@ -317,7 +331,7 @@ def test_citation_bundle_is_frozen():
 
 
 def test_citation_bundle_fields():
-    from agentic_core.L5_safety.enforcement.rag_guardrail import CitationBundle
+#  # MOVED: from agentic_core.L5_safety.enforcement.rag_guardrail import CitationBundle
 
     cb = CitationBundle(
         chunk_id="c1", source_ref="a.md", byte_sha256="abc123", byte_range=(0, 50), score=0.88
@@ -335,7 +349,7 @@ def test_citation_bundle_fields():
 
 
 def test_external_knowledge_access_violation_is_exception():
-    from agentic_core.L5_safety.enforcement.rag_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.rag_guardrail import (
         ExternalKnowledgeAccessViolation,
     )
 
@@ -343,7 +357,7 @@ def test_external_knowledge_access_violation_is_exception():
 
 
 def test_external_knowledge_access_violation_carries_message():
-    from agentic_core.L5_safety.enforcement.rag_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.rag_guardrail import (
         ExternalKnowledgeAccessViolation,
     )
 

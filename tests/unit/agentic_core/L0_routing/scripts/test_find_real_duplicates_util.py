@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L0_routing.scripts.find_real_duplicates_v2_util import (  # noqa: F401
+#  # MOVED: from agentic_core.L0_routing.scripts.find_real_duplicates_v2_util import (  # noqa: F401
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,
@@ -25,6 +25,7 @@ from agentic_core.L0_routing.scripts.find_real_duplicates_v2_util import (  # no
 
 class TestIsAgentFileFunction:
     def test_is_callable(self):
+        from agentic_core.L0_routing.scripts.find_real_duplicates_v2_util import (  # noqa: F401
     """Test is_callable runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

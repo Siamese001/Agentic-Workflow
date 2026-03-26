@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -76,11 +76,11 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.utils.location_utils_util import (
+#  # MOVED: from agentic_core.L5_safety.utils.location_utils_util import (
     get_agent_files,
     normalize_location_path,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -173,6 +173,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestNormalizeLocationPath:
     def test_forward_slashes(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.utils.location_utils_util import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         result = normalize_location_path("foo/bar/baz.py")
         assert "\\" not in result
 

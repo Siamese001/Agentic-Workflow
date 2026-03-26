@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from agentic_core.interfaces.write_gateway import compute_replay_key
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.interfaces.write_gateway import compute_replay_key
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -160,6 +160,8 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 class TestComputeReplayKey:
     def test_identical_inputs_produce_same_key(self):
+        from agentic_core.interfaces.write_gateway import compute_replay_key
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         k1 = compute_replay_key("ph1", ["tool_a", "tool_b"], "stdout_digest", "diff_hash")
         k2 = compute_replay_key("ph1", ["tool_a", "tool_b"], "stdout_digest", "diff_hash")
         assert k1 == k2

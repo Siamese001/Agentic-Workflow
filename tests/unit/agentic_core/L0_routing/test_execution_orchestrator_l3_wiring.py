@@ -17,8 +17,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -295,6 +295,8 @@ def _make_orch(path="A", allow=True, l3=None, max_reentry=3):
 
 class TestL3WiringBackwardsCompat:
     def test_no_l3_injected_defaults_to_none(self):
+        from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test no_l3_injected_defaults_to_none runtime behavior."""
     # Arrange
     # TODO: Set up test data for no_l3_injected_defaults_to_none

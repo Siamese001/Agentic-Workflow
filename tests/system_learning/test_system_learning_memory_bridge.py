@@ -19,7 +19,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from unittest.mock import MagicMock, patch
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -81,17 +81,17 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_system_learning_memory_bridge", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_system_learning_memory_bridge", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_system_learning_memory_bridge", "exec_snapshot_link")
-from system_learning.adapters.system_learning_memory_bridge import (
+#  # MOVED: from system_learning.adapters.system_learning_memory_bridge import (
     SystemLearningMemoryBridge,
     get_sl_memory_bridge,
 )
-from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
-from system_learning.engines.rca_engine import analyze_failures, analyze_failures_and_persist
+#  # MOVED: from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+#  # MOVED: from system_learning.engines.rca_engine import analyze_failures, analyze_failures_and_persist
 
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_system_learning_memory_bridge")
 # REMOVED: _emit_applies_guardrail("p0", "test_system_learning_memory_bridge", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_system_learning_memory_bridge", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -297,6 +297,16 @@ class _MockAggSnapshot:
 
 class TestSLMemoryBridgeInit:
     def test_singleton(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.adapters.system_learning_memory_bridge import (
+        from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+        from system_learning.engines.rca_engine import analyze_failures, analyze_failures_and_persist
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
+        from system_learning.engines.policy_recommendation_engine import (
+        from system_learning.engines.retrieval_profile import RetrievalProfile
+        from system_learning.engines.policy_recommendation_engine import (
+        from system_learning.engines.retrieval_profile import RetrievalProfile
         a = SystemLearningMemoryBridge.get_instance()
         b = SystemLearningMemoryBridge.get_instance()
         assert a is b
@@ -587,7 +597,7 @@ class TestDriftPersistence:
 
     def test_shadow_drift_analyzer_emits_to_mcp(self):
         """ShadowDriftAnalyzer.analyze_batch should call persist_drift_summary."""
-        from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
+#  # MOVED: from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
 
         called = []
         mock_bridge_instance = MagicMock()
@@ -655,10 +665,10 @@ class TestPolicyRecommendationPersistence:
 
     def test_memory_aware_engine_persists(self):
         """MemoryAwarePolicyRecommendationEngine persists each recommendation."""
-        from system_learning.engines.policy_recommendation_engine import (
+#  # MOVED: from system_learning.engines.policy_recommendation_engine import (
             MemoryAwarePolicyRecommendationEngine,
         )
-        from system_learning.engines.retrieval_profile import RetrievalProfile
+#  # MOVED: from system_learning.engines.retrieval_profile import RetrievalProfile
 
         called = []
         mock_bridge_instance = MagicMock()
@@ -679,10 +689,10 @@ class TestPolicyRecommendationPersistence:
 
     def test_memory_aware_engine_resilient(self):
         """MemoryAwarePolicyRecommendationEngine still returns recommendation on MCP failure."""
-        from system_learning.engines.policy_recommendation_engine import (
+#  # MOVED: from system_learning.engines.policy_recommendation_engine import (
             MemoryAwarePolicyRecommendationEngine,
         )
-        from system_learning.engines.retrieval_profile import RetrievalProfile
+#  # MOVED: from system_learning.engines.retrieval_profile import RetrievalProfile
 
         with patch(
             "system_learning.adapters.system_learning_memory_bridge.SystemLearningMemoryBridge.get_instance",

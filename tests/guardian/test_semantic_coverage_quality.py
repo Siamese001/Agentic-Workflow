@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -97,11 +97,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_routing.types.guardian_contract_types import (
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import (
     CheckStatus,
     GuardianResult,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -207,6 +207,9 @@ class TestAssertionQuality:
         clear_assertion_registry()
 
     def test_empty_assertion_not_recorded(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.types.guardian_contract_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """Assertion with only check_id presence does not count toward coverage."""
         r = GuardianResult(guardian_id="test")
         r.add_check("c1", CheckStatus.PASS, "ok")

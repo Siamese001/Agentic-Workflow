@@ -9,7 +9,7 @@ import os
 import unittest
 from unittest.mock import MagicMock, patch
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -56,7 +56,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_sovereign_semantic_cache_query", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_sovereign_semantic_cache_query", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_sovereign_semantic_cache_query", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -174,7 +174,7 @@ def _make_memory_item(key: str, vector: list[float], metadata: dict, namespace: 
     """Build a MemoryItem for injection into InMemoryVectorStore._storage."""
     import uuid
 
-    from agentic_core.L4_state.types.memory_item_types import MemoryItem
+#  # MOVED: from agentic_core.L4_state.types.memory_item_types import MemoryItem
 
     meta = dict(metadata)
     if namespace:
@@ -190,7 +190,7 @@ class TestSovereignSemanticCacheQuery(unittest.TestCase):
         """Build a SovereignSemanticCache with mocked Redis (no live connection)."""
         with patch("agentic_core.L4_state.memory.sovereign_semantic_cache.get_redis_client") as mock_redis:
             mock_redis.return_value = MagicMock()
-            from agentic_core.L4_state.memory.sovereign_semantic_cache import (
+#  # MOVED: from agentic_core.L4_state.memory.sovereign_semantic_cache import (
                 SovereignSemanticCache,
             )
 
@@ -205,6 +205,10 @@ class TestSovereignSemanticCacheQuery(unittest.TestCase):
             cache._vector_store._ordered_ids.append(key)
 
     def test_query_returns_empty_when_kill_switch_active(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L4_state.types.memory_item_types import MemoryItem
+        from agentic_core.L4_state.memory.sovereign_semantic_cache import (
         """query() must return [] when EMBEDDING_ENABLED=false."""
         with patch.dict(os.environ, {"EMBEDDING_ENABLED": "false"}):
             cache = self._make_cache()

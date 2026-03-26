@@ -19,14 +19,14 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L5_safety.validators.base_detector_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.base_detector_validator import (
     AntiPatternCategory,
     EnforcementLevel,
 )
-from agentic_core.L5_safety.validators.test_quality_detector_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.test_quality_detector_validator import (
     TestQualityDetector,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -210,6 +210,9 @@ def _sub_patterns(result) -> set[str]:
 class TestVacuousAssert:
 
     def test_detects_assert_true(self, det, tmp_path):
+        from agentic_core.L5_safety.validators.base_detector_validator import (
+        from agentic_core.L5_safety.validators.test_quality_detector_validator import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         code = """\
 class TestFoo:
     def test_something(self):

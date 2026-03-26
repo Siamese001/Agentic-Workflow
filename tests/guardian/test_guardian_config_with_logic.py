@@ -35,14 +35,14 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L5_safety.validators.base_detector_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.base_detector_validator import (
     AntiPatternCategory,
     EnforcementLevel,
 )
-from agentic_core.L5_safety.validators.config_with_logic_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.config_with_logic_validator import (
     ConfigWithLogicDetector,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -212,6 +212,9 @@ def _violations(source: str, tmp_path: Path) -> list:
 
 class TestConfigWithLogicCleanFile:
     def test_plain_data_dict_no_violations(self, tmp_path):
+        from agentic_core.L5_safety.validators.base_detector_validator import (
+        from agentic_core.L5_safety.validators.config_with_logic_validator import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         src = "my_config = {'key': 'value', 'n': 42}\n"
         assert _violations(src, tmp_path) == []
 

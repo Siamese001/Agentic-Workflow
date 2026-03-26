@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -81,11 +81,11 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.validators.dependency_healing_integration_types import (
+#  # MOVED: from agentic_core.L5_safety.validators.dependency_healing_integration_types import (
     DependencyPruningStrategy,
     HealingStrategyProtocol,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -178,6 +178,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestHealingStrategyProtocol:
     def test_protocol_importable(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.validators.dependency_healing_integration_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test protocol_importable contract compliance."""
     # Arrange
     # TODO: Set up interface implementation

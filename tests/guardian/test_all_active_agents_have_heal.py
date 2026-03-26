@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -41,6 +41,7 @@ class TestAllActiveAgentsHaveHeal:
     """Every ACTIVE agent must define heal()."""
 
     def test_no_active_agent_missing_heal(self, active_agents):
+        from agentic_core.L0_routing.config.path_constants import REPORTS_DIR
         missing = [a["identity"] for a in active_agents if "heal" not in a.get("detected_methods", [])]
         assert missing == [], f"ACTIVE agents missing heal(): {missing}"
 

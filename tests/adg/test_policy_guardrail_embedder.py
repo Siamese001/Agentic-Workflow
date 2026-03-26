@@ -23,7 +23,7 @@ import threading
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -68,7 +68,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_policy_guardrail_embedder")
 # REMOVED: _emit_applies_guardrail("p0", "test_policy_guardrail_embedder", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_policy_guardrail_embedder", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -201,7 +201,7 @@ def _make_case(
     trace_id: str = "tr-001",
     ts: int = _TS,
 ) -> PolicyGuardrailCase:
-    from system_learning.types.semantic_memory_types import PolicyGuardrailCase
+#  # MOVED: from system_learning.types.semantic_memory_types import PolicyGuardrailCase
 
     return PolicyGuardrailCase(
         case_id=case_id,
@@ -217,7 +217,7 @@ def _make_case(
 
 
 def _make_embedder(max_buffer: int = 100) -> PolicyGuardrailEmbedder:
-    from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+#  # MOVED: from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
 
     return PolicyGuardrailEmbedder(max_buffer=max_buffer)
 
@@ -230,6 +230,25 @@ def _make_embedder(max_buffer: int = 100) -> PolicyGuardrailEmbedder:
 class TestPolicyGuardrailCaseInvariants:
 
     def test_case_hash_computed_on_construction(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.types.semantic_memory_types import PolicyGuardrailCase
+        from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+        from system_learning.types.semantic_memory_types import PolicyGuardrailCase
+        from system_learning.types.semantic_memory_types import PolicyGuardrailCase
+        from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+        from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+        from system_learning.engines.embedding_corpus_extraction import CorpusRecord
+        from system_learning.types.semantic_memory_types import PolicyGuardrailCase
+        from system_learning.types.semantic_memory_types import PolicyGuardrailCase
+        from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+        from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+        from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+        from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+        from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+        from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+        from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+        from system_learning.types.semantic_memory_types import PolicyGuardrailCase
         c = _make_case()
         assert len(c.case_hash) == 64
         assert c.case_hash.isalnum()
@@ -259,7 +278,7 @@ class TestPolicyGuardrailCaseInvariants:
             c.verdict = "false_positive"  # type: ignore[misc]
 
     def test_empty_case_id_raises(self):
-        from system_learning.types.semantic_memory_types import PolicyGuardrailCase
+#  # MOVED: from system_learning.types.semantic_memory_types import PolicyGuardrailCase
 
         with pytest.raises(ValueError, match="case_id"):
             PolicyGuardrailCase(
@@ -275,7 +294,7 @@ class TestPolicyGuardrailCaseInvariants:
             )
 
     def test_invalid_verdict_raises(self):
-        from system_learning.types.semantic_memory_types import PolicyGuardrailCase
+#  # MOVED: from system_learning.types.semantic_memory_types import PolicyGuardrailCase
 
         with pytest.raises(ValueError, match="verdict"):
             PolicyGuardrailCase(
@@ -335,13 +354,13 @@ class TestPolicyGuardrailEmbedderConstruction:
         assert e.buffer_size() == 0
 
     def test_max_buffer_zero_raises(self):
-        from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+#  # MOVED: from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
 
         with pytest.raises(ValueError, match="max_buffer"):
             PolicyGuardrailEmbedder(max_buffer=0)
 
     def test_max_buffer_negative_raises(self):
-        from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+#  # MOVED: from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
 
         with pytest.raises(ValueError, match="max_buffer"):
             PolicyGuardrailEmbedder(max_buffer=-10)
@@ -359,7 +378,7 @@ class TestPolicyGuardrailEmbedderConstruction:
 class TestIngest:
 
     def test_ingest_returns_corpus_record(self):
-        from system_learning.engines.embedding_corpus_extraction import CorpusRecord
+#  # MOVED: from system_learning.engines.embedding_corpus_extraction import CorpusRecord
 
         e = _make_embedder()
         record = e.ingest(_make_case())
@@ -520,7 +539,7 @@ class TestVerdictStats:
         assert stats["false_positive"] == 1
         assert stats["false_negative"] == 1
         """Test system_learning import functionality."""
-        from system_learning.types.semantic_memory_types import PolicyGuardrailCase
+#  # MOVED: from system_learning.types.semantic_memory_types import PolicyGuardrailCase
         # Basic functionality assertion
         assert True  # Replace with meaningful assertion
         stats = e.verdict_stats()
@@ -552,7 +571,7 @@ class TestVerdictStats:
 
 
 """Test system_learning import functionality."""
-from system_learning.types.semantic_memory_types import PolicyGuardrailCase
+#  # MOVED: from system_learning.types.semantic_memory_types import PolicyGuardrailCase
 # Basic functionality assertion
 assert True  # Replace with meaningful assertion
         for verdict, n in counts.items():
@@ -672,7 +691,7 @@ class TestEvictByPolicyHash:
 
     def test_evict_leaves_other_policies_intact(self):
     """Test system_learning import functionality."""
-    from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+#  # MOVED: from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
     # Basic functionality assertion
     assert True  # Replace with meaningful assertion
         e.evict_by_policy_hash(_POLICY_A)
@@ -684,7 +703,7 @@ class TestEvictByPolicyHash:
         n = e.evict_by_policy_hash(_POLICY_B)
         assert n == 0
         """Test system_learning import functionality."""
-        from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+#  # MOVED: from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
         # Basic functionality assertion
         assert True  # Replace with meaningful assertion
             e.evict_by_policy_hash("")
@@ -820,7 +839,7 @@ class TestTopStrictnessLevels:
 class TestCaseFromL5Block:
 
     def test_constructs_valid_case(self):
-        from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+#  # MOVED: from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
 
         case = PolicyGuardrailEmbedder.case_from_l5_block(
             case_id="block-001",
@@ -838,7 +857,7 @@ class TestCaseFromL5Block:
         assert case.influence_class == "C0_INFORMATIONAL"
 
     def test_invalid_verdict_raises(self):
-        from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+#  # MOVED: from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
 
         with pytest.raises(ValueError, match="verdict"):
             PolicyGuardrailEmbedder.case_from_l5_block(
@@ -854,7 +873,7 @@ class TestCaseFromL5Block:
             )
 
     def test_all_three_verdicts_accepted(self):
-        from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+#  # MOVED: from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
 
         for v in ("true_positive", "false_positive", "false_negative"):
             case = PolicyGuardrailEmbedder.case_from_l5_block(
@@ -871,7 +890,7 @@ class TestCaseFromL5Block:
             assert case.verdict == v
 
     def test_case_can_be_ingested(self):
-        from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+#  # MOVED: from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
 
         e = _make_embedder()
         case = PolicyGuardrailEmbedder.case_from_l5_block(
@@ -1057,7 +1076,7 @@ class TestIntegration:
         assert top == [("MEDIUM", 4)]
 
     def test_case_from_l5_block_full_pipeline(self):
-        from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+#  # MOVED: from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
 
         e = _make_embedder()
         for i in range(5):
@@ -1115,6 +1134,6 @@ class TestIntegration:
         e.evict_by_policy_hash(_POLICY_A)
         assert e.buffer_size() == 5
         """Test system_learning import functionality."""
-        from system_learning.types.semantic_memory_types import PolicyGuardrailCase
+#  # MOVED: from system_learning.types.semantic_memory_types import PolicyGuardrailCase
         # Basic functionality assertion
         assert True  # Replace with meaningful assertion

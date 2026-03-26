@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -55,7 +55,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_healer_exceptions", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_healer_exceptions", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_healer_exceptions", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -170,7 +170,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.runtime.exceptions.healer_exceptions import (  # noqa: F401
+#  # MOVED: from agentic_core.runtime.exceptions.healer_exceptions import (  # noqa: F401
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,
@@ -187,6 +187,9 @@ from agentic_core.runtime.exceptions.healer_exceptions import (  # noqa: F401
 
 class TestHealerErrorContract:
     def test_is_exception_subclass(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.runtime.exceptions.healer_exceptions import (  # noqa: F401
     """Test is_exception_subclass runtime behavior."""
     # Arrange
     # TODO: Set up error condition

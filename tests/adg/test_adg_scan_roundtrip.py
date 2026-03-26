@@ -18,7 +18,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -65,7 +65,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_scan_roundtrip", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_scan_roundtrip", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_scan_roundtrip", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -189,7 +189,7 @@ if str(ROOT) not in sys.path:
 
 
 def _scan(source: str, tmp_path: Path, filename: str = "fixture.py"):
-    from agentic_core.adg.extraction.static_scanner import _scan_file
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _scan_file
 
     f = tmp_path / filename
     f.write_text(textwrap.dedent(source), encoding="utf-8")
@@ -215,6 +215,33 @@ class TestRoundTripG1InvokesDynamic:
     """G1: _DynamicExecutionVisitor via _scan_file."""
 
     def test_eval_round_trip(self, tmp_path):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.extraction.static_scanner import _scan_file
+        from agentic_core.adg.extraction.static_scanner import _CallVisitor
+        from agentic_core.adg.schema_util import EMBEDDING_SYMBOLS
+        from agentic_core.adg.schema_util import EMBEDDING_SYMBOLS
+        from agentic_core.adg.schema_util import WRITE_SIDE_EFFECT_EXCLUSIONS, WRITE_SIDE_EFFECT_SYMBOLS
+        from agentic_core.adg.schema_util import WRITE_SIDE_EFFECT_EXCLUSIONS, WRITE_SIDE_EFFECT_SYMBOLS
+        from agentic_core.adg.schema_util import WRITE_SIDE_EFFECT_EXCLUSIONS
+        from agentic_core.adg.schema_util import PROVIDER_SDK_SYMBOLS
+        from agentic_core.adg.extraction.static_scanner import _AttributeVisitor
+        from agentic_core.adg.schema_util import WRITE_SIDE_EFFECT_EXCLUSIONS
+        from agentic_core.adg.schema_util import verify_layer_graph_consistency
+        from agentic_core.adg.schema_util import verify_layer_graph_consistency
+        from agentic_core.adg.schema_util import verify_layer_graph_consistency
+        from agentic_core.adg.schema_util import verify_layer_graph_consistency
+        from agentic_core.adg.schema_util import verify_layer_graph_consistency
+        from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.schema_util import SEAM_MODULE_PATTERNS
+        from agentic_core.adg.extraction.static_scanner import Edge
+        from agentic_core.adg.extraction.static_scanner import Edge
+        from agentic_core.adg.extraction.static_scanner import _tag_dead_imports
+        from agentic_core.adg.extraction.static_scanner import _tag_dead_imports
+        from agentic_core.adg.extraction.static_scanner import _tag_dead_imports
+        from agentic_core.adg.extraction.static_scanner import _tag_dead_imports
+        from agentic_core.adg.extraction.static_scanner import Edge, _tag_dead_imports
         edges = _scan("result = eval('1+1')\n", tmp_path)
         assert "invokes_dynamic" in _rel_types(edges)
         assert "invokes_provider" not in _rel_types(edges) or all(
@@ -367,12 +394,12 @@ class TestClassifyCallBoundary:
     """Full branch coverage of _CallVisitor._classify_call."""
 
     def setup_method(self):
-        from agentic_core.adg.extraction.static_scanner import _CallVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _CallVisitor
 
         self._classify = _CallVisitor._classify_call
 
     def test_embedding_symbol_direct(self):
-        from agentic_core.adg.schema_util import EMBEDDING_SYMBOLS
+#  # MOVED: from agentic_core.adg.schema_util import EMBEDDING_SYMBOLS
 
         sym = next(iter(EMBEDDING_SYMBOLS))
         kind, rel = self._classify(sym)
@@ -380,7 +407,7 @@ class TestClassifyCallBoundary:
         assert rel == "instantiates"
 
     def test_embedding_symbol_suffix_match(self):
-        from agentic_core.adg.schema_util import EMBEDDING_SYMBOLS
+#  # MOVED: from agentic_core.adg.schema_util import EMBEDDING_SYMBOLS
 
         sym = next(iter(EMBEDDING_SYMBOLS))
         kind, rel = self._classify(f"some.nested.{sym}")
@@ -389,7 +416,7 @@ class TestClassifyCallBoundary:
 
     def test_write_symbol_direct(self):
         # Pick one that is NOT in WRITE_SIDE_EFFECT_EXCLUSIONS
-        from agentic_core.adg.schema_util import WRITE_SIDE_EFFECT_EXCLUSIONS, WRITE_SIDE_EFFECT_SYMBOLS
+#  # MOVED: from agentic_core.adg.schema_util import WRITE_SIDE_EFFECT_EXCLUSIONS, WRITE_SIDE_EFFECT_SYMBOLS
 
         sym = next(s for s in WRITE_SIDE_EFFECT_SYMBOLS if s not in WRITE_SIDE_EFFECT_EXCLUSIONS)
         kind, rel = self._classify(sym)
@@ -397,7 +424,7 @@ class TestClassifyCallBoundary:
         assert rel == "writes_to"
 
     def test_write_symbol_suffix_match_not_excluded(self):
-        from agentic_core.adg.schema_util import WRITE_SIDE_EFFECT_EXCLUSIONS, WRITE_SIDE_EFFECT_SYMBOLS
+#  # MOVED: from agentic_core.adg.schema_util import WRITE_SIDE_EFFECT_EXCLUSIONS, WRITE_SIDE_EFFECT_SYMBOLS
 
         sym = next(s for s in WRITE_SIDE_EFFECT_SYMBOLS if s not in WRITE_SIDE_EFFECT_EXCLUSIONS)
         kind, rel = self._classify(f"some.module.{sym}")
@@ -405,7 +432,7 @@ class TestClassifyCallBoundary:
         assert rel == "writes_to"
 
     def test_excluded_write_symbol_returns_empty(self):
-        from agentic_core.adg.schema_util import WRITE_SIDE_EFFECT_EXCLUSIONS
+#  # MOVED: from agentic_core.adg.schema_util import WRITE_SIDE_EFFECT_EXCLUSIONS
 
         for excl in WRITE_SIDE_EFFECT_EXCLUSIONS:
             kind, rel = self._classify(excl)
@@ -420,7 +447,7 @@ class TestClassifyCallBoundary:
         assert rel == "invokes_provider"
 
     def test_provider_sdk_base_match(self):
-        from agentic_core.adg.schema_util import PROVIDER_SDK_SYMBOLS
+#  # MOVED: from agentic_core.adg.schema_util import PROVIDER_SDK_SYMBOLS
 
         sym = next(iter(PROVIDER_SDK_SYMBOLS))
         base = sym.split(".")[0]
@@ -460,7 +487,7 @@ class TestClassifyConfigReadBranches:
     """All branches of _AttributeVisitor._classify_config_read."""
 
     def setup_method(self):
-        from agentic_core.adg.extraction.static_scanner import _AttributeVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _AttributeVisitor
 
         self._classify = _AttributeVisitor._classify_config_read
 
@@ -545,7 +572,7 @@ class TestRegressionLockBannedRelations:
         assert not bad
 
     def test_no_writes_to_from_excluded_symbols(self, tmp_path):
-        from agentic_core.adg.schema_util import WRITE_SIDE_EFFECT_EXCLUSIONS
+#  # MOVED: from agentic_core.adg.schema_util import WRITE_SIDE_EFFECT_EXCLUSIONS
 
         for excl in WRITE_SIDE_EFFECT_EXCLUSIONS:
             src = f"result = {excl}(something)\n"
@@ -582,20 +609,20 @@ class TestRegressionLockBannedRelations:
 
 class TestVerifyLayerGraphConsistency:
     def test_clean_map_returns_empty(self):
-        from agentic_core.adg.schema_util import verify_layer_graph_consistency
+#  # MOVED: from agentic_core.adg.schema_util import verify_layer_graph_consistency
 
         errors = verify_layer_graph_consistency({"mod_a.py": "L0", "mod_b.py": "L2"})
         assert errors == []
 
     def test_l_unknown_produces_error(self):
-        from agentic_core.adg.schema_util import verify_layer_graph_consistency
+#  # MOVED: from agentic_core.adg.schema_util import verify_layer_graph_consistency
 
         errors = verify_layer_graph_consistency({"unmapped/some_module.py": "L_UNKNOWN"})
         assert errors
         assert "unmapped/some_module.py" in errors[0]
 
     def test_multiple_l_unknown_all_reported(self):
-        from agentic_core.adg.schema_util import verify_layer_graph_consistency
+#  # MOVED: from agentic_core.adg.schema_util import verify_layer_graph_consistency
 
         errors = verify_layer_graph_consistency(
             {
@@ -607,12 +634,12 @@ class TestVerifyLayerGraphConsistency:
         assert len(errors) == 2
 
     def test_empty_map_returns_empty(self):
-        from agentic_core.adg.schema_util import verify_layer_graph_consistency
+#  # MOVED: from agentic_core.adg.schema_util import verify_layer_graph_consistency
 
         assert verify_layer_graph_consistency({}) == []
 
     def test_error_message_contains_l_unknown_text(self):
-        from agentic_core.adg.schema_util import verify_layer_graph_consistency
+#  # MOVED: from agentic_core.adg.schema_util import verify_layer_graph_consistency
 
         errors = verify_layer_graph_consistency({"orphan.py": "L_UNKNOWN"})
         assert "L_UNKNOWN" in errors[0]
@@ -625,8 +652,8 @@ class TestVerifyLayerGraphConsistency:
 
 class TestPopulateModuleEntities:
     def _build(self, modules, edges=None):
-        from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
-        from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="sha")
         result.edges = edges or []
@@ -637,7 +664,7 @@ class TestPopulateModuleEntities:
         return builder.build(result)
 
     def test_seam_module_in_modules_list_gets_seam_type(self):
-        from agentic_core.adg.schema_util import SEAM_MODULE_PATTERNS
+#  # MOVED: from agentic_core.adg.schema_util import SEAM_MODULE_PATTERNS
 
         if not SEAM_MODULE_PATTERNS:
 
@@ -651,7 +678,7 @@ class TestPopulateModuleEntities:
         assert seam_ents[0].entity_type in ("module", "seam")
 
     def test_dedup_between_modules_and_edges(self):
-        from agentic_core.adg.extraction.static_scanner import Edge
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge
 
         rel_path = "agentic_core/L2_execution/SomeAgent.py"
         edge = Edge(
@@ -802,7 +829,7 @@ resp = requests.get("http://example.com")
 
 class TestTagDeadImports:
     def _make_import_edge(self, symbol: str):
-        from agentic_core.adg.extraction.static_scanner import Edge
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge
 
         return Edge(
             from_name="ADG::Module::test.py",
@@ -815,7 +842,7 @@ class TestTagDeadImports:
         )
 
     def test_dead_name_retagged(self):
-        from agentic_core.adg.extraction.static_scanner import _tag_dead_imports
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _tag_dead_imports
 
         edge = self._make_import_edge("some_module")
         result = _tag_dead_imports([edge], {"some_module"})
@@ -823,7 +850,7 @@ class TestTagDeadImports:
         assert result[0].edge_kind == "dead_import"
 
     def test_live_name_preserved(self):
-        from agentic_core.adg.extraction.static_scanner import _tag_dead_imports
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _tag_dead_imports
 
         edge = self._make_import_edge("some_module")
         result = _tag_dead_imports([edge], set())
@@ -831,7 +858,7 @@ class TestTagDeadImports:
         assert result[0].edge_kind == "import"
 
     def test_future_dotted_symbol_not_dead(self):
-        from agentic_core.adg.extraction.static_scanner import _tag_dead_imports
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _tag_dead_imports
 
         # Simulate: from __future__ import annotations -> symbol = "__future__.annotations"
         edge = self._make_import_edge("__future__.annotations")
@@ -844,7 +871,7 @@ class TestTagDeadImports:
         assert result[0].symbol == "__future__.annotations"
 
     def test_mixed_dead_and_live(self):
-        from agentic_core.adg.extraction.static_scanner import _tag_dead_imports
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _tag_dead_imports
 
         edges = [
             self._make_import_edge("unused_mod"),
@@ -857,7 +884,7 @@ class TestTagDeadImports:
         assert len(live) == 1 and live[0].symbol == "used_mod"
 
     def test_non_import_edges_unchanged(self):
-        from agentic_core.adg.extraction.static_scanner import Edge, _tag_dead_imports
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, _tag_dead_imports
 
         call_edge = Edge(
             from_name="ADG::Module::test.py",

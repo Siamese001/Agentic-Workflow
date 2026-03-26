@@ -21,7 +21,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -68,7 +68,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_accelerator_wiring", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_accelerator_wiring", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_accelerator_wiring", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -204,6 +204,8 @@ class TestPreCommitContract:
         return PRE_COMMIT_CFG.read_text(encoding="utf-8")
 
     def test_t2c_guardian_comment_fixer_hook_exists(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         cfg = self._load_cfg()
         assert "guardian-comment-fixer" in cfg, (
             "T2c hook 'guardian-comment-fixer' missing from .pre-commit-config.yaml"

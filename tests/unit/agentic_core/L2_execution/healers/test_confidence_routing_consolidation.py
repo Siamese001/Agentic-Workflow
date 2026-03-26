@@ -19,7 +19,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -64,7 +64,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_confidence_routing_consolidation")
 # REMOVED: _emit_applies_guardrail("p0", "test_confidence_routing_consolidation", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_confidence_routing_consolidation", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -188,6 +188,25 @@ REPO_ROOT = Path(__file__).resolve().parents[5]
 
 class TestSSOTScoreThresholds:
     def test_det_constant_exists(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+        from agentic_core.L2_execution.healers.healing_tier_types import HealingTier
+        from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+        from agentic_core.L2_execution.healers.healing_tier_types import HealingTier
+        from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+        from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+        from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+        from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+        from agentic_core.utils.decorators_util import _get_heal_policy_types
+        from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+        from agentic_core.utils.decorators_util import _get_heal_policy_types
+        from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_X as cfg_x
+        from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+        from agentic_core.L2_execution.healers.healing_tier_types import HealingTier
+        from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_Y as cfg_y
+        from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+        from agentic_core.L2_execution.healers.healing_tier_types import HealingTier
     """Test det_constant_exists runtime behavior."""
     # Arrange
     # TODO: Set up test data for det_constant_exists
@@ -250,35 +269,35 @@ class TestSSOTScoreThresholds:
         assert result.tier == HealingTier.LOCAL_AGENT
 
     def test_mid_confidence_routes_qwen(self):
-        from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingTier
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_types import HealingTier
         result = route_by_confidence(confidence=0.65)
         assert result.tier == HealingTier.QWEN_VLLM
 
     def test_low_confidence_routes_gemini(self):
-        from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingTier
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_types import HealingTier
         result = route_by_confidence(confidence=0.30)
         assert result.tier == HealingTier.GEMINI_2_5_PRO
 
     def test_result_has_reason_codes(self):
-        from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
         result = route_by_confidence(confidence=0.5)
         assert isinstance(result.reason_codes, tuple)
         assert len(result.reason_codes) > 0
 
     def test_result_heal_confidence_in_unit_interval(self):
-        from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
         result = route_by_confidence(confidence=0.7)
         assert 0.0 <= result.heal_confidence <= 1.0
 
     def test_accepts_retry_count(self):
-        from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
         result = route_by_confidence(confidence=0.9, retry_count=5)
         assert result is not None
 
     def test_accepts_failure_type(self):
-        from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
         result = route_by_confidence(confidence=0.9, failure_type="import_error")
         assert result is not None
 
@@ -573,14 +592,14 @@ assert isinstance(result, object), "Result should be an object"
 # TODO: Add specific runtime behavior assertions
 class TestDecoratorsUtilUsesCanonicalRouter:
     def test_get_heal_policy_types_returns_route_by_confidence(self):
-        from agentic_core.utils.decorators_util import _get_heal_policy_types
+#  # MOVED: from agentic_core.utils.decorators_util import _get_heal_policy_types
         result = _get_heal_policy_types()
         route_fn, reasoning_tier = result
         assert callable(route_fn), "_get_heal_policy_types() must return route_by_confidence as first element"
 
     def test_route_by_confidence_is_the_returned_fn(self):
-        from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
-        from agentic_core.utils.decorators_util import _get_heal_policy_types
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+#  # MOVED: from agentic_core.utils.decorators_util import _get_heal_policy_types
         returned_fn, _ = _get_heal_policy_types()
         assert returned_fn is route_by_confidence
 
@@ -604,17 +623,17 @@ class TestDecoratorsUtilUsesCanonicalRouter:
     # TODO: Add specific runtime behavior assertions
 class TestSingleSourceOfTruth:
     def test_healing_confidence_x_value_consistent_across_modules(self):
-        from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_X as cfg_x
-        from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingTier
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_X as cfg_x
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_types import HealingTier
         # Just above X should always be LOCAL_AGENT
         result = route_by_confidence(confidence=cfg_x + 0.001)
         assert result.tier == HealingTier.LOCAL_AGENT
 
     def test_healing_confidence_y_value_consistent_across_modules(self):
-        from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_Y as cfg_y
-        from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingTier
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_config import HEALING_CONFIDENCE_Y as cfg_y
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_router import route_by_confidence
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_types import HealingTier
         # Just below Y should always be GEMINI
         result = route_by_confidence(confidence=cfg_y - 0.001)
         assert result.tier == HealingTier.GEMINI_2_5_PRO

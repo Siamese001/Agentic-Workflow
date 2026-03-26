@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.config.contract_stage_config import (  # noqa: F401
+#  # MOVED: from agentic_core.L5_safety.config.contract_stage_config import (  # noqa: F401
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,
@@ -27,6 +27,7 @@ from agentic_core.L5_safety.config.contract_stage_config import (  # noqa: F401
 
 class TestContractStageContract:
     def test_is_class(self):
+        from agentic_core.L5_safety.config.contract_stage_config import (  # noqa: F401
         assert isinstance(ContractStage, type)
 
     def test_instantiable_or_abstract(self):

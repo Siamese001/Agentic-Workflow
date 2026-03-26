@@ -44,7 +44,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 
 def _import_location_evict():
-    from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
         _BLUEPRINT_MODULE_PREFIXES,
         _evict_blueprint_modules,
     )
@@ -53,7 +53,7 @@ def _import_location_evict():
 
 
 def _import_reconciler_evict():
-    from agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler import (
         _BLUEPRINT_MODULE_PREFIXES,
         _evict_blueprint_modules,
     )
@@ -109,6 +109,10 @@ _SENTINEL = object()
 
 class TestLocationHealerEviction:
     def test_evict_removes_all_blueprint_prefixes(self):
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler import (
+        import agentic_core.L5_safety.config.structure_blueprint._constants  # noqa: F401
+        import agentic_core.L5_safety.config.structure_blueprint._constants as fresh  # noqa: F401
         """All structure_blueprint* keys are removed from sys.modules."""
         _evict, _prefixes = _import_location_evict()
         cleanup = _inject_fake_modules(_FAKE_BLUEPRINT_KEYS)
@@ -287,7 +291,7 @@ class TestEvictionAllowsFreshReimport:
         key = "agentic_core.L5_safety.config.structure_blueprint._constants"
         if key not in sys.modules:
             # If not loaded yet, load it now
-            import agentic_core.L5_safety.config.structure_blueprint._constants  # noqa: F401
+#  # MOVED: import agentic_core.L5_safety.config.structure_blueprint._constants  # noqa: F401
 
         original_mod = sys.modules.get(key)
 
@@ -315,7 +319,7 @@ class TestEvictionAllowsFreshReimport:
                 importlib.import_module(_types_pkg)
 
             # Re-import: Python will execute the real module source again
-            import agentic_core.L5_safety.config.structure_blueprint._constants as fresh  # noqa: F401
+#  # MOVED: import agentic_core.L5_safety.config.structure_blueprint._constants as fresh  # noqa: F401
 
             assert sys.modules.get(key) is not fake_mod, (
                 "After eviction, reimport must not return the fake/stale module"

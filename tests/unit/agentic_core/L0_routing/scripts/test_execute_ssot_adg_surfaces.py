@@ -34,8 +34,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 # Force register SL bridge so patch() can resolve it regardless of test ordering
-import system_learning.adapters.system_learning_memory_bridge as _sl_bridge_mod  # noqa: F401
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: import system_learning.adapters.system_learning_memory_bridge as _sl_bridge_mod  # noqa: F401
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -80,7 +80,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_execute_ssot_adg_surfaces")
 # REMOVED: _emit_applies_guardrail("p0", "test_execute_ssot_adg_surfaces", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_execute_ssot_adg_surfaces", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -216,7 +216,7 @@ if "agentic_core.adg.runtime.execution_proof" not in sys.modules:
 
 
 def _make_empty_scan_result():
-    from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
     r = ScanResult(commit_sha="test")
     r.modules = []
@@ -226,8 +226,8 @@ def _make_empty_scan_result():
 
 
 def _make_cross_layer_scan_result():
-    from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-    from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
     r = ScanResult(commit_sha="xl")
     r.modules = [
@@ -277,12 +277,77 @@ class TestEmitADGPreRunArtifactGuardianPrioritizer:
 
     @pytest.mark.unit
     def test_guardian_scope_populated_when_adg_available(self) -> None:
-        """When ADG is available and GuardianPrioritizer runs, guardian_scope is populated."""
+        import system_learning.adapters.system_learning_memory_bridge as _sl_bridge_mod  # noqa: F401
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.schema_util import canonical_name
         from agentic_core.adg.applications.guardian_prioritizer_types import (
+        from agentic_core.L0_routing.scripts._ssot_pipeline import (
+        from agentic_core.L0_routing.scripts._ssot_pipeline import _emit_adg_pre_run_artifact
+        from agentic_core.L0_routing.scripts._ssot_pipeline import _emit_adg_pre_run_artifact
+        from agentic_core.L0_routing.scripts._ssot_pipeline import _emit_adg_pre_run_artifact
+        import agentic_core.adg.runtime.behavioral_index as _bi_mod
+        from agentic_core.L0_routing.scripts.execute_ssot import execute_phase4_validation_impl
+        import agentic_core.adg.runtime.behavioral_index as _bi_mod
+        from agentic_core.L0_routing.scripts.execute_ssot import execute_phase4_validation_impl
+        import agentic_core.adg.runtime.behavioral_index as _bi_mod
+        from agentic_core.L0_routing.scripts.execute_ssot import execute_phase4_validation_impl
+        import agentic_core.adg.runtime.behavioral_index as _bi_mod
+        from agentic_core.L0_routing.scripts.execute_ssot import execute_phase4_validation_impl
+        from agentic_core.cache.redis_cache_client import get_hot_cache
+        from agentic_core.cache.redis_cache_client import get_hot_cache
+        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+        from agentic_core.cache.redis_cache_client import content_hash
+        from agentic_core.cache.redis_cache_client import get_hot_cache
+        from agentic_core.cache.redis_cache_client import get_hot_cache
+        import agentic_core.embeddings.embedding_factory as _ef
+        import agentic_core.embeddings.embedding_factory as _ef
+        import agentic_core.embeddings.embedding_factory as _ef
+        import agentic_core.embeddings.embedding_factory as _ef
+        import agentic_core.embeddings.embedding_factory as _ef
+        import agentic_core.embeddings.embedding_factory as _ef
+        from apps_shared.utils.prompt_registry_util import (
+        from apps_shared.utils.prompt_registry_util import PromptCategory, PromptTemplate
+        from apps_shared.utils.prompt_registry_util import (
+        from apps_shared.utils.prompt_registry_util import (
+        from apps_shared.utils.prompt_registry_util import (
+        from apps_shared.utils.prompt_registry_util import (
+        from apps_shared.utils.prompt_registry_util import (
+        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
+        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
+        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
+        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
+        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
+        from agentic_core.L0_routing.scripts._ssot_pipeline import EXECUTION_PLAN
+        from agentic_core.L0_routing.scripts._ssot_pipeline import AGENT_PIPELINE
+        from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
+        from agentic_core.L0_routing.scripts._ssot_pipeline import PIPELINE_SUBPHASES
+        from agentic_core.L0_routing.scripts._ssot_pipeline import AGENT_DEPENDENCIES
+        from agentic_core.L0_routing.scripts._ssot_pipeline import resolve_agent_subset
+        from agentic_core.L0_routing.scripts._ssot_pipeline import resolve_agent_subset
+        from agentic_core.L0_routing.scripts._ssot_pipeline import EXECUTION_PLAN
+        import agentic_core.adg.runtime.cache_loader as _cl_mod
+        from agentic_core.adg.applications.PreRunADGReport import build_pre_run_report
+        from agentic_core.adg.applications.PreRunADGReport import PreRunADGReport
+        from agentic_core.adg.applications.PreRunADGReport import PreRunADGReport
+        from agentic_core.adg.applications.PreRunADGReport import (
+        from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
+        from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
+        from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
+        from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
+        from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
+        from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
+        from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
+        """When ADG is available and GuardianPrioritizer runs, guardian_scope is populated."""
+#  # MOVED: from agentic_core.adg.applications.guardian_prioritizer_types import (
             GuardianPriorityScore,
             PrioritizationResult,
         )
-        from agentic_core.L0_routing.scripts._ssot_pipeline import (
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_pipeline import (
             CANONICAL_ROSTER_KEYS,
             _emit_adg_pre_run_artifact,
         )
@@ -327,7 +392,7 @@ class TestEmitADGPreRunArtifactGuardianPrioritizer:
     @pytest.mark.unit
     def test_guardian_scope_empty_when_adg_unavailable(self) -> None:
         """When ADG is unavailable, guardian_scope stays empty (graceful degradation)."""
-        from agentic_core.L0_routing.scripts._ssot_pipeline import _emit_adg_pre_run_artifact
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_pipeline import _emit_adg_pre_run_artifact
 
         tmp = Path(tempfile.mkdtemp())
         try:
@@ -347,7 +412,7 @@ class TestEmitADGPreRunArtifactGuardianPrioritizer:
     @pytest.mark.unit
     def test_guardian_prioritizer_failure_does_not_block_artifact_write(self) -> None:
         """If GuardianPrioritizer raises, artifact is still written (fail-open)."""
-        from agentic_core.L0_routing.scripts._ssot_pipeline import _emit_adg_pre_run_artifact
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_pipeline import _emit_adg_pre_run_artifact
 
         tmp = Path(tempfile.mkdtemp())
         try:
@@ -378,7 +443,7 @@ class TestEmitADGPreRunArtifactGuardianPrioritizer:
     @pytest.mark.unit
     def test_artifact_has_required_top_level_keys(self) -> None:
         """Emitted artifact always has the mandatory keys regardless of ADG state."""
-        from agentic_core.L0_routing.scripts._ssot_pipeline import _emit_adg_pre_run_artifact
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_pipeline import _emit_adg_pre_run_artifact
 
         tmp = Path(tempfile.mkdtemp())
         try:
@@ -435,8 +500,8 @@ class TestPhase4ADGSignalInjection:
     @pytest.mark.unit
     def test_adg_arch_signals_stored_in_state_when_available(self) -> None:
         """ADG cross-layer signals must be written to state_mgr.state['adg_arch_signals']."""
-        import agentic_core.adg.runtime.behavioral_index as _bi_mod
-        from agentic_core.L0_routing.scripts.execute_ssot import execute_phase4_validation_impl
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _bi_mod
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import execute_phase4_validation_impl
 
         state_mgr = self._make_state_mgr()
         agents, _ = self._make_agents()
@@ -473,8 +538,8 @@ class TestPhase4ADGSignalInjection:
     @pytest.mark.unit
     def test_adg_signal_injection_failure_does_not_abort_phase4(self) -> None:
         """If ADG signal injection raises, phase4 still calls comprehensive_territory_audit."""
-        import agentic_core.adg.runtime.behavioral_index as _bi_mod
-        from agentic_core.L0_routing.scripts.execute_ssot import execute_phase4_validation_impl
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _bi_mod
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import execute_phase4_validation_impl
 
         state_mgr = self._make_state_mgr()
         agents, arch_gov_inst = self._make_agents()
@@ -487,8 +552,8 @@ class TestPhase4ADGSignalInjection:
     @pytest.mark.unit
     def test_adg_cross_layer_signals_merged_into_gov_report(self) -> None:
         """ADG cross-layer violations must be present in state or merged into gov_report."""
-        import agentic_core.adg.runtime.behavioral_index as _bi_mod
-        from agentic_core.L0_routing.scripts.execute_ssot import execute_phase4_validation_impl
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _bi_mod
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import execute_phase4_validation_impl
 
         state_mgr = self._make_state_mgr()
         base_report = {"layer_violations": [], "naming_violations": []}
@@ -525,8 +590,8 @@ class TestPhase4ADGSignalInjection:
     @pytest.mark.unit
     def test_phase4_returns_none_when_gov_report_is_none(self) -> None:
         """When arch_gov returns None, phase4 returns (None, None)."""
-        import agentic_core.adg.runtime.behavioral_index as _bi_mod
-        from agentic_core.L0_routing.scripts.execute_ssot import execute_phase4_validation_impl
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _bi_mod
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import execute_phase4_validation_impl
 
         state_mgr = self._make_state_mgr()
         agents, arch_gov_inst = self._make_agents(gov_report=None)
@@ -548,7 +613,7 @@ class TestRedisCacheClientSurface:
 
     @pytest.mark.unit
     def test_get_hot_cache_returns_cache_instance(self) -> None:
-        from agentic_core.cache.redis_cache_client import get_hot_cache
+#  # MOVED: from agentic_core.cache.redis_cache_client import get_hot_cache
 
         cache = get_hot_cache()
         assert cache is not None
@@ -557,7 +622,7 @@ class TestRedisCacheClientSurface:
 
     @pytest.mark.unit
     def test_get_hot_cache_is_singleton(self) -> None:
-        from agentic_core.cache.redis_cache_client import get_hot_cache
+#  # MOVED: from agentic_core.cache.redis_cache_client import get_hot_cache
 
         c1 = get_hot_cache()
         c2 = get_hot_cache()
@@ -565,7 +630,7 @@ class TestRedisCacheClientSurface:
 
     @pytest.mark.unit
     def test_canonical_json_bytes_is_deterministic(self) -> None:
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+#  # MOVED: from agentic_core.cache.redis_cache_client import canonical_json_bytes
 
         obj = {"z": 1, "a": [3, 1, 2], "m": {"k": "v"}}
         b1 = canonical_json_bytes(obj)
@@ -575,7 +640,7 @@ class TestRedisCacheClientSurface:
 
     @pytest.mark.unit
     def test_canonical_json_bytes_sorts_keys(self) -> None:
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+#  # MOVED: from agentic_core.cache.redis_cache_client import canonical_json_bytes
 
         b1 = canonical_json_bytes({"b": 1, "a": 2})
         b2 = canonical_json_bytes({"a": 2, "b": 1})
@@ -583,7 +648,7 @@ class TestRedisCacheClientSurface:
 
     @pytest.mark.unit
     def test_canonical_json_bytes_rejects_nan(self) -> None:
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+#  # MOVED: from agentic_core.cache.redis_cache_client import canonical_json_bytes
 
         with pytest.raises(Exception):
 
@@ -593,7 +658,7 @@ class TestRedisCacheClientSurface:
 
     @pytest.mark.unit
     def test_content_hash_returns_64_char_hex(self) -> None:
-        from agentic_core.cache.redis_cache_client import content_hash
+#  # MOVED: from agentic_core.cache.redis_cache_client import content_hash
 
         h = content_hash(b"hello world")
         assert len(h) == 64
@@ -602,7 +667,7 @@ class TestRedisCacheClientSurface:
     @pytest.mark.unit
     def test_cache_set_and_get_roundtrip(self) -> None:
         """Cache set/get must not raise; returns bytes or None (LRU fallback)."""
-        from agentic_core.cache.redis_cache_client import get_hot_cache
+#  # MOVED: from agentic_core.cache.redis_cache_client import get_hot_cache
 
         cache = get_hot_cache()
         try:
@@ -615,7 +680,7 @@ class TestRedisCacheClientSurface:
     @pytest.mark.unit
     def test_cache_replay_mode_returns_none(self) -> None:
         """replay_mode=True must return None unconditionally (determinism invariant)."""
-        from agentic_core.cache.redis_cache_client import get_hot_cache
+#  # MOVED: from agentic_core.cache.redis_cache_client import get_hot_cache
 
         cache = get_hot_cache()
         cache.set("replay_test_key", b"stored_value", ttl_seconds=60)
@@ -698,7 +763,7 @@ class TestEmbeddingFactorySurface:
         self._seed_replay_mock()
         import importlib as _il
 
-        import agentic_core.embeddings.embedding_factory as _ef
+#  # MOVED: import agentic_core.embeddings.embedding_factory as _ef
 
         _il.reload(_ef)
         assert hasattr(_ef, "EmbeddingDisabledError")
@@ -712,7 +777,7 @@ class TestEmbeddingFactorySurface:
         self._seed_replay_mock()
         import importlib as _il
 
-        import agentic_core.embeddings.embedding_factory as _ef
+#  # MOVED: import agentic_core.embeddings.embedding_factory as _ef
 
         _il.reload(_ef)
         with patch.dict(os.environ, {"EMBEDDING_ENABLED": "true"}):
@@ -724,7 +789,7 @@ class TestEmbeddingFactorySurface:
         self._seed_replay_mock()
         import importlib as _il
 
-        import agentic_core.embeddings.embedding_factory as _ef
+#  # MOVED: import agentic_core.embeddings.embedding_factory as _ef
 
         _il.reload(_ef)
         with patch.dict(os.environ, {"EMBEDDING_ENABLED": "false"}):
@@ -736,7 +801,7 @@ class TestEmbeddingFactorySurface:
         self._seed_replay_mock()
         import importlib as _il
 
-        import agentic_core.embeddings.embedding_factory as _ef
+#  # MOVED: import agentic_core.embeddings.embedding_factory as _ef
 
         _il.reload(_ef)
         assert issubclass(_ef.EmbeddingDisabledError, RuntimeError)
@@ -747,7 +812,7 @@ class TestEmbeddingFactorySurface:
         self._seed_replay_mock()
         import importlib as _il
 
-        import agentic_core.embeddings.embedding_factory as _ef
+#  # MOVED: import agentic_core.embeddings.embedding_factory as _ef
 
         _il.reload(_ef)
         assert issubclass(_ef.EmbeddingSovereigntyViolationError, RuntimeError)
@@ -758,7 +823,7 @@ class TestEmbeddingFactorySurface:
         self._seed_replay_mock()
         import importlib as _il
 
-        import agentic_core.embeddings.embedding_factory as _ef
+#  # MOVED: import agentic_core.embeddings.embedding_factory as _ef
 
         _il.reload(_ef)
         assert hasattr(_ef.EmbeddingClient, "get_embedding")
@@ -775,7 +840,7 @@ class TestPromptRegistrySurface:
 
     @pytest.mark.unit
     def test_register_and_get_template(self) -> None:
-        from apps_shared.utils.prompt_registry_util import (
+#  # MOVED: from apps_shared.utils.prompt_registry_util import (
             PromptCategory,
             PromptRegistry,
             PromptTemplate,
@@ -802,7 +867,7 @@ class TestPromptRegistrySurface:
 
     @pytest.mark.unit
     def test_render_substitutes_variables(self) -> None:
-        from apps_shared.utils.prompt_registry_util import PromptCategory, PromptTemplate
+#  # MOVED: from apps_shared.utils.prompt_registry_util import PromptCategory, PromptTemplate
 
         tmpl = PromptTemplate(
             template_id="t_render",
@@ -821,7 +886,7 @@ class TestPromptRegistrySurface:
 
         Counts defaults seeded at construction time, then verifies 3 more are added.
         """
-        from apps_shared.utils.prompt_registry_util import (
+#  # MOVED: from apps_shared.utils.prompt_registry_util import (
             PromptCategory,
             PromptRegistry,
             PromptTemplate,
@@ -848,7 +913,7 @@ class TestPromptRegistrySurface:
 
     @pytest.mark.unit
     def test_delete_removes_template(self) -> None:
-        from apps_shared.utils.prompt_registry_util import (
+#  # MOVED: from apps_shared.utils.prompt_registry_util import (
             PromptCategory,
             PromptRegistry,
             PromptTemplate,
@@ -875,7 +940,7 @@ class TestPromptRegistrySurface:
 
     @pytest.mark.unit
     def test_search_by_name_substring(self) -> None:
-        from apps_shared.utils.prompt_registry_util import (
+#  # MOVED: from apps_shared.utils.prompt_registry_util import (
             PromptCategory,
             PromptRegistry,
             PromptTemplate,
@@ -900,7 +965,7 @@ class TestPromptRegistrySurface:
 
     @pytest.mark.unit
     def test_persists_and_reloads_from_disk(self) -> None:
-        from apps_shared.utils.prompt_registry_util import (
+#  # MOVED: from apps_shared.utils.prompt_registry_util import (
             PromptCategory,
             PromptRegistry,
             PromptTemplate,
@@ -929,7 +994,7 @@ class TestPromptRegistrySurface:
     @pytest.mark.unit
     def test_task_template_not_in_safety_policy_category(self) -> None:
         """Templates registered under TASK_TEMPLATE must not appear in SAFETY_POLICY results."""
-        from apps_shared.utils.prompt_registry_util import (
+#  # MOVED: from apps_shared.utils.prompt_registry_util import (
             PromptCategory,
             PromptRegistry,
             PromptTemplate,
@@ -963,7 +1028,7 @@ class TestSystemLearningBridgeSurface:
 
     @pytest.mark.unit
     def test_record_healing_action_calls_persist_success_rate_on_success(self) -> None:
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
 
         mock_state_mgr = MagicMock()
         mock_state_mgr.state = {"healing_actions": []}
@@ -986,7 +1051,7 @@ class TestSystemLearningBridgeSurface:
 
     @pytest.mark.unit
     def test_record_healing_action_calls_persist_failure_pattern_on_failure(self) -> None:
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
 
         mock_state_mgr = MagicMock()
         mock_state_mgr.state = {"healing_actions": []}
@@ -1010,7 +1075,7 @@ class TestSystemLearningBridgeSurface:
 
     @pytest.mark.unit
     def test_record_healing_action_success_does_not_call_persist_failure_pattern(self) -> None:
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
 
         mock_state_mgr = MagicMock()
         mock_state_mgr.state = {"healing_actions": []}
@@ -1031,7 +1096,7 @@ class TestSystemLearningBridgeSurface:
 
     @pytest.mark.unit
     def test_sl_bridge_error_does_not_raise_from_record_healing_action(self) -> None:
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
 
         mock_state_mgr = MagicMock()
         mock_state_mgr.state = {"healing_actions": []}
@@ -1052,7 +1117,7 @@ class TestSystemLearningBridgeSurface:
 
     @pytest.mark.unit
     def test_healing_action_appended_to_state(self) -> None:
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_validation_artifacts import _record_healing_action
 
         mock_state_mgr = MagicMock()
         mock_state_mgr.state = {"healing_actions": []}
@@ -1087,7 +1152,7 @@ class TestSSoTPipelineStructureInvariants:
 
     @pytest.mark.unit
     def test_execution_plan_has_required_phases(self) -> None:
-        from agentic_core.L0_routing.scripts._ssot_pipeline import EXECUTION_PLAN
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_pipeline import EXECUTION_PLAN
 
         phases = [p["phase"] for p in EXECUTION_PLAN]
         assert "1" in phases
@@ -1096,7 +1161,7 @@ class TestSSoTPipelineStructureInvariants:
 
     @pytest.mark.unit
     def test_agent_pipeline_is_ordered_list(self) -> None:
-        from agentic_core.L0_routing.scripts._ssot_pipeline import AGENT_PIPELINE
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_pipeline import AGENT_PIPELINE
 
         assert isinstance(AGENT_PIPELINE, list)
         assert len(AGENT_PIPELINE) >= 5
@@ -1104,7 +1169,7 @@ class TestSSoTPipelineStructureInvariants:
 
     @pytest.mark.unit
     def test_canonical_roster_keys_is_frozenset(self) -> None:
-        from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
 
         assert isinstance(CANONICAL_ROSTER_KEYS, frozenset)
         assert "reconciler" in CANONICAL_ROSTER_KEYS
@@ -1113,19 +1178,19 @@ class TestSSoTPipelineStructureInvariants:
 
     @pytest.mark.unit
     def test_pipeline_subphases_four_slots(self) -> None:
-        from agentic_core.L0_routing.scripts._ssot_pipeline import PIPELINE_SUBPHASES
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_pipeline import PIPELINE_SUBPHASES
 
         assert set(PIPELINE_SUBPHASES) == {"pre_commit", "validate", "execute", "heal"}
 
     @pytest.mark.unit
     def test_agent_dependencies_arch_governor_depends_on_location(self) -> None:
-        from agentic_core.L0_routing.scripts._ssot_pipeline import AGENT_DEPENDENCIES
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_pipeline import AGENT_DEPENDENCIES
 
         assert "location" in AGENT_DEPENDENCIES.get("arch_governor", [])
 
     @pytest.mark.unit
     def test_resolve_agent_subset_closure_includes_dependencies(self) -> None:
-        from agentic_core.L0_routing.scripts._ssot_pipeline import resolve_agent_subset
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_pipeline import resolve_agent_subset
 
         result = resolve_agent_subset(["arch_governor"])
         assert "reconciler" in result
@@ -1135,7 +1200,7 @@ class TestSSoTPipelineStructureInvariants:
 
     @pytest.mark.unit
     def test_resolve_agent_subset_raises_on_unknown_key(self) -> None:
-        from agentic_core.L0_routing.scripts._ssot_pipeline import resolve_agent_subset
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_pipeline import resolve_agent_subset
 
         with pytest.raises(Exception):
 
@@ -1145,7 +1210,7 @@ class TestSSoTPipelineStructureInvariants:
 
     @pytest.mark.unit
     def test_execution_plan_phase4_contains_arch_governor(self) -> None:
-        from agentic_core.L0_routing.scripts._ssot_pipeline import EXECUTION_PLAN
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_pipeline import EXECUTION_PLAN
 
         phase4 = next((p for p in EXECUTION_PLAN if p["phase"] == "4"), None)
         assert phase4 is not None
@@ -1164,8 +1229,8 @@ class TestExecuteSSOTIntegrationSurface:
     @pytest.mark.unit
     def test_returns_unavailable_report_on_runtime_error(self) -> None:
         """build_pre_run_report must return unavailable report when ADG scan fails."""
-        import agentic_core.adg.runtime.cache_loader as _cl_mod
-        from agentic_core.adg.applications.PreRunADGReport import build_pre_run_report
+#  # MOVED: import agentic_core.adg.runtime.cache_loader as _cl_mod
+#  # MOVED: from agentic_core.adg.applications.PreRunADGReport import build_pre_run_report
 
         tmp = Path(tempfile.mkdtemp())
         try:
@@ -1180,7 +1245,7 @@ class TestExecuteSSOTIntegrationSurface:
 
     @pytest.mark.unit
     def test_unavailable_classmethod_sets_changed_files(self) -> None:
-        from agentic_core.adg.applications.PreRunADGReport import PreRunADGReport
+#  # MOVED: from agentic_core.adg.applications.PreRunADGReport import PreRunADGReport
 
         report = PreRunADGReport.unavailable(["a.py", "b.py"], "test reason")
         assert report.adg_available is False
@@ -1190,7 +1255,7 @@ class TestExecuteSSOTIntegrationSurface:
 
     @pytest.mark.unit
     def test_pre_run_report_to_dict_has_summary_key(self) -> None:
-        from agentic_core.adg.applications.PreRunADGReport import PreRunADGReport
+#  # MOVED: from agentic_core.adg.applications.PreRunADGReport import PreRunADGReport
 
         report = PreRunADGReport.unavailable([], "no adg")
         d = report.to_dict()
@@ -1201,7 +1266,7 @@ class TestExecuteSSOTIntegrationSurface:
 
     @pytest.mark.unit
     def test_emit_pre_run_log_handles_unavailable_gracefully(self) -> None:
-        from agentic_core.adg.applications.PreRunADGReport import (
+#  # MOVED: from agentic_core.adg.applications.PreRunADGReport import (
             PreRunADGReport,
             emit_pre_run_log,
         )
@@ -1220,8 +1285,8 @@ class TestGuardianPrioritizerPipelineIntegration:
 
     @pytest.mark.unit
     def test_prioritize_with_canonical_roster_keys(self) -> None:
-        from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
-        from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
+#  # MOVED: from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
 
         scan = _make_empty_scan_result()
         prio = GuardianPrioritizer(scan).prioritize(guardian_ids=list(CANONICAL_ROSTER_KEYS))
@@ -1231,8 +1296,8 @@ class TestGuardianPrioritizerPipelineIntegration:
 
     @pytest.mark.unit
     def test_cross_layer_violation_raises_hierarchy_compliance_priority(self) -> None:
-        from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
-        from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
+#  # MOVED: from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
 
         empty_scan = _make_empty_scan_result()
         cl_scan = _make_cross_layer_scan_result()
@@ -1247,8 +1312,8 @@ class TestGuardianPrioritizerPipelineIntegration:
 
     @pytest.mark.unit
     def test_ordered_output_is_list_of_strings_when_extracted(self) -> None:
-        from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
-        from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
+#  # MOVED: from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
+#  # MOVED: from agentic_core.L0_routing.scripts._ssot_pipeline import CANONICAL_ROSTER_KEYS
 
         scan = _make_empty_scan_result()
         prio = GuardianPrioritizer(scan).prioritize(guardian_ids=list(CANONICAL_ROSTER_KEYS))
@@ -1258,7 +1323,7 @@ class TestGuardianPrioritizerPipelineIntegration:
 
     @pytest.mark.unit
     def test_priority_digest_is_16_char_hex(self) -> None:
-        from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
+#  # MOVED: from agentic_core.adg.applications.guardian_prioritizer_types import GuardianPrioritizer
 
         scan = _make_empty_scan_result()
         prio = GuardianPrioritizer(scan).prioritize()

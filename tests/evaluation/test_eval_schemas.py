@@ -14,21 +14,21 @@ Branch coverage:
 
 import pytest
 
-from agentic_core.evaluation.schemas.evaluation_dataset_schema import (
+#  # MOVED: from agentic_core.evaluation.schemas.evaluation_dataset_schema import (
     EvaluationDataset,
     EvaluationExample,
 )
-from agentic_core.evaluation.schemas.evaluation_report_schema import (
+#  # MOVED: from agentic_core.evaluation.schemas.evaluation_report_schema import (
     ComparativeEvaluationSummary,
     SystemEvaluationSummary,
 )
-from agentic_core.evaluation.schemas.evaluation_result_schema import (
+#  # MOVED: from agentic_core.evaluation.schemas.evaluation_result_schema import (
     DeltaReport,
     EvaluationReport,
     EvaluationResult,
     EvaluationSnapshot,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -189,6 +189,10 @@ class TestEvaluationExample:
         return EvaluationExample(**defaults)
 
     def test_to_dict_roundtrip(self):
+        from agentic_core.evaluation.schemas.evaluation_dataset_schema import (
+        from agentic_core.evaluation.schemas.evaluation_report_schema import (
+        from agentic_core.evaluation.schemas.evaluation_result_schema import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test to_dict_roundtrip contract compliance."""
     # Arrange
     # TODO: Set up contract test scenario

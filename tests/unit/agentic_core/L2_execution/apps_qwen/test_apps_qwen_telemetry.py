@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from agentic_core.L2_execution.apps_qwen.apps_qwen_telemetry import AppsQwenTelemetry
+#  # MOVED: from agentic_core.L2_execution.apps_qwen.apps_qwen_telemetry import AppsQwenTelemetry
 
 
 def test_apps_qwen_telemetry_session_happy_path() -> None:
+    from agentic_core.L2_execution.apps_qwen.apps_qwen_telemetry import AppsQwenTelemetry
 """Test apps_qwen_telemetry_session_happy_path runtime behavior."""
 # Arrange
 # TODO: Set up test data for apps_qwen_telemetry_session_happy_path

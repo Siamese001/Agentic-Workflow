@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -74,8 +74,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_integrity_validation_types_adg", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_integrity_validation_types_adg", "exec_snapshot_link")
 pytestmark = pytest.mark.unit
-from agentic_core.L5_safety.types.integrity_validation_types import IntegrityResult, IntegrityViolation
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L5_safety.types.integrity_validation_types import IntegrityResult, IntegrityViolation
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -168,6 +168,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestIntegrityViolation:
     def test_is_dataclass(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.types.integrity_validation_types import IntegrityResult, IntegrityViolation
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         import dataclasses; assert dataclasses.is_dataclass(IntegrityViolation)
     def test_creates(self):
         v = IntegrityViolation(rule="r1", severity="error", description="bad")

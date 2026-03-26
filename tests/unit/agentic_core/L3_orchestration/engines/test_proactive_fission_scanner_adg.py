@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L3_orchestration.engines.proactive_fission_scanner  # noqa: F401
+#  # MOVED: import agentic_core.L3_orchestration.engines.proactive_fission_scanner  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L3_orchestration.engines.proactive_fission_scanner  # noqa: F401
     """Module proactive_fission_scanner must be importable."""
     assert agentic_core.L3_orchestration.engines.proactive_fission_scanner is not None

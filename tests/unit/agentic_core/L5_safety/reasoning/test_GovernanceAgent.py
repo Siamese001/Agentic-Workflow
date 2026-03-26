@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.reasoning.GovernanceAgent import (  # noqa: F401
+#  # MOVED: from agentic_core.L5_safety.reasoning.GovernanceAgent import (  # noqa: F401
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,
@@ -26,6 +26,7 @@ from agentic_core.L5_safety.reasoning.GovernanceAgent import (  # noqa: F401
 
 class TestDependencyGraphContract:
     def test_is_class(self):
+        from agentic_core.L5_safety.reasoning.GovernanceAgent import (  # noqa: F401
         assert isinstance(DependencyGraph, type)
 
     def test_has_method_build(self):

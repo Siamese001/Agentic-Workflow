@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.mixins.event_emission_mixin  # noqa: F401
+#  # MOVED: import agentic_core.mixins.event_emission_mixin  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.mixins.event_emission_mixin  # noqa: F401
     """Module event_emission_mixin must be importable."""
     assert agentic_core.mixins.event_emission_mixin is not None

@@ -9,7 +9,6 @@ import ast
 import pathlib
 import re
 import sys
-from typing import List, Dict, Set, Tuple, Optional
 
 # Target import patterns to migrate
 TARGET_IMPORT_RE = re.compile(
@@ -21,7 +20,7 @@ TARGET_IMPORT_RE = re.compile(
 SAFE_TOP_IMPORTS = {
     'import agentic_core',
     'import apps_lic',
-    'import apps_rg', 
+    'import apps_rg',
     'import apps_shared',
     'import system_learning',
     'import infrastructure',
@@ -39,7 +38,7 @@ class TestImportMigrator:
             'imports_moved': 0,
         }
 
-    def migrate_directory(self, test_dir: str) -> Dict:
+    def migrate_directory(self, test_dir: str) -> dict:
         """Migrate all test files in a directory."""
         test_path = self.repo_root / test_dir
         if not test_path.exists():
@@ -80,18 +79,18 @@ class TestImportMigrator:
             return True  # No migration needed
 
         print(f"  🔄 Migrating {len(top_imports)} top-level imports in {file_path.name}")
-        
+
         # Analyze which imports are used where
         import_usage = self._analyze_import_usage(tree, top_imports)
-        
+
         # Generate new content with moved imports
         new_content = self._generate_migrated_content(content, top_imports, import_usage)
-        
+
         # Write back
         file_path.write_text(new_content, encoding='utf-8')
         self.migrated_files.append(str(file_path))
         self.stats['imports_moved'] += len(top_imports)
-        
+
         return True
 
     def _is_target_import(self, node: ast.AST, content: str) -> bool:
@@ -105,16 +104,16 @@ class TestImportMigrator:
                     if import_stmt not in SAFE_TOP_IMPORTS:
                         return True
         elif isinstance(node, ast.ImportFrom):
-            if node.module and any(node.module.startswith(prefix) for prefix in 
+            if node.module and any(node.module.startswith(prefix) for prefix in
                                  ['agentic_core', 'apps_', 'system_learning', 'infrastructure']):
                 line = content.splitlines()[node.lineno - 1]
                 return TARGET_IMPORT_RE.match(line) is not None
         return False
 
-    def _analyze_import_usage(self, tree: ast.AST, imports: List[ast.AST]) -> Dict[str, List[str]]:
+    def _analyze_import_usage(self, tree: ast.AST, imports: list[ast.AST]) -> dict[str, list[str]]:
         """Analyze which imported symbols are used in which test functions/fixtures."""
         usage = {}
-        
+
         # Map imported names to their import statements
         import_map = {}
         for imp in imports:
@@ -135,17 +134,17 @@ class TestImportMigrator:
                     for subnode in ast.walk(node):
                         if isinstance(subnode, ast.Name) and subnode.id in import_map:
                             used_imports.add(subnode.id)
-                    
+
                     if used_imports:
                         usage[node.name] = list(used_imports)
 
         return usage
 
-    def _generate_migrated_content(self, content: str, imports: List[ast.AST], 
-                                 usage: Dict[str, List[str]]) -> str:
+    def _generate_migrated_content(self, content: str, imports: list[ast.AST],
+                                 usage: dict[str, list[str]]) -> str:
         """Generate new content with imports moved into functions."""
         lines = content.splitlines()
-        
+
         # Remove top-level target imports
         new_lines = []
         for i, line in enumerate(lines):
@@ -165,7 +164,7 @@ class TestImportMigrator:
                     func_start = i
                     func_indent = len(line) - len(line.lstrip())
                     break
-            
+
             if func_start is not None:
                 # Insert imports after function definition
                 import_lines = []
@@ -184,7 +183,7 @@ class TestImportMigrator:
                                    (not alias.asname and alias.name == name):
                                     import_lines.append(f"{' ' * (func_indent + 4)}{ast.unparse(imp)}")
                                     break
-                
+
                 if import_lines:
                     # Insert imports after function docstring or first line
                     insert_pos = func_start + 1
@@ -194,7 +193,7 @@ class TestImportMigrator:
                             if new_lines[j].strip().endswith(('"""', "'''")):
                                 insert_pos = j + 1
                                 break
-                    
+
                     for import_line in reversed(import_lines):
                         new_lines.insert(insert_pos, import_line)
 
@@ -202,14 +201,14 @@ class TestImportMigrator:
 
     def print_summary(self):
         """Print migration summary."""
-        print(f"\n=== Migration Summary ===")
+        print("\n=== Migration Summary ===")
         print(f"Total files processed: {self.stats['total_files']}")
         print(f"Successfully migrated: {self.stats['migrated']}")
         print(f"Failed: {self.stats['failed']}")
         print(f"Imports moved: {self.stats['imports_moved']}")
-        
+
         if self.failed_files:
-            print(f"\nFailed files:")
+            print("\nFailed files:")
             for path, error in self.failed_files[:10]:
                 print(f"  {path}: {error}")
             if len(self.failed_files) > 10:
@@ -219,10 +218,10 @@ def main():
     if len(sys.argv) != 2:
         print("Usage: python migrate_test_imports.py <test_directory>")
         sys.exit(1)
-    
+
     repo_root = pathlib.Path(__file__).parent.parent
     test_dir = sys.argv[1]
-    
+
     migrator = TestImportMigrator(repo_root)
     migrator.migrate_directory(test_dir)
     migrator.print_summary()

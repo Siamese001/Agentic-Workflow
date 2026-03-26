@@ -5,7 +5,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.config.structure_blueprint.artifacts import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.artifacts import (
     APP_SPECIFIC_PATTERN_STRINGS,
     APP_SPECIFIC_PREFIXES,
     APP_SPECIFIC_TARGET_SUBFOLDER,
@@ -15,6 +15,7 @@ from agentic_core.L5_safety.config.structure_blueprint.artifacts import (
 
 class TestArtifactConstants:
     def test_app_specific_prefixes_mapping(self):
+        from agentic_core.L5_safety.config.structure_blueprint.artifacts import (
         assert isinstance(APP_SPECIFIC_PREFIXES, dict | type(APP_SPECIFIC_PREFIXES))
         assert "rg_" in APP_SPECIFIC_PREFIXES
         assert "lic_" in APP_SPECIFIC_PREFIXES

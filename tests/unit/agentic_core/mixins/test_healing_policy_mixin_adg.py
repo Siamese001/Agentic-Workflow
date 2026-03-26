@@ -5,11 +5,12 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
+#  # MOVED: from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
 
 
 class TestHealingPolicyMixin:
     def test_importable(self):
+        from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
         assert callable(HealingPolicyMixin)
 
     def test_max_healing_operations_default(self):

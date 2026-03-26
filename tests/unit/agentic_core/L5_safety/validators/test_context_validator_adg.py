@@ -5,7 +5,7 @@ import time
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -80,8 +80,8 @@ _FIXED_TS = 9999999999.0  # far-future: ensures is_expired() returns False
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.validators.context_validator import CacheEntry
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L5_safety.validators.context_validator import CacheEntry
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -174,6 +174,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestCacheEntry:
     def test_creates(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.validators.context_validator import CacheEntry
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         entry = CacheEntry(
             key="test:key",
             value={"result": True},

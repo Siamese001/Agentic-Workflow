@@ -13,21 +13,21 @@ import json
 
 import pytest
 
-from agentic_core.L0_routing.enforcement.vigilance_routing import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.vigilance_routing import (
     route_vigilance_event,
 )
-from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-from agentic_core.L0_routing.types.routing_artifact_types import RoutePath
-from agentic_core.L6_observability.engines.TieredVigilanceEmitter import (
+#  # MOVED: from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+#  # MOVED: from agentic_core.L0_routing.types.routing_artifact_types import RoutePath
+#  # MOVED: from agentic_core.L6_observability.engines.TieredVigilanceEmitter import (
     classify_signals,
     emit_vigilance_event,
 )
-from agentic_core.L6_observability.types.vigilance_event_types import (
+#  # MOVED: from agentic_core.L6_observability.types.vigilance_event_types import (
     VigilanceEventArtifact,
     VigilanceSeverity,
     build_deterministic_trace_id,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -188,6 +188,12 @@ def clock() -> SemanticClockSnapshot:
 
 class TestTierMappingDeterminism:
     def test_same_signals_different_order_same_tier(self):
+        from agentic_core.L0_routing.enforcement.vigilance_routing import (
+        from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+        from agentic_core.L0_routing.types.routing_artifact_types import RoutePath
+        from agentic_core.L6_observability.engines.TieredVigilanceEmitter import (
+        from agentic_core.L6_observability.types.vigilance_event_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         a = classify_signals(["budget_overflow", "guardian_fail", "info_metric"])
         b = classify_signals(["info_metric", "budget_overflow", "guardian_fail"])
         assert a == b

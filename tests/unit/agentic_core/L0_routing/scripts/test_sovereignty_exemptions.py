@@ -10,7 +10,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -73,7 +73,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_sovereignty_exemptions", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_sovereignty_exemptions", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_sovereignty_exemptions", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -184,6 +184,8 @@ class TestSovereigntyExemptions(unittest.TestCase):
         self.fixer = PascalSovereigntyFixer(dry_run=True)
 
     def test_ignores_standard_test_file(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """Scenario: 'test_auth.py' should be ignored even if it contains classes."""
         path = Path("test_auth.py")
         with (

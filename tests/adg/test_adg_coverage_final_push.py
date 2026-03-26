@@ -42,7 +42,7 @@ import textwrap
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -89,7 +89,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_coverage_final_push", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_coverage_final_push", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_coverage_final_push", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -210,13 +210,13 @@ def _parse(src: str) -> ast.Module:
 
 
 def _mod(path: str) -> str:
-    from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
     return canonical_name("Module", path)
 
 
 def _sym(name: str) -> str:
-    from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
     return canonical_name("Symbol", name)
 
@@ -228,8 +228,87 @@ def _sym(name: str) -> str:
 
 class TestExtractReturnEmpty:
     def test_extract_name_constant_input(self):
-        """_InheritanceVisitor._extract_name: ast.Constant node → ''."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
         from agentic_core.adg.extraction.static_scanner import _InheritanceVisitor
+        from agentic_core.adg.extraction.static_scanner import _AttributeVisitor
+        from agentic_core.adg.extraction.static_scanner import _AttributeVisitor
+        from agentic_core.adg.extraction.static_scanner import _DynamicExecutionVisitor
+        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+        from agentic_core.adg.extraction.static_scanner import _InternalCallGraphVisitor
+        from agentic_core.foo import bar
+        from agentic_core.adg.extraction.static_scanner import _InternalCallGraphVisitor
+        from agentic_core.L2_execution import gateway
+        from agentic_core.adg.extraction.static_scanner import _InternalCallGraphVisitor
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.adg.extraction.static_scanner import _GovernancePlaneVisitor
+        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+        from agentic_core.adg.extraction.static_scanner import _BLOCKING_CALL_PREFIXES, _AntipatternVisitor
+        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+        from agentic_core.adg.extraction.static_scanner import _DecoratorVisitor
+        from agentic_core.adg.extraction.static_scanner import _DecoratorVisitor
+        from agentic_core.adg.extraction.static_scanner import _DecoratorVisitor
+        from agentic_core.adg.extraction.static_scanner import _DecoratorVisitor
+        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, LAYER_PREFIXES
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, LAYER_PREFIXES
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.adg.extraction.static_scanner import _CallVisitor
+        from agentic_core.adg.extraction.static_scanner import _CallVisitor
+        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+        from agentic_core.adg.extraction.static_scanner import _InternalCallGraphVisitor
+        from agentic_core.adg.extraction.static_scanner import _GovernancePlaneVisitor
+        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+        from agentic_core.adg.extraction.static_scanner import _DecoratorVisitor
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, LAYER_PREFIXES, module_path_to_layer
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.adg.extraction.static_scanner import _DecoratorVisitor
+        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult, _emit_layer_violation_edges
+        from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, LAYER_PREFIXES
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, LAYER_PREFIXES, module_path_to_layer
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.adg.extraction.static_scanner import (
+        import agentic_core.adg.extraction.static_scanner as ss_mod
+        from agentic_core.adg.extraction.static_scanner import (
+        """_InheritanceVisitor._extract_name: ast.Constant node → ''."""
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _InheritanceVisitor
 
         v = _InheritanceVisitor(_mod("pkg/m.py"), "pkg/m.py")
         const_node = ast.Constant(value=42)
@@ -238,21 +317,21 @@ class TestExtractReturnEmpty:
 
     def test_extract_call_sym_constant_input(self):
         """_AttributeVisitor._extract_call_sym: ast.Constant func → ''."""
-        from agentic_core.adg.extraction.static_scanner import _AttributeVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _AttributeVisitor
 
         v = _AttributeVisitor._extract_call_sym(ast.Constant(value=42))
         assert v == ""
 
     def test_extract_attr_chain_constant_input(self):
         """_AttributeVisitor._extract_attr_chain: ast.Constant → ''."""
-        from agentic_core.adg.extraction.static_scanner import _AttributeVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _AttributeVisitor
 
         result = _AttributeVisitor._extract_attr_chain(ast.Constant(value=42))
         assert result == ""
 
     def test_dynamic_execution_visitor_extract_sym_constant(self):
         """_DynamicExecutionVisitor._extract_sym: ast.Constant → '' (line 550)."""
-        from agentic_core.adg.extraction.static_scanner import _DynamicExecutionVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _DynamicExecutionVisitor
 
         result = _DynamicExecutionVisitor._extract_sym(ast.Constant(value=42))
         assert result == ""
@@ -266,7 +345,7 @@ class TestExtractReturnEmpty:
 
 class TestClassifyIfContextAttributeChain:
     def _classify(self, src: str) -> str:
-        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _ImportVisitor
 
         tree = _parse(src)
         # Extract the test node from the If statement
@@ -303,7 +382,7 @@ class TestClassifyIfContextAttributeChain:
         tree = _parse(src)
         if_node = next(n for n in ast.walk(tree) if isinstance(n, ast.If))
         # The test is a Compare: left=Attribute(value=Name('sys'), attr='version_info')
-        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _ImportVisitor
 
         result = _ImportVisitor._classify_if_context(if_node.test)
         assert result == "version_guard_import"
@@ -317,7 +396,7 @@ class TestClassifyIfContextAttributeChain:
 class TestImportVisitorTryOrelseFinalbody:
     def test_import_in_try_orelse(self):
         """Import inside try/except else clause is visited and produces an edge."""
-        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _ImportVisitor
 
         src = """\
             try:
@@ -335,7 +414,7 @@ class TestImportVisitorTryOrelseFinalbody:
 
     def test_import_in_try_finalbody(self):
         """Import inside finally clause is visited and produces an edge."""
-        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _ImportVisitor
 
         src = """\
             try:
@@ -358,10 +437,10 @@ class TestImportVisitorTryOrelseFinalbody:
 class TestInternalCallGraphVisitorCalls:
     def test_call_to_internal_imported_symbol(self):
         """from agentic_core.foo import bar; bar.run() → calls edge emitted."""
-        from agentic_core.adg.extraction.static_scanner import _InternalCallGraphVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _InternalCallGraphVisitor
 
         src = """\
-            from agentic_core.foo import bar
+#  # MOVED: from agentic_core.foo import bar
             bar.run()
         """
         tree = _parse(src)
@@ -372,10 +451,10 @@ class TestInternalCallGraphVisitorCalls:
 
     def test_internal_call_sym_is_registered(self):
         """Symbol for the call references the fully qualified internal module."""
-        from agentic_core.adg.extraction.static_scanner import _InternalCallGraphVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _InternalCallGraphVisitor
 
         src = """\
-            from agentic_core.L2_execution import gateway
+#  # MOVED: from agentic_core.L2_execution import gateway
             gateway.execute()
         """
         tree = _parse(src)
@@ -393,7 +472,7 @@ class TestInternalCallGraphVisitorCalls:
 class TestInternalCallGraphExtractSymbolEmpty:
     def test_extract_symbol_constant_returns_empty(self):
         """_InternalCallGraphVisitor._extract_symbol(Constant) → ''."""
-        from agentic_core.adg.extraction.static_scanner import _InternalCallGraphVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _InternalCallGraphVisitor
 
         result = _InternalCallGraphVisitor._extract_symbol(ast.Constant(value=42))
         assert result == ""
@@ -407,7 +486,7 @@ class TestInternalCallGraphExtractSymbolEmpty:
 class TestGovernancePlaneVisitorDirectCalls:
     def test_governance_write_direct_call(self):
         """Calling a _GOVERNANCE_WRITE_SYMBOLS function by Name → writes_through edge."""
-        from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
             _GOVERNANCE_WRITE_SYMBOLS,
             _GovernancePlaneVisitor,
         )
@@ -422,7 +501,7 @@ class TestGovernancePlaneVisitorDirectCalls:
 
     def test_governance_route_direct_call(self):
         """Calling a _GOVERNANCE_ROUTE_SYMBOLS function by Name → routes_through edge."""
-        from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
             _GOVERNANCE_ROUTE_SYMBOLS,
             _GovernancePlaneVisitor,
         )
@@ -444,7 +523,7 @@ class TestGovernancePlaneVisitorDirectCalls:
 class TestGovernancePlaneExtractSymbolEmpty:
     def test_extract_symbol_constant_returns_empty(self):
         """_GovernancePlaneVisitor._extract_symbol(Constant) → ''."""
-        from agentic_core.adg.extraction.static_scanner import _GovernancePlaneVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _GovernancePlaneVisitor
 
         result = _GovernancePlaneVisitor._extract_symbol(ast.Constant(value=42))
         assert result == ""
@@ -458,7 +537,7 @@ class TestGovernancePlaneExtractSymbolEmpty:
 class TestAntipatternAttributeExcType:
     def test_silent_swallow_attribute_exc_type(self):
         """except some.module.Error: pass → silent swallow with Attribute exc type."""
-        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
 
         src = """\
             try:
@@ -483,7 +562,7 @@ class TestAntipatternAttributeExcType:
 class TestAntipatternEmptyExceptBody:
     def test_is_silent_swallow_empty_body(self):
         """_is_silent_swallow returns True for handler with empty body."""
-        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
 
         # Build a handler node with empty body manually
         v = _AntipatternVisitor(_mod("pkg/m.py"), "pkg/m.py")
@@ -500,7 +579,7 @@ class TestAntipatternEmptyExceptBody:
 class TestAntipatternBlockingCallInAsync:
     def test_blocking_call_in_async_function(self):
         """time.sleep() inside async def → blocking_call_in_async antipattern edge."""
-        from agentic_core.adg.extraction.static_scanner import _BLOCKING_CALL_PREFIXES, _AntipatternVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _BLOCKING_CALL_PREFIXES, _AntipatternVisitor
 
         # Find a prefix that will match a call like time.sleep or requests.get
         prefix = next(iter(_BLOCKING_CALL_PREFIXES))
@@ -521,7 +600,7 @@ class TestAntipatternBlockingCallInAsync:
 class TestAntipatternGlobalStateMutation:
     def test_global_state_mutation_inside_function(self):
         """Reassigning UPPER_CASE global inside function → global_state_mutation edge."""
-        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
 
         src = """\
             COUNTER = 0
@@ -547,7 +626,7 @@ class TestAntipatternGlobalStateMutation:
 class TestAntipatternExtractSym:
     def test_extract_sym_attribute_with_name_root(self):
         """_extract_sym on Attribute with Name root returns full dotted chain."""
-        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
 
         v = _AntipatternVisitor(_mod("pkg/m.py"), "pkg/m.py")
         # Build ast.Attribute for 'time.sleep'
@@ -561,7 +640,7 @@ class TestAntipatternExtractSym:
 
     def test_extract_sym_constant_returns_empty(self):
         """_extract_sym on Constant → ''."""
-        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
 
         v = _AntipatternVisitor(_mod("pkg/m.py"), "pkg/m.py")
         result = v._extract_sym(ast.Constant(value=42))
@@ -579,14 +658,14 @@ class TestAntipatternExtractSym:
 class TestDecoratorExtractName:
     def test_extract_decorator_name_constant_returns_empty(self):
         """_extract_decorator_name(Constant) → ''."""
-        from agentic_core.adg.extraction.static_scanner import _DecoratorVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _DecoratorVisitor
 
         result = _DecoratorVisitor._extract_decorator_name(ast.Constant(value=42))
         assert result == ""
 
     def test_extract_decorator_name_attribute_with_name_root(self):
         """@some.module.decorator → _extract_decorator_name returns 'some.module.decorator'."""
-        from agentic_core.adg.extraction.static_scanner import _DecoratorVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _DecoratorVisitor
 
         node = ast.Attribute(
             value=ast.Attribute(
@@ -602,7 +681,7 @@ class TestDecoratorExtractName:
 
     def test_extract_decorator_name_call_node(self):
         """@decorator(args) → ast.Call → recurse into func → returns decorator name."""
-        from agentic_core.adg.extraction.static_scanner import _DecoratorVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _DecoratorVisitor
 
         # Build @my_decorator(arg=1) → ast.Call(func=ast.Name(id='my_decorator'))
         call_node = ast.Call(
@@ -615,7 +694,7 @@ class TestDecoratorExtractName:
 
     def test_decorator_call_emitted_as_decorated_by(self):
         """@property(x) style decorator (Call node) → decorated_by edge emitted."""
-        from agentic_core.adg.extraction.static_scanner import _DecoratorVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _DecoratorVisitor
 
         src = "@functools.lru_cache(maxsize=128)\ndef foo(): pass\n"
         tree = _parse(src)
@@ -633,7 +712,7 @@ class TestDecoratorExtractName:
 class TestSymbolInventoryAllFilter:
     def test_symbol_not_in_all_not_exported(self):
         """If __all__ is defined and name is not in it, no exports edge emitted."""
-        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
 
         src = """\
             __all__ = ['public_func']
@@ -660,7 +739,7 @@ class TestSymbolInventoryAllFilter:
 class TestSymbolInventoryAssignColOffset:
     def test_indented_assign_not_exported(self):
         """Assignment inside a function (col_offset > 0) is not collected."""
-        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
 
         src = """\
             def foo():
@@ -674,7 +753,7 @@ class TestSymbolInventoryAssignColOffset:
 
     def test_top_level_assign_exported(self):
         """Top-level assignment (col_offset == 0) IS collected."""
-        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
 
         src = "MY_CONST = 42\n"
         tree = _parse(src)
@@ -692,7 +771,7 @@ class TestSymbolInventoryAssignColOffset:
 class TestSymbolInventoryAnnAssignColOffset:
     def test_indented_ann_assign_not_exported(self):
         """Annotated assignment inside a function (col_offset > 0) is not collected."""
-        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
 
         src = """\
             def foo():
@@ -706,7 +785,7 @@ class TestSymbolInventoryAnnAssignColOffset:
 
     def test_top_level_ann_assign_exported(self):
         """Top-level annotated assignment (col_offset == 0) IS collected."""
-        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
 
         src = "MY_VAR: int = 5\n"
         tree = _parse(src)
@@ -724,12 +803,12 @@ class TestSymbolInventoryAnnAssignColOffset:
 class TestEmitLayerViolationAllowedEdge:
     def test_allowed_layer_edge_produces_no_violation(self):
         """An import from Layer A to Layer B that's in ALLOWED_LAYER_EDGES → no violation."""
-        from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
             Edge,
             ScanResult,
             _emit_layer_violation_edges,
         )
-        from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, LAYER_PREFIXES
+#  # MOVED: from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, LAYER_PREFIXES
 
         if not ALLOWED_LAYER_EDGES:
 
@@ -751,7 +830,7 @@ class TestEmitLayerViolationAllowedEdge:
         if not from_prefix or not to_prefix:
 
 
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         from_mod = canonical_name("Module", f"{from_prefix}/mod_a.py")
         to_mod = canonical_name("Module", f"{to_prefix}/mod_b.py")
@@ -780,7 +859,7 @@ class TestEmitLayerViolationAllowedEdge:
 class TestCheckCardinalityHighActual:
     def test_high_cardinality_violation(self):
         """Edge count exceeding upper bound → CARDINALITY HIGH violation string."""
-        from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
             _CARDINALITY_RANGES,
             Edge,
             ScanResult,
@@ -841,8 +920,8 @@ class TestScanViolationAndCycleDigestUpdate:
 
     def test_layer_violation_extends_edges_and_recomputes_digest(self, tmp_path):
         """scan() with cross-layer violation → violation_edges appended → digest changes."""
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
-        from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, LAYER_PREFIXES
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, LAYER_PREFIXES
 
         # Find a layer pair that is NOT allowed (a real violation)
         all_pairs = set()
@@ -882,7 +961,7 @@ class TestScanViolationAndCycleDigestUpdate:
 
     def test_cyclic_imports_produces_in_cycle_edges(self):
         """Two modules mutually importing each other → in_cycle edges via _detect_cycles."""
-        from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
             Edge,
             ScanResult,
             _detect_cycles,
@@ -928,7 +1007,7 @@ class TestScanViolationAndCycleDigestUpdate:
 class TestCallVisitorNetworkSymbol:
     def test_network_call_via_requests_get(self):
         """requests.get() → network edge via NETWORK_SYMBOLS direct match."""
-        from agentic_core.adg.extraction.static_scanner import _CallVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _CallVisitor
 
         src = "requests.get('https://example.com')\n"
         tree = _parse(src)
@@ -939,7 +1018,7 @@ class TestCallVisitorNetworkSymbol:
 
     def test_network_call_via_provider_sdk_base(self):
         """openai.ChatCompletion.create() → network edge via PROVIDER_SDK_SYMBOLS base."""
-        from agentic_core.adg.extraction.static_scanner import _CallVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _CallVisitor
 
         src = "openai.ChatCompletion.create(model='gpt-4')\n"
         tree = _parse(src)
@@ -968,7 +1047,7 @@ class TestMissingFalseBranches:
     def test_classify_if_context_attribute_non_name_root(self):
         """Attribute chain where root is NOT a Name → False branch at 630.
         e.g. get_sys().version_info → root is Call, not Name."""
-        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _ImportVisitor
 
         # Build: get_sys().version_info → Attribute(value=Call(...), attr='version_info')
         call_node = ast.Call(
@@ -985,7 +1064,7 @@ class TestMissingFalseBranches:
     def test_classify_if_context_attribute_non_version(self):
         """Attribute chain that does NOT contain version_info → False branch at 633.
         Returns '' (falls through to Compare check, then returns '')."""
-        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _ImportVisitor
 
         # Build: os.path → Attribute(value=Name('os'), attr='path')
         node = ast.Attribute(
@@ -999,7 +1078,7 @@ class TestMissingFalseBranches:
     def test_classify_if_context_compare_non_name_root(self):
         """Compare(left=Attribute where root is Call) → False branch at 642.
         E.g. get_sys().version_info >= (3, 8)."""
-        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _ImportVisitor
 
         call_node = ast.Call(
             func=ast.Name(id="get_sys", ctx=ast.Load()),
@@ -1018,7 +1097,7 @@ class TestMissingFalseBranches:
 
     def test_try_visit_empty_orelse_finalbody(self):
         """visit_Try with empty orelse and finalbody → empty-list loops → no crash."""
-        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _ImportVisitor
 
         src = "try:\n    import os\nexcept Exception:\n    pass\n"
         tree = _parse(src)
@@ -1029,7 +1108,7 @@ class TestMissingFalseBranches:
 
     def test_internal_call_visitor_sym_empty_no_edge(self):
         """_InternalCallGraphVisitor: Call with Constant func → sym='' → no edge."""
-        from agentic_core.adg.extraction.static_scanner import _InternalCallGraphVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _InternalCallGraphVisitor
 
         # 42() is unusual but parseable via manual AST
         src = "x = 1\n"
@@ -1044,7 +1123,7 @@ class TestMissingFalseBranches:
 
     def test_governance_visitor_sym_empty_no_edge(self):
         """_GovernancePlaneVisitor: Call with Constant func → sym='' → no edge."""
-        from agentic_core.adg.extraction.static_scanner import _GovernancePlaneVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _GovernancePlaneVisitor
 
         v = _GovernancePlaneVisitor(_mod("agentic_core/L0_routing/m.py"), "agentic_core/L0_routing/m.py")
         call_node = ast.Call(func=ast.Constant(value=42), args=[], keywords=[])
@@ -1055,7 +1134,7 @@ class TestMissingFalseBranches:
 
     def test_antipattern_non_silent_swallow_no_edge(self):
         """except with real action → NOT a silent swallow → no antipattern edge."""
-        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
 
         src = """\
             try:
@@ -1071,7 +1150,7 @@ class TestMissingFalseBranches:
 
     def test_antipattern_async_call_not_in_blocking_prefixes(self):
         """Call in async function whose sym is NOT in _BLOCKING_CALL_PREFIXES → no edge."""
-        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
 
         src = "async def foo():\n    my_custom_func(1)\n"
         tree = _parse(src)
@@ -1082,7 +1161,7 @@ class TestMissingFalseBranches:
 
     def test_antipattern_assign_outside_function_no_edge(self):
         """Assignment to UPPER_CASE global at module level (depth=0) → no mutation edge."""
-        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
 
         src = "COUNTER = 0\nCOUNTER = 1\n"
         tree = _parse(src)
@@ -1094,7 +1173,7 @@ class TestMissingFalseBranches:
     def test_antipattern_extract_sym_attribute_non_name_root(self):
         """_extract_sym Attribute where root is NOT a Name → False branch at 1322.
         Only the attr parts are joined (no root appended)."""
-        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
 
         v = _AntipatternVisitor(_mod("pkg/m.py"), "pkg/m.py")
         # Build: get_obj().sleep → Attribute(value=Call(...), attr='sleep')
@@ -1110,7 +1189,7 @@ class TestMissingFalseBranches:
 
     def test_symbol_inventory_all_defined_but_name_excluded(self):
         """__all__ defined but function name not in it → 1589->1587 (False) → not emitted."""
-        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
 
         src = "__all__ = ['exported_func']\ndef not_exported(): pass\n"
         tree = _parse(src)
@@ -1122,7 +1201,7 @@ class TestMissingFalseBranches:
 
     def test_symbol_inventory_visit_assign_indented_skipped(self):
         """visit_Assign with col_offset != 0 → return early (line 1610)."""
-        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
 
         src = "class Foo:\n    BAR = 1\n"
         tree = _parse(src)
@@ -1133,7 +1212,7 @@ class TestMissingFalseBranches:
 
     def test_symbol_inventory_visit_ann_assign_indented_skipped(self):
         """visit_AnnAssign with col_offset != 0 → return early (line 1618)."""
-        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
 
         src = "class Foo:\n    bar: int = 1\n"
         tree = _parse(src)
@@ -1145,7 +1224,7 @@ class TestMissingFalseBranches:
     def test_decorator_extract_name_attribute_non_name_root(self):
         """_extract_decorator_name Attribute where cur ends NOT as Name → False at 1551.
         Only attr parts are joined."""
-        from agentic_core.adg.extraction.static_scanner import _DecoratorVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _DecoratorVisitor
 
         call_node = ast.Call(
             func=ast.Name(id="get_module", ctx=ast.Load()),
@@ -1170,12 +1249,12 @@ class TestScanPostPassViaFullScan:
         """_emit_layer_violation_edges returns non-empty → simulates lines 2213-2214.
         Build a ScanResult with a cross-layer import edge where symbol resolves to to_layer.
         _emit_layer_violation_edges uses edge.symbol (dotted path) to resolve to_layer."""
-        from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
             Edge,
             ScanResult,
             _emit_layer_violation_edges,
         )
-        from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, LAYER_PREFIXES, module_path_to_layer
+#  # MOVED: from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, LAYER_PREFIXES, module_path_to_layer
 
         # Find a forbidden pair where both have known path prefixes
         all_pairs = {
@@ -1231,7 +1310,7 @@ class TestScanPostPassViaFullScan:
         """_detect_cycles returns non-empty → simulates lines 2219-2220 and 2244.
         Build a ScanResult with mutual imports, call _detect_cycles, merge edges,
         and compute max_cycle_depth exactly as scan() does."""
-        from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
             Edge,
             ScanResult,
             _detect_cycles,
@@ -1291,7 +1370,7 @@ class TestScanPostPassViaFullScan:
 class TestRemainingBranchGaps:
     def test_decorator_visitor_empty_sym_skips(self):
         """_DecoratorVisitor: decorator whose name extracts to '' → line 1511 continue."""
-        from agentic_core.adg.extraction.static_scanner import _DecoratorVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _DecoratorVisitor
 
         v = _DecoratorVisitor(_mod("pkg/m.py"), "pkg/m.py")
         # Call _process_decorators with a Constant node → _extract_decorator_name → ''
@@ -1302,7 +1381,7 @@ class TestRemainingBranchGaps:
 
     def test_symbol_inventory_name_in_all_exported(self):
         """__all__ defined, function IS in it → 1589->1587 True branch → emitted."""
-        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
 
         src = "__all__ = ['exported_func']\ndef exported_func(): pass\n"
         tree = _parse(src)
@@ -1313,7 +1392,7 @@ class TestRemainingBranchGaps:
 
     def test_symbol_inventory_assign_indented_not_exported(self):
         """visit_Assign: col_offset > 0 → early return at line 1610, no export edge."""
-        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
 
         src = "class Foo:\n    MY_VAR = 1\n"
         tree = _parse(src)
@@ -1324,7 +1403,7 @@ class TestRemainingBranchGaps:
 
     def test_symbol_inventory_ann_assign_indented_not_exported(self):
         """visit_AnnAssign: col_offset > 0 → early return at line 1618, no export edge."""
-        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
 
         src = "class Foo:\n    my_attr: int = 1\n"
         tree = _parse(src)
@@ -1335,8 +1414,8 @@ class TestRemainingBranchGaps:
 
     def test_emit_layer_violation_allowed_edge_skipped(self):
         """Edge in ALLOWED_LAYER_EDGES → line 1860 continue, no violation emitted."""
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult, _emit_layer_violation_edges
-        from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, LAYER_PREFIXES
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult, _emit_layer_violation_edges
+#  # MOVED: from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, LAYER_PREFIXES
 
         if not ALLOWED_LAYER_EDGES:
 
@@ -1368,7 +1447,7 @@ class TestRemainingBranchGaps:
 
     def test_cardinality_high_violation(self):
         """_check_cardinality: actual > hi → line 2036->2032 taken, HIGH violation."""
-        from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
             _CARDINALITY_RANGES,
             Edge,
             ScanResult,
@@ -1405,7 +1484,7 @@ class TestRemainingBranchGaps:
 
     def test_antipattern_global_mutation_inside_function(self):
         """UPPER_CASE global mutated inside function → True branch of 1248 hit."""
-        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
 
         src = "COUNTER = 0\ndef foo():\n    global COUNTER\n    COUNTER = 1\n"
         tree = _parse(src)
@@ -1417,7 +1496,7 @@ class TestRemainingBranchGaps:
     def test_antipattern_non_global_assign_inside_function_no_mutation(self):
         """Assignment inside function to name NOT in global_names → 1248->1247 False branch.
         Exercises loop continuation without emitting an edge."""
-        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
 
         src = "COUNTER = 0\ndef foo():\n    local_var = 1\n"
         tree = _parse(src)
@@ -1428,7 +1507,7 @@ class TestRemainingBranchGaps:
 
     def test_antipattern_silent_swallow_attribute_exc_type(self):
         """Silent swallow with Attribute exc type → line 1191->1193 branch hit."""
-        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
 
         src = "try:\n    x = 1\nexcept some.module.Error:\n    pass\n"
         tree = _parse(src)
@@ -1440,7 +1519,7 @@ class TestRemainingBranchGaps:
 
     def test_visit_try_finalbody_imports_extracted(self):
         """visit_Try: finally clause with import → finalbody loop executed (line 658)."""
-        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _ImportVisitor
 
         src = "try:\n    x = 1\nfinally:\n    import os\n"
         tree = _parse(src)
@@ -1450,7 +1529,7 @@ class TestRemainingBranchGaps:
 
     def test_extract_all_non_list_value_returns_none(self):
         """_extract_all: __all__ = some_var (not List/Tuple) → 1589->1587 False branch → returns None."""
-        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
 
         src = "__all__ = MY_LIST\ndef exported(): pass\n"
         tree = _parse(src)
@@ -1460,12 +1539,12 @@ class TestRemainingBranchGaps:
 
     def test_emit_layer_violation_allowed_pair_no_violation_emitted(self):
         """_emit_layer_violation_edges: allowed pair → line 1860 continue, no violation."""
-        from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
             Edge,
             ScanResult,
             _emit_layer_violation_edges,
         )
-        from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, LAYER_PREFIXES, module_path_to_layer
+#  # MOVED: from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES, LAYER_PREFIXES, module_path_to_layer
 
         if not ALLOWED_LAYER_EDGES:
 
@@ -1503,7 +1582,7 @@ class TestRemainingBranchGaps:
 
     def test_check_cardinality_high_violation_precise(self):
         """_check_cardinality: actual > hi → line 2036 elif-True branch."""
-        from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
             _CARDINALITY_RANGES,
             Edge,
             ScanResult,
@@ -1537,7 +1616,7 @@ class TestRemainingBranchGaps:
 
     def test_check_cardinality_in_range_no_violation(self):
         """_check_cardinality: lo <= actual <= hi → 2036->2032 False branch (loop continues)."""
-        from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
             _CARDINALITY_RANGES,
             Edge,
             ScanResult,
@@ -1573,8 +1652,8 @@ class TestRemainingBranchGaps:
     def test_scan_post_pass_via_monkeypatch(self, monkeypatch, tmp_path):
         """Lines 2213-2214, 2219-2220, 2244: monkeypatch _emit_layer_violation_edges and
         _detect_cycles inside scan() to return non-empty results, forcing those branches."""
-        import agentic_core.adg.extraction.static_scanner as ss_mod
-        from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: import agentic_core.adg.extraction.static_scanner as ss_mod
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
             ADGStaticScanner,
             Edge,
         )

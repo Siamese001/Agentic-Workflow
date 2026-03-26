@@ -12,7 +12,7 @@ import inspect
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -59,7 +59,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_l0_seam_contracts", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_l0_seam_contracts", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_l0_seam_contracts", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -205,6 +205,13 @@ SEAM_MODULE_PREFIX = "agentic_core.L0_routing.seams."
 
 @pytest.mark.parametrize("stem,_callable,_type", SEAM_REGISTRY)
 def test_seam_imports_without_error(stem, _callable, _type):
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L0_routing.seams.observability_seam import load_meta_learning_agent
+    from agentic_core.L0_routing.seams.observability_seam import load_meta_learning_agent
+    from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
+    from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
+    from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
     """Each seam module must be importable with no ImportError."""
     mod = importlib.import_module(SEAM_MODULE_PREFIX + stem)
     assert mod is not None
@@ -229,14 +236,14 @@ assert isinstance(result, (dict, list, str, int, float, bool)), "Result should b
 # TODO: Add specific execution assertions
 class TestObservabilitySeam:
     def test_load_meta_learning_agent_returns_class_or_none(self):
-        from agentic_core.L0_routing.seams.observability_seam import load_meta_learning_agent
+#  # MOVED: from agentic_core.L0_routing.seams.observability_seam import load_meta_learning_agent
 
         result = load_meta_learning_agent()
         # Must be a class or None (fail-open)
         assert result is None or (inspect.isclass(result)), f"Expected class or None, got {type(result)}"
 
     def test_load_meta_learning_agent_returns_meta_learning_client(self):
-        from agentic_core.L0_routing.seams.observability_seam import load_meta_learning_agent
+#  # MOVED: from agentic_core.L0_routing.seams.observability_seam import load_meta_learning_agent
 
         cls = load_meta_learning_agent()
         if cls is not None:
@@ -257,21 +264,21 @@ class TestObservabilitySeam:
     assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
     # TODO: Add specific execution assertions
     def test_load_context_jit_returns_dict(self):
-        from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
+#  # MOVED: from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
 
         result = load_context_jit("intent_001")
         assert isinstance(result, dict)
 
     def test_load_context_jit_returns_empty_dict(self):
         """Seam is a pure stub — always returns empty dict (no control flow allowed)."""
-        from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
+#  # MOVED: from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
 
         result = load_context_jit("any_intent")
         assert result == {}
 
     def test_load_context_jit_intent_id_accepted(self):
         """intent_id parameter is accepted without error."""
-        from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
+#  # MOVED: from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
 
         r1 = load_context_jit("intent_a")
         r2 = load_context_jit("intent_b")

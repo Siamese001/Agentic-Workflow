@@ -70,7 +70,7 @@ from typing import Any
 import pytest
 
 # Import SSOT constants for validation
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
@@ -87,7 +87,7 @@ from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
     TOOLS_DIR,
 )
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     ARCHIVES_DIR,
     DOCS_REPORTS_PLANS,
     ENFORCED_TERRITORIES,
@@ -274,6 +274,8 @@ def _scan_file_for_violations(fpath: Path) -> list[dict[str, Any]]:
 
 @pytest.mark.guardian
 def test_zero_ssot_hardcoding_violations():
+    from agentic_core.L0_routing.config.path_constants import (
+    from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     """
     GUARDIAN: Assert zero fixable SSOT hardcoding violations across all enforced territories.
 

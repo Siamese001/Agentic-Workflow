@@ -15,26 +15,26 @@ Branch coverage:
 
 import pytest
 
-from agentic_core.evaluation.monitoring.drift_monitor import (
+#  # MOVED: from agentic_core.evaluation.monitoring.drift_monitor import (
     AnswerQualityMonitor,
     EmbeddingDriftMonitor,
     RetrievalDriftMonitor,
 )
-from agentic_core.evaluation.monitoring.shadow_eval_runner import (
+#  # MOVED: from agentic_core.evaluation.monitoring.shadow_eval_runner import (
     ShadowEvaluationRunner,
 )
-from agentic_core.evaluation.monitoring.snapshots import (
+#  # MOVED: from agentic_core.evaluation.monitoring.snapshots import (
     AnswerQualitySnapshot,
     DriftAlert,
     EmbeddingHealthSnapshot,
     RetrievalDriftSnapshot,
 )
-from agentic_core.evaluation.runners.replay_eval_runner import SystemConfig
-from agentic_core.evaluation.schemas.evaluation_dataset_schema import (
+#  # MOVED: from agentic_core.evaluation.runners.replay_eval_runner import SystemConfig
+#  # MOVED: from agentic_core.evaluation.schemas.evaluation_dataset_schema import (
     EvaluationDataset,
     EvaluationExample,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -234,6 +234,12 @@ class TestRetrievalDriftSnapshot:
         )
 
     def test_to_dict_keys(self):
+        from agentic_core.evaluation.monitoring.drift_monitor import (
+        from agentic_core.evaluation.monitoring.shadow_eval_runner import (
+        from agentic_core.evaluation.monitoring.snapshots import (
+        from agentic_core.evaluation.runners.replay_eval_runner import SystemConfig
+        from agentic_core.evaluation.schemas.evaluation_dataset_schema import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         d = self._make().to_dict()
         assert d["snapshot_type"] == "retrieval_drift"
         assert d["retrieval_hit_rate"] == pytest.approx(0.82)

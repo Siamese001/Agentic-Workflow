@@ -10,11 +10,11 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_SHARED_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -77,7 +77,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_sovereignty_gold_master", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_sovereignty_gold_master", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_sovereignty_gold_master", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -192,6 +192,9 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
         self.fixer = PascalSovereigntyFixer(dry_run=True)
 
     def test_relative_import_integrity(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """Edge Case: Ensure 'from .llm_mixin import' is refactored correctly."""
         old_mod = "llm_mixin"
         new_mod = "LLMMixin"  # Testing the mechanism

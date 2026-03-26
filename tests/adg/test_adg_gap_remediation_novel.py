@@ -47,7 +47,7 @@ import threading
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (  # noqa: E402
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (  # noqa: E402
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -105,7 +105,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (  # noqa: E402
 # REMOVED: _emit_stores_embedding("p4", "test_adg_gap_remediation_novel", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_adg_gap_remediation_novel", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_adg_gap_remediation_novel", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -211,8 +211,84 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     ],
 )
 def test_routing_gateway_all_valid_paths(route_path):
-    """Every governed route path must stamp, verify, and convert cleanly."""
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (  # noqa: E402
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+    from agentic_core.L0_routing.policy.route_policy_governor import (
+    from agentic_core.L0_routing.policy.route_policy_governor import (
+    from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
+    from agentic_core.L5_safety.gates.tool_safety_gate import (
+    from agentic_core.L5_safety.adaptation.policy_adaptation_loop import (
+    from agentic_core.L4_state.enforcement.state_lifecycle_policy import (
+    from agentic_core.L4_state.enforcement.state_lifecycle_policy import (
+    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+    from agentic_core.L2_execution.enforcement.guardrail_gate import (
+    from agentic_core.L4_state.authority.run_scoped_state_authority import (
+    from agentic_core.L4_state.memory.unified_memory_facade import (
+    from agentic_core.L4_state.versioning.state_version_manager import (
+    from agentic_core.L5_safety.adaptation.policy_adaptation_loop import (
+    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+    from agentic_core.L4_state.versioning.state_version_manager import (
+    from agentic_core.L5_safety.audit.safety_audit_trail import SafetyAuditTrail
+    from agentic_core.L0_routing.policy.route_policy_governor import (
+    from agentic_core.L0_routing.policy.route_policy_governor import (
+    from agentic_core.L6_observability.evaluation.evaluation_signal_integrator import (
+    from agentic_core.L6_observability.metrics.performance_metrics_emitter import (
+    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+    from agentic_core.L2_execution.types.execution_tool_contract import (
+    from agentic_core.L2_execution.types.execution_tool_contract import ToolCategory as TC
+    from agentic_core.L3_orchestration.coordination.work_coordination_bundle import (
+    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+    from agentic_core.L0_routing.policy.route_policy_governor import (
+    from agentic_core.L1_cognition.context.reasoning_context_envelope import (
+    from agentic_core.L2_execution.determinism.execution_proof_emitter import (
+    from agentic_core.L2_execution.enforcement.guardrail_gate import (
+    from agentic_core.L2_execution.types.execution_tool_contract import (
+    from agentic_core.L3_orchestration.coordination.work_coordination_bundle import (
+    from agentic_core.L3_orchestration.learning.workflow_learning_bridge import (
+    from agentic_core.L3_orchestration.registry.agent_capability_registry import (
+    from agentic_core.L4_state.authority.run_scoped_state_authority import (
+    from agentic_core.L4_state.enforcement.state_lifecycle_policy import (
+    from agentic_core.L4_state.memory.unified_memory_facade import (
+    from agentic_core.L4_state.versioning.state_version_manager import (
+    from agentic_core.L5_safety.audit.safety_audit_trail import (
+    from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
+    from agentic_core.L6_observability.evaluation.evaluation_signal_integrator import (
+    from agentic_core.L6_observability.metrics.performance_metrics_emitter import (
+    from agentic_core.L4_state.authority.run_scoped_state_authority import (
+    from agentic_core.L4_state.versioning.state_version_manager import (
+    from agentic_core.L5_safety.audit.safety_audit_trail import SafetyAuditTrail
+    from agentic_core.L6_observability.metrics.performance_metrics_emitter import (
+    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+    from agentic_core.L3_orchestration.contracts.agent_handoff import AgentHandoff
+    from agentic_core.L2_execution.types.execution_tool_contract import (
+    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+    from agentic_core.L0_routing.policy.route_policy_governor import (
+    from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
+    from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+    from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
+    from agentic_core.L5_safety.gates.tool_safety_gate import (
+    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+    from agentic_core.L4_state.memory.unified_memory_facade import (
+    from agentic_core.L6_observability.evaluation.evaluation_signal_integrator import (
+    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+    from agentic_core.L4_state.memory.unified_memory_facade import reset_memory_facade
+    from agentic_core.L5_safety.adaptation.policy_adaptation_loop import (
+    from agentic_core.L6_observability.metrics.performance_metrics_emitter import (
+    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+    from agentic_core.L3_orchestration.registry.agent_capability_registry import (
+    from agentic_core.L3_orchestration.registry.agent_capability_registry import (
+    from agentic_core.L3_orchestration.coordination.work_coordination_bundle import (
+    from agentic_core.L6_observability.metrics.performance_metrics_emitter import (
+    from agentic_core.L6_observability.metrics.performance_metrics_emitter import (
+    from agentic_core.L6_observability.evaluation.evaluation_signal_integrator import (
+    from agentic_core.L6_observability.evaluation.evaluation_signal_integrator import (
+    from agentic_core.L4_state.memory.unified_memory_facade import (
+    from agentic_core.L4_state.memory.unified_memory_facade import UnifiedMemoryFacade
+    from agentic_core.L4_state.memory.unified_memory_facade import UnifiedMemoryFacade
+    """Every governed route path must stamp, verify, and convert cleanly."""
+#  # MOVED: from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
         DeterministicRoutingGateway,
     )
 
@@ -235,7 +311,7 @@ def test_routing_gateway_all_valid_paths(route_path):
     ],
 )
 def test_governor_boundary_verification_all_valid_paths(route_path):
-    from agentic_core.L0_routing.policy.route_policy_governor import (
+#  # MOVED: from agentic_core.L0_routing.policy.route_policy_governor import (
         RoutePolicyGovernor,
     )
 
@@ -259,7 +335,7 @@ def test_governor_boundary_verification_all_valid_paths(route_path):
     ],
 )
 def test_governor_boundary_verification_all_invalid_paths(bad_path):
-    from agentic_core.L0_routing.policy.route_policy_governor import (
+#  # MOVED: from agentic_core.L0_routing.policy.route_policy_governor import (
         RoutePolicyGovernor,
     )
 
@@ -281,10 +357,10 @@ def test_governor_boundary_verification_all_invalid_paths(bad_path):
     ],
 )
 def test_tool_safety_gate_risk_matrix(risk_level, sandboxed, should_raise):
-    from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
         PolicyEnforcementPoint,
     )
-    from agentic_core.L5_safety.gates.tool_safety_gate import (
+#  # MOVED: from agentic_core.L5_safety.gates.tool_safety_gate import (
         ToolNotSandboxedError,
         ToolRiskLevel,
         ToolSafetyGate,
@@ -317,7 +393,7 @@ def test_tool_safety_gate_risk_matrix(risk_level, sandboxed, should_raise):
     ],
 )
 def test_policy_adaptation_all_signal_directions(signal, expected_direction):
-    from agentic_core.L5_safety.adaptation.policy_adaptation_loop import (
+#  # MOVED: from agentic_core.L5_safety.adaptation.policy_adaptation_loop import (
         AdaptationSignal,
         PolicyAdaptationLoop,
     )
@@ -351,7 +427,7 @@ def test_policy_adaptation_all_signal_directions(signal, expected_direction):
 )
 def test_state_lifecycle_all_transition_pairs(from_stage, to_stage, valid):
     """Exhaustive parametric coverage of the state machine transition table."""
-    from agentic_core.L4_state.enforcement.state_lifecycle_policy import (
+#  # MOVED: from agentic_core.L4_state.enforcement.state_lifecycle_policy import (
         StateLifecyclePolicy,
         StateLifecycleStage,
         StateLifecycleViolationError,
@@ -372,7 +448,7 @@ def test_state_lifecycle_all_transition_pairs(from_stage, to_stage, valid):
 
 def _advance_to(policy, target_stage):
     """Helper: advance a fresh policy (CREATED) to target_stage via valid path."""
-    from agentic_core.L4_state.enforcement.state_lifecycle_policy import (
+#  # MOVED: from agentic_core.L4_state.enforcement.state_lifecycle_policy import (
         StateLifecycleStage,
     )
 
@@ -395,7 +471,7 @@ def _advance_to(policy, target_stage):
 
 def test_routing_artifact_tampered_replay_fails():
     """Mutate replay_key on a frozen artifact — verify_replay must return False."""
-    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+#  # MOVED: from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
         DeterministicRoutingGateway,
         RoutingArtifact,
     )
@@ -442,7 +518,7 @@ assert isinstance(result, object), "Result should be an object"
 def test_guardrail_gate_policy_hash_mutation_toggles_strict():
     """After constructing with strict_mode=True and empty policy_hash,
     the gate must fail on check calls when the op is blocked."""
-    from agentic_core.L2_execution.enforcement.guardrail_gate import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.guardrail_gate import (
         GuardrailGate,
         GuardrailViolationError,
     )
@@ -454,7 +530,7 @@ def test_guardrail_gate_policy_hash_mutation_toggles_strict():
 
 
 def test_state_authority_delete_then_read_returns_default():
-    from agentic_core.L4_state.authority.run_scoped_state_authority import (
+#  # MOVED: from agentic_core.L4_state.authority.run_scoped_state_authority import (
         RunScopedStateAuthority,
     )
 
@@ -465,7 +541,7 @@ def test_state_authority_delete_then_read_returns_default():
 
 
 def test_unified_memory_facade_unknown_backend_returns_none_value():
-    from agentic_core.L4_state.memory.unified_memory_facade import (
+#  # MOVED: from agentic_core.L4_state.memory.unified_memory_facade import (
         UnifiedMemoryFacade,
     )
 
@@ -477,7 +553,7 @@ def test_unified_memory_facade_unknown_backend_returns_none_value():
 
 
 def test_version_manager_rollback_nonexistent_id_returns_none():
-    from agentic_core.L4_state.versioning.state_version_manager import (
+#  # MOVED: from agentic_core.L4_state.versioning.state_version_manager import (
         StateVersionManager,
     )
 
@@ -517,7 +593,7 @@ processed_result = None  # Replace with actual processing
 assert processed_result is not None, "Processing should produce a result"
 assert len(processed_result) >= 0, "Processed result should be measurable"
 # TODO: Add specific processing assertions
-    from agentic_core.L5_safety.adaptation.policy_adaptation_loop import (
+#  # MOVED: from agentic_core.L5_safety.adaptation.policy_adaptation_loop import (
         AdaptationSignal,
         PolicyAdaptationLoop,
     )
@@ -543,7 +619,7 @@ def _random_str(n: int = 16) -> str:
 def test_routing_gateway_replay_key_determinism_property():
     """For any fixed (route_path, policy_hash, sequence), the replay_key must
     be fully determined by those inputs (same inputs → same key)."""
-    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+#  # MOVED: from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
         DeterministicRoutingGateway,
     )
 
@@ -588,7 +664,7 @@ assert isinstance(result, object), "Result should be an object"
 
 def test_version_manager_version_ids_unique_property():
     """All version IDs in a commit chain must be unique."""
-    from agentic_core.L4_state.versioning.state_version_manager import (
+#  # MOVED: from agentic_core.L4_state.versioning.state_version_manager import (
         StateVersionManager,
     )
 
@@ -604,7 +680,7 @@ def test_version_manager_version_ids_unique_property():
 
 def test_safety_audit_trail_event_ids_unique_property():
     """All event IDs must be unique across many rapid-fire records."""
-    from agentic_core.L5_safety.audit.safety_audit_trail import SafetyAuditTrail
+#  # MOVED: from agentic_core.L5_safety.audit.safety_audit_trail import SafetyAuditTrail
 
     trail = SafetyAuditTrail(trail_path=None)
     for i in range(100):
@@ -625,7 +701,7 @@ def test_proposal_hash_stability_same_inputs():
     The ledger must grow by exactly N entries (idempotency of individual hashes
     does not prevent ledger recording).
     """
-    from agentic_core.L0_routing.policy.route_policy_governor import (
+#  # MOVED: from agentic_core.L0_routing.policy.route_policy_governor import (
         RoutePolicyGovernor,
     )
 
@@ -644,7 +720,7 @@ def test_proposal_hash_stability_same_inputs():
 
 def test_proposal_hash_unique_across_distinct_routes():
     """Different route_paths must produce distinct proposal hashes."""
-    from agentic_core.L0_routing.policy.route_policy_governor import (
+#  # MOVED: from agentic_core.L0_routing.policy.route_policy_governor import (
         RoutePolicyGovernor,
     )
 
@@ -662,7 +738,7 @@ def test_proposal_hash_unique_across_distinct_routes():
 
 def test_eval_signal_score_bounds_property():
     """EvalSignal.is_positive must be consistent with score >= 0.7 boundary."""
-    from agentic_core.L6_observability.evaluation.evaluation_signal_integrator import (
+#  # MOVED: from agentic_core.L6_observability.evaluation.evaluation_signal_integrator import (
         EvalSignalKind,
         EvaluationSignalIntegrator,
     )
@@ -680,7 +756,7 @@ def test_eval_signal_score_bounds_property():
 
 def test_metrics_emitter_summary_statistics_invariants():
     """p50 ≤ p95 ≤ p99, min ≤ mean ≤ max for any distribution."""
-    from agentic_core.L6_observability.metrics.performance_metrics_emitter import (
+#  # MOVED: from agentic_core.L6_observability.metrics.performance_metrics_emitter import (
         MetricKind,
         PerformanceMetricsEmitter,
     )
@@ -708,7 +784,7 @@ def test_routing_artifact_golden_digest():
     Uses a fixed policy_hash + route so the replay_key is reproducible.
     The digest of the serialised dict must stay constant across code changes.
     """
-    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+#  # MOVED: from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
         DeterministicRoutingGateway,
     )
 
@@ -727,7 +803,7 @@ def test_routing_artifact_golden_digest():
 
 def test_tool_contract_golden_capability_hash():
     """ToolCapabilityDescriptor.capability_hash must be stable for fixed inputs."""
-    from agentic_core.L2_execution.types.execution_tool_contract import (
+#  # MOVED: from agentic_core.L2_execution.types.execution_tool_contract import (
         ToolCapabilityDescriptor,
         ToolCategory,
     )
@@ -745,7 +821,7 @@ def test_tool_contract_golden_capability_hash():
 
     # capability_hash uses f"{tool_name}:{category}:{risk_level}" where
     # category is the enum object repr, e.g. "ToolCategory.FILE_SYSTEM"
-    from agentic_core.L2_execution.types.execution_tool_contract import ToolCategory as TC
+#  # MOVED: from agentic_core.L2_execution.types.execution_tool_contract import ToolCategory as TC
 
     payload = f"file_system.write:{TC.FILE_SYSTEM}:medium"
     expected = hashlib.sha256(payload.encode()).hexdigest()[:16]
@@ -754,7 +830,7 @@ def test_tool_contract_golden_capability_hash():
 
 def test_work_coordination_bundle_contract_hash_stability():
     """Two bundles with the same id and task must produce the same contract_hash."""
-    from agentic_core.L3_orchestration.coordination.work_coordination_bundle import (
+#  # MOVED: from agentic_core.L3_orchestration.coordination.work_coordination_bundle import (
         WorkCoordinationBundle,
     )
 
@@ -782,11 +858,11 @@ workflow_result = None  # Replace with actual workflow execution
 assert workflow_result is not None, "Workflow should produce a result"
 assert isinstance(workflow_result, dict), "Workflow result should be structured"
 # TODO: Add workflow step assertions
-    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+#  # MOVED: from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
         DeterministicRoutingGateway,
         reset_routing_gateway,
     )
-    from agentic_core.L0_routing.policy.route_policy_governor import (
+#  # MOVED: from agentic_core.L0_routing.policy.route_policy_governor import (
         RoutePolicyGovernor,
         reset_route_policy_governor,
     )
@@ -801,7 +877,7 @@ assert isinstance(workflow_result, dict), "Workflow result should be structured"
     trace_id = artifact.replay_key[:16]
 
     # ---- L1 ----
-    from agentic_core.L1_cognition.context.reasoning_context_envelope import (
+#  # MOVED: from agentic_core.L1_cognition.context.reasoning_context_envelope import (
         ReasoningContextEnvelopeBuilder,
         release_envelope,
     )
@@ -813,14 +889,14 @@ assert isinstance(workflow_result, dict), "Workflow result should be structured"
     release_envelope("pipeline-run-001")
 
     # ---- L2 ----
-    from agentic_core.L2_execution.determinism.execution_proof_emitter import (
+#  # MOVED: from agentic_core.L2_execution.determinism.execution_proof_emitter import (
         ExecutionProofEmitter,
     )
-    from agentic_core.L2_execution.enforcement.guardrail_gate import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.guardrail_gate import (
         GuardrailGate,
         reset_guardrail_gate,
     )
-    from agentic_core.L2_execution.types.execution_tool_contract import (
+#  # MOVED: from agentic_core.L2_execution.types.execution_tool_contract import (
         ToolCategory,
         ToolContract,
     )
@@ -843,16 +919,16 @@ assert isinstance(workflow_result, dict), "Workflow result should be structured"
     assert proof.verify_replay()
 
     # ---- L3 ----
-    from agentic_core.L3_orchestration.coordination.work_coordination_bundle import (
+#  # MOVED: from agentic_core.L3_orchestration.coordination.work_coordination_bundle import (
         WorkCoordinationBundle,
         release_coordination_bundle,
     )
-    from agentic_core.L3_orchestration.learning.workflow_learning_bridge import (
+#  # MOVED: from agentic_core.L3_orchestration.learning.workflow_learning_bridge import (
         WorkflowLearningBridge,
         WorkflowOutcome,
         reset_workflow_learning_bridge,
     )
-    from agentic_core.L3_orchestration.registry.agent_capability_registry import (
+#  # MOVED: from agentic_core.L3_orchestration.registry.agent_capability_registry import (
         AgentCapabilityRegistry,
         AgentCapabilitySpec,
         reset_agent_capability_registry,
@@ -892,17 +968,17 @@ assert isinstance(workflow_result, dict), "Workflow result should be structured"
     assert len(outcomes_received) == 1
 
     # ---- L4 ----
-    from agentic_core.L4_state.authority.run_scoped_state_authority import (
+#  # MOVED: from agentic_core.L4_state.authority.run_scoped_state_authority import (
         RunScopedStateAuthority,
     )
-    from agentic_core.L4_state.enforcement.state_lifecycle_policy import (
+#  # MOVED: from agentic_core.L4_state.enforcement.state_lifecycle_policy import (
         StateLifecyclePolicy,
     )
-    from agentic_core.L4_state.memory.unified_memory_facade import (
+#  # MOVED: from agentic_core.L4_state.memory.unified_memory_facade import (
         UnifiedMemoryFacade,
         reset_memory_facade,
     )
-    from agentic_core.L4_state.versioning.state_version_manager import (
+#  # MOVED: from agentic_core.L4_state.versioning.state_version_manager import (
         StateVersionManager,
     )
 
@@ -944,11 +1020,11 @@ assert isinstance(workflow_result, dict), "Workflow result should be structured"
     lc.purge()
 
     # ---- L5 ----
-    from agentic_core.L5_safety.audit.safety_audit_trail import (
+#  # MOVED: from agentic_core.L5_safety.audit.safety_audit_trail import (
         SafetyAuditTrail,
         reset_safety_audit_trail,
     )
-    from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
+#  # MOVED: from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
         HITLEscalationActivator,
         reset_hitl_escalation_activator,
     )
@@ -982,12 +1058,12 @@ assert isinstance(workflow_result, dict), "Workflow result should be structured"
     assert activator.pending_count() == 0
 
     # ---- L6 ----
-    from agentic_core.L6_observability.evaluation.evaluation_signal_integrator import (
+#  # MOVED: from agentic_core.L6_observability.evaluation.evaluation_signal_integrator import (
         EvalSignalKind,
         EvaluationSignalIntegrator,
         reset_eval_signal_integrator,
     )
-    from agentic_core.L6_observability.metrics.performance_metrics_emitter import (
+#  # MOVED: from agentic_core.L6_observability.metrics.performance_metrics_emitter import (
         MetricKind,
         PerformanceMetricsEmitter,
         reset_metrics_emitter,
@@ -1040,7 +1116,7 @@ def _run_threads(target, n=_THREAD_N):
 
 def test_concurrent_state_authority_writes():
     """N threads writing to RunScopedStateAuthority must not corrupt state."""
-    from agentic_core.L4_state.authority.run_scoped_state_authority import (
+#  # MOVED: from agentic_core.L4_state.authority.run_scoped_state_authority import (
         RunScopedStateAuthority,
     )
 
@@ -1061,7 +1137,7 @@ def test_concurrent_state_authority_writes():
 
 def test_concurrent_version_manager_commits():
     """N threads committing to a shared StateVersionManager must keep unique IDs."""
-    from agentic_core.L4_state.versioning.state_version_manager import (
+#  # MOVED: from agentic_core.L4_state.versioning.state_version_manager import (
         StateVersionManager,
     )
 
@@ -1079,7 +1155,7 @@ def test_concurrent_version_manager_commits():
 
 def test_concurrent_safety_audit_trail_records():
     """N threads recording audit events must produce N unique event IDs."""
-    from agentic_core.L5_safety.audit.safety_audit_trail import SafetyAuditTrail
+#  # MOVED: from agentic_core.L5_safety.audit.safety_audit_trail import SafetyAuditTrail
 
     trail = SafetyAuditTrail(trail_path=None)
 
@@ -1101,7 +1177,7 @@ def test_concurrent_safety_audit_trail_records():
 
 def test_concurrent_metrics_emitter():
     """N threads emitting metrics concurrently must not lose any samples."""
-    from agentic_core.L6_observability.metrics.performance_metrics_emitter import (
+#  # MOVED: from agentic_core.L6_observability.metrics.performance_metrics_emitter import (
         PerformanceMetricsEmitter,
     )
 
@@ -1124,7 +1200,7 @@ def test_concurrent_routing_gateway_ledger_integrity():
     no active trace, same route, same policy), so key uniqueness is NOT the
     invariant here — ledger completeness is.
     """
-    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+#  # MOVED: from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
         DeterministicRoutingGateway,
     )
 
@@ -1149,7 +1225,7 @@ def test_concurrent_routing_gateway_ledger_integrity():
 
 def test_routing_artifact_is_frozen():
     """RoutingArtifact must be a frozen dataclass — mutation raises TypeError."""
-    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+#  # MOVED: from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
         DeterministicRoutingGateway,
     )
 
@@ -1184,7 +1260,7 @@ assert isinstance(result, object), "Result should be an object"
 
 
 def test_agent_handoff_is_frozen():
-    from agentic_core.L3_orchestration.contracts.agent_handoff import AgentHandoff
+#  # MOVED: from agentic_core.L3_orchestration.contracts.agent_handoff import AgentHandoff
 
     h = AgentHandoff.create("A", "B", {})
     with pytest.raises((AttributeError, TypeError)):
@@ -1215,7 +1291,7 @@ assert isinstance(workflow_result, dict), "Workflow result should be structured"
 
 
 def test_tool_contract_is_frozen():
-    from agentic_core.L2_execution.types.execution_tool_contract import (
+#  # MOVED: from agentic_core.L2_execution.types.execution_tool_contract import (
         ToolCategory,
         ToolContract,
     )
@@ -1228,10 +1304,10 @@ def test_tool_contract_is_frozen():
 def test_routing_proposal_satisfies_policy_requires_both_fields():
     """satisfies_policy() must return False if either policy_hash is empty
     or boundary_verified is False."""
-    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+#  # MOVED: from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
         DeterministicRoutingGateway,
     )
-    from agentic_core.L0_routing.policy.route_policy_governor import (
+#  # MOVED: from agentic_core.L0_routing.policy.route_policy_governor import (
         RoutePolicyGovernor,
     )
 
@@ -1263,7 +1339,7 @@ def test_routing_proposal_satisfies_policy_requires_both_fields():
 def test_pep_adversarial_policy_hashes_no_crash(bad_hash):
     """PolicyEnforcementPoint must not crash with adversarial policy_hash inputs.
     It may escalate or block, but must not raise unexpected exceptions."""
-    from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
         PolicyEnforcementPoint,
         PolicyViolationError,
     )
@@ -1287,7 +1363,7 @@ def test_pep_adversarial_policy_hashes_no_crash(bad_hash):
     ],
 )
 def test_guardrail_gate_adversarial_hashes_no_crash(bad_hash):
-    from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+#  # MOVED: from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
 
     gate = GuardrailGate(policy_hash=bad_hash, strict_mode=False)
     result = gate.check("write_file", "artifacts/test.json")
@@ -1303,10 +1379,10 @@ def test_guardrail_gate_adversarial_hashes_no_crash(bad_hash):
     ],
 )
 def test_tool_safety_gate_adversarial_hashes_no_crash(bad_hash):
-    from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
         PolicyEnforcementPoint,
     )
-    from agentic_core.L5_safety.gates.tool_safety_gate import (
+#  # MOVED: from agentic_core.L5_safety.gates.tool_safety_gate import (
         ToolRiskLevel,
         ToolSafetyGate,
     )
@@ -1324,7 +1400,7 @@ def test_tool_safety_gate_adversarial_hashes_no_crash(bad_hash):
 
 
 def test_reset_routing_gateway_gives_fresh_state():
-    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+#  # MOVED: from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
         get_routing_gateway,
         reset_routing_gateway,
     )
@@ -1340,7 +1416,7 @@ def test_reset_routing_gateway_gives_fresh_state():
 
 
 def test_reset_memory_facade_gives_fresh_state():
-    from agentic_core.L4_state.memory.unified_memory_facade import (
+#  # MOVED: from agentic_core.L4_state.memory.unified_memory_facade import (
         get_memory_facade,
         reset_memory_facade,
     )
@@ -1367,7 +1443,7 @@ def test_reset_memory_facade_gives_fresh_state():
 
 
 def test_reset_eval_signal_integrator_gives_fresh_state():
-    from agentic_core.L6_observability.evaluation.evaluation_signal_integrator import (
+#  # MOVED: from agentic_core.L6_observability.evaluation.evaluation_signal_integrator import (
         EvalSignalKind,
         get_eval_signal_integrator,
         reset_eval_signal_integrator,
@@ -1385,14 +1461,14 @@ def test_reset_eval_signal_integrator_gives_fresh_state():
 
 def test_multiple_resets_idempotent():
     """Calling reset N times then constructing fresh state must be stable."""
-    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+#  # MOVED: from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
         reset_routing_gateway,
     )
-    from agentic_core.L4_state.memory.unified_memory_facade import reset_memory_facade
-    from agentic_core.L5_safety.adaptation.policy_adaptation_loop import (
+#  # MOVED: from agentic_core.L4_state.memory.unified_memory_facade import reset_memory_facade
+#  # MOVED: from agentic_core.L5_safety.adaptation.policy_adaptation_loop import (
         reset_policy_adaptation_loop,
     )
-    from agentic_core.L6_observability.metrics.performance_metrics_emitter import (
+#  # MOVED: from agentic_core.L6_observability.metrics.performance_metrics_emitter import (
         reset_metrics_emitter,
     )
 
@@ -1402,7 +1478,7 @@ def test_multiple_resets_idempotent():
         reset_policy_adaptation_loop()
         reset_metrics_emitter()
     # Final construction must work
-    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+#  # MOVED: from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
         get_routing_gateway,
     )
 
@@ -1418,7 +1494,7 @@ def test_multiple_resets_idempotent():
 
 def test_capability_registry_all_handoff_edges():
     """all_handoff_edges() must return exactly the declared (src, dst) pairs."""
-    from agentic_core.L3_orchestration.registry.agent_capability_registry import (
+#  # MOVED: from agentic_core.L3_orchestration.registry.agent_capability_registry import (
         AgentCapabilityRegistry,
         AgentCapabilitySpec,
     )
@@ -1434,7 +1510,7 @@ def test_capability_registry_all_handoff_edges():
 
 
 def test_capability_registry_agents_with_capability():
-    from agentic_core.L3_orchestration.registry.agent_capability_registry import (
+#  # MOVED: from agentic_core.L3_orchestration.registry.agent_capability_registry import (
         AgentCapabilityRegistry,
         AgentCapabilitySpec,
     )
@@ -1457,7 +1533,7 @@ def test_capability_registry_agents_with_capability():
 
 def test_bundle_multiple_agents_coordination():
     """Multiple agents completing tasks on the same bundle must all be tracked."""
-    from agentic_core.L3_orchestration.coordination.work_coordination_bundle import (
+#  # MOVED: from agentic_core.L3_orchestration.coordination.work_coordination_bundle import (
         WorkCoordinationBundle,
     )
 
@@ -1515,7 +1591,7 @@ assert isinstance(workflow_result, dict), "Workflow result should be structured"
 
 def test_metrics_emitter_per_layer_isolation():
     """Samples for L1 must not appear in L3 summaries."""
-    from agentic_core.L6_observability.metrics.performance_metrics_emitter import (
+#  # MOVED: from agentic_core.L6_observability.metrics.performance_metrics_emitter import (
         MetricKind,
         PerformanceMetricsEmitter,
     )
@@ -1535,7 +1611,7 @@ def test_metrics_emitter_per_layer_isolation():
 
 
 def test_metrics_emitter_no_samples_returns_none_summary():
-    from agentic_core.L6_observability.metrics.performance_metrics_emitter import (
+#  # MOVED: from agentic_core.L6_observability.metrics.performance_metrics_emitter import (
         MetricKind,
         PerformanceMetricsEmitter,
     )
@@ -1551,7 +1627,7 @@ def test_metrics_emitter_no_samples_returns_none_summary():
 
 def test_eval_signal_integrator_multiple_layers():
     """Subscribing to multiple layers must route signals to the correct callbacks."""
-    from agentic_core.L6_observability.evaluation.evaluation_signal_integrator import (
+#  # MOVED: from agentic_core.L6_observability.evaluation.evaluation_signal_integrator import (
         EvalSignalKind,
         EvaluationSignalIntegrator,
     )
@@ -1571,7 +1647,7 @@ def test_eval_signal_integrator_multiple_layers():
 
 def test_eval_signal_record_latency_normalises_correctly():
     """Elapsed < 30_000ms must produce score in (0, 1]; >= 30_000 must produce 0."""
-    from agentic_core.L6_observability.evaluation.evaluation_signal_integrator import (
+#  # MOVED: from agentic_core.L6_observability.evaluation.evaluation_signal_integrator import (
         EvaluationSignalIntegrator,
     )
 
@@ -1591,7 +1667,7 @@ def test_eval_signal_record_latency_normalises_correctly():
 
 def test_unified_memory_facade_is_valid_memory_backend():
     """UnifiedMemoryFacade itself must satisfy the MemoryBackend protocol."""
-    from agentic_core.L4_state.memory.unified_memory_facade import (
+#  # MOVED: from agentic_core.L4_state.memory.unified_memory_facade import (
         MemoryBackend,
         UnifiedMemoryFacade,
     )
@@ -1601,7 +1677,7 @@ def test_unified_memory_facade_is_valid_memory_backend():
 
 
 def test_unified_memory_facade_embedding_roundtrip():
-    from agentic_core.L4_state.memory.unified_memory_facade import UnifiedMemoryFacade
+#  # MOVED: from agentic_core.L4_state.memory.unified_memory_facade import UnifiedMemoryFacade
 
     facade = UnifiedMemoryFacade()
     emb = [0.1, 0.2, 0.3, 0.4]
@@ -1612,7 +1688,7 @@ def test_unified_memory_facade_embedding_roundtrip():
 
 
 def test_unified_memory_facade_stats_accuracy():
-    from agentic_core.L4_state.memory.unified_memory_facade import UnifiedMemoryFacade
+#  # MOVED: from agentic_core.L4_state.memory.unified_memory_facade import UnifiedMemoryFacade
 
     class B:
         def __init__(self):

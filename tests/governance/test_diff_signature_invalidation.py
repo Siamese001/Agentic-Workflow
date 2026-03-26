@@ -4,18 +4,18 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
     VerificationError,
     sign_artifact,
     verify_signature,
 )
-from agentic_core.L0_routing.types.crypto_trust_types import (
+#  # MOVED: from agentic_core.L0_routing.types.crypto_trust_types import (
     DeterministicTestEnclave,
     KeyRecord,
     KeyStatus,
     TrustRoot,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -178,6 +178,9 @@ def _make_trust_root() -> TrustRoot:
 
 @pytest.mark.governance
 def test_modify_diff_invalidates_old_signature() -> None:
+    from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
+    from agentic_core.L0_routing.types.crypto_trust_types import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test modify_diff_invalidates_old_signature contract compliance."""
 # Arrange
 # TODO: Set up test data

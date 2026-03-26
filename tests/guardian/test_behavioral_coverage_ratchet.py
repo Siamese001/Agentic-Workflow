@@ -29,8 +29,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_routing.config.path_constants import TESTS_DIR
-from agentic_core.L0_routing.types.guardian_registry_types import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+#  # MOVED: from agentic_core.L0_routing.types.guardian_registry_types import (
     ALL_GUARDIANS,
 )
 
@@ -84,6 +84,8 @@ class TestCheckIdCoverage:
 
     @pytest.mark.parametrize("guardian_id", _ENABLED_WITH_TESTS)
     def test_all_check_ids_referenced_in_tests(self, guardian_id: str):
+        from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+        from agentic_core.L0_routing.types.guardian_registry_types import (
     """Test all_check_ids_referenced_in_tests runtime behavior."""
     # Arrange
     # TODO: Set up test data for all_check_ids_referenced_in_tests

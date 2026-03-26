@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L5_safety.reasoning.PreCommitSovereignAgent  # noqa: F401
+#  # MOVED: import agentic_core.L5_safety.reasoning.PreCommitSovereignAgent  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L5_safety.reasoning.PreCommitSovereignAgent  # noqa: F401
     """Module PreCommitSovereignAgent must be importable."""
     assert agentic_core.L5_safety.reasoning.PreCommitSovereignAgent is not None

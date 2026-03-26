@@ -9,7 +9,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     L0_ROUTING_DIR,
     L1_COGNITION_DIR,
@@ -31,6 +31,7 @@ class TestManualVerification:
     """
 
     def test_monolith_detection_works(self, tmp_path):
+        from agentic_core.L0_routing.config.path_constants import (
         """
         Verify monolith detection by creating a temporary >800 LOC file.
 

@@ -52,7 +52,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     SYSTEM_LEARNING_DIR,
 )
@@ -185,6 +185,7 @@ class TestRealRepoSingletonInvariant:
         ],
     )
     def test_singleton_class_has_exactly_one_owner(self, cls_name, expected_stem):
+        from agentic_core.L0_routing.config.path_constants import (
         owners: list[str] = []
         for scan_root in _SSOT_SCAN_ROOTS:
             if not scan_root.exists():

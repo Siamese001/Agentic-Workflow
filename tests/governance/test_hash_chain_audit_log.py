@@ -11,12 +11,12 @@ Validates:
 
 import pytest
 
-from agentic_core.L2_execution.audit.hash_chain_audit_log import (
+#  # MOVED: from agentic_core.L2_execution.audit.hash_chain_audit_log import (
     GENESIS_HASH,
     AuditEntry,
     HashChainAuditLog,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -167,6 +167,8 @@ class TestGenesisRule:
     """First entry must follow genesis convention."""
 
     def test_first_entry_has_genesis_previous_hash(self):
+        from agentic_core.L2_execution.audit.hash_chain_audit_log import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         log = HashChainAuditLog()
         entry = log.append(tier="L2", action="init")
         assert entry.previous_hash == GENESIS_HASH

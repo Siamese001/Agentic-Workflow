@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -91,13 +91,13 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L2_execution.types.commit_proof_invariant_types import (
+#  # MOVED: from agentic_core.L2_execution.types.commit_proof_invariant_types import (
     CommitProofInvariant,
     DeterminismProofFailure,
     canonical_digest,
     make_proof,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -194,6 +194,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestCanonicalDigest:
     def test_returns_64_hex_chars(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.commit_proof_invariant_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test returns_64_hex_chars runtime behavior."""
     # Arrange
     # TODO: Set up test data for returns_64_hex_chars

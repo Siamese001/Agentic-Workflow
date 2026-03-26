@@ -17,7 +17,7 @@ Branch coverage:
 
 import pytest
 
-from agentic_core.evaluation.chunking.policies import (
+#  # MOVED: from agentic_core.evaluation.chunking.policies import (
     Chunk,
     ChunkManifest,
     FixedTokenChunkPolicy,
@@ -26,7 +26,7 @@ from agentic_core.evaluation.chunking.policies import (
     SemanticChunkPolicy,
     _approx_token_count,
 )
-from agentic_core.evaluation.chunking.validators import (
+#  # MOVED: from agentic_core.evaluation.chunking.validators import (
     ChunkManifestValidator,
     ChunkQualityReport,
     DuplicateChunkDetector,
@@ -35,7 +35,7 @@ from agentic_core.evaluation.chunking.validators import (
     OrphanChunkDetector,
     OverlapSanityValidator,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -204,6 +204,9 @@ def _make_manifest(chunks, policy="fixed_token"):
 
 class TestApproxTokenCount:
     def test_empty_string(self):
+        from agentic_core.evaluation.chunking.policies import (
+        from agentic_core.evaluation.chunking.validators import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         assert _approx_token_count("") == 0
 
     def test_single_word(self):

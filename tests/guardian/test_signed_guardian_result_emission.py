@@ -9,12 +9,12 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L0_routing.types.guardian_contract_types import (
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import (
     GuardianResult,
     V15EnforcementError,
     maybe_sign_result,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -170,6 +170,8 @@ class TestSignedGuardianResultEmission:
     """§7 — Guardian results must be signed when V15 is enforced."""
 
     def test_enforced_with_test_signing_produces_signed_result(self, monkeypatch):
+        from agentic_core.L0_routing.types.guardian_contract_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         monkeypatch.setenv("V15_ENFORCEMENT", "1")
         monkeypatch.setenv("V15_TEST_SIGNING", "1")
 

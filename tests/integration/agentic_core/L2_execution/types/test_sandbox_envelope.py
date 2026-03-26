@@ -17,7 +17,7 @@ import os
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -100,13 +100,13 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L2_execution.enforcement.boundary_verifier import L2BoundaryVerifier
-from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
-from agentic_core.L2_execution.types.instruction_packet_types import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.boundary_verifier import L2BoundaryVerifier
+#  # MOVED: from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
+#  # MOVED: from agentic_core.L2_execution.types.instruction_packet_types import (
     SignatureVerificationError,
 )
-from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -215,7 +215,7 @@ _ENVELOPE_V = SandboxEnvelope(
 
 def _make_unsigned_envelope(**overrides) -> SandboxEnvelope:
     """Construct a SandboxEnvelope with no signature, bypassing __post_init__."""
-    from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
+#  # MOVED: from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
 
     e = SandboxEnvelope.__new__(SandboxEnvelope)
     object.__setattr__(e, "envelope_id", overrides.get("envelope_id", "env-0001"))
@@ -276,6 +276,15 @@ def _print_w1_env_digest_once() -> str:
 
 
 def test_envelope_canonical_bytes_stable():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.enforcement.boundary_verifier import L2BoundaryVerifier
+    from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
+    from agentic_core.L2_execution.types.instruction_packet_types import (
+    from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
+    from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket as _IP
+    from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket as _IP
     b1 = _ENVELOPE_V.canonical_bytes()
     b2 = _ENVELOPE_V.canonical_bytes()
     assert b1 == b2
@@ -418,7 +427,7 @@ def test_envelope_is_immutable():
 
 def test_boundary_verifier_rejects_unsigned_packet():
     verifier = L2BoundaryVerifier(secret=_SECRET)
-    from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket as _IP
+#  # MOVED: from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket as _IP
 
     p = _IP.__new__(_IP)
     object.__setattr__(p, "instruction_id", "x")
@@ -455,7 +464,7 @@ def test_boundary_verifier_accepts_signed_envelope():
 
 def test_boundary_verifier_accepts_signed_packet():
     verifier = L2BoundaryVerifier(secret=_SECRET)
-    from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket as _IP
+#  # MOVED: from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket as _IP
 
     p = _IP.__new__(_IP)
     object.__setattr__(p, "instruction_id", "instr-0001")

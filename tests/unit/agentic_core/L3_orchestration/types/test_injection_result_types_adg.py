@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -74,12 +74,12 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_injection_result_types_adg", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_injection_result_types_adg", "exec_snapshot_link")
 pytestmark = pytest.mark.unit
-from agentic_core.L3_orchestration.types.injection_result_types import (
+#  # MOVED: from agentic_core.L3_orchestration.types.injection_result_types import (
     InjectionResult,
     detect_injection,
     validate_safety_threshold,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -172,6 +172,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestInjectionResult:
     def test_is_dataclass(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L3_orchestration.types.injection_result_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         import dataclasses; assert dataclasses.is_dataclass(InjectionResult)
     def test_creates(self):
         r = InjectionResult(is_injection=False, Severity="low", confidence=0.1, detected_patterns=[])

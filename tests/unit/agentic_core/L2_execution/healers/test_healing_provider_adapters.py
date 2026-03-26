@@ -20,23 +20,23 @@ from unittest.mock import Mock
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L2_EXECUTION_DIR,
 )
-from agentic_core.L2_execution.healers.healing_provider_adapters import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_provider_adapters import (
     GeminiInvokerAdapter,
     LocalAgentAdapter,
     QwenInvokerAdapter,
 )
-from agentic_core.L2_execution.healers.healing_tier_config import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_config import (
     load_default_healing_tier_config,
 )
-from agentic_core.L2_execution.healers.healing_tier_router import route_healing_tier
-from agentic_core.L2_execution.healers.healing_tier_types import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_router import route_healing_tier
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_types import (
     HealingInput,
     HealingTier,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -83,7 +83,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_healing_provider_adapters", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_healing_provider_adapters", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_healing_provider_adapters", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -203,6 +203,35 @@ class TestQwenAdapterContract:
     """Contract tests for QwenInvokerAdapter with faked OpenAI SDK."""
 
     def test_qwen_adapter_invokes_sdk_with_correct_args(self) -> None:
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L2_execution.healers.healing_provider_adapters import (
+        from agentic_core.L2_execution.healers.healing_tier_config import (
+        from agentic_core.L2_execution.healers.healing_tier_router import route_healing_tier
+        from agentic_core.L2_execution.healers.healing_tier_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.healers.healing_provider_adapters import GeminiInvokerAdapter
+        from agentic_core.L2_execution.healers.healing_provider_adapters import GeminiInvokerAdapter
+        from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
+        from agentic_core.L2_execution.healers.healing_provider_adapters import GeminiInvokerAdapter
+        from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
+        from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
+        from agentic_core.L2_execution.healers.healing_provider_adapters import (
+        from agentic_core.L2_execution.healers.healing_provider_adapters import (
+        from agentic_core.L2_execution.healers.healing_tier_config import (
+        from agentic_core.L2_execution.healers.healing_tier_types import (
+        from agentic_core.L2_execution.healers.healing_provider_adapters import (
+        from agentic_core.L2_execution.healers.healing_tier_config import (
+        from agentic_core.L2_execution.healers.healing_tier_types import (
+        from agentic_core.L2_execution.healers.healing_tier_config import (
+        from agentic_core.L2_execution.healers.healing_tier_config import (
+        from agentic_core.L2_execution.healers.qwen_meta_learning import (
+        from agentic_core.L2_execution.healers.qwen_meta_learning import (
+        from agentic_core.L2_execution.healers.qwen_meta_learning import (
+        from apps_shared.types.hardened_gemini_executor_types import HardenedGeminiConfig
+        from apps_shared.types.hardened_gemini_executor_types import HardenedGeminiConfig
+        from agentic_core.L2_execution.healers.healing_tier_config import (
+        from apps_shared.types.hardened_gemini_executor_types import HardenedGeminiConfig
         """Qwen adapter should call OpenAI SDK with expected parameters."""
         # Setup fake OpenAI module
         fake_openai = Mock()
@@ -454,7 +483,7 @@ class TestGeminiAdapterContract:
         sys.modules.pop("agentic_core.L2_execution.healers.healing_provider_adapters", None)
 
         # Re-import the adapter to test fresh import
-        from agentic_core.L2_execution.healers.healing_provider_adapters import GeminiInvokerAdapter
+#  # MOVED: from agentic_core.L2_execution.healers.healing_provider_adapters import GeminiInvokerAdapter
 
         adapter = GeminiInvokerAdapter(api_key="test-key")
 
@@ -488,7 +517,7 @@ class TestGeminiAdapterContract:
 
         # Clear adapter module cache
         sys.modules.pop("agentic_core.L2_execution.healers.healing_provider_adapters", None)
-        from agentic_core.L2_execution.healers.healing_provider_adapters import GeminiInvokerAdapter
+#  # MOVED: from agentic_core.L2_execution.healers.healing_provider_adapters import GeminiInvokerAdapter
 
         try:
             adapter = GeminiInvokerAdapter(api_key="test-key")
@@ -625,7 +654,7 @@ class TestAdapterIntegrationWithDispatcher:
             qwen_adapter = QwenInvokerAdapter(base_url="http://localhost:8000/v1")
 
             # Use real adapter with dispatcher
-            from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
 
             healing_input = HealingInput(
                 failure_type="import_cycle",
@@ -673,13 +702,13 @@ class TestAdapterIntegrationWithDispatcher:
 
         # Clear adapter module cache
         sys.modules.pop("agentic_core.L2_execution.healers.healing_provider_adapters", None)
-        from agentic_core.L2_execution.healers.healing_provider_adapters import GeminiInvokerAdapter
+#  # MOVED: from agentic_core.L2_execution.healers.healing_provider_adapters import GeminiInvokerAdapter
 
         try:
             gemini_adapter = GeminiInvokerAdapter(api_key="test-key")
 
             # Use real adapter with dispatcher
-            from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
 
             healing_input = HealingInput(
                 failure_type="integrity_gate_failure",
@@ -715,7 +744,7 @@ class TestAdapterIntegrationWithDispatcher:
         """Dispatcher should correctly select and invoke local adapter."""
         local_adapter = LocalAgentAdapter()
 
-        from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
 
         healing_input = HealingInput(
             failure_type="naming_violation",
@@ -746,7 +775,7 @@ class TestTokenLimitConstants:
 
     def test_token_limit_constants_exist_and_have_correct_values(self) -> None:
         """Module should define token limit constants with correct values."""
-        from agentic_core.L2_execution.healers.healing_provider_adapters import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_provider_adapters import (
             DEFAULT_MAX_OUTPUT_TOKENS,
             DEFAULT_MAX_TOKENS,
         )
@@ -776,14 +805,14 @@ class TestTokenLimitConstants:
         sys.modules["openai"] = fake_openai
 
         try:
-            from agentic_core.L2_execution.healers.healing_provider_adapters import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_provider_adapters import (
                 DEFAULT_MAX_TOKENS,
                 QwenInvokerAdapter,
             )
-            from agentic_core.L2_execution.healers.healing_tier_config import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_config import (
                 load_default_healing_tier_config,
             )
-            from agentic_core.L2_execution.healers.healing_tier_types import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_types import (
                 HealingDecision,
                 HealingInput,
                 HealingTier,
@@ -833,14 +862,14 @@ class TestTokenLimitConstants:
         sys.modules["google.generativeai"] = fake_genai
 
         try:
-            from agentic_core.L2_execution.healers.healing_provider_adapters import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_provider_adapters import (
                 DEFAULT_MAX_OUTPUT_TOKENS,
                 GeminiInvokerAdapter,
             )
-            from agentic_core.L2_execution.healers.healing_tier_config import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_config import (
                 load_default_healing_tier_config,
             )
-            from agentic_core.L2_execution.healers.healing_tier_types import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_types import (
                 HealingDecision,
                 HealingInput,
                 HealingTier,
@@ -990,16 +1019,16 @@ class TestThresholdUnification:
     """Plan 1 Phase 1-B: HEALING_CONFIDENCE_X/Y single SSOT."""
 
     def test_meta_learning_imports_equal_config_thresholds(self) -> None:
-        from agentic_core.L2_execution.healers.healing_tier_config import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_config import (
             HEALING_CONFIDENCE_X as cfg_x,
         )
-        from agentic_core.L2_execution.healers.healing_tier_config import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_config import (
             HEALING_CONFIDENCE_Y as cfg_y,
         )
-        from agentic_core.L2_execution.healers.qwen_meta_learning import (
+#  # MOVED: from agentic_core.L2_execution.healers.qwen_meta_learning import (
             HEALING_CONFIDENCE_X as meta_x,
         )
-        from agentic_core.L2_execution.healers.qwen_meta_learning import (
+#  # MOVED: from agentic_core.L2_execution.healers.qwen_meta_learning import (
             HEALING_CONFIDENCE_Y as meta_y,
         )
 
@@ -1031,7 +1060,7 @@ class TestThresholdUnification:
         )
 
     def test_validate_threshold_immutability_passes(self) -> None:
-        from agentic_core.L2_execution.healers.qwen_meta_learning import (
+#  # MOVED: from agentic_core.L2_execution.healers.qwen_meta_learning import (
             validate_threshold_immutability,
         )
 
@@ -1042,20 +1071,20 @@ class TestHardenedGeminiModelLimits:
     """Plan 1 Phase 2-A: gemini-2.5-pro must appear in HardenedGeminiConfig.MODEL_LIMITS."""
 
     def test_gemini_2_5_pro_in_model_limits(self) -> None:
-        from apps_shared.types.hardened_gemini_executor_types import HardenedGeminiConfig
+#  # MOVED: from apps_shared.types.hardened_gemini_executor_types import HardenedGeminiConfig
 
         assert "gemini-2.5-pro" in HardenedGeminiConfig.MODEL_LIMITS
 
     def test_gemini_2_5_pro_context_window_is_1m(self) -> None:
-        from apps_shared.types.hardened_gemini_executor_types import HardenedGeminiConfig
+#  # MOVED: from apps_shared.types.hardened_gemini_executor_types import HardenedGeminiConfig
 
         assert HardenedGeminiConfig.MODEL_LIMITS["gemini-2.5-pro"] == 1_048_576
 
     def test_healing_config_model_id_covered_by_model_limits(self) -> None:
-        from agentic_core.L2_execution.healers.healing_tier_config import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_config import (
             load_default_healing_tier_config,
         )
-        from apps_shared.types.hardened_gemini_executor_types import HardenedGeminiConfig
+#  # MOVED: from apps_shared.types.hardened_gemini_executor_types import HardenedGeminiConfig
 
         cfg = load_default_healing_tier_config()
         assert cfg.model_gemini_2_5_pro_id in HardenedGeminiConfig.MODEL_LIMITS, (

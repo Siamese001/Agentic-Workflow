@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.prompt_governance.core.invariant_registry  # noqa: F401
+#  # MOVED: import agentic_core.prompt_governance.core.invariant_registry  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.prompt_governance.core.invariant_registry  # noqa: F401
     """Module invariant_registry must be importable."""
     assert agentic_core.prompt_governance.core.invariant_registry is not None

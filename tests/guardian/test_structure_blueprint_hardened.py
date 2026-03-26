@@ -40,7 +40,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -123,15 +123,15 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.guardian
 
-from agentic_core.L0_routing.config.path_constants import SYSTEM_LEARNING_DIR
-from agentic_core.L5_safety.config.structure_blueprint.sovereign_kernel import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import SYSTEM_LEARNING_DIR
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.sovereign_kernel import (
     MODULAR_EXTENSIONS,
     SOVEREIGN_KERNEL_COMPONENTS,
     is_kernel_component,
     is_modular_extension,
     validate_boundary,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -228,6 +228,16 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestIsKernelComponent:
     def test_exact_match_l5_safety(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.config.path_constants import SYSTEM_LEARNING_DIR
+        from agentic_core.L5_safety.config.structure_blueprint.sovereign_kernel import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        import agentic_core.L5_safety.config.structure_blueprint_config as shim  # noqa: F401
+        import agentic_core.L5_safety.config.structure_blueprint_config as shim
+        import agentic_core.L5_safety.config.structure_blueprint as pkg
+        import agentic_core.L5_safety.config.structure_blueprint_config as shim
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
         assert is_kernel_component("agentic_core.L5_safety") is True
 
     def test_prefix_match_l5_safety_submodule(self):
@@ -434,29 +444,29 @@ class TestStructureBlueprintConfigShim:
     """
 
     def test_shim_is_importable(self):
-        import agentic_core.L5_safety.config.structure_blueprint_config as shim  # noqa: F401
+#  # MOVED: import agentic_core.L5_safety.config.structure_blueprint_config as shim  # noqa: F401
 
     def test_shim_has_dunder_all(self):
-        import agentic_core.L5_safety.config.structure_blueprint_config as shim
+#  # MOVED: import agentic_core.L5_safety.config.structure_blueprint_config as shim
 
         assert hasattr(shim, "__all__")
         assert len(shim.__all__) > 0
 
     def test_shim_all_matches_package_all(self):
-        import agentic_core.L5_safety.config.structure_blueprint as pkg
-        import agentic_core.L5_safety.config.structure_blueprint_config as shim
+#  # MOVED: import agentic_core.L5_safety.config.structure_blueprint as pkg
+#  # MOVED: import agentic_core.L5_safety.config.structure_blueprint_config as shim
 
         assert set(shim.__all__) == set(pkg.__all__)
 
     def test_sovereign_territories_accessible_via_shim(self):
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint_config import (
             SOVEREIGN_REGISTRY,
         )
 
         assert SOVEREIGN_REGISTRY is not None
 
     def test_get_sovereign_territories_accessible_via_shim(self):
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint_config import (
             get_sovereign_territories,
         )
 

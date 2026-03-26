@@ -23,7 +23,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -96,9 +96,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L0_routing.engines.agentic_router import AgenticRouter, RoutingDecision
-from agentic_core.L0_routing.engines.intent_embedding_classifier import IntentEmbeddingClassifier
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L0_routing.engines.agentic_router import AgenticRouter, RoutingDecision
+#  # MOVED: from agentic_core.L0_routing.engines.intent_embedding_classifier import IntentEmbeddingClassifier
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -244,6 +244,10 @@ _MAPPING = {
 
 class TestAgenticRouterInit:
     def test_no_classifier_by_default(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.engines.agentic_router import AgenticRouter, RoutingDecision
+        from agentic_core.L0_routing.engines.intent_embedding_classifier import IntentEmbeddingClassifier
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         router = AgenticRouter()
         assert router._classifier is None
 

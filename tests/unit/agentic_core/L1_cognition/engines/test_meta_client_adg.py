@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -79,8 +79,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L1_cognition.engines.meta_client import MetaLearningClient
-from agentic_core.L1_cognition.types.client_types import (
+#  # MOVED: from agentic_core.L1_cognition.engines.meta_client import MetaLearningClient
+#  # MOVED: from agentic_core.L1_cognition.types.client_types import (
     CACHE_KEY_PREFIX,
     DEFAULT_SIMILARITY_THRESHOLD,
     DEFAULT_TTL_SECONDS,
@@ -88,7 +88,7 @@ from agentic_core.L1_cognition.types.client_types import (
     CacheEntry,
     HealingPattern,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -181,6 +181,10 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestClientTypeConstants:
     def test_cache_key_prefix_is_string(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L1_cognition.engines.meta_client import MetaLearningClient
+        from agentic_core.L1_cognition.types.client_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         assert isinstance(CACHE_KEY_PREFIX, str)
 
     def test_default_similarity_threshold_is_float(self):

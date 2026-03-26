@@ -7,7 +7,7 @@ import os
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -70,14 +70,14 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_shadow_embedder_w4b", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_shadow_embedder_w4b", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_shadow_embedder_w4b", "exec_snapshot_link")
-from system_learning.engines.retrieval_profile import RetrievalProfile
-from system_learning.pipelines.meta_learning_pipeline import _retrieve_semantic_context
+#  # MOVED: from system_learning.engines.retrieval_profile import RetrievalProfile
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import _retrieve_semantic_context
 
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_shadow_embedder_w4b")
 # REMOVED: _emit_applies_guardrail("p0", "test_shadow_embedder_w4b", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_shadow_embedder_w4b", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_shadow_embedder_w4b", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -186,16 +186,28 @@ class TestShadowEmbedderW4B:
     """Test W4-B Shadow Embedder functionality."""
 
     def setup_method(self):
-        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+#  # MOVED: from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
 
         get_retrieval_profile_manager().clear_cache()
 
     def teardown_method(self):
-        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+#  # MOVED: from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
 
         get_retrieval_profile_manager().clear_cache()
 
     def test_shadow_embedder_non_influential(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.retrieval_profile import RetrievalProfile
+        from system_learning.pipelines.meta_learning_pipeline import _retrieve_semantic_context
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+        import system_learning.pipelines.meta_learning_pipeline as pipeline
+        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
         """Test shadow embedder does not affect retrieval ranking."""
         # Create profile without shadow embedder
         profile_no_shadow = RetrievalProfile(
@@ -308,7 +320,7 @@ class TestShadowEmbedderW4B:
         )
 
         # Activate the profile using global manager
-        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+#  # MOVED: from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
 
         manager = get_retrieval_profile_manager()
         manager.activate_profile(profile, 1234567890)
@@ -371,12 +383,12 @@ class TestW4BNegativeControl:
     """Negative control tests for W4-B Shadow Embedder."""
 
     def setup_method(self):
-        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+#  # MOVED: from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
 
         get_retrieval_profile_manager().clear_cache()
 
     def teardown_method(self):
-        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+#  # MOVED: from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
 
         get_retrieval_profile_manager().clear_cache()
 
@@ -387,7 +399,7 @@ class TestW4BNegativeControl:
         os.environ["W4B_NEGCTRL_TAMPER"] = "1"
 
         # Monkey patch the rounding function to use different precision
-        import system_learning.pipelines.meta_learning_pipeline as pipeline
+#  # MOVED: import system_learning.pipelines.meta_learning_pipeline as pipeline
 
         original_round = round
 
@@ -414,7 +426,7 @@ class TestW4BNegativeControl:
             )
 
             # Activate the profile using global manager
-            from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+#  # MOVED: from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
 
             manager = get_retrieval_profile_manager()
             manager.clear_cache()  # Clear any cached profile
@@ -474,7 +486,7 @@ class TestW4BNegativeControl:
             # Clean up environment
             os.environ.pop("W4B_NEGCTRL_TAMPER", None)
             # Reset profile manager cache to prevent cross-test contamination
-            from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+#  # MOVED: from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
 
             get_retrieval_profile_manager().clear_cache()
 

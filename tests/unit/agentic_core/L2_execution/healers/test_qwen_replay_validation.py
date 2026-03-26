@@ -10,11 +10,11 @@ from __future__ import annotations
 import json
 from dataclasses import asdict
 
-from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
-from agentic_core.L2_execution.healers.healing_tier_types import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_types import (
     HealingInput,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -61,7 +61,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_qwen_replay_validation", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_qwen_replay_validation", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_qwen_replay_validation", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -191,8 +191,8 @@ def create_deterministic_healing_input() -> HealingInput:
 def invoke_qwen_via_healing_tier(healing_input: HealingInput) -> InvocationRecord:
     """Invoke Qwen through the healing tier system."""
     # Import here to avoid circular dependency
-    from agentic_core.L2_execution.healers.healing_tier_config import load_default_healing_tier_config
-    from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_config import load_default_healing_tier_config
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
 
     config = load_default_healing_tier_config()
 
@@ -208,6 +208,12 @@ def invoke_qwen_via_healing_tier(healing_input: HealingInput) -> InvocationRecor
 
 
 def test_qwen_replay_determinism():
+    from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
+    from agentic_core.L2_execution.healers.healing_tier_types import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.healers.healing_tier_config import load_default_healing_tier_config
+    from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
     """Verify exact replay consistency across invocations."""
     healing_input = create_deterministic_healing_input()
 

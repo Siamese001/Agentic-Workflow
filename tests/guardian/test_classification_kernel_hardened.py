@@ -29,8 +29,8 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import TESTS_DIR
-from agentic_core.L5_safety.core_kernel.classification_kernel import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+#  # MOVED: from agentic_core.L5_safety.core_kernel.classification_kernel import (
     FileType,
     classification_cache_context,
     classification_cache_info,
@@ -41,7 +41,7 @@ from agentic_core.L5_safety.core_kernel.classification_kernel import (
     is_agent_file,
     is_agent_or_orchestrator,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -208,6 +208,9 @@ class TestFileTypeTaxonomy:
     """Every FileType literal must be reachable via classify_file_standalone."""
 
     def test_filetype_literal_is_a_type_alias(self):
+        from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+        from agentic_core.L5_safety.core_kernel.classification_kernel import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         args = getattr(FileType, "__args__", None)
         assert args is not None, "FileType must be a Literal with __args__"
         assert len(args) >= 19, f"Expected ≥19 FileType literals, got {len(args)}"

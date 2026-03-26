@@ -22,7 +22,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L5_safety.enforcement.hitl_gate import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.hitl_gate import (
     HITL_PROTECTED_PATHS,
     HitlChoice,
     HitlGate,
@@ -31,7 +31,7 @@ from agentic_core.L5_safety.enforcement.hitl_gate import (
     clear_gate_cache,
     get_hitl_gate,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -78,7 +78,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_hitl_gate", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_hitl_gate", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_hitl_gate", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -222,6 +222,10 @@ def _interactive_gate(repo_root: Path, user_input: str) -> HitlGate:
 
 class TestHitlProtectedPaths:
     def test_key_paths_present(self):
+        from agentic_core.L5_safety.enforcement.hitl_gate import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.enforcement.hitl_gate import HitlRequiredError as HRE
         for path in ("agentic_core", "scripts", "mixins", "runtime", "tests"):
             assert path in HITL_PROTECTED_PATHS, f"{path!r} must be in HITL_PROTECTED_PATHS"
 
@@ -501,7 +505,7 @@ class TestCallSiteContract:
 
     def test_hitl_required_error_exported(self):
         """HitlRequiredError must be importable from hitl_gate."""
-        from agentic_core.L5_safety.enforcement.hitl_gate import HitlRequiredError as HRE
+#  # MOVED: from agentic_core.L5_safety.enforcement.hitl_gate import HitlRequiredError as HRE
 
         assert issubclass(HRE, RuntimeError)
 

@@ -8,10 +8,10 @@ Directly invokes HierarchyAgent to test movement and archival boundaries.
 import sys
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L0_ROUTING_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -86,8 +86,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -179,6 +179,10 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 
 def test_structural_move():
+    from agentic_core.L0_routing.config.path_constants import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test Case A: Structural re-alignment (should be automatic)."""
     print("\n" + "=" * 80)
     print("TEST CASE A: Structural Re-alignment (Automatic)")

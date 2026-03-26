@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -74,13 +74,13 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_recursion_monitor_types_adg", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_recursion_monitor_types_adg", "exec_snapshot_link")
 pytestmark = pytest.mark.unit
-from agentic_core.L3_orchestration.types.recursion_monitor_types import (
+#  # MOVED: from agentic_core.L3_orchestration.types.recursion_monitor_types import (
     Alert,
     AlertSeverity,
     HealthStatus,
     RecursionMonitor,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -173,6 +173,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestHealthStatus:
     def test_is_str_enum(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L3_orchestration.types.recursion_monitor_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         import enum; assert issubclass(HealthStatus, str); assert issubclass(HealthStatus, enum.Enum)
     def test_has_healthy(self): assert HealthStatus.HEALTHY == "healthy"
     def test_has_critical(self): assert HealthStatus.CRITICAL == "critical"

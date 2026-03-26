@@ -18,7 +18,7 @@ import threading
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -65,7 +65,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_bge_embedding_embedders", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_bge_embedding_embedders", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_bge_embedding_embedders", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -210,7 +210,7 @@ def _rfr(
     trace_id: str = _TID,
     ts: int = _TS,
 ):
-    from system_learning.types.semantic_memory_types import ReplayFailureRecord
+#  # MOVED: from system_learning.types.semantic_memory_types import ReplayFailureRecord
 
     return ReplayFailureRecord(
         failure_id=failure_id,
@@ -245,7 +245,7 @@ def _poem(
     trace_id: str = _TID,
     ts: int = _TS,
 ):
-    from system_learning.types.semantic_memory_types import PromptOutcomeEmbeddingRecord
+#  # MOVED: from system_learning.types.semantic_memory_types import PromptOutcomeEmbeddingRecord
 
     return PromptOutcomeEmbeddingRecord(
         record_id=record_id,
@@ -284,7 +284,7 @@ def _rcr(
     trace_id: str = _TID,
     ts: int = _TS,
 ):
-    from system_learning.types.semantic_memory_types import RetrievalCaseRecord
+#  # MOVED: from system_learning.types.semantic_memory_types import RetrievalCaseRecord
 
     return RetrievalCaseRecord(
         case_id=case_id,
@@ -311,12 +311,51 @@ def _rcr(
 
 class TestReplayFailureEmbedder:
     def _e(self, max_buffer=100):
-        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+#  # MOVED: from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
 
         return ReplayFailureEmbedder(max_buffer=max_buffer)
 
     def test_ingest_returns_corpus_record(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.types.semantic_memory_types import ReplayFailureRecord
+        from system_learning.types.semantic_memory_types import PromptOutcomeEmbeddingRecord
+        from system_learning.types.semantic_memory_types import RetrievalCaseRecord
+        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
         from system_learning.engines.embedding_corpus_extraction import CorpusRecord
+        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+        from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
+        from system_learning.engines.embedding_corpus_extraction import CorpusRecord
+        from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
+        from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
+        from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
+        from system_learning.engines.embedding_corpus_extraction import CorpusRecord
+        from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
+        from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
+        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+        from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
+        from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
+        from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
+        from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
+        from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
+        from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
+        from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
+        from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
+        from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
+        from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
+#  # MOVED: from system_learning.engines.embedding_corpus_extraction import CorpusRecord
 
         e = self._e()
         r = e.ingest(_rfr())
@@ -402,7 +441,7 @@ class TestReplayFailureEmbedder:
         assert n2 == 0
 
     def test_record_from_replay_event_convenience_constructor(self):
-        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+#  # MOVED: from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
 
         r = ReplayFailureEmbedder.record_from_replay_event(
             failure_id="fe-001",
@@ -420,7 +459,7 @@ class TestReplayFailureEmbedder:
         assert r.affected_subsystems == ("L0", "L3")  # sorted
 
     def test_record_from_replay_event_empty_failure_id_raises(self):
-        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+#  # MOVED: from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
 
         with pytest.raises(ValueError, match="failure_id"):
             ReplayFailureEmbedder.record_from_replay_event(
@@ -471,12 +510,12 @@ class TestReplayFailureEmbedder:
 
 class TestPromptOutcomeEmbedder:
     def _e(self, max_buffer=100):
-        from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
+#  # MOVED: from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
 
         return PromptOutcomeEmbedder(max_buffer=max_buffer)
 
     def test_ingest_returns_corpus_record(self):
-        from system_learning.engines.embedding_corpus_extraction import CorpusRecord
+#  # MOVED: from system_learning.engines.embedding_corpus_extraction import CorpusRecord
 
         e = self._e()
         assert isinstance(e.ingest(_poem()), CorpusRecord)
@@ -544,7 +583,7 @@ class TestPromptOutcomeEmbedder:
         assert stats["ALLOWED"] == 1
 
     def test_record_from_execution_convenience_constructor(self):
-        from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
+#  # MOVED: from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
 
         r = PromptOutcomeEmbedder.record_from_execution(
             record_id="exec-001",
@@ -569,7 +608,7 @@ class TestPromptOutcomeEmbedder:
         assert r.safety_outcome == "ALLOWED"
 
     def test_record_from_execution_invalid_safety_raises(self):
-        from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
+#  # MOVED: from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
 
         with pytest.raises(ValueError, match="safety_outcome"):
             PromptOutcomeEmbedder.record_from_execution(
@@ -628,12 +667,12 @@ class TestPromptOutcomeEmbedder:
 
 class TestRetrievalCaseEmbedder:
     def _e(self, max_buffer=100):
-        from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
+#  # MOVED: from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
 
         return RetrievalCaseEmbedder(max_buffer=max_buffer)
 
     def test_ingest_returns_corpus_record(self):
-        from system_learning.engines.embedding_corpus_extraction import CorpusRecord
+#  # MOVED: from system_learning.engines.embedding_corpus_extraction import CorpusRecord
 
         e = self._e()
         assert isinstance(e.ingest(_rcr()), CorpusRecord)
@@ -747,7 +786,7 @@ class TestRetrievalCaseEmbedder:
         assert weak2[0]["case_id"] == "c0"
 
     def test_record_from_rag_evaluation_convenience(self):
-        from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
+#  # MOVED: from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
 
         r = RetrievalCaseEmbedder.record_from_rag_evaluation(
             case_id="eval-001",
@@ -770,7 +809,7 @@ class TestRetrievalCaseEmbedder:
         assert r.chunk_ids == ("cid-a", "cid-b")  # sorted
 
     def test_record_from_rag_evaluation_invalid_score_raises(self):
-        from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
+#  # MOVED: from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
 
         with pytest.raises(ValueError, match="support_score"):
             RetrievalCaseEmbedder.record_from_rag_evaluation(
@@ -831,23 +870,23 @@ class TestRetrievalCaseEmbedder:
 
 class TestTopAffectedSubsystems:
     def test_empty_buffer_returns_empty(self):
-        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+#  # MOVED: from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
 
         e = ReplayFailureEmbedder(max_buffer=10_000)
         assert e.top_affected_subsystems() == []
 
     def test_single_record_counts_each_subsystem(self):
-        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+#  # MOVED: from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
 
         e = ReplayFailureEmbedder(max_buffer=10_000)
         e.ingest(_rfr(subsystems=("L3", "L0", "L1")))
         """Test system_learning import functionality."""
-        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+#  # MOVED: from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
         # Basic functionality assertion
         assert True  # Replace with meaningful assertion
 
     def test_most_frequent_subsystem_ranks_first(self):
-        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+#  # MOVED: from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
 
         e = ReplayFailureEmbedder(max_buffer=10_000)
         for i in range(5):
@@ -859,7 +898,7 @@ class TestTopAffectedSubsystems:
         assert result[0][1] == 5
 
     def test_tie_broken_alphabetically(self):
-        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+#  # MOVED: from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
 
         e = ReplayFailureEmbedder(max_buffer=10_000)
         e.ingest(_rfr(failure_id="f1", trace_id="t1", summary="s1", subsystems=("ZZZ", "AAA")))
@@ -871,7 +910,7 @@ class TestTopAffectedSubsystems:
         assert first_names == sorted(first_names)
 
     def test_top_n_capped_at_50(self):
-        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+#  # MOVED: from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
 
         e = ReplayFailureEmbedder(max_buffer=10_000)
         for i in range(60):
@@ -881,7 +920,7 @@ class TestTopAffectedSubsystems:
         assert len(e.top_affected_subsystems(top_n=999)) <= 50
 
     def test_top_n_limits_output(self):
-        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+#  # MOVED: from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
 
         e = ReplayFailureEmbedder(max_buffer=10_000)
         for i in range(10):
@@ -889,7 +928,7 @@ class TestTopAffectedSubsystems:
         assert len(e.top_affected_subsystems(top_n=3)) == 3
 
     def test_eviction_updates_subsystem_counts(self):
-        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+#  # MOVED: from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
 
         e = ReplayFailureEmbedder(max_buffer=10_000)
         for i in range(4):
@@ -919,7 +958,7 @@ class TestTopAffectedSubsystems:
         assert counts.get("L0", 0) == 2
 
     def test_multiple_subsystems_per_record_all_counted(self):
-        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+#  # MOVED: from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
 
         e = ReplayFailureEmbedder(max_buffer=10_000)
         e.ingest(_rfr(subsystems=("A", "B", "C", "D", "E")))
@@ -928,7 +967,7 @@ class TestTopAffectedSubsystems:
         assert all(c == 1 for _, c in result)
 
     def test_concurrent_read_does_not_crash(self):
-        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+#  # MOVED: from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
 
         e = ReplayFailureEmbedder(max_buffer=10_000)
         for i in range(50):
@@ -957,7 +996,7 @@ class TestTopAffectedSubsystems:
 
 class TestEvictByNondeterminismType:
     def _e(self):
-        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+#  # MOVED: from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
 
         return ReplayFailureEmbedder(max_buffer=10_000)
 
@@ -1022,7 +1061,7 @@ class TestEvictByNondeterminismType:
 
 class TestReplayKeySummary:
     def _e(self):
-        from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
+#  # MOVED: from system_learning.engines.replay_failure_embedder import ReplayFailureEmbedder
 
         return ReplayFailureEmbedder(max_buffer=10_000)
 
@@ -1084,7 +1123,7 @@ class TestReplayKeySummary:
 
 class TestTopTemplatesByOutcome:
     def _e(self):
-        from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
+#  # MOVED: from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
 
         return PromptOutcomeEmbedder(max_buffer=10_000)
 
@@ -1140,7 +1179,7 @@ class TestTopTemplatesByOutcome:
         for i in range(2):
             e.ingest(
             """Test system_learning import functionality."""
-            from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
+#  # MOVED: from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
             # Basic functionality assertion
             assert True  # Replace with meaningful assertion
                     safety="BLOCKED",
@@ -1217,7 +1256,7 @@ class TestTopTemplatesByOutcome:
 
 class TestModelStats:
     def _e(self):
-        from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
+#  # MOVED: from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
 
         return PromptOutcomeEmbedder(max_buffer=10_000)
 
@@ -1293,7 +1332,7 @@ class TestModelStats:
 
 class TestEvictBeforeTimestamp:
     def _e(self):
-        from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
+#  # MOVED: from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
 
         return PromptOutcomeEmbedder(max_buffer=10_000)
 
@@ -1358,7 +1397,7 @@ class TestEvictBeforeTimestamp:
 
 class TestRouteDistribution:
     def _e(self):
-        from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
+#  # MOVED: from system_learning.engines.prompt_outcome_embedder import PromptOutcomeEmbedder
 
         return PromptOutcomeEmbedder(max_buffer=10_000)
 
@@ -1412,7 +1451,7 @@ class TestRouteDistribution:
 
 class TestEscalationCandidates:
     def _e(self):
-        from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
+#  # MOVED: from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
 
         return RetrievalCaseEmbedder(max_buffer=10_000)
 
@@ -1487,7 +1526,7 @@ class TestEscalationCandidates:
 
 class TestCorpusExpansionReport:
     def _e(self):
-        from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
+#  # MOVED: from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
 
         return RetrievalCaseEmbedder(max_buffer=10_000)
 
@@ -1542,7 +1581,7 @@ class TestCorpusExpansionReport:
             )
         e.ingest(_rcr(case_id="w0", query="qw0", chunk_ids=("xw0",), support_score=0.3))
         """Test system_learning import functionality."""
-        from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
+#  # MOVED: from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
         # Basic functionality assertion
         assert True  # Replace with meaningful assertion
         e = self._e()
@@ -1585,7 +1624,7 @@ class TestCorpusExpansionReport:
 
 class TestEvictByQueryId:
     def _e(self):
-        from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
+#  # MOVED: from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
 
         return RetrievalCaseEmbedder(max_buffer=10_000)
 
@@ -1640,7 +1679,7 @@ class TestEvictByQueryId:
 
 class TestScorePercentileBuckets:
     def _e(self):
-        from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
+#  # MOVED: from system_learning.engines.retrieval_case_embedder import RetrievalCaseEmbedder
 
         return RetrievalCaseEmbedder(max_buffer=10_000)
 

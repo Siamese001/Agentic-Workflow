@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -81,7 +81,7 @@ pytestmark = pytest.mark.unit
 # ---------------------------------------------------------------------------
 # cache_types
 # ---------------------------------------------------------------------------
-from agentic_core.L1_cognition.types.cache_types import (
+#  # MOVED: from agentic_core.L1_cognition.types.cache_types import (
     DEFAULT_SIMILARITY_THRESHOLD,
     DEFAULT_TTL_SECONDS,
     MAX_CACHE_SIZE,
@@ -95,6 +95,13 @@ from agentic_core.L1_cognition.types.cache_types import (
 
 class TestCacheTypes:
     def test_default_ttl_positive(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L1_cognition.types.cache_types import (
+        from agentic_core.L1_cognition.types.domain_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        import agentic_core.L1_cognition.types.memory_types as mod
+        import agentic_core.L1_cognition.types.observability_types as mod
+        import agentic_core.L1_cognition.types.validation_types as mod
         assert DEFAULT_TTL_SECONDS > 0
 
     def test_min_ttl_less_than_default(self):
@@ -131,11 +138,11 @@ class TestCacheTypes:
 # ---------------------------------------------------------------------------
 # domain_types
 # ---------------------------------------------------------------------------
-from agentic_core.L1_cognition.types.domain_types import (
+#  # MOVED: from agentic_core.L1_cognition.types.domain_types import (
     DomainContext,
     SharingPolicy,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -264,7 +271,7 @@ class TestDomainTypes:
 # ---------------------------------------------------------------------------
 class TestMemoryTypes:
     def test_importable(self):
-        import agentic_core.L1_cognition.types.memory_types as mod
+#  # MOVED: import agentic_core.L1_cognition.types.memory_types as mod
         assert mod is not None
 
 # ---------------------------------------------------------------------------
@@ -272,7 +279,7 @@ class TestMemoryTypes:
 # ---------------------------------------------------------------------------
 class TestObservabilityTypes:
     def test_importable(self):
-        import agentic_core.L1_cognition.types.observability_types as mod
+#  # MOVED: import agentic_core.L1_cognition.types.observability_types as mod
         assert mod is not None
 
 # ---------------------------------------------------------------------------
@@ -280,5 +287,5 @@ class TestObservabilityTypes:
 # ---------------------------------------------------------------------------
 class TestValidationTypes:
     def test_importable(self):
-        import agentic_core.L1_cognition.types.validation_types as mod
+#  # MOVED: import agentic_core.L1_cognition.types.validation_types as mod
         assert mod is not None

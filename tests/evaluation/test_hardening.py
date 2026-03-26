@@ -17,59 +17,59 @@ import math
 
 import pytest
 
-from agentic_core.evaluation.chunking.policies import (
+#  # MOVED: from agentic_core.evaluation.chunking.policies import (
     FixedTokenChunkPolicy,
     OverlapWindowChunkPolicy,
     SemanticChunkPolicy,
 )
-from agentic_core.evaluation.chunking.validators import (
+#  # MOVED: from agentic_core.evaluation.chunking.validators import (
     MaxChunkSizeValidator,
 )
-from agentic_core.evaluation.feedback.dpo_batch_builder import DPOBatchBuilder
-from agentic_core.evaluation.feedback.proposer_bridge import (
+#  # MOVED: from agentic_core.evaluation.feedback.dpo_batch_builder import DPOBatchBuilder
+#  # MOVED: from agentic_core.evaluation.feedback.proposer_bridge import (
     EvaluatorProposerBridge,
     ImprovementProposal,
     ImprovementSignal,
 )
-from agentic_core.evaluation.feedback.schemas import (
+#  # MOVED: from agentic_core.evaluation.feedback.schemas import (
     DPOBatch,
     DPOPair,
     FeedbackExample,
     ReviewRubric,
 )
-from agentic_core.evaluation.metrics.answer_correctness import AnswerCorrectness
-from agentic_core.evaluation.metrics.groundedness import Groundedness, _token_f1, _tokenize
-from agentic_core.evaluation.metrics.ndcg import NDCG
-from agentic_core.evaluation.metrics.precision_at_k import PrecisionAtK
-from agentic_core.evaluation.metrics.recall_at_k import RecallAtK
-from agentic_core.evaluation.monitoring.drift_monitor import (
+#  # MOVED: from agentic_core.evaluation.metrics.answer_correctness import AnswerCorrectness
+#  # MOVED: from agentic_core.evaluation.metrics.groundedness import Groundedness, _token_f1, _tokenize
+#  # MOVED: from agentic_core.evaluation.metrics.ndcg import NDCG
+#  # MOVED: from agentic_core.evaluation.metrics.precision_at_k import PrecisionAtK
+#  # MOVED: from agentic_core.evaluation.metrics.recall_at_k import RecallAtK
+#  # MOVED: from agentic_core.evaluation.monitoring.drift_monitor import (
     AnswerQualityMonitor,
     EmbeddingDriftMonitor,
     RetrievalDriftMonitor,
 )
-from agentic_core.evaluation.monitoring.snapshots import (
+#  # MOVED: from agentic_core.evaluation.monitoring.snapshots import (
     AnswerQualitySnapshot,
     DriftAlert,
     EmbeddingHealthSnapshot,
     RetrievalDriftSnapshot,
 )
-from agentic_core.evaluation.retrieval.fusion import ReciprocalRankFusion, ScoreFusion
-from agentic_core.evaluation.retrieval.interfaces import Document
-from agentic_core.evaluation.retrieval.profiles import (
+#  # MOVED: from agentic_core.evaluation.retrieval.fusion import ReciprocalRankFusion, ScoreFusion
+#  # MOVED: from agentic_core.evaluation.retrieval.interfaces import Document
+#  # MOVED: from agentic_core.evaluation.retrieval.profiles import (
     PROFILE_HYBRID,
     PROFILE_HYBRID_RERANKED,
     PROFILE_VECTOR_ONLY,
     RetrievalPipeline,
     make_profile,
 )
-from agentic_core.evaluation.retrieval.reranker import HeuristicReranker, PassthroughReranker
-from agentic_core.evaluation.schemas.evaluation_result_schema import (
+#  # MOVED: from agentic_core.evaluation.retrieval.reranker import HeuristicReranker, PassthroughReranker
+#  # MOVED: from agentic_core.evaluation.schemas.evaluation_result_schema import (
     DeltaReport,
     EvaluationReport,
     EvaluationResult,
     EvaluationSnapshot,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -114,7 +114,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_hardening")
 # REMOVED: _emit_applies_guardrail("p0", "test_hardening", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_hardening", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -288,6 +288,29 @@ class TestBoundaryPrecisionAtK:
     """§1.4: PrecisionAtK denominator is always k, not len(retrieved)."""
 
     def test_prediction_exactly_k(self):
+        from agentic_core.evaluation.chunking.policies import (
+        from agentic_core.evaluation.chunking.validators import (
+        from agentic_core.evaluation.feedback.dpo_batch_builder import DPOBatchBuilder
+        from agentic_core.evaluation.feedback.proposer_bridge import (
+        from agentic_core.evaluation.feedback.schemas import (
+        from agentic_core.evaluation.metrics.answer_correctness import AnswerCorrectness
+        from agentic_core.evaluation.metrics.groundedness import Groundedness, _token_f1, _tokenize
+        from agentic_core.evaluation.metrics.ndcg import NDCG
+        from agentic_core.evaluation.metrics.precision_at_k import PrecisionAtK
+        from agentic_core.evaluation.metrics.recall_at_k import RecallAtK
+        from agentic_core.evaluation.monitoring.drift_monitor import (
+        from agentic_core.evaluation.monitoring.snapshots import (
+        from agentic_core.evaluation.retrieval.fusion import ReciprocalRankFusion, ScoreFusion
+        from agentic_core.evaluation.retrieval.interfaces import Document
+        from agentic_core.evaluation.retrieval.profiles import (
+        from agentic_core.evaluation.retrieval.reranker import HeuristicReranker, PassthroughReranker
+        from agentic_core.evaluation.schemas.evaluation_result_schema import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.evaluation.monitoring.snapshots import RetrievalDriftSnapshot
+        from agentic_core.evaluation.monitoring.snapshots import RetrievalDriftSnapshot
+        from agentic_core.evaluation.chunking.policies import Chunk
+        from agentic_core.evaluation.chunking.policies import Chunk
         # prediction = exactly k docs, all relevant
         assert PrecisionAtK(k=3).compute(["a", "b", "c"], ["a", "b", "c"]) == pytest.approx(1.0)
 
@@ -512,7 +535,7 @@ class TestBoundaryProposerBridgeThresholds:
         assert prec_sig.priority == "critical"
 
     def test_retrieval_hit_rate_exactly_at_ok_boundary(self):
-        from agentic_core.evaluation.monitoring.snapshots import RetrievalDriftSnapshot
+#  # MOVED: from agentic_core.evaluation.monitoring.snapshots import RetrievalDriftSnapshot
 
         snap = RetrievalDriftSnapshot(
             timestamp="t",
@@ -529,7 +552,7 @@ class TestBoundaryProposerBridgeThresholds:
 
     def test_retrieval_hit_critical_threshold(self):
         # hit_rate = 0.75 - 0.21 = 0.54 → delta = -0.21 < -0.20 → critical
-        from agentic_core.evaluation.monitoring.snapshots import RetrievalDriftSnapshot
+#  # MOVED: from agentic_core.evaluation.monitoring.snapshots import RetrievalDriftSnapshot
 
         snap = RetrievalDriftSnapshot(
             timestamp="t",
@@ -1190,7 +1213,7 @@ class TestMatrixChunkPolicyValidator:
     )
     def test_max_validator_x_policy_size(self, chunk_size, max_tokens, expect_violation):
         doc = " ".join(f"w{i}" for i in range(chunk_size))
-        from agentic_core.evaluation.chunking.policies import Chunk
+#  # MOVED: from agentic_core.evaluation.chunking.policies import Chunk
 
         chunk = Chunk(
             chunk_id="c0",
@@ -1550,7 +1573,7 @@ class TestStatefulSerializationKeyOrder:
             assert key in d
 
     def test_chunk_to_dict_roundtrip(self):
-        from agentic_core.evaluation.chunking.policies import Chunk
+#  # MOVED: from agentic_core.evaluation.chunking.policies import Chunk
 
         c = Chunk(
             chunk_id="c0",

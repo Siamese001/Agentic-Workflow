@@ -17,10 +17,10 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -65,7 +65,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_circuit_breaker_gate")
 # REMOVED: _emit_reads_policy_state("p0", "test_circuit_breaker_gate", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_circuit_breaker_gate", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -213,6 +213,17 @@ class TestStructuralContract:
     REQUIRED_FUNCTIONS = {"get_breaker", "get_all_breakers", "reset_registry"}
 
     def test_module_exists(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import reset_registry
+        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import (
+        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
+        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import reset_registry
+        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
+        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
+        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import (
+        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import (
         assert MODULE_PATH.exists(), "circuit_breaker_gate.py must exist in L5_safety/enforcement"
 
     def test_required_classes_present(self):
@@ -260,14 +271,14 @@ class TestClosedState:
 
     @pytest.fixture(autouse=True)
     def _reset(self):
-        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import reset_registry
+#  # MOVED: from agentic_core.L5_safety.enforcement.circuit_breaker_gate import reset_registry
 
         reset_registry()
         yield
         reset_registry()
 
     def test_get_breaker_returns_breaker_instance(self):
-        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.circuit_breaker_gate import (
             CircuitBreaker,
             get_breaker,
         )
@@ -276,7 +287,7 @@ class TestClosedState:
         assert isinstance(breaker, CircuitBreaker)
 
     def test_same_name_returns_same_instance(self):
-        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
+#  # MOVED: from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
 
         b1 = get_breaker("test_singleton")
         b2 = get_breaker("test_singleton")
@@ -313,14 +324,14 @@ class TestOpenState:
 
     @pytest.fixture(autouse=True)
     def _reset(self):
-        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import reset_registry
+#  # MOVED: from agentic_core.L5_safety.enforcement.circuit_breaker_gate import reset_registry
 
         reset_registry()
         yield
         reset_registry()
 
     def test_open_after_threshold_failures(self):
-        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
+#  # MOVED: from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
 
         breaker = get_breaker("test_open_threshold", failure_threshold=THRESHOLD, reset_timeout_seconds=999.0)
 
@@ -330,7 +341,7 @@ class TestOpenState:
         assert breaker.is_open, "Breaker must be OPEN after failure_threshold failures"
 
     def test_open_state_rejects_requests(self):
-        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
+#  # MOVED: from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
 
         breaker = get_breaker("test_open_reject", failure_threshold=THRESHOLD, reset_timeout_seconds=999.0)
 
@@ -346,7 +357,7 @@ class TestOpenState:
 
 class TestResetRegistry:
     def test_reset_removes_all_breakers(self):
-        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.circuit_breaker_gate import (
             get_all_breakers,
             get_breaker,
             reset_registry,
@@ -360,7 +371,7 @@ class TestResetRegistry:
         assert "reset_b" not in all_b
 
     def test_reset_allows_fresh_registration(self):
-        from agentic_core.L5_safety.enforcement.circuit_breaker_gate import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.circuit_breaker_gate import (
             get_breaker,
             reset_registry,
         )

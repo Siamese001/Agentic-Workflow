@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.enforcement.agent_info_enforcer import (  # noqa: F401
+#  # MOVED: from agentic_core.L5_safety.enforcement.agent_info_enforcer import (  # noqa: F401
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,
@@ -27,6 +27,7 @@ from agentic_core.L5_safety.enforcement.agent_info_enforcer import (  # noqa: F4
 
 class TestAgentInfoContract:
     def test_is_dataclass(self):
+        from agentic_core.L5_safety.enforcement.agent_info_enforcer import (  # noqa: F401
         import dataclasses
         assert dataclasses.is_dataclass(AgentInfo)
 

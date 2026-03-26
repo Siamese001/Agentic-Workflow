@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -95,18 +95,18 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L2_execution.types.vllm_backpressure_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_backpressure_types import (
     MAX_QUEUE_DEPTH,
     QUEUE_WAIT_TIMEOUT_SECONDS,
     VLLMCircuitBreaker,
     VLLMQueueState,
     evaluate_backpressure,
 )
-from agentic_core.L2_execution.types.vllm_token_budget_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_token_budget_types import (
     GEMINI_25_PRO_MODEL_ID,
     VLLMFailureType,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -225,6 +225,10 @@ def make_partial_queue(depth: int = 2) -> VLLMQueueState:
 
 
 def test_full_queue_escalates_to_gemini():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.types.vllm_backpressure_types import (
+    from agentic_core.L2_execution.types.vllm_token_budget_types import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test full_queue_escalates_to_gemini runtime behavior."""
 # Arrange
 # TODO: Set up test data for full_queue_escalates_to_gemini

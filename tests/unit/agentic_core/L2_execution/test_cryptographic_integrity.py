@@ -13,20 +13,20 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L2_execution.determinism.digest_calculator import DigestCalculator
-from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+#  # MOVED: from agentic_core.L2_execution.determinism.digest_calculator import DigestCalculator
+#  # MOVED: from agentic_core.L6_observability.engines.determinism_digest_emitter import (
     DeterminismDigestEmitter,
     DuplicateEmissionError,
     build_stable_config_surface,
     hash_config_surface,
 )
-from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
+#  # MOVED: from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
     ProviderBinding,
     ProviderBindingFingerprint,
     capture_provider_bindings,
     fingerprint_matches,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -205,6 +205,10 @@ def _emitter_compute(emitter: DeterminismDigestEmitter | None = None, **override
 class TestDigestCalculator:
     @pytest.mark.governance
     def test_compute_returns_64_hex_chars(self):
+        from agentic_core.L2_execution.determinism.digest_calculator import DigestCalculator
+        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+        from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         result = _compute()
         assert len(result) == 64
         int(result, 16)

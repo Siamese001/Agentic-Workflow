@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -57,7 +57,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_bge_embedding_types", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_bge_embedding_types", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_bge_embedding_types", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -198,7 +198,7 @@ def _rfr(
     trace_id: str = _TID,
     ts: int = _TS,
 ):
-    from system_learning.types.semantic_memory_types import ReplayFailureRecord
+#  # MOVED: from system_learning.types.semantic_memory_types import ReplayFailureRecord
 
     return ReplayFailureRecord(
         failure_id=failure_id,
@@ -233,7 +233,7 @@ def _poem(
     trace_id: str = _TID,
     ts: int = _TS,
 ):
-    from system_learning.types.semantic_memory_types import PromptOutcomeEmbeddingRecord
+#  # MOVED: from system_learning.types.semantic_memory_types import PromptOutcomeEmbeddingRecord
 
     return PromptOutcomeEmbeddingRecord(
         record_id=record_id,
@@ -272,7 +272,7 @@ def _rcr(
     trace_id: str = _TID,
     ts: int = _TS,
 ):
-    from system_learning.types.semantic_memory_types import RetrievalCaseRecord
+#  # MOVED: from system_learning.types.semantic_memory_types import RetrievalCaseRecord
 
     return RetrievalCaseRecord(
         case_id=case_id,
@@ -299,6 +299,19 @@ def _rcr(
 
 class TestReplayFailureRecord:
     def test_hash_computed_on_construction(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.types.semantic_memory_types import ReplayFailureRecord
+        from system_learning.types.semantic_memory_types import PromptOutcomeEmbeddingRecord
+        from system_learning.types.semantic_memory_types import RetrievalCaseRecord
+        from system_learning.types.semantic_memory_types import ReplayFailureRecord
+        from system_learning.types.semantic_memory_types import ReplayFailureRecord
+        from system_learning.types.semantic_memory_types import ReplayFailureRecord
+        from system_learning.types.semantic_memory_types import PromptOutcomeEmbeddingRecord
+        from system_learning.types.semantic_memory_types import PromptOutcomeEmbeddingRecord
+        from system_learning.types.semantic_memory_types import RetrievalCaseRecord
+        from system_learning.types.semantic_memory_types import RetrievalCaseRecord
+        from system_learning.types.semantic_memory_types import RetrievalCaseRecord
         r = _rfr()
         assert len(r.failure_hash) == 64
         assert r.failure_hash.isalnum()
@@ -320,7 +333,7 @@ class TestReplayFailureRecord:
             r.nondeterminism_type = "MUTATED"  # type: ignore[misc]
 
     def test_empty_failure_id_raises(self):
-        from system_learning.types.semantic_memory_types import ReplayFailureRecord
+#  # MOVED: from system_learning.types.semantic_memory_types import ReplayFailureRecord
 
         with pytest.raises(ValueError, match="failure_id"):
             ReplayFailureRecord(
@@ -337,7 +350,7 @@ class TestReplayFailureRecord:
             )
 
     def test_empty_nondeterminism_type_raises(self):
-        from system_learning.types.semantic_memory_types import ReplayFailureRecord
+#  # MOVED: from system_learning.types.semantic_memory_types import ReplayFailureRecord
 
         with pytest.raises(ValueError, match="nondeterminism_type"):
             ReplayFailureRecord(
@@ -354,7 +367,7 @@ class TestReplayFailureRecord:
             )
 
     def test_empty_replay_key_raises(self):
-        from system_learning.types.semantic_memory_types import ReplayFailureRecord
+#  # MOVED: from system_learning.types.semantic_memory_types import ReplayFailureRecord
 
         with pytest.raises(ValueError, match="replay_key"):
             ReplayFailureRecord(
@@ -429,7 +442,7 @@ class TestPromptOutcomeEmbeddingRecord:
             r.safety_outcome = "BLOCKED"  # type: ignore[misc]
 
     def test_empty_record_id_raises(self):
-        from system_learning.types.semantic_memory_types import PromptOutcomeEmbeddingRecord
+#  # MOVED: from system_learning.types.semantic_memory_types import PromptOutcomeEmbeddingRecord
 
         with pytest.raises(ValueError, match="record_id"):
             PromptOutcomeEmbeddingRecord(
@@ -453,7 +466,7 @@ class TestPromptOutcomeEmbeddingRecord:
             )
 
     def test_invalid_safety_outcome_raises(self):
-        from system_learning.types.semantic_memory_types import PromptOutcomeEmbeddingRecord
+#  # MOVED: from system_learning.types.semantic_memory_types import PromptOutcomeEmbeddingRecord
 
         with pytest.raises(ValueError, match="safety_outcome"):
             PromptOutcomeEmbeddingRecord(
@@ -535,7 +548,7 @@ class TestRetrievalCaseRecord:
             r.support_score = 0.0  # type: ignore[misc]
 
     def test_empty_case_id_raises(self):
-        from system_learning.types.semantic_memory_types import RetrievalCaseRecord
+#  # MOVED: from system_learning.types.semantic_memory_types import RetrievalCaseRecord
 
         with pytest.raises(ValueError, match="case_id"):
             RetrievalCaseRecord(
@@ -556,7 +569,7 @@ class TestRetrievalCaseRecord:
             )
 
     def test_support_score_out_of_range_raises(self):
-        from system_learning.types.semantic_memory_types import RetrievalCaseRecord
+#  # MOVED: from system_learning.types.semantic_memory_types import RetrievalCaseRecord
 
         with pytest.raises(ValueError, match="support_score"):
             RetrievalCaseRecord(
@@ -577,7 +590,7 @@ class TestRetrievalCaseRecord:
             )
 
     def test_completeness_score_out_of_range_raises(self):
-        from system_learning.types.semantic_memory_types import RetrievalCaseRecord
+#  # MOVED: from system_learning.types.semantic_memory_types import RetrievalCaseRecord
 
         with pytest.raises(ValueError, match="completeness_score"):
             RetrievalCaseRecord(

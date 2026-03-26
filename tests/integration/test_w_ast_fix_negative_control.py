@@ -12,7 +12,7 @@ import os
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -59,7 +59,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_w_ast_fix_negative_control", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_w_ast_fix_negative_control", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_w_ast_fix_negative_control", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -198,8 +198,12 @@ _TAMPER = os.environ.get("W_AST_FIX_NEGCTRL_TAMPER", "0") == "1"
     strict=True,
 )
 def test_negctrl_pt011_slot_order():
-    """Normal mode: canonical order passes.  Tamper mode: reversed order must fail."""
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     from agentic_core.prompt_governance.contracts.slot_contracts import (
+    from agentic_core.L5_safety.enforcement.rag_guardrail import (
+    """Normal mode: canonical order passes.  Tamper mode: reversed order must fail."""
+#  # MOVED: from agentic_core.prompt_governance.contracts.slot_contracts import (
         validate_slot_order,
     )
 
@@ -237,7 +241,7 @@ def test_negctrl_pt011_slot_order():
 )
 def test_negctrl_ragx006_citation_custody():
     """Normal mode: cited context passes.  Tamper mode: uncited context must fail."""
-    from agentic_core.L5_safety.enforcement.rag_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.rag_guardrail import (
         CitationBundle,
         validate_citation_custody,
     )

@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 from unittest.mock import MagicMock
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -61,7 +61,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_missing_edges", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_missing_edges", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_missing_edges", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -187,7 +187,7 @@ if str(ROOT) not in sys.path:
 def _make_edge(
     from_name, relation_type, to_name, edge_kind="import", source_file="test.py", line_no=1, symbol=""
 ):
-    from agentic_core.adg.extraction.static_scanner import Edge
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge
 
     return Edge(
         from_name=from_name,
@@ -201,7 +201,7 @@ def _make_edge(
 
 
 def _make_scan_result(edges, modules=None):
-    from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
     result = ScanResult(commit_sha="test_sha")
     result.edges = edges
@@ -218,7 +218,31 @@ def _make_scan_result(edges, modules=None):
 
 class TestG12BelongsToLayer:
     def test_persist_modules_emits_belongs_to_layer(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.extraction.static_scanner import Edge
+        from agentic_core.adg.extraction.static_scanner import ScanResult
         from agentic_core.adg.extraction.graph_persister import _persist_modules
+        from agentic_core.adg.extraction.graph_persister import _persist_modules
+        from agentic_core.adg.extraction.static_scanner import _detect_cycles
+        from agentic_core.adg.extraction.static_scanner import _detect_cycles
+        from agentic_core.adg.extraction.static_scanner import _detect_cycles
+        from agentic_core.adg.extraction.static_scanner import _detect_cycles
+        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+        from agentic_core.adg.extraction.graph_persister import _persist_edges
+        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+        from agentic_core.adg.extraction.graph_persister import _infer_entity_type
+        from agentic_core.adg.extraction.graph_persister import _infer_entity_type
+        from agentic_core.adg.extraction.graph_persister import _infer_entity_type
+        from agentic_core.adg.extraction.graph_persister import _infer_entity_type
+        from agentic_core.adg.extraction.graph_persister import _infer_entity_type
+        from agentic_core.adg.extraction.graph_persister import _infer_entity_type
+        from agentic_core.adg.extraction.graph_persister import _infer_entity_type
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _persist_modules
 
         client = MagicMock()
         result = _make_scan_result([], modules=["agentic_core/L2_execution/SomeAgent.py"])
@@ -234,7 +258,7 @@ class TestG12BelongsToLayer:
         )
 
     def test_belongs_to_layer_target_is_layer_node(self):
-        from agentic_core.adg.extraction.graph_persister import _persist_modules
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _persist_modules
 
         client = MagicMock()
         result = _make_scan_result([], modules=["agentic_core/L2_execution/SomeAgent.py"])
@@ -271,7 +295,7 @@ class TestG12BelongsToLayer:
 
 class TestG15InCycleEdges:
     def test_detect_cycles_finds_mutual_import(self):
-        from agentic_core.adg.extraction.static_scanner import _detect_cycles
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _detect_cycles
 
         # A -> B -> A is a cycle
         edges = [
@@ -294,7 +318,7 @@ class TestG15InCycleEdges:
         assert all(e.relation_type == "in_cycle" for e in cycle_edges)
 
     def test_no_cycle_for_acyclic_graph(self):
-        from agentic_core.adg.extraction.static_scanner import _detect_cycles
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _detect_cycles
 
         edges = [
             _make_edge(
@@ -315,7 +339,7 @@ class TestG15InCycleEdges:
         assert not cycle_edges, "Acyclic graph should produce no in_cycle edges"
 
     def test_cycle_edges_point_to_adg_cycle_node(self):
-        from agentic_core.adg.extraction.static_scanner import _detect_cycles
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _detect_cycles
 
         edges = [
             _make_edge("ADG::Module::a.py", "imports", "ADG::Module::b.py", symbol="b"),
@@ -329,7 +353,7 @@ class TestG15InCycleEdges:
             )
 
     def test_three_node_cycle_detected(self):
-        from agentic_core.adg.extraction.static_scanner import _detect_cycles
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _detect_cycles
 
         edges = [
             _make_edge("ADG::Module::a.py", "imports", "ADG::Module::b.py", symbol="b"),
@@ -348,35 +372,35 @@ class TestG15InCycleEdges:
 
 class TestG16RuleId:
     def test_violates_edge_gets_rule_id_observation(self):
-        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _derive_rule_id
 
         rule_id = _derive_rule_id("violates", "L0->L3")
         assert rule_id, "violates relation should produce a rule_id"
         assert "LAYER_GRAVITY" in rule_id
 
     def test_bypasses_uwg_edge_gets_rule_id_observation(self):
-        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _derive_rule_id
 
         rule_id = _derive_rule_id("bypasses_uwg", "some_write_call")
         assert rule_id, "bypasses_uwg relation should produce a rule_id"
         assert "UWG_BYPASS" in rule_id
 
     def test_seam_bypass_edge_gets_rule_id_observation(self):
-        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _derive_rule_id
 
         rule_id = _derive_rule_id("seam_bypass", "direct_openai_call")
         assert rule_id, "seam_bypass relation should produce a rule_id"
         assert "SEAM_BYPASS" in rule_id
 
     def test_regular_edge_no_rule_id(self):
-        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _derive_rule_id
 
         assert _derive_rule_id("imports", "some_module") == ""
         assert _derive_rule_id("calls", "some_func") == ""
         assert _derive_rule_id("reads_env", "os.getenv") == ""
 
     def test_rule_id_observation_attached_in_persist_edges(self):
-        from agentic_core.adg.extraction.graph_persister import _persist_edges
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _persist_edges
 
         edges = [
             _make_edge(
@@ -404,13 +428,13 @@ class TestG16RuleId:
         )
 
     def test_rule_id_includes_symbol_in_observation(self):
-        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _derive_rule_id
 
         rule_id = _derive_rule_id("violates", "L0->L3")
         assert "L0->L3" in rule_id, "rule_id should include the symbol value for context"
 
     def test_rule_id_without_symbol_is_just_prefix(self):
-        from agentic_core.adg.extraction.graph_persister import _derive_rule_id
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _derive_rule_id
 
         rule_id = _derive_rule_id("violates", "")
         assert rule_id == "LAYER_GRAVITY"
@@ -423,36 +447,36 @@ class TestG16RuleId:
 
 class TestInferEntityType:
     def test_layer_prefix_infers_layer(self):
-        from agentic_core.adg.extraction.graph_persister import _infer_entity_type
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _infer_entity_type
 
         assert _infer_entity_type("ADG::Layer::L2") == "layer"
 
     def test_gateway_prefix_infers_gateway(self):
-        from agentic_core.adg.extraction.graph_persister import _infer_entity_type
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _infer_entity_type
 
         assert _infer_entity_type("ADG::Gateway::UniversalWriteGateway") == "gateway"
 
     def test_prompt_slot_prefix_infers_prompt_slot(self):
-        from agentic_core.adg.extraction.graph_persister import _infer_entity_type
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _infer_entity_type
 
         assert _infer_entity_type("ADG::PromptSlot::S0::test.py") == "prompt_slot"
 
     def test_prompt_template_prefix_infers_prompt_template(self):
-        from agentic_core.adg.extraction.graph_persister import _infer_entity_type
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _infer_entity_type
 
         assert _infer_entity_type("ADG::PromptTemplate::CONSTITUTION") == "prompt_template"
 
     def test_seam_prefix_infers_seam(self):
-        from agentic_core.adg.extraction.graph_persister import _infer_entity_type
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _infer_entity_type
 
         assert _infer_entity_type("ADG::Seam::some_seam") == "seam"
 
     def test_symbol_prefix_infers_symbol(self):
-        from agentic_core.adg.extraction.graph_persister import _infer_entity_type
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _infer_entity_type
 
         assert _infer_entity_type("ADG::Symbol::some.func") == "symbol"
 
     def test_unknown_prefix_falls_back_to_symbol(self):
-        from agentic_core.adg.extraction.graph_persister import _infer_entity_type
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import _infer_entity_type
 
         assert _infer_entity_type("ADG::Unknown::whatever") == "symbol"

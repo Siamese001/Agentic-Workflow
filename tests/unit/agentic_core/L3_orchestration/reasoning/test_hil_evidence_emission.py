@@ -16,15 +16,15 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L0_routing.enforcement.governance_contracts import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.governance_contracts import (
     build_hil_evidence_pack,
 )
-from agentic_core.L0_routing.types.governance_types import (
+#  # MOVED: from agentic_core.L0_routing.types.governance_types import (
     EvidencePack,
     PolicySnapshot,
     RouteDecisionRef,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -69,7 +69,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_hil_evidence_emission")
 # REMOVED: _emit_applies_guardrail("p0", "test_hil_evidence_emission", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_hil_evidence_emission", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -191,6 +191,11 @@ class TestEvidencePackConstruction:
     """Unit: build_hil_evidence_pack produces valid, typed EvidencePack."""
 
     def test_hil_pack_has_required_fields(self):
+        from agentic_core.L0_routing.enforcement.governance_contracts import (
+        from agentic_core.L0_routing.types.governance_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        import agentic_core.L3_orchestration.reasoning.OrchestrationHandshakeAgent as mod
         ref = RouteDecisionRef(
             trace_id="t1",
             decision="human_escalation",
@@ -327,7 +332,7 @@ def _install_module_stubs():
 def _import_oha_module():
     """Import OrchestrationHandshakeAgent module with stubs in place."""
     _install_module_stubs()
-    import agentic_core.L3_orchestration.reasoning.OrchestrationHandshakeAgent as mod
+#  # MOVED: import agentic_core.L3_orchestration.reasoning.OrchestrationHandshakeAgent as mod
 
     return mod
 

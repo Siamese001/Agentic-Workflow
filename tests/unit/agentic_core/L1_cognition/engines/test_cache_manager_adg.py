@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L1_cognition.engines.cache_manager  # noqa: F401
+#  # MOVED: import agentic_core.L1_cognition.engines.cache_manager  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L1_cognition.engines.cache_manager  # noqa: F401
     """Module cache_manager must be importable."""
     assert agentic_core.L1_cognition.engines.cache_manager is not None

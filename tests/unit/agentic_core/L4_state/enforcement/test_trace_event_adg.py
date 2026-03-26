@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L4_state.enforcement.trace_event  # noqa: F401
+#  # MOVED: import agentic_core.L4_state.enforcement.trace_event  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L4_state.enforcement.trace_event  # noqa: F401
     """Module trace_event must be importable."""
     assert agentic_core.L4_state.enforcement.trace_event is not None

@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -72,7 +72,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_review_summary_generator", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_review_summary_generator", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_review_summary_generator", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -235,6 +235,8 @@ class TestDeterministicContent:
     """Validate fixed headings and key lines in generated markdown."""
 
     def test_all_present_all_pass(self, tmp_path):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """All evidence + guardian present and passing."""
         for ph in ["P3", "P4", "P5", "P6"]:
             _write_evidence(tmp_path, ph, passed=5, violations=0, gate=f"gate_{ph.lower()}")

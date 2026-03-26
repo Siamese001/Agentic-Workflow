@@ -46,7 +46,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -129,10 +129,10 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.guardian
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.L5_safety.validators.gravity_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.gravity_validator import (
     DriftViolation,
     GravityViolation,
     HierarchyViolation,
@@ -140,7 +140,7 @@ from agentic_core.L5_safety.validators.gravity_validator import (
     SovereignHealthReport,
     UnifiedSSOTValidator,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -263,6 +263,10 @@ def _fresh_validator(tmp_path: Path) -> UnifiedSSOTValidator:
 
 class TestViolationStrContracts:
     def test_gravity_violation_str_contains_file_path(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L5_safety.validators.gravity_validator import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         v = GravityViolation(
             file_path="agentic_core/L0_routing/MyAgent.py",
             actual_layer="L0",

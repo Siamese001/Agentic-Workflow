@@ -6,22 +6,22 @@ Tests that FAIL violations trigger Gemini fallback with violations in telemetry.
 
 import pytest
 
-from agentic_core.L2_execution.types.vllm_gateway_adapter_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_gateway_adapter_types import (
     VLLMGatewayAdapter,
     reset_singletons,
 )
-from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
     VLLMCircuitBreakerRegistry,
     VLLMQueueController,
 )
-from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
     VLLMInfrastructureFingerprint,
 )
-from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
     InvariantId,
     InvariantSeverity,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -68,7 +68,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_vllm_invariant_enforcement", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_vllm_invariant_enforcement", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_vllm_invariant_enforcement", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -193,6 +193,13 @@ def reset_adapter_state():
 
 
 def test_adapter_local_success_with_zero_violations():
+    from agentic_core.L2_execution.types.vllm_gateway_adapter_types import (
+    from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
+    from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
     """Test that valid local request produces zero violations."""
     adapter = VLLMGatewayAdapter(
         queue=VLLMQueueController(),
@@ -303,7 +310,7 @@ def test_adapter_fail_violation_triggers_gemini_with_violations_attached():
     """
     from unittest.mock import patch
 
-    from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
         InvariantViolation,
     )
 

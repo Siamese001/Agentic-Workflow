@@ -6,16 +6,16 @@ import importlib
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     OPS_SCRIPTS_DIR,
 )
-from agentic_core.L5_safety.enforcement.runtime_mutation_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.runtime_mutation_guardrail import (
     _CORE_PREFIXES,
     _guarded_setattr,
     _GuardedSysModules,
     install_guards,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -62,7 +62,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_runtime_mutation_guard", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_runtime_mutation_guard", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_runtime_mutation_guard", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -178,6 +178,10 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 @pytest.mark.governance
 def test_install_guards_is_idempotent() -> None:
+    from agentic_core.L0_routing.config.path_constants import (
+    from agentic_core.L5_safety.enforcement.runtime_mutation_guardrail import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test install_guards_is_idempotent runtime behavior."""
 # Arrange
 # TODO: Set up runtime environment

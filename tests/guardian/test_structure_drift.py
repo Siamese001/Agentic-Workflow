@@ -5,12 +5,12 @@ from __future__ import annotations
 import tempfile
 from pathlib import Path
 
-from agentic_core.L5_safety.utils.structure_drift_writer import save_manifest
-from agentic_core.L5_safety.validators.structure_drift_validator import (
+#  # MOVED: from agentic_core.L5_safety.utils.structure_drift_writer import save_manifest
+#  # MOVED: from agentic_core.L5_safety.validators.structure_drift_validator import (
     generate_structure_manifest,
     load_manifest,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -57,7 +57,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_structure_drift", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_structure_drift", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_structure_drift", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -172,6 +172,10 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 
 def test_manifest_determinism():
+    from agentic_core.L5_safety.utils.structure_drift_writer import save_manifest
+    from agentic_core.L5_safety.validators.structure_drift_validator import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test that manifest generation is deterministic."""
     manifest1 = generate_structure_manifest()
     manifest2 = generate_structure_manifest()

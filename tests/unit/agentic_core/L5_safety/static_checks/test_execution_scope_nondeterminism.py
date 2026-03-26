@@ -9,12 +9,12 @@ import ast
 import textwrap
 from pathlib import Path
 
-from agentic_core.L5_safety.static_checks.determinism_serialization_check import (
+#  # MOVED: from agentic_core.L5_safety.static_checks.determinism_serialization_check import (
     _EXEC_ALLOWLIST_COMMENT,
     ExecutionScopeNondeterminismVisitor,
     scan_file_for_execution_nondeterminism,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -181,6 +181,8 @@ def _rule_ids(violations: list[tuple]) -> list[str]:
 
 
 def test_detects_time_time() -> None:
+    from agentic_core.L5_safety.static_checks.determinism_serialization_check import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test detects_time_time runtime behavior."""
 # Arrange
 # TODO: Set up test data for detects_time_time

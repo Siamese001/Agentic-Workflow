@@ -9,10 +9,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L0_ROUTING_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -74,7 +74,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_policy_pack_validator", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_policy_pack_validator", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_policy_pack_validator", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -212,6 +212,9 @@ class TestValidPack:
     """Valid policy packs must pass."""
 
     def test_minimal_valid(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         code, errors, warnings = validate_policy_pack(_valid_pack())
         assert code == 0
         assert errors == []

@@ -13,6 +13,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 def test_import_manager_agent_now_succeeds():
+    from agentic_core.knowledge.engine.rag_orchestrator import SovereignRagOrchestrator
     """SovereignRAGManagerAgent imports pdf_loader + text_loader internally."""
     mod = importlib.import_module(
         "agentic_core.knowledge.reasoning.SovereignRAGManagerAgent",
@@ -22,6 +23,6 @@ def test_import_manager_agent_now_succeeds():
 
 def test_import_orchestrator_now_succeeds():
     """rag_orchestrator imports csv_loader, html_loader, pdf_loader, text_loader internally."""
-    from agentic_core.knowledge.engine.rag_orchestrator import SovereignRagOrchestrator
+#  # MOVED: from agentic_core.knowledge.engine.rag_orchestrator import SovereignRagOrchestrator
 
     assert SovereignRagOrchestrator is not None

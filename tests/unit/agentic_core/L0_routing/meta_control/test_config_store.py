@@ -7,24 +7,24 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     APPS_RG_DIR,
 )
-from agentic_core.L0_routing.meta_control.config_store import (
+#  # MOVED: from agentic_core.L0_routing.meta_control.config_store import (
     _version_path,
     apply_change_package_readonly,
     load_current,
     write_next_version,
 )
-from agentic_core.L0_routing.meta_control.config_store_types import (
+#  # MOVED: from agentic_core.L0_routing.meta_control.config_store_types import (
     build_config_delta,
     build_config_snapshot,
     canonical_json,
     stable_sha256,
     validate_component_allowed,
 )
-from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -87,7 +87,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_config_store", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_config_store", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_config_store", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -125,7 +125,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.types.meta_learning_types import (
+#  # MOVED: from system_learning.types.meta_learning_types import (
     build_meta_learning_approval,
     build_meta_learning_change_package,
     build_meta_learning_decision,
@@ -197,6 +197,13 @@ _CLOCK = SemanticClockSnapshot(tick=1, vector_clock=(("L0", 1),))
 
 class TestCanonicalJsonDeterminism:
     def test_same_dict_different_key_order(self) -> None:
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L0_routing.meta_control.config_store import (
+        from agentic_core.L0_routing.meta_control.config_store_types import (
+        from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.types.meta_learning_types import (
         d1 = {"z": 1, "a": 2, "m": {"b": 3, "a": 4}}
         d2 = {"a": 2, "m": {"a": 4, "b": 3}, "z": 1}
         assert canonical_json(d1) == canonical_json(d2)

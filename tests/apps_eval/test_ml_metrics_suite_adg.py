@@ -14,10 +14,10 @@ from __future__ import annotations
 
 import pytest
 
-from apps_eval.config.agent_spec_config import EvalAgentSpecs, load_eval_specs
-from apps_eval.engines.scenario_runner import ScenarioRunner
-from apps_eval.engines.scorecard_engine import _SUITE_TO_DIMENSION, ScorecardEngine
-from apps_eval.types.eval_types import ScenarioOutcome
+#  # MOVED: from apps_eval.config.agent_spec_config import EvalAgentSpecs, load_eval_specs
+#  # MOVED: from apps_eval.engines.scenario_runner import ScenarioRunner
+#  # MOVED: from apps_eval.engines.scorecard_engine import _SUITE_TO_DIMENSION, ScorecardEngine
+#  # MOVED: from apps_eval.types.eval_types import ScenarioOutcome
 
 _ML_METRICS_SUITE_ID = "ml_metrics_validation"
 _ML_SCENARIO_IDS = [
@@ -37,6 +37,13 @@ _ML_SCENARIO_IDS = [
 
 class TestMlMetricsSuiteConfig:
     def test_suite_registered_in_default_specs(self):
+        from apps_eval.config.agent_spec_config import EvalAgentSpecs, load_eval_specs
+        from apps_eval.engines.scenario_runner import ScenarioRunner
+        from apps_eval.engines.scorecard_engine import _SUITE_TO_DIMENSION, ScorecardEngine
+        from apps_eval.types.eval_types import ScenarioOutcome
+        import apps_eval.config.agent_spec_config as _cfg
+        from apps_eval.types.eval_types import SuiteResult
+        from apps_eval.types.eval_types import SuiteResult
         specs = EvalAgentSpecs()
         assert _ML_METRICS_SUITE_ID in specs.benchmark_suites
 
@@ -67,7 +74,7 @@ class TestMlMetricsSuiteConfig:
         assert dim.threshold_pass >= 0.90
 
     def test_load_eval_specs_includes_suite(self):
-        import apps_eval.config.agent_spec_config as _cfg
+#  # MOVED: import apps_eval.config.agent_spec_config as _cfg
 
         _cfg._SPEC_CACHE = None
         specs = load_eval_specs()
@@ -196,7 +203,7 @@ class TestScorecardEngineMlDimension:
         assert _SUITE_TO_DIMENSION.get(_ML_METRICS_SUITE_ID) == "ml_metric_correctness"
 
     def test_scorecard_includes_ml_metric_correctness(self):
-        from apps_eval.types.eval_types import SuiteResult
+#  # MOVED: from apps_eval.types.eval_types import SuiteResult
 
         suite_result = SuiteResult(
             suite_id=_ML_METRICS_SUITE_ID,
@@ -212,7 +219,7 @@ class TestScorecardEngineMlDimension:
         assert "ml_metric_correctness" in dim_ids
 
     def test_scorecard_ml_metric_correctness_score_from_pass_rate(self):
-        from apps_eval.types.eval_types import SuiteResult
+#  # MOVED: from apps_eval.types.eval_types import SuiteResult
 
         suite_result = SuiteResult(
             suite_id=_ML_METRICS_SUITE_ID,

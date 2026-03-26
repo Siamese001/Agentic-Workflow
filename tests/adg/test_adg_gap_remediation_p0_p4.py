@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -72,7 +72,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_adg_gap_remediation_p0_p4", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_adg_gap_remediation_p0_p4", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_adg_gap_remediation_p0_p4", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -160,7 +160,59 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 
 def test_deterministic_routing_gateway_stamp_and_verify():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+    from agentic_core.runtime.trace_emitter import TraceEmitter
+    from agentic_core.runtime.trace_emitter import TraceEmitter
+    from agentic_core.runtime.trace_emitter import emit_trace
+    from agentic_core.L2_execution.enforcement.guardrail_gate import (
+    from agentic_core.L2_execution.enforcement.guardrail_gate import (
+    from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+    from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+    from agentic_core.L3_orchestration.contracts.agent_handoff import AgentHandoff
+    from agentic_core.L3_orchestration.contracts.agent_handoff import (
+    from agentic_core.L3_orchestration.contracts.agent_handoff import (
+    from agentic_core.L4_state.authority.run_scoped_state_authority import (
+    from agentic_core.L4_state.authority.run_scoped_state_authority import (
+    from agentic_core.L4_state.authority.run_scoped_state_authority import (
+    from agentic_core.L4_state.authority.run_scoped_state_authority import (
+    from agentic_core.L4_state.authority.run_scoped_state_authority import (
+    from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
+    from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
+    from agentic_core.L5_safety.gates.tool_safety_gate import (
+    from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
+    from agentic_core.L5_safety.gates.tool_safety_gate import (
+    from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
+    from agentic_core.L5_safety.gates.tool_safety_gate import (
+    from agentic_core.L1_cognition.context.reasoning_context_envelope import (
+    from agentic_core.L1_cognition.context.reasoning_context_envelope import (
+    from agentic_core.L1_cognition.context.reasoning_context_envelope import (
+    from agentic_core.L3_orchestration.coordination.work_coordination_bundle import (
+    from agentic_core.L3_orchestration.coordination.work_coordination_bundle import (
+    from agentic_core.L3_orchestration.coordination.work_coordination_bundle import (
+    from agentic_core.L4_state.memory.unified_memory_facade import (
+    from agentic_core.L4_state.memory.unified_memory_facade import (
+    from agentic_core.L6_observability.evaluation.evaluation_signal_integrator import (
+    from agentic_core.L6_observability.evaluation.evaluation_signal_integrator import (
+    from agentic_core.L2_execution.types.execution_tool_contract import (
+    from agentic_core.L2_execution.types.execution_tool_contract import (
+    from agentic_core.L3_orchestration.registry.agent_capability_registry import (
+    from agentic_core.L3_orchestration.registry.agent_capability_registry import (
+    from agentic_core.L4_state.versioning.state_version_manager import (
+    from agentic_core.L4_state.versioning.state_version_manager import (
+    from agentic_core.L5_safety.audit.safety_audit_trail import (
+    from agentic_core.L4_state.enforcement.state_lifecycle_policy import (
+    from agentic_core.L4_state.enforcement.state_lifecycle_policy import (
+    from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
+    from agentic_core.L5_safety.adaptation.policy_adaptation_loop import (
+    from agentic_core.L5_safety.adaptation.policy_adaptation_loop import (
+    from agentic_core.L5_safety.adaptation.policy_adaptation_loop import (
+    from agentic_core.L0_routing.policy.route_policy_governor import (
+    from agentic_core.L0_routing.policy.route_policy_governor import (
+#  # MOVED: from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
         DeterministicRoutingGateway,
         reset_routing_gateway,
     )
@@ -177,7 +229,7 @@ def test_deterministic_routing_gateway_stamp_and_verify():
 
 
 def test_deterministic_routing_gateway_ledger():
-    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+#  # MOVED: from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
         DeterministicRoutingGateway,
     )
 
@@ -188,7 +240,7 @@ def test_deterministic_routing_gateway_ledger():
 
 
 def test_routing_artifact_to_route_decision():
-    from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
+#  # MOVED: from agentic_core.L0_routing.artifacts.deterministic_routing_gateway import (
         DeterministicRoutingGateway,
     )
 
@@ -205,7 +257,7 @@ def test_routing_artifact_to_route_decision():
 
 
 def test_trace_emitter_emit_record():
-    from agentic_core.runtime.trace_emitter import TraceEmitter
+#  # MOVED: from agentic_core.runtime.trace_emitter import TraceEmitter
 
     class MyModule(TraceEmitter):
         _LAYER = "L1"
@@ -220,7 +272,7 @@ def test_trace_emitter_emit_record():
 
 
 def test_trace_emitter_context_manager():
-    from agentic_core.runtime.trace_emitter import TraceEmitter
+#  # MOVED: from agentic_core.runtime.trace_emitter import TraceEmitter
 
     class MyModule(TraceEmitter):
         _LAYER = "L2"
@@ -233,7 +285,7 @@ def test_trace_emitter_context_manager():
 
 
 def test_emit_trace_decorator():
-    from agentic_core.runtime.trace_emitter import emit_trace
+#  # MOVED: from agentic_core.runtime.trace_emitter import emit_trace
 
     call_log = []
 
@@ -255,7 +307,7 @@ def test_emit_trace_decorator():
 
 
 def test_guardrail_gate_allow():
-    from agentic_core.L2_execution.enforcement.guardrail_gate import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.guardrail_gate import (
         GuardrailGate,
         GuardrailVerdict,
         reset_guardrail_gate,
@@ -269,7 +321,7 @@ def test_guardrail_gate_allow():
 
 
 def test_guardrail_gate_blocked_operation():
-    from agentic_core.L2_execution.enforcement.guardrail_gate import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.guardrail_gate import (
         GuardrailGate,
         GuardrailViolationError,
     )
@@ -281,7 +333,7 @@ def test_guardrail_gate_blocked_operation():
 
 
 def test_guardrail_gate_context_manager():
-    from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+#  # MOVED: from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
 
     gate = GuardrailGate(policy_hash="ph", strict_mode=False)
     executed = []
@@ -292,7 +344,7 @@ def test_guardrail_gate_context_manager():
 
 
 def test_guardrail_gate_audit_log():
-    from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
+#  # MOVED: from agentic_core.L2_execution.enforcement.guardrail_gate import GuardrailGate
 
     gate = GuardrailGate(strict_mode=False)
     gate.check("op1", "target1")
@@ -306,7 +358,7 @@ def test_guardrail_gate_audit_log():
 
 
 def test_agent_handoff_create():
-    from agentic_core.L3_orchestration.contracts.agent_handoff import AgentHandoff
+#  # MOVED: from agentic_core.L3_orchestration.contracts.agent_handoff import AgentHandoff
 
     h = AgentHandoff.create(
         src="OrchestratorA",
@@ -321,7 +373,7 @@ def test_agent_handoff_create():
 
 
 def test_handoff_dispatcher_dispatch():
-    from agentic_core.L3_orchestration.contracts.agent_handoff import (
+#  # MOVED: from agentic_core.L3_orchestration.contracts.agent_handoff import (
         AgentHandoff,
         HandoffDispatcher,
         HandoffStatus,
@@ -344,7 +396,7 @@ def test_handoff_dispatcher_dispatch():
 
 
 def test_handoff_dispatcher_unregistered_raises():
-    from agentic_core.L3_orchestration.contracts.agent_handoff import (
+#  # MOVED: from agentic_core.L3_orchestration.contracts.agent_handoff import (
         AgentHandoff,
         HandoffDispatcher,
     )
@@ -361,7 +413,7 @@ def test_handoff_dispatcher_unregistered_raises():
 
 
 def test_state_authority_write_read():
-    from agentic_core.L4_state.authority.run_scoped_state_authority import (
+#  # MOVED: from agentic_core.L4_state.authority.run_scoped_state_authority import (
         RunScopedStateAuthority,
     )
 
@@ -372,7 +424,7 @@ def test_state_authority_write_read():
 
 
 def test_state_authority_freeze_blocks_writes():
-    from agentic_core.L4_state.authority.run_scoped_state_authority import (
+#  # MOVED: from agentic_core.L4_state.authority.run_scoped_state_authority import (
         FrozenStateError,
         RunScopedStateAuthority,
     )
@@ -386,7 +438,7 @@ def test_state_authority_freeze_blocks_writes():
 
 
 def test_state_authority_frozen_section_context_manager():
-    from agentic_core.L4_state.authority.run_scoped_state_authority import (
+#  # MOVED: from agentic_core.L4_state.authority.run_scoped_state_authority import (
         FrozenStateError,
         RunScopedStateAuthority,
     )
@@ -399,7 +451,7 @@ def test_state_authority_frozen_section_context_manager():
 
 
 def test_state_authority_snapshot():
-    from agentic_core.L4_state.authority.run_scoped_state_authority import (
+#  # MOVED: from agentic_core.L4_state.authority.run_scoped_state_authority import (
         RunScopedStateAuthority,
     )
 
@@ -412,7 +464,7 @@ def test_state_authority_snapshot():
 
 
 def test_state_authority_work_contract():
-    from agentic_core.L4_state.authority.run_scoped_state_authority import (
+#  # MOVED: from agentic_core.L4_state.authority.run_scoped_state_authority import (
         RunScopedStateAuthority,
     )
 
@@ -431,7 +483,7 @@ def test_state_authority_work_contract():
 
 
 def test_pep_allow():
-    from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
         PolicyEnforcementPoint,
         PolicyVerdict,
         reset_policy_enforcement_point,
@@ -473,10 +525,10 @@ assert isinstance(result, object), "Result should be an object"
 
 
 def test_tool_safety_gate_allow_low_risk():
-    from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
         PolicyEnforcementPoint,
     )
-    from agentic_core.L5_safety.gates.tool_safety_gate import (
+#  # MOVED: from agentic_core.L5_safety.gates.tool_safety_gate import (
         ToolRiskLevel,
         ToolSafetyGate,
         reset_tool_safety_gate,
@@ -490,10 +542,10 @@ def test_tool_safety_gate_allow_low_risk():
 
 
 def test_tool_safety_gate_critical_requires_sandbox():
-    from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
         PolicyEnforcementPoint,
     )
-    from agentic_core.L5_safety.gates.tool_safety_gate import (
+#  # MOVED: from agentic_core.L5_safety.gates.tool_safety_gate import (
         ToolNotSandboxedError,
         ToolRiskLevel,
         ToolSafetyGate,
@@ -506,10 +558,10 @@ def test_tool_safety_gate_critical_requires_sandbox():
 
 
 def test_tool_safety_gate_sandbox_context_manager():
-    from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.policy_enforcement_point import (
         PolicyEnforcementPoint,
     )
-    from agentic_core.L5_safety.gates.tool_safety_gate import (
+#  # MOVED: from agentic_core.L5_safety.gates.tool_safety_gate import (
         ToolRiskLevel,
         ToolSafetyGate,
     )
@@ -529,7 +581,7 @@ def test_tool_safety_gate_sandbox_context_manager():
 
 
 def test_envelope_builder_seal():
-    from agentic_core.L1_cognition.context.reasoning_context_envelope import (
+#  # MOVED: from agentic_core.L1_cognition.context.reasoning_context_envelope import (
         ReasoningContextEnvelopeBuilder,
         release_envelope,
     )
@@ -545,7 +597,7 @@ def test_envelope_builder_seal():
 
 
 def test_envelope_confidence_gate():
-    from agentic_core.L1_cognition.context.reasoning_context_envelope import (
+#  # MOVED: from agentic_core.L1_cognition.context.reasoning_context_envelope import (
         ReasoningContextEnvelopeBuilder,
     )
 
@@ -556,7 +608,7 @@ def test_envelope_confidence_gate():
 
 
 def test_envelope_already_sealed_raises():
-    from agentic_core.L1_cognition.context.reasoning_context_envelope import (
+#  # MOVED: from agentic_core.L1_cognition.context.reasoning_context_envelope import (
         ReasoningContextEnvelopeBuilder,
     )
 
@@ -572,7 +624,7 @@ def test_envelope_already_sealed_raises():
 
 
 def test_work_coordination_bundle_create():
-    from agentic_core.L3_orchestration.coordination.work_coordination_bundle import (
+#  # MOVED: from agentic_core.L3_orchestration.coordination.work_coordination_bundle import (
         WorkCoordinationBundle,
         release_coordination_bundle,
     )
@@ -584,7 +636,7 @@ def test_work_coordination_bundle_create():
 
 
 def test_bundle_observe_and_read():
-    from agentic_core.L3_orchestration.coordination.work_coordination_bundle import (
+#  # MOVED: from agentic_core.L3_orchestration.coordination.work_coordination_bundle import (
         WorkCoordinationBundle,
     )
 
@@ -594,7 +646,7 @@ def test_bundle_observe_and_read():
 
 
 def test_bundle_agent_completion_and_snapshot():
-    from agentic_core.L3_orchestration.coordination.work_coordination_bundle import (
+#  # MOVED: from agentic_core.L3_orchestration.coordination.work_coordination_bundle import (
         WorkCoordinationBundle,
     )
 
@@ -611,7 +663,7 @@ def test_bundle_agent_completion_and_snapshot():
 
 
 def test_unified_memory_facade_register_and_retrieve():
-    from agentic_core.L4_state.memory.unified_memory_facade import (
+#  # MOVED: from agentic_core.L4_state.memory.unified_memory_facade import (
         UnifiedMemoryFacade,
         reset_memory_facade,
     )
@@ -641,7 +693,7 @@ def test_unified_memory_facade_register_and_retrieve():
 
 
 def test_unified_memory_facade_gated_retrieve_blocks_low_confidence():
-    from agentic_core.L4_state.memory.unified_memory_facade import (
+#  # MOVED: from agentic_core.L4_state.memory.unified_memory_facade import (
         UnifiedMemoryFacade,
     )
 
@@ -698,7 +750,7 @@ assert isinstance(result, object), "Result should be an object"
 
 
 def test_eval_signal_integrator_emit_and_subscribe():
-    from agentic_core.L6_observability.evaluation.evaluation_signal_integrator import (
+#  # MOVED: from agentic_core.L6_observability.evaluation.evaluation_signal_integrator import (
         EvalSignalKind,
         EvaluationSignalIntegrator,
         reset_eval_signal_integrator,
@@ -720,7 +772,7 @@ def test_eval_signal_integrator_emit_and_subscribe():
 
 
 def test_eval_signal_integrator_average_score():
-    from agentic_core.L6_observability.evaluation.evaluation_signal_integrator import (
+#  # MOVED: from agentic_core.L6_observability.evaluation.evaluation_signal_integrator import (
         EvalSignalKind,
         EvaluationSignalIntegrator,
     )
@@ -738,7 +790,7 @@ def test_eval_signal_integrator_average_score():
 
 
 def test_tool_contract_create():
-    from agentic_core.L2_execution.types.execution_tool_contract import (
+#  # MOVED: from agentic_core.L2_execution.types.execution_tool_contract import (
         ToolCategory,
         ToolContract,
     )
@@ -755,7 +807,7 @@ def test_tool_contract_create():
 
 
 def test_tool_registry():
-    from agentic_core.L2_execution.types.execution_tool_contract import (
+#  # MOVED: from agentic_core.L2_execution.types.execution_tool_contract import (
         ToolCapabilityDescriptor,
         ToolCategory,
         get_tool_capability,
@@ -782,7 +834,7 @@ def test_tool_registry():
 
 
 def test_agent_capability_registry():
-    from agentic_core.L3_orchestration.registry.agent_capability_registry import (
+#  # MOVED: from agentic_core.L3_orchestration.registry.agent_capability_registry import (
         AgentCapabilityRegistry,
         AgentCapabilitySpec,
         reset_agent_capability_registry,
@@ -805,7 +857,7 @@ def test_agent_capability_registry():
 
 
 def test_agent_capability_registry_handoff_check():
-    from agentic_core.L3_orchestration.registry.agent_capability_registry import (
+#  # MOVED: from agentic_core.L3_orchestration.registry.agent_capability_registry import (
         AgentCapabilityRegistry,
         AgentCapabilitySpec,
     )
@@ -823,7 +875,7 @@ def test_agent_capability_registry_handoff_check():
 
 
 def test_state_version_manager_commit_and_history():
-    from agentic_core.L4_state.versioning.state_version_manager import (
+#  # MOVED: from agentic_core.L4_state.versioning.state_version_manager import (
         StateVersionManager,
     )
 
@@ -835,7 +887,7 @@ def test_state_version_manager_commit_and_history():
 
 
 def test_state_version_manager_rollback():
-    from agentic_core.L4_state.versioning.state_version_manager import (
+#  # MOVED: from agentic_core.L4_state.versioning.state_version_manager import (
         StateVersionManager,
     )
 
@@ -854,7 +906,7 @@ def test_state_version_manager_rollback():
 
 
 def test_safety_audit_trail_records():
-    from agentic_core.L5_safety.audit.safety_audit_trail import (
+#  # MOVED: from agentic_core.L5_safety.audit.safety_audit_trail import (
         SafetyAuditTrail,
         reset_safety_audit_trail,
     )
@@ -911,7 +963,7 @@ assert len(processed_result) >= 0, "Processed result should be measurable"
 
 
 def test_state_lifecycle_happy_path():
-    from agentic_core.L4_state.enforcement.state_lifecycle_policy import (
+#  # MOVED: from agentic_core.L4_state.enforcement.state_lifecycle_policy import (
         StateLifecyclePolicy,
         StateLifecycleStage,
     )
@@ -929,7 +981,7 @@ def test_state_lifecycle_happy_path():
 
 
 def test_state_lifecycle_invalid_transition_raises():
-    from agentic_core.L4_state.enforcement.state_lifecycle_policy import (
+#  # MOVED: from agentic_core.L4_state.enforcement.state_lifecycle_policy import (
         StateLifecyclePolicy,
         StateLifecycleViolationError,
     )
@@ -945,7 +997,7 @@ def test_state_lifecycle_invalid_transition_raises():
 
 
 def test_hitl_escalation_activator_pending():
-    from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
+#  # MOVED: from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
         EscalationPriority,
         HITLEscalationActivator,
         reset_hitl_escalation_activator,
@@ -1032,7 +1084,7 @@ assert isinstance(workflow_result, dict), "Workflow result should be structured"
 
 
 def test_policy_adaptation_loop_tighten():
-    from agentic_core.L5_safety.adaptation.policy_adaptation_loop import (
+#  # MOVED: from agentic_core.L5_safety.adaptation.policy_adaptation_loop import (
         AdaptationSignal,
         PolicyAdaptationLoop,
         PolicyDirection,
@@ -1048,7 +1100,7 @@ def test_policy_adaptation_loop_tighten():
 
 
 def test_policy_adaptation_loop_no_proposal_on_hold():
-    from agentic_core.L5_safety.adaptation.policy_adaptation_loop import (
+#  # MOVED: from agentic_core.L5_safety.adaptation.policy_adaptation_loop import (
         AdaptationSignal,
         PolicyAdaptationLoop,
     )
@@ -1062,7 +1114,7 @@ def test_policy_adaptation_loop_no_proposal_on_hold():
 
 
 def test_policy_hash_updates_on_applied():
-    from agentic_core.L5_safety.adaptation.policy_adaptation_loop import (
+#  # MOVED: from agentic_core.L5_safety.adaptation.policy_adaptation_loop import (
         AdaptationSignal,
         PolicyAdaptationLoop,
     )
@@ -1079,7 +1131,7 @@ def test_policy_hash_updates_on_applied():
 
 
 def test_route_policy_governor_commit():
-    from agentic_core.L0_routing.policy.route_policy_governor import (
+#  # MOVED: from agentic_core.L0_routing.policy.route_policy_governor import (
         RoutePolicyGovernor,
         reset_route_policy_governor,
     )
@@ -1094,7 +1146,7 @@ def test_route_policy_governor_commit():
 
 
 def test_route_policy_governor_unknown_path_not_boundary_verified():
-    from agentic_core.L0_routing.policy.route_policy_governor import (
+#  # MOVED: from agentic_core.L0_routing.policy.route_policy_governor import (
         RoutePolicyGovernor,
     )
 

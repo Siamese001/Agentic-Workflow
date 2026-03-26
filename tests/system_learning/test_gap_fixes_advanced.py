@@ -17,7 +17,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -62,7 +62,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_gap_fixes_advanced")
 # REMOVED: _emit_applies_guardrail("p0", "test_gap_fixes_advanced", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_gap_fixes_advanced", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -181,10 +181,10 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 
 def _make_pipeline_config(**overrides):
-    from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
-    from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
-    from system_learning.validators.oscillation_detector import OscillationPolicy
-    from system_learning.validators.shadow_evaluator import ShadowThresholds
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy
+#  # MOVED: from system_learning.validators.shadow_evaluator import ShadowThresholds
 
     defaults = {
         "engine_version": "test",
@@ -215,7 +215,7 @@ def _minimal_package(
     timestamp_utc=1_000_000,
     target_surface="test_surface",
 ):
-    from system_learning.engines.change_package_impl import ChangePackage
+#  # MOVED: from system_learning.engines.change_package_impl import ChangePackage
 
     return ChangePackage(
         source=source,
@@ -230,7 +230,7 @@ def _minimal_package(
 
 def _make_minimal_deps(freeze_reader=None):
     """Build a minimal PipelineDependencies with stubs."""
-    from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
 
     audit_store = MagicMock()
     audit_store.read_audit_slice.return_value = b"line1\nline2\nline3\n"
@@ -276,7 +276,60 @@ def _make_minimal_deps(freeze_reader=None):
 @pytest.mark.unit
 class TestCommitProofDeterminism:
     def test_same_package_yields_same_proof_twice(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
+        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+        from system_learning.validators.oscillation_detector import OscillationPolicy
+        from system_learning.validators.shadow_evaluator import ShadowThresholds
+        from system_learning.engines.change_package_impl import ChangePackage
+        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
         from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
+        from system_learning.pipelines.meta_learning_pipeline import PipelineError, run_pipeline
+        from system_learning.engines.rca_engine import classify_line
+        from system_learning.engines.rca_engine import classify_line
+        from system_learning.engines.rca_engine import classify_line
+        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+        from system_learning.engines.rca_engine import analyze_failures
+        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+        from system_learning.engines.rca_engine import analyze_failures
+        from system_learning.engines.rca_engine import analyze_failures
+        from system_learning.engines.rca_engine import analyze_failures
+        from system_learning.engines.rca_engine import analyze_failures
+        from system_learning.engines.rca_engine import analyze_failures
+        from system_learning.engines.rca_engine import analyze_failures
+        from system_learning.engines.rca_engine import analyze_failures
+        from system_learning.pipelines.meta_learning_pipeline import PipelineError, run_pipeline
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+        from system_learning.invariants.commit_proof_invariant import (
+        from system_learning.invariants.commit_proof_invariant import (
+        from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
+        from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
+        from system_learning.invariants.commit_proof_invariant import (
+        from system_learning.invariants.commit_proof_invariant import (
+        from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
+        from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
+        from system_learning.invariants.commit_proof_invariant import (
+        from system_learning.engines.rca_engine import classify_line
+        from system_learning.engines.rca_engine import classify_line
+        from system_learning.engines.rca_engine import classify_line
+        from system_learning.engines.rca_engine import CLASSIFICATION_RULES
+        from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
+        from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
+        import system_learning.pipelines.meta_learning_pipeline as m
+#  # MOVED: from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
 
         pkg = _minimal_package()
         impl_hash = hashlib.sha256(pkg.canonical_bytes()).hexdigest()
@@ -313,7 +366,7 @@ class TestFreezeGateNegativeControls:
     assert workflow_result is not None, "Workflow should produce a result"
     assert isinstance(workflow_result, dict), "Workflow result should be structured"
     # TODO: Add workflow step assertions
-        from system_learning.pipelines.meta_learning_pipeline import PipelineError, run_pipeline
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineError, run_pipeline
 
         cfg = _make_pipeline_config(proposal_only=True)
         deps = _make_minimal_deps(freeze_reader=StaticFreezeReader(frozen=False))
@@ -334,21 +387,21 @@ class TestFreezeGateNegativeControls:
 @pytest.mark.unit
 class TestRcaRuntimeNegativeControls:
     def test_policy_block_not_reclassified_as_runtime(self):
-        from system_learning.engines.rca_engine import classify_line
+#  # MOVED: from system_learning.engines.rca_engine import classify_line
 
         result = classify_line("AuthorityViolation: rejected")
         assert result is not None
         assert result[0] == "POLICY_BLOCK"
 
     def test_import_error_not_classified_as_runtime(self):
-        from system_learning.engines.rca_engine import classify_line
+#  # MOVED: from system_learning.engines.rca_engine import classify_line
 
         result = classify_line("ImportError: no module named foo")
         assert result is not None
         assert result[0] == "IMPORT"
 
     def test_timeout_error_not_classified_as_runtime(self):
-        from system_learning.engines.rca_engine import classify_line
+#  # MOVED: from system_learning.engines.rca_engine import classify_line
 
         result = classify_line("TimeoutError: operation timed out")
         assert result is not None
@@ -366,7 +419,7 @@ class TestRcaAnalyzeFailuresExceptionPaths:
 
     def test_invalid_window_start_equals_end_raises(self):
         """window_start_utc == window_end_utc must raise RCAAnalysisError."""
-        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+#  # MOVED: from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
 
         with pytest.raises(RCAAnalysisError, match="Invalid window"):
             analyze_failures(
@@ -378,7 +431,7 @@ class TestRcaAnalyzeFailuresExceptionPaths:
 
     def test_invalid_window_start_greater_than_end_raises(self):
         """window_start_utc > window_end_utc must raise RCAAnalysisError."""
-        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+#  # MOVED: from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
 
         with pytest.raises(RCAAnalysisError, match="Invalid window"):
             analyze_failures(
@@ -390,7 +443,7 @@ class TestRcaAnalyzeFailuresExceptionPaths:
 
     def test_valid_window_start_one_below_end_passes(self):
         """window_start_utc == window_end_utc - 1 must NOT raise."""
-        from system_learning.engines.rca_engine import analyze_failures
+#  # MOVED: from system_learning.engines.rca_engine import analyze_failures
 
         report = analyze_failures(
             snapshot_id="s",
@@ -402,7 +455,7 @@ class TestRcaAnalyzeFailuresExceptionPaths:
 
     def test_unicode_decode_error_raises_rca_analysis_error(self):
         """Non-UTF-8 bytes must raise RCAAnalysisError (fail-closed)."""
-        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+#  # MOVED: from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
 
         bad_bytes = b"\xff\xfe invalid utf-8 \xc3\x28"
         with pytest.raises(RCAAnalysisError, match="UTF-8"):
@@ -415,7 +468,7 @@ class TestRcaAnalyzeFailuresExceptionPaths:
 
     def test_empty_bytes_yields_unknown_category(self):
         """Empty audit_slice must not crash; yields UNKNOWN finding."""
-        from system_learning.engines.rca_engine import analyze_failures
+#  # MOVED: from system_learning.engines.rca_engine import analyze_failures
 
         report = analyze_failures(
             snapshot_id="s",
@@ -428,7 +481,7 @@ class TestRcaAnalyzeFailuresExceptionPaths:
 
     def test_list_input_normalized_to_bytes(self):
         """list-of-strings audit_slice must be accepted and classified."""
-        from system_learning.engines.rca_engine import analyze_failures
+#  # MOVED: from system_learning.engines.rca_engine import analyze_failures
 
         report = analyze_failures(
             snapshot_id="s",
@@ -441,7 +494,7 @@ class TestRcaAnalyzeFailuresExceptionPaths:
 
     def test_none_input_normalized_to_empty(self):
         """Non-bytes/list input must not crash (falls back to b'')."""
-        from system_learning.engines.rca_engine import analyze_failures
+#  # MOVED: from system_learning.engines.rca_engine import analyze_failures
 
         report = analyze_failures(
             snapshot_id="s",
@@ -455,7 +508,7 @@ class TestRcaAnalyzeFailuresExceptionPaths:
 
     def test_all_blank_lines_yields_unknown(self):
         """Audit slice with only blank lines must yield UNKNOWN."""
-        from system_learning.engines.rca_engine import analyze_failures
+#  # MOVED: from system_learning.engines.rca_engine import analyze_failures
 
         report = analyze_failures(
             snapshot_id="s",
@@ -468,7 +521,7 @@ class TestRcaAnalyzeFailuresExceptionPaths:
 
     def test_no_patterns_matched_yields_unknown_not_crash(self):
         """Lines with no matching pattern must produce UNKNOWN, not crash."""
-        from system_learning.engines.rca_engine import analyze_failures
+#  # MOVED: from system_learning.engines.rca_engine import analyze_failures
 
         report = analyze_failures(
             snapshot_id="s",
@@ -481,7 +534,7 @@ class TestRcaAnalyzeFailuresExceptionPaths:
 
     def test_report_hash_changes_with_different_input(self):
         """Distinct inputs must not collapse to same report_hash (§1.10 distinct-input)."""
-        from system_learning.engines.rca_engine import analyze_failures
+#  # MOVED: from system_learning.engines.rca_engine import analyze_failures
 
         r1 = analyze_failures("s", b"RuntimeError: A\n", 0, 100)
         r2 = analyze_failures("s", b"TypeError: B\n", 0, 100)
@@ -489,7 +542,7 @@ class TestRcaAnalyzeFailuresExceptionPaths:
 
     def test_report_hash_stable_across_equivalent_inputs(self):
         """Same canonical input → identical report_hash (§1.10 metamorphic)."""
-        from system_learning.engines.rca_engine import analyze_failures
+#  # MOVED: from system_learning.engines.rca_engine import analyze_failures
 
         b = b"RuntimeError: x\nTypeError: y\n"
         r1 = analyze_failures("snap", b, 0, 100)
@@ -552,7 +605,7 @@ class TestDualInjectionGuardViaRealPipeline:
     # TODO: Add workflow step assertions
     def test_proposal_only_true_skips_guard_entirely(self):
         """proposal_only=True must never reach the injection guard (no PipelineError from guard)."""
-        from system_learning.pipelines.meta_learning_pipeline import PipelineError, run_pipeline
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineError, run_pipeline
 
         cfg = _make_pipeline_config(proposal_only=True)
         deps = _make_minimal_deps()
@@ -607,7 +660,7 @@ class TestShadowVectorDimRegression:
         """Prove the fix: shadow vector must match query vector dimension."""
         import numpy as np
 
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import (
             generate_fallback_vector,
         )
 
@@ -631,7 +684,7 @@ class TestShadowVectorDimRegression:
         """np.dot(query, shadow) must not raise ValueError when dims match."""
         import numpy as np
 
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import (
             generate_fallback_vector,
         )
 
@@ -656,7 +709,7 @@ class TestShadowVectorDimRegression:
         """Prove the old range(0,8,2) approach produces dim=4, which mismatches 16-dim query."""
         import numpy as np
 
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import (
             generate_fallback_vector,
         )
 
@@ -673,7 +726,7 @@ class TestShadowVectorDimRegression:
         """Same failure_signature → same cosine result (§1.10 determinism)."""
         import numpy as np
 
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import (
             generate_fallback_vector,
         )
 
@@ -705,7 +758,7 @@ class TestShadowVectorDimRegression:
         """Distinct signatures must not produce identical cosine (§1.10 distinct collapse)."""
         import numpy as np
 
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import (
             generate_fallback_vector,
         )
 
@@ -745,7 +798,7 @@ class TestFreezeGateExceptionPaths:
 
     def test_oserror_on_read_fails_open(self, tmp_path, monkeypatch):
         """OSError during file read → fail open (False). Forced via monkeypatch."""
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+#  # MOVED: from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
 
         p = tmp_path / "runtime_state.json"
         p.write_text('{"freeze": true}')
@@ -759,7 +812,7 @@ class TestFreezeGateExceptionPaths:
 
     def test_json_decode_error_fails_open(self, tmp_path):
         """Malformed JSON → JSONDecodeError → fail open (False)."""
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+#  # MOVED: from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
 
         p = tmp_path / "runtime_state.json"
         p.write_text("{ this is not json }")
@@ -768,7 +821,7 @@ class TestFreezeGateExceptionPaths:
 
     def test_empty_file_fails_open(self, tmp_path):
         """Empty file → JSONDecodeError → fail open (False)."""
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+#  # MOVED: from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
 
         p = tmp_path / "runtime_state.json"
         p.write_text("")
@@ -777,7 +830,7 @@ class TestFreezeGateExceptionPaths:
 
     def test_flags_not_dict_does_not_raise(self, tmp_path):
         """flags key that is not a dict must not raise — treated as no freeze."""
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+#  # MOVED: from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
 
         p = tmp_path / "runtime_state.json"
         p.write_text('{"flags": "not_a_dict"}')
@@ -786,7 +839,7 @@ class TestFreezeGateExceptionPaths:
 
     def test_flags_none_does_not_raise(self, tmp_path):
         """flags: null must not raise."""
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+#  # MOVED: from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
 
         p = tmp_path / "runtime_state.json"
         p.write_text('{"flags": null}')
@@ -795,7 +848,7 @@ class TestFreezeGateExceptionPaths:
 
     def test_l2_freeze_false_not_frozen(self, tmp_path):
         """flags.l2_freeze = false must return False."""
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+#  # MOVED: from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
 
         p = tmp_path / "runtime_state.json"
         p.write_text('{"flags": {"l2_freeze": false}}')
@@ -804,7 +857,7 @@ class TestFreezeGateExceptionPaths:
 
     def test_side_effect_safety_freeze_does_not_mutate_file(self, tmp_path):
         """is_frozen() must be read-only: file content unchanged after call."""
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+#  # MOVED: from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
 
         p = tmp_path / "runtime_state.json"
         content = '{"freeze": true}'
@@ -825,7 +878,7 @@ class TestCommitProofInvariantCompleteness:
 
     def test_non_hex_implementation_hash_raises(self):
         """implementation_hash with non-hex chars must raise CommitProofViolation."""
-        from system_learning.invariants.commit_proof_invariant import (
+#  # MOVED: from system_learning.invariants.commit_proof_invariant import (
             CommitProofInvariant,
             CommitProofViolation,
         )
@@ -842,7 +895,7 @@ class TestCommitProofInvariantCompleteness:
 
     def test_empty_implementation_hash_string_raises(self):
         """Empty string implementation_hash must raise CommitProofViolation."""
-        from system_learning.invariants.commit_proof_invariant import (
+#  # MOVED: from system_learning.invariants.commit_proof_invariant import (
             CommitProofInvariant,
             CommitProofViolation,
         )
@@ -857,7 +910,7 @@ class TestCommitProofInvariantCompleteness:
 
     def test_timestamp_exactly_one_passes(self):
         """commit_timestamp_utc == 1 (minimum positive) must pass."""
-        from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
+#  # MOVED: from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
 
         pkg = _minimal_package()
         impl_hash = hashlib.sha256(pkg.canonical_bytes()).hexdigest()
@@ -870,7 +923,7 @@ class TestCommitProofInvariantCompleteness:
 
     def test_version_id_exactly_64_chars_valid_hex_passes(self):
         """A valid 64-char lowercase hex version_id must not fail the length/hex check."""
-        from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
+#  # MOVED: from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
 
         pkg = _minimal_package()
         impl_hash = hashlib.sha256(pkg.canonical_bytes()).hexdigest()
@@ -883,7 +936,7 @@ class TestCommitProofInvariantCompleteness:
 
     def test_version_id_65_chars_raises(self):
         """65-char version_id must raise (off-by-one boundary)."""
-        from system_learning.invariants.commit_proof_invariant import (
+#  # MOVED: from system_learning.invariants.commit_proof_invariant import (
             CommitProofInvariant,
             CommitProofViolation,
         )
@@ -898,7 +951,7 @@ class TestCommitProofInvariantCompleteness:
 
     def test_version_id_63_chars_raises(self):
         """63-char version_id must raise (off-by-one boundary below)."""
-        from system_learning.invariants.commit_proof_invariant import (
+#  # MOVED: from system_learning.invariants.commit_proof_invariant import (
             CommitProofInvariant,
             CommitProofViolation,
         )
@@ -913,7 +966,7 @@ class TestCommitProofInvariantCompleteness:
 
     def test_from_package_no_side_effects_on_package(self):
         """from_package must not mutate the package (§1.11 side-effect safety)."""
-        from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
+#  # MOVED: from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
 
         pkg = _minimal_package()
         original_changes = pkg.changes
@@ -923,7 +976,7 @@ class TestCommitProofInvariantCompleteness:
 
     def test_verify_is_idempotent(self):
         """Calling verify() twice on same proof must not raise (idempotent)."""
-        from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
+#  # MOVED: from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
 
         pkg = _minimal_package()
         impl_hash = hashlib.sha256(pkg.canonical_bytes()).hexdigest()
@@ -937,7 +990,7 @@ class TestCommitProofInvariantCompleteness:
 
     def test_churn_hash_blocks_side_effects(self):
         """Churn hash verification failure must raise BEFORE any side-effects can occur."""
-        from system_learning.invariants.commit_proof_invariant import (
+#  # MOVED: from system_learning.invariants.commit_proof_invariant import (
             CommitProofInvariant,
             CommitProofViolation,
         )
@@ -963,28 +1016,28 @@ class TestRcaClassificationDeterminism:
 
     def test_first_matching_rule_wins(self):
         """SYNTAX rules appear before RUNTIME; SyntaxError must classify as SYNTAX."""
-        from system_learning.engines.rca_engine import classify_line
+#  # MOVED: from system_learning.engines.rca_engine import classify_line
 
         result = classify_line("SyntaxError: bad indentation")
         assert result[0] == "SYNTAX", f"Expected SYNTAX, got {result[0]}"
 
     def test_policy_block_before_runtime(self):
         """AuthorityViolation is POLICY_BLOCK not RUNTIME."""
-        from system_learning.engines.rca_engine import classify_line
+#  # MOVED: from system_learning.engines.rca_engine import classify_line
 
         result = classify_line("AuthorityViolation: access denied")
         assert result[0] == "POLICY_BLOCK"
 
     def test_import_error_before_runtime(self):
         """ImportError must classify as IMPORT, not RUNTIME."""
-        from system_learning.engines.rca_engine import classify_line
+#  # MOVED: from system_learning.engines.rca_engine import classify_line
 
         result = classify_line("ImportError: cannot import name foo")
         assert result[0] == "IMPORT"
 
     def test_classification_rules_count_stable(self):
         """CLASSIFICATION_RULES must have exactly the expected count (mutation guard)."""
-        from system_learning.engines.rca_engine import CLASSIFICATION_RULES
+#  # MOVED: from system_learning.engines.rca_engine import CLASSIFICATION_RULES
 
         assert len(CLASSIFICATION_RULES) == 17, (
             f"CLASSIFICATION_RULES must have 17 entries, got {len(CLASSIFICATION_RULES)}. "
@@ -1016,7 +1069,7 @@ class TestProposalOnlyMetamorphic:
         original = os.environ.get("PROPOSAL_ONLY")
         try:
             os.environ["PROPOSAL_ONLY"] = "false"
-            from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
 
             fields = {f.name: f for f in dataclasses.fields(PipelineConfig)}
             assert fields["proposal_only"].default is True, "Default must be hardcoded True, not env-driven"
@@ -1036,7 +1089,7 @@ class TestProposalOnlyMetamorphic:
         """Creating explicit False instance must not alter default for subsequent instances."""
         import dataclasses
 
-        from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
 
         _ = _make_pipeline_config(proposal_only=False)
         fields = {f.name: f for f in dataclasses.fields(PipelineConfig)}
@@ -1053,7 +1106,7 @@ class TestShadowTelemetryBatchStateful:
     """Verify module-level _shadow_telemetry_batch behaves as a stateful surface (§1.17)."""
 
     def test_batch_starts_as_list(self):
-        import system_learning.pipelines.meta_learning_pipeline as m
+#  # MOVED: import system_learning.pipelines.meta_learning_pipeline as m
 
         assert isinstance(m._shadow_telemetry_batch, list)
 

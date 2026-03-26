@@ -19,7 +19,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -104,7 +104,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_routing.types.guardian_contract_types import (
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import (
     CONTRACT_VERSION,
     ArtifactClass,
     ArtifactType,
@@ -117,7 +117,7 @@ from agentic_core.L0_routing.types.guardian_contract_types import (
     validate_against_json_schema,
     validate_no_absolute_paths,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -228,6 +228,15 @@ class TestStatusPromotion:
     """Verify that a FAIL check correctly promotes the top-level status."""
 
     def test_initial_status_is_pass(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.types.guardian_contract_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L0_routing.scripts.run_guardian_c0_sovereignty import (
+        from agentic_core.L0_routing.scripts.run_guardian_change_package_activation import (
+        from agentic_core.L0_routing.scripts.run_guardian_cross_layer_mutation import (
+        from agentic_core.L0_routing.scripts.run_guardian_escalation_determinism import (
+        from agentic_core.L0_routing.scripts.run_guardian_gateway_bypass import (
     """Test initial_status_is_pass contract compliance."""
     # Arrange
     # TODO: Set up contract parties and terms
@@ -494,24 +503,24 @@ assert isinstance(contract_result, dict), "Contract result should be structured"
 
 def _all_guardian_runners():
     """Return (guardian_id, runner_callable, clean_repo_factory) tuples."""
-    from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
         AGENTIC_CORE_DIR,
         APPS_LIC_DIR,
         L0_ROUTING_DIR,
     )
-    from agentic_core.L0_routing.scripts.run_guardian_c0_sovereignty import (
+#  # MOVED: from agentic_core.L0_routing.scripts.run_guardian_c0_sovereignty import (
         run_c0_sovereignty_guardian,
     )
-    from agentic_core.L0_routing.scripts.run_guardian_change_package_activation import (
+#  # MOVED: from agentic_core.L0_routing.scripts.run_guardian_change_package_activation import (
         run_change_package_activation_guardian,
     )
-    from agentic_core.L0_routing.scripts.run_guardian_cross_layer_mutation import (
+#  # MOVED: from agentic_core.L0_routing.scripts.run_guardian_cross_layer_mutation import (
         run_cross_layer_mutation_guardian,
     )
-    from agentic_core.L0_routing.scripts.run_guardian_escalation_determinism import (
+#  # MOVED: from agentic_core.L0_routing.scripts.run_guardian_escalation_determinism import (
         run_escalation_determinism_guardian,
     )
-    from agentic_core.L0_routing.scripts.run_guardian_gateway_bypass import (
+#  # MOVED: from agentic_core.L0_routing.scripts.run_guardian_gateway_bypass import (
         run_gateway_bypass_guardian,
     )
 

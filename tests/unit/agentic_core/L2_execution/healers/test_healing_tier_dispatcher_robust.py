@@ -20,7 +20,7 @@ import inspect
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -67,7 +67,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_healing_tier_dispatcher_robust", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_healing_tier_dispatcher_robust", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_healing_tier_dispatcher_robust", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -203,6 +203,13 @@ class TestFailureSignalImportInvariant:
     """
 
     def test_failure_signal_is_module_level_name_in_dispatcher(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.healers.healing_tier_types import FailureSignal
+        from agentic_core.L2_execution.healers.healing_tier_types import (
+        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+        from agentic_core.L2_execution.healers.healing_tier_types import HealingDecision
+        from agentic_core.L2_execution.healers.healing_tier_types import HealingDecision
     """Test failure_signal_is_module_level_name_in_dispatcher runtime behavior."""
     # Arrange
     # TODO: Set up error condition
@@ -267,7 +274,7 @@ class TestFailureSignalConstruction:
 
     def test_failure_signal_minimal_construction(self):
         """Minimal valid FailureSignal must construct without error."""
-        from agentic_core.L2_execution.healers.healing_tier_types import FailureSignal
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_types import FailureSignal
 
         sig = FailureSignal(
             source_agent="test_agent",
@@ -299,7 +306,7 @@ class TestFailureSignalConstruction:
 
     def test_failure_signal_to_healing_input_conversion(self):
         """FailureSignal.to_healing_input() must produce a valid HealingInput."""
-        from agentic_core.L2_execution.healers.healing_tier_types import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_types import (
             FailureSignal,
             HealingInput,
         )
@@ -529,7 +536,7 @@ class TestDispatchHealingChokePoint:
     def _make_healing_input(
         self, *, agent_id: str = "remediation_dispatcher", retry_count: int = 0
     ) -> HealingInput:
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
 
         return HealingInput(
             failure_type="syntax_error",
@@ -616,7 +623,7 @@ class TestDispatchHealingChokePoint:
         decision_high, _ = dispatch_healing(hi_high, config)
 
         # Just assert they are valid decisions (tier may differ or not — both valid)
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingDecision
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_types import HealingDecision
 
         assert isinstance(decision_low, HealingDecision)
         assert isinstance(decision_high, HealingDecision)
@@ -692,7 +699,7 @@ class TestSovereigntyAllowlistEnforcement:
             agent_id="",  # empty → skip allowlist check
         )
         # Must not raise SovereigntyViolation
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingDecision
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_types import HealingDecision
 
         decision = route_healing_tier(hi, config)
         assert isinstance(decision, HealingDecision)

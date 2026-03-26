@@ -22,7 +22,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -69,7 +69,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_accelerator_hardening", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_accelerator_hardening", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_accelerator_hardening", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -203,6 +203,8 @@ class TestMypyBanGate:
         return Path(f.name)
 
     def test_direct_mypy_binary_call_is_flagged(self) -> None:
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         from ops_scripts.ci.adg_mypy_ban_gate import scan_file
 
         tmp = self._make('subprocess.run(["mypy", "agentic_core/"], check=True)\n')

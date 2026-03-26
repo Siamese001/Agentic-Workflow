@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -96,7 +96,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.governance
 
-from agentic_core.L2_execution.types.vllm_token_budget_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_token_budget_types import (
     EXTENDED_CAP_WHITELIST,
     TASK_CLASS_OUTPUT_CAPS,
     VLLM_MAX_TOKENS_ABSOLUTE,
@@ -108,7 +108,7 @@ from agentic_core.L2_execution.types.vllm_token_budget_types import (
     estimate_tokens_qwen,
     get_output_cap,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -204,6 +204,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 
 def test_constants_are_hardcoded() -> None:
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.types.vllm_token_budget_types import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test constants_are_hardcoded runtime behavior."""
 # Arrange
 # TODO: Set up test data for constants_are_hardcoded

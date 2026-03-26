@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_authorize_and_execute,
     _emit_blocks_direct_write,
@@ -60,7 +60,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_generation_routing_enforcement")
 # REMOVED: _emit_reads_policy_state("p0", "test_generation_routing_enforcement", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_generation_routing_enforcement", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -203,8 +203,15 @@ def compute_w4_determinism_digest() -> str:
 
 
 def test_sovereign_llm_gateway_exists():
-    """Test that SovereignLLMGateway exists and is the generation choke point."""
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
+    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
+    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
+    from agentic_core.L0_routing.config.path_constants import (
+    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
+    """Test that SovereignLLMGateway exists and is the generation choke point."""
+#  # MOVED: from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
 
     # Verify gateway exists
     assert SovereignLLMGateway is not None
@@ -235,7 +242,7 @@ def test_gateway_uses_client_wrappers():
 
 def test_gateway_deterministic_defaults():
     """Test that gateway has deterministic defaults."""
-    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
+#  # MOVED: from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
 
     gateway = SovereignLLMGateway()
 
@@ -307,8 +314,8 @@ def test_ast_scanner_allows_clean_code():
     test_content = """
 # This file contains no violations
 from data.sdks_mcps.client_wrappers import create_openai_client
-from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     SYSTEM_LEARNING_DIR,
     APPS_SHARED_DIR,
@@ -518,7 +525,7 @@ def test_full_repo_scan():
 def test_gateway_choke_point_enforced():
     """Test that all generation flows through gateway."""
     # This is a structural test - we verify the gateway has the right interface
-    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
+#  # MOVED: from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
 
     gateway = SovereignLLMGateway()
 

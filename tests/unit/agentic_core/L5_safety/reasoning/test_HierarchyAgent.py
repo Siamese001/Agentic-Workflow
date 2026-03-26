@@ -5,9 +5,9 @@ in commit 2f0dc584d — refactor(phase5): rename HierarchyAgent.py -> hierarchy_
 """
 from __future__ import annotations
 
-from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-from agentic_core.L5_safety.reasoning.hierarchy_validator import HierarchyValidatorAgent
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_validator import HierarchyValidatorAgent
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -154,6 +154,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestHierarchyAgentSmoke:
     def test_instantiates_with_project_root(self, tmp_path):
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_validator import HierarchyValidatorAgent
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         agent = HierarchyAgent(project_root=tmp_path, healing_enabled=False)
         assert agent is not None
 

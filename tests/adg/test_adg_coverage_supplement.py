@@ -54,13 +54,13 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
     Edge,
     ScanResult,
     _emit_layer_violation_edges,
 )
-from agentic_core.adg.schema_util import canonical_name
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -107,7 +107,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_coverage_supplement", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_coverage_supplement", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_coverage_supplement", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -260,8 +260,47 @@ def _import_edge(from_path: str, sym: str) -> Edge:
 
 class TestExtractNameNonNameRoot:
     def test_inheritance_attribute_non_name_base(self):
-        """class Foo(get_base().Sub): base is Call, not Name → _extract_name returns ''."""
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         from agentic_core.adg.extraction.static_scanner import _InheritanceVisitor
+        from agentic_core.adg.extraction.static_scanner import _AttributeVisitor
+        from agentic_core.adg.extraction.static_scanner import _AttributeVisitor
+        from agentic_core.adg.extraction.static_scanner import _DynamicExecutionVisitor
+        from agentic_core.adg.extraction.static_scanner import _CallVisitor
+        from agentic_core.adg.extraction.static_scanner import _InternalCallGraphVisitor
+        from agentic_core.adg.extraction.static_scanner import _GovernancePlaneVisitor
+        from agentic_core.adg.extraction.static_scanner import _PromptSlotVisitor
+        from agentic_core.adg.extraction.static_scanner import _ExecutionTraceVisitor
+        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+        from agentic_core.adg.extraction.static_scanner import _InternalCallGraphVisitor
+        from agentic_core.adg.extraction.static_scanner import _GovernancePlaneVisitor
+        from agentic_core.adg.extraction.static_scanner import _GOVERNANCE_WRITE_SYMBOLS
+        from agentic_core.adg.extraction.static_scanner import _GOVERNANCE_ROUTE_SYMBOLS
+        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+        from agentic_core.adg.extraction.static_scanner import _PromptSlotVisitor
+        from agentic_core.adg.extraction.static_scanner import _ExecutionTraceVisitor
+        from agentic_core.adg.extraction.static_scanner import _DecoratorVisitor
+        from agentic_core.adg.extraction.static_scanner import _GOVERNANCE_WRITE_SYMBOLS
+        from agentic_core.adg.extraction.static_scanner import _GOVERNANCE_ROUTE_SYMBOLS
+        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+        from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES
+        from agentic_core.adg.extraction.static_scanner import _CARDINALITY_RANGES, _check_cardinality
+        from agentic_core.adg.extraction.static_scanner import _CARDINALITY_RANGES, _check_cardinality
+        from agentic_core.adg.extraction.static_scanner import _SCAN_ROOTS
+        from agentic_core.adg.extraction.static_scanner import _SCAN_ROOTS, ADGStaticScanner
+        from agentic_core.adg.extraction.static_scanner import _SCAN_ROOTS, ADGStaticScanner
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.extraction.static_scanner import _SCAN_ROOTS
+        from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
+        from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
+        from agentic_core.adg.identity.normalizer import (
+        """class Foo(get_base().Sub): base is Call, not Name → _extract_name returns ''."""
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _InheritanceVisitor
 
         src = "class Foo(get_base().Sub): pass\n"
         tree = _parse(src)
@@ -277,7 +316,7 @@ class TestExtractNameNonNameRoot:
 
     def test_attribute_visitor_call_sym_non_name_root(self):
         """(obj)().method() → Attribute root is a Call → _extract_call_sym returns '' → no edge."""
-        from agentic_core.adg.extraction.static_scanner import _AttributeVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _AttributeVisitor
 
         # Use a call whose func is an Attribute with a Call as the value:
         # (get_factory()).unrelated_method() — 'unrelated_method' doesn't match any config sym
@@ -290,7 +329,7 @@ class TestExtractNameNonNameRoot:
 
     def test_attribute_visitor_attr_chain_non_name_root(self):
         """Subscript[0].unrelated() → _extract_attr_chain: root is Subscript not Name → ''."""
-        from agentic_core.adg.extraction.static_scanner import _AttributeVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _AttributeVisitor
 
         # lst[0].unrelated_method() — root of Attribute is a Subscript
         # _extract_attr_chain traverses Attribute chain: root is Subscript → returns ''
@@ -303,7 +342,7 @@ class TestExtractNameNonNameRoot:
 
     def test_dynamic_visitor_extract_symbol_non_name_root(self):
         """get_lib().import_module('x') → _DynamicExecutionVisitor._extract_symbol non-Name root."""
-        from agentic_core.adg.extraction.static_scanner import _DynamicExecutionVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _DynamicExecutionVisitor
 
         src = "get_lib().import_module('x')\n"
         tree = _parse(src)
@@ -314,7 +353,7 @@ class TestExtractNameNonNameRoot:
 
     def test_call_visitor_extract_symbol_non_name_root(self):
         """lst[0].unrelated_xyz() → _CallVisitor._extract_symbol: Subscript root → '' → no edge."""
-        from agentic_core.adg.extraction.static_scanner import _CallVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _CallVisitor
 
         # Subscript root: lst[0].unrelated_xyz() — 'unrelated_xyz' not in any symbol set
         src = "lst[0].unrelated_xyz_abc_123()\n"
@@ -325,7 +364,7 @@ class TestExtractNameNonNameRoot:
 
     def test_internal_call_visitor_extract_symbol_non_name_root(self):
         """get_obj().call() → _InternalCallGraphVisitor._extract_symbol non-Name root."""
-        from agentic_core.adg.extraction.static_scanner import _InternalCallGraphVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _InternalCallGraphVisitor
 
         src = "from agentic_core.foo import bar\nget_obj().call()\n"
         tree = _parse(src)
@@ -337,7 +376,7 @@ class TestExtractNameNonNameRoot:
 
     def test_governance_visitor_extract_symbol_non_name_root(self):
         """get_gw().write_route() → _GovernancePlaneVisitor._extract_symbol non-Name root."""
-        from agentic_core.adg.extraction.static_scanner import _GovernancePlaneVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _GovernancePlaneVisitor
 
         src = "get_gw().write_route()\n"
         tree = _parse(src)
@@ -348,7 +387,7 @@ class TestExtractNameNonNameRoot:
 
     def test_prompt_slot_sym_non_name_root(self):
         """get_builder().assemble(system='x') → _PromptSlotVisitor._sym non-Name root."""
-        from agentic_core.adg.extraction.static_scanner import _PromptSlotVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _PromptSlotVisitor
 
         src = "get_builder().assemble(system='x')\n"
         tree = _parse(src)
@@ -361,7 +400,7 @@ class TestExtractNameNonNameRoot:
     def test_execution_trace_sym_non_name_root(self):
         """lst[0].zzz_not_a_trace_sym_xyz() → _ExecutionTraceVisitor._sym: Subscript root →
         tail 'zzz_not_a_trace_sym_xyz' not in _TRACE_CALL_NAMES → no trace edge."""
-        from agentic_core.adg.extraction.static_scanner import _ExecutionTraceVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _ExecutionTraceVisitor
 
         # Use a method name that is NOT in _TRACE_CALL_NAMES so even the tail check fails.
         # The Subscript root exercises the 'if isinstance(cur, ast.Name):' False branch.
@@ -381,7 +420,7 @@ class TestExtractNameNonNameRoot:
 
 class TestImportVisitorIfOrelse:
     def _visit(self, src: str):
-        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _ImportVisitor
 
         tree = _parse(src)
         v = _ImportVisitor(_mod("pkg/m.py"), "pkg/m.py")
@@ -409,7 +448,7 @@ class TestImportVisitorIfOrelse:
 
 class TestImportVisitorTryFinalbody:
     def _visit(self, src: str):
-        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _ImportVisitor
 
         tree = _parse(src)
         v = _ImportVisitor(_mod("pkg/m.py"), "pkg/m.py")
@@ -441,7 +480,7 @@ class TestImportVisitorTryFinalbody:
 class TestClassifyIfContextBranches:
     def _classify(self, test_src: str) -> str:
         """Parse `if <test_src>: pass` and extract the context the visitor would assign."""
-        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _ImportVisitor
 
         src = f"if {test_src}:\n    import pkg_x\n"
         tree = _parse(src)
@@ -485,7 +524,7 @@ class TestClassifyIfContextBranches:
 class TestExtractExceptionNameUnknown:
     def test_non_name_attribute_tuple_exception_type(self):
         """except <Constant>: -> falls through all isinstance checks -> returns ''."""
-        from agentic_core.adg.extraction.static_scanner import _ImportVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _ImportVisitor
 
         # Manually inject a fake handler with a Constant exception type
         src = "try:\n    pass\nexcept Exception:\n    import safe_pkg\n"
@@ -512,7 +551,7 @@ class TestExtractExceptionNameUnknown:
 
 class TestInternalCallGraphLocals:
     def _visit(self, src: str):
-        from agentic_core.adg.extraction.static_scanner import _InternalCallGraphVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _InternalCallGraphVisitor
 
         tree = _parse(src)
         v = _InternalCallGraphVisitor(_mod("pkg/m.py"), "pkg/m.py")
@@ -543,7 +582,7 @@ class TestInternalCallGraphLocals:
 
 class TestGovernancePlaneVisitCall:
     def _visit(self, src: str):
-        from agentic_core.adg.extraction.static_scanner import _GovernancePlaneVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _GovernancePlaneVisitor
 
         tree = _parse(src)
         v = _GovernancePlaneVisitor(_mod("pkg/m.py"), "pkg/m.py")
@@ -552,7 +591,7 @@ class TestGovernancePlaneVisitCall:
 
     def test_base_governance_write_plain_name(self):
         """Direct call using governance write symbol as the function name."""
-        from agentic_core.adg.extraction.static_scanner import _GOVERNANCE_WRITE_SYMBOLS
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _GOVERNANCE_WRITE_SYMBOLS
 
         sym = next(iter(_GOVERNANCE_WRITE_SYMBOLS))
         edges = self._visit(f"{sym}(x)\n")
@@ -560,7 +599,7 @@ class TestGovernancePlaneVisitCall:
         assert writes
 
     def test_base_governance_route_plain_name(self):
-        from agentic_core.adg.extraction.static_scanner import _GOVERNANCE_ROUTE_SYMBOLS
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _GOVERNANCE_ROUTE_SYMBOLS
 
         sym = next(iter(_GOVERNANCE_ROUTE_SYMBOLS))
         edges = self._visit(f"{sym}(x)\n")
@@ -582,7 +621,7 @@ class TestGovernancePlaneVisitCall:
 
 class TestAntipatternVisitorMoreBranches:
     def _visit(self, src: str):
-        from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _AntipatternVisitor
 
         tree = _parse(src)
         v = _AntipatternVisitor(_mod("pkg/m.py"), "pkg/m.py")
@@ -629,7 +668,7 @@ class TestAntipatternVisitorMoreBranches:
 
 class TestPromptSlotEdgeCases:
     def _visit(self, src: str):
-        from agentic_core.adg.extraction.static_scanner import _PromptSlotVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _PromptSlotVisitor
 
         tree = _parse(src)
         v = _PromptSlotVisitor(_mod("pkg/m.py"), "pkg/m.py")
@@ -669,7 +708,7 @@ class TestPromptSlotEdgeCases:
 
 class TestExecutionTraceExtractId:
     def _visit(self, src: str):
-        from agentic_core.adg.extraction.static_scanner import _ExecutionTraceVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _ExecutionTraceVisitor
 
         tree = _parse(src)
         v = _ExecutionTraceVisitor(_mod("pkg/m.py"), "pkg/m.py")
@@ -708,7 +747,7 @@ class TestExecutionTraceExtractId:
 
 class TestDecoratorVisitorGovernanceSkip:
     def _visit(self, src: str):
-        from agentic_core.adg.extraction.static_scanner import _DecoratorVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _DecoratorVisitor
 
         tree = _parse(src)
         v = _DecoratorVisitor(_mod("pkg/m.py"), "pkg/m.py")
@@ -717,7 +756,7 @@ class TestDecoratorVisitorGovernanceSkip:
 
     def test_governance_write_decorator_not_emitted_as_applies(self):
         """@<governance_write_sym> -> skipped by _DecoratorVisitor (handled by GovernancePlane)."""
-        from agentic_core.adg.extraction.static_scanner import _GOVERNANCE_WRITE_SYMBOLS
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _GOVERNANCE_WRITE_SYMBOLS
 
         sym = next(iter(_GOVERNANCE_WRITE_SYMBOLS))
         src = f"@{sym}\ndef foo(): pass\n"
@@ -727,7 +766,7 @@ class TestDecoratorVisitorGovernanceSkip:
 
     def test_governance_route_decorator_not_emitted_as_applies(self):
         """@<governance_route_sym> -> skipped by _DecoratorVisitor."""
-        from agentic_core.adg.extraction.static_scanner import _GOVERNANCE_ROUTE_SYMBOLS
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _GOVERNANCE_ROUTE_SYMBOLS
 
         sym = next(iter(_GOVERNANCE_ROUTE_SYMBOLS))
         src = f"@{sym}\ndef foo(): pass\n"
@@ -755,7 +794,7 @@ class TestDecoratorVisitorGovernanceSkip:
 
 class TestSymbolInventoryEdgeCases2:
     def _visit(self, src: str):
-        from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SymbolInventoryVisitor
 
         tree = _parse(src)
         v = _SymbolInventoryVisitor(_mod("pkg/mod.py"), "pkg/mod.py")
@@ -810,7 +849,7 @@ class TestSymbolInventoryEdgeCases2:
 class TestEmitLayerViolationAllowed:
     def test_allowed_edge_not_emitted(self):
         """Import between layers in ALLOWED_LAYER_EDGES -> no violation edge emitted."""
-        from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES
+#  # MOVED: from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES
 
         if not ALLOWED_LAYER_EDGES:
 
@@ -872,7 +911,7 @@ class TestCheckCardinalityHighViolation:
 
     def test_high_violation_upper_bound_exceeded(self):
         """Edge count > upper bound -> 'CARDINALITY HIGH' violation string returned."""
-        from agentic_core.adg.extraction.static_scanner import _CARDINALITY_RANGES, _check_cardinality
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _CARDINALITY_RANGES, _check_cardinality
 
         if "implements" not in _CARDINALITY_RANGES:
 
@@ -883,7 +922,7 @@ class TestCheckCardinalityHighViolation:
         assert high_viols
 
     def test_low_violation_below_lower_bound(self):
-        from agentic_core.adg.extraction.static_scanner import _CARDINALITY_RANGES, _check_cardinality
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _CARDINALITY_RANGES, _check_cardinality
 
         if "implements" not in _CARDINALITY_RANGES:
 
@@ -906,7 +945,7 @@ class TestCheckCardinalityHighViolation:
 class TestScanViolationAndCycleBranches:
     def _make_violating_repo(self, td: str) -> Path:
         """Create a minimal repo with a cross-layer import (violation) and a cycle."""
-        from agentic_core.adg.extraction.static_scanner import _SCAN_ROOTS
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SCAN_ROOTS
 
         repo = Path(td)
 
@@ -928,7 +967,7 @@ class TestScanViolationAndCycleBranches:
 
     def test_scan_with_layer_violation_updates_digest(self):
         """If violation_edges found, scan() re-runs result.compute_digest()."""
-        from agentic_core.adg.extraction.static_scanner import _SCAN_ROOTS, ADGStaticScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SCAN_ROOTS, ADGStaticScanner
 
         with tempfile.TemporaryDirectory() as td:
             repo = Path(td)
@@ -946,7 +985,7 @@ class TestScanViolationAndCycleBranches:
 
     def test_scan_with_cyclic_imports_updates_digest(self):
         """Two modules importing each other creates in_cycle edges -> digest recomputed."""
-        from agentic_core.adg.extraction.static_scanner import _SCAN_ROOTS, ADGStaticScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SCAN_ROOTS, ADGStaticScanner
 
         with tempfile.TemporaryDirectory() as td:
             repo = Path(td)
@@ -969,12 +1008,12 @@ class TestScanViolationAndCycleBranches:
 
     def test_scan_manifest_max_cycle_depth_set(self):
         """When cycles exist, manifest.max_cycle_depth should be >= 1."""
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         # Directly inject a result with in_cycle edges and call scan via scan_files
         with tempfile.TemporaryDirectory() as td:
             repo = Path(td)
-            from agentic_core.adg.extraction.static_scanner import _SCAN_ROOTS
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SCAN_ROOTS
 
             root = repo / _SCAN_ROOTS[0]
             root.mkdir(parents=True, exist_ok=True)
@@ -1004,7 +1043,7 @@ class TestBuilderLine347Precise:
         """Two edges with identical to_name: the second iteration hits line 347 'continue'.
         After the first edge adds the symbol, existing_adg contains it; the second
         duplicate adg_target is skipped via the 'if adg_target in existing_adg: continue'."""
-        from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
+#  # MOVED: from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
 
         shared_sym = canonical_name("Symbol", "pytest")
         mod_a = canonical_name("Module", "agentic_core/L0_routing/a.py")
@@ -1050,8 +1089,8 @@ class TestBuilderUnresolvedImportLine457:
         """Force UNRESOLVED_IMPORT by patching normalizer.normalize for an internal name.
         'agentic_core.unresolved_xyz_abc.Missing' is internal but file doesn't exist
         -> normalizer returns UNRESOLVED_IMPORT -> appended to artifact.unresolved_imports."""
-        from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
-        from agentic_core.adg.identity.normalizer import (
+#  # MOVED: from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
+#  # MOVED: from agentic_core.adg.identity.normalizer import (
             IdentityConfidence,
             IdentityKind,
             IdentityRecord,

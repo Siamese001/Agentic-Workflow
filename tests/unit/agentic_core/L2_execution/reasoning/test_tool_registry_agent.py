@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L2_EXECUTION_DIR,
 )
 
@@ -13,6 +13,7 @@ class TestToolRegistryAgent:
     """Tests for tool registry functionality."""
 
     def test_tool_registry_exists(self):
+        from agentic_core.L0_routing.config.path_constants import (
     """Test tool_registry_exists runtime behavior."""
     # Arrange
     # TODO: Set up test data for tool_registry_exists

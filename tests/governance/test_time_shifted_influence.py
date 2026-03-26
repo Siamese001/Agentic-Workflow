@@ -13,11 +13,11 @@ import copy
 
 import pytest
 
-from agentic_core.L0_routing.types.routing_config_seal_types import (
+#  # MOVED: from agentic_core.L0_routing.types.routing_config_seal_types import (
     RoutingConfigSealViolation,
     SealedRoutingContext,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -185,6 +185,8 @@ class TestNoMidRunMutation:
     """Routing must not change during a single run."""
 
     def test_routing_unchanged_in_same_run(self):
+        from agentic_core.L0_routing.types.routing_config_seal_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test routing_unchanged_in_same_run runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

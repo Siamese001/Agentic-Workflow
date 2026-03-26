@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -51,7 +51,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_fail_closed", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_fail_closed", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_fail_closed", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -179,8 +179,12 @@ HARDENING_ORDER = "land AST/CI ratchet for fail-closed patterns BEFORE applying 
 
 @pytest.mark.governance
 def test_req016_all_subsystems_fail_closed():
-    """Boundary: 10 subsystems must raise on failure, never silently return."""
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+    from agentic_core.L4_state.enforcement.replay_bundle_store import ReplayBundleStore
+    """Boundary: 10 subsystems must raise on failure, never silently return."""
+#  # MOVED: from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
 
     uwg = UniversalWriteGateway()
     with pytest.raises(Exception):  # noqa: B017
@@ -190,7 +194,7 @@ def test_req016_all_subsystems_fail_closed():
 @pytest.mark.governance
 def test_req020_sealed_artifact_immutable():
     """Sealed artifacts must raise on post-seal mutation attempt."""
-    from agentic_core.L4_state.enforcement.replay_bundle_store import ReplayBundleStore
+#  # MOVED: from agentic_core.L4_state.enforcement.replay_bundle_store import ReplayBundleStore
 
     store = ReplayBundleStore()
     bundle_id = store.seal({"trace_id": "CC3AL1-00000001", "payload": "data"})

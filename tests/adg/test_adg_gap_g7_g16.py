@@ -23,7 +23,7 @@ import pytest
 # ---------------------------------------------------------------------------
 # G10: Boundary verifier
 # ---------------------------------------------------------------------------
-from agentic_core.adg.runtime.boundary_verifier import (
+#  # MOVED: from agentic_core.adg.runtime.boundary_verifier import (
     BoundaryPacket,
     CapabilityChokepoint,
     L2BoundaryVerifier,
@@ -33,7 +33,7 @@ from agentic_core.adg.runtime.boundary_verifier import (
 # ---------------------------------------------------------------------------
 # G8: Capability budget
 # ---------------------------------------------------------------------------
-from agentic_core.adg.runtime.capability_budget import (
+#  # MOVED: from agentic_core.adg.runtime.capability_budget import (
     BudgetExceededError,
     BudgetStatus,
     ResourceGovernor,
@@ -44,7 +44,7 @@ from agentic_core.adg.runtime.capability_budget import (
 # ---------------------------------------------------------------------------
 # G11: Determinism control
 # ---------------------------------------------------------------------------
-from agentic_core.adg.runtime.determinism_control import (
+#  # MOVED: from agentic_core.adg.runtime.determinism_control import (
     DeterminismController,
     DeterminismViolationType,
     ReplayGuard,
@@ -54,7 +54,7 @@ from agentic_core.adg.runtime.determinism_control import (
 # ---------------------------------------------------------------------------
 # G16: Evaluation spine
 # ---------------------------------------------------------------------------
-from agentic_core.adg.runtime.eval_spine import (
+#  # MOVED: from agentic_core.adg.runtime.eval_spine import (
     DPOBatch,
     DriftAlert,
     EvalSpine,
@@ -64,7 +64,7 @@ from agentic_core.adg.runtime.eval_spine import (
 # ---------------------------------------------------------------------------
 # G14: Execution proof
 # ---------------------------------------------------------------------------
-from agentic_core.adg.runtime.execution_proof import (
+#  # MOVED: from agentic_core.adg.runtime.execution_proof import (
     ExecutionProofRecorder,
     ExecutionTrace,
     ProofComparisonOutcome,
@@ -74,7 +74,7 @@ from agentic_core.adg.runtime.execution_proof import (
 # ---------------------------------------------------------------------------
 # G12: IO interception
 # ---------------------------------------------------------------------------
-from agentic_core.adg.runtime.io_interception import (
+#  # MOVED: from agentic_core.adg.runtime.io_interception import (
     InterceptionOutcome,
     IOInterceptor,
     NetworkTranscript,
@@ -83,7 +83,7 @@ from agentic_core.adg.runtime.io_interception import (
 # ---------------------------------------------------------------------------
 # G9: JIT context
 # ---------------------------------------------------------------------------
-from agentic_core.adg.runtime.jit_context import (
+#  # MOVED: from agentic_core.adg.runtime.jit_context import (
     ContextSnapshot,
     FreezeState,
     JITContextSynchronizer,
@@ -92,7 +92,7 @@ from agentic_core.adg.runtime.jit_context import (
 # ---------------------------------------------------------------------------
 # G13: Mutation transport
 # ---------------------------------------------------------------------------
-from agentic_core.adg.runtime.mutation_transport import (
+#  # MOVED: from agentic_core.adg.runtime.mutation_transport import (
     CommitPhase,
     MutationTransport,
 )
@@ -100,7 +100,7 @@ from agentic_core.adg.runtime.mutation_transport import (
 # ---------------------------------------------------------------------------
 # G15: Path control
 # ---------------------------------------------------------------------------
-from agentic_core.adg.runtime.path_control import (
+#  # MOVED: from agentic_core.adg.runtime.path_control import (
     ExecutionPath,
     ExecutionPathController,
 )
@@ -108,14 +108,14 @@ from agentic_core.adg.runtime.path_control import (
 # ---------------------------------------------------------------------------
 # G7: Sandbox airlock
 # ---------------------------------------------------------------------------
-from agentic_core.adg.runtime.sandbox_airlock import (
+#  # MOVED: from agentic_core.adg.runtime.sandbox_airlock import (
     AirlockPhase,
     CapabilityToken,
     SandboxAirlockRecorder,
     SandboxEnvelope,
     WorkContract,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -177,7 +177,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_adg_gap_g7_g16", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_adg_gap_g7_g16", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_adg_gap_g7_g16", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -274,6 +274,30 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestWorkContract:
     def test_stamp_sets_fields(self) -> None:
+        from agentic_core.adg.runtime.boundary_verifier import (
+        from agentic_core.adg.runtime.capability_budget import (
+        from agentic_core.adg.runtime.determinism_control import (
+        from agentic_core.adg.runtime.eval_spine import (
+        from agentic_core.adg.runtime.execution_proof import (
+        from agentic_core.adg.runtime.io_interception import (
+        from agentic_core.adg.runtime.jit_context import (
+        from agentic_core.adg.runtime.mutation_transport import (
+        from agentic_core.adg.runtime.path_control import (
+        from agentic_core.adg.runtime.sandbox_airlock import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.adg.schema_util import SANDBOX_ENVELOPE_CLASSES
+        from agentic_core.adg.schema_util import CAPABILITY_TOKEN_CLASSES
+        from agentic_core.adg.schema_util import TOOL_BUDGET_CLASSES
+        from agentic_core.adg.schema_util import JIT_CONTEXT_CLASSES
+        from agentic_core.adg.schema_util import BOUNDARY_VERIFIER_CLASSES
+        from agentic_core.adg.schema_util import SEMANTIC_CLOCK_CLASSES
+        from agentic_core.adg.schema_util import IO_INTERCEPT_CLASSES
+        from agentic_core.adg.schema_util import MUTATION_TRANSPORT_CLASSES
+        from agentic_core.adg.schema_util import DPO_BATCH_CLASSES
+        from agentic_core.adg.schema_util import RelationType
+        from agentic_core.adg.schema_util import EdgeKind
         wc = WorkContract()
         wc.stamp("agent-1", "run-1", payload="hello", ttl_seconds=60.0)
         assert wc.agent_id == "agent-1"
@@ -893,7 +917,7 @@ class TestEvalSpine:
 
 def _scan_source(source: str) -> list:
     """Run all gap-plane visitors against a code snippet and collect edges."""
-    from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
         _BoundaryVerifierVisitor,
         _CapabilityBudgetVisitor,
         _DeterminismControlVisitor,
@@ -1110,42 +1134,42 @@ class TestG16EvalSpineVisitor:
 
 class TestSchemaG7G16Constants:
     def test_sandbox_envelope_classes(self) -> None:
-        from agentic_core.adg.schema_util import SANDBOX_ENVELOPE_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import SANDBOX_ENVELOPE_CLASSES
 
         assert "SandboxEnvelope" in SANDBOX_ENVELOPE_CLASSES
 
     def test_capability_token_classes(self) -> None:
-        from agentic_core.adg.schema_util import CAPABILITY_TOKEN_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import CAPABILITY_TOKEN_CLASSES
 
         assert "CapabilityToken" in CAPABILITY_TOKEN_CLASSES
 
     def test_tool_budget_classes(self) -> None:
-        from agentic_core.adg.schema_util import TOOL_BUDGET_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import TOOL_BUDGET_CLASSES
 
         assert "ToolBudget" in TOOL_BUDGET_CLASSES
 
     def test_jit_context_classes(self) -> None:
-        from agentic_core.adg.schema_util import JIT_CONTEXT_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import JIT_CONTEXT_CLASSES
 
         assert "JITContext" in JIT_CONTEXT_CLASSES
 
     def test_boundary_verifier_classes(self) -> None:
-        from agentic_core.adg.schema_util import BOUNDARY_VERIFIER_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import BOUNDARY_VERIFIER_CLASSES
 
         assert "L2BoundaryVerifier" in BOUNDARY_VERIFIER_CLASSES
 
     def test_semantic_clock_classes(self) -> None:
-        from agentic_core.adg.schema_util import SEMANTIC_CLOCK_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import SEMANTIC_CLOCK_CLASSES
 
         assert "SemanticClock" in SEMANTIC_CLOCK_CLASSES
 
     def test_io_intercept_classes(self) -> None:
-        from agentic_core.adg.schema_util import IO_INTERCEPT_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import IO_INTERCEPT_CLASSES
 
         assert "IOInterceptor" in IO_INTERCEPT_CLASSES
 
     def test_mutation_transport_classes(self) -> None:
-        from agentic_core.adg.schema_util import MUTATION_TRANSPORT_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import MUTATION_TRANSPORT_CLASSES
 
         assert "MutationTransport" in MUTATION_TRANSPORT_CLASSES
 
@@ -1165,14 +1189,14 @@ class TestSchemaG7G16Constants:
     # TODO: Add specific runtime behavior assertions
 
     def test_dpo_batch_classes(self) -> None:
-        from agentic_core.adg.schema_util import DPO_BATCH_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import DPO_BATCH_CLASSES
 
         assert "DPOBatchBuilder" in DPO_BATCH_CLASSES
 
     def test_all_new_relation_types_valid(self) -> None:
         import typing
 
-        from agentic_core.adg.schema_util import RelationType
+#  # MOVED: from agentic_core.adg.schema_util import RelationType
 
         args = typing.get_args(RelationType)
         for rel in [
@@ -1212,7 +1236,7 @@ class TestSchemaG7G16Constants:
     def test_all_new_edge_kinds_valid(self) -> None:
         import typing
 
-        from agentic_core.adg.schema_util import EdgeKind
+#  # MOVED: from agentic_core.adg.schema_util import EdgeKind
 
         args = typing.get_args(EdgeKind)
         for ek in [

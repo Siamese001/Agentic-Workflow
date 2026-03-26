@@ -16,7 +16,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -63,7 +63,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_node_types", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_node_types", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_node_types", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -188,7 +188,7 @@ if str(ROOT) not in sys.path:
 
 def _make_scan_result_with_edges(edges):
     """Build a minimal ScanResult-like object for builder tests."""
-    from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
     result = ScanResult(commit_sha="test_sha")
     result.edges = edges
@@ -199,7 +199,7 @@ def _make_scan_result_with_edges(edges):
 
 
 def _make_edge(from_name, relation_type, to_name, edge_kind="import", source_file="test.py", symbol=""):
-    from agentic_core.adg.extraction.static_scanner import Edge
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge
 
     return Edge(
         from_name=from_name,
@@ -213,7 +213,7 @@ def _make_edge(from_name, relation_type, to_name, edge_kind="import", source_fil
 
 
 def _build_artifact(edges, modules=None):
-    from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
+#  # MOVED: from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
 
     result = _make_scan_result_with_edges(edges)
     if modules:
@@ -229,6 +229,19 @@ def _build_artifact(edges, modules=None):
 
 class TestG7LayerEntityType:
     def test_layer_node_gets_layer_entity_type(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.extraction.static_scanner import Edge
+        from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
+        from agentic_core.adg.schema_util import GATEWAY_ALLOWLIST
+        from agentic_core.adg.schema_util import SEAM_MODULE_PATTERNS
+        from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
+        from agentic_core.adg.schema_util import LAYER_PREFIXES
+        from agentic_core.adg.schema_util import LAYER_PREFIXES
+        from agentic_core.adg.schema_util import LAYER_PREFIXES
+        from agentic_core.adg.schema_util import LAYER_PREFIXES
+        from agentic_core.adg.schema_util import module_path_to_layer
         edges = [
             _make_edge(
                 "ADG::Module::agentic_core/L2_execution/UniversalWriteGateway.py",
@@ -281,7 +294,7 @@ class TestG8GatewayNodes:
         assert gw_entities[0].entity_type == "gateway"
 
     def test_gateway_node_has_resolved_path(self):
-        from agentic_core.adg.schema_util import GATEWAY_ALLOWLIST
+#  # MOVED: from agentic_core.adg.schema_util import GATEWAY_ALLOWLIST
 
         edges = [
             _make_edge(
@@ -305,7 +318,7 @@ class TestG8GatewayNodes:
 
 class TestG9SeamEntityType:
     def test_seam_module_gets_seam_entity_type(self):
-        from agentic_core.adg.schema_util import SEAM_MODULE_PATTERNS
+#  # MOVED: from agentic_core.adg.schema_util import SEAM_MODULE_PATTERNS
 
         if not SEAM_MODULE_PATTERNS:
 
@@ -340,7 +353,7 @@ class TestG9SeamEntityType:
             assert non_seam.entity_type == "module"
 
     def test_is_seam_module_helper(self):
-        from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
+#  # MOVED: from agentic_core.adg.artifact.builder_types import ADGArtifactBuilder
 
         assert ADGArtifactBuilder._is_seam_module("agentic_core/L0_routing/seams/some_seam.py")
         assert ADGArtifactBuilder._is_seam_module("agentic_core/seams/my_seam.py")
@@ -464,34 +477,34 @@ class TestG2PromptEntityTypes:
 
 class TestG11LayerPrefixes:
     def test_compat_dir_mapped(self):
-        from agentic_core.adg.schema_util import LAYER_PREFIXES
+#  # MOVED: from agentic_core.adg.schema_util import LAYER_PREFIXES
 
         assert "agentic_core/_compat" in LAYER_PREFIXES, (
             "agentic_core/_compat must be in LAYER_PREFIXES (G11)"
         )
 
     def test_embeddings_dir_mapped(self):
-        from agentic_core.adg.schema_util import LAYER_PREFIXES
+#  # MOVED: from agentic_core.adg.schema_util import LAYER_PREFIXES
 
         assert "agentic_core/embeddings" in LAYER_PREFIXES, (
             "agentic_core/embeddings must be in LAYER_PREFIXES (G11)"
         )
 
     def test_enforcement_dir_mapped(self):
-        from agentic_core.adg.schema_util import LAYER_PREFIXES
+#  # MOVED: from agentic_core.adg.schema_util import LAYER_PREFIXES
 
         assert "agentic_core/enforcement" in LAYER_PREFIXES, (
             "agentic_core/enforcement must be in LAYER_PREFIXES (G11)"
         )
 
     def test_new_entries_map_to_l_shared(self):
-        from agentic_core.adg.schema_util import LAYER_PREFIXES
+#  # MOVED: from agentic_core.adg.schema_util import LAYER_PREFIXES
 
         for key in ("agentic_core/_compat", "agentic_core/embeddings", "agentic_core/enforcement"):
             assert LAYER_PREFIXES.get(key) == "L_SHARED", f"{key} should map to L_SHARED in LAYER_PREFIXES"
 
     def test_module_path_to_layer_resolves_new_entries(self):
-        from agentic_core.adg.schema_util import module_path_to_layer
+#  # MOVED: from agentic_core.adg.schema_util import module_path_to_layer
 
         assert module_path_to_layer("agentic_core/_compat/some_module.py") == "L_SHARED"
         assert module_path_to_layer("agentic_core/embeddings/vertex.py") == "L_SHARED"

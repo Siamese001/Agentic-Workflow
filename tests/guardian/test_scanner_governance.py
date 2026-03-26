@@ -7,8 +7,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from agentic_core.adg.extraction.static_scanner import ADGStaticScanner, ScanResult
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner, ScanResult
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -176,6 +176,8 @@ class TestScannerGovernance:
     """S10: The scanner can scan itself and produce meaningful output."""
 
     def test_scanner_scans_itself(self):
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner, ScanResult
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         result = _scan_scanner()
         assert result.modules, "Scanner produced no modules from its own file"
 

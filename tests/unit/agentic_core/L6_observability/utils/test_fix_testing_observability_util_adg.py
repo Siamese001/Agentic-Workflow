@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L6_observability.utils.fix_testing_observability_util  # noqa: F401
+#  # MOVED: import agentic_core.L6_observability.utils.fix_testing_observability_util  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L6_observability.utils.fix_testing_observability_util  # noqa: F401
     """Module fix_testing_observability_util must be importable."""
     assert agentic_core.L6_observability.utils.fix_testing_observability_util is not None

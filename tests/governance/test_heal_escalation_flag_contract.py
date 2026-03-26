@@ -17,12 +17,12 @@ from unittest.mock import patch
 
 import pytest
 
-import agentic_core.utils.decorators_util as decorators_module
-from agentic_core.L5_safety.types.heal_policy_types import (
+#  # MOVED: import agentic_core.utils.decorators_util as decorators_module
+#  # MOVED: from agentic_core.L5_safety.types.heal_policy_types import (
     HealEscalationDecision,
     ReasoningTier,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -85,13 +85,13 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_heal_escalation_flag_contract", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_heal_escalation_flag_contract", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_heal_escalation_flag_contract", "exec_snapshot_link")
-from agentic_core.utils.decorators_compat_util import standard_heal
+#  # MOVED: from agentic_core.utils.decorators_compat_util import standard_heal
 
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_heal_escalation_flag_contract")
 # REMOVED: _emit_applies_guardrail("p0", "test_heal_escalation_flag_contract", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_heal_escalation_flag_contract", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_heal_escalation_flag_contract", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -216,6 +216,12 @@ class TestFlagDefaultOff:
     """Enforce flag default-off behavior is preserved."""
 
     def test_no_escalation_log_without_env_var(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        import agentic_core.utils.decorators_util as decorators_module
+        from agentic_core.L5_safety.types.heal_policy_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.utils.decorators_compat_util import standard_heal
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        import agentic_core.utils.decorators_util
         """Without env var, no 'escalation_enabled=1' log appears."""
         monkeypatch.delenv("HEAL_POLICY_MODEL_ESCALATION", raising=False)
 
@@ -285,7 +291,7 @@ class TestObserverSeamSafety:
 
     def test_observer_default_is_none_at_import(self) -> None:
         """Observer seam must be None at import time."""
-        import agentic_core.utils.decorators_util
+#  # MOVED: import agentic_core.utils.decorators_util
 
         # Check the observer is None (or has been reset) - no reload needed
         # The default value defined at module scope must be None

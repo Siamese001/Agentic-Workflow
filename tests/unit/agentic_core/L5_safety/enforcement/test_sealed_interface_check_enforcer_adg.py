@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L5_safety.enforcement.sealed_interface_check_enforcer  # noqa: F401
+#  # MOVED: import agentic_core.L5_safety.enforcement.sealed_interface_check_enforcer  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L5_safety.enforcement.sealed_interface_check_enforcer  # noqa: F401
     """Module sealed_interface_check_enforcer must be importable."""
     assert agentic_core.L5_safety.enforcement.sealed_interface_check_enforcer is not None

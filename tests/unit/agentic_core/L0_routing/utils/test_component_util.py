@@ -11,7 +11,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L0_routing.utils.component_util import (  # noqa: F401
+#  # MOVED: from agentic_core.L0_routing.utils.component_util import (  # noqa: F401
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,
@@ -27,6 +27,8 @@ from agentic_core.L0_routing.utils.component_util import (  # noqa: F401
 
 class TestComponentFactoryContract:
     def test_is_class(self):
+        from agentic_core.L0_routing.utils.component_util import (  # noqa: F401
+        import agentic_core.L0_routing.utils.component_util as mod
         assert isinstance(ComponentFactory, type)
 
     def test_has_method_get_verification_gate(self):
@@ -115,7 +117,7 @@ def test_module_importable():
     """Module component_util must be importable or skip gracefully."""
     # Import verified at module level
     # Verify the module can be imported and has expected attributes
-    import agentic_core.L0_routing.utils.component_util as mod
+#  # MOVED: import agentic_core.L0_routing.utils.component_util as mod
 
     # Check that key classes are available
     assert hasattr(mod, "ComponentFactory"), "ComponentFactory class should be available"

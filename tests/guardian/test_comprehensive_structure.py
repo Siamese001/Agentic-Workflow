@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -104,16 +104,16 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import validation functions
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     ARCHIVES_DIR,
     TESTS_DIR,
 )
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     DISCOVERY_EXCLUDED_TERRITORIES,
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -223,6 +223,10 @@ class TestComprehensiveSSOTStructure:
 
     @pytest.mark.guardian
     def test_comprehensive_file_placement(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """
         Test that all Python files are in valid SSOT locations.
 

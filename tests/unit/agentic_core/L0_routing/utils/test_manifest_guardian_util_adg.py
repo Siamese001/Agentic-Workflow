@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L0_routing.utils.manifest_guardian_util  # noqa: F401
+#  # MOVED: import agentic_core.L0_routing.utils.manifest_guardian_util  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L0_routing.utils.manifest_guardian_util  # noqa: F401
     """Module manifest_guardian_util must be importable."""
     assert agentic_core.L0_routing.utils.manifest_guardian_util is not None

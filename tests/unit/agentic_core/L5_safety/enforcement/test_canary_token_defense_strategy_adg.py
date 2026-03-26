@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L5_safety.enforcement.canary_token_defense_strategy  # noqa: F401
+#  # MOVED: import agentic_core.L5_safety.enforcement.canary_token_defense_strategy  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L5_safety.enforcement.canary_token_defense_strategy  # noqa: F401
     """Module canary_token_defense_strategy must be importable."""
     assert agentic_core.L5_safety.enforcement.canary_token_defense_strategy is not None

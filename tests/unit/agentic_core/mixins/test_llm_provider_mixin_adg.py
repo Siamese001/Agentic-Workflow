@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.mixins.llm_provider_mixin  # noqa: F401
+#  # MOVED: import agentic_core.mixins.llm_provider_mixin  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.mixins.llm_provider_mixin  # noqa: F401
     """Module llm_provider_mixin must be importable."""
     assert agentic_core.mixins.llm_provider_mixin is not None

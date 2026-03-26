@@ -11,7 +11,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 try:
-    import agentic_core.L3_orchestration.engines.omni_context_engine as _mod  # noqa: F401  # ADG covers
+#  # MOVED: import agentic_core.L3_orchestration.engines.omni_context_engine as _mod  # noqa: F401  # ADG covers
 except (ValueError, TypeError, RuntimeError) as e:
     _mod = None
 
@@ -40,6 +40,7 @@ def _methods_of(cls_name: str) -> set:
 
 class TestOmniContextSource:
     def test_source_exists(self):
+        import agentic_core.L3_orchestration.engines.omni_context_engine as _mod  # noqa: F401  # ADG covers
         assert _SRC.exists()
 
     def test_parses_without_error(self):

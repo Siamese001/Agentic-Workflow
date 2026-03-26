@@ -17,7 +17,7 @@ import pytest
 # Module under test
 # ---------------------------------------------------------------------------
 import tools.adg.drift_lifecycle as lifecycle
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -103,7 +103,7 @@ from tools.adg.drift_lifecycle import (
 # REMOVED: _emit_applies_guardrail("p0", "test_drift_lifecycle", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_drift_lifecycle", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_drift_lifecycle", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -250,6 +250,8 @@ def _good_drift_state() -> dict:
 
 class TestReadDriftState:
     def test_raises_when_score_missing(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         r = _mock_redis()
         with pytest.raises(RuntimeError, match="adg:drift:score not found"):
             _read_drift_state(r)

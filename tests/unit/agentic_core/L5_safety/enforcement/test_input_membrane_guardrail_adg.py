@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L5_safety.enforcement.input_membrane_guardrail  # noqa: F401
+#  # MOVED: import agentic_core.L5_safety.enforcement.input_membrane_guardrail  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L5_safety.enforcement.input_membrane_guardrail  # noqa: F401
     """Module input_membrane_guardrail must be importable."""
     assert agentic_core.L5_safety.enforcement.input_membrane_guardrail is not None

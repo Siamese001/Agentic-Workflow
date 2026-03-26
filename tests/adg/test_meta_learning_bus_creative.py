@@ -33,7 +33,7 @@ import json
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -78,7 +78,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_meta_learning_bus_creative")
 # REMOVED: _emit_applies_guardrail("p0", "test_meta_learning_bus_creative", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_meta_learning_bus_creative", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -214,7 +214,7 @@ def _make_record(
     policies=(),
     node="ADG::Module::alpha",
 ):
-    from system_learning.types.trace_feature_types import TraceFeatureRecord
+#  # MOVED: from system_learning.types.trace_feature_types import TraceFeatureRecord
 
     bh = _sha256(trace_id)
     return TraceFeatureRecord(
@@ -244,7 +244,7 @@ def _make_proposal(
     evidence=None,
     cluster_id=None,
 ):
-    from system_learning.types.optimization_types import OptimizationProposal
+#  # MOVED: from system_learning.types.optimization_types import OptimizationProposal
 
     cid = cluster_id or _sha256("cluster")
     pid = _sha256(change_type + risk_class + affected_component + cid)
@@ -281,7 +281,7 @@ def _make_signal(
     mut=1.0,
     approval=None,
 ):
-    from system_learning.types.optimization_types import GovernanceRewardSignal
+#  # MOVED: from system_learning.types.optimization_types import GovernanceRewardSignal
 
     return GovernanceRewardSignal(
         signal_id=_sha256(trace_id + "sig"),
@@ -297,7 +297,7 @@ def _make_signal(
 
 
 def _make_bus(reward_threshold=0.0, commit_reward_threshold=0.0):
-    from system_learning.engines.meta_learning_bus import MetaLearningBus, MetaLearningBusConfig
+#  # MOVED: from system_learning.engines.meta_learning_bus import MetaLearningBus, MetaLearningBusConfig
 
     return MetaLearningBus(
         MetaLearningBusConfig(
@@ -335,7 +335,81 @@ class TestHashCollisionResistance:
     """Distinct inputs must always produce distinct stable_hash values."""
 
     def test_feature_bundle_hashes_differ_by_trace_id(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.types.trace_feature_types import TraceFeatureRecord
+        from system_learning.types.optimization_types import OptimizationProposal
+        from system_learning.types.optimization_types import GovernanceRewardSignal
+        from system_learning.engines.meta_learning_bus import MetaLearningBus, MetaLearningBusConfig
         from system_learning.engines.trace_feature_extractor import build_feature_bundle
+        from system_learning.engines.trace_feature_extractor import build_feature_bundle
+        from system_learning.engines.rca_cluster_engine import RCAClusterConfig, RCAClusterEngine
+        from system_learning.engines.trace_feature_extractor import build_feature_bundle
+        from system_learning.engines.proposal_validation_engine import validate_proposal
+        from system_learning.engines.governance_reward_model import score_proposal
+        from system_learning.engines.rca_cluster_engine import cluster_records
+        from system_learning.engines.proposal_validation_engine import validate_proposal
+        from system_learning.engines.governance_reward_model import score_proposal
+        from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
+        from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
+        from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
+        from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
+        from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
+        from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
+        from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
+        from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
+        from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
+        from system_learning.engines.governance_reward_model import GovernanceRewardModel, RewardModelConfig
+        from system_learning.engines.governance_reward_model import GovernanceRewardModel, RewardModelConfig
+        from system_learning.engines.governance_reward_model import score_proposal
+        from system_learning.engines.governance_reward_model import score_proposal
+        from system_learning.engines.governance_reward_model import RewardModelConfig
+        from system_learning.engines.governance_reward_model import GovernanceRewardModel, RewardModelConfig
+        from system_learning.engines.governance_reward_model import GovernanceRewardModel, RewardModelConfig
+        from system_learning.engines.rca_cluster_engine import cluster_records
+        from system_learning.engines.rca_cluster_engine import cluster_records
+        from system_learning.engines.rca_cluster_engine import cluster_records
+        from system_learning.engines.rca_cluster_engine import cluster_records
+        from system_learning.engines.proposal_validation_engine import validate_proposal
+        from system_learning.types.optimization_types import OptimizationProposal
+        from system_learning.engines.proposal_validation_engine import (
+        from system_learning.types.optimization_types import OptimizationProposal
+        from system_learning.engines.governance_reward_model import score_proposal
+        from system_learning.engines.governance_reward_model import score_proposal
+        from system_learning.engines.governance_reward_model import score_proposal
+        from system_learning.types.optimization_types import GovernanceRewardSignal
+        from system_learning.engines.rca_cluster_engine import RCAClusterConfig, RCAClusterEngine
+        from system_learning.engines.rca_cluster_engine import RCAClusterConfig, RCAClusterEngine
+        from system_learning.engines.rca_cluster_engine import RCAClusterConfig, RCAClusterEngine
+        from system_learning.engines.optimization_proposal_engine import generate_proposals
+        from system_learning.engines.rca_cluster_engine import cluster_records
+        from system_learning.engines.optimization_proposal_engine import generate_proposals
+        from system_learning.engines.rca_cluster_engine import cluster_records
+        from system_learning.types.optimization_types import OptimizationProposal
+        from system_learning.engines.proposal_validation_engine import validate_proposal
+        from system_learning.engines.proposal_validation_engine import validate_proposal
+        from system_learning.engines.proposal_validation_engine import validate_proposal
+        from system_learning.engines.proposal_validation_engine import validate_proposal
+        from system_learning.engines.proposal_validation_engine import validate_proposal
+        from system_learning.engines.governance_reward_model import (
+        from system_learning.engines.proposal_validation_engine import validate_proposal
+        from system_learning.engines.proposal_validation_engine import validate_proposal
+        from system_learning.types.optimization_types import OptimizationProposal
+        from system_learning.engines.rca_cluster_engine import cluster_records
+        from system_learning.types.trace_feature_types import FailurePattern
+        from system_learning.engines.rca_cluster_engine import cluster_records
+        from system_learning.types.trace_feature_types import FailurePattern
+        from system_learning.engines.rca_cluster_engine import cluster_records
+        from system_learning.types.trace_feature_types import FailurePattern
+        from system_learning.engines.trace_feature_extractor import build_feature_bundle
+        from system_learning.engines.governance_reward_model import score_proposal
+        from system_learning.engines.rca_cluster_engine import cluster_records
+        from system_learning.engines.trace_feature_extractor import build_feature_bundle
+        from system_learning.engines.trace_feature_extractor import build_feature_bundle
+        from system_learning.engines.trace_feature_extractor import build_feature_bundle
+        from system_learning.engines.trace_feature_extractor import TraceFeatureExtractor
+        from system_learning.engines.trace_feature_extractor import build_feature_bundle
+#  # MOVED: from system_learning.engines.trace_feature_extractor import build_feature_bundle
 
         sig = {"route_selected": "PATH_A", "success": True,
                "adg_entity_name": "ADG::M", "adg_relation_ids": []}
@@ -344,7 +418,7 @@ class TestHashCollisionResistance:
         assert b1.stable_hash() != b2.stable_hash()
 
     def test_feature_bundle_hashes_differ_by_route(self):
-        from system_learning.engines.trace_feature_extractor import build_feature_bundle
+#  # MOVED: from system_learning.engines.trace_feature_extractor import build_feature_bundle
 
         sig_a = {"route_selected": "PATH_A", "success": True,
                  "adg_entity_name": "ADG::M", "adg_relation_ids": []}
@@ -355,7 +429,7 @@ class TestHashCollisionResistance:
         assert b1.stable_hash() != b2.stable_hash()
 
     def test_rca_cluster_hashes_differ_by_member_list(self):
-        from system_learning.engines.rca_cluster_engine import RCAClusterConfig, RCAClusterEngine
+#  # MOVED: from system_learning.engines.rca_cluster_engine import RCAClusterConfig, RCAClusterEngine
 
         eng = RCAClusterEngine(RCAClusterConfig(min_cluster_size=2))
         records_a = [_make_record(f"ta{i}", groundedness=0.2) for i in range(4)]
@@ -370,7 +444,7 @@ class TestHashCollisionResistance:
         assert p1.proposal_id != p2.proposal_id
 
     def test_100_distinct_bundles_have_100_distinct_hashes(self):
-        from system_learning.engines.trace_feature_extractor import build_feature_bundle
+#  # MOVED: from system_learning.engines.trace_feature_extractor import build_feature_bundle
 
         hashes = set()
         for i in range(100):
@@ -384,7 +458,7 @@ class TestHashCollisionResistance:
         assert len(hashes) == 100
 
     def test_validation_result_ids_differ_by_proposal_id(self):
-        from system_learning.engines.proposal_validation_engine import validate_proposal
+#  # MOVED: from system_learning.engines.proposal_validation_engine import validate_proposal
 
         p1 = _make_proposal(cluster_id=_sha256("cx1"))
         p2 = _make_proposal(cluster_id=_sha256("cx2"))
@@ -393,7 +467,7 @@ class TestHashCollisionResistance:
         assert r1.result_id != r2.result_id
 
     def test_governance_score_ids_differ_by_signal_set(self):
-        from system_learning.engines.governance_reward_model import score_proposal
+#  # MOVED: from system_learning.engines.governance_reward_model import score_proposal
 
         p = _make_proposal()
         s1 = [_make_signal("t1", gnd=0.9)]
@@ -413,14 +487,14 @@ class TestPipelineIdempotency:
 
     def test_same_traces_twice_produce_same_cluster_ids(self):
         records = [_make_record(f"t{i}", groundedness=0.2) for i in range(6)]
-        from system_learning.engines.rca_cluster_engine import cluster_records
+#  # MOVED: from system_learning.engines.rca_cluster_engine import cluster_records
 
         c1 = sorted(c.cluster_id for c in cluster_records(records, _TS))
         c2 = sorted(c.cluster_id for c in cluster_records(records, _TS))
         assert c1 == c2
 
     def test_same_proposal_validated_twice_gives_same_result_id(self):
-        from system_learning.engines.proposal_validation_engine import validate_proposal
+#  # MOVED: from system_learning.engines.proposal_validation_engine import validate_proposal
 
         p = _make_proposal()
         r1 = validate_proposal(p, _TS)
@@ -446,7 +520,7 @@ class TestPipelineIdempotency:
         assert rels1 == rels2
 
     def test_reward_score_same_signals_same_aggregate(self):
-        from system_learning.engines.governance_reward_model import score_proposal
+#  # MOVED: from system_learning.engines.governance_reward_model import score_proposal
 
         p = _make_proposal()
         signals = [_make_signal(f"t{i}") for i in range(5)]
@@ -465,45 +539,45 @@ class TestPatternPriorityCascade:
 
     def test_replay_beats_healer(self):
         """REPLAY_FAILURE outranks HEALER_REQUIRED."""
-        from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
+#  # MOVED: from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
 
         rec = _make_record("t", outcome="REPLAY_FAILURE", healer="h")
         assert _derive_failure_pattern(rec) == "REPLAY_FAILURE"
 
     def test_replay_beats_hitl(self):
-        from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
+#  # MOVED: from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
 
         rec = _make_record("t", outcome="REPLAY_FAILURE", hitl=True)
         assert _derive_failure_pattern(rec) == "REPLAY_FAILURE"
 
     def test_rollback_beats_hitl(self):
-        from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
+#  # MOVED: from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
 
         rec = _make_record("t", outcome="ROLLBACK", hitl=True)
         assert _derive_failure_pattern(rec) == "ROLLBACK"
 
     def test_healer_beats_hitl(self):
         """HEALER_REQUIRED (healer_used ≠ None) beats HITL_ESCALATION."""
-        from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
+#  # MOVED: from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
 
         rec = _make_record("t", healer="h", hitl=True)
         assert _derive_failure_pattern(rec) == "HEALER_REQUIRED"
 
     def test_hitl_beats_low_groundedness(self):
-        from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
+#  # MOVED: from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
 
         rec = _make_record("t", groundedness=0.1, hitl=True)
         assert _derive_failure_pattern(rec) == "HITL_ESCALATION"
 
     def test_low_groundedness_beats_guardrail(self):
         """LOW_GROUNDEDNESS outranks GUARDRAIL_BLOCK when groundedness < 0.5."""
-        from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
+#  # MOVED: from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
 
         rec = _make_record("t", groundedness=0.2, guardrails=("g1",))
         assert _derive_failure_pattern(rec) == "LOW_GROUNDEDNESS"
 
     def test_guardrail_beats_policy_violation(self):
-        from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
+#  # MOVED: from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
 
         rec = _make_record(
             "t",
@@ -515,13 +589,13 @@ class TestPatternPriorityCascade:
         assert _derive_failure_pattern(rec) == "GUARDRAIL_BLOCK"
 
     def test_success_record_gets_success_pattern(self):
-        from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
+#  # MOVED: from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
 
         rec = _make_record("t", outcome="SUCCESS", groundedness=0.9)
         assert _derive_failure_pattern(rec) == "SUCCESS"
 
     def test_healed_success_gets_healed_success_pattern(self):
-        from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
+#  # MOVED: from system_learning.engines.rca_cluster_engine import _derive_failure_pattern
 
         # healer_used=None but outcome=HEALED_SUCCESS → should reach HEALED_SUCCESS branch
         rec = _make_record("t", outcome="HEALED_SUCCESS", groundedness=0.9)
@@ -537,7 +611,7 @@ class TestRewardWeightBoundaries:
     """Extreme weight configurations produce valid, in-range scores."""
 
     def test_all_weight_on_groundedness_produces_valid_score(self):
-        from system_learning.engines.governance_reward_model import GovernanceRewardModel, RewardModelConfig
+#  # MOVED: from system_learning.engines.governance_reward_model import GovernanceRewardModel, RewardModelConfig
 
         cfg = RewardModelConfig(
             weight_groundedness=1.0,
@@ -554,7 +628,7 @@ class TestRewardWeightBoundaries:
         assert 0.0 <= score.aggregate_score <= 1.0
 
     def test_all_weight_on_policy_compliance(self):
-        from system_learning.engines.governance_reward_model import GovernanceRewardModel, RewardModelConfig
+#  # MOVED: from system_learning.engines.governance_reward_model import GovernanceRewardModel, RewardModelConfig
 
         cfg = RewardModelConfig(
             weight_groundedness=0.0,
@@ -570,7 +644,7 @@ class TestRewardWeightBoundaries:
         assert pytest.approx(score.aggregate_score, abs=1e-5) == 0.6
 
     def test_perfect_signals_produce_aggregate_near_1(self):
-        from system_learning.engines.governance_reward_model import score_proposal
+#  # MOVED: from system_learning.engines.governance_reward_model import score_proposal
 
         p = _make_proposal()
         signals = [
@@ -581,7 +655,7 @@ class TestRewardWeightBoundaries:
         assert score.aggregate_score == pytest.approx(1.0, abs=1e-5)
 
     def test_worst_case_signals_produce_aggregate_near_0(self):
-        from system_learning.engines.governance_reward_model import score_proposal
+#  # MOVED: from system_learning.engines.governance_reward_model import score_proposal
 
         p = _make_proposal()
         signals = [
@@ -592,7 +666,7 @@ class TestRewardWeightBoundaries:
         assert score.aggregate_score == pytest.approx(0.0, abs=1e-5)
 
     def test_invalid_weights_sum_raises(self):
-        from system_learning.engines.governance_reward_model import RewardModelConfig
+#  # MOVED: from system_learning.engines.governance_reward_model import RewardModelConfig
 
         with pytest.raises(ValueError, match="sum to 1.0"):
             RewardModelConfig(
@@ -604,7 +678,7 @@ class TestRewardWeightBoundaries:
             )
 
     def test_invariant_floor_at_zero_always_preserved(self):
-        from system_learning.engines.governance_reward_model import GovernanceRewardModel, RewardModelConfig
+#  # MOVED: from system_learning.engines.governance_reward_model import GovernanceRewardModel, RewardModelConfig
 
         cfg = RewardModelConfig(invariant_floor=0.0, policy_floor=0.0, replay_floor=0.0)
         model = GovernanceRewardModel(cfg)
@@ -614,7 +688,7 @@ class TestRewardWeightBoundaries:
         assert score.invariant_preserved is True
 
     def test_invariant_floor_at_one_never_preserved_unless_perfect(self):
-        from system_learning.engines.governance_reward_model import GovernanceRewardModel, RewardModelConfig
+#  # MOVED: from system_learning.engines.governance_reward_model import GovernanceRewardModel, RewardModelConfig
 
         cfg = RewardModelConfig(invariant_floor=1.0, policy_floor=1.0, replay_floor=1.0)
         model = GovernanceRewardModel(cfg)
@@ -634,7 +708,7 @@ class TestClusterOrderingStability:
     """Input permutation must not affect cluster_ids."""
 
     def test_reversed_record_order_same_cluster_ids(self):
-        from system_learning.engines.rca_cluster_engine import cluster_records
+#  # MOVED: from system_learning.engines.rca_cluster_engine import cluster_records
 
         records = [_make_record(f"t{i}", groundedness=0.2) for i in range(8)]
         c_fwd = sorted(c.cluster_id for c in cluster_records(records, _TS))
@@ -644,7 +718,7 @@ class TestClusterOrderingStability:
     def test_shuffled_record_order_same_cluster_ids(self):
         import random
 
-        from system_learning.engines.rca_cluster_engine import cluster_records
+#  # MOVED: from system_learning.engines.rca_cluster_engine import cluster_records
 
         records = [_make_record(f"t{i}", groundedness=0.2) for i in range(10)]
         shuffled = list(records)
@@ -655,7 +729,7 @@ class TestClusterOrderingStability:
         assert c_orig == c_shuf
 
     def test_cluster_member_trace_ids_always_sorted(self):
-        from system_learning.engines.rca_cluster_engine import cluster_records
+#  # MOVED: from system_learning.engines.rca_cluster_engine import cluster_records
 
         records = [_make_record(f"t{i:03d}", groundedness=0.2) for i in range(6)]
         clusters = cluster_records(records, _TS)
@@ -664,7 +738,7 @@ class TestClusterOrderingStability:
             assert ids == sorted(ids)
 
     def test_affected_agents_always_sorted(self):
-        from system_learning.engines.rca_cluster_engine import cluster_records
+#  # MOVED: from system_learning.engines.rca_cluster_engine import cluster_records
 
         records = [
             _make_record(f"t{i}", groundedness=0.2, node=f"ADG::Module::node_{chr(ord('z') - i)}")
@@ -685,8 +759,8 @@ class TestMultiGateSimultaneousFailure:
     """Proposals that fail multiple gates list ALL denial reasons."""
 
     def test_two_gates_fail_both_captured(self):
-        from system_learning.engines.proposal_validation_engine import validate_proposal
-        from system_learning.types.optimization_types import OptimizationProposal
+#  # MOVED: from system_learning.engines.proposal_validation_engine import validate_proposal
+#  # MOVED: from system_learning.types.optimization_types import OptimizationProposal
 
         cid = _sha256("cluster")
         # proposal_id is NOT a valid hash → DETERMINISM fails
@@ -712,11 +786,11 @@ class TestMultiGateSimultaneousFailure:
         assert len(result.denial_reasons) >= 2
 
     def test_three_gates_fail_all_captured(self):
-        from system_learning.engines.proposal_validation_engine import (
+#  # MOVED: from system_learning.engines.proposal_validation_engine import (
             ProposalValidationEngine,
             ValidationConfig,
         )
-        from system_learning.types.optimization_types import OptimizationProposal
+#  # MOVED: from system_learning.types.optimization_types import OptimizationProposal
 
         cid = _sha256("cluster")
         # NOT_A_HASH → DETERMINISM fails
@@ -775,7 +849,7 @@ class TestSignalPoisoning:
     """One bad signal among many good signals degrades score predictably."""
 
     def test_one_zero_replay_signal_among_9_perfect_degrades_replay_contrib(self):
-        from system_learning.engines.governance_reward_model import score_proposal
+#  # MOVED: from system_learning.engines.governance_reward_model import score_proposal
 
         p = _make_proposal()
         good = [_make_signal(f"t{i}", replay=1.0) for i in range(9)]
@@ -805,7 +879,7 @@ class TestSignalPoisoning:
             )
 
     def test_single_bad_human_approval_lowers_approval_rate(self):
-        from system_learning.engines.governance_reward_model import score_proposal
+#  # MOVED: from system_learning.engines.governance_reward_model import score_proposal
 
         p = _make_proposal()
         all_approved = [_make_signal(f"t{i}", approval=True) for i in range(4)]
@@ -814,8 +888,8 @@ class TestSignalPoisoning:
         assert score.human_approval_rate == pytest.approx(4 / 5, abs=1e-5)
 
     def test_empty_trace_id_signal_filtered_out(self):
-        from system_learning.engines.governance_reward_model import score_proposal
-        from system_learning.types.optimization_types import GovernanceRewardSignal
+#  # MOVED: from system_learning.engines.governance_reward_model import score_proposal
+#  # MOVED: from system_learning.types.optimization_types import GovernanceRewardSignal
 
         p = _make_proposal()
         valid = [_make_signal("t1")]
@@ -847,7 +921,7 @@ class TestMaxClustersCap:
     """RCA engine must not exceed max_clusters setting."""
 
     def test_max_clusters_2_trims_to_2(self):
-        from system_learning.engines.rca_cluster_engine import RCAClusterConfig, RCAClusterEngine
+#  # MOVED: from system_learning.engines.rca_cluster_engine import RCAClusterConfig, RCAClusterEngine
 
         # Create records spread across many distinct patterns
         records = []
@@ -861,7 +935,7 @@ class TestMaxClustersCap:
         assert len(clusters) <= 2
 
     def test_max_clusters_enforced_after_singleton_merge(self):
-        from system_learning.engines.rca_cluster_engine import RCAClusterConfig, RCAClusterEngine
+#  # MOVED: from system_learning.engines.rca_cluster_engine import RCAClusterConfig, RCAClusterEngine
 
         records = [_make_record(f"t{i}", groundedness=0.2) for i in range(50)]
         engine = RCAClusterEngine(RCAClusterConfig(max_clusters=1))
@@ -869,7 +943,7 @@ class TestMaxClustersCap:
         assert len(clusters) <= 1
 
     def test_max_clusters_cap_keeps_largest_clusters(self):
-        from system_learning.engines.rca_cluster_engine import RCAClusterConfig, RCAClusterEngine
+#  # MOVED: from system_learning.engines.rca_cluster_engine import RCAClusterConfig, RCAClusterEngine
 
         # 10 LOW_GROUNDEDNESS + 2 HITL_ESCALATION
         records = (
@@ -892,8 +966,8 @@ class TestLineageTraceability:
     """cluster→proposal→commit chain is hash-provable."""
 
     def test_proposal_evidence_contains_cluster_hash(self):
-        from system_learning.engines.optimization_proposal_engine import generate_proposals
-        from system_learning.engines.rca_cluster_engine import cluster_records
+#  # MOVED: from system_learning.engines.optimization_proposal_engine import generate_proposals
+#  # MOVED: from system_learning.engines.rca_cluster_engine import cluster_records
 
         records = [_make_record(f"t{i}", groundedness=0.2) for i in range(6)]
         clusters = cluster_records(records, _TS)
@@ -908,8 +982,8 @@ class TestLineageTraceability:
             )
 
     def test_proposal_cluster_id_matches_originating_cluster(self):
-        from system_learning.engines.optimization_proposal_engine import generate_proposals
-        from system_learning.engines.rca_cluster_engine import cluster_records
+#  # MOVED: from system_learning.engines.optimization_proposal_engine import generate_proposals
+#  # MOVED: from system_learning.engines.rca_cluster_engine import cluster_records
 
         records = [_make_record(f"t{i}", groundedness=0.2) for i in range(6)]
         clusters = cluster_records(records, _TS)
@@ -969,7 +1043,7 @@ class TestAdversarialChangeSpec:
     """Change spec with unicode, special chars, empty string values must serialize."""
 
     def _proposal_with_spec(self, spec):
-        from system_learning.types.optimization_types import OptimizationProposal
+#  # MOVED: from system_learning.types.optimization_types import OptimizationProposal
 
         cid = _sha256("cluster_adv")
         pid = _sha256("adv" + str(spec))
@@ -988,7 +1062,7 @@ class TestAdversarialChangeSpec:
         )
 
     def test_unicode_value_in_change_spec_serializes(self):
-        from system_learning.engines.proposal_validation_engine import validate_proposal
+#  # MOVED: from system_learning.engines.proposal_validation_engine import validate_proposal
 
         p = self._proposal_with_spec((
             ("key", "值 日本語 Ünïcödé"),
@@ -999,7 +1073,7 @@ class TestAdversarialChangeSpec:
         assert result.determinism_verified is True
 
     def test_empty_string_value_in_change_spec_serializes(self):
-        from system_learning.engines.proposal_validation_engine import validate_proposal
+#  # MOVED: from system_learning.engines.proposal_validation_engine import validate_proposal
 
         p = self._proposal_with_spec((
             ("key", ""),
@@ -1009,7 +1083,7 @@ class TestAdversarialChangeSpec:
         assert result.determinism_verified is True
 
     def test_numeric_string_value_in_change_spec(self):
-        from system_learning.engines.proposal_validation_engine import validate_proposal
+#  # MOVED: from system_learning.engines.proposal_validation_engine import validate_proposal
 
         p = self._proposal_with_spec((
             ("score", "0.123456789"),
@@ -1019,7 +1093,7 @@ class TestAdversarialChangeSpec:
         assert result.determinism_verified is True
 
     def test_change_spec_json_output_is_deterministic(self):
-        from system_learning.engines.proposal_validation_engine import validate_proposal
+#  # MOVED: from system_learning.engines.proposal_validation_engine import validate_proposal
 
         spec = (("z_key", "z_val"), ("a_key", "a_val"))
         p = self._proposal_with_spec(spec)
@@ -1029,7 +1103,7 @@ class TestAdversarialChangeSpec:
         assert r1.result_id == r2.result_id
 
     def test_backslash_and_quote_in_spec_value(self):
-        from system_learning.engines.proposal_validation_engine import validate_proposal
+#  # MOVED: from system_learning.engines.proposal_validation_engine import validate_proposal
 
         p = self._proposal_with_spec((
             ("path", r"C:\some\path"),
@@ -1048,7 +1122,7 @@ class TestRewardInvariantFloorBoundary:
     """Scores exactly at the invariant_floor should pass; below should fail."""
 
     def _score_at(self, gnd, policy, replay, floor=0.60, p_floor=0.80, r_floor=0.75):
-        from system_learning.engines.governance_reward_model import (
+#  # MOVED: from system_learning.engines.governance_reward_model import (
             GovernanceRewardModel,
             RewardModelConfig,
         )
@@ -1152,7 +1226,7 @@ class TestGateResultsCompleteness:
     })
 
     def test_passing_proposal_has_all_5_gates(self):
-        from system_learning.engines.proposal_validation_engine import validate_proposal
+#  # MOVED: from system_learning.engines.proposal_validation_engine import validate_proposal
 
         p = _make_proposal()
         result = validate_proposal(p, _TS)
@@ -1160,8 +1234,8 @@ class TestGateResultsCompleteness:
         assert gate_names == self._EXPECTED_GATES
 
     def test_failing_proposal_has_all_5_gates(self):
-        from system_learning.engines.proposal_validation_engine import validate_proposal
-        from system_learning.types.optimization_types import OptimizationProposal
+#  # MOVED: from system_learning.engines.proposal_validation_engine import validate_proposal
+#  # MOVED: from system_learning.types.optimization_types import OptimizationProposal
 
         cid = _sha256("c")
         p = OptimizationProposal(
@@ -1208,8 +1282,8 @@ class TestNegativeSeedDeduplication:
     """Duplicate seeds produce exactly one cluster (not two)."""
 
     def test_duplicate_seeds_produce_one_cluster(self):
-        from system_learning.engines.rca_cluster_engine import cluster_records
-        from system_learning.types.trace_feature_types import FailurePattern
+#  # MOVED: from system_learning.engines.rca_cluster_engine import cluster_records
+#  # MOVED: from system_learning.types.trace_feature_types import FailurePattern
 
         seed = FailurePattern(
             pattern_id=_HASH64,
@@ -1227,8 +1301,8 @@ class TestNegativeSeedDeduplication:
         assert len(seed_clusters) == 1
 
     def test_two_distinct_seeds_produce_two_clusters(self):
-        from system_learning.engines.rca_cluster_engine import cluster_records
-        from system_learning.types.trace_feature_types import FailurePattern
+#  # MOVED: from system_learning.engines.rca_cluster_engine import cluster_records
+#  # MOVED: from system_learning.types.trace_feature_types import FailurePattern
 
         seeds = [
             FailurePattern(
@@ -1257,8 +1331,8 @@ class TestNegativeSeedDeduplication:
         assert len(seed_clusters) == 2
 
     def test_seed_cluster_node_contains_source_type(self):
-        from system_learning.engines.rca_cluster_engine import cluster_records
-        from system_learning.types.trace_feature_types import FailurePattern
+#  # MOVED: from system_learning.engines.rca_cluster_engine import cluster_records
+#  # MOVED: from system_learning.types.trace_feature_types import FailurePattern
 
         seed = FailurePattern(
             pattern_id=_HASH64,
@@ -1285,7 +1359,7 @@ class TestFeatureBundleRoundTrip:
     """to_json() produces deterministic JSON that re-hashes consistently."""
 
     def _make_bundle(self, trace_id="tr-rt"):
-        from system_learning.engines.trace_feature_extractor import build_feature_bundle
+#  # MOVED: from system_learning.engines.trace_feature_extractor import build_feature_bundle
 
         return build_feature_bundle(
             trace_id,
@@ -1369,7 +1443,7 @@ class TestZeroGroundednessEdge:
             assert not (c.avg_groundedness != c.avg_groundedness)  # NaN check
 
     def test_zero_groundedness_reward_signal_valid(self):
-        from system_learning.engines.governance_reward_model import score_proposal
+#  # MOVED: from system_learning.engines.governance_reward_model import score_proposal
 
         p = _make_proposal()
         signals = [_make_signal("t1", gnd=0.0)]
@@ -1378,7 +1452,7 @@ class TestZeroGroundednessEdge:
         assert score.groundedness_contrib == pytest.approx(0.0, abs=1e-9)
 
     def test_all_hitl_escalation_rate_1(self):
-        from system_learning.engines.rca_cluster_engine import cluster_records
+#  # MOVED: from system_learning.engines.rca_cluster_engine import cluster_records
 
         records = [_make_record(f"t{i}", hitl=True) for i in range(4)]
         clusters = cluster_records(records, _TS)
@@ -1519,7 +1593,7 @@ class TestFullPipelineLargeScale:
     """Batch extraction must handle all edge-case signal shapes."""
 
     def test_all_none_values_in_signal_produces_unknown_bundle(self):
-        from system_learning.engines.trace_feature_extractor import build_feature_bundle
+#  # MOVED: from system_learning.engines.trace_feature_extractor import build_feature_bundle
 
         b = build_feature_bundle("tr-nulls", {
             "route_selected": None,
@@ -1535,7 +1609,7 @@ class TestFullPipelineLargeScale:
         assert b.retrieval_groundedness_score == 0.0
 
     def test_empty_dict_signal_produces_valid_bundle(self):
-        from system_learning.engines.trace_feature_extractor import build_feature_bundle
+#  # MOVED: from system_learning.engines.trace_feature_extractor import build_feature_bundle
 
         b = build_feature_bundle("tr-empty", {}, _TS)
         assert b.trace_id == "tr-empty"
@@ -1543,7 +1617,7 @@ class TestFullPipelineLargeScale:
         assert b.adg_entity_name == "ADG::Unknown"
 
     def test_extra_unknown_keys_ignored(self):
-        from system_learning.engines.trace_feature_extractor import build_feature_bundle
+#  # MOVED: from system_learning.engines.trace_feature_extractor import build_feature_bundle
 
         b = build_feature_bundle("tr-extra", {
             "success": True,
@@ -1555,13 +1629,13 @@ class TestFullPipelineLargeScale:
         assert b.trace_id == "tr-extra"
 
     def test_zero_item_batch_returns_empty_list(self):
-        from system_learning.engines.trace_feature_extractor import TraceFeatureExtractor
+#  # MOVED: from system_learning.engines.trace_feature_extractor import TraceFeatureExtractor
 
         bundles = TraceFeatureExtractor().extract_batch([])
         assert bundles == []
 
     def test_guardrails_applied_must_be_list_not_string(self):
-        from system_learning.engines.trace_feature_extractor import build_feature_bundle
+#  # MOVED: from system_learning.engines.trace_feature_extractor import build_feature_bundle
 
         # If someone passes a string instead of list, it must not crash
         b = build_feature_bundle("tr-bad-guard", {

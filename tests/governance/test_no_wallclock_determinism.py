@@ -12,12 +12,12 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     L0_ROUTING_DIR,
     OPS_SCRIPTS_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -64,7 +64,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_no_wallclock_determinism", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_no_wallclock_determinism", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_no_wallclock_determinism", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -193,6 +193,11 @@ CI_SCRIPT = REPO_ROOT / OPS_SCRIPTS_DIR / "ci" / "check_determinism_violations.p
 
 @pytest.mark.governance
 def test_req114_no_wallclock_determinism_critical_paths():
+    from agentic_core.L0_routing.config.path_constants import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.determinism.determinism_guard import assert_no_wallclock
+    from agentic_core.L2_execution.determinism.determinism_guard import assert_no_wallclock
     """REQ-114: AST scan proves no wall-clock in canonical byte computation paths."""
     # Run the CI script to check for wall-clock usage
     result = subprocess.run(
@@ -270,7 +275,7 @@ def test_req114_determinism_guard_context_manager():
     import datetime
     import time
 
-    from agentic_core.L2_execution.determinism.determinism_guard import assert_no_wallclock
+#  # MOVED: from agentic_core.L2_execution.determinism.determinism_guard import assert_no_wallclock
 
     normal_now = datetime.datetime.now()
     assert isinstance(normal_now, datetime.datetime)
@@ -351,7 +356,7 @@ def test_req114_deterministic_time_functions():
     # (e.g., semantic clock ticks) work as expected
     # For now, just verify the determinism guard can be used
 
-    from agentic_core.L2_execution.determinism.determinism_guard import assert_no_wallclock
+#  # MOVED: from agentic_core.L2_execution.determinism.determinism_guard import assert_no_wallclock
 
     # Context manager should not raise when no wall-clock functions are called
     with assert_no_wallclock():

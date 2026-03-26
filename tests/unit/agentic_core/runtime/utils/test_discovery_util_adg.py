@@ -11,7 +11,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 try:
-    import agentic_core.runtime.utils.discovery_util as _mod  # noqa: F401  # ADG covers
+#  # MOVED: import agentic_core.runtime.utils.discovery_util as _mod  # noqa: F401  # ADG covers
 except (ValueError, TypeError, RuntimeError) as e:
     _mod = None
 
@@ -44,6 +44,7 @@ def _src_text():
 
 class TestDiscoveryUtilSource:
     def test_source_exists(self):
+        import agentic_core.runtime.utils.discovery_util as _mod  # noqa: F401  # ADG covers
     """Test source_exists runtime behavior."""
     # Arrange
     # TODO: Set up runtime environment

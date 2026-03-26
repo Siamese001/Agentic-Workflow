@@ -8,7 +8,7 @@ import os
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -71,13 +71,13 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_shadow_drift_w4c", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_shadow_drift_w4c", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_shadow_drift_w4c", "exec_snapshot_link")
-from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
+#  # MOVED: from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
 
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_shadow_drift_w4c")
 # REMOVED: _emit_applies_guardrail("p0", "test_shadow_drift_w4c", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_shadow_drift_w4c", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_shadow_drift_w4c", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -186,6 +186,10 @@ class TestShadowDriftW4C:
     """Test W4-C Shadow Drift Analyzer functionality."""
 
     def test_shadow_drift_determinism(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        import system_learning.engines.shadow_drift_analyzer as analyzer_module
         """Test that drift analysis produces identical digests for identical inputs."""
         # Create fixed shadow telemetry input
         shadow_records = [
@@ -369,7 +373,7 @@ class TestW4CNegativeControl:
         os.environ["W4C_NEGCTRL_TAMPER"] = "1"
 
         # Monkey patch the rounding function to use different precision
-        import system_learning.engines.shadow_drift_analyzer as analyzer_module
+#  # MOVED: import system_learning.engines.shadow_drift_analyzer as analyzer_module
 
         original_round = round
 

@@ -13,14 +13,14 @@ import hashlib
 
 import pytest
 
-from agentic_core.L0_routing.types.determinism_contracts_types import (
+#  # MOVED: from agentic_core.L0_routing.types.determinism_contracts_types import (
     require_manifest_hash_ok,
 )
-from agentic_core.L0_routing.types.determinism_types import (
+#  # MOVED: from agentic_core.L0_routing.types.determinism_types import (
     FixConstraint,
     SurgicalManifest,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -185,6 +185,9 @@ class TestRequireManifestHashOk:
     """require_manifest_hash_ok must raise on hash mismatch."""
 
     def test_valid_manifest_passes(self):
+        from agentic_core.L0_routing.types.determinism_contracts_types import (
+        from agentic_core.L0_routing.types.determinism_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test valid_manifest_passes contract compliance."""
     # Arrange
     # TODO: Set up contract test scenario

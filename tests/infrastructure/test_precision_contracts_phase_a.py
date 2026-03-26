@@ -9,7 +9,7 @@ import time
 import unittest
 from datetime import datetime, timedelta
 
-from infrastructure.hardening.novel_testing_frameworks import (
+#  # MOVED: from infrastructure.hardening.novel_testing_frameworks import (
     ChaosEngineeringFramework,
     ChaosExperiment,
     PropertyBasedTestingFramework,
@@ -17,7 +17,7 @@ from infrastructure.hardening.novel_testing_frameworks import (
     TemporalInvariant,
     TemporalInvariantTesting,
 )
-from infrastructure.hardening.precision_contracts import (
+#  # MOVED: from infrastructure.hardening.precision_contracts import (
     PrecisionCircuitBreaker,
     PrecisionContractError,
     PrecisionFourLayerContractGuard,
@@ -36,6 +36,8 @@ class TestPrecisionContractGuard(unittest.TestCase):
         self.guard = PrecisionFourLayerContractGuard(l4_rate_limit_per_minute=60)
 
     def test_query_request_cryptographic_integrity(self):
+        from infrastructure.hardening.novel_testing_frameworks import (
+        from infrastructure.hardening.precision_contracts import (
         """Test query request cryptographic integrity verification."""
         # Valid request
         request = PrecisionQueryRequest(

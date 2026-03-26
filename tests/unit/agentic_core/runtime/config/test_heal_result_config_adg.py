@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -76,8 +76,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.runtime.config.heal_result_config import HealResult, HealStatus
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.runtime.config.heal_result_config import HealResult, HealStatus
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -170,6 +170,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestHealStatus:
     def test_success_value(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.runtime.config.heal_result_config import HealResult, HealStatus
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test success_value runtime behavior."""
     # Arrange
     # TODO: Set up runtime environment

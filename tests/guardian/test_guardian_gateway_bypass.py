@@ -16,11 +16,11 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -95,16 +95,16 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_routing.scripts.run_guardian_gateway_bypass import (
+#  # MOVED: from agentic_core.L0_routing.scripts.run_guardian_gateway_bypass import (
     run_gateway_bypass_guardian,
     scan_direct_model_calls,
     scan_provider_sdk_imports,
 )
-from agentic_core.L0_routing.types.guardian_contract_types import (
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import (
     CheckStatus,
     GuardianStatus,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -222,6 +222,11 @@ def direct_call_repo(tmp_path: Path) -> Path:
 
 class TestGatewayBypassGuardianClean:
     def test_clean_repo_passes(self, clean_repo):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.scripts.run_guardian_gateway_bypass import (
+        from agentic_core.L0_routing.types.guardian_contract_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         result = run_gateway_bypass_guardian(repo_root=clean_repo)
         check_map = {c.check_id: c.status for c in result.checks}
         assert check_map["provider_sdk_import"] == CheckStatus.PASS.value

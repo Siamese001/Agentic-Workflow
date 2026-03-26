@@ -22,7 +22,7 @@ from __future__ import annotations
 import sys
 import types as _types
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -121,7 +121,7 @@ from functools import cached_property
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -267,6 +267,52 @@ class TestPhase4MROInjection(unittest.TestCase):
     """Verify ADGBehavioralMixin is wired into SovereignBaseAgent MRO."""
 
     def test_adg_behavioral_mixin_in_mro(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.mixins.adg_behavioral_mixin import ADGBehavioralMixin
+        from agentic_core.mixins.adg_behavioral_mixin import ADGBehavioralMixin
+        from agentic_core.mixins.adg_behavioral_mixin import ADGBehavioralMixin
+        from agentic_core.mixins.adg_behavioral_mixin import ADGBehavioralMixin
+        from agentic_core.L4_state.enforcement.elevator_shaft_consistency_enforcer import (
+        from agentic_core.L4_state.enforcement.elevator_shaft_consistency_enforcer import (
+        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+        from agentic_core.L5_safety.enforcement.security.credential_access_guard import (
+        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+        from agentic_core.L5_safety.enforcement.security.credential_access_guard import CredentialAccessGuard
+        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+        from agentic_core.L5_safety.enforcement.security.credential_access_guard import (
+        from agentic_core.knowledge.reasoning.SovereignRAGManagerAgent import SovereignRAGManager
+        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+        from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
+        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+        from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
+        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+        from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
+        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+        from agentic_core.mixins.self_diagnosis_mixin import SelfDiagnosisMixin
+        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+        from agentic_core.mixins.self_diagnosis_mixin import SelfDiagnosisMixin
+        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+        from agentic_core.mixins.self_diagnosis_mixin import SelfDiagnosisMixin
+        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+        from agentic_core.base_agents.L3OrchestrationBase import L3OrchestrationBase
+        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+        from agentic_core.base_agents.L6ObservabilityBase import L6ObservabilityBase
+        from agentic_core.L5_safety.validators.base_detector_validator import (
+        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+        from agentic_core.L5_safety.validators.base_detector_validator import (
+        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+        from agentic_core.L4_state.enforcement.elevator_shaft_consistency_enforcer import (
+        from agentic_core.L5_safety.enforcement.security.credential_access_guard import (
+        from agentic_core.knowledge.reasoning.SovereignRAGManagerAgent import SovereignRAGManager
+        from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
+        from agentic_core.mixins.self_diagnosis_mixin import SelfDiagnosisMixin
     """Test adg_behavioral_mixin_in_mro runtime behavior."""
     # Arrange
     # TODO: Set up test data for adg_behavioral_mixin_in_mro
@@ -286,7 +332,7 @@ class TestPhase4MROInjection(unittest.TestCase):
     assert result is not None, f"{function_name} should return a result"
     assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
     # TODO: Add specific execution assertions
-        from agentic_core.mixins.adg_behavioral_mixin import ADGBehavioralMixin
+#  # MOVED: from agentic_core.mixins.adg_behavioral_mixin import ADGBehavioralMixin
 
         expected = {
             "adg_behavioral_score",
@@ -304,7 +350,7 @@ class TestPhase4MROInjection(unittest.TestCase):
 
     def test_mixin_neutral_fallback_without_project_root(self):
         """Without project_root, all properties must return safe defaults."""
-        from agentic_core.mixins.adg_behavioral_mixin import ADGBehavioralMixin
+#  # MOVED: from agentic_core.mixins.adg_behavioral_mixin import ADGBehavioralMixin
 
         class _Bare(ADGBehavioralMixin):
             pass  # no project_root
@@ -318,7 +364,7 @@ class TestPhase4MROInjection(unittest.TestCase):
 
     def test_mixin_stub_profile_agent_like(self):
         """When stub profile has score >0.7, is_agent_like must be True."""
-        from agentic_core.mixins.adg_behavioral_mixin import ADGBehavioralMixin
+#  # MOVED: from agentic_core.mixins.adg_behavioral_mixin import ADGBehavioralMixin
 
         class _Stubbed(ADGBehavioralMixin):
             project_root = REPO
@@ -334,7 +380,7 @@ class TestPhase4MROInjection(unittest.TestCase):
             self.assertTrue(obj.adg_is_agent_like)
 
     def test_mixin_stub_profile_script_like(self):
-        from agentic_core.mixins.adg_behavioral_mixin import ADGBehavioralMixin
+#  # MOVED: from agentic_core.mixins.adg_behavioral_mixin import ADGBehavioralMixin
 
         class _Stubbed(ADGBehavioralMixin):
             project_root = REPO
@@ -374,7 +420,7 @@ class TestPhase2jElevatorShaft(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        from agentic_core.L4_state.enforcement.elevator_shaft_consistency_enforcer import (
+#  # MOVED: from agentic_core.L4_state.enforcement.elevator_shaft_consistency_enforcer import (
             ElevatorShaftConsistencyEnforcer,
         )
 
@@ -391,7 +437,7 @@ class TestPhase2jElevatorShaft(unittest.TestCase):
 
     def test_summary_still_contains_layer_records(self):
         """Existing layer-record structure must not be broken."""
-        from agentic_core.L4_state.enforcement.elevator_shaft_consistency_enforcer import (
+#  # MOVED: from agentic_core.L4_state.enforcement.elevator_shaft_consistency_enforcer import (
             ElevatorShaftConsistencyEnforcer,
             SemanticClockSnapshot,
         )
@@ -406,7 +452,7 @@ class TestPhase2jElevatorShaft(unittest.TestCase):
         """When ADG returns antipatterns, they appear in summary and trigger warning log."""
         import logging
 
-        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _beh_idx
 
         enf = self.EnfClass(drift_tolerance=5)
         stub = _StubProfile(antipattern_signals=frozenset({"for_retry", "silent_swallower"}))
@@ -428,7 +474,7 @@ class TestPhase2jElevatorShaft(unittest.TestCase):
 
     def test_summary_no_exception_when_adg_unavailable(self):
         """Graceful when behavioral_index import raises."""
-        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _beh_idx
 
         enf = self.EnfClass(drift_tolerance=5)
         with patch.object(_beh_idx, "get_behavioral_profile", side_effect=RuntimeError("ADG unavailable")):
@@ -443,8 +489,8 @@ class TestPhase2kCredentialAccessGuard(unittest.TestCase):
     """Verify _adg_violates wired into __init__ without SQLite."""
 
     def _make_guard(self, profile_stub=None):
-        import agentic_core.adg.runtime.behavioral_index as _beh_idx
-        from agentic_core.L5_safety.enforcement.security.credential_access_guard import (
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _beh_idx
+#  # MOVED: from agentic_core.L5_safety.enforcement.security.credential_access_guard import (
             CredentialAccessGuard,
         )
 
@@ -474,10 +520,10 @@ class TestPhase2kCredentialAccessGuard(unittest.TestCase):
     def test_adg_violates_warning_logged(self):
         import logging
 
-        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _beh_idx
 
         stub = _StubProfile(antipattern_signals=frozenset({"type_erasure"}))
-        from agentic_core.L5_safety.enforcement.security.credential_access_guard import CredentialAccessGuard
+#  # MOVED: from agentic_core.L5_safety.enforcement.security.credential_access_guard import CredentialAccessGuard
 
         with (
             self.assertLogs(level=logging.WARNING),
@@ -486,7 +532,7 @@ class TestPhase2kCredentialAccessGuard(unittest.TestCase):
             CredentialAccessGuard(agent_id="test_agent", run_id="run_001")
 
     def test_adg_violates_graceful_on_import_error(self):
-        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _beh_idx
 
         with patch.object(_beh_idx, "get_behavioral_profile", side_effect=ImportError("no ADG")):
             guard = self._make_guard()
@@ -496,7 +542,7 @@ class TestPhase2kCredentialAccessGuard(unittest.TestCase):
         """guarded_get_secret / guarded_get_env signatures must be intact."""
         import inspect
 
-        from agentic_core.L5_safety.enforcement.security.credential_access_guard import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.security.credential_access_guard import (
             CredentialAccessGuard,
         )
 
@@ -517,7 +563,7 @@ class TestPhase2lRAGConfidence(unittest.TestCase):
     """Verify adg_confidence_weight injected into retrieve() results."""
 
     def _make_rag_manager(self):
-        from agentic_core.knowledge.reasoning.SovereignRAGManagerAgent import SovereignRAGManager
+#  # MOVED: from agentic_core.knowledge.reasoning.SovereignRAGManagerAgent import SovereignRAGManager
 
         # Bypass SovereignBaseAgent.__init__ integrity check (Merkle-seal on base_agents/)
         # by using object.__new__ and manually setting required attrs.
@@ -531,7 +577,7 @@ class TestPhase2lRAGConfidence(unittest.TestCase):
         return mgr
 
     def test_retrieve_returns_adg_confidence_weight_key(self):
-        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _beh_idx
 
         mgr = self._make_rag_manager()
         stub_profile = _StubProfile(behavioral_score=0.8)
@@ -559,7 +605,7 @@ class TestPhase2lRAGConfidence(unittest.TestCase):
         """adg_confidence_weight is attached to every vector result at exactly the stub value.
         The final fused score may differ (RRF / re-ranking applied downstream), but the weight
         key itself must carry the exact confidence that was used to scale the raw score."""
-        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _beh_idx
 
         mgr = self._make_rag_manager()
         stub_profile = _StubProfile(behavioral_score=0.6)
@@ -582,7 +628,7 @@ class TestPhase2lRAGConfidence(unittest.TestCase):
             self.assertGreaterEqual(vec_results[0]["score"], 0.0)
 
     def test_retrieve_graceful_when_adg_unavailable(self):
-        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _beh_idx
 
         mgr = self._make_rag_manager()
         mgr.embedder = None
@@ -617,8 +663,8 @@ class TestPhase3aHealingPolicy(unittest.TestCase):
 
     def test_confidence_increased_for_script_like(self):
         """Script-like files (deterministic_coverage=True) get +0.05 confidence."""
-        import agentic_core.adg.runtime.behavioral_index as _beh_idx
-        from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _beh_idx
+#  # MOVED: from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
 
         class _TestAgent(HealingPolicyMixin):
             name = "TestAgent"
@@ -636,8 +682,8 @@ class TestPhase3aHealingPolicy(unittest.TestCase):
 
     def test_confidence_decreased_for_agent_like(self):
         """Agent-like files (score>0.7) get -0.05 confidence — no crash."""
-        import agentic_core.adg.runtime.behavioral_index as _beh_idx
-        from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _beh_idx
+#  # MOVED: from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
 
         class _TestAgent(HealingPolicyMixin):
             name = "TestAgent"
@@ -652,8 +698,8 @@ class TestPhase3aHealingPolicy(unittest.TestCase):
         self.assertIsInstance(result, dict)
 
     def test_healing_chain_graceful_on_adg_error(self):
-        import agentic_core.adg.runtime.behavioral_index as _beh_idx
-        from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _beh_idx
+#  # MOVED: from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
 
         class _TestAgent(HealingPolicyMixin):
             name = "TestAgent"
@@ -681,8 +727,8 @@ class TestPhase3bSelfDiagnosis(unittest.TestCase):
         """Run self_diagnose() via asyncio and confirm ADG keys present."""
         import asyncio
 
-        import agentic_core.adg.runtime.behavioral_index as _beh_idx
-        from agentic_core.mixins.self_diagnosis_mixin import SelfDiagnosisMixin
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _beh_idx
+#  # MOVED: from agentic_core.mixins.self_diagnosis_mixin import SelfDiagnosisMixin
 
         class _Agent(SelfDiagnosisMixin):
             MANDATORY_COMPONENTS = []
@@ -699,8 +745,8 @@ class TestPhase3bSelfDiagnosis(unittest.TestCase):
     def test_self_diagnose_adg_antipatterns_are_sorted_list(self):
         import asyncio
 
-        import agentic_core.adg.runtime.behavioral_index as _beh_idx
-        from agentic_core.mixins.self_diagnosis_mixin import SelfDiagnosisMixin
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _beh_idx
+#  # MOVED: from agentic_core.mixins.self_diagnosis_mixin import SelfDiagnosisMixin
 
         class _Agent(SelfDiagnosisMixin):
             MANDATORY_COMPONENTS = []
@@ -716,8 +762,8 @@ class TestPhase3bSelfDiagnosis(unittest.TestCase):
     def test_self_diagnose_graceful_when_adg_missing(self):
         import asyncio
 
-        import agentic_core.adg.runtime.behavioral_index as _beh_idx
-        from agentic_core.mixins.self_diagnosis_mixin import SelfDiagnosisMixin
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _beh_idx
+#  # MOVED: from agentic_core.mixins.self_diagnosis_mixin import SelfDiagnosisMixin
 
         class _Agent(SelfDiagnosisMixin):
             MANDATORY_COMPONENTS = []
@@ -737,8 +783,8 @@ class TestPhase3cL3PlanExecution(unittest.TestCase):
     def _call_plan_execution(self, stub=None, side_effect=None):
         """Call plan_execution() on a standalone L3OrchestrationBase-like object,
         bypassing SovereignBaseAgent.__post_init__ integrity check."""
-        import agentic_core.adg.runtime.behavioral_index as _beh_idx
-        from agentic_core.base_agents.L3OrchestrationBase import L3OrchestrationBase
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _beh_idx
+#  # MOVED: from agentic_core.base_agents.L3OrchestrationBase import L3OrchestrationBase
 
         # Instantiate WITHOUT calling __post_init__ to avoid SovereignLockError
         obj = object.__new__(L3OrchestrationBase)
@@ -799,8 +845,8 @@ class TestPhase3cL3PlanExecution(unittest.TestCase):
 class TestPhase3dL6Metrics(unittest.TestCase):
     def _call_collect_metrics(self, idx_mock=None, idx_side_effect=None):
         """Call collect_metrics() bypassing SovereignBaseAgent integrity check."""
-        import agentic_core.adg.runtime.behavioral_index as _beh_idx
-        from agentic_core.base_agents.L6ObservabilityBase import L6ObservabilityBase
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _beh_idx
+#  # MOVED: from agentic_core.base_agents.L6ObservabilityBase import L6ObservabilityBase
 
         obj = object.__new__(L6ObservabilityBase)
         if idx_mock is not None:
@@ -847,7 +893,7 @@ class TestPhase3eDetectorSeverityUpgrade(unittest.TestCase):
     """ADG-confirmed violations must be upgraded to hard_block."""
 
     def _make_concrete_detector(self):
-        from agentic_core.L5_safety.validators.base_detector_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.base_detector_validator import (
             AntiPatternCategory,
             AntiPatternDetector,
             AntiPatternViolation,
@@ -877,7 +923,7 @@ class TestPhase3eDetectorSeverityUpgrade(unittest.TestCase):
         """When ADG antipattern_signals contains the category value, severity → hard_block."""
         import tempfile
 
-        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _beh_idx
 
         detector = self._make_concrete_detector()
         stub = _StubProfile(antipattern_signals=frozenset({"silent_swallower"}))
@@ -898,7 +944,7 @@ class TestPhase3eDetectorSeverityUpgrade(unittest.TestCase):
 
     def test_whitelisted_violation_not_upgraded(self):
         """Whitelisted violations must never be upgraded."""
-        from agentic_core.L5_safety.validators.base_detector_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.base_detector_validator import (
             AntiPatternCategory,
             AntiPatternDetector,
             AntiPatternViolation,
@@ -932,7 +978,7 @@ class TestPhase3eDetectorSeverityUpgrade(unittest.TestCase):
             tmp_path = Path(f.name)
 
         try:
-            import agentic_core.adg.runtime.behavioral_index as _beh_idx
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _beh_idx
 
             with patch.object(_beh_idx, "get_behavioral_profile", return_value=stub):
                 result = detector.scan_file(tmp_path)
@@ -947,7 +993,7 @@ class TestPhase3eDetectorSeverityUpgrade(unittest.TestCase):
         """When ADG returns empty antipattern_signals, severity stays unchanged."""
         import tempfile
 
-        import agentic_core.adg.runtime.behavioral_index as _beh_idx
+#  # MOVED: import agentic_core.adg.runtime.behavioral_index as _beh_idx
 
         detector = self._make_concrete_detector()
         stub = _StubProfile(antipattern_signals=frozenset())
@@ -978,7 +1024,7 @@ class TestAPISignatureIntegrity(unittest.TestCase):
     """Verify that no public method signatures were altered by any phase."""
 
     def test_elevator_shaft_summary_signature(self):
-        from agentic_core.L4_state.enforcement.elevator_shaft_consistency_enforcer import (
+#  # MOVED: from agentic_core.L4_state.enforcement.elevator_shaft_consistency_enforcer import (
             ElevatorShaftConsistencyEnforcer,
         )
 
@@ -988,7 +1034,7 @@ class TestAPISignatureIntegrity(unittest.TestCase):
         self.assertEqual(params, [])
 
     def test_credential_guard_guarded_get_secret_signature(self):
-        from agentic_core.L5_safety.enforcement.security.credential_access_guard import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.security.credential_access_guard import (
             CredentialAccessGuard,
         )
 
@@ -999,7 +1045,7 @@ class TestAPISignatureIntegrity(unittest.TestCase):
         self.assertIn("default", params)
 
     def test_rag_manager_retrieve_signature(self):
-        from agentic_core.knowledge.reasoning.SovereignRAGManagerAgent import SovereignRAGManager
+#  # MOVED: from agentic_core.knowledge.reasoning.SovereignRAGManagerAgent import SovereignRAGManager
 
         sig = inspect.signature(SovereignRAGManager.retrieve)
         self.assertIn("query", sig.parameters)
@@ -1019,14 +1065,14 @@ class TestAPISignatureIntegrity(unittest.TestCase):
     assert result is not None, f"{function_name} should return a result"
     assert isinstance(result, object), "Result should be an object"
     # TODO: Add specific runtime behavior assertions
-        from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
+#  # MOVED: from agentic_core.mixins.healing_policy_mixin import HealingPolicyMixin
 
         sig = inspect.signature(HealingPolicyMixin.heal_repository)
         for param in ("dry_run", "execute", "depth", "max_depth"):
             self.assertIn(param, sig.parameters)
 
     def test_self_diagnosis_mixin_self_diagnose_signature(self):
-        from agentic_core.mixins.self_diagnosis_mixin import SelfDiagnosisMixin
+#  # MOVED: from agentic_core.mixins.self_diagnosis_mixin import SelfDiagnosisMixin
 
         sig = inspect.signature(SelfDiagnosisMixin.self_diagnose)
         params = [p for p in sig.parameters if p != "self"]

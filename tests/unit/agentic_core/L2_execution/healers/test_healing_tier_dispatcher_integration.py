@@ -6,15 +6,15 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
-from agentic_core.L2_execution.healers.healing_tier_dispatcher import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_dispatcher import (
     dispatch_healing,
 )
-from agentic_core.L2_execution.healers.healing_tier_types import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_types import (
     HealingInput,
     HealingTier,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -77,11 +77,11 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_healing_tier_dispatcher_integration", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_healing_tier_dispatcher_integration", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_healing_tier_dispatcher_integration", "exec_snapshot_link")
-from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
-from system_learning.ports.meta_prior_provider import (
+#  # MOVED: from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+#  # MOVED: from system_learning.ports.meta_prior_provider import (
     NeutralMetaPriorProvider,
 )
-from system_learning.ports.outcome_write_back_hook import (
+#  # MOVED: from system_learning.ports.outcome_write_back_hook import (
     DefaultOutcomeWriteBackHook,
     NullOutcomeWriteBackHook,
 )
@@ -90,7 +90,7 @@ from system_learning.ports.outcome_write_back_hook import (
 # REMOVED: _emit_applies_guardrail("p0", "test_healing_tier_dispatcher_integration", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_healing_tier_dispatcher_integration", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_healing_tier_dispatcher_integration", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -198,7 +198,7 @@ class MockHealingProviderInvoker:
     """Mock invoker that always succeeds."""
 
     def invoke_local(self, healing_input, decision, config, agent_name=""):
-        from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
 
         return InvocationRecord(
             tier=decision.tier,
@@ -211,6 +211,15 @@ class MockHealingProviderInvoker:
 
 
 def test_dispatch_healing_phase2_integration() -> None:
+    from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
+    from agentic_core.L2_execution.healers.healing_tier_dispatcher import (
+    from agentic_core.L2_execution.healers.healing_tier_types import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+    from system_learning.ports.meta_prior_provider import (
+    from system_learning.ports.outcome_write_back_hook import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
 """Test dispatch_healing_phase2_integration runtime behavior."""
 # Arrange
 # TODO: Set up test data for dispatch_healing_phase2_integration

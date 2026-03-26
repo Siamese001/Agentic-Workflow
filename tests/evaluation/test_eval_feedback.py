@@ -16,24 +16,24 @@ Branch coverage:
 
 import pytest
 
-from agentic_core.evaluation.feedback.dpo_batch_builder import DPOBatchBuilder
-from agentic_core.evaluation.feedback.proposer_bridge import (
+#  # MOVED: from agentic_core.evaluation.feedback.dpo_batch_builder import DPOBatchBuilder
+#  # MOVED: from agentic_core.evaluation.feedback.proposer_bridge import (
     EvaluatorProposerBridge,
     ImprovementProposal,
     ImprovementSignal,
 )
-from agentic_core.evaluation.feedback.schemas import (
+#  # MOVED: from agentic_core.evaluation.feedback.schemas import (
     DPOBatch,
     DPOPair,
     FeedbackExample,
     ReviewRubric,
 )
-from agentic_core.evaluation.monitoring.snapshots import (
+#  # MOVED: from agentic_core.evaluation.monitoring.snapshots import (
     AnswerQualitySnapshot,
     RetrievalDriftSnapshot,
 )
-from agentic_core.evaluation.schemas.evaluation_result_schema import EvaluationReport
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.evaluation.schemas.evaluation_result_schema import EvaluationReport
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -80,7 +80,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_eval_feedback", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_eval_feedback", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_eval_feedback", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -252,6 +252,15 @@ def _make_report(scores=None):
 
 class TestReviewRubric:
     def test_all_positive_is_positive(self):
+        from agentic_core.evaluation.feedback.dpo_batch_builder import DPOBatchBuilder
+        from agentic_core.evaluation.feedback.proposer_bridge import (
+        from agentic_core.evaluation.feedback.schemas import (
+        from agentic_core.evaluation.monitoring.snapshots import (
+        from agentic_core.evaluation.schemas.evaluation_result_schema import EvaluationReport
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.evaluation.feedback.schemas import DPOBatch, DPOPair
+        from agentic_core.evaluation.feedback.schemas import DPOBatch, DPOPair
         assert _make_rubric().is_positive is True
 
     def test_not_grounded_is_negative(self):
@@ -664,7 +673,7 @@ class TestEvaluatorProposerBridge:
 
     def test_dpo_count_above_ten_triggers_finetuning(self):
         bridge = EvaluatorProposerBridge()
-        from agentic_core.evaluation.feedback.schemas import DPOBatch, DPOPair
+#  # MOVED: from agentic_core.evaluation.feedback.schemas import DPOBatch, DPOPair
 
         pairs = [
             DPOPair(
@@ -691,7 +700,7 @@ class TestEvaluatorProposerBridge:
 
     def test_dpo_count_low_suggests_accumulate(self):
         bridge = EvaluatorProposerBridge()
-        from agentic_core.evaluation.feedback.schemas import DPOBatch, DPOPair
+#  # MOVED: from agentic_core.evaluation.feedback.schemas import DPOBatch, DPOPair
 
         pairs = [
             DPOPair(

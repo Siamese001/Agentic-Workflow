@@ -4,10 +4,10 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -54,7 +54,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_territory_integrity", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_territory_integrity", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_territory_integrity", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -173,7 +173,7 @@ project_root = current_file.parent.parent.parent  # Go up 3 levels from tests/un
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
 
 class TestTerritoryIntegrity(unittest.TestCase):
@@ -209,6 +209,10 @@ class TestTerritoryIntegrity(unittest.TestCase):
             shutil.rmtree(self.tmp)
 
     def test_detection_of_root_files(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
         """Test 1: Verify all files in territory root are flagged as STRUCTURE violations."""
         agent = HierarchyAgent(project_root=self.tmp)
         report = agent.scan_root_violations(target_territory="prompt_governance")

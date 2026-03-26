@@ -6,7 +6,7 @@ import dataclasses
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -53,7 +53,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_hil_approval", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_hil_approval", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_hil_approval", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -178,7 +178,11 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.governance
 def test_req085_reviewer_sig_field_required():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     from agentic_core.L0_routing.types.governance_types import HILReviewOutcome
+    from agentic_core.L0_routing.types.governance_types import HILReviewOutcome
+#  # MOVED: from agentic_core.L0_routing.types.governance_types import HILReviewOutcome
 
     fields = {f.name for f in dataclasses.fields(HILReviewOutcome)}
     assert "reviewer_sig" in fields
@@ -187,7 +191,7 @@ def test_req085_reviewer_sig_field_required():
 
 @pytest.mark.governance
 def test_req086_modify_diff_requires_l5_reclear():
-    from agentic_core.L0_routing.types.governance_types import HILReviewOutcome
+#  # MOVED: from agentic_core.L0_routing.types.governance_types import HILReviewOutcome
 
     outcome = HILReviewOutcome(
         decision="MODIFY_DIFF",

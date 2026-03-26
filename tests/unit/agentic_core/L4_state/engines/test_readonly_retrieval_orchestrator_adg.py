@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L4_state.engines.readonly_retrieval_orchestrator  # noqa: F401
+#  # MOVED: import agentic_core.L4_state.engines.readonly_retrieval_orchestrator  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L4_state.engines.readonly_retrieval_orchestrator  # noqa: F401
     """Module readonly_retrieval_orchestrator must be importable."""
     assert agentic_core.L4_state.engines.readonly_retrieval_orchestrator is not None

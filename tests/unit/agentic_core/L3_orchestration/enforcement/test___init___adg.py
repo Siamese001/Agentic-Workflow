@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L3_orchestration.enforcement.__init__ as _mod  # noqa: F401
+#  # MOVED: import agentic_core.L3_orchestration.enforcement.__init__ as _mod  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L3_orchestration.enforcement.__init__ as _mod  # noqa: F401
     """Module enforcement must be importable."""
     assert _mod is not None

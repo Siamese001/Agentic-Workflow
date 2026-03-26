@@ -19,7 +19,7 @@ import dataclasses
 
 import pytest
 
-from agentic_core.L0_routing.enforcement.governance_contracts import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.governance_contracts import (
     EvidencePackError,
     PolicyExceptionError,
     PolicyUpdateError,
@@ -30,14 +30,14 @@ from agentic_core.L0_routing.enforcement.governance_contracts import (
     validate_policy_exception_tick,
     validate_proposal,
 )
-from agentic_core.L0_routing.types.governance_types import (
+#  # MOVED: from agentic_core.L0_routing.types.governance_types import (
     EvidencePack,
     ExceptionScope,
     PolicyExceptionArtifact,
     PolicyUpdateProposal,
     ProposalStatus,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -215,6 +215,9 @@ class TestP3_34_EvidencePackArtifact:
     """§3.4 — EvidencePack typed artifact validation."""
 
     def test_all_required_fields_present(self):
+        from agentic_core.L0_routing.enforcement.governance_contracts import (
+        from agentic_core.L0_routing.types.governance_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         required = {
             "trace_id",
             "action_trace",

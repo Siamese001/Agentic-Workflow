@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.utils.state_util  # noqa: F401
+#  # MOVED: import agentic_core.utils.state_util  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.utils.state_util  # noqa: F401
     """Module state_util must be importable."""
     assert agentic_core.utils.state_util is not None

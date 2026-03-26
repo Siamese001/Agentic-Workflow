@@ -35,8 +35,8 @@ import importlib
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -119,13 +119,13 @@ def _auto_approve_gate(repo_root=None):
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
     TESTS_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -278,6 +278,10 @@ class TestPhase3Alignment:
         }
 
     def test_zero_violations_completes_no_violations(self, mod):
+        from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         de = _make_de(mod)
         sm = _make_state_mgr()
         agents = {}

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -76,11 +76,11 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.reasoning.filesystem_ssot_validator import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.filesystem_ssot_validator import (
     CHECK_ID,
     FilesystemSSOTValidatorAgent,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -173,6 +173,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestFilesystemSSOTValidatorAgent:
     def test_check_id_value(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.reasoning.filesystem_ssot_validator import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         assert CHECK_ID == "filesystem_ssot_drift"
 
     def test_creates(self, tmp_path):

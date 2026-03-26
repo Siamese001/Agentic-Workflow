@@ -6,7 +6,7 @@ import dataclasses
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -51,7 +51,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_hil_ttl")
 # REMOVED: _emit_applies_guardrail("p0", "test_hil_ttl", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_hil_ttl", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -176,7 +176,11 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.governance
 def test_req245_expired_exception_auto_revoked():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     from agentic_core.L0_routing.types.governance_types import PolicyExceptionArtifact
+    from agentic_core.L0_routing.types.governance_types import (
+#  # MOVED: from agentic_core.L0_routing.types.governance_types import PolicyExceptionArtifact
 
     fields = {f.name for f in dataclasses.fields(PolicyExceptionArtifact)}
     assert "ttl_ticks" in fields
@@ -185,7 +189,7 @@ def test_req245_expired_exception_auto_revoked():
 
 @pytest.mark.governance
 def test_req248_semantic_clock_ttl():
-    from agentic_core.L0_routing.types.governance_types import (
+#  # MOVED: from agentic_core.L0_routing.types.governance_types import (
         ExceptionScope,
         PolicyExceptionArtifact,
     )

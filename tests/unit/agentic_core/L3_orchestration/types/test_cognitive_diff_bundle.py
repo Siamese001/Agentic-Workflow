@@ -13,15 +13,15 @@ import json
 
 import pytest
 
-from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-from agentic_core.L3_orchestration.types.cognitive_diff_types import (
+#  # MOVED: from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+#  # MOVED: from agentic_core.L3_orchestration.types.cognitive_diff_types import (
     CognitiveStateSnapshot,
     DiffOp,
     L3CognitiveDiffBundle,
     compute_cognitive_diff,
     emit_cognitive_diff_bundle,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -204,6 +204,9 @@ def after_state() -> CognitiveStateSnapshot:
 
 class TestContractSerialization:
     def test_to_dict_stable_json(self, clock, before_state, after_state):
+        from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+        from agentic_core.L3_orchestration.types.cognitive_diff_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         bundle = emit_cognitive_diff_bundle(
             before=before_state,
             after=after_state,

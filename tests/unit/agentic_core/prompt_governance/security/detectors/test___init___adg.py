@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.prompt_governance.security.detectors.__init__ as _mod  # noqa: F401
+#  # MOVED: import agentic_core.prompt_governance.security.detectors.__init__ as _mod  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.prompt_governance.security.detectors.__init__ as _mod  # noqa: F401
     """Module detectors must be importable."""
     assert _mod is not None

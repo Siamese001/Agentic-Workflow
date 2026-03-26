@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L1_cognition.engines.pitch_engine  # noqa: F401
+#  # MOVED: import agentic_core.L1_cognition.engines.pitch_engine  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L1_cognition.engines.pitch_engine  # noqa: F401
     """Module pitch_engine must be importable."""
     assert agentic_core.L1_cognition.engines.pitch_engine is not None

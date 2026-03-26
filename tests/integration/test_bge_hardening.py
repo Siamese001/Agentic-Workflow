@@ -31,7 +31,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -78,7 +78,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_bge_hardening", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_bge_hardening", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_bge_hardening", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -228,12 +228,31 @@ def _collect_env_get_calls(tree: ast.Module, var_name: str) -> list[str]:
 
 @pytest.mark.unit
 def test_preflight_check_raises_on_missing_bge(monkeypatch):
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    import agentic_core.L0_routing.scripts.execute_ssot as _mod
+    import agentic_core.L0_routing.scripts.execute_ssot as _mod
+    import agentic_core.L0_routing.scripts.execute_ssot as _mod
+    import agentic_core.L0_routing.scripts.execute_ssot as _mod
+    import agentic_core.L0_routing.scripts.execute_ssot as _mod
+    from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
+    from agentic_core.L1_cognition.memory.healing_memory_retriever import VectorSourceMismatchError
+    import agentic_core.L0_routing.scripts.execute_ssot as _mod
+    from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
+    from system_learning.engines.retrieval_profile import RetrievalProfile
+    from system_learning.engines.retrieval_profile import RetrievalProfile
+    import system_learning.pipelines.meta_learning_pipeline as _pipeline
+    import system_learning.pipelines.meta_learning_pipeline as _pipeline
+    import system_learning.pipelines.meta_learning_pipeline as _pipeline
+    import system_learning.pipelines.meta_learning_pipeline as _pipeline
+    import agentic_core.L0_routing.scripts.execute_ssot as _mod
+    from agentic_core.L0_routing.scripts.execute_ssot import ConfidenceScore
     """_preflight_import_check must raise RuntimeError with install instructions on missing BGE.
 
     §1.8 fail-closed: missing BGE dependency → RuntimeError before any execution.
     §1.5 edge case: ImportError from BGE module propagated as clear RuntimeError.
     """
-    import agentic_core.L0_routing.scripts.execute_ssot as _mod
+#  # MOVED: import agentic_core.L0_routing.scripts.execute_ssot as _mod
 
     monkeypatch.delenv("BOOTSTRAP_MODE", raising=False)
     with patch(
@@ -269,7 +288,7 @@ def test_preflight_check_passes_when_bge_available(monkeypatch):
 
     §1.5 boundary: normal path (BGE present) must succeed without side effects.
     """
-    import agentic_core.L0_routing.scripts.execute_ssot as _mod
+#  # MOVED: import agentic_core.L0_routing.scripts.execute_ssot as _mod
 
     monkeypatch.delenv("BOOTSTRAP_MODE", raising=False)
     # BGE is available in this environment — check should pass cleanly
@@ -283,7 +302,7 @@ def test_preflight_check_bootstrap_mode_bypasses_bge(monkeypatch):
     §1.9 matrix: BOOTSTRAP_MODE=true × BGE unavailable → no RuntimeError.
     BOOTSTRAP_MODE is emergency-only; test verifies the bypass gate exists.
     """
-    import agentic_core.L0_routing.scripts.execute_ssot as _mod
+#  # MOVED: import agentic_core.L0_routing.scripts.execute_ssot as _mod
 
     monkeypatch.setenv("BOOTSTRAP_MODE", "true")
     # Even if BGE would fail, bootstrap mode skips the check
@@ -297,7 +316,7 @@ def test_preflight_check_error_message_contains_install_instructions():
     §1.5 edge: error message quality — operator must know what to do.
     §1.11 mutation: if error message is removed, this test fails.
     """
-    import agentic_core.L0_routing.scripts.execute_ssot as _mod
+#  # MOVED: import agentic_core.L0_routing.scripts.execute_ssot as _mod
 
     src = inspect.getsource(_mod._preflight_import_check)
     assert "pip install sentence-transformers" in src, (
@@ -312,7 +331,7 @@ def test_preflight_check_bootstrap_mode_case_insensitive():
 
     §1.5 boundary: env var case normalization.
     """
-    import agentic_core.L0_routing.scripts.execute_ssot as _mod
+#  # MOVED: import agentic_core.L0_routing.scripts.execute_ssot as _mod
 
     src = inspect.getsource(_mod._preflight_import_check)
     assert ".lower()" in src, "BOOTSTRAP_MODE env check must use .lower() for case-insensitive comparison"
@@ -330,8 +349,8 @@ def test_compute_novelty_score_raises_vsme_on_dim_mismatch():
     §1.8 fail-closed: dimension mismatch is a contract violation, must not be swallowed.
     §1.5 edge case: stored 1024-dim vectors vs 16-dim query vector.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
-    from agentic_core.L1_cognition.memory.healing_memory_retriever import VectorSourceMismatchError
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
+#  # MOVED: from agentic_core.L1_cognition.memory.healing_memory_retriever import VectorSourceMismatchError
 
     state_mgr = MagicMock()
     state_mgr.state = {"meta_learning": {"recent_failure_vectors": [[0.1] * 1024]}}
@@ -353,7 +372,7 @@ def test_compute_novelty_score_vsme_not_swallowed_by_guardian():
 
     §1.11 mutation regression: if the re-raise guard is removed, this test catches it.
     """
-    import agentic_core.L0_routing.scripts.execute_ssot as _mod
+#  # MOVED: import agentic_core.L0_routing.scripts.execute_ssot as _mod
 
     src = inspect.getsource(_mod.SovereignDecisionEngine._compute_novelty_score)
     # The except block must explicitly re-raise VectorSourceMismatchError
@@ -368,7 +387,7 @@ def test_compute_novelty_score_regular_exceptions_still_swallowed():
 
     §1.6 state transition: exception in BGE path → return 1 (safe default).
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
 
     state_mgr = MagicMock()
     state_mgr.state = {"meta_learning": {"recent_failure_vectors": [[0.1] * 1024]}}
@@ -437,7 +456,7 @@ def test_retrieval_profile_default_embeddings_always_true():
     §1.7 determinism: identical call → identical output; no env-variable dependency.
     §1.11 mutation: if embeddings_enabled is set to False, this test fails.
     """
-    from system_learning.engines.retrieval_profile import RetrievalProfile
+#  # MOVED: from system_learning.engines.retrieval_profile import RetrievalProfile
 
     for env in [{}, {"BMG_EMBEDDINGS_ENABLED": "false"}, {"BMG_EMBEDDINGS_ENABLED": "true"}]:
         with patch.dict("os.environ", env, clear=False):
@@ -453,7 +472,7 @@ def test_retrieval_profile_field_default_true():
     """
     import dataclasses
 
-    from system_learning.engines.retrieval_profile import RetrievalProfile
+#  # MOVED: from system_learning.engines.retrieval_profile import RetrievalProfile
 
     fields = {f.name: f for f in dataclasses.fields(RetrievalProfile)}
     assert "embeddings_enabled" in fields
@@ -491,7 +510,7 @@ def test_create_deterministic_embedding_raises_on_missing_bge():
     §1.8 fail-closed: no fallback path. ImportError must propagate.
     §1.11 mutation: if fallback is re-added, this test fails.
     """
-    import system_learning.pipelines.meta_learning_pipeline as _pipeline
+#  # MOVED: import system_learning.pipelines.meta_learning_pipeline as _pipeline
 
     mock_sig = MagicMock()
     mock_sig.component = "test_component"
@@ -512,7 +531,7 @@ def test_create_deterministic_embedding_no_hash_fallback_code():
 
     §1.11 regression: if the 4-dim hash fallback is re-introduced, this catches it.
     """
-    import system_learning.pipelines.meta_learning_pipeline as _pipeline
+#  # MOVED: import system_learning.pipelines.meta_learning_pipeline as _pipeline
 
     src = inspect.getsource(_pipeline._create_deterministic_embedding)
     tree = ast.parse(src)
@@ -529,7 +548,7 @@ def test_create_deterministic_embedding_calls_bmg_embed_text():
 
     §1.7 determinism: identical failure_signature → identical bmg_embed_text call args.
     """
-    import system_learning.pipelines.meta_learning_pipeline as _pipeline
+#  # MOVED: import system_learning.pipelines.meta_learning_pipeline as _pipeline
 
     mock_sig = MagicMock()
     mock_sig.component = "L0_routing"
@@ -561,7 +580,7 @@ def test_create_deterministic_embedding_empty_signature_uses_unknown():
 
     §1.5 edge case: empty/missing failure signature fields.
     """
-    import system_learning.pipelines.meta_learning_pipeline as _pipeline
+#  # MOVED: import system_learning.pipelines.meta_learning_pipeline as _pipeline
 
     mock_sig = MagicMock(spec=[])  # no attributes
     captured = []
@@ -639,7 +658,7 @@ def test_preflight_bootstrap_mode_matrix(bootstrap_val, expect_bypass, monkeypat
     §1.9 matrix: BOOTSTRAP_MODE string variant × bypass expectation.
     §1.3 deterministic: fixed inputs, fixed expected outcomes.
     """
-    import agentic_core.L0_routing.scripts.execute_ssot as _mod
+#  # MOVED: import agentic_core.L0_routing.scripts.execute_ssot as _mod
 
     if bootstrap_val:
         monkeypatch.setenv("BOOTSTRAP_MODE", bootstrap_val)
@@ -661,6 +680,6 @@ def test_preflight_bootstrap_mode_matrix(bootstrap_val, expect_bypass, monkeypat
 
 
 def _dummy_confidence(value=0.8, reasoning=""):
-    from agentic_core.L0_routing.scripts.execute_ssot import ConfidenceScore
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import ConfidenceScore
 
     return ConfidenceScore(value=value, reasoning=reasoning)

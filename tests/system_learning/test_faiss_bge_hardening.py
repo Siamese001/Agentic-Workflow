@@ -18,16 +18,16 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+#  # MOVED: from agentic_core.L1_cognition.memory.healing_memory_retriever import (
     HealingMemoryRetriever,
     NullHealingMemoryRetriever,
     build_retriever,
 )
-from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import (
     generate_fallback_vector,
     normalize_failure_signal,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -90,7 +90,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_faiss_bge_hardening", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_faiss_bge_hardening", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_faiss_bge_hardening", "exec_snapshot_link")
-from system_learning.engines.local_faiss_store import (
+#  # MOVED: from system_learning.engines.local_faiss_store import (
     LocalFAISSStore,
     ManifestIntegrityError,
 )
@@ -99,7 +99,7 @@ from system_learning.engines.local_faiss_store import (
 # REMOVED: _emit_applies_guardrail("p0", "test_faiss_bge_hardening", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_faiss_bge_hardening", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_faiss_bge_hardening", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -249,6 +249,15 @@ class TestFinalizeBuildRequiredArgs:
 
     @pytest.mark.unit_min_deps
     def test_finalize_build_succeeds_with_all_kwargs(self, tmp_path):
+        from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.local_faiss_store import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
+        from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
+        from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
+        from agentic_core.L0_routing.scripts.execute_ssot import ConfidenceScore
         """finalize_build must not raise TypeError when all required kwargs supplied."""
         store = LocalFAISSStore(base_path=tmp_path)
         vecs, metas = _make_hash_fallback_vectors(3)
@@ -593,7 +602,7 @@ class TestSovereignDecisionEngineHMRWiring:
     @pytest.mark.unit_min_deps
     def test_sde_accepts_healing_memory_retriever_param(self):
         """SovereignDecisionEngine constructor must accept healing_memory_retriever."""
-        from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
 
         mock_state_mgr = MagicMock()
         mock_state_mgr.state = {"meta_learning": {}}
@@ -609,7 +618,7 @@ class TestSovereignDecisionEngineHMRWiring:
     @pytest.mark.unit_min_deps
     def test_sde_healing_memory_retriever_default_none(self):
         """When healing_memory_retriever not passed, _healing_memory_retriever must be None."""
-        from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
 
         mock_state_mgr = MagicMock()
         mock_state_mgr.state = {"meta_learning": {}}
@@ -619,7 +628,7 @@ class TestSovereignDecisionEngineHMRWiring:
     @pytest.mark.unit_min_deps
     def test_sde_with_null_retriever_does_not_attempt_search(self):
         """When NullHealingMemoryRetriever is passed, _route_decision must not call search."""
-        from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
 
         mock_state_mgr = MagicMock()
         mock_state_mgr.state = {"meta_learning": {"recent_failure_vectors": []}}
@@ -632,7 +641,7 @@ class TestSovereignDecisionEngineHMRWiring:
         )
         # NullHealingMemoryRetriever.is_active == False — no search attempt
         # _route_decision with a NullHealingMemoryRetriever must not raise
-        from agentic_core.L0_routing.scripts.execute_ssot import ConfidenceScore
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import ConfidenceScore
 
         conf = ConfidenceScore(value=0.85, reasoning="test")
         decision = sde._route_decision(conf, agent_name="TestAgent", territory="test_territory")

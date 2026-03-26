@@ -20,21 +20,21 @@ import time
 import unittest
 from datetime import datetime, timedelta
 
-from infrastructure.hardening.adaptive_optimizer import AdaptiveOptimizer
-from infrastructure.hardening.cross_layer_coherence import CrossLayerCoherenceManager
-from infrastructure.hardening.distributed_state_manager import DistributedStateManager
-from infrastructure.hardening.implementation_plan import (
+#  # MOVED: from infrastructure.hardening.adaptive_optimizer import AdaptiveOptimizer
+#  # MOVED: from infrastructure.hardening.cross_layer_coherence import CrossLayerCoherenceManager
+#  # MOVED: from infrastructure.hardening.distributed_state_manager import DistributedStateManager
+#  # MOVED: from infrastructure.hardening.implementation_plan import (
     LayerType,
     QueryRequest,
     QueryStatus,
     SecurityContext,
 )
-from infrastructure.hardening.security_framework import (
+#  # MOVED: from infrastructure.hardening.security_framework import (
     DataClassification,
     SecurityAction,
     SecurityGateway,
 )
-from infrastructure.hardening.unified_query_router import UnifiedQueryRouter
+#  # MOVED: from infrastructure.hardening.unified_query_router import UnifiedQueryRouter
 
 
 class TestEdgeCasesAndBoundaries(unittest.TestCase):
@@ -48,6 +48,12 @@ class TestEdgeCasesAndBoundaries(unittest.TestCase):
         self.security_gateway = SecurityGateway()
 
     def test_empty_query_handling(self):
+        from infrastructure.hardening.adaptive_optimizer import AdaptiveOptimizer
+        from infrastructure.hardening.cross_layer_coherence import CrossLayerCoherenceManager
+        from infrastructure.hardening.distributed_state_manager import DistributedStateManager
+        from infrastructure.hardening.implementation_plan import (
+        from infrastructure.hardening.security_framework import (
+        from infrastructure.hardening.unified_query_router import UnifiedQueryRouter
         """Test handling of empty and null queries."""
         # Test empty string query
         empty_request = QueryRequest(

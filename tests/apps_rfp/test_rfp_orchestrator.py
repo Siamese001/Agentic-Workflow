@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from apps_rfp.types.rfp_types import (
+#  # MOVED: from apps_rfp.types.rfp_types import (
     ArchitecturePosture,
     ProposalSection,
     ProposalStatus,
@@ -22,6 +22,22 @@ from apps_rfp.types.rfp_types import (
 
 class TestRfpTypes:
     def test_proposal_status_values(self) -> None:
+        from apps_rfp.types.rfp_types import (
+        from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
+        from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
+        from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
+        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+        from apps_rfp.config.agent_spec_config import load_rfp_specs
+        from apps_rfp.config.agent_spec_config import load_rfp_specs
+        from apps_rfp.config.reasoning_toggles_config import DEFAULT_TOGGLES
+        from apps_rfp.config.agent_spec_config import load_rfp_specs
         assert ProposalStatus.COMPLETE.value == "complete"
         assert ProposalStatus.DRY_RUN.value == "dry_run"
         assert ProposalStatus.FAILED.value == "failed"
@@ -81,7 +97,7 @@ class TestRfpTypes:
     assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
     # TODO: Add specific execution assertions
     def test_passes_valid_sections(self) -> None:
-        from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
+#  # MOVED: from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
 
         sections = [
             ProposalSection(
@@ -160,7 +176,7 @@ class TestRfpTypes:
         assert result.passed is True
 
     def test_fails_missing_required_section(self) -> None:
-        from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
+#  # MOVED: from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
 
         sections = [
             ProposalSection(
@@ -174,7 +190,7 @@ class TestRfpTypes:
         assert result.passed is False
 
     def test_quality_score_in_range(self) -> None:
-        from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
+#  # MOVED: from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
 
         sections = [
             ProposalSection(
@@ -190,7 +206,7 @@ class TestRfpTypes:
 
 class TestRfpOrchestratorDryRun:
     def test_dry_run_returns_dry_run_status(self) -> None:
-        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+#  # MOVED: from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
 
         req = RfpRequest(problem_statement="need AI platform", dry_run=True)
         orch = RfpOrchestrator(dry_run=True)
@@ -198,7 +214,7 @@ class TestRfpOrchestratorDryRun:
         assert result.status == ProposalStatus.DRY_RUN
 
     def test_dry_run_no_artifact_paths(self) -> None:
-        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+#  # MOVED: from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
 
         req = RfpRequest(problem_statement="need AI platform", dry_run=True)
         orch = RfpOrchestrator(dry_run=True)
@@ -206,7 +222,7 @@ class TestRfpOrchestratorDryRun:
         assert result.artifact_paths == []
 
     def test_dry_run_has_sections(self) -> None:
-        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+#  # MOVED: from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
 
         req = RfpRequest(problem_statement="need AI platform", dry_run=True)
         orch = RfpOrchestrator(dry_run=True)
@@ -214,7 +230,7 @@ class TestRfpOrchestratorDryRun:
         assert len(result.sections) > 0
 
     def test_dry_run_has_roadmap(self) -> None:
-        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+#  # MOVED: from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
 
         req = RfpRequest(problem_statement="need AI platform", dry_run=True)
         orch = RfpOrchestrator(dry_run=True)
@@ -222,7 +238,7 @@ class TestRfpOrchestratorDryRun:
         assert len(result.roadmap) > 0
 
     def test_dry_run_has_risks(self) -> None:
-        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+#  # MOVED: from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
 
         req = RfpRequest(problem_statement="need AI platform", dry_run=True)
         orch = RfpOrchestrator(dry_run=True)
@@ -230,7 +246,7 @@ class TestRfpOrchestratorDryRun:
         assert len(result.risks) > 0
 
     def test_trace_id_deterministic(self) -> None:
-        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+#  # MOVED: from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
 
         req1 = RfpRequest(problem_statement="need AI platform", industry="technology")
         req2 = RfpRequest(problem_statement="need AI platform", industry="technology")
@@ -239,7 +255,7 @@ class TestRfpOrchestratorDryRun:
         assert t1 == t2
 
     def test_different_inputs_different_trace_ids(self) -> None:
-        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+#  # MOVED: from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
 
         req1 = RfpRequest(problem_statement="need AI platform", industry="technology")
         req2 = RfpRequest(problem_statement="need AI platform", industry="healthcare")
@@ -248,7 +264,7 @@ class TestRfpOrchestratorDryRun:
         assert t1 != t2
 
     def test_all_industries_complete_dry_run(self) -> None:
-        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+#  # MOVED: from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
 
         for industry in ["financial_services", "healthcare", "technology", "government"]:
             req = RfpRequest(problem_statement="need AI", industry=industry, dry_run=True)
@@ -261,14 +277,14 @@ class TestRfpOrchestratorDryRun:
 
 class TestRfpConfig:
     def test_load_rfp_specs_returns_defaults(self) -> None:
-        from apps_rfp.config.agent_spec_config import load_rfp_specs
+#  # MOVED: from apps_rfp.config.agent_spec_config import load_rfp_specs
 
         specs = load_rfp_specs()
         assert specs is not None
         assert specs.version == "1.0.0"
 
     def test_required_sections_present(self) -> None:
-        from apps_rfp.config.agent_spec_config import load_rfp_specs
+#  # MOVED: from apps_rfp.config.agent_spec_config import load_rfp_specs
 
         specs = load_rfp_specs()
         section_ids = {s.section_id for s in specs.sections}
@@ -276,14 +292,14 @@ class TestRfpConfig:
         assert must_have.issubset(section_ids)
 
     def test_reasoning_toggles_defaults(self) -> None:
-        from apps_rfp.config.reasoning_toggles_config import DEFAULT_TOGGLES
+#  # MOVED: from apps_rfp.config.reasoning_toggles_config import DEFAULT_TOGGLES
 
         assert DEFAULT_TOGGLES.enable_roadmap_generation is True
         assert DEFAULT_TOGGLES.enable_risk_matrix is True
         assert DEFAULT_TOGGLES.llm_narrative_enabled is False
 
     def test_industry_profiles_configured(self) -> None:
-        from apps_rfp.config.agent_spec_config import load_rfp_specs
+#  # MOVED: from apps_rfp.config.agent_spec_config import load_rfp_specs
 
         specs = load_rfp_specs()
         assert "technology" in specs.industries

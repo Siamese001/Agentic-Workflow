@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L5_safety.reasoning.AutonomousThreatEvolutionAgent  # noqa: F401
+#  # MOVED: import agentic_core.L5_safety.reasoning.AutonomousThreatEvolutionAgent  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L5_safety.reasoning.AutonomousThreatEvolutionAgent  # noqa: F401
     """Module AutonomousThreatEvolutionAgent must be importable."""
     assert agentic_core.L5_safety.reasoning.AutonomousThreatEvolutionAgent is not None

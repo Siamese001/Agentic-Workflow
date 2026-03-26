@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -85,7 +85,7 @@ pytestmark = pytest.mark.unit
 # ---------------------------------------------------------------------------
 # canonical_truth_seam
 # ---------------------------------------------------------------------------
-from agentic_core.L0_routing.seams.canonical_truth_seam import (
+#  # MOVED: from agentic_core.L0_routing.seams.canonical_truth_seam import (
     CanonicalTruthProvider,
     get_canonical_layer,
     get_canonical_truth_provider,
@@ -94,6 +94,9 @@ from agentic_core.L0_routing.seams.canonical_truth_seam import (
 
 class TestCanonicalTruthSeam:
     def test_canonical_truth_provider_is_protocol(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.seams.canonical_truth_seam import (
+        from agentic_core.L0_routing.seams.layer_emission_seam import (
         assert callable(CanonicalTruthProvider)
 
     def test_has_get_layer(self):
@@ -123,7 +126,7 @@ class TestCanonicalTruthSeam:
     assert result is not None, f"{function_name} should return a result"
     assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
     # TODO: Add specific execution assertions
-from agentic_core.L0_routing.seams.layer_emission_seam import (
+#  # MOVED: from agentic_core.L0_routing.seams.layer_emission_seam import (
     LayerEmissionValidator,
     assert_layer_may_emit,
     get_layer_emission_validator,

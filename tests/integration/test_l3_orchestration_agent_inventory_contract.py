@@ -19,7 +19,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
@@ -27,7 +27,7 @@ from agentic_core.L0_routing.config.path_constants import (
     L3_ORCHESTRATION_DIR,
     OPS_SCRIPTS_DIR,
 )
-from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 ROOT = Path(__file__).resolve().parents[3]
 L3_ROOT = ROOT / L3_ORCHESTRATION_DIR
@@ -82,6 +82,8 @@ class TestAgentFileStructure:
 
     @pytest.mark.parametrize("agent_path", AGENT_FILES, ids=lambda p: p.name)
     def test_has_agent_classdef(self, agent_path: Path) -> None:
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
     """Test has_agent_classdef contract compliance."""
     # Arrange
     # TODO: Set up contract parties and terms

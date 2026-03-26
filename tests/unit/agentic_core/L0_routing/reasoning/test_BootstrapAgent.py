@@ -6,10 +6,12 @@ Generated as part of test structure mirror contract enforcement.
 
 import pytest
 
-import agentic_core.L5_safety.reasoning.BootstrapAgent
+#  # MOVED: import agentic_core.L5_safety.reasoning.BootstrapAgent
 
 
 def test_BootstrapAgent_can_import():
+    import agentic_core.L5_safety.reasoning.BootstrapAgent
+    import agentic_core.L5_safety.reasoning.BootstrapAgent
     """Test that the module can be imported successfully."""
     # This is a basic smoke test to ensure the module is importable
     assert agentic_core.L5_safety.reasoning.BootstrapAgent is not None
@@ -64,7 +66,7 @@ def test_heal_exists():
 def test_module_has_minimum_coverage():
     """Test that the module has some minimum level of functionality."""
     # This test ensures we're not just importing empty modules
-    import agentic_core.L5_safety.reasoning.BootstrapAgent
+#  # MOVED: import agentic_core.L5_safety.reasoning.BootstrapAgent
 
     # Check that module has some content
     module_dict = agentic_core.L5_safety.reasoning.BootstrapAgent.__dict__

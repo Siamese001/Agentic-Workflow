@@ -11,15 +11,15 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L5_safety.types.surgical_context_types import (
+#  # MOVED: from agentic_core.L5_safety.types.surgical_context_types import (
     ASTCoordinate,
     SurgicalContext,
     ViolationConstraint,
 )
-from agentic_core.mixins.cst_healer_mixin import (
+#  # MOVED: from agentic_core.mixins.cst_healer_mixin import (
     SurgicalCSTHealerMixin,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -66,7 +66,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_code_healer_cst_integration", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_code_healer_cst_integration", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_code_healer_cst_integration", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -184,6 +184,10 @@ class TestCodeHealerCSTIntegration:
     """Test CST integration with CodeHealerAgent pattern."""
 
     def test_surgical_context_creation(self):
+        from agentic_core.L5_safety.types.surgical_context_types import (
+        from agentic_core.mixins.cst_healer_mixin import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """Test that surgical contexts are created correctly for import healing."""
         source_code = """# Module comment
 import os  # Used import

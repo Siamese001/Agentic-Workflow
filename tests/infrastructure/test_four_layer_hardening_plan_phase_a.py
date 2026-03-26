@@ -3,21 +3,21 @@ import inspect
 import unittest
 from datetime import datetime
 
-from infrastructure.hardening.distributed_state_manager import DistributedStateManager
-from infrastructure.hardening.implementation_plan import (
+#  # MOVED: from infrastructure.hardening.distributed_state_manager import DistributedStateManager
+#  # MOVED: from infrastructure.hardening.implementation_plan import (
     FourLayerContractError,
     FourLayerContractGuard,
     LayerType,
     QueryRequest,
 )
-from infrastructure.hardening.security_framework import (
+#  # MOVED: from infrastructure.hardening.security_framework import (
     AccessLevel,
     DataClassification,
     SecurityAction,
     SecurityContext,
     SecurityGateway,
 )
-from infrastructure.hardening.unified_query_router import UnifiedQueryRouter
+#  # MOVED: from infrastructure.hardening.unified_query_router import UnifiedQueryRouter
 
 
 class TestFourLayerContractGuard(unittest.TestCase):
@@ -25,6 +25,10 @@ class TestFourLayerContractGuard(unittest.TestCase):
         self.guard = FourLayerContractGuard(l4_rate_limit_per_minute=2)
 
     def test_validate_query_request_fail_closed(self):
+        from infrastructure.hardening.distributed_state_manager import DistributedStateManager
+        from infrastructure.hardening.implementation_plan import (
+        from infrastructure.hardening.security_framework import (
+        from infrastructure.hardening.unified_query_router import UnifiedQueryRouter
     """Test validate_query_request_fail_closed contract compliance."""
     # Arrange
     # TODO: Set up test data

@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.validators.golden_state_test_case_validator import (  # noqa: F401
+#  # MOVED: from agentic_core.L5_safety.validators.golden_state_test_case_validator import (  # noqa: F401
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,
@@ -26,6 +26,7 @@ from agentic_core.L5_safety.validators.golden_state_test_case_validator import (
 
 class TestGoldenStateTestCaseContract:
     def test_is_class(self):
+        from agentic_core.L5_safety.validators.golden_state_test_case_validator import (  # noqa: F401
         assert isinstance(GoldenStateTestCase, type)
 
     def test_has_method_validate_required_text(self):

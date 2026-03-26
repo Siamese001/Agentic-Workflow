@@ -5,9 +5,9 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L5_safety.hitl.patch_validator import ValidatedPatch, validate_patch
-from agentic_core.L5_safety.types.hardening_errors import HumanPatchValidationError
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L5_safety.hitl.patch_validator import ValidatedPatch, validate_patch
+#  # MOVED: from agentic_core.L5_safety.types.hardening_errors import HumanPatchValidationError
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -171,6 +171,9 @@ class TestValidatePatch:
         }
 
     def test_valid_patch_returns_validated(self):
+        from agentic_core.L5_safety.hitl.patch_validator import ValidatedPatch, validate_patch
+        from agentic_core.L5_safety.types.hardening_errors import HumanPatchValidationError
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         result = validate_patch(self._valid_patch())
         assert isinstance(result, ValidatedPatch)
         assert result.reviewer_signature == "reviewer@example.com"

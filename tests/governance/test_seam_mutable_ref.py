@@ -10,7 +10,7 @@ import dataclasses
 
 import pytest
 
-from agentic_core.L2_execution.enforcement.runtime_interceptor import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.runtime_interceptor import (
     MutableReferenceError,
     MutableReferenceTracker,
     assert_immutable_reference,
@@ -18,7 +18,7 @@ from agentic_core.L2_execution.enforcement.runtime_interceptor import (
     get_mutable_ref_violations,
     immutable_references,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -165,6 +165,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 @pytest.mark.governance
 def test_req270_immutable_reference_enforcement():
+    from agentic_core.L2_execution.enforcement.runtime_interceptor import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """REQ-270: Seam passes only immutable references."""
     # Test immutable types pass
     assert_immutable_reference(42, "test context")

@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.runtime.utils.trait_system_util import (  # noqa: F401
+#  # MOVED: from agentic_core.runtime.utils.trait_system_util import (  # noqa: F401
     BATCH_SIZE,
     BUFFER_SIZE,
     DEFAULT_SLEEP,
@@ -28,6 +28,7 @@ from agentic_core.runtime.utils.trait_system_util import (  # noqa: F401
 
 class TestTraitContract:
     def test_is_class(self):
+        from agentic_core.runtime.utils.trait_system_util import (  # noqa: F401
     """Test is_class runtime behavior."""
     # Arrange
     # TODO: Set up runtime environment

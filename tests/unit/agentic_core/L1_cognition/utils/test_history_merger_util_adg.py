@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L1_cognition.utils.history_merger_util  # noqa: F401
+#  # MOVED: import agentic_core.L1_cognition.utils.history_merger_util  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L1_cognition.utils.history_merger_util  # noqa: F401
     """Module history_merger_util must be importable."""
     assert agentic_core.L1_cognition.utils.history_merger_util is not None

@@ -14,7 +14,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -77,20 +77,20 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_apps_integration", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_apps_integration", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_apps_integration", "exec_snapshot_link")
-from apps_lic.engines.hop_stage_registry import (
+#  # MOVED: from apps_lic.engines.hop_stage_registry import (
     _REGISTRY,
     get_stage_handler,
     register_stage,
 )
-from apps_rg.engines.contact_safety_engine import ContactSafetyEngine
-from apps_rg.engines.hallucination_detector import HallucinationDetector
-from apps_rg.engines.skill_score_normalizer import SkillScoreNormalizer
+#  # MOVED: from apps_rg.engines.contact_safety_engine import ContactSafetyEngine
+#  # MOVED: from apps_rg.engines.hallucination_detector import HallucinationDetector
+#  # MOVED: from apps_rg.engines.skill_score_normalizer import SkillScoreNormalizer
 
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_apps_integration")
 # REMOVED: _emit_applies_guardrail("p0", "test_apps_integration", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_apps_integration", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_apps_integration", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -216,6 +216,12 @@ def _skill_normalizer() -> SkillScoreNormalizer:
 class TestContactSafetySSNDetection:
     @pytest.mark.governance
     def test_detects_standard_ssn_format(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from apps_lic.engines.hop_stage_registry import (
+        from apps_rg.engines.contact_safety_engine import ContactSafetyEngine
+        from apps_rg.engines.hallucination_detector import HallucinationDetector
+        from apps_rg.engines.skill_score_normalizer import SkillScoreNormalizer
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         engine = _contact_safety()
         assert engine._contains_ssn("SSN: 123-45-6789") is True
 

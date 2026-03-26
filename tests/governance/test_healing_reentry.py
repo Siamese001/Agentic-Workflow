@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     L0_ROUTING_DIR,
     L2_EXECUTION_DIR,
@@ -37,6 +37,7 @@ class TestNoDirectL5Import:
     """validation_orchestrator.py must not contain any static L5 import."""
 
     def test_no_static_l5_import(self):
+        from agentic_core.L0_routing.config.path_constants import (
         tree = ast.parse(_ORCHESTRATOR.read_text("utf-8"), filename=str(_ORCHESTRATOR))
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom) and node.module:

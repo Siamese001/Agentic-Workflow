@@ -85,6 +85,82 @@ class TestGeminiJudgeProviderSuccess:
 
     def test_judge_valid_json_response(self):
         from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+        from agentic_core.evaluation.judges.provider_registry import create_default_registry
+        from agentic_core.evaluation.judges.provider_registry import create_default_registry
+        from agentic_core.evaluation.judges.provider_registry import create_default_registry
+        from agentic_core.evaluation.judges.provider_registry import create_default_registry
+        from agentic_core.evaluation.judges.provider_registry import create_default_registry
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.rubric_engine import RubricEngine
+        from agentic_core.evaluation.judges.types import EvidenceBundle
+        from agentic_core.evaluation.judges.llm_judges import judge_gov_001
+        from agentic_core.evaluation.judges.types import VerdictOutcome
+        from agentic_core.evaluation.judges.llm_judges import judge_gov_003
+        from agentic_core.evaluation.judges.llm_judges import judge_sec_001
+        from agentic_core.evaluation.judges.types import VerdictOutcome
+        from agentic_core.evaluation.judges.llm_judges import judge_sec_001
+        from agentic_core.evaluation.judges.types import VerdictOutcome
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.rubric_engine import RubricEngine
+        from agentic_core.evaluation.judges.llm_judges import judge_gov_001
+        from agentic_core.evaluation.judges.types import EvidenceBundle
+        from agentic_core.evaluation.judges.llm_judges import judge_gov_003
+        from agentic_core.evaluation.judges.types import EvidenceBundle
+        from agentic_core.evaluation.judges.llm_judges import judge_sec_001
+        from agentic_core.evaluation.judges.types import EvidenceBundle
+        from agentic_core.evaluation.judges.orchestrator import JudgeOrchestrator
+        from agentic_core.evaluation.judges.provider_registry import (
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         mock_model = FakeGenerativeModel(response_text=_valid_judge_json())
         provider = GeminiJudgeProvider(gemini_client=mock_model)
@@ -100,7 +176,7 @@ class TestGeminiJudgeProviderSuccess:
         assert "error" not in result
 
     def test_judge_passes_temperature_zero(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         mock_model = FakeGenerativeModel(response_text=_valid_judge_json())
         provider = GeminiJudgeProvider(gemini_client=mock_model)
@@ -112,7 +188,7 @@ class TestGeminiJudgeProviderSuccess:
         assert call["generation_config"]["temperature"] == 0.0
 
     def test_judge_passes_prompt_through(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         mock_model = FakeGenerativeModel(response_text=_valid_judge_json())
         provider = GeminiJudgeProvider(gemini_client=mock_model)
@@ -122,43 +198,43 @@ class TestGeminiJudgeProviderSuccess:
         assert mock_model.generate_content_calls[0]["prompt"] == "exact prompt text"
 
     def test_provider_id_is_gemini(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         assert GeminiJudgeProvider().provider_id == "gemini"
 
     def test_cost_per_eval(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         assert GeminiJudgeProvider().cost_per_eval == 0.001
 
     def test_model_id_default(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         provider = GeminiJudgeProvider()
         assert provider.model_id == "gemini-2.5-flash"
 
     def test_model_id_override_via_constructor(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         provider = GeminiJudgeProvider(model="gemini-2.5-pro")
         assert provider.model_id == "gemini-2.5-pro"
 
     def test_model_id_override_via_env(self, monkeypatch):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         monkeypatch.setenv("GEMINI_MODEL", "gemini-1.5-flash")
         provider = GeminiJudgeProvider()
         assert provider.model_id == "gemini-1.5-flash"
 
     def test_constructor_model_takes_precedence_over_env(self, monkeypatch):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         monkeypatch.setenv("GEMINI_MODEL", "env-model")
         provider = GeminiJudgeProvider(model="constructor-model")
         assert provider.model_id == "constructor-model"
 
     def test_model_appears_in_result(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         mock_model = FakeGenerativeModel(response_text=_valid_judge_json())
         provider = GeminiJudgeProvider(gemini_client=mock_model, model="gemini-2.5-pro")
@@ -167,7 +243,7 @@ class TestGeminiJudgeProviderSuccess:
         assert result["model"] == "gemini-2.5-pro"
 
     def test_criteria_scores_extracted_correctly(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         response = json.dumps(
             {
@@ -189,7 +265,7 @@ class TestGeminiJudgeProviderSuccess:
         assert result["score"] == pytest.approx(expected_score, abs=0.001)
 
     def test_aggregate_score_is_mean_of_criteria(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         response = json.dumps(
             {
@@ -205,7 +281,7 @@ class TestGeminiJudgeProviderSuccess:
         assert result["score"] == pytest.approx(0.5)
 
     def test_no_criteria_scores_yields_zero(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         response = json.dumps({"reasoning": "no scores provided"})
         mock_model = FakeGenerativeModel(response_text=response)
@@ -225,7 +301,7 @@ class TestGeminiJudgeProviderParseErrors:
     """Response parsing failure modes."""
 
     def test_malformed_json_returns_error(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         mock_model = FakeGenerativeModel(response_text="not json at all")
         provider = GeminiJudgeProvider(gemini_client=mock_model)
@@ -239,7 +315,7 @@ class TestGeminiJudgeProviderParseErrors:
         assert result["rubric_id"] == "GOV-001"
 
     def test_markdown_fenced_json_parsed_successfully(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         fenced = '```json\n{"guardrail_substantive": 0.9, "reasoning": "ok"}\n```'
         mock_model = FakeGenerativeModel(response_text=fenced)
@@ -251,7 +327,7 @@ class TestGeminiJudgeProviderParseErrors:
         assert "error" not in result
 
     def test_bare_markdown_fences_parsed(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         fenced = '```\n{"a": 0.5, "reasoning": "ok"}\n```'
         mock_model = FakeGenerativeModel(response_text=fenced)
@@ -261,7 +337,7 @@ class TestGeminiJudgeProviderParseErrors:
         assert result["score"] == pytest.approx(0.5)
 
     def test_partial_json_returns_error(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         mock_model = FakeGenerativeModel(response_text='{"incomplete": ')
         provider = GeminiJudgeProvider(gemini_client=mock_model)
@@ -271,7 +347,7 @@ class TestGeminiJudgeProviderParseErrors:
         assert "error" in result
 
     def test_empty_string_returns_error(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         mock_model = FakeGenerativeModel(response_text="")
         provider = GeminiJudgeProvider(gemini_client=mock_model)
@@ -281,7 +357,7 @@ class TestGeminiJudgeProviderParseErrors:
         assert "error" in result
 
     def test_raw_response_truncated_at_500(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         long_garbage = "x" * 1000
         mock_model = FakeGenerativeModel(response_text=long_garbage)
@@ -300,7 +376,7 @@ class TestGeminiJudgeProviderAPIErrors:
     """Gemini SDK call failures."""
 
     def test_api_exception_returns_error_dict(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         mock_model = FakeGenerativeModel(raise_on_generate=RuntimeError("quota exceeded"))
         provider = GeminiJudgeProvider(gemini_client=mock_model)
@@ -313,7 +389,7 @@ class TestGeminiJudgeProviderAPIErrors:
         assert result["provider"] == "gemini"
 
     def test_timeout_error_returns_error_dict(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         mock_model = FakeGenerativeModel(raise_on_generate=TimeoutError("request timed out"))
         provider = GeminiJudgeProvider(gemini_client=mock_model)
@@ -323,7 +399,7 @@ class TestGeminiJudgeProviderAPIErrors:
         assert "timed out" in result["reasoning"]
 
     def test_connection_error_returns_error_dict(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         mock_model = FakeGenerativeModel(raise_on_generate=ConnectionError("network unreachable"))
         provider = GeminiJudgeProvider(gemini_client=mock_model)
@@ -372,7 +448,7 @@ class TestGeminiJudgeProviderCredentials:
         return mock_genai, {"google": mock_google, "google.generativeai": mock_genai}
 
     def test_gemini_api_key_accepted(self, monkeypatch):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         monkeypatch.setenv("GEMINI_API_KEY", "test-key-123")
         monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
@@ -387,7 +463,7 @@ class TestGeminiJudgeProviderCredentials:
         mock_genai.configure.assert_called_once_with(api_key="test-key-123")
 
     def test_google_api_key_fallback(self, monkeypatch):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         monkeypatch.delenv("GEMINI_API_KEY", raising=False)
         monkeypatch.setenv("GOOGLE_API_KEY", "google-key-456")
@@ -402,7 +478,7 @@ class TestGeminiJudgeProviderCredentials:
         mock_genai.configure.assert_called_once_with(api_key="google-key-456")
 
     def test_injected_client_bypasses_sdk(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         sentinel = object()
         provider = GeminiJudgeProvider(gemini_client=sentinel)
@@ -431,7 +507,7 @@ class TestGeminiJudgeProviderDeterminism:
     """Identical inputs → identical outputs (deterministic contract)."""
 
     def test_same_input_same_output(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         response = _valid_judge_json(guardrail_substantive=0.75, policy_integration=0.85)
         mock_model = FakeGenerativeModel(response_text=response)
@@ -449,7 +525,7 @@ class TestGeminiJudgeProviderDeterminism:
         assert len(reasonings) == 1
 
     def test_different_prompts_both_succeed(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         response = _valid_judge_json()
         mock_model = FakeGenerativeModel(response_text=response)
@@ -473,7 +549,7 @@ class TestGeminiJudgeSuccess:
     """Tests for the GeminiJudge in llm_judge.py with mocked SDK."""
 
     def test_score_valid_response(self):
-        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+#  # MOVED: from agentic_core.evaluation.judges.llm_judge import GeminiJudge
 
         mock_model = FakeGenerativeModel(response_text=_valid_score_json())
         judge = GeminiJudge(gemini_client=mock_model)
@@ -492,7 +568,7 @@ class TestGeminiJudgeSuccess:
         assert result.judge_model == "gemini-2.5-flash"
 
     def test_score_custom_model(self):
-        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+#  # MOVED: from agentic_core.evaluation.judges.llm_judge import GeminiJudge
 
         mock_model = FakeGenerativeModel(response_text=_valid_score_json())
         judge = GeminiJudge(gemini_client=mock_model, model="gemini-2.5-pro")
@@ -501,7 +577,7 @@ class TestGeminiJudgeSuccess:
         assert result.judge_model == "gemini-2.5-pro"
 
     def test_score_passes_temperature_zero(self):
-        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+#  # MOVED: from agentic_core.evaluation.judges.llm_judge import GeminiJudge
 
         mock_model = FakeGenerativeModel(response_text=_valid_score_json())
         judge = GeminiJudge(gemini_client=mock_model)
@@ -512,7 +588,7 @@ class TestGeminiJudgeSuccess:
         assert mock_model.generate_content_calls[0]["generation_config"]["temperature"] == 0.0
 
     def test_score_prompt_contains_query_context_answer(self):
-        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+#  # MOVED: from agentic_core.evaluation.judges.llm_judge import GeminiJudge
 
         mock_model = FakeGenerativeModel(response_text=_valid_score_json())
         judge = GeminiJudge(gemini_client=mock_model)
@@ -525,19 +601,19 @@ class TestGeminiJudgeSuccess:
         assert "my_answer" in prompt
 
     def test_model_id_property(self):
-        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+#  # MOVED: from agentic_core.evaluation.judges.llm_judge import GeminiJudge
 
         judge = GeminiJudge(model="gemini-2.5-pro")
         assert judge.model_id == "gemini-2.5-pro"
 
     def test_default_model_id(self):
-        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+#  # MOVED: from agentic_core.evaluation.judges.llm_judge import GeminiJudge
 
         judge = GeminiJudge()
         assert judge.model_id == "gemini-2.5-flash"
 
     def test_model_env_override(self, monkeypatch):
-        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+#  # MOVED: from agentic_core.evaluation.judges.llm_judge import GeminiJudge
 
         monkeypatch.setenv("GEMINI_MODEL", "custom-model-from-env")
         judge = GeminiJudge()
@@ -553,14 +629,14 @@ class TestGeminiJudgeErrors:
     """Error handling in GeminiJudge."""
 
     def test_missing_sdk_raises(self):
-        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+#  # MOVED: from agentic_core.evaluation.judges.llm_judge import GeminiJudge
 
         judge = GeminiJudge()
         with pytest.raises(RuntimeError, match="google-genai package not installed"):
             judge._get_client()
 
     def test_missing_api_key_raises(self, monkeypatch):
-        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+#  # MOVED: from agentic_core.evaluation.judges.llm_judge import GeminiJudge
 
         monkeypatch.delenv("GEMINI_API_KEY", raising=False)
         monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
@@ -575,7 +651,7 @@ class TestGeminiJudgeErrors:
                 judge._get_client()
 
     def test_api_error_propagates(self):
-        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+#  # MOVED: from agentic_core.evaluation.judges.llm_judge import GeminiJudge
 
         mock_model = FakeGenerativeModel(raise_on_generate=RuntimeError("API down"))
         judge = GeminiJudge(gemini_client=mock_model)
@@ -584,7 +660,7 @@ class TestGeminiJudgeErrors:
             judge.score("q", "c", "a")
 
     def test_malformed_json_raises(self):
-        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+#  # MOVED: from agentic_core.evaluation.judges.llm_judge import GeminiJudge
 
         mock_model = FakeGenerativeModel(response_text="not json")
         judge = GeminiJudge(gemini_client=mock_model)
@@ -593,7 +669,7 @@ class TestGeminiJudgeErrors:
             judge.score("q", "c", "a")
 
     def test_markdown_fenced_json_parsed(self):
-        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+#  # MOVED: from agentic_core.evaluation.judges.llm_judge import GeminiJudge
 
         fenced = f"```json\n{_valid_score_json()}\n```"
         mock_model = FakeGenerativeModel(response_text=fenced)
@@ -603,7 +679,7 @@ class TestGeminiJudgeErrors:
         assert result.faithfulness == pytest.approx(0.95)
 
     def test_missing_fields_default_to_one(self):
-        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+#  # MOVED: from agentic_core.evaluation.judges.llm_judge import GeminiJudge
 
         response = json.dumps({"reasoning": "partial response"})
         mock_model = FakeGenerativeModel(response_text=response)
@@ -625,7 +701,7 @@ class TestJudgeScoreInvariants:
     """JudgeScore dataclass invariants."""
 
     def test_score_boundary_values(self):
-        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+#  # MOVED: from agentic_core.evaluation.judges.llm_judge import GeminiJudge
 
         response = json.dumps(
             {
@@ -646,7 +722,7 @@ class TestJudgeScoreInvariants:
         assert result.groundedness == 1.0
 
     def test_all_scores_preserved(self):
-        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+#  # MOVED: from agentic_core.evaluation.judges.llm_judge import GeminiJudge
 
         response = json.dumps(
             {
@@ -668,7 +744,7 @@ class TestJudgeScoreInvariants:
         assert result.reasoning == "test preservation"
 
     def test_deterministic_digest_stable(self):
-        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+#  # MOVED: from agentic_core.evaluation.judges.llm_judge import GeminiJudge
 
         response = _valid_score_json()
         mock_model = FakeGenerativeModel(response_text=response)
@@ -690,7 +766,7 @@ class TestCreateDefaultRegistry:
     """Tests for create_default_registry Gemini auto-registration."""
 
     def test_no_api_key_uses_null_default(self, monkeypatch):
-        from agentic_core.evaluation.judges.provider_registry import create_default_registry
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import create_default_registry
 
         monkeypatch.delenv("GEMINI_API_KEY", raising=False)
         monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
@@ -701,7 +777,7 @@ class TestCreateDefaultRegistry:
         assert "gemini" not in registry.provider_ids
 
     def test_with_api_key_registers_gemini_as_default(self, monkeypatch):
-        from agentic_core.evaluation.judges.provider_registry import create_default_registry
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import create_default_registry
 
         monkeypatch.setenv("GEMINI_API_KEY", "test-key")
 
@@ -710,7 +786,7 @@ class TestCreateDefaultRegistry:
         assert registry.default.provider_id == "gemini"
 
     def test_with_google_api_key_registers_gemini(self, monkeypatch):
-        from agentic_core.evaluation.judges.provider_registry import create_default_registry
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import create_default_registry
 
         monkeypatch.delenv("GEMINI_API_KEY", raising=False)
         monkeypatch.setenv("GOOGLE_API_KEY", "google-key")
@@ -719,7 +795,7 @@ class TestCreateDefaultRegistry:
         assert "gemini" in registry.provider_ids
 
     def test_null_always_available_as_fallback(self, monkeypatch):
-        from agentic_core.evaluation.judges.provider_registry import create_default_registry
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import create_default_registry
 
         monkeypatch.setenv("GEMINI_API_KEY", "test-key")
         registry = create_default_registry()
@@ -728,7 +804,7 @@ class TestCreateDefaultRegistry:
         assert null_provider.provider_id == "null"
 
     def test_summary_reflects_registered_providers(self, monkeypatch):
-        from agentic_core.evaluation.judges.provider_registry import create_default_registry
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import create_default_registry
 
         monkeypatch.setenv("GEMINI_API_KEY", "test-key")
         registry = create_default_registry()
@@ -749,7 +825,7 @@ class TestLLMJudgesWithGeminiProvider:
 
     @pytest.fixture()
     def gemini_provider(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         response = json.dumps(
             {
@@ -769,19 +845,19 @@ class TestLLMJudgesWithGeminiProvider:
 
     @pytest.fixture()
     def rubric_engine(self):
-        from agentic_core.evaluation.judges.rubric_engine import RubricEngine
+#  # MOVED: from agentic_core.evaluation.judges.rubric_engine import RubricEngine
 
         return RubricEngine()
 
     def _make_bundle(self, target: str, **edge_overrides: Any):
-        from agentic_core.evaluation.judges.types import EvidenceBundle
+#  # MOVED: from agentic_core.evaluation.judges.types import EvidenceBundle
 
         edges = edge_overrides or {"applies_guardrail": [{"symbol": "guard"}]}
         return EvidenceBundle(target=target, adg_edges=edges, adg_digest="test-digest")
 
     def test_gov_001_with_gemini(self, gemini_provider, rubric_engine):
-        from agentic_core.evaluation.judges.llm_judges import judge_gov_001
-        from agentic_core.evaluation.judges.types import VerdictOutcome
+#  # MOVED: from agentic_core.evaluation.judges.llm_judges import judge_gov_001
+#  # MOVED: from agentic_core.evaluation.judges.types import VerdictOutcome
 
         bundle = self._make_bundle("agentic_core/L2_execution/mod.py")
         verdict = asyncio.get_event_loop().run_until_complete(
@@ -795,7 +871,7 @@ class TestLLMJudgesWithGeminiProvider:
         assert verdict.adg_digest == "test-digest"
 
     def test_gov_003_with_gemini(self, gemini_provider, rubric_engine):
-        from agentic_core.evaluation.judges.llm_judges import judge_gov_003
+#  # MOVED: from agentic_core.evaluation.judges.llm_judges import judge_gov_003
 
         bundle = self._make_bundle(
             "agentic_core/L3_orchestration/orch.py",
@@ -810,8 +886,8 @@ class TestLLMJudgesWithGeminiProvider:
         assert 0.0 <= verdict.score <= 1.0
 
     def test_sec_001_with_gemini_and_dynamic_edges(self, gemini_provider, rubric_engine):
-        from agentic_core.evaluation.judges.llm_judges import judge_sec_001
-        from agentic_core.evaluation.judges.types import VerdictOutcome
+#  # MOVED: from agentic_core.evaluation.judges.llm_judges import judge_sec_001
+#  # MOVED: from agentic_core.evaluation.judges.types import VerdictOutcome
 
         bundle = self._make_bundle(
             "agentic_core/risky.py",
@@ -827,8 +903,8 @@ class TestLLMJudgesWithGeminiProvider:
         assert len(verdict.evidence_items) >= 1
 
     def test_sec_001_skip_without_dynamic_edges(self, gemini_provider, rubric_engine):
-        from agentic_core.evaluation.judges.llm_judges import judge_sec_001
-        from agentic_core.evaluation.judges.types import VerdictOutcome
+#  # MOVED: from agentic_core.evaluation.judges.llm_judges import judge_sec_001
+#  # MOVED: from agentic_core.evaluation.judges.types import VerdictOutcome
 
         bundle = self._make_bundle(
             "agentic_core/safe.py",
@@ -871,20 +947,20 @@ class TestLLMJudgesProviderErrors:
 
     @pytest.fixture()
     def error_provider(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         mock_model = FakeGenerativeModel(raise_on_generate=RuntimeError("Gemini API quota exceeded"))
         return GeminiJudgeProvider(gemini_client=mock_model)
 
     @pytest.fixture()
     def rubric_engine(self):
-        from agentic_core.evaluation.judges.rubric_engine import RubricEngine
+#  # MOVED: from agentic_core.evaluation.judges.rubric_engine import RubricEngine
 
         return RubricEngine()
 
     def test_gov_001_api_error_returns_error_verdict(self, error_provider, rubric_engine):
-        from agentic_core.evaluation.judges.llm_judges import judge_gov_001
-        from agentic_core.evaluation.judges.types import EvidenceBundle
+#  # MOVED: from agentic_core.evaluation.judges.llm_judges import judge_gov_001
+#  # MOVED: from agentic_core.evaluation.judges.types import EvidenceBundle
 
         bundle = EvidenceBundle(target="test.py")
         verdict = asyncio.get_event_loop().run_until_complete(
@@ -897,8 +973,8 @@ class TestLLMJudgesProviderErrors:
         assert 0.0 <= verdict.score <= 1.0
 
     def test_gov_003_api_error_returns_error_verdict(self, error_provider, rubric_engine):
-        from agentic_core.evaluation.judges.llm_judges import judge_gov_003
-        from agentic_core.evaluation.judges.types import EvidenceBundle
+#  # MOVED: from agentic_core.evaluation.judges.llm_judges import judge_gov_003
+#  # MOVED: from agentic_core.evaluation.judges.types import EvidenceBundle
 
         bundle = EvidenceBundle(target="test.py")
         verdict = asyncio.get_event_loop().run_until_complete(
@@ -907,8 +983,8 @@ class TestLLMJudgesProviderErrors:
         assert verdict.rubric_id == "GOV-003"
 
     def test_sec_001_api_error_with_dynamic_edges(self, error_provider, rubric_engine):
-        from agentic_core.evaluation.judges.llm_judges import judge_sec_001
-        from agentic_core.evaluation.judges.types import EvidenceBundle
+#  # MOVED: from agentic_core.evaluation.judges.llm_judges import judge_sec_001
+#  # MOVED: from agentic_core.evaluation.judges.types import EvidenceBundle
 
         bundle = EvidenceBundle(
             target="risky.py",
@@ -930,8 +1006,8 @@ class TestOrchestratorLLMMode:
 
     @pytest.fixture()
     def orch_with_gemini(self, tmp_path):
-        from agentic_core.evaluation.judges.orchestrator import JudgeOrchestrator
-        from agentic_core.evaluation.judges.provider_registry import (
+#  # MOVED: from agentic_core.evaluation.judges.orchestrator import JudgeOrchestrator
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import (
             GeminiJudgeProvider,
             JudgeProviderRegistry,
             NullJudgeProvider,
@@ -1020,48 +1096,48 @@ class TestParseHelpers:
     """Unit tests for _clean and _parse static methods."""
 
     def test_clean_removes_json_fences(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         raw = '```json\n{"key": "value"}\n```'
         assert GeminiJudgeProvider._clean(raw) == '{"key": "value"}'
 
     def test_clean_removes_bare_fences(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         raw = '```\n{"key": "value"}\n```'
         assert GeminiJudgeProvider._clean(raw) == '{"key": "value"}'
 
     def test_clean_no_fences_passthrough(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         raw = '{"key": "value"}'
         assert GeminiJudgeProvider._clean(raw) == '{"key": "value"}'
 
     def test_parse_valid_json(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         assert GeminiJudgeProvider._parse('{"a": 1}') == {"a": 1}
 
     def test_parse_fenced_json(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         result = GeminiJudgeProvider._parse('```json\n{"a": 1}\n```')
         assert result == {"a": 1}
 
     def test_parse_invalid_raises(self):
-        from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
+#  # MOVED: from agentic_core.evaluation.judges.provider_registry import GeminiJudgeProvider
 
         with pytest.raises(json.JSONDecodeError):
             GeminiJudgeProvider._parse("completely invalid")
 
     def test_gemini_judge_clean(self):
-        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+#  # MOVED: from agentic_core.evaluation.judges.llm_judge import GeminiJudge
 
         raw = '```json\n{"x": 1}\n```'
         assert GeminiJudge._clean(raw) == '{"x": 1}'
 
     def test_gemini_judge_parse(self):
-        from agentic_core.evaluation.judges.llm_judge import GeminiJudge
+#  # MOVED: from agentic_core.evaluation.judges.llm_judge import GeminiJudge
 
         result = GeminiJudge._parse('```\n{"x": 1}\n```')
         assert result == {"x": 1}

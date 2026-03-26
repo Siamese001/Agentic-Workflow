@@ -16,10 +16,10 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L0_ROUTING_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -96,20 +96,20 @@ if str(PROJECT_ROOT) not in sys.path:
 
 import ast
 
-from agentic_core.L0_routing.scripts.run_guardian_contract_integrity import (
+#  # MOVED: from agentic_core.L0_routing.scripts.run_guardian_contract_integrity import (
     _check_imports_contract,
     _check_imports_normalize,
     _check_no_raw_json_dumps,
     _check_returns_guardian_result,
     run_contract_integrity_guardian,
 )
-from agentic_core.L0_routing.types.guardian_contract_types import (
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import (
     CheckStatus,
     GuardianStatus,
     check_schema_compatibility,
     validate_no_absolute_paths,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -180,7 +180,7 @@ pytestmark = pytest.mark.guardian
 
 COMPLIANT_SCRIPT = '''
 """Compliant guardian."""
-from agentic_core.L0_routing.types.guardian_contract_types import (
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import (
     GuardianResult,
     normalize_repo_path,
 )
@@ -205,6 +205,13 @@ def run_guardian_bad(repo_root=None) -> dict:
 
 class TestASTChecks:
     def test_compliant_imports_contract(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.scripts.run_guardian_contract_integrity import (
+        from agentic_core.L0_routing.types.guardian_contract_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.types.guardian_contract_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         tree = ast.parse(COMPLIANT_SCRIPT)
         assert _check_imports_contract(tree) is True
 
@@ -231,7 +238,7 @@ class TestASTChecks:
     def test_raw_json_dumps_detected(self):
         script_with_dumps = """
 import json
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_execution_terminates_at_uwg,
     _emit_writes_through,

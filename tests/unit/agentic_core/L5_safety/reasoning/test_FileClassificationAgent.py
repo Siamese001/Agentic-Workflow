@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -139,6 +139,8 @@ _emit_gated_by_confidence("p1", "test_FileClassificationAgent", "confidence_gate
 
 
 def test_fileclassificationagent_basic_functionality():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
 """Test fileclassificationagent_basic_functionality runtime behavior."""
 # Arrange
 # TODO: Set up test data for fileclassificationagent_basic_functionality
@@ -164,7 +166,7 @@ assert isinstance(result, object), "Result should be an object"
 @pytest.fixture
 def fca_instance(tmp_path):
     """Create a minimal FileClassificationAgent scoped to tmp_path."""
-    from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
         FileClassificationAgent,
     )
 

@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L0_routing.scripts.layer_summary_util  # noqa: F401
+#  # MOVED: import agentic_core.L0_routing.scripts.layer_summary_util  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L0_routing.scripts.layer_summary_util  # noqa: F401
     """Module layer_summary_util must be importable."""
     assert agentic_core.L0_routing.scripts.layer_summary_util is not None

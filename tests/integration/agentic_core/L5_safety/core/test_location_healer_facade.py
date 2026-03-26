@@ -14,11 +14,11 @@ from unittest.mock import Mock
 
 import pytest
 
-from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
+#  # MOVED: from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     HealingResult,
     LocationHealingStrategy,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -65,7 +65,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_location_healer_facade", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_location_healer_facade", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_location_healer_facade", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -197,6 +197,25 @@ class TestLocationHealingStrategy:
         return LocationHealingStrategy(config)
 
     def test_initialization(self, strategy, config):
+        from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+        from agentic_core.L3_orchestration.reasoning.UnifiedAgent import LocationHealingStrategy
+        from agentic_core.L3_orchestration.reasoning.UnifiedAgent import __all__
+        from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
         """Test strategy initialization."""
         assert strategy.project_root == "/test/project"
         assert strategy.backup_enabled is True
@@ -253,7 +272,7 @@ class TestLocationHealerAgentFacade:
 
     def test_class_exists(self):
         """Test LocationHealerAgent class exists."""
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -261,8 +280,8 @@ class TestLocationHealerAgentFacade:
 
     def test_inherits_from_sovereign_base(self):
         """Test class still inherits from SovereignBaseAgent."""
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -272,7 +291,7 @@ class TestLocationHealerAgentFacade:
         """Test LocationHealerAgent is a dataclass."""
         from dataclasses import is_dataclass
 
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -280,7 +299,7 @@ class TestLocationHealerAgentFacade:
 
     def test_has_project_root_field(self):
         """Test LocationHealerAgent has project_root field."""
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -293,7 +312,7 @@ class TestLocationHealerMethods:
 
     def test_heal_method_signature(self):
         """Test heal method exists with correct signature."""
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -302,7 +321,7 @@ class TestLocationHealerMethods:
 
     def test_heal_repository_method_signature(self):
         """Test heal_repository method exists."""
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -311,7 +330,7 @@ class TestLocationHealerMethods:
 
     def test_safe_move_method_exists(self):
         """Test safe_move method exists."""
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -320,7 +339,7 @@ class TestLocationHealerMethods:
 
     def test_safe_delete_method_exists(self):
         """Test safe_delete method exists."""
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -329,7 +348,7 @@ class TestLocationHealerMethods:
 
     def test_post_heal_validation_method_exists(self):
         """Test post_heal_validation method exists."""
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -338,7 +357,7 @@ class TestLocationHealerMethods:
 
     def test_fix_imports_after_move_method_exists(self):
         """Test fix_imports_after_move method exists."""
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -351,7 +370,7 @@ class TestLegacyCompatibility:
 
     def test_import_compatibility(self):
         """Test original import still works."""
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -359,7 +378,7 @@ class TestLegacyCompatibility:
 
     def test_docstring_updated(self):
         """Test docstring mentions facade pattern."""
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
             LocationHealerAgent,
         )
 
@@ -368,7 +387,7 @@ class TestLegacyCompatibility:
 
     def test_unified_strategy_import(self):
         """Test LocationHealingStrategy can be imported."""
-        from agentic_core.L3_orchestration.reasoning.UnifiedAgent import LocationHealingStrategy
+#  # MOVED: from agentic_core.L3_orchestration.reasoning.UnifiedAgent import LocationHealingStrategy
 
         assert LocationHealingStrategy is not None
 
@@ -378,13 +397,13 @@ class TestStrategyIntegration:
 
     def test_strategy_in_UnifiedAgent_exports(self):
         """Test LocationHealingStrategy is in UnifiedAgent exports."""
-        from agentic_core.L3_orchestration.reasoning.UnifiedAgent import __all__
+#  # MOVED: from agentic_core.L3_orchestration.reasoning.UnifiedAgent import __all__
 
         assert "LocationHealingStrategy" in __all__
 
     def test_strategy_inherits_from_healing_strategy(self):
         """Test LocationHealingStrategy inherits from HealingStrategy."""
-        from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
+#  # MOVED: from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
             HealingStrategy,
             LocationHealingStrategy,
         )

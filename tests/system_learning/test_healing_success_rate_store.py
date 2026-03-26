@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -65,7 +65,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_healing_success_rate_store", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_healing_success_rate_store", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_healing_success_rate_store", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -103,7 +103,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.healing_success_rate_store import (
+#  # MOVED: from system_learning.engines.healing_success_rate_store import (
     _EMA_ALPHA,
     _MIN_SAMPLE_SIZE,
     _NEUTRAL_PRIOR,
@@ -173,6 +173,9 @@ from system_learning.engines.healing_success_rate_store import (
 
 
 def test_store_initial_state() -> None:
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from system_learning.engines.healing_success_rate_store import (
     """Store starts empty and returns neutral prior."""
     store = HealingSuccessRateStore()
     assert store.get_prior("any_sig") == _NEUTRAL_PRIOR

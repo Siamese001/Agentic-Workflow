@@ -10,7 +10,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -73,16 +73,16 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_replay_engine", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_replay_engine", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_replay_engine", "exec_snapshot_link")
-from system_learning.engines.deterministic_replay_engine import DeterministicReplayEngine
-from system_learning.engines.l4_state_writer import L4StateWriter
-from system_learning.engines.retrieval_profile import RetrievalProfile
-from system_learning.engines.retrieval_profile_activation_gate import RetrievalProfileActivationGate
+#  # MOVED: from system_learning.engines.deterministic_replay_engine import DeterministicReplayEngine
+#  # MOVED: from system_learning.engines.l4_state_writer import L4StateWriter
+#  # MOVED: from system_learning.engines.retrieval_profile import RetrievalProfile
+#  # MOVED: from system_learning.engines.retrieval_profile_activation_gate import RetrievalProfileActivationGate
 
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_replay_engine")
 # REMOVED: _emit_applies_guardrail("p0", "test_replay_engine", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_replay_engine", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_replay_engine", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -190,6 +190,13 @@ class TestW5ReplayEngine:
     """Test W5 Deterministic Replay Engine functionality."""
 
     def test_determinism(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.deterministic_replay_engine import DeterministicReplayEngine
+        from system_learning.engines.l4_state_writer import L4StateWriter
+        from system_learning.engines.retrieval_profile import RetrievalProfile
+        from system_learning.engines.retrieval_profile_activation_gate import RetrievalProfileActivationGate
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        import system_learning.engines.deterministic_replay_engine as engine_module
         """Test that two independent runs produce identical W5-REPLAY-DIGEST."""
         engine = DeterministicReplayEngine()
 
@@ -450,7 +457,7 @@ class TestW5NegativeControl:
         # Monkey patch the json.dumps in replay engine
         import json
 
-        import system_learning.engines.deterministic_replay_engine as engine_module
+#  # MOVED: import system_learning.engines.deterministic_replay_engine as engine_module
 
         original_json_dumps = json.dumps
 

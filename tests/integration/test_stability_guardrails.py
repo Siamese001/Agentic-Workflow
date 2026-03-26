@@ -13,10 +13,10 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L3_ORCHESTRATION_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -160,7 +160,7 @@ def _make_file(tmp_path: Path, name: str, code: str) -> Path:
 
 
 def _new_fca(tmp_path: Path):
-    from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+#  # MOVED: from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
         FileClassificationAgent,
     )
 
@@ -178,6 +178,14 @@ def _new_fca(tmp_path: Path):
 
 class TestClassificationDeterminism:
     def test_repeated_classification_is_stable(self, tmp_path):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+        from agentic_core.L3_orchestration.reasoning import AgentA
+        from agentic_core.L5_safety.enforcement import GuardB
+        from agentic_core.L3_orchestration.reasoning import AgentA
+        from agentic_core.L5_safety.enforcement import GuardB
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         code = """\
         from engines import handler_engine
         class RequestRouter:
@@ -195,8 +203,8 @@ class TestClassificationDeterminism:
         o_dir = tmp_path / L3_ORCHESTRATION_DIR / "reasoning"
         o_dir.mkdir(parents=True, exist_ok=True)
         code = """\
-        from agentic_core.L3_orchestration.reasoning import AgentA
-        from agentic_core.L5_safety.enforcement import GuardB
+#  # MOVED: from agentic_core.L3_orchestration.reasoning import AgentA
+#  # MOVED: from agentic_core.L5_safety.enforcement import GuardB
         class WorkflowOrchestrator:
             def run_pipeline(self):
                 self.stage_1()
@@ -281,9 +289,9 @@ class TestClassificationOrderIndependence:
                     raise PermissionError("no")
         """
         orchestrator_code = """\
-        from agentic_core.L3_orchestration.reasoning import AgentA
-        from agentic_core.L5_safety.enforcement import GuardB
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L3_orchestration.reasoning import AgentA
+#  # MOVED: from agentic_core.L5_safety.enforcement import GuardB
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_execution_terminates_at_uwg,
     _emit_writes_through,

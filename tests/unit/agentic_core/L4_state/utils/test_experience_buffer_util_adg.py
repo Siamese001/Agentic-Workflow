@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L4_state.utils.experience_buffer_util  # noqa: F401
+#  # MOVED: import agentic_core.L4_state.utils.experience_buffer_util  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L4_state.utils.experience_buffer_util  # noqa: F401
     """Module experience_buffer_util must be importable."""
     assert agentic_core.L4_state.utils.experience_buffer_util is not None

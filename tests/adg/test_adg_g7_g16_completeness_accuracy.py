@@ -33,7 +33,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -95,7 +95,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_adg_g7_g16_completeness_accuracy", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_adg_g7_g16_completeness_accuracy", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_adg_g7_g16_completeness_accuracy", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -194,7 +194,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def _scan_src(source: str) -> list:
     """Run all G7-G16 AST visitors against source and collect edges."""
-    from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
         _BoundaryVerifierVisitor,
         _CapabilityBudgetVisitor,
         _DeterminismControlVisitor,
@@ -377,40 +377,150 @@ class TestC1SchemaCompleteness:
     """C1: All G7-G16 literals declared in schema.py."""
 
     def test_all_g7_g16_entity_types_in_literal(self) -> None:
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.extraction.static_scanner import (
         from agentic_core.adg.schema_util import EntityType
+        from agentic_core.adg.schema_util import RelationType
+        from agentic_core.adg.schema_util import EdgeKind
+        from agentic_core.adg.schema_util import EntityType
+        from agentic_core.adg.schema_util import RelationType
+        from agentic_core.adg.schema_util import EdgeKind
+        from agentic_core.adg.schema_util import SANDBOX_ENVELOPE_CLASSES
+        from agentic_core.adg.schema_util import CAPABILITY_TOKEN_CLASSES
+        from agentic_core.adg.schema_util import WORK_CONTRACT_METHODS
+        from agentic_core.adg.schema_util import TOOL_BUDGET_CLASSES
+        from agentic_core.adg.schema_util import BUDGET_EXCEEDED_EXCEPTIONS
+        from agentic_core.adg.schema_util import JIT_CONTEXT_CLASSES
+        from agentic_core.adg.schema_util import FREEZE_METHOD_NAMES
+        from agentic_core.adg.schema_util import BOUNDARY_VERIFIER_CLASSES
+        from agentic_core.adg.schema_util import CAPABILITY_CHOKEPOINT_CLASSES
+        from agentic_core.adg.schema_util import SEMANTIC_CLOCK_CLASSES
+        from agentic_core.adg.schema_util import REPLAY_GUARD_CLASSES
+        from agentic_core.adg.schema_util import DETERMINISM_PATCH_METHODS
+        from agentic_core.adg.schema_util import IO_INTERCEPT_CLASSES
+        from agentic_core.adg.schema_util import NETWORK_TRANSCRIPT_SYMBOLS
+        from agentic_core.adg.schema_util import MUTATION_TRANSPORT_CLASSES
+        from agentic_core.adg.schema_util import RFC6902_DIFF_SYMBOLS
+        from agentic_core.adg.schema_util import EXECUTION_TRACE_CLASSES
+        from agentic_core.adg.schema_util import REPLAY_KEY_METHODS
+        from agentic_core.adg.schema_util import PATH_CONTROL_CLASSES
+        from agentic_core.adg.schema_util import PATH_REROUTE_METHODS
+        from agentic_core.adg.schema_util import EVAL_METRIC_CLASSES
+        from agentic_core.adg.schema_util import DPO_BATCH_CLASSES
+        from agentic_core.adg.schema_util import DRIFT_ALERT_METHODS
+        import agentic_core.adg.schema_util as sch
+        from agentic_core.adg.schema_util import (
+        import agentic_core.adg.runtime as pkg
+        import agentic_core.adg.runtime as pkg
+        import agentic_core.adg.runtime as pkg
+        import agentic_core.adg.runtime as pkg
+        from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
+        from agentic_core.adg.extraction.static_scanner import _CapabilityBudgetVisitor
+        from agentic_core.adg.extraction.static_scanner import _JITContextVisitor
+        from agentic_core.adg.extraction.static_scanner import _BoundaryVerifierVisitor
+        from agentic_core.adg.extraction.static_scanner import _DeterminismControlVisitor
+        from agentic_core.adg.extraction.static_scanner import _IOInterceptionVisitor
+        from agentic_core.adg.extraction.static_scanner import _MutationTransportVisitor
+        from agentic_core.adg.extraction.static_scanner import _ExecutionProofVisitor
+        from agentic_core.adg.extraction.static_scanner import _PathControlVisitor
+        from agentic_core.adg.extraction.static_scanner import _EvalSpineVisitor
+        from agentic_core.adg.extraction import static_scanner
+        from agentic_core.adg.runtime.sandbox_airlock import AirlockPhase, SandboxAirlockRecorder
+        from agentic_core.adg.runtime.sandbox_airlock import AirlockPhase, SandboxAirlockRecorder
+        from agentic_core.adg.runtime.sandbox_airlock import AirlockPhase, SandboxAirlockRecorder
+        from agentic_core.adg.runtime.sandbox_airlock import AirlockPhase, SandboxEnvelope
+        from agentic_core.adg.runtime.sandbox_airlock import AirlockPhase, SandboxAirlockRecorder
+        from agentic_core.adg.runtime.capability_budget import ResourceGovernor, ToolBudget
+        from agentic_core.adg.runtime.capability_budget import ResourceGovernor, ToolBudget
+        from agentic_core.adg.runtime.capability_budget import ResourceGovernor
+        from agentic_core.adg.runtime.capability_budget import BudgetStatus, ResourceGovernor, ToolBudget
+        from agentic_core.adg.runtime.capability_budget import BudgetStatus, ResourceGrant
+        from agentic_core.adg.runtime.capability_budget import (
+        from agentic_core.adg.runtime.jit_context import FreezeState, JITContextSynchronizer
+        from agentic_core.adg.runtime.jit_context import FreezeState, JITContextSynchronizer
+        from agentic_core.adg.runtime.jit_context import FreezeState, JITContextSynchronizer
+        from agentic_core.adg.runtime.jit_context import JITContextSynchronizer
+        from agentic_core.adg.runtime.boundary_verifier import (
+        from agentic_core.adg.runtime.boundary_verifier import (
+        from agentic_core.adg.runtime.boundary_verifier import (
+        from agentic_core.adg.runtime.boundary_verifier import (
+        from agentic_core.adg.runtime.boundary_verifier import (
+        from agentic_core.adg.runtime.boundary_verifier import L2BoundaryVerifier
+        from agentic_core.adg.runtime.boundary_verifier import CapabilityChokepoint
+        from agentic_core.adg.runtime.determinism_control import DeterminismController
+        from agentic_core.adg.runtime.determinism_control import (
+        from agentic_core.adg.runtime.determinism_control import DeterminismController
+        from agentic_core.adg.runtime.determinism_control import (
+        from agentic_core.adg.runtime.determinism_control import SemanticClock
+        from agentic_core.adg.runtime.io_interception import InterceptionOutcome, IOInterceptor
+        from agentic_core.adg.runtime.io_interception import IOInterceptor
+        from agentic_core.adg.runtime.io_interception import InterceptionOutcome, IOInterceptor
+        from agentic_core.adg.runtime.io_interception import NetworkTranscript
+        from agentic_core.adg.runtime.io_interception import IOInterceptor
+        from agentic_core.adg.runtime.mutation_transport import CommitPhase, MutationTransport
+        from agentic_core.adg.runtime.mutation_transport import CommitPhase, MutationTransport
+        from agentic_core.adg.runtime.mutation_transport import CommitPhase, MutationTransport
+        from agentic_core.adg.runtime.mutation_transport import MutationTransport
+        from agentic_core.adg.runtime.mutation_transport import MutationTransport
+        from agentic_core.adg.runtime.execution_proof import ExecutionProofRecorder
+        from agentic_core.adg.runtime.execution_proof import (
+        from agentic_core.adg.runtime.execution_proof import ExecutionProofRecorder
+        from agentic_core.adg.runtime.execution_proof import ExecutionProofRecorder
+        from agentic_core.adg.runtime.path_control import ExecutionPath, ExecutionPathController
+        from agentic_core.adg.runtime.path_control import ExecutionPathController
+        from agentic_core.adg.runtime.path_control import ExecutionPathController
+        from agentic_core.adg.runtime.path_control import ExecutionPathController
+        from agentic_core.adg.runtime.path_control import ExecutionPath, ExecutionPathController
+        from agentic_core.adg.runtime.eval_spine import EvalSpine
+        from agentic_core.adg.runtime.eval_spine import EvalSpine
+        from agentic_core.adg.runtime.eval_spine import EvalSpine
+        from agentic_core.adg.runtime.eval_spine import EvalSpine, OptimizationStage
+        from agentic_core.adg.runtime.eval_spine import EvalSpine, OptimizationStage
+        from agentic_core.adg.runtime.eval_spine import EvalSpine
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.artifact.SplitArtifact import _GOVERNANCE_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _GOVERNANCE_GRAPH_RELS, _SYMBOL_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import _SYMBOL_GRAPH_RELS
+        from agentic_core.adg.artifact.SplitArtifact import (
+        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS
+#  # MOVED: from agentic_core.adg.schema_util import EntityType
 
         args = set(typing.get_args(EntityType))
         missing = [e for e in G7_G16_ENTITY_TYPES if e not in args]
         assert not missing, f"EntityType missing: {missing}"
 
     def test_all_g7_g16_relation_types_in_literal(self) -> None:
-        from agentic_core.adg.schema_util import RelationType
+#  # MOVED: from agentic_core.adg.schema_util import RelationType
 
         args = set(typing.get_args(RelationType))
         missing = [r for r in G7_G16_RELATION_TYPES if r not in args]
         assert not missing, f"RelationType missing: {missing}"
 
     def test_all_g7_g16_edge_kinds_in_literal(self) -> None:
-        from agentic_core.adg.schema_util import EdgeKind
+#  # MOVED: from agentic_core.adg.schema_util import EdgeKind
 
         args = set(typing.get_args(EdgeKind))
         missing = [k for k in G7_G16_EDGE_KINDS if k not in args]
         assert not missing, f"EdgeKind missing: {missing}"
 
     def test_no_empty_entity_type_string(self) -> None:
-        from agentic_core.adg.schema_util import EntityType
+#  # MOVED: from agentic_core.adg.schema_util import EntityType
 
         for et in typing.get_args(EntityType):
             assert et and et.strip(), f"Empty EntityType: {et!r}"
 
     def test_no_empty_relation_type_string(self) -> None:
-        from agentic_core.adg.schema_util import RelationType
+#  # MOVED: from agentic_core.adg.schema_util import RelationType
 
         for rt in typing.get_args(RelationType):
             assert rt and rt.strip(), f"Empty RelationType: {rt!r}"
 
     def test_no_empty_edge_kind_string(self) -> None:
-        from agentic_core.adg.schema_util import EdgeKind
+#  # MOVED: from agentic_core.adg.schema_util import EdgeKind
 
         for ek in typing.get_args(EdgeKind):
             assert ek and ek.strip(), f"Empty EdgeKind: {ek!r}"
@@ -435,45 +545,45 @@ class TestC2DetectionConstants:
 
     # ---------- G7 ----------
     def test_sandbox_envelope_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import SANDBOX_ENVELOPE_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import SANDBOX_ENVELOPE_CLASSES
 
         assert len(SANDBOX_ENVELOPE_CLASSES) >= 3
         assert "SandboxEnvelope" in SANDBOX_ENVELOPE_CLASSES
 
     def test_capability_token_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import CAPABILITY_TOKEN_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import CAPABILITY_TOKEN_CLASSES
 
         assert len(CAPABILITY_TOKEN_CLASSES) >= 2
         assert "CapabilityToken" in CAPABILITY_TOKEN_CLASSES
 
     def test_work_contract_methods_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import WORK_CONTRACT_METHODS
+#  # MOVED: from agentic_core.adg.schema_util import WORK_CONTRACT_METHODS
 
         assert len(WORK_CONTRACT_METHODS) >= 3
         assert "stamp_work_contract" in WORK_CONTRACT_METHODS
 
     # ---------- G8 ----------
     def test_tool_budget_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import TOOL_BUDGET_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import TOOL_BUDGET_CLASSES
 
         assert len(TOOL_BUDGET_CLASSES) >= 3
         assert "ToolBudget" in TOOL_BUDGET_CLASSES
 
     def test_budget_exceeded_exceptions_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import BUDGET_EXCEEDED_EXCEPTIONS
+#  # MOVED: from agentic_core.adg.schema_util import BUDGET_EXCEEDED_EXCEPTIONS
 
         assert len(BUDGET_EXCEEDED_EXCEPTIONS) >= 3
         assert "BudgetExceededError" in BUDGET_EXCEEDED_EXCEPTIONS
 
     # ---------- G9 ----------
     def test_jit_context_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import JIT_CONTEXT_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import JIT_CONTEXT_CLASSES
 
         assert len(JIT_CONTEXT_CLASSES) >= 3
         assert "JITContext" in JIT_CONTEXT_CLASSES
 
     def test_freeze_method_names_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import FREEZE_METHOD_NAMES
+#  # MOVED: from agentic_core.adg.schema_util import FREEZE_METHOD_NAMES
 
         assert len(FREEZE_METHOD_NAMES) >= 4
         assert "freeze_context" in FREEZE_METHOD_NAMES
@@ -482,32 +592,32 @@ class TestC2DetectionConstants:
 
     # ---------- G10 ----------
     def test_boundary_verifier_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import BOUNDARY_VERIFIER_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import BOUNDARY_VERIFIER_CLASSES
 
         assert len(BOUNDARY_VERIFIER_CLASSES) >= 3
         assert "L2BoundaryVerifier" in BOUNDARY_VERIFIER_CLASSES
 
     def test_capability_chokepoint_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import CAPABILITY_CHOKEPOINT_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import CAPABILITY_CHOKEPOINT_CLASSES
 
         assert len(CAPABILITY_CHOKEPOINT_CLASSES) >= 2
         assert "CapabilityChokepoint" in CAPABILITY_CHOKEPOINT_CLASSES
 
     # ---------- G11 ----------
     def test_semantic_clock_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import SEMANTIC_CLOCK_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import SEMANTIC_CLOCK_CLASSES
 
         assert len(SEMANTIC_CLOCK_CLASSES) >= 2
         assert "SemanticClock" in SEMANTIC_CLOCK_CLASSES
 
     def test_replay_guard_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import REPLAY_GUARD_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import REPLAY_GUARD_CLASSES
 
         assert len(REPLAY_GUARD_CLASSES) >= 2
         assert "ReplayGuard" in REPLAY_GUARD_CLASSES
 
     def test_determinism_patch_methods_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import DETERMINISM_PATCH_METHODS
+#  # MOVED: from agentic_core.adg.schema_util import DETERMINISM_PATCH_METHODS
 
         assert len(DETERMINISM_PATCH_METHODS) >= 4
         assert "seed_rng" in DETERMINISM_PATCH_METHODS
@@ -516,13 +626,13 @@ class TestC2DetectionConstants:
 
     # ---------- G12 ----------
     def test_io_intercept_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import IO_INTERCEPT_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import IO_INTERCEPT_CLASSES
 
         assert len(IO_INTERCEPT_CLASSES) >= 3
         assert "IOInterceptor" in IO_INTERCEPT_CLASSES
 
     def test_network_transcript_symbols_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import NETWORK_TRANSCRIPT_SYMBOLS
+#  # MOVED: from agentic_core.adg.schema_util import NETWORK_TRANSCRIPT_SYMBOLS
 
         assert len(NETWORK_TRANSCRIPT_SYMBOLS) >= 3
         assert "transcript_response" in NETWORK_TRANSCRIPT_SYMBOLS
@@ -530,14 +640,14 @@ class TestC2DetectionConstants:
 
     # ---------- G13 ----------
     def test_mutation_transport_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import MUTATION_TRANSPORT_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import MUTATION_TRANSPORT_CLASSES
 
         assert len(MUTATION_TRANSPORT_CLASSES) >= 3
         assert "MutationTransport" in MUTATION_TRANSPORT_CLASSES
         assert "TwoPhaseCommit" in MUTATION_TRANSPORT_CLASSES
 
     def test_rfc6902_diff_symbols_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import RFC6902_DIFF_SYMBOLS
+#  # MOVED: from agentic_core.adg.schema_util import RFC6902_DIFF_SYMBOLS
 
         assert len(RFC6902_DIFF_SYMBOLS) >= 4
         assert "package_diff" in RFC6902_DIFF_SYMBOLS
@@ -545,13 +655,13 @@ class TestC2DetectionConstants:
 
     # ---------- G14 ----------
     def test_execution_trace_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import EXECUTION_TRACE_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import EXECUTION_TRACE_CLASSES
 
         assert len(EXECUTION_TRACE_CLASSES) >= 3
         assert "ExecutionTrace" in EXECUTION_TRACE_CLASSES
 
     def test_replay_key_methods_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import REPLAY_KEY_METHODS
+#  # MOVED: from agentic_core.adg.schema_util import REPLAY_KEY_METHODS
 
         assert len(REPLAY_KEY_METHODS) >= 4
         assert "emit_replay_key" in REPLAY_KEY_METHODS
@@ -560,13 +670,13 @@ class TestC2DetectionConstants:
 
     # ---------- G15 ----------
     def test_path_control_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import PATH_CONTROL_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import PATH_CONTROL_CLASSES
 
         assert len(PATH_CONTROL_CLASSES) >= 3
         assert "ExecutionPathController" in PATH_CONTROL_CLASSES
 
     def test_path_reroute_methods_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import PATH_REROUTE_METHODS
+#  # MOVED: from agentic_core.adg.schema_util import PATH_REROUTE_METHODS
 
         assert len(PATH_REROUTE_METHODS) >= 5
         assert "route_path" in PATH_REROUTE_METHODS
@@ -576,20 +686,20 @@ class TestC2DetectionConstants:
 
     # ---------- G16 ----------
     def test_eval_metric_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import EVAL_METRIC_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import EVAL_METRIC_CLASSES
 
         assert len(EVAL_METRIC_CLASSES) >= 4
         assert "EvalSpine" in EVAL_METRIC_CLASSES
 
     def test_dpo_batch_classes_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import DPO_BATCH_CLASSES
+#  # MOVED: from agentic_core.adg.schema_util import DPO_BATCH_CLASSES
 
         assert len(DPO_BATCH_CLASSES) >= 3
         assert "DPOBatchBuilder" in DPO_BATCH_CLASSES
         assert "DPOBatch" in DPO_BATCH_CLASSES
 
     def test_drift_alert_methods_nonempty(self) -> None:
-        from agentic_core.adg.schema_util import DRIFT_ALERT_METHODS
+#  # MOVED: from agentic_core.adg.schema_util import DRIFT_ALERT_METHODS
 
         assert len(DRIFT_ALERT_METHODS) >= 5
         assert "emit_drift_alert" in DRIFT_ALERT_METHODS
@@ -597,7 +707,7 @@ class TestC2DetectionConstants:
         assert "commit_optimization" in DRIFT_ALERT_METHODS
 
     def test_all_constants_are_frozensets(self) -> None:
-        import agentic_core.adg.schema_util as sch
+#  # MOVED: import agentic_core.adg.schema_util as sch
 
         constant_names = [
             "SANDBOX_ENVELOPE_CLASSES",
@@ -631,7 +741,7 @@ class TestC2DetectionConstants:
 
     def test_constants_cover_canonical_runtime_class_names(self) -> None:
         """Every primary class used in the runtime modules is in a detection constant."""
-        from agentic_core.adg.schema_util import (
+#  # MOVED: from agentic_core.adg.schema_util import (
             BOUNDARY_VERIFIER_CLASSES,
             CAPABILITY_CHOKEPOINT_CLASSES,
             CAPABILITY_TOKEN_CLASSES,
@@ -819,7 +929,7 @@ class TestC4InitExportCompleteness:
     """C4: runtime/__init__.py __all__ is a superset of all G7-G16 module public names."""
 
     def test_all_module_symbols_in_init_all(self) -> None:
-        import agentic_core.adg.runtime as pkg
+#  # MOVED: import agentic_core.adg.runtime as pkg
 
         pkg_all = set(pkg.__all__)
         missing: list[str] = []
@@ -830,7 +940,7 @@ class TestC4InitExportCompleteness:
         assert not missing, f"Symbols missing from runtime/__all__: {missing}"
 
     def test_all_all_names_are_importable_from_package(self) -> None:
-        import agentic_core.adg.runtime as pkg
+#  # MOVED: import agentic_core.adg.runtime as pkg
 
         broken = []
         for name in pkg.__all__:
@@ -839,14 +949,14 @@ class TestC4InitExportCompleteness:
         assert not broken, f"Names in __all__ not resolvable from package: {broken}"
 
     def test_no_none_exports(self) -> None:
-        import agentic_core.adg.runtime as pkg
+#  # MOVED: import agentic_core.adg.runtime as pkg
 
         none_exports = [n for n in pkg.__all__ if getattr(pkg, n, "MISSING") is None]
         assert not none_exports, f"None-valued exports: {none_exports}"
 
     def test_g7_g16_section_completeness_in_all(self) -> None:
         """Every G7-G16 gap section is represented in __all__."""
-        import agentic_core.adg.runtime as pkg
+#  # MOVED: import agentic_core.adg.runtime as pkg
 
         pkg_all = set(pkg.__all__)
         # At minimum one sentinel from each gap
@@ -875,7 +985,7 @@ class TestA1VisitorAccuracyG7Sandbox:
     """A1: _SandboxAirlockVisitor emits exact pairs for every detection branch."""
 
     def _v(self):
-        from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _SandboxAirlockVisitor
 
         return _SandboxAirlockVisitor
 
@@ -941,7 +1051,7 @@ class TestA1VisitorAccuracyG8Budget:
     """A1: _CapabilityBudgetVisitor emits exact pairs for every detection branch."""
 
     def _v(self):
-        from agentic_core.adg.extraction.static_scanner import _CapabilityBudgetVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _CapabilityBudgetVisitor
 
         return _CapabilityBudgetVisitor
 
@@ -986,7 +1096,7 @@ class TestA1VisitorAccuracyG9JIT:
     """A1: _JITContextVisitor emits exact pairs for every detection branch."""
 
     def _v(self):
-        from agentic_core.adg.extraction.static_scanner import _JITContextVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _JITContextVisitor
 
         return _JITContextVisitor
 
@@ -1022,7 +1132,7 @@ class TestA1VisitorAccuracyG10Boundary:
     """A1: _BoundaryVerifierVisitor emits exact pairs for every detection branch."""
 
     def _v(self):
-        from agentic_core.adg.extraction.static_scanner import _BoundaryVerifierVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _BoundaryVerifierVisitor
 
         return _BoundaryVerifierVisitor
 
@@ -1056,7 +1166,7 @@ class TestA1VisitorAccuracyG11Determinism:
     """A1: _DeterminismControlVisitor emits exact pairs for every detection branch."""
 
     def _v(self):
-        from agentic_core.adg.extraction.static_scanner import _DeterminismControlVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _DeterminismControlVisitor
 
         return _DeterminismControlVisitor
 
@@ -1102,7 +1212,7 @@ class TestA1VisitorAccuracyG12IO:
     """A1: _IOInterceptionVisitor emits exact pairs for every detection branch."""
 
     def _v(self):
-        from agentic_core.adg.extraction.static_scanner import _IOInterceptionVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _IOInterceptionVisitor
 
         return _IOInterceptionVisitor
 
@@ -1141,7 +1251,7 @@ class TestA1VisitorAccuracyG13Mutation:
     """A1: _MutationTransportVisitor emits exact pairs for every detection branch."""
 
     def _v(self):
-        from agentic_core.adg.extraction.static_scanner import _MutationTransportVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _MutationTransportVisitor
 
         return _MutationTransportVisitor
 
@@ -1181,7 +1291,7 @@ class TestA1VisitorAccuracyG14Proof:
     """A1: _ExecutionProofVisitor emits exact pairs for every detection branch."""
 
     def _v(self):
-        from agentic_core.adg.extraction.static_scanner import _ExecutionProofVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _ExecutionProofVisitor
 
         return _ExecutionProofVisitor
 
@@ -1218,7 +1328,7 @@ class TestA1VisitorAccuracyG15Path:
     """A1: _PathControlVisitor emits exact pairs for every detection branch."""
 
     def _v(self):
-        from agentic_core.adg.extraction.static_scanner import _PathControlVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _PathControlVisitor
 
         return _PathControlVisitor
 
@@ -1270,7 +1380,7 @@ class TestA1VisitorAccuracyG16Eval:
     """A1: _EvalSpineVisitor emits exact pairs for every detection branch."""
 
     def _v(self):
-        from agentic_core.adg.extraction.static_scanner import _EvalSpineVisitor
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _EvalSpineVisitor
 
         return _EvalSpineVisitor
 
@@ -1367,7 +1477,7 @@ class TestA2VisitorNonContamination:
         ],
     )
     def test_no_edges_for_unrelated_code(self, visitor_name: str) -> None:
-        from agentic_core.adg.extraction import static_scanner
+#  # MOVED: from agentic_core.adg.extraction import static_scanner
 
         Cls = getattr(static_scanner, visitor_name)
         edges = _edges_for(_UNRELATED_CODE, Cls)
@@ -1405,7 +1515,7 @@ class TestA3StateMachineG7:
     """A3: G7 SandboxAirlockRecorder full lifecycle including error paths."""
 
     def test_happy_path_terminal_state(self) -> None:
-        from agentic_core.adg.runtime.sandbox_airlock import AirlockPhase, SandboxAirlockRecorder
+#  # MOVED: from agentic_core.adg.runtime.sandbox_airlock import AirlockPhase, SandboxAirlockRecorder
 
         rec = SandboxAirlockRecorder("a", "r")
         c = rec.stamp_contract(ttl_seconds=300.0)
@@ -1417,7 +1527,7 @@ class TestA3StateMachineG7:
         assert t.revoked
 
     def test_revoked_token_path_terminal_state(self) -> None:
-        from agentic_core.adg.runtime.sandbox_airlock import AirlockPhase, SandboxAirlockRecorder
+#  # MOVED: from agentic_core.adg.runtime.sandbox_airlock import AirlockPhase, SandboxAirlockRecorder
 
         rec = SandboxAirlockRecorder("a", "r")
         c = rec.stamp_contract()
@@ -1427,7 +1537,7 @@ class TestA3StateMachineG7:
         assert env.phase == AirlockPhase.REJECTED
 
     def test_expired_contract_path_terminal_state(self) -> None:
-        from agentic_core.adg.runtime.sandbox_airlock import AirlockPhase, SandboxAirlockRecorder
+#  # MOVED: from agentic_core.adg.runtime.sandbox_airlock import AirlockPhase, SandboxAirlockRecorder
 
         rec = SandboxAirlockRecorder("a", "r")
         c = rec.stamp_contract(ttl_seconds=-1.0)  # already expired
@@ -1436,7 +1546,7 @@ class TestA3StateMachineG7:
         assert env.phase == AirlockPhase.REJECTED
 
     def test_reject_sets_reason(self) -> None:
-        from agentic_core.adg.runtime.sandbox_airlock import AirlockPhase, SandboxEnvelope
+#  # MOVED: from agentic_core.adg.runtime.sandbox_airlock import AirlockPhase, SandboxEnvelope
 
         env = SandboxEnvelope()
         env.reject("test_reason")
@@ -1444,7 +1554,7 @@ class TestA3StateMachineG7:
         assert env.phase == AirlockPhase.REJECTED
 
     def test_multiple_contracts_tracked(self) -> None:
-        from agentic_core.adg.runtime.sandbox_airlock import AirlockPhase, SandboxAirlockRecorder
+#  # MOVED: from agentic_core.adg.runtime.sandbox_airlock import AirlockPhase, SandboxAirlockRecorder
 
         rec = SandboxAirlockRecorder("a", "r")
         envelopes = []
@@ -1468,7 +1578,7 @@ class TestA3StateMachineG8:
     """A3: G8 ResourceGovernor full lifecycle including exhaustion path."""
 
     def test_happy_path_consume_within_limit(self) -> None:
-        from agentic_core.adg.runtime.capability_budget import ResourceGovernor, ToolBudget
+#  # MOVED: from agentic_core.adg.runtime.capability_budget import ResourceGovernor, ToolBudget
 
         gov = ResourceGovernor("a", "r")
         budget = ToolBudget.default()
@@ -1478,7 +1588,7 @@ class TestA3StateMachineG8:
         assert gov.report.exceeded_count == 0
 
     def test_exceeded_path_returns_false_and_records(self) -> None:
-        from agentic_core.adg.runtime.capability_budget import ResourceGovernor, ToolBudget
+#  # MOVED: from agentic_core.adg.runtime.capability_budget import ResourceGovernor, ToolBudget
 
         gov = ResourceGovernor("a", "r")
         budget = ToolBudget.default(compute_ms=1.0)
@@ -1488,14 +1598,14 @@ class TestA3StateMachineG8:
         assert gov.report.exceeded_count == 1
 
     def test_no_active_budget_consume_is_permissive(self) -> None:
-        from agentic_core.adg.runtime.capability_budget import ResourceGovernor
+#  # MOVED: from agentic_core.adg.runtime.capability_budget import ResourceGovernor
 
         gov = ResourceGovernor("a", "r")
         result = gov.consume("tool_calls", 1.0)
         assert result is True  # no active budget → permissive pass-through
 
     def test_revoked_budget_all_consumes_fail(self) -> None:
-        from agentic_core.adg.runtime.capability_budget import BudgetStatus, ResourceGovernor, ToolBudget
+#  # MOVED: from agentic_core.adg.runtime.capability_budget import BudgetStatus, ResourceGovernor, ToolBudget
 
         gov = ResourceGovernor("a", "r")
         budget = ToolBudget.default()
@@ -1506,14 +1616,14 @@ class TestA3StateMachineG8:
         assert result is False
 
     def test_warning_threshold_at_91_percent(self) -> None:
-        from agentic_core.adg.runtime.capability_budget import BudgetStatus, ResourceGrant
+#  # MOVED: from agentic_core.adg.runtime.capability_budget import BudgetStatus, ResourceGrant
 
         g = ResourceGrant("mem", 100.0)
         g.consume(91.0)
         assert g.status == BudgetStatus.WARNING
 
     def test_full_exhaustion_status(self) -> None:
-        from agentic_core.adg.runtime.capability_budget import (
+#  # MOVED: from agentic_core.adg.runtime.capability_budget import (
             BudgetExceededError,
             ResourceGrant,
         )
@@ -1527,7 +1637,7 @@ class TestA3StateMachineG9:
     """A3: G9 JITContextSynchronizer full lifecycle including freeze/release."""
 
     def test_pull_then_freeze_then_release(self) -> None:
-        from agentic_core.adg.runtime.jit_context import FreezeState, JITContextSynchronizer
+#  # MOVED: from agentic_core.adg.runtime.jit_context import FreezeState, JITContextSynchronizer
 
         sync = JITContextSynchronizer("a", "r")
         snap = sync.pull_context(c0_context_hash="h1")
@@ -1539,7 +1649,7 @@ class TestA3StateMachineG9:
         assert boundary.freeze_state == FreezeState.RELEASED
 
     def test_double_freeze_idempotent(self) -> None:
-        from agentic_core.adg.runtime.jit_context import FreezeState, JITContextSynchronizer
+#  # MOVED: from agentic_core.adg.runtime.jit_context import FreezeState, JITContextSynchronizer
 
         sync = JITContextSynchronizer("a", "r")
         snap = sync.pull_context()
@@ -1549,7 +1659,7 @@ class TestA3StateMachineG9:
         assert b2.freeze_state == FreezeState.FROZEN
 
     def test_sync_context_atomic_both_frozen(self) -> None:
-        from agentic_core.adg.runtime.jit_context import FreezeState, JITContextSynchronizer
+#  # MOVED: from agentic_core.adg.runtime.jit_context import FreezeState, JITContextSynchronizer
 
         sync = JITContextSynchronizer("a", "r")
         snap, boundary = sync.sync_context(state_hash="s1")
@@ -1557,7 +1667,7 @@ class TestA3StateMachineG9:
         assert boundary.freeze_state == FreezeState.FROZEN
 
     def test_session_summary_counts(self) -> None:
-        from agentic_core.adg.runtime.jit_context import JITContextSynchronizer
+#  # MOVED: from agentic_core.adg.runtime.jit_context import JITContextSynchronizer
 
         sync = JITContextSynchronizer("a", "r")
         sync.sync_context()
@@ -1572,7 +1682,7 @@ class TestA3StateMachineG10:
     """A3: G10 L2BoundaryVerifier all verification outcome paths."""
 
     def test_accepted_path(self) -> None:
-        from agentic_core.adg.runtime.boundary_verifier import (
+#  # MOVED: from agentic_core.adg.runtime.boundary_verifier import (
             BoundaryPacket,
             L2BoundaryVerifier,
             VerificationOutcome,
@@ -1585,7 +1695,7 @@ class TestA3StateMachineG10:
         assert r.accepted
 
     def test_missing_cert_path(self) -> None:
-        from agentic_core.adg.runtime.boundary_verifier import (
+#  # MOVED: from agentic_core.adg.runtime.boundary_verifier import (
             BoundaryPacket,
             L2BoundaryVerifier,
             VerificationOutcome,
@@ -1598,7 +1708,7 @@ class TestA3StateMachineG10:
         assert not r.accepted
 
     def test_missing_envelope_path(self) -> None:
-        from agentic_core.adg.runtime.boundary_verifier import (
+#  # MOVED: from agentic_core.adg.runtime.boundary_verifier import (
             BoundaryPacket,
             L2BoundaryVerifier,
             VerificationOutcome,
@@ -1610,7 +1720,7 @@ class TestA3StateMachineG10:
         assert r.outcome == VerificationOutcome.REJECTED_INVALID_PACKET
 
     def test_missing_token_path(self) -> None:
-        from agentic_core.adg.runtime.boundary_verifier import (
+#  # MOVED: from agentic_core.adg.runtime.boundary_verifier import (
             BoundaryPacket,
             L2BoundaryVerifier,
             VerificationOutcome,
@@ -1622,7 +1732,7 @@ class TestA3StateMachineG10:
         assert r.outcome == VerificationOutcome.REJECTED_TOKEN_REVOKED
 
     def test_empty_packet_id_path(self) -> None:
-        from agentic_core.adg.runtime.boundary_verifier import (
+#  # MOVED: from agentic_core.adg.runtime.boundary_verifier import (
             BoundaryPacket,
             L2BoundaryVerifier,
             VerificationOutcome,
@@ -1634,7 +1744,7 @@ class TestA3StateMachineG10:
         assert r.outcome == VerificationOutcome.REJECTED_INVALID_PACKET
 
     def test_acceptance_rate_calculation(self) -> None:
-        from agentic_core.adg.runtime.boundary_verifier import L2BoundaryVerifier
+#  # MOVED: from agentic_core.adg.runtime.boundary_verifier import L2BoundaryVerifier
 
         v = L2BoundaryVerifier("a", "r")
         v.certify_envelope("e1", "t1", "c1")  # accepted
@@ -1642,7 +1752,7 @@ class TestA3StateMachineG10:
         assert v.report.acceptance_rate == pytest.approx(0.5)
 
     def test_chokepoint_certify_valid_then_invalid(self) -> None:
-        from agentic_core.adg.runtime.boundary_verifier import CapabilityChokepoint
+#  # MOVED: from agentic_core.adg.runtime.boundary_verifier import CapabilityChokepoint
 
         cp = CapabilityChokepoint("a")
         assert cp.certify("t1", "cert1") is True
@@ -1655,7 +1765,7 @@ class TestA3StateMachineG11:
     """A3: G11 DeterminismController full state transitions."""
 
     def test_full_deterministic_path(self) -> None:
-        from agentic_core.adg.runtime.determinism_control import DeterminismController
+#  # MOVED: from agentic_core.adg.runtime.determinism_control import DeterminismController
 
         ctrl = DeterminismController("a", "r")
         ctrl.seed_rng(42)
@@ -1668,7 +1778,7 @@ class TestA3StateMachineG11:
         assert digest.rng_seed == 42
 
     def test_violation_breaks_determinism(self) -> None:
-        from agentic_core.adg.runtime.determinism_control import (
+#  # MOVED: from agentic_core.adg.runtime.determinism_control import (
             DeterminismController,
             DeterminismViolationType,
         )
@@ -1679,13 +1789,13 @@ class TestA3StateMachineG11:
         assert not ctrl.report.is_fully_deterministic
 
     def test_unseeded_rng_not_deterministic(self) -> None:
-        from agentic_core.adg.runtime.determinism_control import DeterminismController
+#  # MOVED: from agentic_core.adg.runtime.determinism_control import DeterminismController
 
         ctrl = DeterminismController("a", "r")
         assert not ctrl.report.is_fully_deterministic
 
     def test_all_violation_types_recordable(self) -> None:
-        from agentic_core.adg.runtime.determinism_control import (
+#  # MOVED: from agentic_core.adg.runtime.determinism_control import (
             DeterminismController,
             DeterminismViolationType,
         )
@@ -1697,7 +1807,7 @@ class TestA3StateMachineG11:
         assert ctrl.report.violation_count == len(DeterminismViolationType)
 
     def test_semantic_clock_monotonic(self) -> None:
-        from agentic_core.adg.runtime.determinism_control import SemanticClock
+#  # MOVED: from agentic_core.adg.runtime.determinism_control import SemanticClock
 
         clock = SemanticClock("r")
         readings = [clock.now() for _ in range(10)]
@@ -1710,7 +1820,7 @@ class TestA3StateMachineG12:
     """A3: G12 IOInterceptor full lifecycle including hard-fail path."""
 
     def test_happy_intercept_path(self) -> None:
-        from agentic_core.adg.runtime.io_interception import InterceptionOutcome, IOInterceptor
+#  # MOVED: from agentic_core.adg.runtime.io_interception import InterceptionOutcome, IOInterceptor
 
         ic = IOInterceptor("a", "r")
         ev = ic.intercept_io("https://a.com", "GET", response_body='{"x": 1}')
@@ -1718,21 +1828,21 @@ class TestA3StateMachineG12:
         assert len(ic.report.transcripts) == 1
 
     def test_hard_fail_raises_when_enabled(self) -> None:
-        from agentic_core.adg.runtime.io_interception import IOInterceptor
+#  # MOVED: from agentic_core.adg.runtime.io_interception import IOInterceptor
 
         ic = IOInterceptor("a", "r", hard_fail_on_untranscripted=True)
         with pytest.raises(RuntimeError):
             ic.hard_fail_untranscripted("https://evil.com")
 
     def test_hard_fail_no_raise_when_disabled(self) -> None:
-        from agentic_core.adg.runtime.io_interception import InterceptionOutcome, IOInterceptor
+#  # MOVED: from agentic_core.adg.runtime.io_interception import InterceptionOutcome, IOInterceptor
 
         ic = IOInterceptor("a", "r", hard_fail_on_untranscripted=False)
         ev = ic.hard_fail_untranscripted("https://evil.com")
         assert ev.outcome == InterceptionOutcome.HARD_FAILED
 
     def test_immutable_transcript_hash_consistent(self) -> None:
-        from agentic_core.adg.runtime.io_interception import NetworkTranscript
+#  # MOVED: from agentic_core.adg.runtime.io_interception import NetworkTranscript
 
         t = NetworkTranscript()
         t.capture("https://a.com", "POST", "body1", "resp1", 200)
@@ -1742,7 +1852,7 @@ class TestA3StateMachineG12:
         assert h1 == h2  # deterministic hashing
 
     def test_outcomes_distribution_accurate(self) -> None:
-        from agentic_core.adg.runtime.io_interception import IOInterceptor
+#  # MOVED: from agentic_core.adg.runtime.io_interception import IOInterceptor
 
         ic = IOInterceptor("a", "r", hard_fail_on_untranscripted=False)
         ic.intercept_io("https://a.com")
@@ -1757,7 +1867,7 @@ class TestA3StateMachineG13:
     """A3: G13 MutationTransport full commit protocol paths."""
 
     def test_full_commit_path(self) -> None:
-        from agentic_core.adg.runtime.mutation_transport import CommitPhase, MutationTransport
+#  # MOVED: from agentic_core.adg.runtime.mutation_transport import CommitPhase, MutationTransport
 
         mt = MutationTransport("a", "r")
         p = mt.package_diff([{"op": "replace", "path": "/x", "value": 1}])
@@ -1767,7 +1877,7 @@ class TestA3StateMachineG13:
         assert p.phase == CommitPhase.PHASE2_COMMITTED
 
     def test_distribute_after_commit(self) -> None:
-        from agentic_core.adg.runtime.mutation_transport import CommitPhase, MutationTransport
+#  # MOVED: from agentic_core.adg.runtime.mutation_transport import CommitPhase, MutationTransport
 
         mt = MutationTransport("a", "r")
         p = mt.package_diff([])
@@ -1778,7 +1888,7 @@ class TestA3StateMachineG13:
         assert p.phase == CommitPhase.DISTRIBUTED
 
     def test_abort_on_blast_radius_exceeded(self) -> None:
-        from agentic_core.adg.runtime.mutation_transport import CommitPhase, MutationTransport
+#  # MOVED: from agentic_core.adg.runtime.mutation_transport import CommitPhase, MutationTransport
 
         mt = MutationTransport("a", "r")
         p = mt.package_diff([])
@@ -1788,7 +1898,7 @@ class TestA3StateMachineG13:
         assert p.abort_reason == "blast_radius_exceeded"
 
     def test_abort_without_signature(self) -> None:
-        from agentic_core.adg.runtime.mutation_transport import MutationTransport
+#  # MOVED: from agentic_core.adg.runtime.mutation_transport import MutationTransport
 
         mt = MutationTransport("a", "r")
         p = mt.package_diff([])
@@ -1798,7 +1908,7 @@ class TestA3StateMachineG13:
         assert p.abort_reason == "unsigned_packet"
 
     def test_diff_hash_deterministic(self) -> None:
-        from agentic_core.adg.runtime.mutation_transport import MutationTransport
+#  # MOVED: from agentic_core.adg.runtime.mutation_transport import MutationTransport
 
         mt = MutationTransport("a", "r")
         patches = [{"op": "add", "path": "/y", "value": 2}]
@@ -1812,7 +1922,7 @@ class TestA3StateMachineG14:
     """A3: G14 ExecutionProofRecorder full lifecycle and comparison paths."""
 
     def test_seal_then_sign_then_compare_match(self) -> None:
-        from agentic_core.adg.runtime.execution_proof import ExecutionProofRecorder
+#  # MOVED: from agentic_core.adg.runtime.execution_proof import ExecutionProofRecorder
 
         rec1 = ExecutionProofRecorder("a", "r")
         t1 = rec1.start_trace()
@@ -1830,7 +1940,7 @@ class TestA3StateMachineG14:
         assert cmp.matches
 
     def test_different_events_produces_mismatch(self) -> None:
-        from agentic_core.adg.runtime.execution_proof import (
+#  # MOVED: from agentic_core.adg.runtime.execution_proof import (
             ExecutionProofRecorder,
             ExecutionTrace,
             ProofComparisonOutcome,
@@ -1849,7 +1959,7 @@ class TestA3StateMachineG14:
         assert cmp.outcome == ProofComparisonOutcome.DIGEST_MISMATCH
 
     def test_replay_key_contains_correct_fields(self) -> None:
-        from agentic_core.adg.runtime.execution_proof import ExecutionProofRecorder
+#  # MOVED: from agentic_core.adg.runtime.execution_proof import ExecutionProofRecorder
 
         rec = ExecutionProofRecorder("a", "r")
         t = rec.start_trace()
@@ -1860,7 +1970,7 @@ class TestA3StateMachineG14:
         assert key.trace_id == t.trace_id
 
     def test_singleton_digest_changes_with_events(self) -> None:
-        from agentic_core.adg.runtime.execution_proof import ExecutionProofRecorder
+#  # MOVED: from agentic_core.adg.runtime.execution_proof import ExecutionProofRecorder
 
         rec1 = ExecutionProofRecorder("a", "r")
         t1 = rec1.start_trace()
@@ -1881,7 +1991,7 @@ class TestA3StateMachineG15:
     """A3: G15 ExecutionPathController all path transitions."""
 
     def test_all_path_values_reachable(self) -> None:
-        from agentic_core.adg.runtime.path_control import ExecutionPath, ExecutionPathController
+#  # MOVED: from agentic_core.adg.runtime.path_control import ExecutionPath, ExecutionPathController
 
         ctrl = ExecutionPathController("a", "r")
         for path in [ExecutionPath.PATH_A, ExecutionPath.PATH_B, ExecutionPath.PATH_C, ExecutionPath.PATH_D]:
@@ -1889,7 +1999,7 @@ class TestA3StateMachineG15:
             assert ctrl.current_path == path
 
     def test_stall_increments_stall_count(self) -> None:
-        from agentic_core.adg.runtime.path_control import ExecutionPathController
+#  # MOVED: from agentic_core.adg.runtime.path_control import ExecutionPathController
 
         ctrl = ExecutionPathController("a", "r")
         ctrl.force_stall()
@@ -1897,7 +2007,7 @@ class TestA3StateMachineG15:
         assert ctrl.report.stall_count == 2
 
     def test_vigilance_reroute_increments_counter(self) -> None:
-        from agentic_core.adg.runtime.path_control import ExecutionPathController
+#  # MOVED: from agentic_core.adg.runtime.path_control import ExecutionPathController
 
         ctrl = ExecutionPathController("a", "r")
         ctrl.vigilance_reroute()
@@ -1906,7 +2016,7 @@ class TestA3StateMachineG15:
         assert ctrl.report.vigilance_reroute_count == 3
 
     def test_safety_reentry_counter(self) -> None:
-        from agentic_core.adg.runtime.path_control import ExecutionPathController
+#  # MOVED: from agentic_core.adg.runtime.path_control import ExecutionPathController
 
         ctrl = ExecutionPathController("a", "r")
         ctrl.reenter_safety()
@@ -1914,7 +2024,7 @@ class TestA3StateMachineG15:
         assert ctrl.report.safety_reentry_count == 2
 
     def test_transition_from_field_accurate(self) -> None:
-        from agentic_core.adg.runtime.path_control import ExecutionPath, ExecutionPathController
+#  # MOVED: from agentic_core.adg.runtime.path_control import ExecutionPath, ExecutionPathController
 
         ctrl = ExecutionPathController("a", "r")
         ctrl.route_path(ExecutionPath.PATH_B)
@@ -1928,7 +2038,7 @@ class TestA3StateMachineG16:
     """A3: G16 EvalSpine full lifecycle including rejection path."""
 
     def test_all_metric_types_recorded_independently(self) -> None:
-        from agentic_core.adg.runtime.eval_spine import EvalSpine
+#  # MOVED: from agentic_core.adg.runtime.eval_spine import EvalSpine
 
         spine = EvalSpine("a", "r")
         spine.score_groundedness(0.9)
@@ -1942,7 +2052,7 @@ class TestA3StateMachineG16:
         assert "NDCG@10" in names
 
     def test_drift_alert_critical_threshold(self) -> None:
-        from agentic_core.adg.runtime.eval_spine import EvalSpine
+#  # MOVED: from agentic_core.adg.runtime.eval_spine import EvalSpine
 
         spine = EvalSpine("a", "r")
         alert = spine.emit_drift_alert("G", 0.1, 0.9, threshold=0.05)
@@ -1950,14 +2060,14 @@ class TestA3StateMachineG16:
         assert spine.report.critical_drift_count == 1
 
     def test_drift_alert_non_critical(self) -> None:
-        from agentic_core.adg.runtime.eval_spine import EvalSpine
+#  # MOVED: from agentic_core.adg.runtime.eval_spine import EvalSpine
 
         spine = EvalSpine("a", "r")
         alert = spine.emit_drift_alert("G", 0.95, 0.9, threshold=0.1)
         assert not alert.is_critical
 
     def test_proposal_commit_path(self) -> None:
-        from agentic_core.adg.runtime.eval_spine import EvalSpine, OptimizationStage
+#  # MOVED: from agentic_core.adg.runtime.eval_spine import EvalSpine, OptimizationStage
 
         spine = EvalSpine("a", "r")
         batch = spine.build_dpo_batch()
@@ -1969,7 +2079,7 @@ class TestA3StateMachineG16:
         assert spine.report.committed_proposal_count == 1
 
     def test_proposal_rejection_path(self) -> None:
-        from agentic_core.adg.runtime.eval_spine import EvalSpine, OptimizationStage
+#  # MOVED: from agentic_core.adg.runtime.eval_spine import EvalSpine, OptimizationStage
 
         spine = EvalSpine("a", "r")
         batch = spine.build_dpo_batch()
@@ -1980,7 +2090,7 @@ class TestA3StateMachineG16:
         assert not proposal.is_committed
 
     def test_average_metric_across_multiple_runs(self) -> None:
-        from agentic_core.adg.runtime.eval_spine import EvalSpine
+#  # MOVED: from agentic_core.adg.runtime.eval_spine import EvalSpine
 
         spine = EvalSpine("a", "r")
         values = [0.5, 0.7, 0.9]
@@ -2053,7 +2163,7 @@ class TestA4ADGRoundTrip:
 
     def test_full_scanner_produces_g7_g16_edges_for_runtime_dir(self) -> None:
         """Running the full ADGStaticScanner over the runtime directory yields G7-G16 edges."""
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=ROOT)
         # Scan only the runtime directory for speed
@@ -2086,37 +2196,37 @@ class TestA5LayerSplitterAccuracy:
     """A5: Governance plane contains all G7-G16 relations; zero cross-plane overlap."""
 
     def test_all_g7_g16_relations_in_governance_plane(self) -> None:
-        from agentic_core.adg.artifact.SplitArtifact import _GOVERNANCE_GRAPH_RELS
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import _GOVERNANCE_GRAPH_RELS
 
         missing = [r for r in G7_G16_RELATION_TYPES if r not in _GOVERNANCE_GRAPH_RELS]
         assert not missing, f"G7-G16 relations missing from governance plane: {missing}"
 
     def test_zero_overlap_file_symbol(self) -> None:
-        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS
 
         overlap = _FILE_GRAPH_RELS & _SYMBOL_GRAPH_RELS
         assert not overlap, f"FILE ∩ SYMBOL overlap: {sorted(overlap)}"
 
     def test_zero_overlap_file_governance(self) -> None:
-        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS, _GOVERNANCE_GRAPH_RELS
 
         overlap = _FILE_GRAPH_RELS & _GOVERNANCE_GRAPH_RELS
         assert not overlap, f"FILE ∩ GOVERNANCE overlap: {sorted(overlap)}"
 
     def test_zero_overlap_symbol_governance(self) -> None:
-        from agentic_core.adg.artifact.SplitArtifact import _GOVERNANCE_GRAPH_RELS, _SYMBOL_GRAPH_RELS
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import _GOVERNANCE_GRAPH_RELS, _SYMBOL_GRAPH_RELS
 
         overlap = _SYMBOL_GRAPH_RELS & _GOVERNANCE_GRAPH_RELS
         assert not overlap, f"SYMBOL ∩ GOVERNANCE overlap: {sorted(overlap)}"
 
     def test_g7_g16_not_in_file_plane(self) -> None:
-        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS
 
         contaminated = [r for r in G7_G16_RELATION_TYPES if r in _FILE_GRAPH_RELS]
         assert not contaminated, f"G7-G16 relations contaminate file plane: {contaminated}"
 
     def test_g7_g16_not_in_symbol_plane(self) -> None:
-        from agentic_core.adg.artifact.SplitArtifact import _SYMBOL_GRAPH_RELS
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import _SYMBOL_GRAPH_RELS
 
         contaminated = [r for r in G7_G16_RELATION_TYPES if r in _SYMBOL_GRAPH_RELS]
         assert not contaminated, f"G7-G16 relations contaminate symbol plane: {contaminated}"
@@ -2125,7 +2235,7 @@ class TestA5LayerSplitterAccuracy:
         """Every relation type in the refreshed SQLite is in at least one plane."""
         import sqlite3
 
-        from agentic_core.adg.artifact.SplitArtifact import (
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import (
             _FILE_GRAPH_RELS,
             _GOVERNANCE_GRAPH_RELS,
             _SYMBOL_GRAPH_RELS,
@@ -2162,7 +2272,7 @@ class TestA5LayerSplitterAccuracy:
 
     def test_runtime_module_relations_not_in_file_or_symbol_planes(self) -> None:
         """Runtime-only relations (e.g. reads_config, reads_env) are not in file/symbol planes."""
-        from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS
+#  # MOVED: from agentic_core.adg.artifact.SplitArtifact import _FILE_GRAPH_RELS, _SYMBOL_GRAPH_RELS
 
         runtime_only = {
             "reads_config",

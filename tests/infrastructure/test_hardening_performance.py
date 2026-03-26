@@ -8,16 +8,16 @@ import time
 import unittest
 from datetime import datetime
 
-from infrastructure.hardening.adaptive_optimizer import AdaptiveOptimizer
-from infrastructure.hardening.cross_layer_coherence import CrossLayerCoherenceManager
-from infrastructure.hardening.distributed_state_manager import DistributedStateManager
-from infrastructure.hardening.implementation_plan import LayerType, QueryRequest, QueryStatus
-from infrastructure.hardening.security_framework import (
+#  # MOVED: from infrastructure.hardening.adaptive_optimizer import AdaptiveOptimizer
+#  # MOVED: from infrastructure.hardening.cross_layer_coherence import CrossLayerCoherenceManager
+#  # MOVED: from infrastructure.hardening.distributed_state_manager import DistributedStateManager
+#  # MOVED: from infrastructure.hardening.implementation_plan import LayerType, QueryRequest, QueryStatus
+#  # MOVED: from infrastructure.hardening.security_framework import (
     DataClassification,
     SecurityContext,
     SecurityGateway,
 )
-from infrastructure.hardening.unified_query_router import UnifiedQueryRouter
+#  # MOVED: from infrastructure.hardening.unified_query_router import UnifiedQueryRouter
 
 
 class TestInfrastructurePerformance(unittest.TestCase):
@@ -31,6 +31,13 @@ class TestInfrastructurePerformance(unittest.TestCase):
         self.security_gateway = SecurityGateway()
 
     def test_query_router_performance(self):
+        from infrastructure.hardening.adaptive_optimizer import AdaptiveOptimizer
+        from infrastructure.hardening.cross_layer_coherence import CrossLayerCoherenceManager
+        from infrastructure.hardening.distributed_state_manager import DistributedStateManager
+        from infrastructure.hardening.implementation_plan import LayerType, QueryRequest, QueryStatus
+        from infrastructure.hardening.security_framework import (
+        from infrastructure.hardening.unified_query_router import UnifiedQueryRouter
+        from infrastructure.hardening.adaptive_optimizer import LayerResponse
     """Test query_router_performance runtime behavior."""
     # Arrange
     # TODO: Set up processing data
@@ -146,7 +153,7 @@ class TestInfrastructurePerformance(unittest.TestCase):
         start_time = time.time()
 
         for i in range(data_points):
-            from infrastructure.hardening.adaptive_optimizer import LayerResponse
+#  # MOVED: from infrastructure.hardening.adaptive_optimizer import LayerResponse
 
             response = LayerResponse(
                 layer_type=LayerType.REDIS_EXACT_MATCH,

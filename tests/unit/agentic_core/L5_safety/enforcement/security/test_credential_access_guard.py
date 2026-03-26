@@ -5,7 +5,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -78,12 +78,12 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.adg.runtime.secret_access import SecretAccessOutcome, SecretKind
-from agentic_core.L5_safety.enforcement.security.credential_access_guard import (
+#  # MOVED: from agentic_core.adg.runtime.secret_access import SecretAccessOutcome, SecretKind
+#  # MOVED: from agentic_core.L5_safety.enforcement.security.credential_access_guard import (
     CredentialAccessDenied,
     CredentialAccessGuard,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -176,6 +176,10 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestCredentialAccessGuardGetSecret:
     def test_returns_env_var_value(self, monkeypatch):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.runtime.secret_access import SecretAccessOutcome, SecretKind
+        from agentic_core.L5_safety.enforcement.security.credential_access_guard import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         monkeypatch.setenv("TEST_API_KEY", "sk-test-123")
         guard = CredentialAccessGuard(agent_id="TestAgent", run_id="run-1")
         value = guard.guarded_get_secret("TEST_API_KEY")

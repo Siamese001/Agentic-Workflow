@@ -21,7 +21,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -68,7 +68,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_stabilization_hardening_s1_s5", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_stabilization_hardening_s1_s5", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_stabilization_hardening_s1_s5", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -200,21 +200,58 @@ class TestInfrastructureDependencyError:
     """§1.5 §1.8 — InfrastructureDependencyError is the canonical fail-closed signal."""
 
     def test_error_is_importable(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         from agentic_core.L2_execution.types.infra_error_types import (
+        from agentic_core.L2_execution.types.infra_error_types import (
+        from agentic_core.L2_execution.types.infra_error_types import (
+        from agentic_core.L2_execution.types.infra_error_types import (
+        from agentic_core.L2_execution.types.infra_error_types import (
+        from agentic_core.L3_orchestration.engines.sovereign_redis_orchestrator import (
+        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+        from agentic_core.L5_safety.enforcement import embedding_non_interference_guardrail as mod
+        from agentic_core.L5_safety.enforcement import embedding_non_interference_guardrail as mod
+        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+        from agentic_core.interfaces.meta_learning import ChangePackage
+        from agentic_core.interfaces.meta_learning import ChangePackage
+        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
+#  # MOVED: from agentic_core.L2_execution.types.infra_error_types import (
             InfrastructureDependencyError,
         )
 
         assert InfrastructureDependencyError is not None
 
     def test_error_is_runtime_error_subclass(self):
-        from agentic_core.L2_execution.types.infra_error_types import (
+#  # MOVED: from agentic_core.L2_execution.types.infra_error_types import (
             InfrastructureDependencyError,
         )
 
         assert issubclass(InfrastructureDependencyError, RuntimeError)
 
     def test_error_carries_message(self):
-        from agentic_core.L2_execution.types.infra_error_types import (
+#  # MOVED: from agentic_core.L2_execution.types.infra_error_types import (
             InfrastructureDependencyError,
         )
 
@@ -222,7 +259,7 @@ class TestInfrastructureDependencyError:
         assert "Redis unavailable" in str(exc)
 
     def test_error_preserves_cause(self):
-        from agentic_core.L2_execution.types.infra_error_types import (
+#  # MOVED: from agentic_core.L2_execution.types.infra_error_types import (
             InfrastructureDependencyError,
         )
 
@@ -232,7 +269,7 @@ class TestInfrastructureDependencyError:
         assert exc_info.value.__cause__ is cause
 
     def test_error_can_be_caught_as_runtime_error(self):
-        from agentic_core.L2_execution.types.infra_error_types import (
+#  # MOVED: from agentic_core.L2_execution.types.infra_error_types import (
             InfrastructureDependencyError,
         )
 
@@ -244,7 +281,7 @@ class TestSovereignRedisOrchestratorFailClosed:
     """§1.5 §1.8 §1.9 — Redis orchestrator raises on connection failure, no silent fallback."""
 
     def _make_orchestrator(self):
-        from agentic_core.L3_orchestration.engines.sovereign_redis_orchestrator import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.sovereign_redis_orchestrator import (
             SovereignRedisOrchestrator,
         )
 
@@ -253,7 +290,7 @@ class TestSovereignRedisOrchestratorFailClosed:
     def test_get_raises_on_connection_error(self):
         import redis as redis_lib
 
-        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+#  # MOVED: from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
 
         orch = self._make_orchestrator()
         orch.connection = MagicMock()
@@ -264,7 +301,7 @@ class TestSovereignRedisOrchestratorFailClosed:
     def test_set_raises_on_timeout_error(self):
         import redis as redis_lib
 
-        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+#  # MOVED: from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
 
         orch = self._make_orchestrator()
         orch.connection = MagicMock()
@@ -275,7 +312,7 @@ class TestSovereignRedisOrchestratorFailClosed:
     def test_delete_raises_on_connection_error(self):
         import redis as redis_lib
 
-        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+#  # MOVED: from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
 
         orch = self._make_orchestrator()
         orch.connection = MagicMock()
@@ -286,7 +323,7 @@ class TestSovereignRedisOrchestratorFailClosed:
     def test_exists_raises_on_connection_error(self):
         import redis as redis_lib
 
-        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+#  # MOVED: from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
 
         orch = self._make_orchestrator()
         orch.connection = MagicMock()
@@ -297,7 +334,7 @@ class TestSovereignRedisOrchestratorFailClosed:
     def test_clear_raises_on_connection_error(self):
         import redis as redis_lib
 
-        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+#  # MOVED: from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
 
         orch = self._make_orchestrator()
         orch.connection = MagicMock()
@@ -329,7 +366,7 @@ class TestSovereignRedisOrchestratorFailClosed:
     def test_infra_error_message_contains_url(self):
         import redis as redis_lib
 
-        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+#  # MOVED: from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
 
         orch = self._make_orchestrator()
         orch.connection = MagicMock()
@@ -347,7 +384,7 @@ class TestC0ContextClean:
     """§1.5 §1.7 §1.8 §1.9 — assert_c0_context_clean enforces the informational boundary."""
 
     def _guard(self):
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             assert_c0_context_clean,
         )
 
@@ -360,7 +397,7 @@ class TestC0ContextClean:
         self._guard()({})
 
     def test_route_mode_is_forbidden(self):
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             C0InterferenceViolation,
         )
 
@@ -368,7 +405,7 @@ class TestC0ContextClean:
             self._guard()({"route_mode": "fast"})
 
     def test_execution_tier_is_forbidden(self):
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             C0InterferenceViolation,
         )
 
@@ -376,7 +413,7 @@ class TestC0ContextClean:
             self._guard()({"execution_tier": "L2"})
 
     def test_safety_threshold_is_forbidden(self):
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             C0InterferenceViolation,
         )
 
@@ -384,7 +421,7 @@ class TestC0ContextClean:
             self._guard()({"safety_threshold": 0.7})
 
     def test_policy_hash_is_forbidden(self):
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             C0InterferenceViolation,
         )
 
@@ -392,7 +429,7 @@ class TestC0ContextClean:
             self._guard()({"policy_hash": "abc123"})
 
     def test_multiple_forbidden_fields_reported(self):
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             C0InterferenceViolation,
         )
 
@@ -400,7 +437,7 @@ class TestC0ContextClean:
             self._guard()({"route_mode": "x", "execution_tier": "L1"})
 
     def test_forbidden_field_alongside_allowed_fields(self):
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             C0InterferenceViolation,
         )
 
@@ -409,7 +446,7 @@ class TestC0ContextClean:
 
     def test_assert_no_c0_influence_calls_context_clean(self):
         """§1.8 — assert_no_c0_influence must invoke assert_c0_context_clean when c0_context given."""
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             C0InterferenceViolation,
             assert_no_c0_influence,
         )
@@ -422,14 +459,14 @@ class TestC0ContextClean:
 
     def test_forbidden_fields_frozenset_immutable(self):
         """§1.7 determinism: the forbidden-fields set must not change between calls."""
-        from agentic_core.L5_safety.enforcement import embedding_non_interference_guardrail as mod
+#  # MOVED: from agentic_core.L5_safety.enforcement import embedding_non_interference_guardrail as mod
 
         snap1 = frozenset(mod._C0_FORBIDDEN_FIELDS)
         snap2 = frozenset(mod._C0_FORBIDDEN_FIELDS)
         assert snap1 == snap2
 
     def test_all_four_forbidden_fields_present(self):
-        from agentic_core.L5_safety.enforcement import embedding_non_interference_guardrail as mod
+#  # MOVED: from agentic_core.L5_safety.enforcement import embedding_non_interference_guardrail as mod
 
         assert {"route_mode", "execution_tier", "safety_threshold", "policy_hash"} <= set(
             mod._C0_FORBIDDEN_FIELDS
@@ -450,7 +487,7 @@ class TestSemanticCacheKeyDeterminism:
         We set instance attributes directly so multiple managers in the same
         test do not share state through the class dict.
         """
-        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+#  # MOVED: from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
 
         mgr = object.__new__(SemanticCacheManager)
         mgr._EMBEDDING_MODEL_VERSION = model_ver
@@ -466,7 +503,7 @@ class TestSemanticCacheKeyDeterminism:
     def test_different_queries_produce_different_hashes(self):
         mgr = self._make_manager()
         """Test agentic_core import functionality."""
-        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+#  # MOVED: from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
         # Basic functionality assertion
         assert True  # Replace with meaningful assertion
     def test_different_namespaces_produce_different_hashes(self):
@@ -504,7 +541,7 @@ class TestSemanticCacheKeyDeterminism:
 
     def test_same_query_different_anchors_never_collide(self):
         """§1.9 matrix: (model_ver × config_hash) must produce unique hashes."""
-        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+#  # MOVED: from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
 
         seen = set()
         combos = [("v1", "cfg1"), ("v1", "cfg2"), ("v2", "cfg1"), ("v2", "cfg2")]
@@ -526,7 +563,7 @@ class TestChangePackageProposalOnly:
     """§1.5 §1.8 §1.9 §1.11 — ChangePackage must block runtime activation without approval token."""
 
     def _make(self, **kwargs):
-        from agentic_core.interfaces.meta_learning import ChangePackage
+#  # MOVED: from agentic_core.interfaces.meta_learning import ChangePackage
 
         return ChangePackage(**kwargs)
 
@@ -586,7 +623,7 @@ class TestChangePackageProposalOnly:
         """§1.8 fail-closed default: new ChangePackages default to proposal-only."""
         import dataclasses
 
-        from agentic_core.interfaces.meta_learning import ChangePackage
+#  # MOVED: from agentic_core.interfaces.meta_learning import ChangePackage
 
         fields = {f.name: f for f in dataclasses.fields(ChangePackage)}
         assert fields["proposal_only"].default is True
@@ -611,7 +648,7 @@ class TestChangePackageProposalOnly:
 
     def test_propose_healing_pattern_returns_proposal_only(self):
         """§1.8 — SovereignMetaLearningClient proposals must always be proposal_only=True."""
-        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+#  # MOVED: from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
 
         inner = MagicMock()
         client = SovereignMetaLearningClient(inner_client=inner, proposal_only=True)
@@ -619,7 +656,7 @@ class TestChangePackageProposalOnly:
         assert pkg.proposal_only is True
 
     def test_suggest_threshold_returns_proposal_only(self):
-        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+#  # MOVED: from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
 
         inner = MagicMock()
         client = SovereignMetaLearningClient(inner_client=inner, proposal_only=True)
@@ -636,7 +673,7 @@ class TestUWGThreeGateWrite:
     """§1.5 §1.8 §1.9 §1.11 — UWG.write() must enforce signature → replay_hash → plan_hash."""
 
     def _make_uwg(self, replay_mode: bool = False):
-        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+#  # MOVED: from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
 
         return UniversalWriteGateway(replay_mode=replay_mode)
 
@@ -722,7 +759,7 @@ class TestUWGThreeGateWrite:
     def test_store_not_called_on_bad_signature(self):
         uwg = self._make_uwg()
         """Test agentic_core import functionality."""
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
+#  # MOVED: from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
         # Basic functionality assertion
         assert True  # Replace with meaningful assertion
 
@@ -738,7 +775,7 @@ class TestUWGThreeGateWrite:
     def test_verify_replay_hash_correct(self):
         uwg = self._make_uwg()
         """Test agentic_core import functionality."""
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
+#  # MOVED: from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
         # Basic functionality assertion
         assert True  # Replace with meaningful assertion
     def test_verify_replay_hash_wrong(self):
@@ -754,7 +791,7 @@ class TestUWGThreeGateWrite:
         assert uwg._verify_plan_hash("plan-001") is True
 
 """Test agentic_core import functionality."""
-from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
+#  # MOVED: from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
 # Basic functionality assertion
 assert True  # Replace with meaningful assertion
     # --- §1.9 matrix: (frozen × signature × replay_key × plan_hash) ---
@@ -770,7 +807,7 @@ assert True  # Replace with meaningful assertion
         ],
     )
     """Test agentic_core import functionality."""
-    from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
+#  # MOVED: from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
     # Basic functionality assertion
     assert True  # Replace with meaningful assertion
         if frozen:
@@ -786,6 +823,6 @@ assert True  # Replace with meaningful assertion
                 uwg.write(payload, sig, store, replay_key=rkey, plan_hash=phash)
             store.write.assert_not_called()
             """Test agentic_core import functionality."""
-            from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
+#  # MOVED: from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import C0InterferenceViolation
             # Basic functionality assertion
             assert True  # Replace with meaningful assertion

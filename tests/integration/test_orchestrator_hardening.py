@@ -22,11 +22,11 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
-from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+#  # MOVED: from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
     FileClassificationAgent,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -198,8 +198,8 @@ def _classify_fca(
 # ================================================================
 
 VALID_ORCHESTRATOR_CODE = """\
-    from agentic_core.L3_orchestration.reasoning import SomeAgent
-    from agentic_core.L5_safety.enforcement import SomeEnforcer
+#  # MOVED: from agentic_core.L3_orchestration.reasoning import SomeAgent
+#  # MOVED: from agentic_core.L5_safety.enforcement import SomeEnforcer
 
     class WorkflowCoordinator:
         pass
@@ -233,6 +233,21 @@ class TestOrchestratorInheritance:
     """Phase 2A: Inheritance-based orchestrator detection."""
 
     def test_inherits_workflow_coordinator(self, tmp_path):
+        from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+        from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L3_orchestration.reasoning import SomeAgent
+        from agentic_core.L5_safety.enforcement import SomeEnforcer
+        from agentic_core.L3_orchestration.reasoning import R
+        from agentic_core.L5_safety.enforcement import G
+        from agentic_core.L3_orchestration.reasoning import A
+        from agentic_core.L5_safety.enforcement import G
+        from agentic_core.L3_orchestration.reasoning import A
+        from agentic_core.L5_safety.enforcement import G
+        from agentic_core.L3_orchestration.reasoning import R
+        from agentic_core.L5_safety.enforcement import G
+        from agentic_core.L3_orchestration.reasoning import A
+        from agentic_core.L5_safety.enforcement import G
         """Inherits WorkflowCoordinator => ORCHESTRATOR."""
         result, _fca = _classify_fca(
             tmp_path,
@@ -250,8 +265,8 @@ class TestOrchestratorThinWrapper:
     def test_thin_wrapper_downgraded_to_engine(self, tmp_path):
         """Thin wrapper (<=3 funcs, <=50 LOC) => ENGINE."""
         code = """\
-            from agentic_core.L3_orchestration.reasoning import R
-            from agentic_core.L5_safety.enforcement import G
+#  # MOVED: from agentic_core.L3_orchestration.reasoning import R
+#  # MOVED: from agentic_core.L5_safety.enforcement import G
 
             class ThinOrchestrator:
                 def run(self):
@@ -275,8 +290,8 @@ class TestOrchestratorMutationHard:
     def test_hard_mutation_downgraded_to_engine(self, tmp_path):
         """open(...,'w') present => ENGINE + mutation_hard stat."""
         code = """\
-            from agentic_core.L3_orchestration.reasoning import A
-            from agentic_core.L5_safety.enforcement import G
+#  # MOVED: from agentic_core.L3_orchestration.reasoning import A
+#  # MOVED: from agentic_core.L5_safety.enforcement import G
 
             class MutatingOrchestrator:
                 def run_pipeline(self):
@@ -316,8 +331,8 @@ class TestOrchestratorMutationSoft:
         """subprocess.run present => ORCHESTRATOR + mutation_soft."""
         code = """\
             import subprocess
-            from agentic_core.L3_orchestration.reasoning import A
-            from agentic_core.L5_safety.enforcement import G
+#  # MOVED: from agentic_core.L3_orchestration.reasoning import A
+#  # MOVED: from agentic_core.L5_safety.enforcement import G
 
             class SubprocessOrchestrator:
                 def run_pipeline(self):
@@ -394,8 +409,8 @@ class TestOrchestratorIntegration:
             (AGENTIC_CORE_DIR, "L3_orchestration", "reasoning"),
             "thin_wrapper_orchestrator",
             textwrap.dedent("""\
-                from agentic_core.L3_orchestration.reasoning import R
-                from agentic_core.L5_safety.enforcement import G
+#  # MOVED: from agentic_core.L3_orchestration.reasoning import R
+#  # MOVED: from agentic_core.L5_safety.enforcement import G
 
                 class ThinWrapperOrchestrator:
                     def run(self):
@@ -411,8 +426,8 @@ class TestOrchestratorIntegration:
             (AGENTIC_CORE_DIR, "L3_orchestration", "reasoning"),
             "mutation_orchestrator",
             textwrap.dedent("""\
-                from agentic_core.L3_orchestration.reasoning import A
-                from agentic_core.L5_safety.enforcement import G
+#  # MOVED: from agentic_core.L3_orchestration.reasoning import A
+#  # MOVED: from agentic_core.L5_safety.enforcement import G
 
                 class MutationOrchestrator:
                     def run_pipeline(self):

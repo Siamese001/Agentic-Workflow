@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L0_routing.scripts.class_info import (  # noqa: F401
+#  # MOVED: from agentic_core.L0_routing.scripts.class_info import (  # noqa: F401
     AGENTIC_CORE_DIR,
     ARCHIVES_DIR,
     EXCLUDE_DIRS,
@@ -27,6 +27,7 @@ from agentic_core.L0_routing.scripts.class_info import (  # noqa: F401
 
 class TestClassInfoContract:
     def test_is_dataclass(self):
+        from agentic_core.L0_routing.scripts.class_info import (  # noqa: F401
         import dataclasses
         assert dataclasses.is_dataclass(ClassInfo)
 

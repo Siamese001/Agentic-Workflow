@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 pytestmark = pytest.mark.unit
 try:
-    from agentic_core.L0_routing.scripts.run_naming_scan_util import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, MAX_DEPTH, MAX_RETRIES, THRESHOLD
+#  # MOVED: from agentic_core.L0_routing.scripts.run_naming_scan_util import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, MAX_DEPTH, MAX_RETRIES, THRESHOLD
 except (ValueError, TypeError, RuntimeError) as e:
     MAX_RETRIES = None
     DEFAULT_SLEEP = None
@@ -15,6 +15,7 @@ except (ValueError, TypeError, RuntimeError) as e:
 class TestMaxRetriesConstant:
 
     def test_is_not_none(self):
+        from agentic_core.L0_routing.scripts.run_naming_scan_util import BATCH_SIZE, BUFFER_SIZE, DEFAULT_SLEEP, MAX_DEPTH, MAX_RETRIES, THRESHOLD
     """Test is_not_none runtime behavior."""
     # Arrange
     # TODO: Set up test data for is_not_none

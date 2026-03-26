@@ -20,7 +20,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -82,22 +82,22 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_system_learning_mcp_integration", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_system_learning_mcp_integration", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_system_learning_mcp_integration", "exec_snapshot_link")
-from system_learning.adapters.system_learning_memory_bridge import (
+#  # MOVED: from system_learning.adapters.system_learning_memory_bridge import (
     SystemLearningMemoryBridge,
     get_sl_memory_bridge,
 )
-from system_learning.engines.healing_success_rate_store import (
+#  # MOVED: from system_learning.engines.healing_success_rate_store import (
     HealingSuccessRateStore,
     reset_default_store,
 )
-from system_learning.engines.rca_engine import analyze_failures_and_persist
-from system_learning.engines.retrieval_profile import RetrievalProfile
-from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
+#  # MOVED: from system_learning.engines.rca_engine import analyze_failures_and_persist
+#  # MOVED: from system_learning.engines.retrieval_profile import RetrievalProfile
+#  # MOVED: from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
 
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_system_learning_mcp_integration")
 # REMOVED: _emit_applies_guardrail("p0", "test_system_learning_mcp_integration", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_system_learning_mcp_integration", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -220,6 +220,14 @@ class TestHealingSuccessRateStoreIntegration:
     """End-to-end tests for HealingSuccessRateStore MCP persistence."""
 
     def test_record_persist_restore_cycle(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.adapters.system_learning_memory_bridge import (
+        from system_learning.engines.healing_success_rate_store import (
+        from system_learning.engines.rca_engine import analyze_failures_and_persist
+        from system_learning.engines.retrieval_profile import RetrievalProfile
+        from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.policy_recommendation_engine import (
         """Verify full cycle: record outcomes → persist to MCP → restore on new instance."""
         bridge = get_sl_memory_bridge()
         if not bridge.is_available:
@@ -432,7 +440,7 @@ class TestPolicyRecommendationEngineIntegration:
         if not bridge.is_available:
             pytest.skip("Memory MCP unavailable")
 
-        from system_learning.engines.policy_recommendation_engine import (
+#  # MOVED: from system_learning.engines.policy_recommendation_engine import (
             MemoryAwarePolicyRecommendationEngine,
         )
 

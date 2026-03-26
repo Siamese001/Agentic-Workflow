@@ -16,11 +16,11 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     L0_ROUTING_DIR,
 )
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
@@ -101,6 +101,8 @@ class TestNoDirectPersistenceImport:
     """Non-L2 agent files must not import persistence."""
 
     def test_no_persistence_imports_in_agents(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L5_safety.config.structure_blueprint.ssot import (
         violations = []
         for path in _agent_files():
             try:

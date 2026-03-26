@@ -21,7 +21,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
 )
 
@@ -108,6 +108,7 @@ class TestIgnoreListGovernance:
     """collect_ignore_glob must match the locked allowlist exactly."""
 
     def test_conftest_exists(self):
+        from agentic_core.L0_routing.config.path_constants import (
         assert CONFTEST_PATH.exists(), f"conftest.py not found at {CONFTEST_PATH}"
 
     def test_ignore_list_matches_locked_allowlist(self):

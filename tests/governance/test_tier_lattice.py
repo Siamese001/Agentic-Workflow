@@ -13,14 +13,14 @@ import itertools
 
 import pytest
 
-from agentic_core.L5_safety.types.tier_lattice_types import (
+#  # MOVED: from agentic_core.L5_safety.types.tier_lattice_types import (
     BackpressurePolicy,
     DropPolicy,
     LearningTier,
     TierLattice,
     validate_escalation_sequence,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -176,6 +176,8 @@ class TestIrreflexivity:
 
     @pytest.mark.parametrize("t", ALL_TIERS, ids=str)
     def test_no_self_dominance(self, t):
+        from agentic_core.L5_safety.types.tier_lattice_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         assert not LATTICE.dominates(t, t)
 
 

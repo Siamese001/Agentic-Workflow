@@ -21,13 +21,13 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     L0_ROUTING_DIR,
     L2_EXECUTION_DIR,
 )
-from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -102,19 +102,19 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_routing.scripts.run_guardian_classification_compliance import (
+#  # MOVED: from agentic_core.L0_routing.scripts.run_guardian_classification_compliance import (
     GUARDIAN_ID,
     _collect_python_files,
     run_classification_compliance_guardian,
     scan_naming_compliance,
     scan_territory_compliance,
 )
-from agentic_core.L0_routing.types.guardian_contract_types import (
+#  # MOVED: from agentic_core.L0_routing.types.guardian_contract_types import (
     GuardianResult,
     GuardianStatus,
 )
-from agentic_core.L0_routing.types.guardian_registry_types import get_guardian_by_id
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L0_routing.types.guardian_registry_types import get_guardian_by_id
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -290,6 +290,13 @@ class TestSchemaValidity:
     """Verify guardian result conforms to contract schema."""
 
     def test_guardian_id(self, real_result: GuardianResult) -> None:
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.scripts.run_guardian_classification_compliance import (
+        from agentic_core.L0_routing.types.guardian_contract_types import (
+        from agentic_core.L0_routing.types.guardian_registry_types import get_guardian_by_id
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         assert real_result.guardian_id == GUARDIAN_ID
 
     def test_timestamp_injected(self, real_result: GuardianResult) -> None:

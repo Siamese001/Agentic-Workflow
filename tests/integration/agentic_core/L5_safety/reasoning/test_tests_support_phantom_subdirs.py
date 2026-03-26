@@ -50,10 +50,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -100,7 +100,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_tests_support_phantom_subdirs", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_tests_support_phantom_subdirs", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_tests_support_phantom_subdirs", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -223,7 +223,7 @@ _Mapping = (dict, MappingProxyType)
 
 def _make_agent(healing_enabled: bool = False):
     """Construct a minimal HierarchyAgent without triggering __init__ chain."""
-    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
     agent = object.__new__(HierarchyAgent)
     agent.project_root = Path("/fake/root")
@@ -289,6 +289,17 @@ class TestBlueprintInvariants:
     """SOVEREIGN_TERRITORIES must not declare any subfolders for tests/support/."""
 
     def test_support_has_no_declared_subfolders_in_blueprint(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+        from agentic_core.L5_safety.config.structure_blueprint import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
         """
         HARD INVARIANT: get_all_territories()[TESTS_DIR]['subfolders']['support']
         must have no 'subfolders' key (or an empty one).
@@ -296,7 +307,7 @@ class TestBlueprintInvariants:
         Any declared subfolders would give healing agents permission to create
         L-layer subdirectories inside tests/support/.
         """
-        from agentic_core.L5_safety.config.structure_blueprint import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint import (
             get_all_territories,
         )
 
@@ -310,7 +321,7 @@ class TestBlueprintInvariants:
 
     def test_support_is_approved_tests_subfolder(self):
         """support must exist in get_all_territories()[TESTS_DIR]['subfolders'] as a canonical dir."""
-        from agentic_core.L5_safety.config.structure_blueprint import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint import (
             get_all_territories,
         )
 
@@ -323,7 +334,7 @@ class TestBlueprintInvariants:
 
     def test_no_l_layer_names_approved_at_tests_top_level(self):
         """No l[0-9]_* names in get_all_territories()[TESTS_DIR]['subfolders'] at top level."""
-        from agentic_core.L5_safety.config.structure_blueprint import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint import (
             get_all_territories,
         )
 
@@ -339,7 +350,7 @@ class TestBlueprintInvariants:
 
     def test_no_l_layer_in_any_required_subfolders(self):
         """No l[0-9]_* names in required_subfolders of ANY territory."""
-        from agentic_core.L5_safety.config.structure_blueprint import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint import (
             get_all_territories,
         )
 
@@ -359,7 +370,7 @@ class TestBlueprintInvariants:
 
     def test_no_depth_aligned_in_tests_subfolders(self):
         """'depth_aligned' must not appear anywhere in get_all_territories()[TESTS_DIR]['subfolders']."""
-        from agentic_core.L5_safety.config.structure_blueprint import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint import (
             get_all_territories,
         )
 
@@ -372,7 +383,7 @@ class TestBlueprintInvariants:
 
     def test_support_cfg_has_purpose_key(self):
         """Sanity check: support entry is a non-empty Mapping with a purpose."""
-        from agentic_core.L5_safety.config.structure_blueprint import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint import (
             get_all_territories,
         )
 
@@ -702,7 +713,7 @@ class TestDepthEnforcementPhantomSupportFiles:
     """
 
     def _make_heal_agent(self, project_root: Path):
-        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         agent = object.__new__(HierarchyAgent)
         agent.project_root = project_root

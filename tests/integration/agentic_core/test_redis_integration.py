@@ -14,7 +14,7 @@ import time
 
 import pytest
 
-from agentic_core.cache.redis_cache_client import (
+#  # MOVED: from agentic_core.cache.redis_cache_client import (
     CacheDB,
     DeterministicRedisCache,
     check_redis_health,
@@ -22,7 +22,7 @@ from agentic_core.cache.redis_cache_client import (
     get_hot_cache,
     reset_cache_singletons,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -254,6 +254,8 @@ def coord():
 
 class TestRedisConnection:
     def test_health_check_reports_healthy(self):
+        from agentic_core.cache.redis_cache_client import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test health_check_reports_healthy contract compliance."""
     # Arrange
     # TODO: Set up test data

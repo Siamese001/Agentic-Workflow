@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -82,12 +82,12 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L2_execution.enforcement.static_dispatch_registry import (
+#  # MOVED: from agentic_core.L2_execution.enforcement.static_dispatch_registry import (
     StaticDispatchRegistry,
     UnregisteredDispatchError,
     get_guardian_registry,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -172,6 +172,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestStaticDispatchRegistryRegistration:
     def test_register_and_is_registered(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.enforcement.static_dispatch_registry import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test register_and_is_registered runtime behavior."""
     # Arrange
     # TODO: Set up test data for register_and_is_registered

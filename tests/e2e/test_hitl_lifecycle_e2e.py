@@ -22,38 +22,38 @@ import threading
 
 import pytest
 
-from agentic_core.adg.runtime.event_graph import RuntimeGraph
-from agentic_core.adg.runtime.hitl_graph import (
+#  # MOVED: from agentic_core.adg.runtime.event_graph import RuntimeGraph
+#  # MOVED: from agentic_core.adg.runtime.hitl_graph import (
     HITLDecisionType,
     HITLGraph,
     HITLRuntimeRecorder,
 )
-from agentic_core.L5_safety.enforcement.hitl_gate import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.hitl_gate import (
     HITL_PROTECTED_PATHS,
     HitlGate,
     HitlRequest,
     HitlRequiredError,
     clear_gate_cache,
 )
-from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
+#  # MOVED: from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
     HITLEscalationActivator,
 )
-from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import (
+#  # MOVED: from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import (
     DefaultDeterministicDPOPairGenerator,
 )
-from agentic_core.L6_observability.types.dpo_types import (
+#  # MOVED: from agentic_core.L6_observability.types.dpo_types import (
     DPOBatch,
     DPOExampleId,
     DPOPair,
 )
-from agentic_core.mixins.hitl_mixin import ApprovalStatus, HITLMixin, RiskLevel
-from system_learning.confidence.engine import HealingConfidenceScorer
-from system_learning.confidence.types import HealingAttempt
-from system_learning.engines.hitl_decision_logger import log_hitl_decision
-from system_learning.engines.rlhf_optimizer import (
+#  # MOVED: from agentic_core.mixins.hitl_mixin import ApprovalStatus, HITLMixin, RiskLevel
+#  # MOVED: from system_learning.confidence.engine import HealingConfidenceScorer
+#  # MOVED: from system_learning.confidence.types import HealingAttempt
+#  # MOVED: from system_learning.engines.hitl_decision_logger import log_hitl_decision
+#  # MOVED: from system_learning.engines.rlhf_optimizer import (
     DefaultDeterministicRLHFOptimizer,
 )
-from system_learning.engines.rlhf_optimizer_impl import DefaultRLHFOptimizer
+#  # MOVED: from system_learning.engines.rlhf_optimizer_impl import DefaultRLHFOptimizer
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -119,6 +119,23 @@ class TestFullHITLLifecycle:
     """Exercises the complete HITL chain end-to-end."""
 
     def test_confidence_gate_to_dpo_to_rlhf_pipeline(
+        from agentic_core.adg.runtime.event_graph import RuntimeGraph
+        from agentic_core.adg.runtime.hitl_graph import (
+        from agentic_core.L5_safety.enforcement.hitl_gate import (
+        from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
+        from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import (
+        from agentic_core.L6_observability.types.dpo_types import (
+        from agentic_core.mixins.hitl_mixin import ApprovalStatus, HITLMixin, RiskLevel
+        from system_learning.confidence.engine import HealingConfidenceScorer
+        from system_learning.confidence.types import HealingAttempt
+        from system_learning.engines.hitl_decision_logger import log_hitl_decision
+        from system_learning.engines.rlhf_optimizer import (
+        from system_learning.engines.rlhf_optimizer_impl import DefaultRLHFOptimizer
+        from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
+        from system_learning.engines.rlhf_optimizer import ChangePackage
+        from system_learning.engines.rlhf_optimizer_impl import (
+        from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate
+        from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
     """Test confidence_gate_to_dpo_to_rlhf_pipeline runtime behavior."""
     # Arrange
     # TODO: Set up workflow context
@@ -742,7 +759,7 @@ class TestGapFixVerification:
 
     def test_escalation_activator_requires_human_review(self):
         """HITLEscalationActivator.requires_human_review gates on priority."""
-        from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
+#  # MOVED: from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
             EscalationPriority,
             EscalationRequest,
             HITLEscalationActivator,
@@ -764,7 +781,7 @@ class TestGapFixVerification:
 
     def test_rlhf_optimizer_commit_optimization(self, rlhf_optimizer):
         """DefaultDeterministicRLHFOptimizer.commit_optimization gates on confidence."""
-        from system_learning.engines.rlhf_optimizer import ChangePackage
+#  # MOVED: from system_learning.engines.rlhf_optimizer import ChangePackage
 
         high_conf = ChangePackage(
             source="test", target="t", changes=b"{}",
@@ -783,7 +800,7 @@ class TestGapFixVerification:
 
     def test_rlhf_impl_commit_optimization(self):
         """DefaultRLHFOptimizer.commit_optimization gates on preference_strength."""
-        from system_learning.engines.rlhf_optimizer_impl import (
+#  # MOVED: from system_learning.engines.rlhf_optimizer_impl import (
             DefaultRLHFOptimizer,
             RLHFChangePackage,
         )
@@ -813,13 +830,13 @@ class TestADGStaticEdgeVerification:
 
     def test_hitl_gate_importable(self):
         """HitlGate must be importable from L5_safety."""
-        from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate
+#  # MOVED: from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate
 
         assert HitlGate is not None
 
     def test_hitl_escalation_activator_importable(self):
         """HITLEscalationActivator must be importable from L5_safety."""
-        from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
+#  # MOVED: from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
             HITLEscalationActivator,
         )
 

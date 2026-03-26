@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -74,8 +74,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_sovereign_report_types_adg", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_sovereign_report_types_adg", "exec_snapshot_link")
 pytestmark = pytest.mark.unit
-from agentic_core.L6_observability.types.sovereign_report_types import SovereignReport
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L6_observability.types.sovereign_report_types import SovereignReport
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -168,6 +168,9 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestSovereignReport:
     def test_creates(self): r = SovereignReport(); assert r.scores == {}
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L6_observability.types.sovereign_report_types import SovereignReport
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     def test_overall_score_empty(self): r = SovereignReport(); assert r.get_overall_score() == 0.0
     def test_has_builder(self): assert hasattr(SovereignReport, "Builder")
     def test_get_all_issues_empty(self): r = SovereignReport(); assert r.get_all_issues() == []

@@ -17,12 +17,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L0_routing.types.routing_artifact_types import (
+#  # MOVED: from agentic_core.L0_routing.types.routing_artifact_types import (
     RouteDecisionArtifact,
     RoutePath,
     RoutingRationale,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -69,7 +69,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_route_decision_artifact_contract", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_route_decision_artifact_contract", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_route_decision_artifact_contract", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -328,6 +328,10 @@ class TestRouteDecisionArtifactContract:
     """Assert RouteDecisionArtifact is attached to delegate_task return."""
 
     def test_success_path_contains_artifact_with_all_keys(self):
+        from agentic_core.L0_routing.types.routing_artifact_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.types.routing_contracts_types import TelemetryEmitter
     """Test success_path_contains_artifact_with_all_keys contract compliance."""
     # Arrange
     # TODO: Set up contract parties and terms
@@ -558,7 +562,7 @@ class TestFlushDurability:
         """flush_to_artifacts_dir writes NDJSON containing ROUTE_DECISION payload."""
         import json
 
-        from agentic_core.L0_routing.types.routing_contracts_types import TelemetryEmitter
+#  # MOVED: from agentic_core.L0_routing.types.routing_contracts_types import TelemetryEmitter
 
         artifact = RouteDecisionArtifact(
             trace_id="flush-test-trace",

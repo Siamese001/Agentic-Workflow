@@ -20,7 +20,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L0_ROUTING_DIR,
 )
 
@@ -30,7 +30,7 @@ from agentic_core.L0_routing.config.path_constants import (
 
 
 def _make_agent(project_root: Path):
-    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
     agent = object.__new__(HierarchyAgent)
     agent.project_root = project_root
@@ -57,6 +57,8 @@ def _call(agent, file_path, rel, depth, expected):
 
 class TestHierarchyDeepViolation:
     def test_deep_calls_gatekeeper_safe_move(self, tmp_path):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
     """Test deep_calls_gatekeeper_safe_move runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

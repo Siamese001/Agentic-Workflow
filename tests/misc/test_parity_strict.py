@@ -20,14 +20,14 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
+#  # MOVED: from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     AgentCategory,
     HealingResult,
     OrchestrationResult,
     UnifiedAgent,
     ValidationResult,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -805,6 +805,8 @@ class TestReturnTypeValidation:
     """Tests for return type validation."""
 
     def test_validate_matching_types(self):
+        from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test validate_matching_types contract compliance."""
     # Arrange
     # TODO: Set up test data

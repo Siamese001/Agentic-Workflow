@@ -12,7 +12,7 @@ import re
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -59,7 +59,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_heal_context_trace_id", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_heal_context_trace_id", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_heal_context_trace_id", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -184,6 +184,13 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 def test_heal_context_trace_id_format():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L0_routing.scripts.execute_ssot import HealContext
+    from agentic_core.L0_routing.scripts.execute_ssot import HealContext
+    from agentic_core.L0_routing.scripts.execute_ssot import HealContext
+    from agentic_core.L0_routing.scripts.execute_ssot import HealContext
+    from agentic_core.L0_routing.scripts.execute_ssot import HealContext
     """
     PASS: trace_id follows format SSOT-YYYYMMDD-HHMMSS-{8hex}.
     FAIL: trace_id has wrong format or missing components.
@@ -191,7 +198,7 @@ def test_heal_context_trace_id_format():
     Per .windsurfrules §1.7: Deterministic decision surfaces.
     Per hostile audit Section E1: trace_id must be unique and traceable.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import HealContext
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import HealContext
 
     args = argparse.Namespace(heal=False, validate=False)
     ctx = HealContext.from_args(args)
@@ -217,7 +224,7 @@ def test_heal_context_trace_id_uniqueness():
     Per .windsurfrules §1.7: Deterministic decision surfaces must not collapse.
     Per hostile audit Section E1: trace_id must be unique per run.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import HealContext
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import HealContext
 
     args = argparse.Namespace(heal=False, validate=False)
 
@@ -306,7 +313,7 @@ def test_heal_context_immutability():
 
     Per .windsurfrules §1.8: Fail-closed - invalid preconditions must block operation.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import HealContext
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import HealContext
 
     args = argparse.Namespace(heal=False, validate=False)
     ctx = HealContext.from_args(args)
@@ -329,7 +336,7 @@ def test_heal_context_trace_id_correlation():
     Per .windsurfrules §1.7: Deterministic decision surfaces.
     Per hostile audit Section E1: trace_id must be stable for correlation.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import HealContext
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import HealContext
 
     args = argparse.Namespace(heal=True, validate=False)
     ctx = HealContext.from_args(args)
@@ -350,7 +357,7 @@ def test_heal_context_all_fields_present():
     Per .windsurfrules §1.5: Edge cases - missing field.
     Per hostile audit Section E1+E10: All fields must be present.
     """
-    from agentic_core.L0_routing.scripts.execute_ssot import HealContext
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import HealContext
 
     args = argparse.Namespace(heal=True, validate=False)
     ctx = HealContext.from_args(args)

@@ -5,9 +5,10 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-import agentic_core.L5_safety.reasoning.DocumentationAgent  # noqa: F401
+#  # MOVED: import agentic_core.L5_safety.reasoning.DocumentationAgent  # noqa: F401
 
 
 def test_module_importable():
+    import agentic_core.L5_safety.reasoning.DocumentationAgent  # noqa: F401
     """Module DocumentationAgent must be importable."""
     assert agentic_core.L5_safety.reasoning.DocumentationAgent is not None
