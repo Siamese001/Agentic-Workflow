@@ -8,9 +8,22 @@ import pytest
 
 
 
-class TestGetProjectRootFunction:
-    def test_is_callable(self):
-            """Test is_callable runtime behavior."""
+class GeneratedTest:
+    """Generated test class for agentic_core.L5_safety.runners."""
+
+    def test_get_project_root(self):
+        """Test get_project_root function."""
+        from agentic_core.L5_safety.runners import get_project_root
+        # TODO: Implement actual test
+        result = get_project_root()
+        assertIsNotNone(result)
+    def test_run_ci_verification(self):
+        """Test run_ci_verification function."""
+        from agentic_core.L5_safety.runners import run_ci_verification
+        # TODO: Implement actual test
+        result = run_ci_verification()
+        assertIsNotNone(result)
+
 
 
 
