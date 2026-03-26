@@ -2,16 +2,8 @@
 
 """
 from __future__ import annotations
-
 import json
-
 import pytest
-
-
-
-
-
-
 
 class GeneratedTest:
     """Generated test class for agentic_core.L0_routing.types."""
@@ -19,65 +11,50 @@ class GeneratedTest:
     def test_to_ordered_dict(self):
         """Test to_ordered_dict function."""
         from agentic_core.L0_routing.types import to_ordered_dict
-        # TODO: Implement actual test
         result = to_ordered_dict()
         assertIsNotNone(result)
+
     def test_status(self):
         """Test status function."""
         from agentic_core.L0_routing.types import status
-        # TODO: Implement actual test
         result = status()
         assertIsNotNone(result)
+
     def test_Finding_init(self):
         """Test Finding initialization."""
         from agentic_core.L0_routing.types import Finding
-        # TODO: Implement actual test
         instance = Finding()
         assertIsNotNone(instance)
+
     def test_Finding_to_ordered_dict(self):
         """Test Finding.to_ordered_dict method."""
         from agentic_core.L0_routing.types import Finding
-        # TODO: Implement actual test
         instance = Finding()
         result = instance.to_ordered_dict()
         assertIsNotNone(result)
+
     def test_ResultEnvelope_init(self):
         """Test ResultEnvelope initialization."""
         from agentic_core.L0_routing.types import ResultEnvelope
-        # TODO: Implement actual test
         instance = ResultEnvelope()
         assertIsNotNone(instance)
+
     def test_ResultEnvelope_status(self):
         """Test ResultEnvelope.status method."""
         from agentic_core.L0_routing.types import ResultEnvelope
-        # TODO: Implement actual test
         instance = ResultEnvelope()
         result = instance.status()
         assertIsNotNone(result)
-
-
-
-    """Test valid_creation contract compliance."""
-
-"""Test frozen contract compliance."""
-
-"""Test to_ordered_dict_has_keys contract compliance."""
-
-"""Test context_defaults_to_empty_dict contract compliance."""
-
-"""Test to_ordered_dict_sorted_keys contract compliance."""
-
-
-"""Test status_pass_on_zero_exit contract compliance."""
-"""Test status_fail_on_nonzero_exit contract compliance."""
-"""Test status_fail_on_error_finding contract compliance."""
-
-"""Test status_warn_on_warn_finding contract compliance."""
-
-"""Test to_ordered_dict_has_required_keys contract compliance."""
-
-"""Test to_json_valid_json contract compliance."""
-
-"""Test to_json_deterministic contract compliance."""
-"""Test findings_serialized contract compliance."""
-
+    'Test valid_creation contract compliance.'
+'Test frozen contract compliance.'
+'Test to_ordered_dict_has_keys contract compliance.'
+'Test context_defaults_to_empty_dict contract compliance.'
+'Test to_ordered_dict_sorted_keys contract compliance.'
+'Test status_pass_on_zero_exit contract compliance.'
+'Test status_fail_on_nonzero_exit contract compliance.'
+'Test status_fail_on_error_finding contract compliance.'
+'Test status_warn_on_warn_finding contract compliance.'
+'Test to_ordered_dict_has_required_keys contract compliance.'
+'Test to_json_valid_json contract compliance.'
+'Test to_json_deterministic contract compliance.'
+'Test findings_serialized contract compliance.'

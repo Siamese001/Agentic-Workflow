@@ -1,10 +1,7 @@
 """ADG importability contract for system_learning/engines/retrieval_profile_manager.py."""
 from __future__ import annotations
 
-
-
 def test_module_importable():
     """Module retrieval_profile_manager must be importable."""
-    import system_learning.engines.retrieval_profile_manager  # noqa: F401
-
+    import system_learning.engines.retrieval_profile_manager
     assert system_learning.engines.retrieval_profile_manager is not None

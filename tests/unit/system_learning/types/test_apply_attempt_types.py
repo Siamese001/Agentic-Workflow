@@ -1,14 +1,9 @@
 """Foundational behavioral tests for system_learning/types/apply_attempt_types.py."""
 from __future__ import annotations
-
 import pytest
-
 pytestmark = pytest.mark.unit
-
-
 
 def test_module_importable():
     """Module apply_attempt_types must be importable."""
-    import system_learning.types.apply_attempt_types  # noqa: F401
-
+    import system_learning.types.apply_attempt_types
     assert system_learning.types.apply_attempt_types is not None

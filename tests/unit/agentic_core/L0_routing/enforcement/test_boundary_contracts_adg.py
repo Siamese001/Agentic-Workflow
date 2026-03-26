@@ -1,5 +1,4 @@
 """Placeholder test file - syntax fixed."""
-
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -8,9 +7,7 @@ BATCH_SIZE = 32
 MAX_DEPTH = 6
 MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300
-
 import unittest
-
 
 class GeneratedTest(unittest.TestCase):
     """Generated test class for agentic_core.L0_routing.enforcement."""
@@ -18,28 +15,25 @@ class GeneratedTest(unittest.TestCase):
     def test_resolve_ssot_binding(self):
         """Test resolve_ssot_binding function."""
         from agentic_core.L0_routing.enforcement import resolve_ssot_binding
-        # TODO: Implement actual test
         result = resolve_ssot_binding()
         self.assertIsNotNone(result)
+
     def test_build_context_retrieval_request(self):
         """Test build_context_retrieval_request function."""
         from agentic_core.L0_routing.enforcement import build_context_retrieval_request
-        # TODO: Implement actual test
         result = build_context_retrieval_request()
         self.assertIsNotNone(result)
+
     def test_SSOTBindingError_init(self):
         """Test SSOTBindingError initialization."""
         from agentic_core.L0_routing.enforcement import SSOTBindingError
-        # TODO: Implement actual test
         instance = SSOTBindingError()
         self.assertIsNotNone(instance)
+
     def test_ContextRetrievalError_init(self):
         """Test ContextRetrievalError initialization."""
         from agentic_core.L0_routing.enforcement import ContextRetrievalError
-        # TODO: Implement actual test
         instance = ContextRetrievalError()
         self.assertIsNotNone(instance)
-
-
 if __name__ == '__main__':
     unittest.main()

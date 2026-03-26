@@ -1,13 +1,6 @@
 """ADG-driven tests for L0_routing/scripts/action_capability.py — fan_in=0."""
 from __future__ import annotations
-
 import pytest
-
-
-
-
-
-
 
 class GeneratedTest:
     """Generated test class for agentic_core.L0_routing.scripts."""
@@ -15,40 +8,33 @@ class GeneratedTest:
     def test_to_dict(self):
         """Test to_dict function."""
         from agentic_core.L0_routing.scripts import to_dict
-        # TODO: Implement actual test
         result = to_dict()
         assertIsNotNone(result)
+
     def test_to_dict(self):
         """Test to_dict function."""
         from agentic_core.L0_routing.scripts import to_dict
-        # TODO: Implement actual test
         result = to_dict()
         assertIsNotNone(result)
+
     def test_ActionCapability_init(self):
         """Test ActionCapability initialization."""
         from agentic_core.L0_routing.scripts import ActionCapability
-        # TODO: Implement actual test
         instance = ActionCapability()
         assertIsNotNone(instance)
+
     def test_ActionRequest_init(self):
         """Test ActionRequest initialization."""
         from agentic_core.L0_routing.scripts import ActionRequest
-        # TODO: Implement actual test
         instance = ActionRequest()
         assertIsNotNone(instance)
+
     def test_ActionRequest_to_dict(self):
         """Test ActionRequest.to_dict method."""
         from agentic_core.L0_routing.scripts import ActionRequest
-        # TODO: Implement actual test
         instance = ActionRequest()
         result = instance.to_dict()
         assertIsNotNone(result)
-
-
-
-    """Test creates_with_defaults runtime behavior."""
-
-    """Test creates_with_params runtime behavior."""
-
-    """Test has_to_dict runtime behavior."""
-
+    'Test creates_with_defaults runtime behavior.'
+    'Test creates_with_params runtime behavior.'
+    'Test has_to_dict runtime behavior.'
