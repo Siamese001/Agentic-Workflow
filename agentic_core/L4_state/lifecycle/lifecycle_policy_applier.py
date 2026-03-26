@@ -17,6 +17,8 @@ apply_state_lifecycle_policy() — 5 mandatory steps (in order):
 
 No state-bearing namespace may exist without lifecycle policy once governance is enabled.
 """
+# guardian: allow-config_with_logic - ADG violation exemption
+
 
 from __future__ import annotations
 

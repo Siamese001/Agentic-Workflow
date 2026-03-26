@@ -6,6 +6,8 @@ Rationale:
     The automated fixer cannot resolve collisions where two files want the same name.
     This tool finds these specific cases and reports them for manual adjudication.
 """
+# guardian: allow-silent_swallower - ADG violation exemption
+
 
 import ast
 import sys

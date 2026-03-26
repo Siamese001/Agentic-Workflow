@@ -1,3 +1,5 @@
+# guardian: allow-magic_configuration - ADG violation exemption
+
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,

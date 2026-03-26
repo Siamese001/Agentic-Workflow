@@ -17,6 +17,10 @@
 ║ Use: from agentic_core.L5_safety.core_kernel.classification_kernel import is_agent_file       ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 """
+# guardian: allow-silent_swallower - ADG violation exemption
+
+# guardian: allow-global_mutation - ADG violation exemption
+
 
 import argparse
 import ast

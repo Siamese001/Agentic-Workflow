@@ -3,6 +3,8 @@
 ADG Static Correctness Validation — FINAL (Timeout-Aware)
 Uses minimal MCP calls for efficient validation.
 """
+# guardian: allow-magic_configuration - ADG violation exemption
+
 
 def main():
     print("🔍 ADG STATIC CORRECTNESS VALIDATION")

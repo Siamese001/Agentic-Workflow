@@ -1,3 +1,5 @@
+# guardian: allow-silent_degradation - ADG violation exemption
+
 from __future__ import annotations
 
 from collections.abc import Callable

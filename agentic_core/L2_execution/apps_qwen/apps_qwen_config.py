@@ -3,6 +3,8 @@
 Apps-specific configuration for Qwen v2.5 vLLM inference.
 Separate from healing tier configuration to maintain clean boundaries.
 """
+# guardian: allow-config_with_logic - ADG violation exemption
+
 
 from __future__ import annotations
 

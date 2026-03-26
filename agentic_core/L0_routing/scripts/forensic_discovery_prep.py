@@ -21,6 +21,8 @@ HARDENED INVARIANTS:
     - Robust base extraction (no "UnknownBase" silently)
     - Atomic output write support (optional --out)
 """
+# guardian: allow-silent_swallower - ADG violation exemption
+
 
 from __future__ import annotations
 

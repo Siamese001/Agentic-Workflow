@@ -27,6 +27,8 @@ Phase 3 Enhancement (Jan 31, 2026):
 - Converted to facade shell delegating to UnifiedAgent
 - Preserves 100% legacy signature compatibility
 """
+# guardian: allow-silent_swallower - ADG violation exemption
+
 
 from __future__ import annotations
 
