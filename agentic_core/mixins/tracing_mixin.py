@@ -362,6 +362,7 @@ class TracingMixin:
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "TracingMixin.start_span")
 
+        # guardian: allow-silent-degradation - Skip when tracing disabled
         if not self._trace_enabled:
             yield SpanContext(operation_name=operation_name)
             return
@@ -469,6 +470,7 @@ class TracingMixin:
                 # Convert TracingMixin span to OpenTelemetry format
                 self._create_otel_span_from_trace(trace, tracer)
 
+        # guardian: allow-silent-degradation - Optional OpenTelemetry bridging
         except ImportError:
             Logger.debug("[TRACING] OpenTelemetry not available for bridging")
         except Exception as e:
