@@ -6,18 +6,16 @@ and improve test coverage across the codebase.
 
 from __future__ import annotations
 
-import inspect
 import logging
-from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Optional, Type, Union
 
 logger = logging.getLogger(__name__)
 
 
 class AssertionStrength(Enum):
     """Strength levels for test assertions."""
+
     WEAK = "weak"  # Basic property checks (assert obj.attr == value)
     MEDIUM = "medium"  # Behavioral validation (assert obj.method() returns expected)
     STRONG = "strong"  # State validation and edge cases (assert obj.state transitions correctly)
@@ -27,13 +25,14 @@ class AssertionStrength(Enum):
 @dataclass
 class TestQualityIssue:
     """Represents a test quality issue found during analysis."""
+
     test_name: str
     file_path: str
     issue_type: str
     description: str
-    line_number: Optional[int] = None
+    line_number: int | None = None
     current_strength: AssertionStrength = AssertionStrength.WEAK
-    suggested_improvement: Optional[str] = None
+    suggested_improvement: str | None = None
 
 
 class TestQualityAnalyzer:
@@ -57,77 +56,85 @@ class TestQualityAnalyzer:
             "assert obj.raises(",
             "assert obj.contains(",
             "assert obj.validate()",
+            r"\.assert_called\w*\\(",
+            r"pytest\.raises\\(",
         ]
 
-    def analyze_test_file(self, file_path: str) -> List[TestQualityIssue]:
+    def analyze_test_file(self, file_path: str) -> list[TestQualityIssue]:
         """Analyze a test file for quality issues."""
         issues = []
 
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
-            lines = content.split('\n')
+            lines = content.split("\n")
 
         for i, line in enumerate(lines, 1):
             # Check for weak assertions using proper context detection
             for pattern in self.weak_assertion_patterns:
                 if pattern in line and self._is_within_test_method(lines, i):
-                    issues.append(TestQualityIssue(
-                        test_name=self._extract_test_name(lines[:i]),
-                        file_path=file_path,
-                        issue_type="weak_assertion",
-                        description=f"Weak assertion pattern detected: {pattern}",
-                        line_number=i,
-                        current_strength=AssertionStrength.WEAK,
-                        suggested_improvement=self._suggest_improvement(pattern)
-                    ))
+                    issues.append(
+                        TestQualityIssue(
+                            test_name=self._extract_test_name(lines[:i]),
+                            file_path=file_path,
+                            issue_type="weak_assertion",
+                            description=f"Weak assertion pattern detected: {pattern}",
+                            line_number=i,
+                            current_strength=AssertionStrength.WEAK,
+                            suggested_improvement=self._suggest_improvement(pattern),
+                        )
+                    )
 
             # Check for missing exception testing
-            if 'def test_' in line and ('try:' in line or 'with' in line):
-                if not any('assert' in l for l in lines[i:i+10]):
-                    issues.append(TestQualityIssue(
-                        test_name=self._extract_test_name(lines[:i]),
-                        file_path=file_path,
-                        issue_type="missing_exception_testing",
-                        description="Missing exception testing in try/with block",
-                        line_number=i,
-                        current_strength=AssertionStrength.WEAK,
-                        suggested_improvement="Add pytest.raises() or specific exception validation"
-                    ))
+            if "def test_" in line and ("try:" in line or "with" in line):
+                if not any("assert" in l for l in lines[i : i + 10]):
+                    issues.append(
+                        TestQualityIssue(
+                            test_name=self._extract_test_name(lines[:i]),
+                            file_path=file_path,
+                            issue_type="missing_exception_testing",
+                            description="Missing exception testing in try/with block",
+                            line_number=i,
+                            current_strength=AssertionStrength.WEAK,
+                            suggested_improvement="Add pytest.raises() or specific exception validation",
+                        )
+                    )
 
             # Check for behavioral validation opportunities
-            if 'def test_' in line and ('create' in line or 'build' in line):
-                if not any('method()' in l or 'result.' in l for l in lines[i:i+15]):
-                    issues.append(TestQualityIssue(
-                        test_name=self._extract_test_name(lines[:i]),
-                        file_path=file_path,
-                        issue_type="missing_behavioral_validation",
-                        description="Test creates objects but doesn't validate behavior",
-                        line_number=i,
-                        current_strength=AssertionStrength.MEDIUM,
-                        suggested_improvement="Add behavioral validation (method calls, state changes)"
-                    ))
+            if "def test_" in line and ("create" in line or "build" in line):
+                if not any("method()" in l or "result." in l for l in lines[i : i + 15]):
+                    issues.append(
+                        TestQualityIssue(
+                            test_name=self._extract_test_name(lines[:i]),
+                            file_path=file_path,
+                            issue_type="missing_behavioral_validation",
+                            description="Test creates objects but doesn't validate behavior",
+                            line_number=i,
+                            current_strength=AssertionStrength.MEDIUM,
+                            suggested_improvement="Add behavioral validation (method calls, state changes)",
+                        )
+                    )
 
         return issues
 
-    def _extract_test_name(self, lines_before: List[str]) -> str:
+    def _extract_test_name(self, lines_before: list[str]) -> str:
         """Extract test name from preceding lines."""
         for line in reversed(lines_before):
-            if 'def test_' in line:
-                return line.strip().split('def test_')[1].split('(')[0]
+            if "def test_" in line:
+                return line.strip().split("def test_")[1].split("(")[0]
         return "unknown"
 
-    def _is_within_test_method(self, lines: List[str], line_index: int) -> bool:
+    def _is_within_test_method(self, lines: list[str], line_index: int) -> bool:
         """Check if a line is within a test method using proper indentation analysis."""
         # Look backwards to find method definition
         indent_level = None
         for i in range(line_index - 1, max(-1, line_index - 50), -1):
             line = lines[i]
-            if line.strip().startswith('def test_'):
+            if line.strip().startswith("def test_"):
                 # Found test method - check if current line is indented under it
                 method_indent = len(line) - len(line.lstrip())
                 current_indent = len(lines[line_index - 1]) - len(lines[line_index - 1].lstrip())
                 return current_indent > method_indent
-            elif line.strip() and not line.startswith(' ') and not line.startswith('\t'):
+            elif line.strip() and not line.startswith(" ") and not line.startswith("\t"):
                 # Found dedentation - outside any method
                 break
         return False
@@ -160,8 +167,8 @@ class TestAssertionEnhancer:
             enhanced = f"""# Enhanced assertion with behavioral validation
         assert {obj_attr} == {value}
         # Add behavioral validation
-        assert hasattr({obj_attr.split('.')[0]}, 'validate') or hasattr({obj_attr.split('.')[0]}, 'is_valid')
-        # Consider: assert {obj_attr.split('.')[0]}.validate() is True"""
+        assert hasattr({obj_attr.split(".")[0]}, 'validate') or hasattr({obj_attr.split(".")[0]}, 'is_valid')
+        # Consider: assert {obj_attr.split(".")[0]}.validate() is True"""
 
             return enhanced
 
@@ -198,38 +205,44 @@ class TestCoverageAnalyzer:
     def __init__(self):
         """Initialize the coverage analyzer."""
         self.coverage_patterns = {
-            'error_paths': ['except', 'raise', 'error', 'fail'],
-            'edge_cases': ['empty', 'none', 'zero', 'negative', 'maximum'],
-            'integration': ['multiple', 'combined', 'workflow', 'pipeline'],
-            'performance': ['time', 'memory', 'speed', 'benchmark'],
+            "error_paths": ["except", "raise", "error", "fail"],
+            "edge_cases": ["empty", "none", "zero", "negative", "maximum"],
+            "integration": ["multiple", "combined", "workflow", "pipeline"],
+            "performance": ["time", "memory", "speed", "benchmark"],
         }
 
-    def analyze_coverage_gaps(self, source_file: str, test_file: str) -> List[str]:
+    def analyze_coverage_gaps(self, source_file: str, test_file: str) -> list[str]:
         """Analyze coverage gaps between source and test files."""
         gaps = []
 
         try:
             # Read source file
-            with open(source_file, 'r', encoding='utf-8') as f:
+            with open(source_file, encoding="utf-8") as f:
                 source_content = f.read()
 
             # Read test file
-            with open(test_file, 'r', encoding='utf-8') as f:
+            with open(test_file, encoding="utf-8") as f:
                 test_content = f.read()
 
             # Check for missing error path testing
-            if any(pattern in source_content for pattern in self.coverage_patterns['error_paths']):
-                if not any('pytest.raises' in test_content or 'assert' in test_content and 'error' in test_content.lower()):
+            if any(pattern in source_content for pattern in self.coverage_patterns["error_paths"]):
+                if not any(
+                    "pytest.raises" in test_content
+                    or "assert" in test_content
+                    and "error" in test_content.lower()
+                ):
                     gaps.append("Missing error path testing")
 
             # Check for missing edge case testing
-            if any(pattern in source_content.lower() for pattern in self.coverage_patterns['edge_cases']):
-                if not any(pattern in test_content.lower() for pattern in self.coverage_patterns['edge_cases']):
+            if any(pattern in source_content.lower() for pattern in self.coverage_patterns["edge_cases"]):
+                if not any(
+                    pattern in test_content.lower() for pattern in self.coverage_patterns["edge_cases"]
+                ):
                     gaps.append("Missing edge case testing")
 
             # Check for missing integration testing
-            if 'class' in source_content and 'def' in source_content:
-                if not any('multiple' in test_content.lower() or 'combined' in test_content.lower()):
+            if "class" in source_content and "def" in source_content:
+                if not any("multiple" in test_content.lower() or "combined" in test_content.lower()):
                     gaps.append("Missing integration testing")
 
         except Exception as e:
@@ -239,7 +252,7 @@ class TestCoverageAnalyzer:
 
 
 # Utility functions for test improvement
-def create_behavioral_test_template(class_name: str, methods: List[str]) -> str:
+def create_behavioral_test_template(class_name: str, methods: list[str]) -> str:
     """Create a template for behavioral testing of a class."""
     template = f"""
 class Test{class_name}Behavioral:
@@ -279,10 +292,10 @@ def strengthen_existing_assertions(test_file_path: str) -> str:
 
     issues = analyzer.analyze_test_file(test_file_path)
 
-    with open(test_file_path, 'r', encoding='utf-8') as f:
+    with open(test_file_path, encoding="utf-8") as f:
         content = f.read()
 
-    lines = content.split('\n')
+    lines = content.split("\n")
 
     for issue in issues:
         if issue.issue_type == "weak_assertion" and issue.line_number:
@@ -292,7 +305,7 @@ def strengthen_existing_assertions(test_file_path: str) -> str:
                 enhanced_line = enhancer.strengthen_property_assertion(original_line, original_line)
                 lines[line_idx] = enhanced_line
 
-    return '\n'.join(lines)
+    return "\n".join(lines)
 
 
 # Global analyzer instance

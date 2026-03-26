@@ -44,6 +44,7 @@ Logger = logging.getLogger(__name__)
 
 class DependencyStatus(Enum):
     """Status of a dependency."""
+
     AVAILABLE = "available"
     UNAVAILABLE = "unavailable"
     DEGRADED = "degraded"
@@ -53,6 +54,7 @@ class DependencyStatus(Enum):
 @dataclass
 class DependencyInfo:
     """Information about a dependency."""
+
     name: str
     status: DependencyStatus
     version: str | None = None
@@ -103,13 +105,13 @@ class DependencyManager:
         name: str,
         health_check: callable | None = None,
         circuit_breaker_threshold: int = 5,
-        fallback_instance: Any | None = None
+        fallback_instance: Any | None = None,
     ) -> None:
         """Register a dependency with optional health check and circuit breaker."""
         self._dependencies[name] = DependencyInfo(
             name=name,
             status=DependencyStatus.UNAVAILABLE,
-            circuit_breaker_threshold=circuit_breaker_threshold
+            circuit_breaker_threshold=circuit_breaker_threshold,
         )
 
         if health_check:
@@ -121,7 +123,7 @@ class DependencyManager:
         self._circuit_breakers[name] = {
             "failure_count": 0,
             "last_failure_time": None,
-            "state": "closed"  # closed, open, half_open
+            "state": "closed",  # closed, open, half_open
         }
 
     def check_dependency(self, name: str) -> DependencyInfo:
@@ -174,11 +176,7 @@ class DependencyManager:
 
         if dependency.status != DependencyStatus.AVAILABLE:
             suggestion = self._get_suggestion(name)
-            raise DependencyError(
-                f"Dependency '{name}' is {dependency.status.value}",
-                name,
-                suggestion
-            )
+            raise DependencyError(f"Dependency '{name}' is {dependency.status.value}", name, suggestion)
 
         # Return cached instance or create new one
         if name in self._instances:
@@ -192,11 +190,7 @@ class DependencyManager:
         except Exception as e:
             self._record_failure(name)
             suggestion = self._get_suggestion(name)
-            raise DependencyError(
-                f"Failed to create instance of '{name}': {e}",
-                name,
-                suggestion
-            )
+            raise DependencyError(f"Failed to create instance of '{name}': {e}", name, suggestion)
 
     def _create_instance(self, name: str) -> Any:
         """Create an instance of the dependency."""
@@ -223,6 +217,9 @@ class DependencyManager:
             return
 
         circuit_breaker = self._circuit_breakers[name]
+        if circuit_breaker["state"] == "open":
+            return
+
         circuit_breaker["failure_count"] += 1
         circuit_breaker["last_failure_time"] = time.time()
 
@@ -233,7 +230,9 @@ class DependencyManager:
         if circuit_breaker["failure_count"] >= dependency.circuit_breaker_threshold:
             circuit_breaker["state"] = "open"
             dependency.status = DependencyStatus.CIRCUIT_OPEN
-            Logger.warning(f"Circuit breaker opened for {name} after {circuit_breaker['failure_count']} failures")
+            Logger.warning(
+                f"Circuit breaker opened for {name} after {circuit_breaker['failure_count']} failures"
+            )
 
     def _get_suggestion(self, name: str) -> str:
         """Get suggestion for resolving dependency issue."""
@@ -254,11 +253,7 @@ class DependencyManager:
     def reset_circuit_breaker(self, name: str) -> None:
         """Reset circuit breaker for a dependency."""
         if name in self._circuit_breakers:
-            self._circuit_breakers[name] = {
-                "failure_count": 0,
-                "last_failure_time": None,
-                "state": "closed"
-            }
+            self._circuit_breakers[name] = {"failure_count": 0, "last_failure_time": None, "state": "closed"}
             self._dependencies[name].status = DependencyStatus.UNAVAILABLE
 
 
@@ -275,7 +270,7 @@ def register_dependency(
     name: str,
     health_check: callable | None = None,
     circuit_breaker_threshold: int = 5,
-    fallback_instance: Any | None = None
+    fallback_instance: Any | None = None,
 ) -> None:
     """Register a dependency with the global manager."""
     _dependency_manager.register_dependency(name, health_check, circuit_breaker_threshold, fallback_instance)
@@ -294,6 +289,7 @@ def check_dependency(name: str) -> DependencyInfo:
 # Decorator for explicit dependency injection
 def requires_dependency(name: str, fallback: Any | None = None):
     """Decorator to explicitly declare dependency requirements."""
+
     def decorator(func):
         def wrapper(*args, **kwargs):
             try:
@@ -306,7 +302,9 @@ def requires_dependency(name: str, fallback: Any | None = None):
                     return func(*args, **kwargs)
                 else:
                     raise e
+
         return wrapper
+
     return decorator
 
 
