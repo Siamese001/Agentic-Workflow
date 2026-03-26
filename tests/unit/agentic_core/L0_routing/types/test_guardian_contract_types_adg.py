@@ -13,8 +13,34 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class TestGuardianContractTypesAdg:
-    """Test GuardianContractTypesAdg functionality."""
+class GeneratedTest(unittest.TestCase):
+    """Generated test class for agentic_core.L0_routing.types."""
+
+    def test_is_v15_enforced(self):
+        """Test is_v15_enforced function."""
+        from agentic_core.L0_routing.types import is_v15_enforced
+        # TODO: Implement actual test
+        result = is_v15_enforced()
+        self.assertIsNotNone(result)
+    def test_is_v15_hard_fail(self):
+        """Test is_v15_hard_fail function."""
+        from agentic_core.L0_routing.types import is_v15_hard_fail
+        # TODO: Implement actual test
+        result = is_v15_hard_fail()
+        self.assertIsNotNone(result)
+    def test_V15EnforcementError_init(self):
+        """Test V15EnforcementError initialization."""
+        from agentic_core.L0_routing.types import V15EnforcementError
+        # TODO: Implement actual test
+        instance = V15EnforcementError()
+        self.assertIsNotNone(instance)
+    def test_V15SoftFailAbort_init(self):
+        """Test V15SoftFailAbort initialization."""
+        from agentic_core.L0_routing.types import V15SoftFailAbort
+        # TODO: Implement actual test
+        instance = V15SoftFailAbort()
+        self.assertIsNotNone(instance)
+
 
     def test_placeholder_1(self):
         """Placeholder test 1."""

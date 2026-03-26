@@ -111,19 +111,45 @@ class TestStubGenerator:
                 )
 
         # Replace placeholder test class with generated tests
+        # Handle both unittest and pytest styles
         placeholder_start = test_content.find("class PlaceholderTest(unittest.TestCase):")
-        if placeholder_start == -1:
+        pytest_start = test_content.find("class Test")
+        
+        if placeholder_start == -1 and pytest_start == -1:
             return None
-
-        placeholder_end = test_content.find("\n\nif __name__ == '__main__':")
-        if placeholder_end == -1:
-            placeholder_end = len(test_content)
+        
+        # For pytest, find the first test class
+        if placeholder_start == -1:
+            placeholder_start = pytest_start
+            # Find end of class
+            placeholder_end = test_content.find("\n\n", placeholder_start)
+            if placeholder_end == -1:
+                placeholder_end = len(test_content)
+        else:
+            placeholder_end = test_content.find("\n\nif __name__ == '__main__':")
+            if placeholder_end == -1:
+                placeholder_end = len(test_content)
 
         # Build new test class
-        new_test_class = f'''class GeneratedTest(unittest.TestCase):
+        # Use unittest or pytest based on what's in the file
+        if "import unittest" in test_content:
+            new_test_class = f'''class GeneratedTest(unittest.TestCase):
     """Generated test class for {analysis["module_name"]}."""
 
 {"".join(test_methods)}'''
+        else:
+            # Use pytest style
+            pytest_methods = []
+            for method in test_methods:
+                # Convert unittest methods to pytest
+                method = method.replace("self.", "")
+                method = method.replace("self.assert", "assert")
+                pytest_methods.append(method)
+            
+            new_test_class = f'''class GeneratedTest:
+    """Generated test class for {analysis["module_name"]}."""
+
+{"".join(pytest_methods)}'''
 
         # Replace placeholder
         new_content = test_content[:placeholder_start] + new_test_class + test_content[placeholder_end:]

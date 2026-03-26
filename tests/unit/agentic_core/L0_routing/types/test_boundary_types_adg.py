@@ -13,8 +13,22 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class TestBoundaryTypesAdg:
-    """Test BoundaryTypesAdg functionality."""
+class GeneratedTest(unittest.TestCase):
+    """Generated test class for agentic_core.L0_routing.types."""
+
+    def test_SSOTBinding_init(self):
+        """Test SSOTBinding initialization."""
+        from agentic_core.L0_routing.types import SSOTBinding
+        # TODO: Implement actual test
+        instance = SSOTBinding()
+        self.assertIsNotNone(instance)
+    def test_ContextRetrievalRequest_init(self):
+        """Test ContextRetrievalRequest initialization."""
+        from agentic_core.L0_routing.types import ContextRetrievalRequest
+        # TODO: Implement actual test
+        instance = ContextRetrievalRequest()
+        self.assertIsNotNone(instance)
+
 
     def test_placeholder_1(self):
         """Placeholder test 1."""
