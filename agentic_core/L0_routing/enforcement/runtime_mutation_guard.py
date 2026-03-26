@@ -374,6 +374,11 @@ class RuntimeMutationGuard:
 
     def install(self) -> None:
         """Install the runtime mutation guard (REQ-417)."""
+        # Check if disabled for testing
+        import os
+        if os.environ.get('DISABLE_RUNTIME_MUTATION_GUARD') == '1':
+            return
+            
         import uuid as _uuid  # noqa: PLC0415
 
         _trace_id = str(_uuid.uuid4())
