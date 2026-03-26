@@ -12,20 +12,21 @@ DEFAULT_TIMEOUT = 300
 import unittest
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-    
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-    
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-    
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertIsNotNone(None)
+class GeneratedTest(unittest.TestCase):
+    """Generated test class for agentic_core.runtime."""
+
+    def test_SovereigntyViolationError_init(self):
+        """Test SovereigntyViolationError initialization."""
+        from agentic_core.runtime import SovereigntyViolationError
+        # TODO: Implement actual test
+        instance = SovereigntyViolationError()
+        self.assertIsNotNone(instance)
+    def test_IsolationViolationError_init(self):
+        """Test IsolationViolationError initialization."""
+        from agentic_core.runtime import IsolationViolationError
+        # TODO: Implement actual test
+        instance = IsolationViolationError()
+        self.assertIsNotNone(instance)
 
 
 if __name__ == '__main__':
