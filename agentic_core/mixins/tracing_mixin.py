@@ -224,6 +224,20 @@ class SpanContext:
     attributes: dict[str, Any] = field(default_factory=dict)
     status: str = "OK"
 
+    def set_attribute(self, key: str, value: Any) -> None:
+        """Set an attribute on the span."""
+        self.attributes[key] = value
+
+    def add_event(self, name: str, attributes: dict[str, Any] | None = None) -> None:
+        """Add an event to the span."""
+        if attributes:
+            event_key = f"event_{name}_{int(time.time() * 1000)}"
+            self.attributes[event_key] = attributes
+
+    def set_status(self, status: str) -> None:
+        """Set the status of the span."""
+        self.status = status
+
     def to_dict(self) -> dict[str, Any]:
         """Convert span to dictionary for telemetry export."""
         return {
@@ -372,7 +386,8 @@ class TracingMixin:
             raise
         finally:
             span.end_time = time.time()
-            self._span_stack.pop()
+            if self._span_stack and self._span_stack[-1] == span:
+                self._span_stack.pop()
             if self._span_stack:
                 self._current_span_id = self._span_stack[-1].span_id
             else:
@@ -422,14 +437,73 @@ class TracingMixin:
 
     def flush_traces(self) -> list[dict[str, Any]]:
         """
-        Flush and return all buffered traces.
-
+        Flush all buffered traces and optionally bridge to OpenTelemetry.
+        
         Returns:
-            List of span dictionaries
+            List of flushed trace spans
         """
         traces = self._trace_buffer.copy()
         self._trace_buffer.clear()
+        
+        # Bridge to OpenTelemetry if available
+        if hasattr(self, '_otel_bridge_enabled') and getattr(self, '_otel_bridge_enabled', False):
+            self._bridge_to_opentelemetry(traces)
+        
+        Logger.info(f"[TRACING] {self._tracing_service_name} - Flushed {len(traces)} traces")
         return traces
+
+    def _bridge_to_opentelemetry(self, traces: list[dict[str, Any]]) -> None:
+        """
+        Bridge TracingMixin traces to OpenTelemetry adapter.
+        
+        Args:
+            traces: List of TracingMixin trace dictionaries
+        """
+        try:
+            from apps_shared.utils.open_telemetry_tracing_adapter_util import get_tracer
+            
+            tracer = get_tracer(service_name=self._tracing_service_name)
+            
+            for trace in traces:
+                # Convert TracingMixin span to OpenTelemetry format
+                self._create_otel_span_from_trace(trace, tracer)
+                
+        except ImportError:
+            Logger.debug("[TRACING] OpenTelemetry not available for bridging")
+        except Exception as e:
+            Logger.error(f"[TRACING] Failed to bridge to OpenTelemetry: {e}")
+
+    def _create_otel_span_from_trace(self, trace: dict[str, Any], tracer: Any) -> None:
+        """
+        Create OpenTelemetry span from TracingMixin trace.
+        
+        Args:
+            trace: TracingMixin trace dictionary
+            tracer: OpenTelemetry tracer instance
+        """
+        try:
+            operation_name = trace.get("operation_name", "unknown")
+            attributes = trace.get("attributes", {})
+            
+            # Determine span type based on operation
+            if "cognitive" in operation_name.lower():
+                reasoning_mode = attributes.get("reasoning_mode", "react")
+                span_context = tracer.trace_cognitive(operation_name, reasoning_mode=reasoning_mode, metadata=attributes)
+            elif "tool" in operation_name.lower():
+                tool_name = attributes.get("tool_name", operation_name)
+                span_context = tracer.trace_tool(tool_name, attributes)
+            elif "action" in operation_name.lower():
+                action_count = attributes.get("action_count", 1)
+                span_context = tracer.trace_action(action_count=action_count, metadata=attributes)
+            else:
+                span_context = tracer.trace_orchestrator(operation_name, metadata=attributes)
+            
+            # Enter and exit the span context to create it
+            with span_context:
+                pass  # Span is created and automatically closed
+                
+        except Exception as e:
+            Logger.debug(f"[TRACING] Failed to create OpenTelemetry span: {e}")
 
     def get_tracing_status(self) -> dict[str, Any]:
         """

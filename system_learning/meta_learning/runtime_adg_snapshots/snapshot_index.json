@@ -25,5 +25,239 @@
     "node_count": 1,
     "timestamp": 1774484071,
     "trace_id": ""
+  },
+  "runtime_adg_1774484248_a326ec28": {
+    "duration_ms": 0,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484248_a326ec28.json",
+    "mission": "collector_test",
+    "node_count": 1,
+    "timestamp": 1774484248,
+    "trace_id": "1daa96b97e25a8793488800b2b4252ad"
+  },
+  "runtime_adg_1774484275_663e74be": {
+    "duration_ms": 0,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484275_663e74be.json",
+    "mission": "collector_test",
+    "node_count": 1,
+    "timestamp": 1774484275,
+    "trace_id": "d594f76de51cc8d30ca8a70dafe3950b"
+  },
+  "runtime_adg_1774484275_efcf3f7f": {
+    "duration_ms": 0,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484275_efcf3f7f.json",
+    "mission": "collector_test",
+    "node_count": 1,
+    "timestamp": 1774484275,
+    "trace_id": "b25fa27b8dee0ab08e863498a04332c9"
+  },
+  "runtime_adg_1774484301_2beb433c": {
+    "duration_ms": 0,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484301_2beb433c.json",
+    "mission": "agent_process",
+    "node_count": 1,
+    "timestamp": 1774484301,
+    "trace_id": "793cb85d867d7cd9471affdc724bb571"
+  },
+  "runtime_adg_1774484301_8a944bce": {
+    "duration_ms": 0,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484301_8a944bce.json",
+    "mission": "agent_execute",
+    "node_count": 1,
+    "timestamp": 1774484301,
+    "trace_id": "af376d0c37caf938f77e20f7240c5351"
+  },
+  "runtime_adg_1774484301_9f43276c": {
+    "duration_ms": 0,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484301_9f43276c.json",
+    "mission": "test_operation",
+    "node_count": 1,
+    "timestamp": 1774484301,
+    "trace_id": "fb9211b1a3e36d86d0c6542fb8c58497"
+  },
+  "runtime_adg_1774484301_c1111232": {
+    "duration_ms": 0,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484301_c1111232.json",
+    "mission": "agent_init",
+    "node_count": 1,
+    "timestamp": 1774484301,
+    "trace_id": "27a7d44c7f248f596bcf571a75554878"
+  },
+  "runtime_adg_1774484301_dd50c254": {
+    "duration_ms": 2,
+    "edge_count": 5,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484301_dd50c254.json",
+    "mission": "orchestrator_test",
+    "node_count": 3,
+    "timestamp": 1774484301,
+    "trace_id": "5dde32d1a47e1ac226d1818dd611a581"
+  },
+  "runtime_adg_1774484303_0cbe934e": {
+    "duration_ms": 0,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484303_0cbe934e.json",
+    "mission": "collector_test",
+    "node_count": 1,
+    "timestamp": 1774484303,
+    "trace_id": "371c8fc8241e1db22810ce435ca72f1e"
+  },
+  "runtime_adg_1774484303_2259fafd": {
+    "duration_ms": 0,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484303_2259fafd.json",
+    "mission": "collector_test",
+    "node_count": 1,
+    "timestamp": 1774484303,
+    "trace_id": "a1433ffa7dda582c3c04aef10bb57830"
+  },
+  "runtime_adg_1774484304_18eea89e": {
+    "duration_ms": 0,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484304_18eea89e.json",
+    "mission": "cognitive_think_about_mission",
+    "node_count": 1,
+    "timestamp": 1774484304,
+    "trace_id": "0fd7a20113e3d15776f5083ab807c85c"
+  },
+  "runtime_adg_1774484304_19274526": {
+    "duration_ms": 0,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484304_19274526.json",
+    "mission": "tool_mission_processor",
+    "node_count": 1,
+    "timestamp": 1774484304,
+    "trace_id": "0fd7a20113e3d15776f5083ab807c85c"
+  },
+  "runtime_adg_1774484304_1fb0d9bf": {
+    "duration_ms": 0,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484304_1fb0d9bf.json",
+    "mission": "tool_mission_processor",
+    "node_count": 1,
+    "timestamp": 1774484304,
+    "trace_id": "b14cbc165a8dc525dcc864b435d0391b"
+  },
+  "runtime_adg_1774484304_24d641b5": {
+    "duration_ms": 0,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484304_24d641b5.json",
+    "mission": "cognitive_think_about_mission",
+    "node_count": 1,
+    "timestamp": 1774484304,
+    "trace_id": "b445bd30e344f09c001e500c670866d5"
+  },
+  "runtime_adg_1774484304_386ee422": {
+    "duration_ms": 7,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484304_386ee422.json",
+    "mission": "agent_execution",
+    "node_count": 1,
+    "timestamp": 1774484304,
+    "trace_id": "0fd7a20113e3d15776f5083ab807c85c"
+  },
+  "runtime_adg_1774484304_41aaf8fe": {
+    "duration_ms": 29,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484304_41aaf8fe.json",
+    "mission": "agent_execution",
+    "node_count": 1,
+    "timestamp": 1774484304,
+    "trace_id": "a22416753bc1795c94cd2043b23224b8"
+  },
+  "runtime_adg_1774484304_4e5c5ec0": {
+    "duration_ms": 12,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484304_4e5c5ec0.json",
+    "mission": "agent_execute",
+    "node_count": 1,
+    "timestamp": 1774484304,
+    "trace_id": "b14cbc165a8dc525dcc864b435d0391b"
+  },
+  "runtime_adg_1774484304_51d81d3e": {
+    "duration_ms": 11,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484304_51d81d3e.json",
+    "mission": "agent_execute",
+    "node_count": 1,
+    "timestamp": 1774484304,
+    "trace_id": "b445bd30e344f09c001e500c670866d5"
+  },
+  "runtime_adg_1774484304_8766d78d": {
+    "duration_ms": 7,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484304_8766d78d.json",
+    "mission": "agent_execution",
+    "node_count": 1,
+    "timestamp": 1774484304,
+    "trace_id": "b14cbc165a8dc525dcc864b435d0391b"
+  },
+  "runtime_adg_1774484304_8dba31a4": {
+    "duration_ms": 0,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484304_8dba31a4.json",
+    "mission": "tool_mission_processor",
+    "node_count": 1,
+    "timestamp": 1774484304,
+    "trace_id": "b445bd30e344f09c001e500c670866d5"
+  },
+  "runtime_adg_1774484304_a36db58a": {
+    "duration_ms": 0,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484304_a36db58a.json",
+    "mission": "cognitive_think_about_mission",
+    "node_count": 1,
+    "timestamp": 1774484304,
+    "trace_id": "b14cbc165a8dc525dcc864b435d0391b"
+  },
+  "runtime_adg_1774484304_a69f4e23": {
+    "duration_ms": 0,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484304_a69f4e23.json",
+    "mission": "cognitive_think_about_mission",
+    "node_count": 1,
+    "timestamp": 1774484304,
+    "trace_id": "a22416753bc1795c94cd2043b23224b8"
+  },
+  "runtime_adg_1774484304_b7388f72": {
+    "duration_ms": 34,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484304_b7388f72.json",
+    "mission": "agent_execute",
+    "node_count": 1,
+    "timestamp": 1774484304,
+    "trace_id": "a22416753bc1795c94cd2043b23224b8"
+  },
+  "runtime_adg_1774484304_bef58853": {
+    "duration_ms": 0,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484304_bef58853.json",
+    "mission": "tool_mission_processor",
+    "node_count": 1,
+    "timestamp": 1774484304,
+    "trace_id": "a22416753bc1795c94cd2043b23224b8"
+  },
+  "runtime_adg_1774484304_da1a0669": {
+    "duration_ms": 12,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484304_da1a0669.json",
+    "mission": "agent_execute",
+    "node_count": 1,
+    "timestamp": 1774484304,
+    "trace_id": "0fd7a20113e3d15776f5083ab807c85c"
+  },
+  "runtime_adg_1774484304_eeabc5e0": {
+    "duration_ms": 6,
+    "edge_count": 1,
+    "file_path": "system_learning\\meta_learning\\runtime_adg_snapshots\\runtime_adg_1774484304_eeabc5e0.json",
+    "mission": "agent_execution",
+    "node_count": 1,
+    "timestamp": 1774484304,
+    "trace_id": "b445bd30e344f09c001e500c670866d5"
   }
 }
