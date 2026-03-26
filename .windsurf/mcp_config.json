@@ -1,0 +1,48 @@
+{
+  "_comment": "ADG-aware MCP configuration with sequential thinking server. Constitutional Rule #0: NEVER write to .windsurf/plans/ or any out-of-repo path. Sovereign write territories: docs/reports/plans/, artifacts/adg/, artifacts/memory/, ops_scripts/ci/, tools/. Read-sensitive paths (NEVER write ad-hoc): agentic_core/adg/schema.py, agentic_core/adg/extraction/static_scanner.py, agentic_core/runtime/lifecycle_trace_contract.py. Generated/gitignored paths excluded: artifacts/adg/scan_result_cache.json, artifacts/memory/knowledge_graph.sqlite.",
+  "mcpServers": {
+    "filesystem": {
+      "_comment": "Filesystem MCP — allowedDirectories LOCKED to repo root only. SSOT enforced by pre-commit.",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:\\Git\\Agentic-Workflow"],
+      "disabled": false
+    },
+    "sequential-thinking": {
+      "_comment": "Sequential Thinking MCP - TypeScript-based server for structured problem-solving and reasoning processes.",
+      "command": "node",
+      "args": ["C:\\Users\\amita\\AppData\\Roaming\\fnm\\node-versions\\v24.13.0\\installation\\node_modules\\@modelcontextprotocol\\server-sequential-thinking\\dist\\index.js"],
+      "disabled": false,
+      "env": {
+        "DISABLE_THOUGHT_LOGGING": "false"
+      }
+    },
+    "adg_redis": {
+      "command": "python",
+      "args": ["C:\\Git\\Agentic-Workflow\\tools\\adg\\adg_mcp_server.py"],
+      "cwd": "C:\\Git\\Agentic-Workflow",
+      "disabled": false,
+      "env": {
+        "ADG_REDIS_URL": "redis://localhost:6379/0",
+        "ADG_DIR": "C:\\Git\\Agentic-Workflow\\artifacts\\adg",
+        "ADG_MCP_PAGE_SIZE": "500",
+        "ADG_MCP_CACHE_META_TTL": "5"
+      }
+    },
+    "memory": {
+      "command": "python",
+      "args": ["C:\\Git\\Agentic-Workflow\\tools\\memory\\adg_memory_server.py"],
+      "cwd": "C:\\Git\\Agentic-Workflow",
+      "disabled": false,
+      "env": {
+        "ADG_REDIS_URL": "redis://localhost:6379/0",
+        "MEMORY_DB": "C:\\Git\\Agentic-Workflow\\artifacts\\memory\\knowledge_graph.sqlite"
+      }
+    },
+    "redis": {
+      "_comment": "Marketplace Redis MCP — DISABLED. STRING-only, cannot read HASH/SET ADG cache keys. Use adg_redis instead.",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-redis", "redis://localhost:6379"],
+      "disabled": true
+    }
+  }
+}
