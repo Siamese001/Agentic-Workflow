@@ -4,7 +4,6 @@ _ssot_validation_artifacts.py — Validation JSON writers and healing action rec
 Extracted from execute_ssot.py to reduce file size and improve cohesion.
 All public symbols are re-exported from execute_ssot.py for backward compat.
 """
-# guardian: allow-silent_swallower - ADG violation exemption
 
 
 import json

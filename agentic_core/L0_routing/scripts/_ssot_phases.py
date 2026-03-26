@@ -4,7 +4,6 @@ _ssot_phases.py — Phase execution functions, RuntimeStateManager, and agent di
 Extracted from execute_ssot.py to reduce file size and improve cohesion.
 All public symbols are re-exported from execute_ssot.py for backward compat.
 """
-# guardian: allow-silent_swallower - ADG violation exemption
 
 
 import atexit
@@ -252,17 +251,30 @@ def assert_no_persistent_write(layer: str, operation: str) -> None:
     pass
 
 
-# tqdm stub — replaced by real tqdm if available
+# tqdm - optional progress bar with explicit dependency management
 try:
     from tqdm import tqdm
-except ImportError:  # guardian: allow-silent-swallow
+    _TQDM_AVAILABLE = True
+except ImportError as e:
+    _TQDM_AVAILABLE = False
+    logger.warning(f"tqdm not available for progress bars: {e}. Install with: pip install tqdm")
 
     class tqdm:  # type: ignore[no-redef]
         def __init__(self, *a, total=0, desc="", unit="", ncols=0, **kw):
             self.total = total
+            self.desc = desc
+            self.unit = unit
+            self.ncols = ncols
+            self.n = 0
 
-        def __enter__(self):
+        def __iter__(self):
             return self
+
+        def __next__(self):
+            if self.n >= self.total:
+                raise StopIteration
+            self.n += 1
+            return self.n - 1
 
         def __exit__(self, *a):
             pass
@@ -415,7 +427,7 @@ class RuntimeStateManager:
                 temp_name = tf.name
             os.chmod(temp_name, stat.S_IRUSR | stat.S_IWUSR)
             os.replace(temp_name, state_path)
-        except PermissionError as e:  # guardian: allow-silent-swallow
+        except PermissionError as e:
             err_str = str(e)
             if "MUTATION_PROHIBITED" in err_str:
                 self._persistence_disabled = True
@@ -423,23 +435,23 @@ class RuntimeStateManager:
                     f"[RuntimeStateManager] L0 mutation prohibition active — runtime state persistence DISABLED for this run (fail-closed). Reason: {err_str}"
                 )
                 try:
-                    # guardian: allow-path-string
                     if "temp_name" in locals() and os.path.exists(temp_name):
-                        # guardian: allow-silent-swallow - acceptable exception handling
                         os.remove(temp_name)
-                except OSError:
-                    pass
+                        logger.debug("Cleaned up temp file after mutation prohibition")
+                except OSError as cleanup_error:
+                    logger.warning(f"Failed to clean up temp file: {cleanup_error}")
             else:
                 logger.error(f"Failed to save runtime state (Atomic Write Failed): {e}")
+                raise
         except (OSError, TypeError, ValueError) as e:
             logger.error(f"Failed to save runtime state (Atomic Write Failed): {e}")
             try:
-                # guardian: allow-path-string
                 if "temp_name" in locals() and os.path.exists(temp_name):
-                    # guardian: allow-silent-swallow - acceptable exception handling
                     os.remove(temp_name)
-            except OSError:
-                pass
+                    logger.debug("Cleaned up temp file after save error")
+            except OSError as cleanup_error:
+                logger.warning(f"Failed to clean up temp file: {cleanup_error}")
+            raise
 
     def _emergency_cleanup(self):
         """Ensure state is finalized even on unhandled exit."""

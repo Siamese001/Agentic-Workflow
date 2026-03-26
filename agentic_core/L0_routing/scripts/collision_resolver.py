@@ -6,7 +6,6 @@ Rationale:
     The automated fixer cannot resolve collisions where two files want the same name.
     This tool finds these specific cases and reports them for manual adjudication.
 """
-# guardian: allow-silent_swallower - ADG violation exemption
 
 
 import ast
@@ -102,11 +101,14 @@ _emit_links_execution_to_snapshot("p4", "collision_resolver", "exec_snapshot_lin
 
 try:
     from agentic_core.utils.ssot_discovery_validator import get_python_files
-except ImportError:  # guardian: allow-silent-swallow
+    _SSOT_DISCOVERY_AVAILABLE = True
+except ImportError as e:
+    _SSOT_DISCOVERY_AVAILABLE = False
+    print(f"Warning: ssot_discovery_validator not available: {e}. Using fallback implementation.")
 
     def get_python_files(root: Path):
+        """Fallback implementation when ssot_discovery_validator is unavailable."""
         return list(root.rglob("*.py"))
-
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,
@@ -200,7 +202,9 @@ class CollisionResolver:
         try:
             content = path.read_text(encoding="utf-8")
             tree = ast.parse(content)
-        except:  # guardian: allow-silent-swallow
+        except (SyntaxError, UnicodeDecodeError, OSError) as e:
+            # Log the specific error and return None - this file cannot be analyzed
+            print(f"Warning: Could not parse {path}: {e}")
             return None
         classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
         if not classes:
@@ -275,9 +279,9 @@ class CollisionResolver:
                     tree = ast.parse(content)
                     classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
                     class_info = f"[Classes: {', '.join(classes[:3])}]" if classes else "[No classes]"
-                except:  # guardian: allow-silent-swallow
+                except (SyntaxError, UnicodeDecodeError, OSError) as e:
                     size = 0
-                    class_info = "[Parse error]"
+                    class_info = f"[Parse error: {type(e).__name__}]"
                 marker = "✓ EXISTS" if src.name == target_path.name else "→ WANTS"
                 print(f"      {marker}: {src.name} ({size} bytes) {class_info}")
         print("\n" + "=" * 80)
