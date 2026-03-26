@@ -532,8 +532,8 @@ Agents invoked via canonical Python functions only. One canonical agent class pe
 
 When facing a decision point with multiple valid approaches, Windsurf MUST:
 1. **STOP** before taking action
-2. **Present 2-4 concrete options** with trade-offs
-3. **Wait** for explicit user selection (A/B/C/D)
+2. **Present 3-5 high-signal concrete options** with trade-offs
+3. **Wait** for explicit user selection (A/B/C/D/E)
 4. **Execute** only the chosen option
 
 ### 8.5.2 Mandatory HITL Triggers
@@ -554,28 +554,54 @@ HITL is REQUIRED for:
 
 Every HITL prompt MUST include:
 - **Context**: Brief description of decision point and current state
-- **Options**: 2-4 concrete alternatives numbered 1, 2, 3, 4
+- **Options**: 3-5 high-signal concrete alternatives numbered 1, 2, 3, 4, 5
 - **Trade-offs**: Honest pros/cons or impact for each option
-- **Recommendation**: Explicit recommendation marked with ⭐ emoji
+- **Recommendation**: Explicit recommendation marked with ⭐ emoji based on OpenAI SVP Agentic Engineer standards
 - **Question**: Clear "Which option do you choose?"
+
+**HIGH-SIGNAL REQUIREMENTS:**
+- Each option must represent a distinct, meaningful approach
+- Options must be concrete and actionable (not vague concepts)
+- Eliminate redundant or overlapping options
+- Focus on options that materially impact the outcome
+- Avoid trivial variations that don't change the fundamental approach
 
 **REQUIRED FORMAT TEMPLATE**:
 ```markdown
 **Context**: <clear explanation of decision point>
 **Options**:
-1. <Option 1 description> - <trade-offs>
-2. <Option 2 description> - <trade-offs> ⭐ RECOMMENDED
-3. <Option 3 description> - <trade-offs>
-4. <Option 4 description> - <trade-offs>
+1. <Option 1 description>
+   **Pros**: <succinct benefit 1>, <succinct benefit 2>
+   **Cons**: <succinct drawback 1>, <succinct drawback 2>
+2. <Option 2 description> ⭐ RECOMMENDED (aligns with OpenAI SVP Agentic Engineer standards)
+   **Pros**: <succinct benefit 1>, <succinct benefit 2>
+   **Cons**: <succinct drawback 1>, <succinct drawback 2>
+3. <Option 3 description>
+   **Pros**: <succinct benefit 1>, <succinct benefit 2>
+   **Cons**: <succinct drawback 1>, <succinct drawback 2>
+[4. <Option 4 description> - include if needed]
+   **Pros**: <succinct benefit 1>, <succinct benefit 2>
+   **Cons**: <succinct drawback 1>, <succinct drawback 2>
+[5. <Option 5 description> - include if needed]
+   **Pros**: <succinct benefit 1>, <succinct benefit 2>
+   **Cons**: <succinct drawback 1>, <succinct drawback 2>
 ```
 
-**FORBIDDEN**: Single option + confirmation request, proceeding with "default", open-ended questions without options, hiding trade-offs, biased presentation, missing ⭐ recommendation, unnumbered options.
+**FORBIDDEN**: Single option + confirmation request, proceeding with "default", open-ended questions without options, hiding trade-offs, biased presentation, missing ⭐ recommendation, unnumbered options, missing **Pros**/**Cons** sections, verbose or unclear pros/cons, low-signal or redundant options, forcing exactly 4 options when fewer high-signal options exist.
+
+**RECOMMENDATION CRITERIA (OpenAI SVP Agentic Engineer alignment):**
+- ⭐ **Architectural Excellence**: Choose options demonstrating clean separation of concerns, modular design, and scalable patterns
+- ⭐ **Production Readiness**: Prioritize solutions with robust error handling, observability, and operational maturity
+- ⭐ **Code Quality**: Favor approaches with comprehensive testing, type safety, and maintainable abstractions
+- ⭐ **Performance at Scale**: Select options that demonstrate understanding of latency, throughput, and resource optimization
+- ⭐ **Security & Safety**: Choose solutions with proper validation, least-privilege design, and failure containment
+- ⭐ **Documentation & Communication**: Prefer approaches with clear interfaces, comprehensive documentation, and team collaboration patterns
 
 ### 8.5.4 Execution Discipline
 
 After presenting options:
 1. **STOP** — do not proceed with any option
-2. **WAIT** — user must explicitly select 1/2/3/4
+2. **WAIT** — user must explicitly select 1/2/3/4/5
 3. **CONFIRM** — acknowledge selection with option number
 4. **EXECUTE** — only the chosen option
 
