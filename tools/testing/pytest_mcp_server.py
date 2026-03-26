@@ -308,17 +308,17 @@ def pytest_status() -> dict[str, Any]:
 @mcp.tool()
 def pytest_run_adg_impact(file_list: list[str], timeout: int = 300) -> dict[str, Any]:
     """Run tests for ADG-impacted modules only.
-    
+
     Args:
         file_list: List of changed files to analyze for impact
         timeout: Test execution timeout in seconds
-        
+
     Returns:
         Dictionary with impact analysis and test execution results.
     """
     if not file_list or len(file_list) == 0:
         return {"success": False, "error": "file_list cannot be empty"}
-    
+
     if timeout <= 0 or timeout > 1800:  # Max 30 minutes
         return {"success": False, "error": "timeout must be between 1 and 1800 seconds"}
     # First, run ADG impact analysis

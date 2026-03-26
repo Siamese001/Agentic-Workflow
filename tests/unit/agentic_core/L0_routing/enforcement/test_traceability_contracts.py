@@ -39,5 +39,16 @@ class GeneratedTest(unittest.TestCase):
         from agentic_core.L0_routing.enforcement import ErrorSignatureError
         instance = ErrorSignatureError()
         self.assertIsNotNone(instance)
+
+    def test_generate_trace_id_boundary(self):
+        """Test generate_trace_id boundary conditions."""
+        from agentic_core.L0_routing.enforcement import generate_trace_id, TraceIDFormatError
+        # Test invalid hex suffix (non-hex chars) - raises ValueError
+        with self.assertRaises(ValueError):
+            generate_trace_id("WXYZ1234")
+        # Test wrong length - raises TraceIDFormatError
+        with self.assertRaises(TraceIDFormatError):
+            generate_trace_id("ABC")
+
 if __name__ == '__main__':
     unittest.main()

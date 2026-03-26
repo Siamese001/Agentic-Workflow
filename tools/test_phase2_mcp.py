@@ -67,19 +67,19 @@ async def test_guardian_mcp():
         return False
 
     print("✅ All expected Guardian tools are registered")
-    
+
     # Test guardian_run parameter validation
     invalid_result = server_module.guardian_run("", timeout=300)
     if "cannot be empty" not in invalid_result.get("error", ""):
         print("❌ guardian_run() empty name validation failed")
         return False
-    
+
     # Test guardian_status function
     status_result = server_module.guardian_status()
     if not isinstance(status_result.get("overall_health"), (int, float)):
         print("❌ guardian_status() overall_health not numeric")
         return False
-    
+
     try:
         status_result = server_module.guardian_status()
         print(f"✅ guardian_status() returned: {type(status_result).__name__}")

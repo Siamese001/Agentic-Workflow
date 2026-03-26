@@ -31,6 +31,16 @@ class GeneratedTest(unittest.TestCase):
         result = validate_evidence_pack(pack)
         self.assertIsNotNone(result)
 
+    def test_build_evidence_pack_failure(self):
+        """Test build_evidence_pack failure path."""
+        from agentic_core.L0_routing.enforcement import build_evidence_pack, EvidencePackError
+        # Test with invalid risk score (should be 0-1)
+        with self.assertRaises((EvidencePackError, ValueError, TypeError)):
+            build_evidence_pack(
+                "trace123", ("action1",), ("eval1",),
+                risk_score=1.5, budget_breach_data={}, boundary_snapshot_hash="hash123"
+            )
+
     def test_EvidencePackError_init(self):
         """Test EvidencePackError initialization."""
         from agentic_core.L0_routing.enforcement import EvidencePackError

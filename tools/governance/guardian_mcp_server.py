@@ -259,10 +259,10 @@ def guardian_run(guardian_name: str, force: bool = False, timeout: int = 300) ->
     """
     if timeout <= 0 or timeout > 1800:  # Max 30 minutes
         return {"success": False, "error": "timeout must be between 1 and 1800 seconds"}
-    
+
     if not guardian_name or not guardian_name.strip():
         return {"success": False, "error": "guardian_name cannot be empty"}
-    
+
     if len(guardian_name) > 50:
         return {"success": False, "error": "guardian_name too long (max 50 characters)"}
 

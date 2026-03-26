@@ -104,7 +104,16 @@ from agentic_core.L0_routing.utils.manifest_guardian_util import ManifestGuardia
 # compliance_gate_validator not found - create placeholder
 def check_compliance(agents):
     """Placeholder compliance check function."""
-    return []
+    try:
+        # Placeholder implementation - would normally validate agent compliance
+        if not agents:
+            return []
+        return []
+    except Exception as e:
+        # Log error but don't fail boot sequence
+        import logging
+        logging.getLogger(__name__).warning(f"Compliance check failed: {e}")
+        return []
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     LayerSegment,

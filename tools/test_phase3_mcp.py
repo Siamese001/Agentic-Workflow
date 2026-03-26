@@ -66,19 +66,19 @@ async def test_meta_learning_mcp():
         return False
 
     print("✅ All expected Meta-learning tools are registered")
-    
+
     # Test runtime_adg_query parameter validation
     invalid_result = server_module.runtime_adg_query(time_window_hours=0)
     if "must be between" not in invalid_result.get("error", ""):
         print("❌ runtime_adg_query() time_window validation failed")
         return False
-    
+
     # Test runtime_adg_status function
     status_result = server_module.runtime_adg_status()
     if not isinstance(status_result.get("total_snapshots"), int):
         print("❌ runtime_adg_status() total_snapshots not integer")
         return False
-    
+
     try:
         status_result = server_module.runtime_adg_status()
         print(f"✅ runtime_adg_status() returned: {type(status_result).__name__}")

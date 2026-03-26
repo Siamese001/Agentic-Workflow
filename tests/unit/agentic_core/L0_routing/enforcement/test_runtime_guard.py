@@ -18,6 +18,14 @@ class GeneratedTest(unittest.TestCase):
         # runtime_guard returns a decorator, test it's callable
         decorator = runtime_guard("test_entry")
         self.assertTrue(callable(decorator))
+        
+        # Test decorator actually works on a function
+        @decorator
+        def test_func():
+            return "guarded"
+        
+        result = test_func()
+        self.assertEqual(result, "guarded")
 
     def test_assert_v15_guarded(self):
         """Test assert_v15_guarded function."""

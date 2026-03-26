@@ -191,13 +191,13 @@ def otel_status() -> dict[str, Any]:
 @mcp.tool()
 def otel_trace(trace_id: str) -> dict[str, Any]:
     """Fetch trace by CID and return as ADG edges.
-    
+
     Args:
         trace_id: OpenTelemetry trace ID (CID format)
     """
     if not trace_id or not trace_id.strip():
         return {"success": False, "error": "trace_id cannot be empty"}
-    
+
     if len(trace_id) < 8 or len(trace_id) > 128:
         return {"success": False, "error": "trace_id must be between 8 and 128 characters"}
 
@@ -522,7 +522,7 @@ def otel_ingest_to_runtime_adg(trace_data: dict[str, Any]) -> dict[str, Any]:
         spans = trace_data.get("spans", [])
         if len(spans) > 1000:
             return {"success": False, "error": "Too many spans for single ingestion (max 1000)"}
-        
+
         snapshot = create_runtime_adg_snapshot(
             trace_id=trace_data.get("trace_id", f"trace_{int(time.time())}"),
             spans=spans,

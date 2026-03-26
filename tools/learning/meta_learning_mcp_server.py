@@ -239,19 +239,19 @@ def runtime_adg_status() -> dict[str, Any]:
 @mcp.tool()
 def runtime_adg_query(trace_id: str = None, agent_name: str = None, time_window_hours: int = 24, limit: int = 50) -> dict[str, Any]:
     """Query runtime ADG snapshots by trace ID, agent name, or time window.
-    
+
     Args:
         trace_id: Specific trace ID to query
         agent_name: Agent name to filter by
         time_window_hours: Time window in hours (default 24)
         limit: Maximum number of snapshots to return
-        
+
     Returns:
         Dictionary with matching snapshots and query metadata.
     """
     if time_window_hours <= 0 or time_window_hours > 168:  # Max 1 week
         return {"success": False, "error": "time_window_hours must be between 1 and 168"}
-    
+
     if limit <= 0 or limit > 500:
         return {"success": False, "error": "limit must be between 1 and 500"}
     _refresh_snapshot_cache()
@@ -576,17 +576,17 @@ def learning_pipeline_status() -> dict[str, Any]:
 @mcp.tool()
 def cross_repo_import(repo_url: str, import_type: str = "patterns") -> dict[str, Any]:
     """Incorporate external repository learning.
-    
+
     Args:
         repo_url: Repository URL to import from
         import_type: Type of import (patterns, snapshots, models)
-        
+
     Returns:
         Dictionary with import results and status.
     """
     if not repo_url or not repo_url.strip():
         return {"success": False, "error": "repo_url cannot be empty"}
-    
+
     valid_import_types = ["patterns", "snapshots", "models"]
     if import_type not in valid_import_types:
         return {"success": False, "error": f"import_type must be one of: {', '.join(valid_import_types)}"}

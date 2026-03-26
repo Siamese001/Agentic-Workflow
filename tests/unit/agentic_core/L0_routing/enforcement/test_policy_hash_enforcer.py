@@ -48,6 +48,11 @@ class GeneratedTest(unittest.TestCase):
         )
         result = instance.format()
         self.assertIsNotNone(result)
+        # Verify formatted result contains expected fields
+        self.assertIn("packet123", result)
+        self.assertIn("root123", result)
+        # packet_hash is truncated in format output, just check it's not empty
+        self.assertTrue(len(result) > 50)  # Reasonable length for formatted output
 
 if __name__ == '__main__':
     unittest.main()
