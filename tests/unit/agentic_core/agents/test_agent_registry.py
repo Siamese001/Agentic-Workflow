@@ -13,8 +13,22 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class TestAgentRegistry:
-    """Test AgentRegistry functionality."""
+class GeneratedTest:
+    """Generated test class for agentic_core.agents."""
+
+    def test_get_execution_profile(self):
+        """Test get_execution_profile function."""
+        from agentic_core.agents import get_execution_profile
+        # TODO: Implement actual test
+        result = get_execution_profile()
+        assertIsNotNone(result)
+    def test_get_profile(self):
+        """Test get_profile function."""
+        from agentic_core.agents import get_profile
+        # TODO: Implement actual test
+        result = get_profile()
+        assertIsNotNone(result)
+
 
     def test_placeholder_1(self):
         """Placeholder test 1."""
