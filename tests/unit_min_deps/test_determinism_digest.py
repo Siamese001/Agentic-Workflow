@@ -199,14 +199,16 @@ class TestW5DeterminismDigest:
         )
 
     def test_determinism_digest_computation(self):
-        from agentic_core.L3_orchestration.engines.deterministic_orchestrator import DeterministicOrchestrator, compute_determinism_digest
-        from agentic_core.L3_orchestration.engines.deterministic_orchestrator import DeterministicOrchestrator, compute_determinism_digest
-        from agentic_core.L3_orchestration.engines.deterministic_orchestrator import DeterministicOrchestrator, compute_determinism_digest
-        from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
-        """Test determinism digest computation from components."""
-        plan_hash = "plan_hash_001"
-        agent_registry_hash = "agent_hash_001"
-        tool_key_hash = "tool_hash_001"
+                from agentic_core.L3_orchestration.engines.deterministic_orchestrator import DeterministicOrchestrator, compute_determinism_digest
+                from agentic_core.L3_orchestration.engines.deterministic_orchestrator import DeterministicOrchestrator, compute_determinism_digest
+                from agentic_core.L3_orchestration.engines.deterministic_orchestrator import DeterministicOrchestrator, compute_determinism_digest
+                from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
+                """Test determinism digest computation from components."""
+                plan_hash = "plan_hash_001"
+                agent_registry_hash = "agent_hash_001"
+                tool_key_hash = "tool_hash_001"
+                handshake_sequence_hash = "handshake_hash_001"
+
         handshake_sequence_hash = "handshake_hash_001"
 
         digest = compute_determinism_digest(

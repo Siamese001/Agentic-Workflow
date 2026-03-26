@@ -203,14 +203,16 @@ class FakeChangePackage:
 
 class TestValidateLineage:
     def test_genesis_version_valid(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.l4_version_store import L4VersionStore
-        from system_learning.validators.lineage_validator import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.l4_version_store import VersionedPackage
-        from system_learning.engines.l4_version_store import VersionedPackage
-        store = L4VersionStore()
-        pkg = FakeChangePackage("genesis-content")
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.l4_version_store import L4VersionStore
+                from system_learning.validators.lineage_validator import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.l4_version_store import VersionedPackage
+                from system_learning.engines.l4_version_store import VersionedPackage
+                store = L4VersionStore()
+                pkg = FakeChangePackage("genesis-content")
+                version_id = store.commit_change_package(pkg, None, "hash", 1700000000)
+
         version_id = store.commit_change_package(pkg, None, "hash", 1700000000)
 
         validator = LineageValidator(store)

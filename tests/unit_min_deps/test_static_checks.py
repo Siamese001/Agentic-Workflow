@@ -149,14 +149,17 @@ import pytest
 
 @pytest.mark.unit_min_deps
 def test_powershell_scanner_detects_subprocess_calls():
-    from agentic_core.L0_routing.config.path_constants import (
-    from agentic_core.L5_safety.static_checks.determinism_serialization_check import (
-    from agentic_core.L5_safety.static_checks.powershell_ban import (
-    from agentic_core.L5_safety.static_checks.write_gateway_enforcer import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L0_routing.config.path_constants import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test powershell_scanner_detects_subprocess_calls runtime behavior."""
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L5_safety.static_checks.determinism_serialization_check import (
+        from agentic_core.L5_safety.static_checks.powershell_ban import (
+        from agentic_core.L5_safety.static_checks.write_gateway_enforcer import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    """Test powershell_scanner_detects_subprocess_calls runtime behavior."""
+
 # Arrange
 # TODO: Set up execution parameters
 input_data = {}  # Replace with actual test data

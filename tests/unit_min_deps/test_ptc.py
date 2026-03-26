@@ -104,33 +104,35 @@ pytestmark = [pytest.mark.external]
 
 @pytest.mark.unit_min_deps
 def test_tool_arg_validation():
-    from agentic_core.L3_orchestration.ptc.ptc_registry import (
-    from agentic_core.L3_orchestration.ptc.tool_contract import (
-    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
-    from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
-    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
-    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
-    from agentic_core.L3_orchestration.ptc.tool_call_store import ToolCallStore
-    from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
-    from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
-    from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
-    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
-    from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
-    from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
-    from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
-    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
-    from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
-    from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
-    from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
-    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
-    from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
-    from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry, list_tools
-    from agentic_core.L5_safety.static_checks.ptc_invariants import (
-    """Test ToolArg validation."""
-    # Valid arg
-    arg = ToolArg(name="pattern", kind="str", required=True)
-    assert arg.name == "pattern"
-    assert arg.kind == "str"
+        from agentic_core.L3_orchestration.ptc.ptc_registry import (
+        from agentic_core.L3_orchestration.ptc.tool_contract import (
+        from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+        from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
+        from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+        from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+        from agentic_core.L3_orchestration.ptc.tool_call_store import ToolCallStore
+        from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
+        from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
+        from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
+        from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+        from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
+        from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
+        from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
+        from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+        from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
+        from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
+        from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
+        from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+        from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
+        from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry, list_tools
+        from agentic_core.L5_safety.static_checks.ptc_invariants import (
+        """Test ToolArg validation."""
+        # Valid arg
+        arg = ToolArg(name="pattern", kind="str", required=True)
+        assert arg.name == "pattern"
+        assert arg.kind == "str"
+        assert arg.required is True
+
     assert arg.required is True
 
     # Invalid kind

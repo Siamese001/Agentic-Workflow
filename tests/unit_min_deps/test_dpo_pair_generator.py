@@ -157,15 +157,17 @@ class TestDPOPairGenerator:
     """Test suite for DPO Pair Generator deterministic behavior."""
 
     def test_hash_stable_same_inputs(self):
-        from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
-        from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
-        from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
-        from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
-        from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
-        from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
-        from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
-        from agentic_core.L6_observability.types.dpo_types import DPOExampleId
-        """Same inputs must produce identical hashes and content_hash."""
+                from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
+                from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
+                from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
+                from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
+                from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
+                from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
+                from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
+                from agentic_core.L6_observability.types.dpo_types import DPOExampleId
+                """Same inputs must produce identical hashes and content_hash."""
+                generator = DefaultDeterministicDPOPairGenerator()
+
         generator = DefaultDeterministicDPOPairGenerator()
 
         control_output = b"control_output_data"

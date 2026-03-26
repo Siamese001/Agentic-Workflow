@@ -235,22 +235,24 @@ class TestPhase7Hardening:
     """Phase 7 hardening tests for L4 state isolation and determinism."""
 
     def test_negative_control_no_activation_pointer_isolation(self):
-        from system_learning.engines.l4_state_writer import DefaultL4StateWriter, SimpleChangePackage
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
-        from system_learning.engines.l4_state_writer import DefaultL4StateWriter, SimpleChangePackage
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
-        from system_learning.engines.l4_state_writer import DefaultL4StateWriter, SimpleChangePackage
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
-        from agentic_core.L6_observability.engines.detection_signal_emitter import emit_detection_signal_with_l4a
-        from agentic_core.L6_observability.engines.detection_signal_emitter import emit_detection_signal_with_l4a
-        from agentic_core.L6_observability.engines.detection_signal_emitter import emit_detection_signal_with_l4a
-        """Negative control: L0 does not observe newly written L4B snapshot in same run."""
-        # Create L4B writer and aggregator
-        version_store = MockL4VersionStore()
-        l4_writer = DefaultL4StateWriter(version_store=version_store)
+                from system_learning.engines.l4_state_writer import DefaultL4StateWriter, SimpleChangePackage
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+                from system_learning.engines.l4_state_writer import DefaultL4StateWriter, SimpleChangePackage
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+                from system_learning.engines.l4_state_writer import DefaultL4StateWriter, SimpleChangePackage
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+                from agentic_core.L6_observability.engines.detection_signal_emitter import emit_detection_signal_with_l4a
+                from agentic_core.L6_observability.engines.detection_signal_emitter import emit_detection_signal_with_l4a
+                from agentic_core.L6_observability.engines.detection_signal_emitter import emit_detection_signal_with_l4a
+                """Negative control: L0 does not observe newly written L4B snapshot in same run."""
+                # Create L4B writer and aggregator
+                version_store = MockL4VersionStore()
+                l4_writer = DefaultL4StateWriter(version_store=version_store)
+                aggregator = HealingOutcomeAggregator()
+
         aggregator = HealingOutcomeAggregator()
 
         # Record a healing outcome

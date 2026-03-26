@@ -316,16 +316,18 @@ def _create_mutated_artifact(original: VLLMReplayArtifact) -> VLLMReplayArtifact
 
 
 def test_canonical_payload_stability_pass():
-    from agentic_core.L2_execution.types.vllm_gateway_adapter_types import VLLMGatewayAdapter
-    from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
-    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
-    from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
-    from agentic_core.L2_execution.types.vllm_replay_validator_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.types.vllm_gateway_adapter_types import reset_singletons
-    artifact_1 = _create_test_artifact()
-    replay_hash_1 = artifact_1.replay_hash
+        from agentic_core.L2_execution.types.vllm_gateway_adapter_types import VLLMGatewayAdapter
+        from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
+        from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
+        from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
+        from agentic_core.L2_execution.types.vllm_replay_validator_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.vllm_gateway_adapter_types import reset_singletons
+        artifact_1 = _create_test_artifact()
+        replay_hash_1 = artifact_1.replay_hash
+        canonical_payload_hash_1 = artifact_1.canonical_payload_hash()
+
     canonical_payload_hash_1 = artifact_1.canonical_payload_hash()
 
     _validate_64hex(replay_hash_1, "replay_hash_1")

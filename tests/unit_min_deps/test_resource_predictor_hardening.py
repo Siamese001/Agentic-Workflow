@@ -175,37 +175,38 @@ class TestPhase9Hardening:
     """Phase 9 hardening tests for resource bounds and rollback determinism."""
 
     def test_boundary_envelope_saturation(self):
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
-        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
-        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
-        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementRequest, RollbackStrategyId
-        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementRequest, RollbackStrategyId
-        from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
-        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
-        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
-        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
-        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
-        from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
-        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementRequest, RollbackStrategyId
-        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementRequest, RollbackStrategyId
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
-        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
-        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
-        """Boundary envelope saturation: extreme, zero, and negative inputs."""
-        # Test with very tight bounds
-        predictor = DefaultDeterministicResourcePredictor(
-            min_cpu_cores=1,
-            max_cpu_cores=8,
-            min_memory_mb=512,
-            max_memory_mb=4096,
-            min_timeout_s=30,
-            max_timeout_s=600,
-        )
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
+                from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+                from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
+                from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementRequest, RollbackStrategyId
+                from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementRequest, RollbackStrategyId
+                from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
+                from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+                from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
+                from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+                from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
+                from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+                from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementRequest, RollbackStrategyId
+                from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementRequest, RollbackStrategyId
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
+                from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+                from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+                """Boundary envelope saturation: extreme, zero, and negative inputs."""
+                # Test with very tight bounds
+                predictor = DefaultDeterministicResourcePredictor(
+                    min_cpu_cores=1,
+                    max_cpu_cores=8,
+                    min_memory_mb=512,
+                    max_memory_mb=4096,
+                    min_timeout_s=30,
+                    max_timeout_s=600,
+                )
+
 
         # Test cases: extreme, zero, and negative inputs
         test_cases = [

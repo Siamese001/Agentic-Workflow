@@ -199,22 +199,24 @@ class TestTier1UWG:
         return UniversalWriteGateway()
 
     def test_grant_then_revoke_permission(self) -> None:
-        from agentic_core.L2_execution.heal_result_adapter import adapt_heal_result
-        from agentic_core.L2_execution.types.heal_contract_types import HealCheckResult, HealStatus
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
-        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
-        from agentic_core.interfaces.write_gateway import get_write_gateway
-        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-        from agentic_core.L2_execution.healers.healing_tier_config import (
-        uwg = self._fresh_uwg()
-        # UWG stores exact normalized key; check_write_permission looks up that exact key.
-        test_path = "agentic_core/L2_execution/"
-        uwg.grant_write_permission(test_path)
-        assert uwg.check_write_permission(test_path)
-        uwg.revoke_write_permission(test_path)
+                from agentic_core.L2_execution.heal_result_adapter import adapt_heal_result
+                from agentic_core.L2_execution.types.heal_contract_types import HealCheckResult, HealStatus
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+                from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+                from agentic_core.interfaces.write_gateway import get_write_gateway
+                from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+                from agentic_core.L2_execution.healers.healing_tier_config import (
+                from agentic_core.L2_execution.healers.healing_tier_config import (
+                uwg = self._fresh_uwg()
+                # UWG stores exact normalized key; check_write_permission looks up that exact key.
+                test_path = "agentic_core/L2_execution/"
+                uwg.grant_write_permission(test_path)
+                assert uwg.check_write_permission(test_path)
+                uwg.revoke_write_permission(test_path)
+                assert not uwg.check_write_permission(test_path)
+
         assert not uwg.check_write_permission(test_path)
 
     def test_record_mutation_appends_to_ledger(self) -> None:

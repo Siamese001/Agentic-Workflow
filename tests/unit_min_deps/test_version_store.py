@@ -208,45 +208,48 @@ class FakeChangePackage:
 
 class TestCommitChangePackage:
     def test_commit_returns_sha256_version_id(self):
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
-        store = L4VersionStore()
-        pkg = FakeChangePackage("test-content")
-        version_id = store.commit_change_package(
-            package=pkg,
-            parent_version_id=None,
-            change_spec_hash="abc123",
-            committed_at_utc=1700000000,
-        )
-        expected = hashlib.sha256(b"test-content").hexdigest()
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        #  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+                store = L4VersionStore()
+                pkg = FakeChangePackage("test-content")
+                version_id = store.commit_change_package(
+                    package=pkg,
+                    parent_version_id=None,
+                    change_spec_hash="abc123",
+                    committed_at_utc=1700000000,
+                )
+                expected = hashlib.sha256(b"test-content").hexdigest()
+                assert version_id == expected
+
         assert version_id == expected
 
     def test_same_content_produces_same_version_id(self):

@@ -175,12 +175,14 @@ PIPELINE_FACTORY_PATH = (
 @pytest.mark.unit_min_deps
 class TestPipelineFactoryImports:
     def test_no_healing_backups_import_in_source(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test no_healing_backups_import_in_source runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for no_healing_backups_import_in_source
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test no_healing_backups_import_in_source runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for no_healing_backups_import_in_source
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

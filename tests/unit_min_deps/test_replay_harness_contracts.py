@@ -225,24 +225,26 @@ def _digest_bytes(obj) -> str:
     ],
 )
 def test_artifact_replay_deterministic(req, artifact):
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
-    from agentic_core.L4_state.enforcement.replay_bundle_store import ReplayBundleStore
-    from agentic_core.L4_state.types.replay_bundle_types import ReplayBundle
-    from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
-    from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
-    from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket
-    from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
-    from agentic_core.L2_execution.types.gateway_types import GenerationRequest
-    from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
-    from agentic_core.L0_routing.types.crypto_trust_types import (
-    from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
-    from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket
-    from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-    from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
-    d1 = _digest(artifact)
-    d2 = _digest(artifact)
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
+        from agentic_core.L4_state.enforcement.replay_bundle_store import ReplayBundleStore
+        from agentic_core.L4_state.types.replay_bundle_types import ReplayBundle
+        from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
+        from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
+        from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket
+        from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
+        from agentic_core.L2_execution.types.gateway_types import GenerationRequest
+        from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
+        from agentic_core.L0_routing.types.crypto_trust_types import (
+        from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
+        from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket
+        from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+        from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
+        d1 = _digest(artifact)
+        d2 = _digest(artifact)
+        assert d1 == d2, f"{req}: replay digest mismatch"
+
     assert d1 == d2, f"{req}: replay digest mismatch"
 
 

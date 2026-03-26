@@ -192,13 +192,15 @@ class TestHealingConfidenceScorer:
     """Test healing confidence scoring deterministic behavior."""
 
     def test_deterministic_fingerprint_same_input(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.confidence.engine import HealingConfidenceScorer
-        from system_learning.confidence.types import (
-        from system_learning.confidence.engine import HealingConfidenceScorer
-        from system_learning.confidence.types import HealingAttempt
-        """Proves same input twice yields identical SHA256."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.confidence.engine import HealingConfidenceScorer
+                from system_learning.confidence.types import (
+                from system_learning.confidence.engine import HealingConfidenceScorer
+                from system_learning.confidence.types import HealingAttempt
+                """Proves same input twice yields identical SHA256."""
+                scorer = HealingConfidenceScorer()
+
         scorer = HealingConfidenceScorer()
 
         attempts = [

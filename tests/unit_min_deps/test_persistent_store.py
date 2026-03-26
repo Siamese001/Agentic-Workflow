@@ -158,25 +158,27 @@ import pytest
 
 @pytest.mark.unit_min_deps
 def test_sanitize_id():
-    from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
-    from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
-    from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
-    from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
-    from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
-    from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
-    from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
-    from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
-    from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
-    from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
-    from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
-    from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
-    from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
-    from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
-    from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
-    from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
-    """Test ID sanitization prevents path traversal."""
-    # Normal IDs pass through
-    assert _sanitize_id("test_id") == "test_id"
+        from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+        from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+        from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+        from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+        from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+        from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
+        from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+        from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
+        from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+        from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
+        from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+        from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
+        from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+        from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
+        from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+        from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
+        """Test ID sanitization prevents path traversal."""
+        # Normal IDs pass through
+        assert _sanitize_id("test_id") == "test_id"
+        assert _sanitize_id("test.id-123") == "test.id-123"
+
     assert _sanitize_id("test.id-123") == "test.id-123"
 
     # Path traversal attempts are blocked

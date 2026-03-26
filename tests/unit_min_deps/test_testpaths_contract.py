@@ -69,10 +69,12 @@ class TestPytestIniHeader:
     """pytest.ini must use [pytest] section header, not [tool:pytest]."""
 
     def test_has_pytest_section(self) -> None:
-        from agentic_core.L0_routing.config.path_constants import (
-    """Test has_pysection contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
+                from agentic_core.L0_routing.config.path_constants import (
+            """Test has_pysection contract compliance."""
+            # Arrange
+            # TODO: Set up contract parties and terms
+            contract_terms = {}  # Replace with actual contract terms
+
     contract_terms = {}  # Replace with actual contract terms
 
     # Act

@@ -224,20 +224,22 @@ def _make_state_mgr(**extra_state):
 class TestBug1LocationAgentRegistry:
     
     def test_location_validator_raises_not_implemented(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
-        from agentic_core.L0_routing.scripts.execute_ssot import _get_l5_agent_roster
-        from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
-        from agentic_core.L0_routing.scripts.execute_ssot import _get_location_healer_agent
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
-        from agentic_core.L0_routing.scripts.execute_ssot import execute_phase2_reconciliation
-        from agentic_core.L0_routing.scripts.execute_ssot import save_comprehensive_reports
-        from agentic_core.L0_routing.scripts.execute_ssot import save_comprehensive_reports
-        from agentic_core.L0_routing.scripts.execute_ssot import save_aggregate_report
         """LocationValidatorAgent.heal_repository() must raise NotImplementedError."""
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
+                from agentic_core.L0_routing.scripts.execute_ssot import _get_l5_agent_roster
+                from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
+                from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+                from agentic_core.L0_routing.scripts.execute_ssot import _get_location_healer_agent
+                from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+                from agentic_core.L0_routing.scripts.execute_ssot import execute_phase2_reconciliation
+                from agentic_core.L0_routing.scripts.execute_ssot import save_comprehensive_reports
+                from agentic_core.L0_routing.scripts.execute_ssot import save_comprehensive_reports
+                from agentic_core.L0_routing.scripts.execute_ssot import save_aggregate_report
+                """LocationValidatorAgent.heal_repository() must raise NotImplementedError."""
+
 #  # MOVED: from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
 
         agent = LocationValidatorAgent(project_root=REPO_ROOT)

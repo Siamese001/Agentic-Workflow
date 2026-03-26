@@ -190,11 +190,13 @@ def cache(qe: ADGRuntimeQueryEngine) -> GraphAwareCache:
 
 class TestADGQueryEngineCorrectness:
     def test_find_agents_by_base_class_returns_list(self, qe):
-        from agentic_core.adg.extraction.static_scanner import (
-        from agentic_core.adg.runtime.query_engine import ADGRuntimeQueryEngine
-        from agentic_core.cache.graph_aware_cache import GraphAwareCache
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        agents = qe.find_agents_by_base_class("SovereignBaseAgent")
+                from agentic_core.adg.extraction.static_scanner import (
+                from agentic_core.adg.runtime.query_engine import ADGRuntimeQueryEngine
+                from agentic_core.cache.graph_aware_cache import GraphAwareCache
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                agents = qe.find_agents_by_base_class("SovereignBaseAgent")
+                assert isinstance(agents, list)
+
         assert isinstance(agents, list)
 
     def test_inheritance_index_populated(self, qe):

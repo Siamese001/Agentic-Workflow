@@ -379,30 +379,32 @@ def _commit_deps(**kw):
 
 class TestCommitPath:
     def test_commit_path_requires_version_store(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
-        from system_learning.engines.l4_state_writer import L4StateWriter
-        from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
-        from system_learning.engines.rlhf_optimizer import DefaultDeterministicRLHFOptimizer
-        from system_learning.pipelines.approval_gates import ApprovalDecision
-        from system_learning.pipelines.meta_learning_pipeline import (
-        from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
-        from system_learning.types.healing_outcome_learning_types import (
-        from system_learning.types.healing_outcome_types import HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.types.pattern_analysis_types import (
-        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
-        from system_learning.validators.oscillation_detector import OscillationPolicy
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowThresholds
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
-        from system_learning.engines.healing_config_optimizer import (
-        from system_learning.engines.healing_config_optimizer import ThresholdAdjustmentProposal
-    """Test commit_path_requires_version_store runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for commit_path_requires_version_store
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
+                from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+                from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+                from system_learning.engines.l4_state_writer import L4StateWriter
+                from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
+                from system_learning.engines.rlhf_optimizer import DefaultDeterministicRLHFOptimizer
+                from system_learning.pipelines.approval_gates import ApprovalDecision
+                from system_learning.pipelines.meta_learning_pipeline import (
+                from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
+                from system_learning.types.healing_outcome_learning_types import (
+                from system_learning.types.healing_outcome_types import HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.types.pattern_analysis_types import (
+                from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+                from system_learning.validators.oscillation_detector import OscillationPolicy
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowThresholds
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+                from system_learning.engines.healing_config_optimizer import (
+                from system_learning.engines.healing_config_optimizer import ThresholdAdjustmentProposal
+            """Test commit_path_requires_version_store runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for commit_path_requires_version_store
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

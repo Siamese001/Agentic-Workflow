@@ -187,29 +187,30 @@ class TestEmbeddingArtifactDeterminism:
     """Test deterministic behavior of EmbeddingArtifact."""
 
     def test_same_inputs_identical_canonical_bytes(self):
-        from system_learning.types.embedding_artifact import EmbeddingArtifact
-        from system_learning.types.embedding_artifact import EmbeddingArtifact
-        from system_learning.types.embedding_artifact import EmbeddingArtifact
-        from system_learning.types.embedding_artifact import EmbeddingArtifact
-        from system_learning.types.embedding_artifact import EmbeddingArtifact
-        from system_learning.types.embedding_artifact import EmbeddingArtifact
-        from system_learning.types.embedding_artifact import EmbeddingArtifact
-        from system_learning.types.embedding_artifact import EmbeddingArtifact
-        from system_learning.types.embedding_artifact import EmbeddingArtifact
-        from system_learning.types.embedding_artifact import EmbeddingArtifact
-        from system_learning.types.embedding_artifact import EmbeddingArtifact
-        from system_learning.types.embedding_artifact import EmbeddingArtifact
-        from system_learning.types.embedding_artifact import EmbeddingArtifact
-        """Same inputs → identical canonical_bytes."""
-        artifact1 = EmbeddingArtifact(
-            namespace="test_namespace",
-            seed_index_version_hash="abcd1234",
-            supporting_trace_ids=["t3", "t1", "t2"],
-            supporting_content_hashes=["h3", "h1", "h2"],
-            k=10,
-            similarity_metric="cosine",
-            embedding_model_version="v1.0",
-        )
+                from system_learning.types.embedding_artifact import EmbeddingArtifact
+                from system_learning.types.embedding_artifact import EmbeddingArtifact
+                from system_learning.types.embedding_artifact import EmbeddingArtifact
+                from system_learning.types.embedding_artifact import EmbeddingArtifact
+                from system_learning.types.embedding_artifact import EmbeddingArtifact
+                from system_learning.types.embedding_artifact import EmbeddingArtifact
+                from system_learning.types.embedding_artifact import EmbeddingArtifact
+                from system_learning.types.embedding_artifact import EmbeddingArtifact
+                from system_learning.types.embedding_artifact import EmbeddingArtifact
+                from system_learning.types.embedding_artifact import EmbeddingArtifact
+                from system_learning.types.embedding_artifact import EmbeddingArtifact
+                from system_learning.types.embedding_artifact import EmbeddingArtifact
+                from system_learning.types.embedding_artifact import EmbeddingArtifact
+                """Same inputs → identical canonical_bytes."""
+                artifact1 = EmbeddingArtifact(
+                    namespace="test_namespace",
+                    seed_index_version_hash="abcd1234",
+                    supporting_trace_ids=["t3", "t1", "t2"],
+                    supporting_content_hashes=["h3", "h1", "h2"],
+                    k=10,
+                    similarity_metric="cosine",
+                    embedding_model_version="v1.0",
+                )
+
 
         artifact2 = EmbeddingArtifact(
             namespace="test_namespace",

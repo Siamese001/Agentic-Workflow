@@ -180,11 +180,14 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit_min_deps
 def test_cross_app_cid_prefixes():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from apps_lic.engines.lic_spine_adapter import LicSpineAdapter
-    from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
 """Test cross_app_cid_prefixes contract compliance."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from apps_lic.engines.lic_spine_adapter import LicSpineAdapter
+        from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
+        from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
+    """Test cross_app_cid_prefixes contract compliance."""
+
 # Arrange
 # TODO: Set up contract parties and terms
 contract_terms = {}  # Replace with actual contract terms

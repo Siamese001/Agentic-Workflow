@@ -188,15 +188,17 @@ class TestReplayValidatorSeedPack:
     """Test seed pack validation functionality."""
 
     def test_validate_seed_pack_success(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.replay_validator import DeterminismViolationError, ReplayValidator
-        from system_learning.engines.seed_embedding_pack_builder import (
-        from system_learning.types.embedding_artifact import EmbeddingArtifact
-        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
-    """Test validate_seed_pack_success contract compliance."""
-    # Arrange
-    # TODO: Set up test data
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.replay_validator import DeterminismViolationError, ReplayValidator
+                from system_learning.engines.seed_embedding_pack_builder import (
+                from system_learning.types.embedding_artifact import EmbeddingArtifact
+                from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+            """Test validate_seed_pack_success contract compliance."""
+            # Arrange
+            # TODO: Set up test data
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

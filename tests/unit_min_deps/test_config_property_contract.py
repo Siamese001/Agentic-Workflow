@@ -80,8 +80,10 @@ class TestNoSelfConfigAssignInInit:
         ids=[p.stem for p in INSPECTOR_FILES],
     )
     def test_no_self_config_assign(self, inspector_file: Path) -> None:
-        from agentic_core.L0_routing.config.path_constants import (
-        tree = _parse_file(inspector_file)
+                from agentic_core.L0_routing.config.path_constants import (
+                tree = _parse_file(inspector_file)
+                assert tree is not None, f"Cannot parse {inspector_file.name}"
+
         assert tree is not None, f"Cannot parse {inspector_file.name}"
 
         violations = _find_self_config_assigns_in_init(tree)

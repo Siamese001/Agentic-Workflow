@@ -72,10 +72,12 @@ class TestImportGraphContract:
     """Hard gate: import graph must not contain forbidden edges."""
 
     def test_no_forbidden_cross_territory_edges(self) -> None:
-        from agentic_core.L0_routing.config.path_constants import (
-    """Test no_forbidden_cross_territory_edges contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
+                from agentic_core.L0_routing.config.path_constants import (
+            """Test no_forbidden_cross_territory_edges contract compliance."""
+            # Arrange
+            # TODO: Set up contract parties and terms
+            contract_terms = {}  # Replace with actual contract terms
+
     contract_terms = {}  # Replace with actual contract terms
 
     # Act

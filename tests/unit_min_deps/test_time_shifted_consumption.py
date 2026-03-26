@@ -197,13 +197,15 @@ class TestTimeShiftedConsumption:
     """Test suite for time-shifted consumption behavior."""
 
     def test_time_shifted_behavior_t_reads_old_t1_reads_new(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.meta_control.config_store import (
-        from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test time_shifted_behavior_t_reads_old_t1_reads_new runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for time_shifted_behavior_t_reads_old_t1_reads_new
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.meta_control.config_store import (
+                from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test time_shifted_behavior_t_reads_old_t1_reads_new runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for time_shifted_behavior_t_reads_old_t1_reads_new
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

@@ -185,29 +185,31 @@ class TestAstDumpHash:
     """Test AST structural hashing."""
 
     def test_hash_determinism(self):
-        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
-        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
-        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
-        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
-        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
-        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
-        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
-        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
-        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
-        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
-        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
-        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
-        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
-        from agentic_core.utils import ast_fuzzy as module
-        import agentic_core.utils.ast_fuzzy as module
-        from agentic_core.utils import ast_fuzzy as module
-        import agentic_core.utils.ast_fuzzy as module
-        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
-        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
-        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
-        """Hash of same AST is deterministic."""
-        code = "def foo(x): return x + 1"
-        tree1 = ast.parse(code)
+                from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+                from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+                from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+                from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+                from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+                from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+                from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+                from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+                from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+                from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+                from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+                from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+                from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+                from agentic_core.utils import ast_fuzzy as module
+                import agentic_core.utils.ast_fuzzy as module
+                from agentic_core.utils import ast_fuzzy as module
+                import agentic_core.utils.ast_fuzzy as module
+                from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+                from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+                from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+                """Hash of same AST is deterministic."""
+                code = "def foo(x): return x + 1"
+                tree1 = ast.parse(code)
+                tree2 = ast.parse(code)
+
         tree2 = ast.parse(code)
 
         hash1 = ast_dump_hash(tree1)

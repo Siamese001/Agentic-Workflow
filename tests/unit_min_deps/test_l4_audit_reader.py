@@ -209,11 +209,13 @@ class FakeAuditStore:
 
 class TestAuditStoreProtocol:
     def test_fake_store_satisfies_protocol(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.enforcement.authority_invariants import AuthorityViolation
-        from system_learning.engines.l4_audit_reader import AuditStore, pull_audit_data
-        store = FakeAuditStore(b"test")
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.enforcement.authority_invariants import AuthorityViolation
+                from system_learning.engines.l4_audit_reader import AuditStore, pull_audit_data
+                store = FakeAuditStore(b"test")
+                assert isinstance(store, AuditStore)
+
         assert isinstance(store, AuditStore)
 
     def test_protocol_has_no_write_methods(self):

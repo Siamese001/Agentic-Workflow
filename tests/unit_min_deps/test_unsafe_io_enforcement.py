@@ -149,12 +149,14 @@ class TestPhase2UnsafeIOEnforcement:
     """Test suite for Phase 2 unsafe I/O enforcement."""
 
     def test_detector_still_works(self):
-        from agentic_core.L2_execution.tools.unsafe_io_detector import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Verify the unsafe I/O detector is functional."""
-        # Test on a simple file with unsafe patterns
         code_with_unsafe = """
+                from agentic_core.L2_execution.tools.unsafe_io_detector import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Verify the unsafe I/O detector is functional."""
+                # Test on a simple file with unsafe patterns
+                code_with_unsafe = """
+
 import subprocess
 #  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_pulls_context,

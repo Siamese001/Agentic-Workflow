@@ -174,58 +174,59 @@ pytestmark = pytest.mark.unit_min_deps
 
 class TestShadowEvaluator:
     def test_pass_within_thresholds(self):
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
-        """Shadow metrics within thresholds pass validation."""
-        prod = ShadowMetrics(
-            p95_latency_ms=100.0,
-            error_rate=0.01,
-            safety_violation_count=0,
-            cpu_pct=50.0,
-            mem_mb=1000.0,
-        )
-        shadow = ShadowMetrics(
-            p95_latency_ms=105.0,  # 5% regression
-            error_rate=0.015,  # 0.005 absolute increase
-            safety_violation_count=0,
-            cpu_pct=52.0,  # 4% regression
-            mem_mb=1020.0,  # 2% regression
-        )
-        thresholds = ShadowThresholds(
-            max_p95_latency_regression_pct=10.0,
-            max_error_rate_regression_abs=0.01,
-            max_cpu_regression_pct=10.0,
-            max_mem_regression_pct=10.0,
-            forbid_any_safety_violation_increase=True,
-        )
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowRegression, ShadowThresholds, evaluate_shadow
+                """Shadow metrics within thresholds pass validation."""
+                prod = ShadowMetrics(
+                    p95_latency_ms=100.0,
+                    error_rate=0.01,
+                    safety_violation_count=0,
+                    cpu_pct=50.0,
+                    mem_mb=1000.0,
+                )
+                shadow = ShadowMetrics(
+                    p95_latency_ms=105.0,  # 5% regression
+                    error_rate=0.015,  # 0.005 absolute increase
+                    safety_violation_count=0,
+                    cpu_pct=52.0,  # 4% regression
+                    mem_mb=1020.0,  # 2% regression
+                )
+                thresholds = ShadowThresholds(
+                    max_p95_latency_regression_pct=10.0,
+                    max_error_rate_regression_abs=0.01,
+                    max_cpu_regression_pct=10.0,
+                    max_mem_regression_pct=10.0,
+                    forbid_any_safety_violation_increase=True,
+                )
+
 
         # Should not raise
         evaluate_shadow(prod, shadow, thresholds)

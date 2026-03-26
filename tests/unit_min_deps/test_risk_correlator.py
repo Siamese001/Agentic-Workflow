@@ -195,16 +195,18 @@ class TestRiskCorrelator:
     """Test risk correlation deterministic behavior."""
 
     def test_deterministic_fingerprint_same_input(self):
-        from system_learning.correlation.engine import RiskCorrelator
-        from system_learning.correlation.engine import RiskCorrelator
-        from system_learning.correlation.engine import RiskCorrelator
-        from system_learning.correlation.engine import RiskCorrelator
-        from system_learning.correlation.engine import RiskCorrelator
-        from system_learning.correlation.engine import RiskCorrelator
-        from system_learning.correlation.types import CorrelatedRiskReport
-        from system_learning.correlation.engine import RiskCorrelator
-        from system_learning.correlation.engine import RiskCorrelator
-        """Proves same input twice yields identical SHA256."""
+                from system_learning.correlation.engine import RiskCorrelator
+                from system_learning.correlation.engine import RiskCorrelator
+                from system_learning.correlation.engine import RiskCorrelator
+                from system_learning.correlation.engine import RiskCorrelator
+                from system_learning.correlation.engine import RiskCorrelator
+                from system_learning.correlation.engine import RiskCorrelator
+                from system_learning.correlation.types import CorrelatedRiskReport
+                from system_learning.correlation.engine import RiskCorrelator
+                from system_learning.correlation.engine import RiskCorrelator
+                """Proves same input twice yields identical SHA256."""
+                correlator = RiskCorrelator()
+
         correlator = RiskCorrelator()
 
         fingerprints = ["fp1_policyA", "fp2_policyB"]

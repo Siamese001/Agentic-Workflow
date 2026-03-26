@@ -196,17 +196,20 @@ class TestCanonicalDecoratorsContract:
 
     
     def test_dunder_all_matches_exports(self) -> None:
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import agentic_core.utils.decorators_base_util as mod
-        from agentic_core.utils.timeout_decorator_util import timeout
-        from agentic_core.L5_safety.utils.decorators_util import standard_heal as shim
-        from agentic_core.utils.decorators_base_util import standard_heal as canonical
-        from agentic_core.L5_safety.utils.decorators_util import (
-        from agentic_core.utils.decorators_base_util import HEAL_RESULT_SCHEMA as canonical
-        from agentic_core.L0_routing.utils.timeout_decorator_util import (
-        from agentic_core.utils.timeout_decorator_util import timeout as canonical
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import agentic_core.utils.decorators_base_util as mod
+                from agentic_core.utils.timeout_decorator_util import timeout
+                from agentic_core.L5_safety.utils.decorators_util import standard_heal as shim
+                from agentic_core.utils.decorators_base_util import standard_heal as canonical
+                from agentic_core.L5_safety.utils.decorators_util import (
+                from agentic_core.utils.decorators_base_util import HEAL_RESULT_SCHEMA as canonical
+                from agentic_core.L0_routing.utils.timeout_decorator_util import (
+                from agentic_core.utils.timeout_decorator_util import timeout as canonical
+                from agentic_core.utils.timeout_decorator_util import timeout as canonical
+        #  # MOVED: import agentic_core.utils.decorators_base_util as mod
+
 #  # MOVED: import agentic_core.utils.decorators_base_util as mod
 
         assert hasattr(mod, "__all__")

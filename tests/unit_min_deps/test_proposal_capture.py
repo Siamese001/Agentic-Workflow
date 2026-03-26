@@ -176,16 +176,18 @@ EXECUTE_SSOT_PATH = Path(__file__).parent.parent.parent / L0_ROUTING_DIR / "scri
 @pytest.mark.unit_min_deps
 class TestProposalCapture:
     def test_pipeline_call_assigned_not_bare_in_source(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.change_package_impl import ChangePackage
-        from system_learning.engines.change_package_impl import ChangePackage
-        from system_learning.engines.change_package_impl import ChangePackage
-        from system_learning.engines.change_package_impl import ChangePackage
-    """Test pipeline_call_assigned_not_bare_in_source runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.change_package_impl import ChangePackage
+                from system_learning.engines.change_package_impl import ChangePackage
+                from system_learning.engines.change_package_impl import ChangePackage
+                from system_learning.engines.change_package_impl import ChangePackage
+            """Test pipeline_call_assigned_not_bare_in_source runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
     input_data = {}  # Replace with actual test data
 
     # Act

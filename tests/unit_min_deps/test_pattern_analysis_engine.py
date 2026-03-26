@@ -191,11 +191,13 @@ class TestPatternAnalysisEngine:
     """Test suite for Pattern Analysis Engine."""
 
     def test_determinism_same_inputs_same_hash(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.pattern_analysis_engine import (
-        from system_learning.types.healing_outcome_learning_types import (
-        """Test that same inputs produce identical outputs."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.pattern_analysis_engine import (
+                from system_learning.types.healing_outcome_learning_types import (
+                """Test that same inputs produce identical outputs."""
+                engine = PatternAnalysisEngine()
+
         engine = PatternAnalysisEngine()
 
         # Create test healing snapshot

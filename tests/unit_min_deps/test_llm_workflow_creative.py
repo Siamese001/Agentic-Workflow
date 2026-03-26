@@ -232,37 +232,39 @@ class TestScriptedLLMSimulator:
     """Verify the simulator itself and use it to drive RewooEngine end-to-end."""
 
     def test_simulator_returns_script_entries(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L3_orchestration.engines.reflexion_engine import ReflexionEngine
-        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
-        from agentic_core.L3_orchestration.engines.rewoo_engine import (
-        from agentic_core.L3_orchestration.types.rewoo_types import RewooTaskStatus
-        from agentic_core.L3_orchestration.engines.rewoo_engine import (
-        from agentic_core.L3_orchestration.types.rewoo_types import RewooTaskStatus
-        from agentic_core.L3_orchestration.engines.parallelization_engine import (
-        from agentic_core.L3_orchestration.engines.autonomous_workflow_engine import (
-        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
-        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
-        from agentic_core.L0_routing.engines.agentic_router import AgenticRouter
-        from agentic_core.L3_orchestration.types.reflexion_types import (
-        from agentic_core.L3_orchestration.types.rewoo_types import (
-        from agentic_core.L3_orchestration.engines.parallelization_engine import (
-        from agentic_core.L3_orchestration.engines.evaluator_optimizer_engine import (
-        from agentic_core.L3_orchestration.engines.rewoo_engine import (
-        from agentic_core.L3_orchestration.types.rewoo_types import RewooTaskStatus
-        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
-        from agentic_core.L3_orchestration.engines.reflexion_engine import ReflexionEngine
-        from agentic_core.L3_orchestration.engines.rewoo_engine import (
-        from agentic_core.L3_orchestration.engines.evaluator_optimizer_engine import (
-        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
-        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
-        from agentic_core.L3_orchestration.engines.parallelization_engine import (
-        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
-        from agentic_core.L3_orchestration.types.reflexion_types import (
-    """Test simulator_returns_script_entries runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for simulator_returns_script_entries
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L3_orchestration.engines.reflexion_engine import ReflexionEngine
+                from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+                from agentic_core.L3_orchestration.engines.rewoo_engine import (
+                from agentic_core.L3_orchestration.types.rewoo_types import RewooTaskStatus
+                from agentic_core.L3_orchestration.engines.rewoo_engine import (
+                from agentic_core.L3_orchestration.types.rewoo_types import RewooTaskStatus
+                from agentic_core.L3_orchestration.engines.parallelization_engine import (
+                from agentic_core.L3_orchestration.engines.autonomous_workflow_engine import (
+                from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
+                from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+                from agentic_core.L0_routing.engines.agentic_router import AgenticRouter
+                from agentic_core.L3_orchestration.types.reflexion_types import (
+                from agentic_core.L3_orchestration.types.rewoo_types import (
+                from agentic_core.L3_orchestration.engines.parallelization_engine import (
+                from agentic_core.L3_orchestration.engines.evaluator_optimizer_engine import (
+                from agentic_core.L3_orchestration.engines.rewoo_engine import (
+                from agentic_core.L3_orchestration.types.rewoo_types import RewooTaskStatus
+                from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+                from agentic_core.L3_orchestration.engines.reflexion_engine import ReflexionEngine
+                from agentic_core.L3_orchestration.engines.rewoo_engine import (
+                from agentic_core.L3_orchestration.engines.evaluator_optimizer_engine import (
+                from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+                from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
+                from agentic_core.L3_orchestration.engines.parallelization_engine import (
+                from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+                from agentic_core.L3_orchestration.types.reflexion_types import (
+            """Test simulator_returns_script_entries runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for simulator_returns_script_entries
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

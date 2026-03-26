@@ -232,15 +232,17 @@ class TestComputePipelineDigestExists:
     
     @pytest.mark.unit_min_deps
     def test_returns_64_hex_string(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.scripts.execute_ssot import _compute_pipeline_digest
-        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
-        fn = _get_compute_fn()
-        result = fn([AGENTIC_CORE_DIR])
-        assert isinstance(result, str)
-        assert len(result) == 64
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.scripts.execute_ssot import _compute_pipeline_digest
+                from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+                fn = _get_compute_fn()
+                result = fn([AGENTIC_CORE_DIR])
+                assert isinstance(result, str)
+                assert len(result) == 64
+                assert all(c in "0123456789abcdef" for c in result)
+
         assert all(c in "0123456789abcdef" for c in result)
 
 

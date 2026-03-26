@@ -190,10 +190,12 @@ pytestmark = pytest.mark.unit_min_deps
 
 class TestForbiddenSurfaces:
     def test_tool_allowlist_forbidden(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.constraints.delta_enforcer import (
-        with pytest.raises(ForbiddenSurface, match="FORBIDDEN_SURFACE"):
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.constraints.delta_enforcer import (
+                with pytest.raises(ForbiddenSurface, match="FORBIDDEN_SURFACE"):
+                    validate_surface_change("tool_allowlist", ["read"], ["read", "write"])
+
             validate_surface_change("tool_allowlist", ["read"], ["read", "write"])
 
     def test_file_scope_whitelist_forbidden(self):

@@ -174,25 +174,26 @@ import pytest
 
 @pytest.mark.unit_min_deps
 def test_deterministic_json_output():
-    from agentic_core.L3_orchestration.replay.deterministic_replay import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L3_orchestration.replay.deterministic_replay import _hash_command_result
-    from agentic_core.L3_orchestration.replay.deterministic_replay import _normalize_output
-    """Test that JSON serialization is deterministic byte-for-byte."""
-    # Create identical records
-    record1 = ReplayRecord(
-        commands=[
-            ReplayCommand(
-                argv=["python", "-c", "print('x')"],
-                cwd="/test",
-                env_allowlist={"PATH": "/bin"},
-                timeout_s=60,
-            )
-        ],
-        results=[ReplayResult(exit_code=0, stdout="x\n", stderr="")],
-        hashes={"cmd_1": "hash123"},
-    )
+        from agentic_core.L3_orchestration.replay.deterministic_replay import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L3_orchestration.replay.deterministic_replay import _hash_command_result
+        from agentic_core.L3_orchestration.replay.deterministic_replay import _normalize_output
+        """Test that JSON serialization is deterministic byte-for-byte."""
+        # Create identical records
+        record1 = ReplayRecord(
+            commands=[
+                ReplayCommand(
+                    argv=["python", "-c", "print('x')"],
+                    cwd="/test",
+                    env_allowlist={"PATH": "/bin"},
+                    timeout_s=60,
+                )
+            ],
+            results=[ReplayResult(exit_code=0, stdout="x\n", stderr="")],
+            hashes={"cmd_1": "hash123"},
+        )
+
 
     record2 = ReplayRecord(
         commands=[

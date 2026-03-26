@@ -186,32 +186,34 @@ class TestNormalizeFailureSignal:
     """normalize_failure_signal contract tests."""
 
     def test_full_action_produces_expected_text(self) -> None:
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
-#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
-        action = {
-            "type": "IMPORT_BOUNDARY_VIOLATION",
-            "routing_gate": "gate:import_boundary_check",
-            "agent": "DependencyRepairAgent",
-            "fix_summary": "yaml config loader",
-        }
-        result = normalize_failure_signal(action)
-        assert result == (
-            "IMPORT_BOUNDARY_VIOLATION gate:import_boundary_check DependencyRepairAgent yaml config loader"
-        )
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+        #  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+                action = {
+                    "type": "IMPORT_BOUNDARY_VIOLATION",
+                    "routing_gate": "gate:import_boundary_check",
+                    "agent": "DependencyRepairAgent",
+                    "fix_summary": "yaml config loader",
+                }
+                result = normalize_failure_signal(action)
+                assert result == (
+                    "IMPORT_BOUNDARY_VIOLATION gate:import_boundary_check DependencyRepairAgent yaml config loader"
+                )
+
 
     def test_routing_gate_included_when_present(self) -> None:
 #  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal

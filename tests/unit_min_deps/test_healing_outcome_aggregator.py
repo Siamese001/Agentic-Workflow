@@ -232,35 +232,37 @@ class TestHealingOutcomeEvent:
     """HealingOutcomeEvent validation and immutability."""
 
     def test_valid_event_creation(self) -> None:
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
-        ev = _event()
-        assert ev.healer_id == "h1"
-        assert ev.tier == "LOCAL_AGENT"
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+                ev = _event()
+                assert ev.healer_id == "h1"
+                assert ev.tier == "LOCAL_AGENT"
+                assert ev.success is True
+
         assert ev.success is True
 
     def test_empty_healer_id_rejected(self) -> None:

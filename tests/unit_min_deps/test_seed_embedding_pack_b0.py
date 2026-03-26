@@ -189,42 +189,44 @@ class TestDeterministicMinimalSeed:
     """Test minimal seed mode produces deterministic hashes."""
 
     def test_minimal_seed_deterministic(self):
-        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
-        """Same corpus + same N → same row_index + same matrix_hash."""
-        # Setup
-        base_path1 = Path(tempfile.mkdtemp())
+                from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+                """Same corpus + same N → same row_index + same matrix_hash."""
+                # Setup
+                base_path1 = Path(tempfile.mkdtemp())
+                base_path2 = Path(tempfile.mkdtemp())
+
         base_path2 = Path(tempfile.mkdtemp())
 
         corpus_rows = [

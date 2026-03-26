@@ -235,14 +235,16 @@ class TestL4StateWriter:
     """Test suite for L4 State Writer implementations."""
 
     def test_default_writer_write_once_idempotent_same_payload(self):
-        from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
-        from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
-        from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
-        from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
-        from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
-        from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
-        """Test that writing the same payload twice returns the same version ID."""
-        fake_store = FakeL4VersionStore()
+                from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
+                from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
+                from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
+                from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
+                from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
+                from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
+                """Test that writing the same payload twice returns the same version ID."""
+                fake_store = FakeL4VersionStore()
+                writer = DefaultL4StateWriter(fake_store)
+
         writer = DefaultL4StateWriter(fake_store)
 
         payload_bytes = b"test payload for l4a"

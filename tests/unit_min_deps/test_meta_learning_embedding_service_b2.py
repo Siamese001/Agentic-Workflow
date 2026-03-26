@@ -189,12 +189,14 @@ class TestMetaLearningEmbeddingService:
     """Test MetaLearningEmbeddingService functionality."""
 
     def test_missing_pack_returns_neutral_none(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.meta_learning_embedding_service import (
-        from system_learning.engines.seed_embedding_pack_builder import (
-        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
-        """Nonexistent pack path => retrieve returns None and does not create files."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.meta_learning_embedding_service import (
+                from system_learning.engines.seed_embedding_pack_builder import (
+                from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+                """Nonexistent pack path => retrieve returns None and does not create files."""
+                base_path = Path(tempfile.mkdtemp())
+
         base_path = Path(tempfile.mkdtemp())
 
         try:

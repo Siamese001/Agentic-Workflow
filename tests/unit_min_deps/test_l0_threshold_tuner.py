@@ -171,31 +171,33 @@ pytestmark = pytest.mark.unit_min_deps
 
 class TestL0ThresholdTuner:
     def test_valid_proposal_passes_constraints(self):
-        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
-        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
-        from system_learning.engines.l0_threshold_tuner import L0ThresholdChangePackage, propose_l0_threshold_changes
-        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
-        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
-        from system_learning.engines.l0_threshold_tuner import L0ThresholdChangePackage, propose_l0_threshold_changes
-        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
-        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
-        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
-        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
-        from system_learning.engines.l0_threshold_tuner import L0ThresholdChangePackage, propose_l0_threshold_changes
-        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
-        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
-        from system_learning.engines.l0_threshold_tuner import L0ThresholdChangePackage, propose_l0_threshold_changes
-        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
-        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
-        from system_learning.engines.l0_threshold_tuner import L0ThresholdChangePackage, propose_l0_threshold_changes
-        from system_learning.engines.l0_threshold_tuner import L0ThresholdChangePackage, propose_l0_threshold_changes
-        from system_learning.engines.l0_threshold_tuner import L0ThresholdChangePackage, propose_l0_threshold_changes
-        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
-        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
-        from system_learning.engines.l0_threshold_tuner import L0ThresholdChangePackage, propose_l0_threshold_changes
-        from system_learning.engines.l0_threshold_tuner import L0ThresholdChangePackage, propose_l0_threshold_changes
-        """Valid proposal within bounds and delta."""
-        cooldown = CooldownPolicy(min_seconds_between_updates=3600)
+                from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+                from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+                from system_learning.engines.l0_threshold_tuner import L0ThresholdChangePackage, propose_l0_threshold_changes
+                from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+                from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+                from system_learning.engines.l0_threshold_tuner import L0ThresholdChangePackage, propose_l0_threshold_changes
+                from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+                from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+                from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+                from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+                from system_learning.engines.l0_threshold_tuner import L0ThresholdChangePackage, propose_l0_threshold_changes
+                from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+                from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+                from system_learning.engines.l0_threshold_tuner import L0ThresholdChangePackage, propose_l0_threshold_changes
+                from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+                from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+                from system_learning.engines.l0_threshold_tuner import L0ThresholdChangePackage, propose_l0_threshold_changes
+                from system_learning.engines.l0_threshold_tuner import L0ThresholdChangePackage, propose_l0_threshold_changes
+                from system_learning.engines.l0_threshold_tuner import L0ThresholdChangePackage, propose_l0_threshold_changes
+                from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+                from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+                from system_learning.engines.l0_threshold_tuner import L0ThresholdChangePackage, propose_l0_threshold_changes
+                from system_learning.engines.l0_threshold_tuner import L0ThresholdChangePackage, propose_l0_threshold_changes
+                """Valid proposal within bounds and delta."""
+                cooldown = CooldownPolicy(min_seconds_between_updates=3600)
+                sample = SampleSizePolicy(min_observations=1000)
+
         sample = SampleSizePolicy(min_observations=1000)
 
         proposal = propose_l0_threshold_changes(

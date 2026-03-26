@@ -193,86 +193,88 @@ class TestOfflineHealingOutcomeEvaluator:
     """Test suite for OfflineHealingOutcomeEvaluator."""
 
     def test_evaluate_deterministic_same_input_same_output(self) -> None:
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
-        from system_learning.types.healing_outcome_scoring_types import ScoringWeights
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
-        from system_learning.types.healing_outcome_scoring_types import ScoringWeights
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
-        from system_learning.types.healing_outcome_scoring_types import ScoringWeights
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
-        from system_learning.types.healing_outcome_scoring_types import ScoringWeights
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.types.healing_outcome_scoring_types import ScoringWeights
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
-        from system_learning.types.healing_outcome_scoring_types import ScoringWeights
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
-        from system_learning.types.healing_outcome_scoring_types import ScoringWeights
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.in_memory_scoring_report_store import InMemoryScoringReportStore
-        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
-        from system_learning.types.healing_outcome_scoring_types import ScoringWeights
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
-        from system_learning.types.healing_outcome_scoring_types import ScoringWeights
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        """Test that same input produces identical output."""
-        # Setup
-        weights = ScoringWeights(
-            success_rate_weight=1.0,
-            stability_penalty_weight=0.5,
-            sample_size_weight=0.3,
-            risk_tier_penalty_weight=0.2,
-        )
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+                from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+                from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+                from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+                from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+                from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+                from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.in_memory_scoring_report_store import InMemoryScoringReportStore
+                from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+                from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+                from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+                from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+                """Test that same input produces identical output."""
+                # Setup
+                weights = ScoringWeights(
+                    success_rate_weight=1.0,
+                    stability_penalty_weight=0.5,
+                    sample_size_weight=0.3,
+                    risk_tier_penalty_weight=0.2,
+                )
+                evaluator = OfflineHealingOutcomeEvaluator(weights)
+
         evaluator = OfflineHealingOutcomeEvaluator(weights)
 
         # Create intake record

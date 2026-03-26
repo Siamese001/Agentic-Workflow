@@ -165,27 +165,29 @@ import pytest
 
 @pytest.mark.unit_min_deps
 def test_write_size_cap_exceeded():
-    from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
-    from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
-    from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
-    from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
-    from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
-    from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
-    from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
-    from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
-    from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
-    from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
-    from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
-    from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
-    from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
-    from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
-    from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
-    from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
-    from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
-    """Test that writes exceeding MAX_WRITE_BYTES raise WriteSizeCapError."""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        target = Path(tmpdir) / "large.txt"
-        # Attempt to write 11 MB (exceeds 10 MB cap)
+        from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
+        from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
+        from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
+        from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
+        from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
+        from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
+        from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
+        from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
+        from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
+        from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
+        from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
+        from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
+        from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
+        from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
+        from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
+        from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
+        from agentic_core.L2_execution.tools.write_gateway import MAX_GROWTH_RATIO, MAX_WRITE_BYTES, MutationEntropyError, WriteAmplificationError, WriteSizeCapError, get_prohibition_hit_count, record_prohibition_hit, write_text
+        """Test that writes exceeding MAX_WRITE_BYTES raise WriteSizeCapError."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            target = Path(tmpdir) / "large.txt"
+            # Attempt to write 11 MB (exceeds 10 MB cap)
+            large_content = "x" * (MAX_WRITE_BYTES + 1024)
+
         large_content = "x" * (MAX_WRITE_BYTES + 1024)
 
         with pytest.raises(WriteSizeCapError) as exc_info:

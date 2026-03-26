@@ -183,15 +183,17 @@ class TestHealingOutcomeIntakeAdapter:
     """Test suite for HealingOutcomeIntakeAdapter."""
 
     def test_build_record_determinism(self) -> None:
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
-        """Test that identical inputs produce identical records."""
-        # Setup
-        store = InMemoryHealingOutcomeIntakeStore()
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+                from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+                from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+                """Test that identical inputs produce identical records."""
+                # Setup
+                store = InMemoryHealingOutcomeIntakeStore()
+                adapter = HealingOutcomeIntakeAdapter(store)
+
         adapter = HealingOutcomeIntakeAdapter(store)
 
         # Create two aggregators with identical events

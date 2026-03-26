@@ -235,15 +235,17 @@ def _reconstruct_window_aggregator(adapter, window_start, window_end, now_utc):
 @pytest.mark.unit_min_deps
 class TestStep8WindowAggregation:
     def test_window_aggregate_sums_counts_across_records(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.in_memory_healing_outcome_intake_store import (
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
-    """Test window_aggregate_sums_counts_across_records runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for window_aggregate_sums_counts_across_records
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+                from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+                from system_learning.engines.in_memory_healing_outcome_intake_store import (
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+            """Test window_aggregate_sums_counts_across_records runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for window_aggregate_sums_counts_across_records
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

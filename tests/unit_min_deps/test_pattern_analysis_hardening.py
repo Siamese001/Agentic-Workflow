@@ -195,28 +195,30 @@ class TestPhase8Hardening:
     """Phase 8 hardening tests for pattern analysis determinism and bounds."""
 
     def test_large_n_determinism_permutation_invariance(self):
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
-        from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
-        from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
-        from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
-        from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
-        from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
-        """Large-N determinism: permutation invariance and stable canonical bytes."""
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+                from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+                from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+                from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+                from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+                from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
+                """Large-N determinism: permutation invariance and stable canonical bytes."""
+                engine = PatternAnalysisEngine()
+
         engine = PatternAnalysisEngine()
 
         # Create large-N test data

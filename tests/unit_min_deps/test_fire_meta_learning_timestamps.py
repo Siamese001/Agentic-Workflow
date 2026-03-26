@@ -186,22 +186,24 @@ class TestFireMetaLearningTimestamps:
         return mgr
 
     def test_signature_accepts_now_utc_parameter(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.in_memory_healing_outcome_intake_store import (
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
-        """_fire_meta_learning_intake must accept now_utc as a parameter (not read wall-clock internally)."""
-        src = EXECUTE_SSOT_PATH.read_text(encoding="utf-8", errors="replace")
-        tree = ast.parse(src)
-        for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef) and node.name == "_fire_meta_learning_intake":
-                args = [a.arg for a in node.args.args]
-                assert "now_utc" in args, "_fire_meta_learning_intake must declare now_utc parameter"
-                return
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+                from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+                from system_learning.engines.in_memory_healing_outcome_intake_store import (
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+                """_fire_meta_learning_intake must accept now_utc as a parameter (not read wall-clock internally)."""
+                src = EXECUTE_SSOT_PATH.read_text(encoding="utf-8", errors="replace")
+                tree = ast.parse(src)
+                for node in ast.walk(tree):
+                    if isinstance(node, ast.FunctionDef) and node.name == "_fire_meta_learning_intake":
+                        args = [a.arg for a in node.args.args]
+                        assert "now_utc" in args, "_fire_meta_learning_intake must declare now_utc parameter"
+                        return
+                pytest.fail("_fire_meta_learning_intake not found in execute_ssot.py")
+
         pytest.fail("_fire_meta_learning_intake not found in execute_ssot.py")
 
     def test_no_hardcoded_zero_timestamps_in_source(self):

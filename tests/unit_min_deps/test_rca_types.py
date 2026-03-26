@@ -174,36 +174,37 @@ pytestmark = pytest.mark.unit_min_deps
 
 class TestRCATypes:
     def test_deterministic_hash_stability(self):
-        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
-        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
-        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
-        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
-        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
-        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
-        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
-        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
-        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
-        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
-        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
-        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
-        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
-        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
-        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
-        """Same inputs produce identical report_hash across two constructions."""
-        findings = (
-            RCAFinding(
-                category="SYNTAX",
-                signature="SyntaxError",
-                count=5,
-                evidence_hash="abc123",
-            ),
-            RCAFinding(
-                category="IMPORT",
-                signature="ModuleNotFoundError",
-                count=2,
-                evidence_hash="def456",
-            ),
-        )
+                from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+                from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+                from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+                from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+                from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+                from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+                from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+                from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+                from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+                from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+                from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+                from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+                from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+                from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+                from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+                """Same inputs produce identical report_hash across two constructions."""
+                findings = (
+                    RCAFinding(
+                        category="SYNTAX",
+                        signature="SyntaxError",
+                        count=5,
+                        evidence_hash="abc123",
+                    ),
+                    RCAFinding(
+                        category="IMPORT",
+                        signature="ModuleNotFoundError",
+                        count=2,
+                        evidence_hash="def456",
+                    ),
+                )
+
 
         report1 = create_rca_report(
             snapshot_id="snap123",

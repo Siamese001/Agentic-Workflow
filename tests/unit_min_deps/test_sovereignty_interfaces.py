@@ -201,27 +201,29 @@ class TestChangePackageJSONOnly:
         return ChangePackage
 
     def test_valid_json_payload_accepted(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.interfaces.meta_learning import ChangePackage
-        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
-        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
-        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
-        from agentic_core.interfaces.meta_learning import ChangePackage
-        from agentic_core.interfaces.meta_learning import ChangePackage
-        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
-        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
-        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
-        from agentic_core.enforcement.sealed_interface_check_enforcer import run_check
-        from agentic_core.enforcement.sealed_interface_check_enforcer import check_file
-        from agentic_core.enforcement.sealed_interface_check_enforcer import check_file
-        from agentic_core.enforcement.sealed_interface_check_enforcer import check_file
-        CP = self._make()
-        pkg = CP(
-            proposal_id="test-1",
-            change_type="healing_pattern",
-            parameters={"key": "value", "number": 42, "flag": True},
-        )
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.interfaces.meta_learning import ChangePackage
+                from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+                from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+                from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+                from agentic_core.interfaces.meta_learning import ChangePackage
+                from agentic_core.interfaces.meta_learning import ChangePackage
+                from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+                from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+                from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+                from agentic_core.enforcement.sealed_interface_check_enforcer import run_check
+                from agentic_core.enforcement.sealed_interface_check_enforcer import check_file
+                from agentic_core.enforcement.sealed_interface_check_enforcer import check_file
+                from agentic_core.enforcement.sealed_interface_check_enforcer import check_file
+                CP = self._make()
+                pkg = CP(
+                    proposal_id="test-1",
+                    change_type="healing_pattern",
+                    parameters={"key": "value", "number": 42, "flag": True},
+                )
+                assert pkg.parameters["key"] == "value"
+
         assert pkg.parameters["key"] == "value"
 
     def test_nested_json_accepted(self):

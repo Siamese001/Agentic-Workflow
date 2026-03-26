@@ -179,16 +179,18 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit_min_deps
 def test_adapter_returns_cid():
-    from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
-    from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
-    from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
-    from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
-    from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
-    from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
-    from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
-    """Adapter returns a cid in result."""
-    with patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_orch:
-        # Return a fresh dict each time to avoid mutation
+        from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
+        from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
+        from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
+        from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
+        from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
+        from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
+        from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
+        """Adapter returns a cid in result."""
+        with patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_orch:
+            # Return a fresh dict each time to avoid mutation
+            mock_orch.return_value.execute.return_value = {"status": "ok"}
+
         mock_orch.return_value.execute.return_value = {"status": "ok"}
 
         adapter = RgSpineAdapter()

@@ -197,10 +197,12 @@ pytestmark = pytest.mark.unit_min_deps
 
 
 def test_exclusion_top_level():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from apps_shared.utils.determinism_util import (
-    """duration_ms value must not affect canonical_hash."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from apps_shared.utils.determinism_util import (
+        """duration_ms value must not affect canonical_hash."""
+        assert canonical_hash({"a": 1, "duration_ms": 999}) == canonical_hash({"a": 1, "duration_ms": 0})
+
     assert canonical_hash({"a": 1, "duration_ms": 999}) == canonical_hash({"a": 1, "duration_ms": 0})
 
 

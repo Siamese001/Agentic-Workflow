@@ -158,11 +158,14 @@ import pytest
 
 @pytest.mark.unit_min_deps
 def test_truncation_deterministic_and_hash_changes():
-    from agentic_core.L3_orchestration.replay.deterministic_replay import (
-    from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
-    from agentic_core.L4_state.storage.persistent_store import create_artifact
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test truncation_deterministic_and_hash_changes runtime behavior."""
+        from agentic_core.L3_orchestration.replay.deterministic_replay import (
+        from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
+        from agentic_core.L4_state.storage.persistent_store import create_artifact
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    """Test truncation_deterministic_and_hash_changes runtime behavior."""
+
 # Arrange
 # TODO: Set up execution parameters
 input_data = {}  # Replace with actual test data

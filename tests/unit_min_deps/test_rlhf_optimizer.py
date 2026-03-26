@@ -186,17 +186,18 @@ class TestRLHFOptimizer:
     """Test suite for RLHF Optimizer deterministic behavior."""
 
     def test_approve_relaxes_within_bounds(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.change_package_impl import ChangePackage
-        from system_learning.engines.rlhf_optimizer import (
-        """APPROVE decisions should relax thresholds within bounds."""
-        optimizer = DefaultDeterministicRLHFOptimizer(
-            min_threshold=0.2,
-            max_threshold=1.8,
-            approve_relax_delta=0.1,
-            reject_tighten_delta=-0.1,
-        )
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.change_package_impl import ChangePackage
+                from system_learning.engines.rlhf_optimizer import (
+                """APPROVE decisions should relax thresholds within bounds."""
+                optimizer = DefaultDeterministicRLHFOptimizer(
+                    min_threshold=0.2,
+                    max_threshold=1.8,
+                    approve_relax_delta=0.1,
+                    reject_tighten_delta=-0.1,
+                )
+
 
         # Create DPO batch with APPROVE decisions
         dpo_batch = {

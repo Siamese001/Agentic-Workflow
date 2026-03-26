@@ -190,19 +190,21 @@ class TestFailureFingerprinting:
     """Test failure fingerprinting deterministic behavior."""
 
     def test_deterministic_sha_same_input(self):
-        from system_learning.fingerprinting.types import FailureEvent
-        from system_learning.fingerprinting.engine import FailureFingerprinter
-        from system_learning.fingerprinting.types import FailureEvent
-        from system_learning.fingerprinting.engine import FailureFingerprinter
-        from system_learning.fingerprinting.types import FailureEvent
-        from system_learning.fingerprinting.engine import FailureFingerprinter
-        from system_learning.fingerprinting.types import FailureEvent
-        from system_learning.fingerprinting.engine import FailureFingerprinter
-        from system_learning.fingerprinting.types import FailureEvent
-        from system_learning.fingerprinting.engine import FailureFingerprinter
-        from system_learning.fingerprinting.types import FailureEvent
-        from system_learning.fingerprinting.engine import FailureFingerprinter
-        """Proves same input twice yields identical SHA256."""
+                from system_learning.fingerprinting.types import FailureEvent
+                from system_learning.fingerprinting.engine import FailureFingerprinter
+                from system_learning.fingerprinting.types import FailureEvent
+                from system_learning.fingerprinting.engine import FailureFingerprinter
+                from system_learning.fingerprinting.types import FailureEvent
+                from system_learning.fingerprinting.engine import FailureFingerprinter
+                from system_learning.fingerprinting.types import FailureEvent
+                from system_learning.fingerprinting.engine import FailureFingerprinter
+                from system_learning.fingerprinting.types import FailureEvent
+                from system_learning.fingerprinting.engine import FailureFingerprinter
+                from system_learning.fingerprinting.types import FailureEvent
+                from system_learning.fingerprinting.engine import FailureFingerprinter
+                """Proves same input twice yields identical SHA256."""
+                fingerprinter = FailureFingerprinter()
+
         fingerprinter = FailureFingerprinter()
 
         event = FailureEvent(

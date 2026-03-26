@@ -197,33 +197,34 @@ class TestHealingConfigOptimizer:
     """Test suite for HealingConfigOptimizer."""
 
     def test_threshold_proposal_deterministic(self):
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
-        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
-        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
-        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
-        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
-        from system_learning.types.healing_outcome_types import HealingOutcomeStats
-        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
-        from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
-        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
-        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
-        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
-        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
-        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
-        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
-        """Test that proposals are deterministic given same input."""
-        optimizer = HealingConfigOptimizer(
-            min_sample_size=10, low_success_rate_threshold=0.6, escalation_delta=0.1, max_threshold=1.0
-        )
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+                from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+                from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+                from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+                from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+                from system_learning.types.healing_outcome_types import HealingOutcomeStats
+                from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+                from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
+                from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+                from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+                from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+                from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+                from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+                from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+                """Test that proposals are deterministic given same input."""
+                optimizer = HealingConfigOptimizer(
+                    min_sample_size=10, low_success_rate_threshold=0.6, escalation_delta=0.1, max_threshold=1.0
+                )
+
 
         # Create test snapshot
         aggregates = [

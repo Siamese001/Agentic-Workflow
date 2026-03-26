@@ -162,36 +162,38 @@ class TestRollbackRefiner:
     """Test suite for RollbackRefiner deterministic behavior."""
 
     def test_determinism_and_tie_break(self):
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
-        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
-        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
-        from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
-        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
-        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
-        from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
-        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
-        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
-        from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
-        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
-        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
-        from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
-        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
-        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
-        from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
-        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
-        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
-        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
-        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
-        from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
-        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
-        from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
-        """Same inputs must produce identical decisions with deterministic tie-breaking."""
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+                from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+                from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+                from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+                from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+                from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+                from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+                from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+                from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+                from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+                from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+                from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+                from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+                from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+                from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+                from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+                from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+                from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+                from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+                from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+                from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+                from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+                from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+                """Same inputs must produce identical decisions with deterministic tie-breaking."""
+                refiner = DefaultDeterministicRollbackRefiner()
+
         refiner = DefaultDeterministicRollbackRefiner()
 
         signature = FailureSignature(

@@ -169,10 +169,12 @@ class TestW5HandshakeStateMachine:
         return HandshakeStateMachine()
 
     def test_initial_state(self, machine):
-        from agentic_core.L3_orchestration.engines.handshake_state_machine import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """Test machine starts in INIT state."""
-        assert machine.current_state == HandshakeState.INIT
+                from agentic_core.L3_orchestration.engines.handshake_state_machine import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """Test machine starts in INIT state."""
+                assert machine.current_state == HandshakeState.INIT
+                assert len(machine.transition_history) == 0
+
         assert len(machine.transition_history) == 0
 
     def test_reset_functionality(self, machine):

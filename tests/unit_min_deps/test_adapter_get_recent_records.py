@@ -194,17 +194,19 @@ def _persist_record(adapter, created_utc, healer_id="agent_x", success=True):
 @pytest.mark.unit_min_deps
 class TestAdapterGetRecentRecords:
     def test_get_recent_records_method_exists(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.in_memory_healing_outcome_intake_store import (
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """HealingOutcomeIntakeAdapter must expose get_recent_records()."""
-        adapter = _make_adapter()
-        assert hasattr(adapter, "get_recent_records"), (
-            "get_recent_records method missing from HealingOutcomeIntakeAdapter"
-        )
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+                from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+                from system_learning.engines.in_memory_healing_outcome_intake_store import (
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """HealingOutcomeIntakeAdapter must expose get_recent_records()."""
+                adapter = _make_adapter()
+                assert hasattr(adapter, "get_recent_records"), (
+                    "get_recent_records method missing from HealingOutcomeIntakeAdapter"
+                )
+                assert callable(adapter.get_recent_records)
+
         assert callable(adapter.get_recent_records)
 
     def test_get_records_on_protocol(self):

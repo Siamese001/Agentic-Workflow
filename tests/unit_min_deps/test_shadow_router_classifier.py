@@ -166,23 +166,24 @@ import pytest
 
 @pytest.mark.unit_min_deps
 def test_shadow_classifier_non_invasive():
-    from agentic_core.L0_routing.engines.shadow_router_classifier import ShadowRouterClassifier
-    from agentic_core.L0_routing.engines.shadow_routing_wiring import (
-    from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-    from agentic_core.L0_routing.types.routing_artifact_types import (
-    from agentic_core.L0_routing.types.shadow_routing_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test that shadow classifier cannot affect actual routing decisions."""
-    # Create a routing decision
-    route_decision = RouteDecisionArtifact(
-        trace_id="test-trace-001",
-        timestamp="2024-01-01T00:00:00Z",
-        route_path=RoutePath.STANDARD_VALIDATION,
-        risk_score=0.3,
-        budget_est=100.0,
-        rationale_enum=RoutingRationale.STANDARD_VALIDATION,
-        policy_config_hash="abc123",
-    )
+        from agentic_core.L0_routing.engines.shadow_router_classifier import ShadowRouterClassifier
+        from agentic_core.L0_routing.engines.shadow_routing_wiring import (
+        from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+        from agentic_core.L0_routing.types.routing_artifact_types import (
+        from agentic_core.L0_routing.types.shadow_routing_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        """Test that shadow classifier cannot affect actual routing decisions."""
+        # Create a routing decision
+        route_decision = RouteDecisionArtifact(
+            trace_id="test-trace-001",
+            timestamp="2024-01-01T00:00:00Z",
+            route_path=RoutePath.STANDARD_VALIDATION,
+            risk_score=0.3,
+            budget_est=100.0,
+            rationale_enum=RoutingRationale.STANDARD_VALIDATION,
+            policy_config_hash="abc123",
+        )
+
 
     # Create shadow classifier
     classifier = ShadowRouterClassifier()

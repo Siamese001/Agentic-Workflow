@@ -71,10 +71,12 @@ class TestBaseAgentsPurity:
     """Hard gate: base_agents/ must contain only base classes and shims."""
 
     def test_no_utility_files_in_base_agents(self) -> None:
-        from agentic_core.L0_routing.config.path_constants import (
-    """Test no_utility_files_in_base_agents contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
+                from agentic_core.L0_routing.config.path_constants import (
+            """Test no_utility_files_in_base_agents contract compliance."""
+            # Arrange
+            # TODO: Set up contract parties and terms
+            contract_terms = {}  # Replace with actual contract terms
+
     contract_terms = {}  # Replace with actual contract terms
 
     # Act

@@ -203,59 +203,61 @@ class TestDeterminismDigestEmitter:
 
     @pytest.mark.unit_min_deps
     def test_compute_returns_64_hex(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
-        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
-        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
-        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
-        from agentic_core.L2_execution.determinism.negative_control_harness import (
-        from agentic_core.L2_execution.determinism.negative_control_harness import (
-        from agentic_core.L2_execution.determinism.negative_control_harness import (
-        from agentic_core.L2_execution.determinism.negative_control_harness import (
-        from agentic_core.L2_execution.determinism.negative_control_harness import (
-        from agentic_core.L2_execution.determinism.negative_control_harness import (
-        from agentic_core.L2_execution.determinism.negative_control_harness import (
-        from agentic_core.L2_execution.determinism.negative_control_harness import (
-        from agentic_core.L0_routing.types.determinism_types import (
-        from agentic_core.L6_observability.engines.semantic_clock_validator import (
-        from agentic_core.L6_observability.engines.semantic_clock_validator import (
-        from agentic_core.L6_observability.engines.semantic_clock_validator import (
-        from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
-        from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
-        from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
-        from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
-        from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
-        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
-        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
-        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
-        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
-        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
-        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
-        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
-        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
-        from agentic_core.L2_execution.determinism.negative_control_harness import assert_digest_differs
-        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
-        from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
-        from agentic_core.L2_execution.determinism.negative_control_harness import assert_digest_stable
-        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
-        e = self._emitter()
-        digest = e.compute(
-            policy_hash=self._zero("a"),
-            registry_hash=self._zero("b"),
-            config_surface_hash=self._zero("c"),
-            transcript_hash=self._zero("d"),
-            dependency_lock_hash=self._zero("e"),
-        )
-        assert isinstance(digest, str)
-        assert len(digest) == 64
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+                from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+                from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+                from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+                from agentic_core.L2_execution.determinism.negative_control_harness import (
+                from agentic_core.L2_execution.determinism.negative_control_harness import (
+                from agentic_core.L2_execution.determinism.negative_control_harness import (
+                from agentic_core.L2_execution.determinism.negative_control_harness import (
+                from agentic_core.L2_execution.determinism.negative_control_harness import (
+                from agentic_core.L2_execution.determinism.negative_control_harness import (
+                from agentic_core.L2_execution.determinism.negative_control_harness import (
+                from agentic_core.L2_execution.determinism.negative_control_harness import (
+                from agentic_core.L0_routing.types.determinism_types import (
+                from agentic_core.L6_observability.engines.semantic_clock_validator import (
+                from agentic_core.L6_observability.engines.semantic_clock_validator import (
+                from agentic_core.L6_observability.engines.semantic_clock_validator import (
+                from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
+                from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
+                from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
+                from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
+                from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
+                from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+                from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+                from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+                from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+                from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+                from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+                from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+                from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+                from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+                from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+                from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+                from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+                from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+                from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+                from agentic_core.L2_execution.determinism.negative_control_harness import assert_digest_differs
+                from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+                from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
+                from agentic_core.L2_execution.determinism.negative_control_harness import assert_digest_stable
+                from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+                e = self._emitter()
+                digest = e.compute(
+                    policy_hash=self._zero("a"),
+                    registry_hash=self._zero("b"),
+                    config_surface_hash=self._zero("c"),
+                    transcript_hash=self._zero("d"),
+                    dependency_lock_hash=self._zero("e"),
+                )
+                assert isinstance(digest, str)
+                assert len(digest) == 64
+                assert all(c in "0123456789abcdef" for c in digest)
+
         assert all(c in "0123456789abcdef" for c in digest)
 
     @pytest.mark.unit_min_deps

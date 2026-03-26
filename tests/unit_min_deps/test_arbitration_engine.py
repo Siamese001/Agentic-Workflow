@@ -191,33 +191,34 @@ class TestArbitrationEngine:
     """Test arbitration engine deterministic behavior."""
 
     def test_deterministic_ordering_total(self):
-        from system_learning.arbitration.engine import ArbitrationEngine
-        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
-        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
-        from system_learning.arbitration.engine import ArbitrationEngine
-        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
-        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
-        from system_learning.arbitration.engine import ArbitrationEngine
-        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
-        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
-        from system_learning.arbitration.engine import ArbitrationEngine
-        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
-        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
-        from system_learning.arbitration.engine import ArbitrationEngine
-        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
-        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
-        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
-        from system_learning.arbitration.engine import ArbitrationEngine
-        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
-        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
-        """Total ordering with score-primary, cost-secondary, kind-tertiary, id-final tie-break."""
-        engine = ArbitrationEngine()
-        policy = ArbitrationPolicy(
-            weights={"healing": 1.0, "threshold": 0.8, "resource": 0.6},
-            caps={"max_winners": 3},
-            thresholds={"min_score": 0.1},
-            allowed_kinds={"healing", "threshold", "resource"},
-        )
+                from system_learning.arbitration.engine import ArbitrationEngine
+                from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+                from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+                from system_learning.arbitration.engine import ArbitrationEngine
+                from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+                from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+                from system_learning.arbitration.engine import ArbitrationEngine
+                from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+                from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+                from system_learning.arbitration.engine import ArbitrationEngine
+                from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+                from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+                from system_learning.arbitration.engine import ArbitrationEngine
+                from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+                from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+                from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+                from system_learning.arbitration.engine import ArbitrationEngine
+                from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+                from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+                """Total ordering with score-primary, cost-secondary, kind-tertiary, id-final tie-break."""
+                engine = ArbitrationEngine()
+                policy = ArbitrationPolicy(
+                    weights={"healing": 1.0, "threshold": 0.8, "resource": 0.6},
+                    caps={"max_winners": 3},
+                    thresholds={"min_score": 0.1},
+                    allowed_kinds={"healing", "threshold", "resource"},
+                )
+
 
         # Create candidates with tie scenarios
         candidates = [

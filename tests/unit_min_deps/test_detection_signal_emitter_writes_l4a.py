@@ -212,13 +212,15 @@ class TestDetectionSignalEmitterWritesL4A:
     """Test suite for detection signal L4A writing."""
 
     def test_emit_with_l4a_writer_calls_write_exactly_once(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L6_observability.engines.detection_signal_emitter import (
-        from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test emit_with_l4a_writer_calls_write_exactly_once runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L6_observability.engines.detection_signal_emitter import (
+                from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test emit_with_l4a_writer_calls_write_exactly_once runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
     input_data = {}  # Replace with actual test data
 
     # Act

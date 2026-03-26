@@ -174,12 +174,15 @@ EXECUTE_SSOT_PATH = Path(__file__).parent.parent.parent / L0_ROUTING_DIR / "scri
 
 
 def test_fire_meta_learning_intake_defined_in_execute_ssot():
-    from agentic_core.L0_routing.config.path_constants import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from system_learning.engines.in_memory_healing_outcome_intake_store import (
-    import agentic_core.L0_routing.scripts.execute_ssot as execute_ssot
 """Test fire_meta_learning_intake_defined_in_execute_ssot runtime behavior."""
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.in_memory_healing_outcome_intake_store import (
+        import agentic_core.L0_routing.scripts.execute_ssot as execute_ssot
+        import agentic_core.L0_routing.scripts.execute_ssot as execute_ssot
+    """Test fire_meta_learning_intake_defined_in_execute_ssot runtime behavior."""
+
 # Arrange
 # TODO: Set up execution parameters
 input_data = {}  # Replace with actual test data

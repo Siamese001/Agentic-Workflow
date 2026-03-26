@@ -190,12 +190,14 @@ pytestmark = pytest.mark.unit_min_deps
 
 class TestAssertZeroExecutionAuthority:
     def test_execute_mode_raises(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.enforcement.authority_invariants import (
-    """Test execute_mode_raises runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.enforcement.authority_invariants import (
+            """Test execute_mode_raises runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
     input_data = {}  # Replace with actual test data
 
     # Act

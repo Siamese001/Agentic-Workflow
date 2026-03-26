@@ -202,29 +202,31 @@ class MockChangePackage:
 
 class TestDefaultRiskClassifier:
     def test_low_impact_single_surface_small_delta(self):
-        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
-        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
-        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
-        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
-        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
-        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
-        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
-        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
-        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
-        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
-        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
-        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
-        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
-        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
-        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
-        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
-        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
-        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
-        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
-        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
-        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
-        """Single surface with small delta is low impact (tier 1)."""
-        classifier = DefaultRiskClassifier()
+                from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+                from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+                from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+                from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+                from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+                from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+                from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+                from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+                from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+                from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+                from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+                from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+                from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+                from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+                from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+                from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+                from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+                from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+                from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+                from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+                from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+                """Single surface with small delta is low impact (tier 1)."""
+                classifier = DefaultRiskClassifier()
+                pkg = MockChangePackage(num_surfaces=1, max_delta=0.03, affects_l5=False)
+
         pkg = MockChangePackage(num_surfaces=1, max_delta=0.03, affects_l5=False)
 
         risk_tier = classifier.classify(pkg)

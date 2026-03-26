@@ -199,12 +199,14 @@ class FakeTelemetryStore:
 
 class TestTelemetryConsumer:
     def test_deterministic_slice_id_across_two_calls(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.telemetry_consumer import (
-    """Test deterministic_slice_id_across_two_calls runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.telemetry_consumer import (
+            """Test deterministic_slice_id_across_two_calls runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
     input_data = {}  # Replace with actual test data
 
     # Act

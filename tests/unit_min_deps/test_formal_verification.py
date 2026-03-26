@@ -166,20 +166,22 @@ import pytest
 
 @pytest.mark.unit_min_deps
 def test_repo_no_powershell_violations():
-    from agentic_core.L5_safety.static_checks.powershell_ban import scan_repository_for_powershell
-    from agentic_core.L5_safety.static_checks.write_gateway_enforcer import scan_repository_for_writes
-    from agentic_core.L5_safety.static_checks.determinism_serialization_check import scan_repository_for_determinism
-    from agentic_core.L5_safety.static_checks.determinism_serialization_check import scan_repository_for_determinism
-    from agentic_core.L5_safety.static_checks.write_gateway_enforcer import scan_repository_for_writes
-    from agentic_core.L5_safety.static_checks.powershell_ban import scan_repository_for_powershell
-    from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, L3_ORCHESTRATION_DIR, L4_STATE_DIR, TOOLS_DIR
-    from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, L3_ORCHESTRATION_DIR, L4_STATE_DIR, TOOLS_DIR
-    from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, L3_ORCHESTRATION_DIR, L4_STATE_DIR, TOOLS_DIR
-    from agentic_core.L5_safety.static_checks.determinism_serialization_check import scan_repository_for_determinism
-    from agentic_core.L5_safety.static_checks.write_gateway_enforcer import scan_repository_for_writes
-    from agentic_core.L5_safety.static_checks.powershell_ban import scan_repository_for_powershell
-    from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, L3_ORCHESTRATION_DIR, L4_STATE_DIR, TOOLS_DIR
-    """Test that repository has no PowerShell violations."""
+        from agentic_core.L5_safety.static_checks.powershell_ban import scan_repository_for_powershell
+        from agentic_core.L5_safety.static_checks.write_gateway_enforcer import scan_repository_for_writes
+        from agentic_core.L5_safety.static_checks.determinism_serialization_check import scan_repository_for_determinism
+        from agentic_core.L5_safety.static_checks.determinism_serialization_check import scan_repository_for_determinism
+        from agentic_core.L5_safety.static_checks.write_gateway_enforcer import scan_repository_for_writes
+        from agentic_core.L5_safety.static_checks.powershell_ban import scan_repository_for_powershell
+        from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, L3_ORCHESTRATION_DIR, L4_STATE_DIR, TOOLS_DIR
+        from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, L3_ORCHESTRATION_DIR, L4_STATE_DIR, TOOLS_DIR
+        from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, L3_ORCHESTRATION_DIR, L4_STATE_DIR, TOOLS_DIR
+        from agentic_core.L5_safety.static_checks.determinism_serialization_check import scan_repository_for_determinism
+        from agentic_core.L5_safety.static_checks.write_gateway_enforcer import scan_repository_for_writes
+        from agentic_core.L5_safety.static_checks.powershell_ban import scan_repository_for_powershell
+        from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, L3_ORCHESTRATION_DIR, L4_STATE_DIR, TOOLS_DIR
+        """Test that repository has no PowerShell violations."""
+        repo_root = Path.cwd()
+
     repo_root = Path.cwd()
 
     violations = scan_repository_for_powershell(repo_root)

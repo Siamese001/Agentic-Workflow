@@ -190,19 +190,21 @@ class TestProtectedRootEnforcement:
     """Test protected-root enforcement primitives."""
 
     def test_enforce_protected_root_blocks_agentic_core(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L0_routing.enforcement.mutation_prohibition import (
-        from agentic_core.L2_execution.tools import write_gateway
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.enforcement.mutation_prohibition import (
-        import agentic_core.L0_routing.scripts.execute_ssot as execute_ssot_module
-        from agentic_core.L2_execution.tools import write_gateway
-        from agentic_core.L0_routing.enforcement.mutation_prohibition import (
-        from agentic_core.L0_routing.enforcement.mutation_prohibition import (
-        """Test that writes to agentic_core are blocked."""
-        target_path = Path("agentic_core/test_file.py")
-        with pytest.raises(SourceMutationBlocked, match="Protected root mutation blocked"):
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+                from agentic_core.L2_execution.tools import write_gateway
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+                import agentic_core.L0_routing.scripts.execute_ssot as execute_ssot_module
+                from agentic_core.L2_execution.tools import write_gateway
+                from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+                from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+                """Test that writes to agentic_core are blocked."""
+                target_path = Path("agentic_core/test_file.py")
+                with pytest.raises(SourceMutationBlocked, match="Protected root mutation blocked"):
+                    enforce_protected_root(target_path, allow_override=False)
+
             enforce_protected_root(target_path, allow_override=False)
 
     def test_enforce_protected_root_allows_outside(self):

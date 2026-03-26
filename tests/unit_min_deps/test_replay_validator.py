@@ -172,10 +172,12 @@ pytestmark = pytest.mark.unit_min_deps
 
 class TestReplayValidator:
     def test_deterministic_engine_passes(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.validators.replay_validator import (
         """Deterministic engine produces same hash on both runs."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.validators.replay_validator import (
+                """Deterministic engine produces same hash on both runs."""
+
 
         def deterministic_engine(snapshot):
             return {"value": snapshot["input"] * 2}

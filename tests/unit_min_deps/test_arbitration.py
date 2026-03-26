@@ -175,22 +175,24 @@ import pytest
 
 @pytest.mark.unit_min_deps
 def test_advisor_proposal_validation():
-    from agentic_core.L3_orchestration.arbitration.arbitration_contract import (
-    from agentic_core.L3_orchestration.arbitration.arbitrator import Arbitrator
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L3_orchestration.arbitration.advisors import (
-    """Test AdvisorProposal validation."""
-    # Valid proposal
-    proposal = AdvisorProposal(
-        advisor_id="test_advisor",
-        decision="execute_plan",
-        confidence=75,
-        rationale=["safe", "fast"],
-        risks=["minimal"],
-        artifacts=["plan.json"],
-    )
-    assert proposal.advisor_id == "test_advisor"
+        from agentic_core.L3_orchestration.arbitration.arbitration_contract import (
+        from agentic_core.L3_orchestration.arbitration.arbitrator import Arbitrator
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L3_orchestration.arbitration.advisors import (
+        """Test AdvisorProposal validation."""
+        # Valid proposal
+        proposal = AdvisorProposal(
+            advisor_id="test_advisor",
+            decision="execute_plan",
+            confidence=75,
+            rationale=["safe", "fast"],
+            risks=["minimal"],
+            artifacts=["plan.json"],
+        )
+        assert proposal.advisor_id == "test_advisor"
+        assert proposal.confidence == 75
+
     assert proposal.confidence == 75
 
     # Invalid confidence

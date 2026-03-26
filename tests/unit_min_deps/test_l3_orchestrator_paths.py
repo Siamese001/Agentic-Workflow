@@ -202,14 +202,16 @@ class TestW5L3OrchestratorPaths:
         )
 
     def test_path_b_policy_check_first(self, orchestrator, sample_payload):
-        from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
-        from agentic_core.L3_orchestration.engines.deterministic_orchestrator import (
-        from agentic_core.L3_orchestration.engines.handshake_state_machine import HandshakeState
-        from agentic_core.L3_orchestration.types.human_decision_artifact_types import HumanAction
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test path_b_policy_check_first contract compliance."""
-    # Arrange
-    # TODO: Set up test data
+                from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
+                from agentic_core.L3_orchestration.engines.deterministic_orchestrator import (
+                from agentic_core.L3_orchestration.engines.handshake_state_machine import HandshakeState
+                from agentic_core.L3_orchestration.types.human_decision_artifact_types import HumanAction
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test path_b_policy_check_first contract compliance."""
+            # Arrange
+            # TODO: Set up test data
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

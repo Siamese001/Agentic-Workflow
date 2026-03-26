@@ -192,23 +192,24 @@ SourceMutationBlocked: cannot modify protected file
 
 class TestRCAEngine:
     def test_analyze_failures_basic(self):
-        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
-        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
-        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
-        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
-        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
-        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
-        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
-        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
-        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
-        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
-        """Basic RCA analysis produces expected findings."""
-        report = analyze_failures(
-            snapshot_id="snap123",
-            audit_slice=AUDIT_SLICE_FIXTURE,
-            window_start_utc=1700000000,
-            window_end_utc=1700003600,
-        )
+                from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+                from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+                from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+                from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+                from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+                from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+                from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+                from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+                from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+                from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+                """Basic RCA analysis produces expected findings."""
+                report = analyze_failures(
+                    snapshot_id="snap123",
+                    audit_slice=AUDIT_SLICE_FIXTURE,
+                    window_start_utc=1700000000,
+                    window_end_utc=1700003600,
+                )
+
 
         # Should have findings for multiple categories
         assert len(report.findings) > 0

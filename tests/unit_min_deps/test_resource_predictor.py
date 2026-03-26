@@ -161,22 +161,24 @@ class TestResourcePredictor:
     """Test suite for ResourcePredictor deterministic behavior."""
 
     def test_determinism_same_input_same_hash(self):
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
-        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
-        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
-        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
-        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
-        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
-        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
-        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
-        """Same inputs must produce identical outputs and hashes."""
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+                from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+                from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+                from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+                from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+                from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+                from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+                from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+                """Same inputs must produce identical outputs and hashes."""
+                predictor = DefaultDeterministicResourcePredictor()
+
         predictor = DefaultDeterministicResourcePredictor()
 
         signature = FailureSignature(

@@ -164,13 +164,15 @@ class TestUnsafeIOSubprocessDetector:
     """Test suite for unsafe I/O and subprocess detection."""
 
     def test_detector_finds_direct_file_writes(self):
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.tools.unsafe_io_detector import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test detector_finds_direct_file_writes runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for detector_finds_direct_file_writes
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.tools.unsafe_io_detector import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test detector_finds_direct_file_writes runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for detector_finds_direct_file_writes
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

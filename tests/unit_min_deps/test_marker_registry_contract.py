@@ -100,10 +100,12 @@ class TestAllUsedMarkersRegistered:
     """Every pytest.mark.<name> used in collected tests must be registered."""
 
     def test_no_unregistered_markers(self) -> None:
-        from agentic_core.L0_routing.config.path_constants import (
-    """Test no_unregistered_markers contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
+                from agentic_core.L0_routing.config.path_constants import (
+            """Test no_unregistered_markers contract compliance."""
+            # Arrange
+            # TODO: Set up contract parties and terms
+            contract_terms = {}  # Replace with actual contract terms
+
     contract_terms = {}  # Replace with actual contract terms
 
     # Act

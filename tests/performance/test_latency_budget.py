@@ -199,11 +199,13 @@ class TestLatencyBudget:
             temp_path.unlink()
 
     def test_atomic_execution_mixin_import_latency(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test atomic_execution_mixin_import_latency runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for atomic_execution_mixin_import_latency
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test atomic_execution_mixin_import_latency runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for atomic_execution_mixin_import_latency
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act

@@ -173,15 +173,16 @@ pytestmark = pytest.mark.unit_min_deps
 
 
 def test_invariant_violation_canonical_json_stable():
-    from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
-    from agentic_core.L2_execution.types.vllm_invariant_verifier_types import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    violation = InvariantViolation(
-        invariant_id=InvariantId.INV_LOCAL_REQUEST_HAS_EXPLICIT_MAX_TOKENS.value,
-        severity=InvariantSeverity.FAIL.value,
-        message="Test message",
-        context={"key1": "value1", "key2": "value2"},
-    )
+        from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
+        from agentic_core.L2_execution.types.vllm_invariant_verifier_types import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        violation = InvariantViolation(
+            invariant_id=InvariantId.INV_LOCAL_REQUEST_HAS_EXPLICIT_MAX_TOKENS.value,
+            severity=InvariantSeverity.FAIL.value,
+            message="Test message",
+            context={"key1": "value1", "key2": "value2"},
+        )
+
 
     json1 = violation.canonical_json()
     json2 = violation.canonical_json()

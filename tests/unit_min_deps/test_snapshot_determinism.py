@@ -227,13 +227,15 @@ def _make_snapshot(**overrides) -> MetaLearningSnapshot:
 
 class TestSnapshotDeterminism:
     def test_same_inputs_produce_identical_snapshot_id(self):
-        from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.snapshots.snapshot_factory import create_snapshot
-        from system_learning.types.snapshot_types import MetaLearningSnapshot
-        snap1 = _make_snapshot()
-        snap2 = _make_snapshot()
+                from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.snapshots.snapshot_factory import create_snapshot
+                from system_learning.types.snapshot_types import MetaLearningSnapshot
+                snap1 = _make_snapshot()
+                snap2 = _make_snapshot()
+                assert snap1.snapshot_id == snap2.snapshot_id
+
         assert snap1.snapshot_id == snap2.snapshot_id
 
     def test_same_inputs_produce_identical_snapshot_object(self):

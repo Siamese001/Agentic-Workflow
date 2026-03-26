@@ -186,23 +186,24 @@ class TestDispatcherEmitsProposalOnly:
     """Test that dispatcher emits proposals without runtime mutation."""
 
     def test_resource_predictor_emission(self):
-        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
-        from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
-        from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
-        from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
-        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L2_execution.types.resource_prediction_types import (
-        """Dispatcher should emit resource prediction as proposal-only."""
-        # Setup
-        config = HealingTierConfig(
-            heal_confidence_x=0.8,
-            heal_confidence_y=0.5,
-            max_heal_retries=3,
-            model_qwen_vllm_id="test-model",
-            model_gemini_2_5_pro_id="test-gemini",
-        )
+                from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+                from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+                from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
+                from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
+                from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L2_execution.types.resource_prediction_types import (
+                """Dispatcher should emit resource prediction as proposal-only."""
+                # Setup
+                config = HealingTierConfig(
+                    heal_confidence_x=0.8,
+                    heal_confidence_y=0.5,
+                    max_heal_retries=3,
+                    model_qwen_vllm_id="test-model",
+                    model_gemini_2_5_pro_id="test-gemini",
+                )
+
 
         healing_input = HealingInput(
             failure_type="timeout",

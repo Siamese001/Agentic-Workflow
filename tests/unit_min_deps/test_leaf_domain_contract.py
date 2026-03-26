@@ -239,13 +239,15 @@ class TestLeafDomainNoSubdirs:
     """Hard gate: LEAF_DOMAIN folders must not sprout LCD-style subdirectories."""
 
     def test_prompt_governance_no_illegal_subdirs(self) -> None:
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.config.structure_blueprint._constants import (
-    """Test prompt_governance_no_illegal_subdirs contract compliance."""
-    # Arrange
-    # TODO: Set up contract parties and terms
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.config.structure_blueprint._constants import (
+            """Test prompt_governance_no_illegal_subdirs contract compliance."""
+            # Arrange
+            # TODO: Set up contract parties and terms
+            contract_terms = {}  # Replace with actual contract terms
+
     contract_terms = {}  # Replace with actual contract terms
 
     # Act

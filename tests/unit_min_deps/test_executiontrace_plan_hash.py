@@ -200,12 +200,14 @@ class TestW5ExecutionTracePlanHash:
         }
 
     def test_canonical_json_format(self):
-        from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
-        from agentic_core.L3_orchestration.types.execution_trace_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test canonical_json_format runtime behavior."""
-    # Arrange
-    # TODO: Set up test data for canonical_json_format
+                from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
+                from agentic_core.L3_orchestration.types.execution_trace_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+            """Test canonical_json_format runtime behavior."""
+            # Arrange
+            # TODO: Set up test data for canonical_json_format
+            test_data = {}  # Replace with actual test data
+
     test_data = {}  # Replace with actual test data
 
     # Act
