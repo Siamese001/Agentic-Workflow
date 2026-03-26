@@ -135,9 +135,10 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 
+# guardian: allow-silent-degradation
 try:
     from agentic_core.utils.decorators_compat_util import timeout
-except ImportError:  # guardian: allow-silent-swallow
+except ImportError:
 
     def timeout(seconds):  # type: ignore[misc]
         """Stub timeout decorator."""
@@ -443,6 +444,7 @@ def get_UnifiedAgent_class(agent_id: str) -> type:
         if agent_id in validator_mapping:
             Logger.info(f"Registry: Mapping legacy validator '{agent_id}' to Unified Class (Phase 2).")
             return validator_mapping[agent_id]
+    # guardian: allow-silent-degradation - Optional validator mapping
     except ImportError as e:
         Logger.warning(f"Phase 2 validator mapping not available: {e}")
     try:
@@ -450,6 +452,7 @@ def get_UnifiedAgent_class(agent_id: str) -> type:
         if agent_id in phase3_mapping:
             Logger.info(f"Registry: Mapping legacy manager/enforcer '{agent_id}' to Unified Class (Phase 3).")
             return phase3_mapping[agent_id]
+    # guardian: allow-silent-degradation - Optional manager mapping
     except ImportError as e:
         Logger.warning(f"Phase 3 manager/enforcer mapping not available: {e}")
     try:
@@ -459,6 +462,7 @@ def get_UnifiedAgent_class(agent_id: str) -> type:
                 f"Registry: Mapping legacy detector/healer/router/executor '{agent_id}' to Unified Class (Phase 4)."
             )
             return phase4_mapping[agent_id]
+    # guardian: allow-silent-degradation - Optional detector mapping
     except ImportError as e:
         Logger.warning(f"Phase 4 detector/healer/router/executor mapping not available: {e}")
     raise ValueError(f"Agent ID '{agent_id}' not found in unified agent registry.")
@@ -554,6 +558,7 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
             if cached:
                 print(f"   [CACHE HIT] Method search for '{Task[:30]}...'")
                 return json.loads(cached)
+        # guardian: allow-silent-degradation - Optional Redis cache
         except (ImportError, AttributeError) as e:
             print(f"Gemini embedding failed: {e}")
         task_lower = Task.lower()
@@ -568,6 +573,7 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
         try:
             if results:
                 self.redis.set(cache_key, json.dumps(results), ex=3600)
+        # guardian: allow-silent-degradation - Optional Redis cache
         except (ImportError, AttributeError, ValueError) as e:
             print(f"Gemini reranking failed: {e}")
         return results
@@ -699,6 +705,7 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
 
             query_engine = get_runtime_query_engine()
             return query_engine.find_agents_by_base_class(base_class)
+        # guardian: allow-silent-degradation - Optional ADG discovery
         except (ImportError, AttributeError) as exc:
             Logger.warning("[SubAtomicRegistry] ADG discovery unavailable: %s", exc)
             return []

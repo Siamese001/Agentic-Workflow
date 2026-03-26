@@ -439,36 +439,36 @@ class TracingMixin:
     def flush_traces(self) -> list[dict[str, Any]]:
         """
         Flush all buffered traces and optionally bridge to OpenTelemetry.
-        
+
         Returns:
             List of flushed trace spans
         """
         traces = self._trace_buffer.copy()
         self._trace_buffer.clear()
-        
+
         # Bridge to OpenTelemetry if available
         if hasattr(self, '_otel_bridge_enabled') and getattr(self, '_otel_bridge_enabled', False):
             self._bridge_to_opentelemetry(traces)
-        
+
         Logger.info(f"[TRACING] {self._tracing_service_name} - Flushed {len(traces)} traces")
         return traces
 
     def _bridge_to_opentelemetry(self, traces: list[dict[str, Any]]) -> None:
         """
         Bridge TracingMixin traces to OpenTelemetry adapter.
-        
+
         Args:
             traces: List of TracingMixin trace dictionaries
         """
         try:
             from apps_shared.utils.open_telemetry_tracing_adapter_util import get_tracer
-            
+
             tracer = get_tracer(service_name=self._tracing_service_name)
-            
+
             for trace in traces:
                 # Convert TracingMixin span to OpenTelemetry format
                 self._create_otel_span_from_trace(trace, tracer)
-                
+
         except ImportError:
             Logger.debug("[TRACING] OpenTelemetry not available for bridging")
         except Exception as e:
@@ -477,7 +477,7 @@ class TracingMixin:
     def _create_otel_span_from_trace(self, trace: dict[str, Any], tracer: Any) -> None:
         """
         Create OpenTelemetry span from TracingMixin trace.
-        
+
         Args:
             trace: TracingMixin trace dictionary
             tracer: OpenTelemetry tracer instance
@@ -485,7 +485,7 @@ class TracingMixin:
         try:
             operation_name = trace.get("operation_name", "unknown")
             attributes = trace.get("attributes", {})
-            
+
             # Determine span type based on operation
             if "cognitive" in operation_name.lower():
                 reasoning_mode = attributes.get("reasoning_mode", "react")
@@ -498,11 +498,11 @@ class TracingMixin:
                 span_context = tracer.trace_action(action_count=action_count, metadata=attributes)
             else:
                 span_context = tracer.trace_orchestrator(operation_name, metadata=attributes)
-            
+
             # Enter and exit the span context to create it
             with span_context:
                 pass  # Span is created and automatically closed
-                
+
         except Exception as e:
             Logger.debug(f"[TRACING] Failed to create OpenTelemetry span: {e}")
 
