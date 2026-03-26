@@ -8,7 +8,7 @@ from typing import Any
 
 try:
     from agentic_core.mixins.healer_mixin import HealerMixin
-except ImportError:  # guardian: allow-silent-swallow
+except ImportError:  # guardian: allow-silent-degradation - Optional healer mixin
 
     class HealerMixin:  # type: ignore[no-redef]
         """Stub."""
@@ -18,7 +18,8 @@ except ImportError:  # guardian: allow-silent-swallow
 
 try:
     from agentic_core.interfaces.mixins import MCPHardenedMixin
-except (ImportError, NameError):
+# guardian: allow-silent-degradation - Optional MCP hardened mixin
+except (ImportError, NameError, ModuleNotFoundError):
 
     class MCPHardenedMixin:  # type: ignore[no-redef]
         """Stub."""
@@ -192,6 +193,7 @@ _emit_proposal_commits_routing("p1", "dag_manager", "routing_commit")
 
 try:
     from agentic_core.mixins.subatomic_testing_mixin import L3SubatomicTestingMixin
+# guardian: allow-silent-degradation - Optional subatomic testing mixin
 except (ImportError, AttributeError):
 
     class L3SubatomicTestingMixin:  # type: ignore[no-redef]
