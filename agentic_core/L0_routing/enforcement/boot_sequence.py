@@ -99,8 +99,8 @@ _emit_links_execution_to_snapshot("p4", "boot_sequence", "exec_snapshot_link")
 
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent.parent.parent))
-from agentic_core.discovery import AgentRegistry
-from agentic_core.L0_routing.enforcement.manifest_guardian_util import ManifestGuardian
+from agentic_core.runtime.utils.discovery_util import AgentRegistry
+from agentic_core.L0_routing.utils.manifest_guardian_util import ManifestGuardian
 from agentic_core.L0_routing.scripts.compliance_gate_validator import check_compliance
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
