@@ -13,8 +13,16 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class TestWebSearchClientAdg:
-    """Test WebSearchClientAdg functionality."""
+class GeneratedTest:
+    """Generated test class for agentic_core.L2_execution.tools."""
+
+    def test_WebSearchTools_init(self):
+        """Test WebSearchTools initialization."""
+        from agentic_core.L2_execution.tools import WebSearchTools
+        # TODO: Implement actual test
+        instance = WebSearchTools()
+        assertIsNotNone(instance)
+
 
     def test_placeholder_1(self):
         """Placeholder test 1."""

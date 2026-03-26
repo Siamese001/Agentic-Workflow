@@ -13,8 +13,22 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class TestReadGateway:
-    """Test ReadGateway functionality."""
+class GeneratedTest:
+    """Generated test class for agentic_core.L2_execution.tools."""
+
+    def test_read_text(self):
+        """Test read_text function."""
+        from agentic_core.L2_execution.tools import read_text
+        # TODO: Implement actual test
+        result = read_text()
+        assertIsNotNone(result)
+    def test_read_bytes(self):
+        """Test read_bytes function."""
+        from agentic_core.L2_execution.tools import read_bytes
+        # TODO: Implement actual test
+        result = read_bytes()
+        assertIsNotNone(result)
+
 
     def test_placeholder_1(self):
         """Placeholder test 1."""
