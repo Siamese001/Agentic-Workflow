@@ -304,7 +304,7 @@ class ConfigurationLoader:
                     with open(config_path) as f:
                         config_data = yaml.safe_load(f) or {}
                 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+                except ImportError:
                     logger.warning("PyYAML not installed, cannot load YAML configs")
                     config_data = {}
             else:
@@ -445,5 +445,4 @@ def get_integration_bridge() -> IntegrationBridge:
     global _integration_bridge
     if _integration_bridge is None:
         _integration_bridge = IntegrationBridge()
-    return _integration_bridge                    except Exception as e:
-                        pass
+    return _integration_bridge

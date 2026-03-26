@@ -81,24 +81,20 @@ _emit_invokes_evaluation("p3", "app_base_util", "evaluation_signal")
 _emit_records_telemetry_event("p4", "app_base_util", "telemetry_event")
 _emit_captures_evaluation_metric("p4", "app_base_util", "eval_metric")
 _emit_stores_embedding("p4", "app_base_util", "embedding_store")
-_emit_updates_meta_learning_state("p4", "app_base_util", "meta_learning")
-_emit_links_execution_to_snapshot("p4", "app_base_util", "exec_snapshot_link")
+# _emit_updates_meta_learning_state("p4", "app_base_util", "meta_learning")
+# _emit_links_execution_to_snapshot("p4", "app_base_util", "exec_snapshot_link")
 
 try:
     from agentic_core.interfaces.mixins import MetaLearningMixin
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
-
+except ImportError:
     class MetaLearningMixin:
         """Fallback MetaLearningMixin when not available."""
-
         pass
-
 
 try:
     from agentic_core.interfaces.mixins import HealerMixin
 except ImportError:
-
     class HealerMixin:
         """Fallback HealerMixin when not available."""
 

@@ -40,11 +40,12 @@ excluded_files: Any = {
     "fix_security_and_hygiene.py",
     "fix_structural_debt.py",
     "fix_print_statements.py",
+    "new_file.py",  # Added new file to excluded files
 }
 try:
     HAS_ASTOR: Any = True
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
     HAS_ASTOR: Any = False
 
 

@@ -264,7 +264,7 @@ _emit_reads_through("l4", "hardened_gemini_executor_types", "urg_read_82")
 try:
     from .agent_executor import AgentExecutor, AgentMessage
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:  # guardian: agent_executor module missing — provide stubs
+except ImportError:  # guardian: agent_executor module missing — provide stubs
 
     class AgentMessage:  # type: ignore[no-redef]
         """Stub: agent_executor not installed."""

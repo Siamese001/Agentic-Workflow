@@ -83,7 +83,7 @@ _emit_links_execution_to_snapshot("p4", "golden_state_evaluator_types", "exec_sn
 try:
     from apps_rg.core.JudgeEvaluation import JudgeEvaluationResult, JudgeEvaluator, create_judge_evaluator
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
 
     @dataclass
     class JudgeEvaluationResult:
