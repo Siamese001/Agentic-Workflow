@@ -32,10 +32,6 @@ from pathlib import Path
 
 import pytest
 
-#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_applies_guardrail,
-    _emit_records_execution_trace,
-)
 
 # ---------------------------------------------------------------------------
 # Skip if redis is not available
@@ -115,33 +111,6 @@ _FIXTURE_SNAPSHOT = {
 
 @pytest.fixture(scope="module")
 def fixture_env():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Create a test ADG directory with fixture SQLite + snapshot, run ingest."""
-    if not _REDIS_OK:
-
-
-    # Use a fixed test directory to avoid Windows temp-dir file lock issues
-    test_dir = Path(__file__).resolve().parent.parent.parent / "artifacts" / "adg_test_projection"
-    test_dir.mkdir(parents=True, exist_ok=True)
-
-    ts = "01012099_0000"
-    sqlite_path = test_dir / f"adg_indexed_{ts}.sqlite"
-    snapshot_path = test_dir / f"adg_snapshot_{ts}.json"
-
-    # Clean any prior run
-    if sqlite_path.exists():
-        sqlite_path.unlink()
-    if snapshot_path.exists():
-        snapshot_path.unlink()
-
-    # Create fixture SQLite
-    conn = sqlite3.connect(str(sqlite_path))
-    conn.executescript(_FIXTURE_DDL)
-    conn.executemany(
-        "INSERT INTO nodes(id,adg_name,entity_type,layer,identity_kind,confidence,resolved_path) "
-        "VALUES (?,?,?,?,?,?,?)",
-        _FIXTURE_NODES,
-    )
     conn.executemany(
         "INSERT INTO edges(src_id,dst_id,relation_type,edge_kind,source_file,line_no,symbol) "
         "VALUES (?,?,?,?,?,?,?)",
