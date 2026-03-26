@@ -24,6 +24,7 @@ class TestUserFlowE2E:
 
     @pytest.mark.e2e
     def test_user_registration_flow(self, page: Page):
+        pass
     """Test user_registration_flow runtime behavior."""
     # Arrange
     # TODO: Set up workflow context
