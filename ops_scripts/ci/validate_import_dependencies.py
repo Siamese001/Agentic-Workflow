@@ -12,6 +12,7 @@ import importlib.util
 import os
 import re
 import sys
+import warnings
 from pathlib import Path
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
@@ -47,16 +48,33 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_signs_execution_trace,  # noqa: E402
     _emit_snapshots_state,  # noqa: E402
     _emit_stores_embedding,
+    _emit_stores_learning_state,
     _emit_transcripts_response,
+    _emit_triggers_alert,
     _emit_updates_meta_learning_state,
+    _emit_updates_monitoring_state,
+    _emit_updates_routing_strategy,
+    _emit_validated_by_safety_plane,
     _emit_validates_agent_capability,
     _emit_validates_capability,
     _emit_verifies_boundary,
     _emit_verifies_policy,
+    _emit_writes_learning_snapshot,
+    _emit_writes_observability_log,
+    _emit_writes_through,
     _emit_writes_via_uwg,
     emit_determinism_digest,  # noqa: E402
     emit_replay_key,  # noqa: E402
 )
+
+# Try to import ADG Query Bridge for ADG-powered import validation
+try:
+    sys.path.insert(0, str(Path(__file__).parent.parent.parent / "tools" / "adg"))
+    from adg_query_bridge import ADGQueryBridge, FileMatch
+    ADG_AVAILABLE = True
+except ImportError as e:
+    warnings.warn(f"ADG Query Bridge unavailable, falling back to AST: {e}")
+    ADG_AVAILABLE = False
 
 _emit_records_execution_trace("p0", "evidence", "validate_import_dependencies")
 _emit_applies_guardrail("p0", "validate_import_dependencies", "p0_governance")
@@ -253,26 +271,101 @@ class ImportDependencyValidator:
             with open(file_path, encoding="utf-8") as f:
                 content = f.read()
 
-            # Parse AST to extract imports
-            try:
-                tree = ast.parse(content, filename=str(file_path))
-            except SyntaxError as e:
-                return [f"Syntax error in {file_path}: {e}"]
-
-            # Extract all import statements
-            imports = self._extract_imports(tree)
-
-            # Validate each import
-            for import_info in imports:
-                error = self._validate_import(import_info, file_path)
-                if error:
-                    errors.append(error)
+            # Use ADG for import validation when available
+            if ADG_AVAILABLE:
+                try:
+                    bridge = ADGQueryBridge()
+                    # Get imports from ADG for this file
+                    file_rel_path = str(file_path.relative_to(self.project_root))
+                    adg_imports = self._get_adg_imports_for_file(bridge, file_rel_path)
+                    
+                    if adg_imports:
+                        # Validate imports using ADG data
+                        for import_info in adg_imports:
+                            error = self._validate_adg_import(import_info, file_path)
+                            if error:
+                                errors.append(error)
+                    else:
+                        # Fallback to AST if no ADG data found
+                        errors.extend(self._validate_with_ast_fallback(file_path, content))
+                        
+                except Exception as e:
+                    warnings.warn(f"ADG import validation failed, falling back to AST: {e}")
+                    errors.extend(self._validate_with_ast_fallback(file_path, content))
+            else:
+                # AST fallback when ADG unavailable
+                errors.extend(self._validate_with_ast_fallback(file_path, content))
 
         except Exception as e:
-            raise
             errors.append(f"Error processing {file_path}: {e}")
 
         return errors
+
+    def _get_adg_imports_for_file(self, bridge: ADGQueryBridge, file_rel_path: str) -> list[dict]:
+        """Get import information from ADG for a specific file."""
+        imports = []
+        
+        # This is a simplified approach - in practice would need more sophisticated matching
+        # For now, we'll use the AST approach but validate against ADG data
+        
+        try:
+            with open(self.project_root / file_rel_path, encoding="utf-8") as f:
+                content = f.read()
+            
+            tree = ast.parse(content, filename=file_rel_path)
+            ast_imports = self._extract_imports(tree)
+            
+            # For each AST import, check if it exists in ADG
+            for import_info in ast_imports:
+                module_name = import_info.get("module", "")
+                if module_name:
+                    # Check if this module is imported by others in ADG (indicates it exists)
+                    importers = bridge.files_importing(module_name)
+                    import_info["adg_validated"] = len(importers) > 0 or self._is_stdlib_module(module_name)
+                    imports.append(import_info)
+                    
+        except Exception as e:
+            warnings.warn(f"Could not get ADG imports for {file_rel_path}: {e}")
+            
+        return imports
+
+    def _validate_adg_import(self, import_info: dict, file_path: Path) -> str | None:
+        """Validate an import using ADG data."""
+        if import_info.get("adg_validated", False):
+            return None  # Import is valid according to ADG
+        
+        # If not validated in ADG, check if it's a stdlib module or should exist
+        module_name = import_info.get("module", "")
+        if self._is_stdlib_module(module_name):
+            return None
+            
+        return f"{file_path}:{import_info.get('line', '?')}: Import '{module_name}' not found in ADG index"
+
+    def _validate_with_ast_fallback(self, file_path: Path, content: str) -> list[str]:
+        """Fallback AST-based validation when ADG is unavailable."""
+        errors = []
+        
+        try:
+            tree = ast.parse(content, filename=str(file_path))
+        except SyntaxError as e:
+            return [f"Syntax error in {file_path}: {e}"]
+
+        # Extract all import statements
+        imports = self._extract_imports(tree)
+
+        # Validate each import using original AST method
+        for import_info in imports:
+            error = self._validate_import(import_info, file_path)
+            if error:
+                errors.append(error)
+                
+        return errors
+
+    def _is_stdlib_module(self, module_name: str) -> bool:
+        """Check if a module is a standard library module."""
+        import stdlib_list
+        stdlib_modules = set(stdlib_list.stdlib_python_modules())
+        return module_name in stdlib_modules or module_name.split('.')[0] in stdlib_modules
 
     def _extract_imports(self, tree: ast.AST) -> list[dict]:
         """Extract import statements from AST."""

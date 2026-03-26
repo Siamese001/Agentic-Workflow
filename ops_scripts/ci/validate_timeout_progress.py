@@ -7,6 +7,7 @@ Enforces Constitutional Rule §9: All queries require timeouts and progress repo
 import ast
 import re
 import sys
+import warnings
 from pathlib import Path
 from typing import Dict, List
 
@@ -21,6 +22,15 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 
+# Try to import ADG Query Bridge for ADG-powered queries
+try:
+    sys.path.insert(0, str(Path(__file__).parent.parent.parent / "tools" / "adg"))
+    from adg_query_bridge import ADGQueryBridge, FileMatch
+    ADG_AVAILABLE = True
+except ImportError as e:
+    warnings.warn(f"ADG Query Bridge unavailable, falling back to regex: {e}")
+    ADG_AVAILABLE = False
+
 
 def validate_timeout_compliance(file_path: Path) -> list[str]:
     """Validate timeout compliance in Python file."""
@@ -33,21 +43,36 @@ def validate_timeout_compliance(file_path: Path) -> list[str]:
         print(f"Error reading {file_path}: {e}")
         return []
 
-    # Check for subprocess.run without timeout
-    subprocess_calls = re.finditer(r"subprocess\.run\s*\([^)]*\)", content)
-    for match in subprocess_calls:
-        call_text = match.group(0)
-        if "timeout" not in call_text:
-            line_num = content[: match.start()].count("\n") + 1
-            violations.append(f"{file_path}:{line_num}: subprocess.run without timeout parameter")
-
-    # Check for subprocess.Popen without timeout context
-    popen_calls = re.finditer(r"subprocess\.Popen\s*\([^)]*\)", content)
-    for match in popen_calls:
-        call_text = match.group(0)
-        if "timeout" not in call_text:
-            line_num = content[: match.start()].count("\n") + 1
-            violations.append(f"{file_path}:{line_num}: subprocess.Popen without timeout handling")
+    # Use ADG for subprocess call detection when available
+    if ADG_AVAILABLE:
+        try:
+            bridge = ADGQueryBridge()
+            subprocess_calls = bridge.subprocess_calls_without_timeout()
+            
+            # Filter calls to those in the current file
+            current_file_rel = str(file_path.relative_to(Path.cwd()))
+            file_calls = [call for call in subprocess_calls 
+                         if call.file_path == current_file_rel or call.file_path.endswith(current_file_rel)]
+            
+            for call in file_calls:
+                # Check if timeout is actually present by reading the specific line
+                if call.line_number:
+                    try:
+                        lines = content.split('\n')
+                        if call.line_number <= len(lines):
+                            line_content = lines[call.line_number - 1]
+                            if "timeout" not in line_content:
+                                violations.append(f"{file_path}:{call.line_number}: subprocess call without timeout parameter")
+                    except IndexError:
+                        violations.append(f"{file_path}:{call.line_number}: subprocess call without timeout parameter")
+                else:
+                    violations.append(f"{file_path}: subprocess call without timeout parameter")
+                    
+        except Exception as e:
+            warnings.warn(f"ADG query failed, falling back to regex: {e}")
+            _fallback_regex_subprocess_detection(file_path, content, violations)
+    else:
+        _fallback_regex_subprocess_detection(file_path, content, violations)
 
     # Check for while True without timeout guard
     while_true_pattern = re.finditer(r"while\s+True\s*:", content)
@@ -89,6 +114,25 @@ def validate_timeout_compliance(file_path: Path) -> list[str]:
         pass
 
     return violations
+
+
+def _fallback_regex_subprocess_detection(file_path: Path, content: str, violations: list[str]) -> None:
+    """Fallback regex-based subprocess detection when ADG is unavailable."""
+    # Check for subprocess.run without timeout
+    subprocess_calls = re.finditer(r"subprocess\.run\s*\([^)]*\)", content)
+    for match in subprocess_calls:
+        call_text = match.group(0)
+        if "timeout" not in call_text:
+            line_num = content[: match.start()].count("\n") + 1
+            violations.append(f"{file_path}:{line_num}: subprocess.run without timeout parameter")
+
+    # Check for subprocess.Popen without timeout context
+    popen_calls = re.finditer(r"subprocess\.Popen\s*\([^)]*\)", content)
+    for match in popen_calls:
+        call_text = match.group(0)
+        if "timeout" not in call_text:
+            line_num = content[: match.start()].count("\n") + 1
+            violations.append(f"{file_path}:{line_num}: subprocess.Popen without timeout handling")
 
 
 def validate_evidence_compliance(evidence_path: Path) -> list[str]:

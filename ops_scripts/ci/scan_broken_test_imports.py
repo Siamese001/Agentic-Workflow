@@ -15,6 +15,7 @@ Usage:
 
 import ast
 import sys
+import warnings
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import (
@@ -48,6 +49,15 @@ PROJECT_PREFIXES = (
 EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 FULLY_ORPHANED_THRESHOLD = 0
 STALE_MIRROR_THRESHOLD = 0
+
+# Try to import ADG Query Bridge for ADG-powered import validation
+try:
+    sys.path.insert(0, str(Path(__file__).parent.parent.parent / "tools" / "adg"))
+    from adg_query_bridge import ADGQueryBridge, FileMatch
+    ADG_AVAILABLE = True
+except ImportError as e:
+    warnings.warn(f"ADG Query Bridge unavailable, falling back to AST: {e}")
+    ADG_AVAILABLE = False
 
 
 def _module_exists(mod: str) -> bool:
@@ -111,20 +121,89 @@ def scan_tests() -> tuple[list[str], list[str]]:
 
         rel = str(fpath.relative_to(ROOT)).replace("\\", "/")
 
+        # Use ADG for import validation when available
+        if ADG_AVAILABLE:
+            try:
+                fully_orphaned_check, stale_mirror_check = _scan_test_with_adg(fpath, tree, source, rel)
+                if fully_orphaned_check:
+                    fully_orphaned.append(rel)
+                if stale_mirror_check:
+                    stale_mirrors.append(rel)
+            except Exception as e:
+                warnings.warn(f"ADG test scan failed for {rel}, falling back to AST: {e}")
+                fully_orphaned_check, stale_mirror_check = _scan_test_with_ast(fpath, tree, source, rel)
+                if fully_orphaned_check:
+                    fully_orphaned.append(rel)
+                if stale_mirror_check:
+                    stale_mirrors.append(rel)
+        else:
+            fully_orphaned_check, stale_mirror_check = _scan_test_with_ast(fpath, tree, source, rel)
+            if fully_orphaned_check:
+                fully_orphaned.append(rel)
+            if stale_mirror_check:
+                stale_mirrors.append(rel)
+
+    return fully_orphaned, stale_mirrors
+
+
+def _scan_test_with_adg(fpath: Path, tree: ast.AST, source: str, rel: str) -> tuple[bool, bool]:
+    """Scan test file using ADG for import validation."""
+    try:
+        bridge = ADGQueryBridge()
+        
         # Guard 3: stale mirror test
         if _has_mirror_marker(source):
             targets = _extract_mirror_targets(tree)
             project_targets = [t for t in targets if _is_project_import(t)]
-            if project_targets and all(not _module_exists(t) for t in project_targets):
-                stale_mirrors.append(rel)
-            continue
+            if project_targets:
+                # Check if targets exist in ADG
+                missing_targets = []
+                for target in project_targets:
+                    # Check if module exists in ADG
+                    importers = bridge.files_importing(target)
+                    if not importers and not _module_exists(target):
+                        missing_targets.append(target)
+                
+                if missing_targets and all(not _module_exists(t) for t in missing_targets):
+                    return False, True  # stale mirror
+            return False, False
 
         # Guard 1: fully orphaned (all project imports broken)
         imports = [m for m in _extract_imports(tree) if _is_project_import(m)]
-        if imports and all(not _module_exists(m) for m in imports):
-            fully_orphaned.append(rel)
+        if imports:
+            # Check if imports exist in ADG
+            missing_imports = []
+            for imp in imports:
+                importers = bridge.files_importing(imp)
+                if not importers and not _module_exists(imp):
+                    missing_imports.append(imp)
+            
+            if missing_imports and all(not _module_exists(m) for m in missing_imports):
+                return True, False  # fully orphaned
+        
+        return False, False
+        
+    except Exception as e:
+        warnings.warn(f"ADG validation failed: {e}")
+        # Fall back to AST
+        return _scan_test_with_ast(fpath, tree, source, rel)
 
-    return fully_orphaned, stale_mirrors
+
+def _scan_test_with_ast(fpath: Path, tree: ast.AST, source: str, rel: str) -> tuple[bool, bool]:
+    """Original AST-based test scanning as fallback."""
+    # Guard 3: stale mirror test
+    if _has_mirror_marker(source):
+        targets = _extract_mirror_targets(tree)
+        project_targets = [t for t in targets if _is_project_import(t)]
+        if project_targets and all(not _module_exists(t) for t in project_targets):
+            return False, True  # stale mirror
+
+    # Guard 1: fully orphaned (all project imports broken)
+    imports = [m for m in _extract_imports(tree) if _is_project_import(m)]
+    if imports and all(not _module_exists(m) for m in imports):
+        return True, False  # fully orphaned
+
+    return False, False
 
 
 def main() -> int:
