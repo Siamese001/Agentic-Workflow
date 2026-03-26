@@ -5,6 +5,7 @@ Tests the new systematic application functions.
 """
 
 import json
+import pytest
 
 # Import the module we're testing
 import sys
@@ -121,17 +122,20 @@ class TestPhase21Enhanced:
 
     @pytest.mark.skipif(not CAN_IMPORT, reason="Cannot import fixer")
     def test_is_optional_dependency(self, fixer_with_violations):
-        """Test optional dependency detection."""
-        # Test optional indicators
-        assert fixer_with_violations._is_optional_dependency("optional import fallback") == True
-        assert fixer_with_violations._is_optional_dependency("missing dependency") == True
-        assert fixer_with_violations._is_optional_dependency("try import") == True
-        assert fixer_with_violations._is_optional_dependency("attempt import") == True
+        """Test optional dependency detection with behavioral validation."""
+        # Test optional indicators - verify method exists and returns boolean
+        optional_contexts = ["optional import fallback", "missing dependency", "try import", "attempt import"]
+        for context in optional_contexts:
+            result = fixer_with_violations._is_optional_dependency(context)
+            assert isinstance(result, bool), f"Should return boolean for context: {context}"
+            assert result is True, f"Should detect optional context: {context}"
 
-        # Test non-optional
-        assert fixer_with_violations._is_optional_dependency("required import") == False
-        assert fixer_with_violations._is_optional_dependency("critical dependency") == False
-        assert fixer_with_violations._is_optional_dependency("random context") == False
+        # Test non-optional - verify method behavior
+        non_optional_contexts = ["required import", "critical dependency", "random context"]
+        for context in non_optional_contexts:
+            result = fixer_with_violations._is_optional_dependency(context)
+            assert isinstance(result, bool), f"Should return boolean for context: {context}"
+            assert result is False, f"Should detect non-optional context: {context}"
 
     @pytest.mark.skipif(not CAN_IMPORT, reason="Cannot import fixer")
     def test_apply_fixes_to_all_remaining_violations(self, fixer_with_violations):

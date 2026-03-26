@@ -34,9 +34,13 @@ class TestPhase23Basic:
 
     @pytest.mark.skipif(not CAN_IMPORT, reason="Cannot import fixer")
     def test_can_import_fixer(self):
-        """Test that the fixer can be imported."""
+        """Test that the fixer can be imported and instantiated."""
         assert CAN_IMPORT
-        assert LowSeveritySilentSwallowerFixer is not None
+        
+        # Behavioral validation - test actual instantiation
+        fixer = LowSeveritySilentSwallowerFixer()
+        assert hasattr(fixer, 'apply_fixes_to_all_remaining_violations')
+        assert callable(fixer.apply_fixes_to_all_remaining_violations)
 
     @pytest.mark.skipif(not CAN_IMPORT, reason="Cannot import fixer")
     def test_fixer_with_empty_violations(self, temp_workspace):
