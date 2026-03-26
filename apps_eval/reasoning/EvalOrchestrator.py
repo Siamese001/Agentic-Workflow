@@ -108,7 +108,7 @@ try:
     _emit_applies_guardrail("p0", "EvalOrchestrator", "p0_governance")
     _emit_reads_policy_state("p0", "EvalOrchestrator", "policy_binding")
     _emit_snapshots_state("p0", "EvalOrchestrator", "state_snapshot")
-# guardian: allow-silent-swallow - optional dependency
+# guardian: allow-silent-degradation - Optional Qwen integration
 except ImportError:
     AppsQwenGateway = None  # type: ignore[assignment]
     AppsQwenRequest = None  # type: ignore[assignment]
@@ -243,6 +243,7 @@ class EvalOrchestrator:
                 fail_on_regression=self._specs.gate.fail_on_regression,
                 max_timeout_violations=self._specs.gate.max_timeout_violations,
             )
+# guardian: allow-silent-degradation - Optional eval specs
         except ImportError:
             self._specs = None
 
@@ -270,6 +271,7 @@ class EvalOrchestrator:
             _profile = _idx.profile_for(Path(__file__).resolve()) if _idx else None
             self.adg_behavioral_score: float = _profile.behavioral_score if _profile else 0.5
             self.adg_antipattern_signals: list[str] = sorted(_profile.antipattern_signals) if _profile else []
+# guardian: allow-silent-degradation - Optional ADG behavioral index
         except (ImportError, AttributeError, OSError):
             self.adg_behavioral_score = 0.5
             self.adg_antipattern_signals = []
