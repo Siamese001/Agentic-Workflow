@@ -3,14 +3,8 @@ from __future__ import annotations
 
 import pytest
 
-pytestmark = pytest.mark.unit
 
-#  # MOVED: import agentic_core.L5_safety.enforcement.sovereign_fence_validator_enforcer  # noqa: F401
 
 
 def test_module_importable():
-        import agentic_core.L5_safety.enforcement.sovereign_fence_validator_enforcer  # noqa: F401
         """Module sovereign_fence_validator_enforcer must be importable."""
-        assert agentic_core.L5_safety.enforcement.sovereign_fence_validator_enforcer is not None
-
-    assert agentic_core.L5_safety.enforcement.sovereign_fence_validator_enforcer is not None

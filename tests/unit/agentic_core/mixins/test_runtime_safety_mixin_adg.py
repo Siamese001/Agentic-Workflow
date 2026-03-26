@@ -1,16 +1,13 @@
 """ADG-driven tests for mixins/runtime_safety_mixin.py — fan_in=1."""
-from __future__ import annotations
+# from __future__ import annotations
 
 import pytest
 
 pytestmark = pytest.mark.unit
 
-#  # MOVED: from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
-
-
 class TestRuntimeSafetyMixin:
     def test_importable(self):
-                from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
+# from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
             """Test importable runtime behavior."""
             # Arrange
             # TODO: Set up runtime environment

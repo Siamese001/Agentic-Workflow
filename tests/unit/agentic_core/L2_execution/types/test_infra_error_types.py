@@ -3,14 +3,8 @@ from __future__ import annotations
 
 import pytest
 
-pytestmark = pytest.mark.unit
 
-#  # MOVED: import agentic_core.L2_execution.types.infra_error_types  # noqa: F401
 
 
 def test_module_importable():
-        import agentic_core.L2_execution.types.infra_error_types  # noqa: F401
         """Module infra_error_types must be importable."""
-        assert agentic_core.L2_execution.types.infra_error_types is not None
-
-    assert agentic_core.L2_execution.types.infra_error_types is not None

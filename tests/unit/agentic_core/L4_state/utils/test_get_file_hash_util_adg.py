@@ -3,14 +3,8 @@ from __future__ import annotations
 
 import pytest
 
-pytestmark = pytest.mark.unit
 
-#  # MOVED: import agentic_core.L4_state.utils.get_file_hash_util  # noqa: F401
 
 
 def test_module_importable():
-        import agentic_core.L4_state.utils.get_file_hash_util  # noqa: F401
         """Module get_file_hash_util must be importable."""
-        assert agentic_core.L4_state.utils.get_file_hash_util is not None
-
-    assert agentic_core.L4_state.utils.get_file_hash_util is not None

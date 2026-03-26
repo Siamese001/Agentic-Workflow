@@ -93,7 +93,6 @@ class ArchitectureDNAVisitor(ast.NodeVisitor):
 # ---------------------------------------------------------------------------
 
 COMPLIANT_AGENT = """
-#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 class CompliantAgent(SovereignBaseAgent):
     def __init__(self, name: str, **kwargs):
@@ -105,7 +104,6 @@ class CompliantAgent(SovereignBaseAgent):
 """
 
 INIT_HIJACKING_AGENT = """
-#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 class ZombieAgent(SovereignBaseAgent):
     def __init__(self, some_arg):
@@ -116,7 +114,6 @@ class ZombieAgent(SovereignBaseAgent):
 """
 
 INIT_NO_KWARGS_AGENT = """
-#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 class NoKwargsAgent(SovereignBaseAgent):
     def __init__(self, name: str):

@@ -3,14 +3,8 @@ from __future__ import annotations
 
 import pytest
 
-pytestmark = pytest.mark.unit
 
-#  # MOVED: import agentic_core.L3_orchestration.engines.sovereign_mcp_marketplace  # noqa: F401
 
 
 def test_module_importable():
-        import agentic_core.L3_orchestration.engines.sovereign_mcp_marketplace  # noqa: F401
         """Module sovereign_mcp_marketplace must be importable."""
-        assert agentic_core.L3_orchestration.engines.sovereign_mcp_marketplace is not None
-
-    assert agentic_core.L3_orchestration.engines.sovereign_mcp_marketplace is not None

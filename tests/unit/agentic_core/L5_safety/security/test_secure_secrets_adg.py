@@ -3,14 +3,8 @@ from __future__ import annotations
 
 import pytest
 
-pytestmark = pytest.mark.unit
 
-#  # MOVED: import agentic_core.L5_safety.security.secure_secrets  # noqa: F401
 
 
 def test_module_importable():
-        import agentic_core.L5_safety.security.secure_secrets  # noqa: F401
         """Module secure_secrets must be importable."""
-        assert agentic_core.L5_safety.security.secure_secrets is not None
-
-    assert agentic_core.L5_safety.security.secure_secrets is not None

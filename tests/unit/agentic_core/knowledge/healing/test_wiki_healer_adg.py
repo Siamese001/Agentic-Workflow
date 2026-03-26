@@ -29,4 +29,3 @@ def test_module_is_namespace_package(mod):
     public = [n for n in dir(mod) if not n.startswith("_")]
     # Empty namespace packages are valid - just verify import succeeded
     assert mod is not None
-

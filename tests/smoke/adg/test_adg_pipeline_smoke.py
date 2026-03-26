@@ -101,7 +101,6 @@ def test_sqlite_nonzero_counts():
 def test_adg_artifact_builder_imports():
     """Verify agentic_core.adg.artifact.builder imports."""
     try:
-#  # MOVED: from agentic_core.adg.artifact.builder import ADGArtifactBuilder
         assert ADGArtifactBuilder is not None
     except ImportError as e:
         pytest.skip(f"ADGArtifactBuilder not available: {e}")

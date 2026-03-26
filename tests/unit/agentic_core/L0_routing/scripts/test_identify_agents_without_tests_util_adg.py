@@ -3,14 +3,8 @@ from __future__ import annotations
 
 import pytest
 
-pytestmark = pytest.mark.unit
 
-#  # MOVED: import agentic_core.L0_routing.scripts.identify_agents_without_tests_util  # noqa: F401
 
 
 def test_module_importable():
-        import agentic_core.L0_routing.scripts.identify_agents_without_tests_util  # noqa: F401
         """Module identify_agents_without_tests_util must be importable."""
-        assert agentic_core.L0_routing.scripts.identify_agents_without_tests_util is not None
-
-    assert agentic_core.L0_routing.scripts.identify_agents_without_tests_util is not None

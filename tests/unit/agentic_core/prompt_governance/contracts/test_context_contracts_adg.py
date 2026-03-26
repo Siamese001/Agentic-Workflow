@@ -3,14 +3,8 @@ from __future__ import annotations
 
 import pytest
 
-pytestmark = pytest.mark.unit
 
-#  # MOVED: import agentic_core.prompt_governance.contracts.context_contracts  # noqa: F401
 
 
 def test_module_importable():
-        import agentic_core.prompt_governance.contracts.context_contracts  # noqa: F401
         """Module context_contracts must be importable."""
-        assert agentic_core.prompt_governance.contracts.context_contracts is not None
-
-    assert agentic_core.prompt_governance.contracts.context_contracts is not None

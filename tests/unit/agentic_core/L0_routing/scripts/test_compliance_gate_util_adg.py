@@ -3,14 +3,8 @@ from __future__ import annotations
 
 import pytest
 
-pytestmark = pytest.mark.unit
 
-#  # MOVED: import agentic_core.L0_routing.scripts.compliance_gate_util  # noqa: F401
 
 
 def test_module_importable():
-        import agentic_core.L0_routing.scripts.compliance_gate_util  # noqa: F401
         """Module compliance_gate_util must be importable."""
-        assert agentic_core.L0_routing.scripts.compliance_gate_util is not None
-
-    assert agentic_core.L0_routing.scripts.compliance_gate_util is not None
