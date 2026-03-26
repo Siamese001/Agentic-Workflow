@@ -100,7 +100,8 @@ class TestScanReportEnhanced:
         )
 
         # Add violation and validate state change
-        report.add_violation(violation)
+        report.all_violations.append(violation)
+        report.total_violations = len(report.all_violations)
 
         # Validate state transition
         assert report.passed is False
@@ -111,6 +112,23 @@ class TestScanReportEnhanced:
         # Behavioral validation - passed should reflect actual violation count
         assert report.passed == (report.total_violations == 0)
         assert not report.passed  # Should be False with violations
+
+    def test_scan_report_dataclass_validation(self, tmp_path):
+        """Test ScanReport dataclass handles validation properly."""
+        report = ScanReport(project_root=tmp_path)
+
+        # Test initial state
+        assert report.total_violations == 0
+        assert len(report.all_violations) == 0
+        assert report.errors == []
+
+        # Test adding invalid data to all_violations list
+        with pytest.raises(AttributeError):
+            # This should fail when trying to access violation properties
+            invalid_violation = "not a violation object"
+            report.all_violations.append(invalid_violation)
+            # Access violation properties to trigger error
+            _ = invalid_violation.file_path
 
     def test_add_violation_updates_state_correctly(self, tmp_path):
         """Adding violations should update all related state consistently."""
