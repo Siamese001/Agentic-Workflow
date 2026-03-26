@@ -53,9 +53,9 @@ from pathlib import Path
 import pytest
 
 #  # MOVED: from agentic_core.L0_routing.config.path_constants import (
-    AGENTIC_CORE_DIR,
-    SYSTEM_LEARNING_DIR,
-)
+#     AGENTIC_CORE_DIR,
+#     SYSTEM_LEARNING_DIR,
+# )
 
 pytestmark = pytest.mark.guardian
 
@@ -206,9 +206,17 @@ class TestRealRepoSingletonInvariant:
             ("SovereignLLMGateway", "SovereignLLMGateway"),
         ],
     )
-    def test_singleton_class_has_exactly_one_owner(self, cls_name, expected_stem):
-                from agentic_core.L0_routing.config.path_constants import (
-                owners: list[str] = []
+
+
+@pytest.mark.parametrize(
+    "cls_name, expected_stem",
+    [
+        ("UniversalWriteGateway", "UniversalWriteGateway"),
+        ("SovereignLLMGateway", "SovereignLLMGateway"),
+    ],
+)
+def test_singleton_class_has_exactly_one_owner(self, cls_name, expected_stem):
+    owners: list[str] = []
                 for scan_root in _SSOT_SCAN_ROOTS:
                     if not scan_root.exists():
                         continue
