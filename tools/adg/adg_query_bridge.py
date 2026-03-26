@@ -18,7 +18,13 @@ import warnings
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Union
 
-from mcp1_adg_redis import adg_status, adg_edge_fanout, adg_edge_fanin, adg_node, adg_nodes_by_layer, adg_violations, adg_nodes_by_file
+# Try to import ADG Redis MCP
+try:
+    from mcp1_adg_redis import adg_status, adg_edge_fanout, adg_edge_fanin, adg_node, adg_nodes_by_layer, adg_violations, adg_nodes_by_file
+    ADG_REDIS_AVAILABLE = True
+except ImportError as e:
+    warnings.warn(f"ADG Redis MCP unavailable: {e}")
+    ADG_REDIS_AVAILABLE = False
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
@@ -82,6 +88,10 @@ class ADGQueryBridge:
     def _check_adg_status(self) -> Dict[str, Any]:
         """Check ADG Redis cache status."""
         if self._cache_status is None:
+            if not ADG_REDIS_AVAILABLE:
+                self._cache_status = {"is_fresh": False, "error": "ADG Redis MCP unavailable"}
+                return self._cache_status
+                
             try:
                 self._cache_status = adg_status()
                 logger.info(f"ADG Redis status: {'FRESH' if self._cache_status.get('is_fresh') else 'STALE'}")
@@ -133,13 +143,14 @@ class ADGQueryBridge:
             return results[0]["id"]
         
         # Try Redis if available
-        try:
-            # This is a simplified approach - in practice might need more sophisticated matching
-            node = adg_node(symbol)
-            if node:
-                return node.get("id")
-        except Exception:
-            pass
+        if ADG_REDIS_AVAILABLE:
+            try:
+                # This is a simplified approach - in practice might need more sophisticated matching
+                node = adg_node(symbol)
+                if node:
+                    return node.get("id")
+            except Exception:
+                pass
         
         return None
     
@@ -148,7 +159,7 @@ class ADGQueryBridge:
         status = self._check_adg_status()
         
         # Try Redis first if cache is fresh
-        if status.get("is_fresh"):
+        if status.get("is_fresh") and ADG_REDIS_AVAILABLE:
             try:
                 node_id = self._find_node_by_symbol(symbol)
                 if node_id:
@@ -180,7 +191,7 @@ class ADGQueryBridge:
         status = self._check_adg_status()
         
         # Try Redis first if cache is fresh
-        if status.get("is_fresh"):
+        if status.get("is_fresh") and ADG_REDIS_AVAILABLE:
             try:
                 node_id = self._find_node_by_symbol(module)
                 if node_id:
@@ -212,7 +223,7 @@ class ADGQueryBridge:
         status = self._check_adg_status()
         
         # Try Redis first if cache is fresh
-        if status.get("is_fresh"):
+        if status.get("is_fresh") and ADG_REDIS_AVAILABLE:
             try:
                 node_ids = adg_nodes_by_layer(layer)
                 nodes = []
@@ -249,7 +260,7 @@ class ADGQueryBridge:
         status = self._check_adg_status()
         
         # Try Redis first if cache is fresh
-        if status.get("is_fresh"):
+        if status.get("is_fresh") and ADG_REDIS_AVAILABLE:
             try:
                 violations_data = adg_violations()
                 violations = []

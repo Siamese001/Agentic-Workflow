@@ -71,6 +71,10 @@ class ADGImportValidator:
         violations = []
         file_path_obj = Path(file_path)
         
+        # Convert to absolute path if relative
+        if not file_path_obj.is_absolute():
+            file_path_obj = self.repo_root / file_path_obj
+        
         if not file_path_obj.exists():
             return [ImportViolation(file_path, 0, "", "file_not_found", f"File not found: {file_path}")]
         
@@ -80,8 +84,9 @@ class ADGImportValidator:
             else:
                 violations = self._validate_file_with_ast_fallback(file_path_obj)
         except Exception as e:
+            rel_path = str(file_path_obj.relative_to(self.repo_root)) if file_path_obj.is_relative_to(self.repo_root) else str(file_path_obj)
             violations.append(ImportViolation(
-                file_path=str(file_path_obj.relative_to(self.repo_root)),
+                file_path=rel_path,
                 line_number=0,
                 import_module="",
                 violation_type="validation_error",
@@ -94,7 +99,7 @@ class ADGImportValidator:
     def _validate_file_with_adg(self, file_path: Path) -> List[ImportViolation]:
         """Validate file imports using ADG."""
         violations = []
-        rel_path = str(file_path.relative_to(self.repo_root))
+        rel_path = str(file_path.relative_to(self.repo_root)) if file_path.is_relative_to(self.repo_root) else str(file_path)
         
         try:
             # Get imports from ADG for this file
@@ -211,7 +216,7 @@ class ADGImportValidator:
     def _validate_file_with_ast_fallback(self, file_path: Path) -> List[ImportViolation]:
         """Validate file imports using AST fallback when ADG is unavailable."""
         violations = []
-        rel_path = str(file_path.relative_to(self.repo_root))
+        rel_path = str(file_path.relative_to(self.repo_root)) if file_path.is_relative_to(self.repo_root) else str(file_path)
         
         try:
             imports = self._extract_imports_ast(file_path)
