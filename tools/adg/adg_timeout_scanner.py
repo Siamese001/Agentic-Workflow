@@ -274,11 +274,7 @@ class ADGTimeoutScanner:
                             if "timeout_guard" not in context and "with timeout" not in context.lower():
                                 violations.append(
                                     TimeoutViolation(
-                                        file_path=str(
-                                            py_file.relative_to(self.repo_root)
-                                            if py_file.is_relative_to(self.repo_root)
-                                            else py_file
-                                        ),
+                                        file_path=str(py_file) if not py_file.is_relative_to(self.repo_root) else str(py_file.relative_to(self.repo_root)),
                                         line_number=line_num,
                                         symbol="while True",
                                         violation_type="while_true_no_timeout_guard",

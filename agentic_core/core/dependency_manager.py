@@ -210,9 +210,7 @@ class DependencyManager:
         return module
 
     def _record_failure(self, name: str) -> None:
-        """Record a failure for circuit breaker logic."""
-        import time
-
+        """Record a failure for circuit breaker tracking."""
         if name not in self._circuit_breakers:
             return
 

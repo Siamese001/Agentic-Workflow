@@ -68,6 +68,10 @@ class TestQualityAnalyzer:
             content = f.read()
             lines = content.split("\n")
 
+        # Track when we're inside a test function
+        current_test_start = -1
+        current_test_name = None
+        
         for i, line in enumerate(lines, 1):
             # Check for weak assertions using proper context detection
             for pattern in self.weak_assertion_patterns:
@@ -84,12 +88,36 @@ class TestQualityAnalyzer:
                         )
                     )
 
-            # Check for missing exception testing
-            if "def test_" in line and ("try:" in line or "with" in line):
-                if not any("assert" in l for l in lines[i : i + 10]):
+            # Track test function boundaries
+            if "def test_" in line:
+                current_test_start = i
+                current_test_name = self._extract_test_name(lines[:i])
+                continue
+                
+            # Reset when we hit next function/class
+            if line.strip().startswith(("def ", "class ", "async def ")) and current_test_start > 0:
+                current_test_start = -1
+                current_test_name = None
+                continue
+
+            # Check for try/with blocks within test functions
+            if current_test_start > 0 and ("try:" in line or "with" in line):
+                # Look for asserts in the rest of the test function
+                has_assert = False
+                for j in range(i, min(len(lines), current_test_start + 50)):  # Search within reasonable scope
+                    line_content = lines[j].strip()
+                    # Only count actual assert statements, not 'pass' or comments containing 'assert'
+                    if line_content.startswith("assert") or " assert " in line_content:
+                        has_assert = True
+                        break
+                    # Stop at next function/class
+                    if line_content.startswith(("def ", "class ", "async def ")):
+                        break
+                
+                if not has_assert:
                     issues.append(
                         TestQualityIssue(
-                            test_name=self._extract_test_name(lines[:i]),
+                            test_name=current_test_name,
                             file_path=file_path,
                             issue_type="missing_exception_testing",
                             description="Missing exception testing in try/with block",
