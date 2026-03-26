@@ -430,6 +430,177 @@ def cmd_scope(args: argparse.Namespace, idx: ADGIndex) -> None:
         print("# Run full suite (no scoping possible)", file=sys.stderr)
 
 
+def cmd_collection_safety(args: argparse.Namespace, idx: ADGIndex) -> None:
+    """Analyze test file collection safety via ADG import graph.
+
+    Queries existing ADGIndex.imports and ADG data to classify each test file:
+    - RESOLVABLE: All imports exist and are reachable
+    - MISSING: Target module does not exist in ADG
+    - SYNTAX_ERROR: Target module has syntax errors
+    - CIRCULAR: Target module is in an import cycle
+    - STALE_PATH: Module exists but filesystem path differs from ADG path
+
+    Maps to PyTest Lifecycle triage:
+    - Check 1.1 (MISSING) → production_bug_fix
+    - Check 1.2 (STALE_PATH) → stale_reference_fix
+    - Neither → ANTI_PATTERN → BLOCKED
+    """
+    from pathlib import Path
+
+    # Build lookup sets from ADG data
+    all_modules = set(idx.result.modules)
+    syntax_errors = set(idx.result.syntax_errors)
+
+    # Build cycle detection set
+    cycle_nodes = {edge.to_name for edge in idx.result.edges if edge.relation_type == "in_cycle"}
+
+    # Collect all test files from ADG
+    test_files = sorted(
+        {
+            e.source_file.replace("\\", "/")
+            for e in idx.result.edges
+            if "tests/" in e.source_file.replace("\\", "/")
+        }
+    )
+
+    # Filter by layer if requested
+    if args.layer:
+        test_files = [tf for tf in test_files if idx.layer_of(tf) == args.layer]
+
+    # Analyze each test file
+    file_reports = []
+    summary = {
+        "files_scanned": len(test_files),
+        "collection_safe": 0,
+        "collection_fatal": 0,
+        "by_category": {
+            "resolvable": 0,
+            "missing": 0,
+            "syntax_error": 0,
+            "circular": 0,
+            "stale_path": 0,
+            "anti_pattern": 0,
+        },
+        "by_layer": defaultdict(int),
+    }
+
+    repo_root = Path(".")
+
+    for test_file in test_files:
+        # Get all modules this test file imports
+        imported_modules = idx.imports.get(test_file, set())
+
+        file_status = "resolvable"
+        issues = []
+
+        for module in imported_modules:
+            # Convert ADG module format to filesystem path if needed
+            if module.startswith("ADG::Module::"):
+                module_path = module[13:]  # Strip prefix
+            else:
+                module_path = module
+
+            # Check each category
+            if module_path not in all_modules:
+                file_status = "missing"
+                issues.append(f"MISSING: {module_path}")
+            elif module_path in syntax_errors:
+                file_status = "syntax_error"
+                issues.append(f"SYNTAX_ERROR: {module_path}")
+            elif any(m in cycle_nodes for m in imported_modules):
+                file_status = "circular"
+                issues.append(f"CIRCULAR: {module_path}")
+            else:
+                # Check if filesystem path matches ADG path
+                fs_path = repo_root / f"{module_path}.py"
+                if not fs_path.exists():
+                    # Try as package
+                    fs_path = repo_root / module_path / "__init__.py"
+
+                if not fs_path.exists():
+                    file_status = "stale_path"
+                    issues.append(f"STALE_PATH: {module_path}")
+
+        # Determine if collection-safe
+        is_safe = file_status == "resolvable"
+
+        # Map to PyTest Lifecycle triage
+        triage_category = "resolvable"
+        if file_status == "missing":
+            triage_category = "production_bug_fix"  # Check 1.1
+        elif file_status == "stale_path":
+            triage_category = "stale_reference_fix"  # Check 1.2
+        elif file_status in ["syntax_error", "circular"]:
+            triage_category = "anti_pattern"  # BLOCKED
+
+        # Update summary
+        summary["by_category"][file_status] += 1
+        summary["by_layer"][idx.layer_of(test_file)] += 1
+        if is_safe:
+            summary["collection_safe"] += 1
+        else:
+            summary["collection_fatal"] += 1
+
+        file_reports.append(
+            {
+                "file": test_file,
+                "layer": idx.layer_of(test_file),
+                "status": file_status,
+                "collection_safe": is_safe,
+                "triage_category": triage_category,
+                "issues": issues,
+                "imports_count": len(imported_modules),
+            }
+        )
+
+    # Build final report
+    report = {
+        "meta": {
+            "scanner_version": idx.result.manifest.scanner_version,
+            "total_modules": len(all_modules),
+            "syntax_errors": len(syntax_errors),
+            "cycle_nodes": len(cycle_nodes),
+        },
+        "summary": summary,
+        "files": file_reports,
+    }
+
+    # Output
+    if args.json:
+        out_path = Path(args.json)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+        print(f"Collection safety report written to: {out_path}", file=sys.stderr)
+    else:
+        # Summary output
+        print("Collection Safety Analysis")
+        print("=========================")
+        print(f"Files scanned: {summary['files_scanned']}")
+        print(f"Collection-safe: {summary['collection_safe']}")
+        print(f"Collection-fatal: {summary['collection_fatal']}")
+        print()
+        print("By category:")
+        for cat, count in summary["by_category"].items():
+            if count > 0:
+                print(f"  {cat}: {count}")
+        print()
+        print("By layer:")
+        for layer, count in sorted(summary["by_layer"].items()):
+            print(f"  {layer}: {count}")
+        print()
+
+        # Show problematic files
+        problematic = [f for f in file_reports if not f["collection_safe"]]
+        if problematic:
+            print("Problematic files (collection-fatal):")
+            for f in problematic[:20]:  # Show first 20
+                print(f"  {f['file']} [{f['status']}] -> {f['triage_category']}")
+                for issue in f["issues"]:
+                    print(f"    {issue}")
+            if len(problematic) > 20:
+                print(f"  ... and {len(problematic) - 20} more")
+
+
 def cmd_groups(args: argparse.Namespace, idx: ADGIndex) -> None:
     """Partition test files into N balanced groups by layer."""
     n = args.workers
@@ -558,6 +729,11 @@ def _build_parser() -> argparse.ArgumentParser:
     rpt = sub.add_parser("report", help="Write full JSON report")
     rpt.add_argument("--out", default="docs/reports/plans/adg_test_report.json")
 
+    # collection-safety
+    cs = sub.add_parser("collection-safety", help="Analyze test file collection safety via ADG")
+    cs.add_argument("--layer", default=None, help="Filter to a specific layer (e.g. L0)")
+    cs.add_argument("--json", default=None, help="Output JSON report to file")
+
     return p
 
 
@@ -586,6 +762,8 @@ def main() -> None:
         cmd_groups(args, idx)
     elif args.command == "report":
         cmd_report(args, idx)
+    elif args.command == "collection-safety":
+        cmd_collection_safety(args, idx)
 
 
 if __name__ == "__main__":
