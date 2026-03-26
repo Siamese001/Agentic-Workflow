@@ -225,11 +225,13 @@ _emit_proposal_commits_routing("p1", "orchestrator_engine", "routing_commit")
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import emit_determinism_digest
 
 # Runtime ADG imports
+# guardian: allow-silent-degradation - Optional runtime ADG
 try:
     from apps_shared.utils.open_telemetry_tracing_adapter_util import get_tracer
     from system_learning.runtime_adg.materializer import RuntimeADGMaterializer
     from system_learning.runtime_adg.store import FileBackedRuntimeADGStore
     RUNTIME_ADG_AVAILABLE = True
+# guardian: allow-silent-degradation - Optional runtime ADG
 except ImportError:
     RUNTIME_ADG_AVAILABLE = False
 
@@ -495,6 +497,7 @@ class Orchestrator(SovereignBaseAgent):
                 from agentic_core.L3_orchestration.reasoning.SafetyStrategy import SafetyStrategy
 
                 self._strategies = {"safety": SafetyStrategy(), "rl": RLStrategy()}
+            # guardian: allow-silent-degradation - Optional strategies
             except ImportError as e:
                 self.logger.warning(f"Could not load strategies: {e}")
                 self._strategies = {}
@@ -710,7 +713,7 @@ class Orchestrator(SovereignBaseAgent):
                     "recommendations": credential_results.get("recommendations", []),
                 },
             )
-        # guardian: allow-silent-swallow - optional dependency
+        # guardian: allow-silent-degradation - Optional credential scanner
         except ImportError:
             self.logger.warning("[COMPLIANCE] CredentialScannerAgent not available")
             return AgentResult(
