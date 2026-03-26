@@ -115,7 +115,7 @@ _proof_emitter = ExecutionProofEmitter("L5.GovernanceAgent")
 
 try:
     from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
-except ImportError:  # guardian: allow-silent-swallow
+except ImportError:  # guardian: allow-silent-degradation - Optional MCP hardened mixin
 
     class MCPHardenedMixin:
         pass
@@ -509,6 +509,7 @@ class GovernanceAgent(SovereignBaseAgent):
                 ROOT_PROTECTED_FILES,
                 SOVEREIGN_REGISTRY,
             )
+        # guardian: allow-silent-degradation - Optional structure blueprint
         except ImportError:
             from agentic_core.config.core.registry_config import SOVEREIGN_REGISTRY
 
@@ -565,6 +566,7 @@ class GovernanceAgent(SovereignBaseAgent):
                 _mod = importlib.import_module("agentic_core.L5_safety.reasoning.hierarchy_healer")
                 HierarchyAgent = _mod.HierarchyAgent
                 self._hierarchy_agent = HierarchyAgent(self.root_dir)
+            # guardian: allow-silent-degradation - Optional hierarchy agent
             except ImportError:
                 pass
         return self._hierarchy_agent
@@ -578,6 +580,7 @@ class GovernanceAgent(SovereignBaseAgent):
                 from agentic_core.L5_safety.reasoning.CodeHealerAgent import create_legacy_import_healer
 
                 self._import_agent = create_legacy_import_healer()
+            # guardian: allow-silent-degradation - Optional import healer
             except ImportError:
                 pass
         return self._import_agent
@@ -681,6 +684,7 @@ class GovernanceAgent(SovereignBaseAgent):
                 if result.success:
                     return f"MOVED to scripts/{target.name}"
                 elif result.approval_status == "DENIED":
+                    # guardian: allow-silent-degradation - User declined move
                     return "SKIPPED: User declined move"
                 else:
                     LOGGER.error(f"Failed to move {file_path}: {result.error}")
