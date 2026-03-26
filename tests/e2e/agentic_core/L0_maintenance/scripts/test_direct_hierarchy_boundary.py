@@ -179,13 +179,15 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 
 def test_structural_move():
-    from agentic_core.L0_routing.config.path_constants import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    """Test Case A: Structural re-alignment (should be automatic)."""
-    print("\n" + "=" * 80)
-    print("TEST CASE A: Structural Re-alignment (Automatic)")
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        """Test Case A: Structural re-alignment (should be automatic)."""
+        print("\n" + "=" * 80)
+        print("TEST CASE A: Structural Re-alignment (Automatic)")
+        print("=" * 80)
+
     print("=" * 80)
 
     agent = HierarchyAgent(project_root=PROJECT_ROOT, healing_enabled=True, auto_approve=True)

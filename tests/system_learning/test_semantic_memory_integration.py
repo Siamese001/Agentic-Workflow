@@ -212,14 +212,16 @@ class TestIncidentLifecycle:
     """Test realistic end-to-end workflow: mutation → healing → incident."""
 
     def test_mutation_triggers_healing_creates_incident(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.embedding_corpus_extraction import write_jsonl_records
-        from system_learning.engines.semantic_memory_registry import SemanticMemoryRegistry
-        from system_learning.types.semantic_memory_types import (
-        """Simulate UWG mutation → healer invocation → incident bundle creation."""
-        registry = SemanticMemoryRegistry.get()
-        trace_id = "trace-lifecycle-001"
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.embedding_corpus_extraction import write_jsonl_records
+                from system_learning.engines.semantic_memory_registry import SemanticMemoryRegistry
+                from system_learning.types.semantic_memory_types import (
+                """Simulate UWG mutation → healer invocation → incident bundle creation."""
+                registry = SemanticMemoryRegistry.get()
+                trace_id = "trace-lifecycle-001"
+                policy_hash = "pol-abc123"
+
         policy_hash = "pol-abc123"
 
         # Step 1: UWG records a mutation attempt

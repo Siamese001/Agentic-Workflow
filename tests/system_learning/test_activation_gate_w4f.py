@@ -181,15 +181,17 @@ class TestActivationGateW4F:
     """Test W4-F Retrieval Profile Activation Gate functionality."""
 
     def test_refuse_without_approval(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.l4_state_writer import L4StateWriter
-        from system_learning.engines.retrieval_profile import RetrievalProfile
-        from system_learning.engines.retrieval_profile_activation_gate import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import system_learning.engines.retrieval_profile_activation_gate as gate_module
-        """Test that activation refuses when proposal exists but no approval."""
-        gate = RetrievalProfileActivationGate()
-        l4_writer = Mock(spec=L4StateWriter)
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.l4_state_writer import L4StateWriter
+                from system_learning.engines.retrieval_profile import RetrievalProfile
+                from system_learning.engines.retrieval_profile_activation_gate import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import system_learning.engines.retrieval_profile_activation_gate as gate_module
+                """Test that activation refuses when proposal exists but no approval."""
+                gate = RetrievalProfileActivationGate()
+                l4_writer = Mock(spec=L4StateWriter)
+                now_utc = 1234567890
+
         now_utc = 1234567890
 
         # Try to activate unapproved proposal

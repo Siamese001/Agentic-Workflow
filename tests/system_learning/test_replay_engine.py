@@ -190,14 +190,16 @@ class TestW5ReplayEngine:
     """Test W5 Deterministic Replay Engine functionality."""
 
     def test_determinism(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.deterministic_replay_engine import DeterministicReplayEngine
-        from system_learning.engines.l4_state_writer import L4StateWriter
-        from system_learning.engines.retrieval_profile import RetrievalProfile
-        from system_learning.engines.retrieval_profile_activation_gate import RetrievalProfileActivationGate
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import system_learning.engines.deterministic_replay_engine as engine_module
-        """Test that two independent runs produce identical W5-REPLAY-DIGEST."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.deterministic_replay_engine import DeterministicReplayEngine
+                from system_learning.engines.l4_state_writer import L4StateWriter
+                from system_learning.engines.retrieval_profile import RetrievalProfile
+                from system_learning.engines.retrieval_profile_activation_gate import RetrievalProfileActivationGate
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import system_learning.engines.deterministic_replay_engine as engine_module
+                """Test that two independent runs produce identical W5-REPLAY-DIGEST."""
+                engine = DeterministicReplayEngine()
+
         engine = DeterministicReplayEngine()
 
         # Create test profiles

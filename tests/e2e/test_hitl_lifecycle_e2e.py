@@ -119,26 +119,28 @@ class TestFullHITLLifecycle:
     """Exercises the complete HITL chain end-to-end."""
 
     def test_confidence_gate_to_dpo_to_rlhf_pipeline(
-        from agentic_core.adg.runtime.event_graph import RuntimeGraph
-        from agentic_core.adg.runtime.hitl_graph import (
-        from agentic_core.L5_safety.enforcement.hitl_gate import (
-        from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
-        from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import (
-        from agentic_core.L6_observability.types.dpo_types import (
-        from agentic_core.mixins.hitl_mixin import ApprovalStatus, HITLMixin, RiskLevel
-        from system_learning.confidence.engine import HealingConfidenceScorer
-        from system_learning.confidence.types import HealingAttempt
-        from system_learning.engines.hitl_decision_logger import log_hitl_decision
-        from system_learning.engines.rlhf_optimizer import (
-        from system_learning.engines.rlhf_optimizer_impl import DefaultRLHFOptimizer
-        from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
-        from system_learning.engines.rlhf_optimizer import ChangePackage
-        from system_learning.engines.rlhf_optimizer_impl import (
-        from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate
-        from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
-    """Test confidence_gate_to_dpo_to_rlhf_pipeline runtime behavior."""
-    # Arrange
-    # TODO: Set up workflow context
+                from agentic_core.adg.runtime.event_graph import RuntimeGraph
+                from agentic_core.adg.runtime.hitl_graph import (
+                from agentic_core.L5_safety.enforcement.hitl_gate import (
+                from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
+                from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import (
+                from agentic_core.L6_observability.types.dpo_types import (
+                from agentic_core.mixins.hitl_mixin import ApprovalStatus, HITLMixin, RiskLevel
+                from system_learning.confidence.engine import HealingConfidenceScorer
+                from system_learning.confidence.types import HealingAttempt
+                from system_learning.engines.hitl_decision_logger import log_hitl_decision
+                from system_learning.engines.rlhf_optimizer import (
+                from system_learning.engines.rlhf_optimizer_impl import DefaultRLHFOptimizer
+                from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
+                from system_learning.engines.rlhf_optimizer import ChangePackage
+                from system_learning.engines.rlhf_optimizer_impl import (
+                from agentic_core.L5_safety.enforcement.hitl_gate import HitlGate
+                from agentic_core.L5_safety.hitl.hitl_escalation_activator import (
+            """Test confidence_gate_to_dpo_to_rlhf_pipeline runtime behavior."""
+            # Arrange
+            # TODO: Set up workflow context
+            workflow_input = {}  # Replace with actual workflow input
+
     workflow_input = {}  # Replace with actual workflow input
 
     # Act

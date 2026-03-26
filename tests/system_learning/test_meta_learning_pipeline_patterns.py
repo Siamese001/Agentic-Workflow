@@ -188,12 +188,14 @@ class TestMetaLearningPipelinePatterns:
     """Test pattern analysis integration in meta-learning pipeline."""
 
     def test_pattern_analysis_disabled_when_embedding_disabled(self) -> None:
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
-        from system_learning.engines.pattern_analysis_engine import (
-        from system_learning.pipelines.meta_learning_pipeline import (
-        """T1: Pattern analysis should be disabled when embeddings are disabled."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
+                from system_learning.engines.pattern_analysis_engine import (
+                from system_learning.pipelines.meta_learning_pipeline import (
+                """T1: Pattern analysis should be disabled when embeddings are disabled."""
+                engine = PatternAnalysisEngine()
+
         engine = PatternAnalysisEngine()
 
         # Create mock dependencies with pattern engine

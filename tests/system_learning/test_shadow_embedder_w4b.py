@@ -196,29 +196,30 @@ class TestShadowEmbedderW4B:
         get_retrieval_profile_manager().clear_cache()
 
     def test_shadow_embedder_non_influential(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.retrieval_profile import RetrievalProfile
-        from system_learning.pipelines.meta_learning_pipeline import _retrieve_semantic_context
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
-        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
-        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
-        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
-        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
-        import system_learning.pipelines.meta_learning_pipeline as pipeline
-        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
-        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
-        """Test shadow embedder does not affect retrieval ranking."""
-        # Create profile without shadow embedder
-        profile_no_shadow = RetrievalProfile(
-            profile_id="test-no-shadow",
-            primary_embedder_id="test-embedder",
-            embedding_dim=4,
-            similarity_cutoff=0.7,
-            top_k=5,
-            influence_cap=0.25,
-            normalization_policy="l2",
-        )
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.retrieval_profile import RetrievalProfile
+                from system_learning.pipelines.meta_learning_pipeline import _retrieve_semantic_context
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+                from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+                from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+                from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+                from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+                import system_learning.pipelines.meta_learning_pipeline as pipeline
+                from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+                from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+                """Test shadow embedder does not affect retrieval ranking."""
+                # Create profile without shadow embedder
+                profile_no_shadow = RetrievalProfile(
+                    profile_id="test-no-shadow",
+                    primary_embedder_id="test-embedder",
+                    embedding_dim=4,
+                    similarity_cutoff=0.7,
+                    top_k=5,
+                    influence_cap=0.25,
+                    normalization_policy="l2",
+                )
+
 
         # Create profile with shadow embedder
         profile_with_shadow = RetrievalProfile(

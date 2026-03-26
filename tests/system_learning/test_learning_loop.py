@@ -192,19 +192,22 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
 def test_fallback_vector_never_none():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
-    from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
-    from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
-    from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
-    from system_learning.types.healing_outcome_types import HealingOutcomeEvent
-    from system_learning.types.healing_outcome_types import HealingOutcomeEvent
-    from system_learning.engines.local_faiss_store import LocalFAISSStore
-    from system_learning.types.index_build_metadata_types import IndexBuildMetadata
-    from system_learning.engines.local_faiss_store import LocalFAISSStore
-    from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
-    from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+        from system_learning.engines.local_faiss_store import LocalFAISSStore
+        from system_learning.types.index_build_metadata_types import IndexBuildMetadata
+        from system_learning.engines.local_faiss_store import LocalFAISSStore
+        from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+        from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+        from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+    #  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
+
 #  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
 
     vec = generate_fallback_vector("IMPORT_BOUNDARY_VIOLATION unknown_agent")

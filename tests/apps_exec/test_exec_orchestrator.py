@@ -21,20 +21,22 @@ import pytest
 
 class TestExecTypes:
     def test_audience_persona_values(self) -> None:
-        from apps_exec.types.exec_types import (
-        from apps_exec.validators.style_gate_validator import StyleGateValidator
-        from apps_exec.validators.style_gate_validator import StyleGateValidator
-        from apps_exec.validators.style_gate_validator import StyleGateValidator
-        from apps_exec.validators.style_gate_validator import StyleGateValidator
-        from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
-        from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
-        from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
-        from apps_exec.config.agent_spec_config import load_exec_specs
-        from apps_exec.config.reasoning_toggles_config import DEFAULT_TOGGLES
-        from apps_exec.config.agent_spec_config import load_exec_specs
-        from apps_exec.spine.exec_spine_adapter import ExecSpineAdapter
-        assert AudiencePersona.RECRUITER.value == "recruiter"
-        assert AudiencePersona.CTO.value == "cto"
+                from apps_exec.types.exec_types import (
+                from apps_exec.validators.style_gate_validator import StyleGateValidator
+                from apps_exec.validators.style_gate_validator import StyleGateValidator
+                from apps_exec.validators.style_gate_validator import StyleGateValidator
+                from apps_exec.validators.style_gate_validator import StyleGateValidator
+                from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
+                from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
+                from apps_exec.reasoning.ExecOrchestrator import ExecOrchestrator
+                from apps_exec.config.agent_spec_config import load_exec_specs
+                from apps_exec.config.reasoning_toggles_config import DEFAULT_TOGGLES
+                from apps_exec.config.agent_spec_config import load_exec_specs
+                from apps_exec.spine.exec_spine_adapter import ExecSpineAdapter
+                assert AudiencePersona.RECRUITER.value == "recruiter"
+                assert AudiencePersona.CTO.value == "cto"
+                assert AudiencePersona.BOARD.value == "board"
+
         assert AudiencePersona.BOARD.value == "board"
 
     def test_brief_tone_values(self) -> None:

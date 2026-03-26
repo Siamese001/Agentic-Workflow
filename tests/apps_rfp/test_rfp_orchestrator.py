@@ -22,24 +22,26 @@ import pytest
 
 class TestRfpTypes:
     def test_proposal_status_values(self) -> None:
-        from apps_rfp.types.rfp_types import (
-        from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
-        from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
-        from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
-        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
-        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
-        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
-        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
-        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
-        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
-        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
-        from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
-        from apps_rfp.config.agent_spec_config import load_rfp_specs
-        from apps_rfp.config.agent_spec_config import load_rfp_specs
-        from apps_rfp.config.reasoning_toggles_config import DEFAULT_TOGGLES
-        from apps_rfp.config.agent_spec_config import load_rfp_specs
-        assert ProposalStatus.COMPLETE.value == "complete"
-        assert ProposalStatus.DRY_RUN.value == "dry_run"
+                from apps_rfp.types.rfp_types import (
+                from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
+                from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
+                from apps_rfp.validators.proposal_gate_validator import ProposalGateValidator
+                from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+                from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+                from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+                from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+                from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+                from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+                from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+                from apps_rfp.reasoning.RfpOrchestrator import RfpOrchestrator
+                from apps_rfp.config.agent_spec_config import load_rfp_specs
+                from apps_rfp.config.agent_spec_config import load_rfp_specs
+                from apps_rfp.config.reasoning_toggles_config import DEFAULT_TOGGLES
+                from apps_rfp.config.agent_spec_config import load_rfp_specs
+                assert ProposalStatus.COMPLETE.value == "complete"
+                assert ProposalStatus.DRY_RUN.value == "dry_run"
+                assert ProposalStatus.FAILED.value == "failed"
+
         assert ProposalStatus.FAILED.value == "failed"
 
     def test_architecture_posture_values(self) -> None:

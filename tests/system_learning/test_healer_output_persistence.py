@@ -279,19 +279,21 @@ class TestWave1HealingSuccessRateStore:
         reset_default_store()
 
     def test_record_success_increments_count(self) -> None:
-        from agentic_core.L0_routing.config.path_constants import SYSTEM_LEARNING_DIR
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.healing_success_rate_store import (
-        from system_learning.engines.in_memory_healing_outcome_intake_store import (
-        from system_learning.stores.version_store import FileBackedVersionStore, InMemoryVersionStore
-        from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeStats
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import agentic_core.L0_routing.scripts.execute_ssot as mod
-        store = HealingSuccessRateStore()
-        store.record_outcome("sig_a", True)
+                from agentic_core.L0_routing.config.path_constants import SYSTEM_LEARNING_DIR
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+                from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+                from system_learning.engines.healing_success_rate_store import (
+                from system_learning.engines.in_memory_healing_outcome_intake_store import (
+                from system_learning.stores.version_store import FileBackedVersionStore, InMemoryVersionStore
+                from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
+                from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeStats
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import agentic_core.L0_routing.scripts.execute_ssot as mod
+                store = HealingSuccessRateStore()
+                store.record_outcome("sig_a", True)
+                assert store.get_counts()["sig_a"] == 1
+
         assert store.get_counts()["sig_a"] == 1
 
     def test_record_failure_increments_count(self) -> None:

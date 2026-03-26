@@ -178,24 +178,25 @@ class TestW4EProposalDeterminism:
     """Test W4-E proposal digest determinism."""
 
     def test_proposal_digest_stable(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.policy_recommendation_engine import (
-        from system_learning.engines.retrieval_profile import RetrievalProfile
-        from system_learning.engines.retrieval_profile_proposal_manager import RetrievalProfileProposalManager
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import system_learning.engines.retrieval_profile_proposal as proposal_module
-        """Test that proposal digests are stable across runs."""
-        # Create fixed policy recommendation
-        recommendation = PolicyRecommendation(
-            profile_id="test-profile",
-            recommended_changes={
-                "similarity_cutoff": 0.842500,  # -0.0075 from 0.85
-                "influence_cap": 0.503000,  # +0.003 from 0.5
-            },
-            rationale="Drift detected: Lower similarity_cutoff from 0.850000 to 0.842500 (drift_score=0.150000); Increase influence_cap from 0.500000 to 0.503000 (drift_score=0.150000)",
-            confidence_score=0.300000,
-            deterministic_digest="4ee35d0874a984a1457095ac1d56a9b819b1b6742e96fd7352393b56d2b47324",
-        )
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.policy_recommendation_engine import (
+                from system_learning.engines.retrieval_profile import RetrievalProfile
+                from system_learning.engines.retrieval_profile_proposal_manager import RetrievalProfileProposalManager
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import system_learning.engines.retrieval_profile_proposal as proposal_module
+                """Test that proposal digests are stable across runs."""
+                # Create fixed policy recommendation
+                recommendation = PolicyRecommendation(
+                    profile_id="test-profile",
+                    recommended_changes={
+                        "similarity_cutoff": 0.842500,  # -0.0075 from 0.85
+                        "influence_cap": 0.503000,  # +0.003 from 0.5
+                    },
+                    rationale="Drift detected: Lower similarity_cutoff from 0.850000 to 0.842500 (drift_score=0.150000); Increase influence_cap from 0.500000 to 0.503000 (drift_score=0.150000)",
+                    confidence_score=0.300000,
+                    deterministic_digest="4ee35d0874a984a1457095ac1d56a9b819b1b6742e96fd7352393b56d2b47324",
+                )
+
 
         # Create active profile
         active_profile = RetrievalProfile(

@@ -181,10 +181,12 @@ class TestPatternAnalysisEngine:
     """Test suite for PatternAnalysisEngine."""
 
     def test_empty_input_returns_empty_summary(self) -> None:
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.pattern_analysis_engine import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """T1: Empty input should return empty summary with deterministic digest."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.pattern_analysis_engine import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """T1: Empty input should return empty summary with deterministic digest."""
+                engine = PatternAnalysisEngine()
+
         engine = PatternAnalysisEngine()
 
         summary = engine.analyze([], [], min_cluster_size=2)

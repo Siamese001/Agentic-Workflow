@@ -186,31 +186,33 @@ class TestShadowDriftW4C:
     """Test W4-C Shadow Drift Analyzer functionality."""
 
     def test_shadow_drift_determinism(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import system_learning.engines.shadow_drift_analyzer as analyzer_module
-        """Test that drift analysis produces identical digests for identical inputs."""
-        # Create fixed shadow telemetry input
-        shadow_records = [
-            {
-                "shadow_embedder_id": "test-shadow-embedder",
-                "primary_embedding_norm": 1.000000,
-                "shadow_embedding_norm": 1.000000,
-                "primary_shadow_cosine": 0.950000,
-            },
-            {
-                "shadow_embedder_id": "test-shadow-embedder",
-                "primary_embedding_norm": 1.000000,
-                "shadow_embedding_norm": 1.000000,
-                "primary_shadow_cosine": 0.920000,
-            },
-            {
-                "shadow_embedder_id": "test-shadow-embedder",
-                "primary_embedding_norm": 1.000000,
-                "shadow_embedding_norm": 1.000000,
-                "primary_shadow_cosine": 0.880000,
-            },
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import system_learning.engines.shadow_drift_analyzer as analyzer_module
+                """Test that drift analysis produces identical digests for identical inputs."""
+                # Create fixed shadow telemetry input
+                shadow_records = [
+                    {
+                        "shadow_embedder_id": "test-shadow-embedder",
+                        "primary_embedding_norm": 1.000000,
+                        "shadow_embedding_norm": 1.000000,
+                        "primary_shadow_cosine": 0.950000,
+                    },
+                    {
+                        "shadow_embedder_id": "test-shadow-embedder",
+                        "primary_embedding_norm": 1.000000,
+                        "shadow_embedding_norm": 1.000000,
+                        "primary_shadow_cosine": 0.920000,
+                    },
+                    {
+                        "shadow_embedder_id": "test-shadow-embedder",
+                        "primary_embedding_norm": 1.000000,
+                        "shadow_embedding_norm": 1.000000,
+                        "primary_shadow_cosine": 0.880000,
+                    },
+                ]
+
         ]
 
         analyzer = ShadowDriftAnalyzer()

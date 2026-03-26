@@ -293,87 +293,89 @@ def _make_minimal_deps(freeze_reader=None):
 @pytest.mark.unit
 class TestGap007ProposalOnlyDefault:
     def test_default_is_true(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
-        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
-        from system_learning.validators.oscillation_detector import OscillationPolicy
-        from system_learning.validators.shadow_evaluator import ShadowThresholds
-        from system_learning.engines.change_package_impl import ChangePackage
-        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
-        from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
-        import system_learning.pipelines.meta_learning_pipeline as m
-        from system_learning.engines.rca_engine import CLASSIFICATION_RULES
-        from system_learning.engines.rca_engine import classify_line
-        from system_learning.engines.rca_engine import classify_line
-        from system_learning.engines.rca_engine import classify_line
-        from system_learning.engines.rca_engine import classify_line
-        from system_learning.engines.rca_engine import classify_line
-        from system_learning.engines.rca_engine import classify_line
-        from system_learning.engines.rca_engine import classify_line
-        from system_learning.engines.rca_engine import classify_line
-        from system_learning.engines.rca_engine import analyze_failures
-        from system_learning.engines.rca_engine import analyze_failures
-        from system_learning.validators.dampening import SampleSizePolicy
-        from system_learning.validators.dampening import (
-        from system_learning.validators.dampening import SampleSizePolicy, assert_min_sample_size
-        from system_learning.validators.dampening import SampleSizePolicy, assert_min_sample_size
-        from system_learning.validators.dampening import (
-        from system_learning.validators.dampening import SampleSizePolicy, assert_min_sample_size
-        from system_learning.pipelines.meta_learning_pipeline import PipelineError
-        from system_learning.pipelines.meta_learning_pipeline import PipelineError
-        from system_learning.pipelines.meta_learning_pipeline import PipelineError
-        from system_learning.pipelines.meta_learning_pipeline import PipelineError
-        from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
-        from system_learning.invariants.commit_proof_invariant import (
-        from system_learning.invariants.commit_proof_invariant import (
-        from system_learning.invariants.commit_proof_invariant import (
-        from system_learning.invariants.commit_proof_invariant import (
-        from system_learning.invariants.commit_proof_invariant import (
-        from system_learning.invariants.commit_proof_invariant import (
-        from system_learning.invariants.commit_proof_invariant import (
-        from system_learning.invariants.commit_proof_invariant import (
-        from system_learning.invariants.commit_proof_invariant import verify_commit_proof
-        from system_learning.engines.change_package_impl import ChangePackage
-        from system_learning.invariants.freeze_gate import StaticFreezeReader
-        from system_learning.invariants.freeze_gate import StaticFreezeReader
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
-        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
-        import system_learning.pipelines.meta_learning_pipeline as m
-        import system_learning.pipelines.meta_learning_pipeline as m
-        import system_learning.pipelines.meta_learning_pipeline as m
-        from system_learning.pipelines.meta_learning_pipeline import PipelineError
-        from system_learning.pipelines.meta_learning_pipeline import run_pipeline
-        import system_learning.pipelines.meta_learning_pipeline as m
-        from system_learning.invariants.freeze_gate import StaticFreezeReader
-        from system_learning.pipelines.meta_learning_pipeline import PipelineError
-        from system_learning.pipelines.meta_learning_pipeline import run_pipeline
-        from system_learning.validators.dampening import SampleSizePolicy
-        from system_learning.validators.dampening import SampleSizeViolation
-        from system_learning.validators.dampening import assert_min_sample_size
-        from system_learning.validators.dampening import SampleSizePolicy
-        from system_learning.validators.dampening import assert_min_sample_size
-        import system_learning.pipelines.meta_learning_pipeline as m
-        import system_learning.pipelines.meta_learning_pipeline as m
-        import system_learning.pipelines.meta_learning_pipeline as m
-        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
-        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
-        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
-        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
-        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
-        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
-        from system_learning.pipelines.pipeline_factory import build_pipeline_config
-        from system_learning.pipelines.pipeline_factory import build_pipeline_config
-        import system_learning.pipelines.meta_learning_pipeline as m
-        import system_learning.pipelines.meta_learning_pipeline as m
-        """proposal_only must default to True (fail-safe)."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
+                from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+                from system_learning.validators.oscillation_detector import OscillationPolicy
+                from system_learning.validators.shadow_evaluator import ShadowThresholds
+                from system_learning.engines.change_package_impl import ChangePackage
+                from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+                from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
+                import system_learning.pipelines.meta_learning_pipeline as m
+                from system_learning.engines.rca_engine import CLASSIFICATION_RULES
+                from system_learning.engines.rca_engine import classify_line
+                from system_learning.engines.rca_engine import classify_line
+                from system_learning.engines.rca_engine import classify_line
+                from system_learning.engines.rca_engine import classify_line
+                from system_learning.engines.rca_engine import classify_line
+                from system_learning.engines.rca_engine import classify_line
+                from system_learning.engines.rca_engine import classify_line
+                from system_learning.engines.rca_engine import classify_line
+                from system_learning.engines.rca_engine import analyze_failures
+                from system_learning.engines.rca_engine import analyze_failures
+                from system_learning.validators.dampening import SampleSizePolicy
+                from system_learning.validators.dampening import (
+                from system_learning.validators.dampening import SampleSizePolicy, assert_min_sample_size
+                from system_learning.validators.dampening import SampleSizePolicy, assert_min_sample_size
+                from system_learning.validators.dampening import (
+                from system_learning.validators.dampening import SampleSizePolicy, assert_min_sample_size
+                from system_learning.pipelines.meta_learning_pipeline import PipelineError
+                from system_learning.pipelines.meta_learning_pipeline import PipelineError
+                from system_learning.pipelines.meta_learning_pipeline import PipelineError
+                from system_learning.pipelines.meta_learning_pipeline import PipelineError
+                from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
+                from system_learning.invariants.commit_proof_invariant import (
+                from system_learning.invariants.commit_proof_invariant import (
+                from system_learning.invariants.commit_proof_invariant import (
+                from system_learning.invariants.commit_proof_invariant import (
+                from system_learning.invariants.commit_proof_invariant import (
+                from system_learning.invariants.commit_proof_invariant import (
+                from system_learning.invariants.commit_proof_invariant import (
+                from system_learning.invariants.commit_proof_invariant import (
+                from system_learning.invariants.commit_proof_invariant import verify_commit_proof
+                from system_learning.engines.change_package_impl import ChangePackage
+                from system_learning.invariants.freeze_gate import StaticFreezeReader
+                from system_learning.invariants.freeze_gate import StaticFreezeReader
+                from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+                from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+                from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+                from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+                from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+                from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+                from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+                from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+                from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+                import system_learning.pipelines.meta_learning_pipeline as m
+                import system_learning.pipelines.meta_learning_pipeline as m
+                import system_learning.pipelines.meta_learning_pipeline as m
+                from system_learning.pipelines.meta_learning_pipeline import PipelineError
+                from system_learning.pipelines.meta_learning_pipeline import run_pipeline
+                import system_learning.pipelines.meta_learning_pipeline as m
+                from system_learning.invariants.freeze_gate import StaticFreezeReader
+                from system_learning.pipelines.meta_learning_pipeline import PipelineError
+                from system_learning.pipelines.meta_learning_pipeline import run_pipeline
+                from system_learning.validators.dampening import SampleSizePolicy
+                from system_learning.validators.dampening import SampleSizeViolation
+                from system_learning.validators.dampening import assert_min_sample_size
+                from system_learning.validators.dampening import SampleSizePolicy
+                from system_learning.validators.dampening import assert_min_sample_size
+                import system_learning.pipelines.meta_learning_pipeline as m
+                import system_learning.pipelines.meta_learning_pipeline as m
+                import system_learning.pipelines.meta_learning_pipeline as m
+                from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+                from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+                from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+                from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+                from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+                from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+                from system_learning.pipelines.pipeline_factory import build_pipeline_config
+                from system_learning.pipelines.pipeline_factory import build_pipeline_config
+                import system_learning.pipelines.meta_learning_pipeline as m
+                import system_learning.pipelines.meta_learning_pipeline as m
+                """proposal_only must default to True (fail-safe)."""
+                import dataclasses
+
         import dataclasses
 
 #  # MOVED: from system_learning.pipelines.meta_learning_pipeline import PipelineConfig

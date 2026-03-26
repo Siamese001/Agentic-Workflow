@@ -168,19 +168,20 @@ class TestFilesystemSSOTReconcilerArchivePath:
         )
 
     def test_archive_root_uses_canonical_archives_path(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
-        from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
-        src = self._src
-        assert '"healing_backups" / "unmapped_drift"' in src or "healing_backups/unmapped_drift" in src, (
-            "filesystem_ssot_reconciler.py ARCHIVE_ROOT must use canonical archives/healing_backups/unmapped_drift"
-        )
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+                from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+                from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+                from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+                from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+                from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+                from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+                from agentic_core.L0_routing.scripts._ssot_validation_artifacts import (
+                src = self._src
+                assert '"healing_backups" / "unmapped_drift"' in src or "healing_backups/unmapped_drift" in src, (
+                    "filesystem_ssot_reconciler.py ARCHIVE_ROOT must use canonical archives/healing_backups/unmapped_drift"
+                )
+
 
     def test_archive_root_does_not_use_root_healing_backups(self):
         src = self._src

@@ -24,32 +24,34 @@ import pytest
 
 class TestEvalTypes:
     def test_eval_status_values(self) -> None:
-        from apps_eval.types.eval_types import (
-        from apps_eval.engines.scorecard_engine import ScorecardEngine
-        from apps_eval.types.eval_types import SuiteResult
-        from apps_eval.engines.scorecard_engine import ScorecardEngine
-        from apps_eval.engines.scorecard_engine import ScorecardEngine
-        from apps_eval.types.eval_types import SuiteResult
-        from apps_eval.engines.regression_detector import RegressionDetector
-        from apps_eval.types.eval_types import ScorecardRow
-        from apps_eval.engines.regression_detector import RegressionDetector
-        from apps_eval.types.eval_types import ScorecardRow
-        from apps_eval.engines.regression_detector import RegressionDetector
-        from apps_eval.types.eval_types import ScorecardRow
-        from apps_eval.validators.eval_gate_validator import EvalGateValidator
-        from apps_eval.validators.eval_gate_validator import EvalGateValidator
-        from apps_eval.validators.eval_gate_validator import EvalGateValidator
-        from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
-        from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
-        from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
-        from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
-        from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
-        from apps_eval.config.agent_spec_config import load_eval_specs
-        from apps_eval.config.agent_spec_config import load_eval_specs
-        from apps_eval.config.agent_spec_config import load_eval_specs
-        from apps_eval.config.reasoning_toggles_config import DEFAULT_TOGGLES
-        assert EvalStatus.COMPLETE.value == "complete"
-        assert EvalStatus.DRY_RUN.value == "dry_run"
+                from apps_eval.types.eval_types import (
+                from apps_eval.engines.scorecard_engine import ScorecardEngine
+                from apps_eval.types.eval_types import SuiteResult
+                from apps_eval.engines.scorecard_engine import ScorecardEngine
+                from apps_eval.engines.scorecard_engine import ScorecardEngine
+                from apps_eval.types.eval_types import SuiteResult
+                from apps_eval.engines.regression_detector import RegressionDetector
+                from apps_eval.types.eval_types import ScorecardRow
+                from apps_eval.engines.regression_detector import RegressionDetector
+                from apps_eval.types.eval_types import ScorecardRow
+                from apps_eval.engines.regression_detector import RegressionDetector
+                from apps_eval.types.eval_types import ScorecardRow
+                from apps_eval.validators.eval_gate_validator import EvalGateValidator
+                from apps_eval.validators.eval_gate_validator import EvalGateValidator
+                from apps_eval.validators.eval_gate_validator import EvalGateValidator
+                from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
+                from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
+                from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
+                from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
+                from apps_eval.reasoning.EvalOrchestrator import EvalOrchestrator
+                from apps_eval.config.agent_spec_config import load_eval_specs
+                from apps_eval.config.agent_spec_config import load_eval_specs
+                from apps_eval.config.agent_spec_config import load_eval_specs
+                from apps_eval.config.reasoning_toggles_config import DEFAULT_TOGGLES
+                assert EvalStatus.COMPLETE.value == "complete"
+                assert EvalStatus.DRY_RUN.value == "dry_run"
+                assert EvalStatus.REGRESSION.value == "regression"
+
         assert EvalStatus.REGRESSION.value == "regression"
 
     def test_scenario_outcome_values(self) -> None:

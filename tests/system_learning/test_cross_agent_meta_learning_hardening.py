@@ -259,65 +259,67 @@ class TestEmbeddingRetentionSchedulerPersist:
 
     @pytest.mark.unit_min_deps
     def test_run_once_rolling_window_persists_to_disk(self, tmp_path):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.config.embedding_storage_layout import EmbeddingStorageLayout
-        from system_learning.engines.embedding_retention_scheduler import (
-        from system_learning.engines.local_faiss_store import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.historical_ingestion_orchestrator import (
-        from system_learning.engines.historical_ingestion_orchestrator import (
-        from system_learning.engines.historical_ingestion_orchestrator import (
-        from system_learning.engines.historical_ingestion_orchestrator import (
-        from system_learning.engines.historical_ingestion_orchestrator import (
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
-        from system_learning.engines.local_faiss_store import (
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
-        from system_learning.engines.meta_learning_state_digest import (
-        from system_learning.engines.meta_learning_state_digest import (
-        from system_learning.engines.meta_learning_state_digest import (
-        from system_learning.engines.meta_learning_state_digest import (
-        from system_learning.engines.meta_learning_state_digest import (
-        from system_learning.engines.meta_learning_state_digest import (
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
-        from system_learning.engines.meta_learning_state_digest import (
-        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
-        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
-        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
-        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
-        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
-        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-        from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
-        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
-        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
-        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
-        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
-        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
-        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
-        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
-        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
-        from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
-        from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
-        from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
-        from system_learning.engines.faiss_startup_integrity import (
-        from system_learning.engines.faiss_startup_integrity import (
-        from system_learning.engines.faiss_startup_integrity import (
-        from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
-        from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
-    """Test run_once_rolling_window_persists_to_disk runtime behavior."""
-    # Arrange
-    # TODO: Set up execution parameters
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.config.embedding_storage_layout import EmbeddingStorageLayout
+                from system_learning.engines.embedding_retention_scheduler import (
+                from system_learning.engines.local_faiss_store import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.historical_ingestion_orchestrator import (
+                from system_learning.engines.historical_ingestion_orchestrator import (
+                from system_learning.engines.historical_ingestion_orchestrator import (
+                from system_learning.engines.historical_ingestion_orchestrator import (
+                from system_learning.engines.historical_ingestion_orchestrator import (
+                from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+                from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
+                from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+                from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
+                from system_learning.engines.local_faiss_store import (
+                from system_learning.engines.local_faiss_store import LocalFAISSStore
+                from system_learning.engines.local_faiss_store import LocalFAISSStore
+                from system_learning.engines.meta_learning_state_digest import (
+                from system_learning.engines.meta_learning_state_digest import (
+                from system_learning.engines.meta_learning_state_digest import (
+                from system_learning.engines.meta_learning_state_digest import (
+                from system_learning.engines.meta_learning_state_digest import (
+                from system_learning.engines.meta_learning_state_digest import (
+                from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+                from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
+                from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+                from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
+                from system_learning.engines.meta_learning_state_digest import (
+                from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+                from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+                from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+                from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+                from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+                from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+                from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+                from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
+                from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+                from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+                from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+                from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+                from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+                from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+                from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+                from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+                from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
+                from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
+                from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
+                from system_learning.engines.faiss_startup_integrity import (
+                from system_learning.engines.faiss_startup_integrity import (
+                from system_learning.engines.faiss_startup_integrity import (
+                from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
+                from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
+                from system_learning.engines.local_faiss_store import LocalFAISSStore
+                from system_learning.engines.local_faiss_store import LocalFAISSStore
+                from system_learning.engines.local_faiss_store import LocalFAISSStore
+                from system_learning.engines.local_faiss_store import LocalFAISSStore
+            """Test run_once_rolling_window_persists_to_disk runtime behavior."""
+            # Arrange
+            # TODO: Set up execution parameters
+            input_data = {}  # Replace with actual test data
+
     input_data = {}  # Replace with actual test data
 
     # Act

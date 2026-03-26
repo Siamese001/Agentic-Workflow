@@ -249,30 +249,32 @@ class TestFinalizeBuildRequiredArgs:
 
     @pytest.mark.unit_min_deps
     def test_finalize_build_succeeds_with_all_kwargs(self, tmp_path):
-        from agentic_core.L1_cognition.memory.healing_memory_retriever import (
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.local_faiss_store import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
-        from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
-        from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
-        from agentic_core.L0_routing.scripts.execute_ssot import ConfidenceScore
-        """finalize_build must not raise TypeError when all required kwargs supplied."""
-        store = LocalFAISSStore(base_path=tmp_path)
-        vecs, metas = _make_hash_fallback_vectors(3)
-        dim = len(vecs[0])
-        store.begin_build("idx_test", dim, seed=0)
-        store.add_vectors("idx_test", vecs, metas)
-        # Must not raise
-        meta = store.finalize_build(
-            "idx_test",
-            built_at_utc=9999,
-            canonicalization_version="v1",
-            embedding_model_version="hash-fallback-v1",
-            embedding_model_checksum="hash-fallback",
-        )
-        assert meta.vector_count == 3
+                from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.local_faiss_store import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
+                from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
+                from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
+                from agentic_core.L0_routing.scripts.execute_ssot import ConfidenceScore
+                """finalize_build must not raise TypeError when all required kwargs supplied."""
+                store = LocalFAISSStore(base_path=tmp_path)
+                vecs, metas = _make_hash_fallback_vectors(3)
+                dim = len(vecs[0])
+                store.begin_build("idx_test", dim, seed=0)
+                store.add_vectors("idx_test", vecs, metas)
+                # Must not raise
+                meta = store.finalize_build(
+                    "idx_test",
+                    built_at_utc=9999,
+                    canonicalization_version="v1",
+                    embedding_model_version="hash-fallback-v1",
+                    embedding_model_checksum="hash-fallback",
+                )
+                assert meta.vector_count == 3
+                assert meta.index_id == "idx_test"
+
         assert meta.index_id == "idx_test"
 
     @pytest.mark.unit_min_deps

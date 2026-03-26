@@ -326,18 +326,20 @@ def _make_guardrail_case(
 
 class TestIncidentBundle:
     def test_construction_sets_bundle_hash(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.graph_neighborhood_embedder import GraphNeighborhoodEmbedder
-        from system_learning.engines.healer_outcome_embedder import HealerOutcomeEmbedder
-        from system_learning.engines.incident_bundle_embedder import IncidentBundleEmbedder
-        from system_learning.engines.mutation_diff_embedder import MutationDiffEmbedder
-        from system_learning.engines.path_d_preference_embedder import PathDPreferenceEmbedder
-        from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
-        from system_learning.engines.semantic_memory_registry import SemanticMemoryRegistry
-        from system_learning.types.semantic_memory_types import (
-        b = _make_incident()
-        assert len(b.bundle_hash) == 64
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.graph_neighborhood_embedder import GraphNeighborhoodEmbedder
+                from system_learning.engines.healer_outcome_embedder import HealerOutcomeEmbedder
+                from system_learning.engines.incident_bundle_embedder import IncidentBundleEmbedder
+                from system_learning.engines.mutation_diff_embedder import MutationDiffEmbedder
+                from system_learning.engines.path_d_preference_embedder import PathDPreferenceEmbedder
+                from system_learning.engines.policy_guardrail_embedder import PolicyGuardrailEmbedder
+                from system_learning.engines.semantic_memory_registry import SemanticMemoryRegistry
+                from system_learning.types.semantic_memory_types import (
+                b = _make_incident()
+                assert len(b.bundle_hash) == 64
+                assert b.influence_class == "C0_INFORMATIONAL"
+
         assert b.influence_class == "C0_INFORMATIONAL"
 
     def test_bundle_hash_is_deterministic(self):

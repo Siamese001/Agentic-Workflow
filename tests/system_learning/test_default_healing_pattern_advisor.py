@@ -175,12 +175,14 @@ from unittest.mock import MagicMock, patch
 
 
 def test_default_advisor_without_ml_client() -> None:
-    from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from system_learning.engines.default_healing_pattern_advisor import (
-    from system_learning.ports.healing_pattern_advisor import (
-    """Default advisor falls back to null when no ML client."""
+        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.default_healing_pattern_advisor import (
+        from system_learning.ports.healing_pattern_advisor import (
+        """Default advisor falls back to null when no ML client."""
+        advisor = DefaultHealingPatternAdvisor(ml_client=None)
+
     advisor = DefaultHealingPatternAdvisor(ml_client=None)
 
     healing_input = HealingInput(

@@ -297,18 +297,20 @@ class _MockAggSnapshot:
 
 class TestSLMemoryBridgeInit:
     def test_singleton(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.adapters.system_learning_memory_bridge import (
-        from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
-        from system_learning.engines.rca_engine import analyze_failures, analyze_failures_and_persist
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
-        from system_learning.engines.policy_recommendation_engine import (
-        from system_learning.engines.retrieval_profile import RetrievalProfile
-        from system_learning.engines.policy_recommendation_engine import (
-        from system_learning.engines.retrieval_profile import RetrievalProfile
-        a = SystemLearningMemoryBridge.get_instance()
-        b = SystemLearningMemoryBridge.get_instance()
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.adapters.system_learning_memory_bridge import (
+                from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+                from system_learning.engines.rca_engine import analyze_failures, analyze_failures_and_persist
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
+                from system_learning.engines.policy_recommendation_engine import (
+                from system_learning.engines.retrieval_profile import RetrievalProfile
+                from system_learning.engines.policy_recommendation_engine import (
+                from system_learning.engines.retrieval_profile import RetrievalProfile
+                a = SystemLearningMemoryBridge.get_instance()
+                b = SystemLearningMemoryBridge.get_instance()
+                assert a is b
+
         assert a is b
 
     def test_get_sl_memory_bridge_alias(self):

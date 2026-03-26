@@ -242,48 +242,50 @@ class TestRedisKeyValidation:
 
     @pytest.mark.unit_min_deps
     def test_empty_key_raises(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
-        from agentic_core.cache.redis_cache_client import (
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
-        from agentic_core.cache.redis_cache_client import DeterministicRedisCache
-        from agentic_core.cache.redis_cache_client import DeterministicRedisCache
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
-        import agentic_core.cache.redis_cache_client as m
-        from agentic_core.cache.redis_cache_client import (
-        from agentic_core.cache.redis_cache_client import _REDIS_SOCKET_TIMEOUT_S, check_redis_health
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
-        from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
-        from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
-        from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
-        from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
-        from system_learning.engines.local_faiss_store import EmbedderMismatchError, LocalFAISSStore
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
-        from agentic_core.L2_execution.healers.vllm_process_manager import get_model_config
-        from agentic_core.L2_execution.healers.vllm_process_manager import get_model_config
-        from agentic_core.L2_execution.healers.vllm_process_manager import get_model_config
-        from system_learning.engines.embedding_service_factory import (
-        from system_learning.engines.embedding_service_factory import (
-        from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
-        from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
-        from system_learning.engines.embedding_service_factory import (
-        from system_learning.engines.embedding_service_factory import (
-        c = self._cache()
-        with pytest.raises(ValueError, match="non-empty"):
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+                from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+                from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+                from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+                from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+                from agentic_core.cache.redis_cache_client import canonical_json_bytes
+                from agentic_core.cache.redis_cache_client import canonical_json_bytes
+                from agentic_core.cache.redis_cache_client import canonical_json_bytes
+                from agentic_core.cache.redis_cache_client import canonical_json_bytes
+                from agentic_core.cache.redis_cache_client import (
+                from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+                from agentic_core.cache.redis_cache_client import DeterministicRedisCache
+                from agentic_core.cache.redis_cache_client import DeterministicRedisCache
+                from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+                from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+                import agentic_core.cache.redis_cache_client as m
+                from agentic_core.cache.redis_cache_client import (
+                from agentic_core.cache.redis_cache_client import _REDIS_SOCKET_TIMEOUT_S, check_redis_health
+                from system_learning.engines.local_faiss_store import LocalFAISSStore
+                from system_learning.engines.local_faiss_store import LocalFAISSStore
+                from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+                from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+                from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+                from system_learning.engines.local_faiss_store import LocalFAISSStore, ManifestIntegrityError
+                from system_learning.engines.local_faiss_store import EmbedderMismatchError, LocalFAISSStore
+                from system_learning.engines.local_faiss_store import LocalFAISSStore
+                from system_learning.engines.local_faiss_store import LocalFAISSStore
+                from system_learning.engines.local_faiss_store import LocalFAISSStore
+                from system_learning.engines.local_faiss_store import LocalFAISSStore
+                from agentic_core.L2_execution.healers.vllm_process_manager import get_model_config
+                from agentic_core.L2_execution.healers.vllm_process_manager import get_model_config
+                from agentic_core.L2_execution.healers.vllm_process_manager import get_model_config
+                from system_learning.engines.embedding_service_factory import (
+                from system_learning.engines.embedding_service_factory import (
+                from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
+                from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
+                from system_learning.engines.embedding_service_factory import (
+                from system_learning.engines.embedding_service_factory import (
+                c = self._cache()
+                with pytest.raises(ValueError, match="non-empty"):
+                    c._validate_key("")
+
             c._validate_key("")
 
     @pytest.mark.unit_min_deps

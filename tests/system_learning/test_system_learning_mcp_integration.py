@@ -220,17 +220,19 @@ class TestHealingSuccessRateStoreIntegration:
     """End-to-end tests for HealingSuccessRateStore MCP persistence."""
 
     def test_record_persist_restore_cycle(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.adapters.system_learning_memory_bridge import (
-        from system_learning.engines.healing_success_rate_store import (
-        from system_learning.engines.rca_engine import analyze_failures_and_persist
-        from system_learning.engines.retrieval_profile import RetrievalProfile
-        from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.policy_recommendation_engine import (
-        """Verify full cycle: record outcomes → persist to MCP → restore on new instance."""
-        bridge = get_sl_memory_bridge()
-        if not bridge.is_available:
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.adapters.system_learning_memory_bridge import (
+                from system_learning.engines.healing_success_rate_store import (
+                from system_learning.engines.rca_engine import analyze_failures_and_persist
+                from system_learning.engines.retrieval_profile import RetrievalProfile
+                from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.policy_recommendation_engine import (
+                """Verify full cycle: record outcomes → persist to MCP → restore on new instance."""
+                bridge = get_sl_memory_bridge()
+                if not bridge.is_available:
+                    pytest.skip("Memory MCP unavailable")
+
             pytest.skip("Memory MCP unavailable")
 
         # Use unique signature to avoid MCP state collision from prior runs

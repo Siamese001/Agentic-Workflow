@@ -173,13 +173,15 @@ from __future__ import annotations
 
 
 def test_store_initial_state() -> None:
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from system_learning.engines.healing_success_rate_store import (
-    """Store starts empty and returns neutral prior."""
-    store = HealingSuccessRateStore()
-    assert store.get_prior("any_sig") == _NEUTRAL_PRIOR
-    assert store.get_all() == {}
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.healing_success_rate_store import (
+        """Store starts empty and returns neutral prior."""
+        store = HealingSuccessRateStore()
+        assert store.get_prior("any_sig") == _NEUTRAL_PRIOR
+        assert store.get_all() == {}
+        assert store.get_counts() == {}
+
     assert store.get_counts() == {}
 
 

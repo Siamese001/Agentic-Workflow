@@ -211,14 +211,16 @@ def compute_w3_determinism_digest() -> str:
 
 
 def test_single_entrypoint_enforced():
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    from system_learning.engines.embedding_service_factory import (
-    from system_learning.engines.embedding_service_factory import _DisabledEmbeddingService
-    from system_learning.engines.embedding_service_factory import EmbeddingIntegrityError
-    from system_learning.engines.embedding_service_factory import _DisabledEmbeddingService
-    from system_learning.engines.embedding_service_factory import EmbeddingResult
-    """Test that only EmbeddingServiceFactory.get_or_disabled() is used."""
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.embedding_service_factory import (
+        from system_learning.engines.embedding_service_factory import _DisabledEmbeddingService
+        from system_learning.engines.embedding_service_factory import EmbeddingIntegrityError
+        from system_learning.engines.embedding_service_factory import _DisabledEmbeddingService
+        from system_learning.engines.embedding_service_factory import EmbeddingResult
+        """Test that only EmbeddingServiceFactory.get_or_disabled() is used."""
+        # This test verifies no direct instantiation exists
+
     # This test verifies no direct instantiation exists
 #  # MOVED: from system_learning.engines.embedding_service_factory import _DisabledEmbeddingService
 

@@ -37,14 +37,16 @@ _ML_SCENARIO_IDS = [
 
 class TestMlMetricsSuiteConfig:
     def test_suite_registered_in_default_specs(self):
-        from apps_eval.config.agent_spec_config import EvalAgentSpecs, load_eval_specs
-        from apps_eval.engines.scenario_runner import ScenarioRunner
-        from apps_eval.engines.scorecard_engine import _SUITE_TO_DIMENSION, ScorecardEngine
-        from apps_eval.types.eval_types import ScenarioOutcome
-        import apps_eval.config.agent_spec_config as _cfg
-        from apps_eval.types.eval_types import SuiteResult
-        from apps_eval.types.eval_types import SuiteResult
-        specs = EvalAgentSpecs()
+                from apps_eval.config.agent_spec_config import EvalAgentSpecs, load_eval_specs
+                from apps_eval.engines.scenario_runner import ScenarioRunner
+                from apps_eval.engines.scorecard_engine import _SUITE_TO_DIMENSION, ScorecardEngine
+                from apps_eval.types.eval_types import ScenarioOutcome
+                import apps_eval.config.agent_spec_config as _cfg
+                from apps_eval.types.eval_types import SuiteResult
+                from apps_eval.types.eval_types import SuiteResult
+                specs = EvalAgentSpecs()
+                assert _ML_METRICS_SUITE_ID in specs.benchmark_suites
+
         assert _ML_METRICS_SUITE_ID in specs.benchmark_suites
 
     def test_suite_has_all_scenarios(self):

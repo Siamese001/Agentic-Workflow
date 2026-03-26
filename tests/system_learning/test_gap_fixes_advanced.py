@@ -276,59 +276,62 @@ def _make_minimal_deps(freeze_reader=None):
 @pytest.mark.unit
 class TestCommitProofDeterminism:
     def test_same_package_yields_same_proof_twice(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
-        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
-        from system_learning.validators.oscillation_detector import OscillationPolicy
-        from system_learning.validators.shadow_evaluator import ShadowThresholds
-        from system_learning.engines.change_package_impl import ChangePackage
-        from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
-        from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
-        from system_learning.pipelines.meta_learning_pipeline import PipelineError, run_pipeline
-        from system_learning.engines.rca_engine import classify_line
-        from system_learning.engines.rca_engine import classify_line
-        from system_learning.engines.rca_engine import classify_line
-        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
-        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
-        from system_learning.engines.rca_engine import analyze_failures
-        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
-        from system_learning.engines.rca_engine import analyze_failures
-        from system_learning.engines.rca_engine import analyze_failures
-        from system_learning.engines.rca_engine import analyze_failures
-        from system_learning.engines.rca_engine import analyze_failures
-        from system_learning.engines.rca_engine import analyze_failures
-        from system_learning.engines.rca_engine import analyze_failures
-        from system_learning.engines.rca_engine import analyze_failures
-        from system_learning.pipelines.meta_learning_pipeline import PipelineError, run_pipeline
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import (
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import (
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import (
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import (
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import (
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
-        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
-        from system_learning.invariants.commit_proof_invariant import (
-        from system_learning.invariants.commit_proof_invariant import (
-        from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
-        from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
-        from system_learning.invariants.commit_proof_invariant import (
-        from system_learning.invariants.commit_proof_invariant import (
-        from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
-        from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
-        from system_learning.invariants.commit_proof_invariant import (
-        from system_learning.engines.rca_engine import classify_line
-        from system_learning.engines.rca_engine import classify_line
-        from system_learning.engines.rca_engine import classify_line
-        from system_learning.engines.rca_engine import CLASSIFICATION_RULES
-        from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
-        from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
-        import system_learning.pipelines.meta_learning_pipeline as m
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
+                from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+                from system_learning.validators.oscillation_detector import OscillationPolicy
+                from system_learning.validators.shadow_evaluator import ShadowThresholds
+                from system_learning.engines.change_package_impl import ChangePackage
+                from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+                from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
+                from system_learning.pipelines.meta_learning_pipeline import PipelineError, run_pipeline
+                from system_learning.engines.rca_engine import classify_line
+                from system_learning.engines.rca_engine import classify_line
+                from system_learning.engines.rca_engine import classify_line
+                from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+                from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+                from system_learning.engines.rca_engine import analyze_failures
+                from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+                from system_learning.engines.rca_engine import analyze_failures
+                from system_learning.engines.rca_engine import analyze_failures
+                from system_learning.engines.rca_engine import analyze_failures
+                from system_learning.engines.rca_engine import analyze_failures
+                from system_learning.engines.rca_engine import analyze_failures
+                from system_learning.engines.rca_engine import analyze_failures
+                from system_learning.engines.rca_engine import analyze_failures
+                from system_learning.pipelines.meta_learning_pipeline import PipelineError, run_pipeline
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+                from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+                from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+                from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+                from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+                from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+                from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+                from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+                from system_learning.invariants.commit_proof_invariant import (
+                from system_learning.invariants.commit_proof_invariant import (
+                from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
+                from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
+                from system_learning.invariants.commit_proof_invariant import (
+                from system_learning.invariants.commit_proof_invariant import (
+                from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
+                from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
+                from system_learning.invariants.commit_proof_invariant import (
+                from system_learning.engines.rca_engine import classify_line
+                from system_learning.engines.rca_engine import classify_line
+                from system_learning.engines.rca_engine import classify_line
+                from system_learning.engines.rca_engine import CLASSIFICATION_RULES
+                from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
+                from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
+                import system_learning.pipelines.meta_learning_pipeline as m
+                import system_learning.pipelines.meta_learning_pipeline as m
+        #  # MOVED: from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
+
 #  # MOVED: from system_learning.invariants.commit_proof_invariant import CommitProofInvariant
 
         pkg = _minimal_package()

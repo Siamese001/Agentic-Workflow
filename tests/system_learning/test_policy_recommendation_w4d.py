@@ -187,23 +187,24 @@ class TestPolicyRecommendationW4D:
     """Test W4-D Policy Recommendation Engine functionality."""
 
     def test_policy_recommendation_determinism(self):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.policy_recommendation_engine import (
-        from system_learning.engines.retrieval_profile import RetrievalProfile
-        from system_learning.engines.shadow_drift_analyzer import DriftSummary
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        import system_learning.engines.policy_recommendation_engine as engine_module
-        """Test that policy recommendations produce identical digests for identical inputs."""
-        # Create fixed drift summary
-        drift_summary = DriftSummary(
-            profile_id="test-profile",
-            batch_size=BATCH_SIZE,
-            mean_cosine=0.916667,
-            p95_cosine=0.947,
-            drift_flag=False,
-            drift_score=0.053,
-            deterministic_digest="test-digest-123",
-        )
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.policy_recommendation_engine import (
+                from system_learning.engines.retrieval_profile import RetrievalProfile
+                from system_learning.engines.shadow_drift_analyzer import DriftSummary
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                import system_learning.engines.policy_recommendation_engine as engine_module
+                """Test that policy recommendations produce identical digests for identical inputs."""
+                # Create fixed drift summary
+                drift_summary = DriftSummary(
+                    profile_id="test-profile",
+                    batch_size=BATCH_SIZE,
+                    mean_cosine=0.916667,
+                    p95_cosine=0.947,
+                    drift_flag=False,
+                    drift_score=0.053,
+                    deterministic_digest="test-digest-123",
+                )
+
 
         # Create active profile
         active_profile = RetrievalProfile(

@@ -266,18 +266,20 @@ class TestHealingConfigOptimizerEmbeddings:
         )
 
     def test_kill_switch_path(
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
-        from system_learning.engines.healing_config_optimizer import (
-        from system_learning.types.healing_outcome_learning_types import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        self, optimizer: HealingConfigOptimizer, sample_snapshot: HealingOutcomeAggregateSnapshot
-    ) -> None:
-        """T1 - Kill-switch path: embeddings disabled should use statistical-only scoring."""
-        # Mock embedding service as disabled
-        with patch.object(EmbeddingServiceFactory, "get_or_disabled") as mock_get:
-            mock_service = MagicMock()
-            mock_service.is_disabled.return_value = True
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
+                from system_learning.engines.healing_config_optimizer import (
+                from system_learning.types.healing_outcome_learning_types import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                self, optimizer: HealingConfigOptimizer, sample_snapshot: HealingOutcomeAggregateSnapshot
+            ) -> None:
+                """T1 - Kill-switch path: embeddings disabled should use statistical-only scoring."""
+                # Mock embedding service as disabled
+                with patch.object(EmbeddingServiceFactory, "get_or_disabled") as mock_get:
+                    mock_service = MagicMock()
+                    mock_service.is_disabled.return_value = True
+                    mock_get.return_value = mock_service
+
             mock_get.return_value = mock_service
 
             # Create embedding metadata indicating disabled

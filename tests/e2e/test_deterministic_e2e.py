@@ -54,32 +54,34 @@ class TestFullPipelineE2E:
     """End-to-end tests for full validation pipeline."""
 
     def test_resume_generation_pipeline(self) -> None:
-        from agentic_core.L5_safety.validators.ats_validator import (
-        from agentic_core.L5_safety.validators.campaign_balance_validator import (
-        from agentic_core.L5_safety.validators.content_quality_validator import (
-        from agentic_core.L5_safety.validators.deliverability_validator import (
-        from agentic_core.L5_safety.validators.governance_validator import (
-        from agentic_core.L5_safety.validators.hop_validator import (
-        from agentic_core.L5_safety.validators.intelligence_query_validator import (
-        from agentic_core.L5_safety.validators.lead_quality_validator import (
-        """E2E Test 1: Complete resume generation pipeline."""
-        # Initialize all validators
-        ats = ATSValidationDeterministic(
-            {
-                "standard_headers": {"experience": ["experience"], "skills": ["skills"]},
-                "ats_unfriendly_patterns": [],
-                "allowed_non_standard_sections": ["projects"],
-                "keyword_optimization": {"min_score_threshold": 0.3, "stop_words": []},
-            },
-        )
-        content = ContentQualityDeterministic(
-            {
-                "placeholder_patterns": [],
-                "quantified_patterns": [r"\d+\s*(?:%|years?)"],
-                "skill_keywords": ["Python", "JavaScript"],
-                "min_skill_matches": 1,
-            },
-        )
+                from agentic_core.L5_safety.validators.ats_validator import (
+                from agentic_core.L5_safety.validators.campaign_balance_validator import (
+                from agentic_core.L5_safety.validators.content_quality_validator import (
+                from agentic_core.L5_safety.validators.deliverability_validator import (
+                from agentic_core.L5_safety.validators.governance_validator import (
+                from agentic_core.L5_safety.validators.hop_validator import (
+                from agentic_core.L5_safety.validators.intelligence_query_validator import (
+                from agentic_core.L5_safety.validators.lead_quality_validator import (
+                """E2E Test 1: Complete resume generation pipeline."""
+                # Initialize all validators
+                ats = ATSValidationDeterministic(
+                    {
+                        "standard_headers": {"experience": ["experience"], "skills": ["skills"]},
+                        "ats_unfriendly_patterns": [],
+                        "allowed_non_standard_sections": ["projects"],
+                        "keyword_optimization": {"min_score_threshold": 0.3, "stop_words": []},
+                    },
+                )
+                content = ContentQualityDeterministic(
+                    {
+                        "placeholder_patterns": [],
+                        "quantified_patterns": [r"\d+\s*(?:%|years?)"],
+                        "skill_keywords": ["Python", "JavaScript"],
+                        "min_skill_matches": 1,
+                    },
+                )
+                governance = GovernanceShieldDeterministic({})
+
         governance = GovernanceShieldDeterministic({})
 
         # Test resume with 3+ quantified achievements

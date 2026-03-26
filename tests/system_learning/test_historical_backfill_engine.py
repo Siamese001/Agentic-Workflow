@@ -207,21 +207,24 @@ def repo(tmp_path):
 
 class TestBackfillProtectedRootBlocks:
     def test_writes_correct_number_of_records(self, repo):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.historical_backfill_engine import backfill_protected_root_blocks
-        from system_learning.engines.historical_backfill_engine import backfill_protected_root_blocks
-        from system_learning.engines.historical_backfill_engine import backfill_protected_root_blocks
-        from system_learning.engines.historical_backfill_engine import backfill_protected_root_blocks
-        from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
-        from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
-        from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
-        from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
-        from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
-        from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
-        from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
-        from system_learning.engines.historical_backfill_engine import run_backfill
-        from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
-        from system_learning.engines.historical_backfill_engine import run_backfill
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.historical_backfill_engine import backfill_protected_root_blocks
+                from system_learning.engines.historical_backfill_engine import backfill_protected_root_blocks
+                from system_learning.engines.historical_backfill_engine import backfill_protected_root_blocks
+                from system_learning.engines.historical_backfill_engine import backfill_protected_root_blocks
+                from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+                from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
+                from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
+                from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
+                from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
+                from system_learning.engines.historical_backfill_engine import backfill_compliance_success_rates
+                from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+                from system_learning.engines.historical_backfill_engine import run_backfill
+                from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+                from system_learning.engines.historical_backfill_engine import run_backfill
+                from system_learning.engines.historical_backfill_engine import run_backfill
+        #  # MOVED: from system_learning.engines.historical_backfill_engine import backfill_protected_root_blocks
+
 #  # MOVED: from system_learning.engines.historical_backfill_engine import backfill_protected_root_blocks
 
         count = backfill_protected_root_blocks(repo)

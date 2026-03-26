@@ -23,23 +23,25 @@ import pytest
 
 class TestResearchTypes:
     def test_research_status_values(self) -> None:
-        from apps_research.types.research_types import (
-        from apps_research.validators.research_gate_validator import ResearchGateValidator
-        from apps_research.validators.research_gate_validator import ResearchGateValidator
-        from apps_research.validators.research_gate_validator import ResearchGateValidator
-        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
-        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
-        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
-        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
-        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
-        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
-        from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
-        from apps_research.config.agent_spec_config import load_research_specs
-        from apps_research.config.agent_spec_config import load_research_specs
-        from apps_research.config.reasoning_toggles_config import DEFAULT_TOGGLES
-        from apps_research.config.agent_spec_config import load_research_specs
-        assert ResearchStatus.COMPLETE.value == "complete"
-        assert ResearchStatus.DRY_RUN.value == "dry_run"
+                from apps_research.types.research_types import (
+                from apps_research.validators.research_gate_validator import ResearchGateValidator
+                from apps_research.validators.research_gate_validator import ResearchGateValidator
+                from apps_research.validators.research_gate_validator import ResearchGateValidator
+                from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+                from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+                from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+                from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+                from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+                from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+                from apps_research.reasoning.ResearchOrchestrator import ResearchOrchestrator
+                from apps_research.config.agent_spec_config import load_research_specs
+                from apps_research.config.agent_spec_config import load_research_specs
+                from apps_research.config.reasoning_toggles_config import DEFAULT_TOGGLES
+                from apps_research.config.agent_spec_config import load_research_specs
+                assert ResearchStatus.COMPLETE.value == "complete"
+                assert ResearchStatus.DRY_RUN.value == "dry_run"
+                assert ResearchStatus.FAILED.value == "failed"
+
         assert ResearchStatus.FAILED.value == "failed"
 
     def test_artifact_mode_values(self) -> None:

@@ -205,17 +205,19 @@ class TestSSOTE2EReporting:
     # CASE 1: Dry Run Integrity (The "Look but Don't Touch" Test)
     # =========================================================================
     def test_e2e_01_dry_run_integrity(self, tmp_path, state_mgr, engine):
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.scripts.execute_ssot import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L0_routing.scripts.execute_ssot import validate_territory_input
-        """
-        Scenario: Execute a dry run on a directory with known violations.
-        Expected: Violations are reported, but NO files are modified.
-        """
-        # Setup: Create a file that violates naming convention
-        bad_file = tmp_path / "BadNaming.py"
-        bad_file.write_text("print('violation')")
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.scripts.execute_ssot import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L0_routing.scripts.execute_ssot import validate_territory_input
+                """
+                Scenario: Execute a dry run on a directory with known violations.
+                Expected: Violations are reported, but NO files are modified.
+                """
+                # Setup: Create a file that violates naming convention
+                bad_file = tmp_path / "BadNaming.py"
+                bad_file.write_text("print('violation')")
+                mtime_initial = os.path.getmtime(bad_file)
+
         mtime_initial = os.path.getmtime(bad_file)
 
         # Mock an agent discovering this

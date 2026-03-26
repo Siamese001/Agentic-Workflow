@@ -185,10 +185,12 @@ class TestW3NegativeControl:
     """Negative control tests for W3 pattern analysis determinism."""
 
     def test_pattern_determinism_violation_negative_control(self) -> None:
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from system_learning.engines.pattern_analysis_engine import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        """NC1: Pattern analysis should detect non-deterministic tampering."""
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from system_learning.engines.pattern_analysis_engine import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                """NC1: Pattern analysis should detect non-deterministic tampering."""
+                engine = PatternAnalysisEngine()
+
         engine = PatternAnalysisEngine()
 
         # Standard test data

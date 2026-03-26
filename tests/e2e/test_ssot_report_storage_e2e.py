@@ -190,19 +190,21 @@ class TestE2EDiscoveryToEnforcement:
     """E2E tests for the complete discovery to enforcement workflow."""
 
     def test_full_workflow_empty_project(self) -> None:
-        from agentic_core.L0_routing.config.path_constants import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
-        from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
-        from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
-        from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
-        from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
-        from agentic_core.utils.report_location_validator_types_util import (
-        """Test full workflow on empty project."""
-        with tempfile.TemporaryDirectory() as tmpdir:
-            project_root = Path(tmpdir)
-            docs_reports = project_root / "docs" / REPORTS_DIR
+                from agentic_core.L0_routing.config.path_constants import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+                from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
+                from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
+                from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
+                from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
+                from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
+                from agentic_core.utils.report_location_validator_types_util import (
+                """Test full workflow on empty project."""
+                with tempfile.TemporaryDirectory() as tmpdir:
+                    project_root = Path(tmpdir)
+                    docs_reports = project_root / "docs" / REPORTS_DIR
+                    docs_reports.mkdir(parents=True)
+
             docs_reports.mkdir(parents=True)
 
 #  # MOVED: from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
