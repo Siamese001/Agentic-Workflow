@@ -133,6 +133,8 @@ class TrainingMetrics:
     training_loss: List[float] = field(default_factory=list)
     validation_loss: List[float] = field(default_factory=list)
     hyperparameters: Dict[str, Any] = field(default_factory=dict)
+    feature_columns: List[str] = field(default_factory=list)
+    target_column: str = "anomaly"
     timestamp: float = field(default_factory=time.time)
     
     def to_dict(self) -> Dict[str, Any]:
@@ -265,6 +267,8 @@ class RandomForestModel(BaseMLModel):
                 confusion_matrix=confusion_matrix(y_val, y_pred).tolist(),
                 feature_importance=dict(zip(self.feature_columns, self.model.feature_importances_)),
                 hyperparameters=self.config.hyperparameters,
+                feature_columns=self.feature_columns,
+                target_column=self.target_column,
             )
             
             self.is_trained = True
@@ -548,28 +552,28 @@ class MLTrainingPipeline:
             "random_forest": ModelConfig(
                 model_type=ModelType.RANDOM_FOREST,
                 hyperparameters={
-                    "n_estimators": [50, 100, 200],
-                    "max_depth": [5, 10, 15],
-                    "min_samples_split": [2, 5, 10],
-                    "min_samples_leaf": [1, 2, 4],
+                    "n_estimators": 100,
+                    "max_depth": 10,
+                    "min_samples_split": 2,
+                    "min_samples_leaf": 1,
                 }
             ),
             "xgboost": ModelConfig(
                 model_type=ModelType.XGBOOST,
                 hyperparameters={
-                    "n_estimators": [50, 100, 200],
-                    "max_depth": [3, 6, 9],
-                    "learning_rate": [0.01, 0.1, 0.2],
-                    "subsample": [0.8, 0.9, 1.0],
+                    "n_estimators": 100,
+                    "max_depth": 6,
+                    "learning_rate": 0.1,
+                    "subsample": 1.0,
                 }
             ),
             "neural_network": ModelConfig(
                 model_type=ModelType.NEURAL_NETWORK,
                 hyperparameters={
-                    "hidden_layer_sizes": [(50,), (100,), (100, 50)],
-                    "activation": ["relu", "tanh"],
-                    "alpha": [0.0001, 0.001, 0.01],
-                    "learning_rate": ["constant", "adaptive"],
+                    "hidden_layer_sizes": (100, 50),
+                    "activation": "relu",
+                    "alpha": 0.0001,
+                    "learning_rate": "constant",
                 }
             ),
         }

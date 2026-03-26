@@ -746,5 +746,1784 @@
       ],
       "slow_operations": []
     }
+  },
+  "runtime_adg_1774485009_28343c5a": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "462a4a99e75cf017"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485009_296dd7b8": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "b71ef6dfb36634e6"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485009_5e2fb208": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "e7c9f12bce4a2de0"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485009_b5901892": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "533a15edfba7dabf"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485009_d59c9ba2": {
+    "component_distribution": {
+      "CognitivePlane": 1,
+      "NervousSystem": 1,
+      "Tool.test_tool": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L1_Cognition": 1,
+      "L2_Execution": 1,
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 3,
+      "temporal_sequence": 2
+    },
+    "span_type_distribution": {
+      "cognitive": 1,
+      "orchestrator": 1,
+      "tool": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "CognitivePlane",
+          "duration_ms": 1.512,
+          "node_id": "2866a5ff4b701c02"
+        },
+        {
+          "component": "Tool.test_tool",
+          "duration_ms": 1.512,
+          "node_id": "3f24dcf26445060c"
+        },
+        {
+          "component": "NervousSystem",
+          "duration_ms": 1.512,
+          "node_id": "d2eae12b1240be87"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485011_62835910": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "3546bb3b0491c129"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485011_fd557c9b": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "e58bcd9a9a87310b"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485012_2e0c606e": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "e3125c51df07948c"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485012_3ca1bcea": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485012_4216c522": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "0b0b157ec33f3115"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485012_4ddc7b34": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485012_4e2d7420": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 8.021,
+          "node_id": "34ba0a582fa7a07b"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485012_537298a8": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485012_53e833b0": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 9.093,
+          "node_id": "f7c8c412072d927e"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485012_5db46767": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "ab8fec58481737b4"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485012_6ba8dfa8": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "441e2050727bd30f"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485012_71640b2f": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 9.366,
+          "node_id": "05a8673a2800d7d4"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485012_858332c5": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "eaf8709763a6aba9"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485012_a5774cb2": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "97cadc2b1d940b31"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485012_bb0e216c": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "47265babc8802ca3"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485012_e676e57f": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "8be327fdbe4003ea"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485012_f586540f": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 5.62,
+          "node_id": "5a01b7efa5e720b7"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485012_f70049b2": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485022_3e7dd7bb": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "8f842473ba4660dc"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485209_0b842d5f": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "d501574c2e9bbc80"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485209_653013a3": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "90a67b84e8c8ac07"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485209_84624a32": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "fedd06d8c7da8262"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485209_d06be506": {
+    "component_distribution": {
+      "CognitivePlane": 1,
+      "NervousSystem": 1,
+      "Tool.test_tool": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L1_Cognition": 1,
+      "L2_Execution": 1,
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 3,
+      "temporal_sequence": 2
+    },
+    "span_type_distribution": {
+      "cognitive": 1,
+      "orchestrator": 1,
+      "tool": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "Tool.test_tool",
+          "duration_ms": 2.037,
+          "node_id": "a425e8864b96d324"
+        },
+        {
+          "component": "NervousSystem",
+          "duration_ms": 2.037,
+          "node_id": "b9e3c1b9e8185038"
+        },
+        {
+          "component": "CognitivePlane",
+          "duration_ms": 2.037,
+          "node_id": "db15d503aacb20e7"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485209_f8d66a74": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "e9688fd2b89277c3"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485211_57ad2fc1": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "2428b3e8d90ab8a9"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485211_de1b366e": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "ff2219ecdd2a1549"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485212_0d5931d5": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485212_1e0e7b0a": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "8756231c32244bd3"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485212_1f994aed": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "b29120767715505a"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485212_389725d6": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 1.518,
+          "node_id": "edb9ba4bbdc0b62a"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485212_4e540977": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 9.26,
+          "node_id": "6bf0e35834744aa2"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485212_7cc91c25": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "391db0ca56c171ff"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485212_8ecfc40d": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 8.508,
+          "node_id": "73ada25c4f574453"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485212_95f472ea": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "081923607e784aa7"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485212_b1f1a085": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485212_c6859069": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 8.441,
+          "node_id": "2d597271e8169d14"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485212_c6d36906": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485212_d24696c4": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "ab00efd048146094"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485212_e574e37b": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "e1a26602256506ce"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485212_f0f2f72d": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 9.236,
+          "node_id": "c21f14768d2349da"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485212_f919e7c5": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "d80fbe2eff81c2c7"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485212_fd7464d5": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485222_7e21a516": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "9bde1c4d2a50b3e0"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485263_225e6ed2": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "09447362a0c64ac2"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485263_69f8cb93": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "360684bd7d4a78e8"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485263_ca4c3613": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "d70ad5710c8dec3d"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485263_dbbd9db3": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "58281a175e56399a"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485263_e229a3cc": {
+    "component_distribution": {
+      "CognitivePlane": 1,
+      "NervousSystem": 1,
+      "Tool.test_tool": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L1_Cognition": 1,
+      "L2_Execution": 1,
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 3,
+      "temporal_sequence": 2
+    },
+    "span_type_distribution": {
+      "cognitive": 1,
+      "orchestrator": 1,
+      "tool": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "CognitivePlane",
+          "duration_ms": 1.752,
+          "node_id": "2ae524480b0d31d4"
+        },
+        {
+          "component": "Tool.test_tool",
+          "duration_ms": 1.752,
+          "node_id": "32acfe25114c872e"
+        },
+        {
+          "component": "NervousSystem",
+          "duration_ms": 1.752,
+          "node_id": "e190e2d6d55d8046"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485265_47e5ff37": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.53,
+          "node_id": "2ce9aa68ed081588"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485265_7f4f6bf2": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "0e30a1f11c488c67"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485266_026fdd62": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "353e5a46a2a5ae68"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485266_33bd13a4": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 9.735,
+          "node_id": "dcd93d57be34fb0e"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485266_410fb0c6": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "4f2b9d70b084c6eb"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485266_48d609b9": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "5c0bffd0d37bbdd4"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485266_4c2972b0": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "eacd7fa7e19cb8d4"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485266_562df67f": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485266_5f7c4610": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "afece6b2d5ee4145"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485266_62703fea": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485266_736c4585": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "b37b33356cf90906"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485266_78e8c70c": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485266_88a6456f": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "bbd2d8b58723bb0e"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485266_8e4e9fe0": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 8.879,
+          "node_id": "729056afe6bc08cf"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485266_aae5988d": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "27f9c46e963eb2b1"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485266_d2987404": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 9.943,
+          "node_id": "425692f0daf11a1a"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485266_e9dcc058": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485266_ebb8ac5c": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 9.186,
+          "node_id": "1520d74a0c758710"
+        }
+      ],
+      "slow_operations": []
+    }
+  },
+  "runtime_adg_1774485276_beaca505": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "ac8326909c73d4ac"
+        }
+      ],
+      "slow_operations": []
+    }
   }
 }

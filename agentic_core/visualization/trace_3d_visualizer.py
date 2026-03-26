@@ -605,7 +605,7 @@ class Trace3DVisualizer:
         
         # Reset node appearances
         for graph in self._graphs.values():
-            for node in graph.nodes:
+            for node in graph.nodes.values():
                 node.color = self._get_node_color(node.node_type)
                 node.radius = 2.0 + node.metadata.get("duration_ms", 0) / 1000
     
