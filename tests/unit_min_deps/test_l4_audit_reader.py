@@ -11,7 +11,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -74,7 +74,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_l4_audit_reader", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_l4_audit_reader", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_l4_audit_reader", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -112,8 +112,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.enforcement.authority_invariants import AuthorityViolation
-from system_learning.engines.l4_audit_reader import AuditStore, pull_audit_data
+#  # MOVED: from system_learning.enforcement.authority_invariants import AuthorityViolation
+#  # MOVED: from system_learning.engines.l4_audit_reader import AuditStore, pull_audit_data
 
 # REMOVED: _emit_emits_metric_event("test_l4_audit_reader", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_l4_audit_reader", "p4obs", "metric_2")
@@ -209,6 +209,10 @@ class FakeAuditStore:
 
 class TestAuditStoreProtocol:
     def test_fake_store_satisfies_protocol(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.enforcement.authority_invariants import AuthorityViolation
+        from system_learning.engines.l4_audit_reader import AuditStore, pull_audit_data
         store = FakeAuditStore(b"test")
         assert isinstance(store, AuditStore)
 

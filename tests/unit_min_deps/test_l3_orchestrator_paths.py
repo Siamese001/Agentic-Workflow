@@ -7,13 +7,13 @@ Validates Path B, C, and D orchestration with proper state transitions.
 
 import pytest
 
-from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
-from agentic_core.L3_orchestration.engines.deterministic_orchestrator import (
+#  # MOVED: from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
+#  # MOVED: from agentic_core.L3_orchestration.engines.deterministic_orchestrator import (
     DeterministicOrchestrator,
 )
-from agentic_core.L3_orchestration.engines.handshake_state_machine import HandshakeState
-from agentic_core.L3_orchestration.types.human_decision_artifact_types import HumanAction
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.handshake_state_machine import HandshakeState
+#  # MOVED: from agentic_core.L3_orchestration.types.human_decision_artifact_types import HumanAction
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -202,6 +202,11 @@ class TestW5L3OrchestratorPaths:
         )
 
     def test_path_b_policy_check_first(self, orchestrator, sample_payload):
+        from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
+        from agentic_core.L3_orchestration.engines.deterministic_orchestrator import (
+        from agentic_core.L3_orchestration.engines.handshake_state_machine import HandshakeState
+        from agentic_core.L3_orchestration.types.human_decision_artifact_types import HumanAction
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test path_b_policy_check_first contract compliance."""
     # Arrange
     # TODO: Set up test data

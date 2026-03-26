@@ -31,11 +31,11 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     TESTS_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -82,7 +82,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_hierarchy_agent_invariants", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_hierarchy_agent_invariants", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_hierarchy_agent_invariants", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -205,7 +205,7 @@ pytestmark = pytest.mark.architecture
 
 def _make_agent(tmp_root: Path, healing_enabled: bool = False):
     """Construct a minimal HierarchyAgent with mocked gatekeeper, no filesystem side-effects."""
-    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
     agent = object.__new__(HierarchyAgent)
     agent.project_root = tmp_root
@@ -238,6 +238,18 @@ class TestFix1EnforceTestsStructure:
         return r
 
     def test_agent_file_in_approved_subfolder_raises_violation(self, tmp_path: Path) -> None:
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+        from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
+        from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
+        from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
+        from agentic_core.L5_safety.enforcement.mission_utils_enforcer import (
+        from agentic_core.L5_safety.enforcement.mission_utils_enforcer import (
+        from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
+        from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
+        from agentic_core.L5_safety.config.structure_blueprint import (
         """*Agent.py inside tests/support/ must be flagged — no silent skip."""
         r = self._run(tmp_path, [("support/SomeAgent.py", "class SomeAgent: pass")])
         assert r["violations_found"] >= 1
@@ -349,7 +361,7 @@ class TestFix3SubfolderConfidence:
     """get_best_target_l2 returns __ARCHIVE__ for agent files routed to non-source roots."""
 
     def test_get_best_target_l2_agent_file_tests_root_returns_archive_sentinel(self) -> None:
-        from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
+#  # MOVED: from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
 
         result = get_best_target_l2(TESTS_DIR, "SomeAgent.py")
         assert result == "__ARCHIVE__", (
@@ -357,7 +369,7 @@ class TestFix3SubfolderConfidence:
         )
 
     def test_get_best_target_l2_agent_file_source_layer_returns_valid(self) -> None:
-        from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
+#  # MOVED: from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
 
         result = get_best_target_l2("L5_safety", "SomeAgent.py")
         assert result != "__ARCHIVE__", (
@@ -365,13 +377,13 @@ class TestFix3SubfolderConfidence:
         )
 
     def test_get_best_target_l2_non_agent_file_tests_root_proceeds(self) -> None:
-        from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
+#  # MOVED: from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
 
         result = get_best_target_l2(TESTS_DIR, "test_something.py")
         assert result != "__ARCHIVE__", "Non-agent files must go through normal routing, not ARCHIVE sentinel"
 
     def test_confidence_zero_for_all_low_confidence_roots(self) -> None:
-        from agentic_core.L5_safety.enforcement.mission_utils_enforcer import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.mission_utils_enforcer import (
             _AGENT_LOW_CONFIDENCE_ROOTS,
             _calculate_subfolder_confidence_for_agent,
         )
@@ -381,7 +393,7 @@ class TestFix3SubfolderConfidence:
             assert conf < 0.5, f"Expected confidence < 0.5 for root {root!r}, got {conf}"
 
     def test_confidence_one_for_source_layer(self) -> None:
-        from agentic_core.L5_safety.enforcement.mission_utils_enforcer import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.mission_utils_enforcer import (
             _calculate_subfolder_confidence_for_agent,
         )
 
@@ -389,12 +401,12 @@ class TestFix3SubfolderConfidence:
         assert conf >= 0.5, f"Expected confidence >= 0.5 for source layer, got {conf}"
 
     def test_docs_root_also_returns_archive_sentinel(self) -> None:
-        from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
+#  # MOVED: from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
 
         assert get_best_target_l2("docs", "MyAgent.py") == "__ARCHIVE__"
 
     def test_data_root_also_returns_archive_sentinel(self) -> None:
-        from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
+#  # MOVED: from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
 
         assert get_best_target_l2("data", "MyAgent.py") == "__ARCHIVE__"
 
@@ -408,7 +420,7 @@ class TestFix4SSOTForbiddenPatterns:
     """tests/support/ SSOT entry must contain forbidden_patterns blocking *Agent.py."""
 
     def _get_support_config(self) -> dict:
-        from agentic_core.L5_safety.config.structure_blueprint import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint import (
             get_all_territories,
         )
 

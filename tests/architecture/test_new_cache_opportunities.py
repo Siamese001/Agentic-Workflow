@@ -12,7 +12,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -57,7 +57,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_new_cache_opportunities")
 # REMOVED: _emit_applies_guardrail("p0", "test_new_cache_opportunities", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_new_cache_opportunities", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -195,8 +195,62 @@ def _make_fake_cache():
 
 
 def test_tool_embedding_cache_has_get_or_fetch():
-    """ToolEmbeddingCache must have get_or_fetch method."""
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+    from agentic_core.cache.config_file_cache import ConfigFileCache
+    from agentic_core.cache.config_file_cache import ConfigFileCache
+    from agentic_core.cache.config_file_cache import ConfigFileCache
+    from agentic_core.cache.config_file_cache import ConfigFileCache
+    from agentic_core.cache.config_file_cache import ConfigFileCache
+    from agentic_core.cache.config_file_cache import ConfigFileCache
+    from agentic_core.cache.config_file_cache import ConfigFileCache
+    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+    from agentic_core.cache.config_file_cache import ConfigFileCache
+    from agentic_core.cache.config_file_cache import ConfigFileCache
+    from agentic_core.cache.config_file_cache import ConfigFileCache
+    from agentic_core.cache.config_file_cache import ConfigFileCache
+    from agentic_core.cache.config_file_cache import ConfigFileCache
+    from agentic_core.cache.config_file_cache import ConfigFileCache
+    from agentic_core.cache.config_file_cache import ConfigFileCache
+    """ToolEmbeddingCache must have get_or_fetch method."""
+#  # MOVED: from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
 
     cache = ToolEmbeddingCache(cache=_make_fake_cache())
     assert hasattr(cache, "get_or_fetch")
@@ -224,7 +278,7 @@ assert isinstance(result, (dict, list, str, int, float, bool)), "Result should b
 
 def test_tool_embedding_cache_empty_tools_raises():
     """Empty tool definitions list must raise ValueError."""
-    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+#  # MOVED: from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
 
     fake = _make_fake_cache()
     cache = ToolEmbeddingCache(cache=fake)
@@ -235,7 +289,7 @@ def test_tool_embedding_cache_empty_tools_raises():
 
 def test_tool_embedding_cache_replay_mode_bypasses():
     """replay_mode=True must skip cache read and write."""
-    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+#  # MOVED: from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = {"embeddings": [[0.9]], "tool_names": ["stale"]}
@@ -264,7 +318,7 @@ assert len(processed_result) >= 0, "Processed result should be measurable"
 # TODO: Add specific processing assertions
 def test_tool_embedding_cache_fingerprint_changes_invalidate():
     """Changing tool set must invalidate cache via different fingerprint."""
-    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+#  # MOVED: from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
 
     fake = _make_fake_cache()
     cache = ToolEmbeddingCache(cache=fake)
@@ -288,7 +342,7 @@ def test_tool_embedding_cache_fingerprint_changes_invalidate():
 
 def test_schema_validator_cache_has_get_or_fetch():
     """SchemaValidatorCache must have get_or_fetch method."""
-    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+#  # MOVED: from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
 
     cache = SchemaValidatorCache(cache=_make_fake_cache())
     assert hasattr(cache, "get_or_fetch")
@@ -297,7 +351,7 @@ def test_schema_validator_cache_has_get_or_fetch():
 
 def test_schema_validator_cache_miss_calls_fetch():
     """Cache miss must call fetch_validator exactly once."""
-    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+#  # MOVED: from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
 
     fake = _make_fake_cache()
     cache = SchemaValidatorCache(cache=fake)
@@ -315,7 +369,7 @@ def test_schema_validator_cache_miss_calls_fetch():
 
 def test_schema_validator_cache_empty_schema_raises():
     """Empty schema dict must raise ValueError."""
-    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+#  # MOVED: from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
 
     fake = _make_fake_cache()
     cache = SchemaValidatorCache(cache=fake)
@@ -326,7 +380,7 @@ def test_schema_validator_cache_empty_schema_raises():
 
 def test_schema_validator_cache_replay_mode_bypasses():
     """replay_mode=True must skip cache read and write."""
-    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+#  # MOVED: from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = {"stale": True}
@@ -340,7 +394,7 @@ def test_schema_validator_cache_replay_mode_bypasses():
 
 def test_schema_validator_cache_schema_changes_invalidate():
     """Changing schema must invalidate cache via different hash."""
-    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+#  # MOVED: from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
 
     fake = _make_fake_cache()
     cache = SchemaValidatorCache(cache=fake)
@@ -359,7 +413,7 @@ def test_schema_validator_cache_schema_changes_invalidate():
 
 def test_schema_validator_cache_handles_cache_exception():
     """Cache exceptions must not propagate."""
-    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+#  # MOVED: from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
 
     fake = _make_fake_cache()
     fake.get_json.side_effect = RuntimeError("Redis down")
@@ -377,7 +431,7 @@ def test_schema_validator_cache_handles_cache_exception():
 
 def test_policy_registry_cache_has_get_or_fetch():
     """PolicyRegistryCache must have get_or_fetch method."""
-    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+#  # MOVED: from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
 
     cache = PolicyRegistryCache(cache=_make_fake_cache())
     assert hasattr(cache, "get_or_fetch")
@@ -386,7 +440,7 @@ def test_policy_registry_cache_has_get_or_fetch():
 
 def test_policy_registry_cache_miss_calls_fetch():
     """Cache miss must call fetch_policy exactly once."""
-    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+#  # MOVED: from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
 
     fake = _make_fake_cache()
     cache = PolicyRegistryCache(cache=fake)
@@ -403,7 +457,7 @@ def test_policy_registry_cache_miss_calls_fetch():
 
 def test_policy_registry_cache_empty_policy_id_raises():
     """Empty policy ID must raise ValueError."""
-    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+#  # MOVED: from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
 
     fake = _make_fake_cache()
     cache = PolicyRegistryCache(cache=fake)
@@ -417,7 +471,7 @@ def test_policy_registry_cache_empty_policy_id_raises():
 
 def test_policy_registry_cache_replay_mode_bypasses():
     """replay_mode=True must skip cache read and write."""
-    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+#  # MOVED: from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = {"stale": True}
@@ -458,7 +512,7 @@ assert isinstance(result, (dict, list, str, int, float, bool)), "Result should b
 
 def test_config_file_cache_has_get_or_fetch():
     """ConfigFileCache must have get_or_fetch method."""
-    from agentic_core.cache.config_file_cache import ConfigFileCache
+#  # MOVED: from agentic_core.cache.config_file_cache import ConfigFileCache
 
     cache = ConfigFileCache(cache=_make_fake_cache())
     assert hasattr(cache, "get_or_fetch")
@@ -467,7 +521,7 @@ def test_config_file_cache_has_get_or_fetch():
 
 def test_config_file_cache_miss_calls_fetch():
     """Cache miss must call fetch_from_disk exactly once."""
-    from agentic_core.cache.config_file_cache import ConfigFileCache
+#  # MOVED: from agentic_core.cache.config_file_cache import ConfigFileCache
 
     fake = _make_fake_cache()
     cache = ConfigFileCache(cache=fake)
@@ -492,7 +546,7 @@ def test_config_file_cache_miss_calls_fetch():
 
 def test_config_file_cache_file_not_found_propagates():
     """FileNotFoundError must propagate when config file missing."""
-    from agentic_core.cache.config_file_cache import ConfigFileCache
+#  # MOVED: from agentic_core.cache.config_file_cache import ConfigFileCache
 
     fake = _make_fake_cache()
     cache = ConfigFileCache(cache=fake)
@@ -504,7 +558,7 @@ def test_config_file_cache_file_not_found_propagates():
 
 def test_config_file_cache_replay_mode_bypasses():
     """replay_mode=True must skip cache read and write."""
-    from agentic_core.cache.config_file_cache import ConfigFileCache
+#  # MOVED: from agentic_core.cache.config_file_cache import ConfigFileCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = {"stale": True}
@@ -524,7 +578,7 @@ def test_config_file_cache_replay_mode_bypasses():
 
 def test_config_file_cache_content_changes_invalidate():
     """Changing file content must invalidate cache via different hash."""
-    from agentic_core.cache.config_file_cache import ConfigFileCache
+#  # MOVED: from agentic_core.cache.config_file_cache import ConfigFileCache
 
     fake = _make_fake_cache()
     cache = ConfigFileCache(cache=fake)
@@ -549,7 +603,7 @@ def test_config_file_cache_content_changes_invalidate():
 
 def test_config_file_cache_handles_cache_exception():
     """Cache exceptions must not propagate."""
-    from agentic_core.cache.config_file_cache import ConfigFileCache
+#  # MOVED: from agentic_core.cache.config_file_cache import ConfigFileCache
 
     fake = _make_fake_cache()
     fake.get_json.side_effect = RuntimeError("Redis down")
@@ -568,7 +622,7 @@ def test_config_file_cache_handles_cache_exception():
 
 def test_config_file_cache_handles_set_exception():
     """Cache write exceptions must not propagate."""
-    from agentic_core.cache.config_file_cache import ConfigFileCache
+#  # MOVED: from agentic_core.cache.config_file_cache import ConfigFileCache
 
     fake = _make_fake_cache()
     fake.set_json.side_effect = RuntimeError("Redis write failed")
@@ -592,7 +646,7 @@ def test_config_file_cache_handles_set_exception():
 
 def test_tool_embedding_cache_same_tools_identical_key_twice():
     """Same tool set must produce identical fingerprint on two successive calls (§4:124-125)."""
-    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+#  # MOVED: from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
 
     fake = _make_fake_cache()
     cache = ToolEmbeddingCache(cache=fake)
@@ -610,7 +664,7 @@ def test_tool_embedding_cache_same_tools_identical_key_twice():
 
 def test_tool_embedding_cache_input_order_invariant():
     """Tool set in different input order must produce identical fingerprint (§4:126, normalization)."""
-    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+#  # MOVED: from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
 
     fake = _make_fake_cache()
     cache = ToolEmbeddingCache(cache=fake)
@@ -638,7 +692,7 @@ def test_tool_embedding_cache_input_order_invariant():
 
 def test_tool_embedding_cache_near_miss_different_description_distinct_key():
     """Tool with same name but different description must produce distinct fingerprint (§4:127)."""
-    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+#  # MOVED: from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
 
     fake = _make_fake_cache()
     cache = ToolEmbeddingCache(cache=fake)
@@ -673,7 +727,7 @@ assert isinstance(result, (dict, list, str, int, float, bool)), "Result should b
 
 def test_tool_embedding_cache_hit_side_effect_envelope():
     """On cache hit: get_json once, set_json never, fetch never (§4:134-138)."""
-    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+#  # MOVED: from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = {"embeddings": [[0.5]], "tool_names": ["cached_tool"]}
@@ -694,7 +748,7 @@ def test_tool_embedding_cache_hit_side_effect_envelope():
 
 def test_tool_embedding_cache_empty_tools_no_cache_side_effect():
     """ValueError from empty tools must propagate before any cache operation (§4:131-133)."""
-    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+#  # MOVED: from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
 
     fake = _make_fake_cache()
     cache = ToolEmbeddingCache(cache=fake)
@@ -708,7 +762,7 @@ def test_tool_embedding_cache_empty_tools_no_cache_side_effect():
 
 def test_tool_embedding_cache_malformed_tool_missing_name_key():
     """Tool dict missing 'name' key must still produce a stable (empty-name) fingerprint (§4:116-117)."""
-    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+#  # MOVED: from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
 
     fake = _make_fake_cache()
     cache = ToolEmbeddingCache(cache=fake)
@@ -722,7 +776,7 @@ def test_tool_embedding_cache_malformed_tool_missing_name_key():
 
 def test_tool_embedding_cache_stale_path_refetch_on_miss():
     """After TTL expiry simulation (get_json→None), fetch and re-cache (§4:179-183)."""
-    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+#  # MOVED: from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
 
     fake = _make_fake_cache()
     cache = ToolEmbeddingCache(cache=fake)
@@ -746,7 +800,7 @@ def test_tool_embedding_cache_stale_path_refetch_on_miss():
 
 def test_tool_embedding_cache_broad_except_does_not_swallow_fetch_error():
     """Broad except on cache read must not swallow errors from fetch (§4:146-148)."""
-    from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
+#  # MOVED: from agentic_core.cache.tool_embedding_cache import ToolEmbeddingCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = None
@@ -764,7 +818,7 @@ def test_tool_embedding_cache_broad_except_does_not_swallow_fetch_error():
 
 def test_schema_validator_cache_same_schema_identical_key_twice():
     """Same schema must produce identical hash on two successive calls (§4:124-125)."""
-    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+#  # MOVED: from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
 
     fake = _make_fake_cache()
     cache = SchemaValidatorCache(cache=fake)
@@ -782,7 +836,7 @@ def test_schema_validator_cache_same_schema_identical_key_twice():
 
 def test_schema_validator_cache_key_order_invariant():
     """Schema dicts with same keys in different order must produce identical hash (§4:126)."""
-    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+#  # MOVED: from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
 
     fake = _make_fake_cache()
     cache = SchemaValidatorCache(cache=fake)
@@ -804,7 +858,7 @@ def test_schema_validator_cache_key_order_invariant():
 
 def test_schema_validator_cache_near_miss_added_field_distinct_key():
     """Schema with one extra field must produce distinct hash from original (§4:127)."""
-    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+#  # MOVED: from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
 
     fake = _make_fake_cache()
     cache = SchemaValidatorCache(cache=fake)
@@ -824,7 +878,7 @@ def test_schema_validator_cache_near_miss_added_field_distinct_key():
 
 def test_schema_validator_cache_replay_warm_get_json_never_called():
     """replay_mode=True with warm cache must NEVER call get_json (§4:155-156)."""
-    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+#  # MOVED: from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = {"stale": True}
@@ -838,7 +892,7 @@ def test_schema_validator_cache_replay_warm_get_json_never_called():
 
 def test_schema_validator_cache_hit_side_effect_envelope():
     """On cache hit: get_json once, set_json never, fetch never (§4:134-138)."""
-    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+#  # MOVED: from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = {"cached": True}
@@ -858,7 +912,7 @@ def test_schema_validator_cache_hit_side_effect_envelope():
 
 def test_schema_validator_cache_empty_schema_no_cache_side_effect():
     """ValueError from empty schema must propagate before any cache operation (§4:131-133)."""
-    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+#  # MOVED: from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
 
     fake = _make_fake_cache()
     cache = SchemaValidatorCache(cache=fake)
@@ -872,7 +926,7 @@ def test_schema_validator_cache_empty_schema_no_cache_side_effect():
 
 def test_schema_validator_cache_broad_except_does_not_swallow_fetch_error():
     """Broad except on cache read must not swallow errors from fetch (§4:146-148)."""
-    from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
+#  # MOVED: from agentic_core.cache.schema_validator_cache import SchemaValidatorCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = None
@@ -889,7 +943,7 @@ def test_schema_validator_cache_broad_except_does_not_swallow_fetch_error():
 
 def test_policy_registry_cache_same_id_identical_key_twice():
     """Same policy ID must produce identical cache key on two successive calls (§4:124-125)."""
-    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+#  # MOVED: from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
 
     fake = _make_fake_cache()
     cache = PolicyRegistryCache(cache=fake)
@@ -906,7 +960,7 @@ def test_policy_registry_cache_same_id_identical_key_twice():
 
 def test_policy_registry_cache_distinct_ids_distinct_keys():
     """Two different policy IDs must produce distinct cache keys (§4:127)."""
-    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+#  # MOVED: from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
 
     fake = _make_fake_cache()
     cache = PolicyRegistryCache(cache=fake)
@@ -923,7 +977,7 @@ def test_policy_registry_cache_distinct_ids_distinct_keys():
 
 def test_policy_registry_cache_replay_warm_get_json_never_called():
     """replay_mode=True with warm cache must NEVER call get_json (§4:155-156)."""
-    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+#  # MOVED: from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = {"stale": True}
@@ -937,7 +991,7 @@ def test_policy_registry_cache_replay_warm_get_json_never_called():
 
 def test_policy_registry_cache_hit_side_effect_envelope():
     """On cache hit: get_json once, set_json never, fetch never (§4:134-138)."""
-    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+#  # MOVED: from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = {"id": "GOV-001", "cached": True}
@@ -957,7 +1011,7 @@ def test_policy_registry_cache_hit_side_effect_envelope():
 
 def test_policy_registry_cache_empty_id_no_cache_side_effect():
     """ValueError from empty policy ID must propagate before any cache op (§4:131-133)."""
-    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+#  # MOVED: from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
 
     fake = _make_fake_cache()
     cache = PolicyRegistryCache(cache=fake)
@@ -971,7 +1025,7 @@ def test_policy_registry_cache_empty_id_no_cache_side_effect():
 
 def test_policy_registry_cache_whitespace_id_no_cache_side_effect():
     """Whitespace-only policy ID must raise before any cache op (§4:107-108)."""
-    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+#  # MOVED: from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
 
     fake = _make_fake_cache()
     cache = PolicyRegistryCache(cache=fake)
@@ -985,7 +1039,7 @@ def test_policy_registry_cache_whitespace_id_no_cache_side_effect():
 
 def test_policy_registry_cache_stale_path_refetch_on_miss():
     """After TTL expiry simulation, fetch and re-cache (§4:179-183)."""
-    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+#  # MOVED: from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
 
     fake = _make_fake_cache()
     cache = PolicyRegistryCache(cache=fake)
@@ -1007,7 +1061,7 @@ def test_policy_registry_cache_stale_path_refetch_on_miss():
 
 def test_policy_registry_cache_broad_except_does_not_swallow_fetch_error():
     """Broad except on cache read must not swallow errors from fetch (§4:146-148)."""
-    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+#  # MOVED: from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = None
@@ -1019,7 +1073,7 @@ def test_policy_registry_cache_broad_except_does_not_swallow_fetch_error():
 
 def test_policy_registry_cache_invalidate_exception_does_not_propagate():
     """invalidate must swallow cache.delete exceptions without propagating (§4:141-144)."""
-    from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
+#  # MOVED: from agentic_core.cache.policy_registry_cache import PolicyRegistryCache
 
     fake = _make_fake_cache()
     fake.delete.side_effect = RuntimeError("Redis unavailable")
@@ -1035,7 +1089,7 @@ def test_policy_registry_cache_invalidate_exception_does_not_propagate():
 
 def test_config_file_cache_same_file_identical_key_twice():
     """Same file content must produce identical cache key on two successive calls (§4:124-125)."""
-    from agentic_core.cache.config_file_cache import ConfigFileCache
+#  # MOVED: from agentic_core.cache.config_file_cache import ConfigFileCache
 
     fake = _make_fake_cache()
     cache = ConfigFileCache(cache=fake)
@@ -1059,7 +1113,7 @@ def test_config_file_cache_same_file_identical_key_twice():
 
 def test_config_file_cache_replay_warm_get_json_never_called():
     """replay_mode=True with warm cache must NEVER call get_json (§4:155-156)."""
-    from agentic_core.cache.config_file_cache import ConfigFileCache
+#  # MOVED: from agentic_core.cache.config_file_cache import ConfigFileCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = {"stale": True}
@@ -1080,7 +1134,7 @@ def test_config_file_cache_replay_warm_get_json_never_called():
 
 def test_config_file_cache_hit_side_effect_envelope():
     """On cache hit: get_json once, set_json never, fetch never (§4:134-138)."""
-    from agentic_core.cache.config_file_cache import ConfigFileCache
+#  # MOVED: from agentic_core.cache.config_file_cache import ConfigFileCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = {"cached": True}
@@ -1107,7 +1161,7 @@ def test_config_file_cache_hit_side_effect_envelope():
 
 def test_config_file_cache_file_not_found_no_set_json_side_effect():
     """FileNotFoundError must propagate before any set_json call (§4:131-133)."""
-    from agentic_core.cache.config_file_cache import ConfigFileCache
+#  # MOVED: from agentic_core.cache.config_file_cache import ConfigFileCache
 
     fake = _make_fake_cache()
     cache = ConfigFileCache(cache=fake)
@@ -1120,7 +1174,7 @@ def test_config_file_cache_file_not_found_no_set_json_side_effect():
 
 def test_config_file_cache_stale_path_refetch_on_miss():
     """After TTL expiry simulation, fetch and re-cache (§4:179-183)."""
-    from agentic_core.cache.config_file_cache import ConfigFileCache
+#  # MOVED: from agentic_core.cache.config_file_cache import ConfigFileCache
 
     fake = _make_fake_cache()
     cache = ConfigFileCache(cache=fake)
@@ -1150,7 +1204,7 @@ def test_config_file_cache_stale_path_refetch_on_miss():
 
 def test_config_file_cache_broad_except_does_not_swallow_fetch_error():
     """Broad except on cache read must not swallow errors from fetch (§4:146-148)."""
-    from agentic_core.cache.config_file_cache import ConfigFileCache
+#  # MOVED: from agentic_core.cache.config_file_cache import ConfigFileCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = None
@@ -1169,7 +1223,7 @@ def test_config_file_cache_broad_except_does_not_swallow_fetch_error():
 
 def test_config_file_cache_distinct_files_distinct_keys():
     """Two files with different content must produce distinct cache keys (§4:127)."""
-    from agentic_core.cache.config_file_cache import ConfigFileCache
+#  # MOVED: from agentic_core.cache.config_file_cache import ConfigFileCache
 
     fake = _make_fake_cache()
     cache = ConfigFileCache(cache=fake)

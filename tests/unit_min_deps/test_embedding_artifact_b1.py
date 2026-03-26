@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -71,13 +71,13 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_embedding_artifact_b1", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_embedding_artifact_b1", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_embedding_artifact_b1", "exec_snapshot_link")
-from system_learning.types.embedding_artifact import EmbeddingArtifact
+#  # MOVED: from system_learning.types.embedding_artifact import EmbeddingArtifact
 
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_embedding_artifact_b1")
 # REMOVED: _emit_applies_guardrail("p0", "test_embedding_artifact_b1", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_embedding_artifact_b1", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_embedding_artifact_b1", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -187,6 +187,19 @@ class TestEmbeddingArtifactDeterminism:
     """Test deterministic behavior of EmbeddingArtifact."""
 
     def test_same_inputs_identical_canonical_bytes(self):
+        from system_learning.types.embedding_artifact import EmbeddingArtifact
+        from system_learning.types.embedding_artifact import EmbeddingArtifact
+        from system_learning.types.embedding_artifact import EmbeddingArtifact
+        from system_learning.types.embedding_artifact import EmbeddingArtifact
+        from system_learning.types.embedding_artifact import EmbeddingArtifact
+        from system_learning.types.embedding_artifact import EmbeddingArtifact
+        from system_learning.types.embedding_artifact import EmbeddingArtifact
+        from system_learning.types.embedding_artifact import EmbeddingArtifact
+        from system_learning.types.embedding_artifact import EmbeddingArtifact
+        from system_learning.types.embedding_artifact import EmbeddingArtifact
+        from system_learning.types.embedding_artifact import EmbeddingArtifact
+        from system_learning.types.embedding_artifact import EmbeddingArtifact
+        from system_learning.types.embedding_artifact import EmbeddingArtifact
         """Same inputs → identical canonical_bytes."""
         artifact1 = EmbeddingArtifact(
             namespace="test_namespace",
@@ -212,6 +225,7 @@ class TestEmbeddingArtifactDeterminism:
 
     def test_same_inputs_identical_artifact_hash(self):
         """Same inputs → identical artifact_hash."""
+#  # MOVED: from system_learning.types.embedding_artifact import EmbeddingArtifact
         artifact1 = EmbeddingArtifact(
             namespace="test_namespace",
             seed_index_version_hash="abcd1234",
@@ -236,6 +250,7 @@ class TestEmbeddingArtifactDeterminism:
 
     def test_different_trace_ids_different_artifact_hash(self):
         """Different trace_ids → different artifact_hash."""
+#  # MOVED: from system_learning.types.embedding_artifact import EmbeddingArtifact
         artifact1 = EmbeddingArtifact(
             namespace="test_namespace",
             seed_index_version_hash="abcd1234",
@@ -260,6 +275,7 @@ class TestEmbeddingArtifactDeterminism:
 
     def test_canonical_sorting_enforced_trace_ids(self):
         """Trace IDs are automatically sorted canonically."""
+#  # MOVED: from system_learning.types.embedding_artifact import EmbeddingArtifact
         # Create with unordered trace IDs
         artifact = EmbeddingArtifact(
             namespace="test_namespace",
@@ -276,6 +292,7 @@ class TestEmbeddingArtifactDeterminism:
 
     def test_canonical_sorting_enforced_content_hashes(self):
         """Content hashes are automatically sorted canonically."""
+#  # MOVED: from system_learning.types.embedding_artifact import EmbeddingArtifact
         artifact = EmbeddingArtifact(
             namespace="test_namespace",
             seed_index_version_hash="abcd1234",
@@ -292,6 +309,7 @@ class TestEmbeddingArtifactDeterminism:
 
 class TestEmbeddingArtifactNegativeControl:
     """Test negative control cases to prove determinism enforcement."""
+#  # MOVED: from system_learning.types.embedding_artifact import EmbeddingArtifact
 
     def test_ordering_instability_without_canonical_sort_changes_hash(self):
         """Negative control: Without canonical sort, ordering changes hash.
@@ -300,6 +318,7 @@ class TestEmbeddingArtifactNegativeControl:
         that different input orders would produce different hashes if not
         automatically sorted.
         """
+#  # MOVED: from system_learning.types.embedding_artifact import EmbeddingArtifact
         # Create two artifacts with different input orders
         # (they will be auto-sorted, but we can verify the sorting works)
         artifact1 = EmbeddingArtifact(
@@ -364,6 +383,7 @@ class TestEmbeddingArtifactInvariants:
 
     def test_canonical_bytes_utf8_minified_json(self):
         """Canonical bytes are UTF-8 minified JSON."""
+#  # MOVED: from system_learning.types.embedding_artifact import EmbeddingArtifact
         artifact = EmbeddingArtifact(
             namespace="test",
             seed_index_version_hash="hash123",
@@ -387,6 +407,7 @@ class TestEmbeddingArtifactInvariants:
 
     def test_canonical_bytes_deterministic_key_order(self):
         """Canonical bytes have deterministic key order."""
+#  # MOVED: from system_learning.types.embedding_artifact import EmbeddingArtifact
         artifact = EmbeddingArtifact(
             namespace="test",
             seed_index_version_hash="hash123",
@@ -420,6 +441,7 @@ class TestEmbeddingArtifactInvariants:
 
     def test_artifact_hash_sha256_of_canonical_bytes(self):
         """artifact_hash is SHA-256 of canonical_bytes."""
+#  # MOVED: from system_learning.types.embedding_artifact import EmbeddingArtifact
         import hashlib
 
         artifact = EmbeddingArtifact(
@@ -439,6 +461,7 @@ class TestEmbeddingArtifactInvariants:
 
     def test_no_timestamps_in_canonical_representation(self):
         """No timestamps in canonical representation."""
+#  # MOVED: from system_learning.types.embedding_artifact import EmbeddingArtifact
         artifact = EmbeddingArtifact(
             namespace="test",
             seed_index_version_hash="hash123",
@@ -459,6 +482,7 @@ class TestEmbeddingArtifactInvariants:
 
     def test_no_floats_stored(self):
         """No floats stored in the artifact."""
+#  # MOVED: from system_learning.types.embedding_artifact import EmbeddingArtifact
         artifact = EmbeddingArtifact(
             namespace="test",
             seed_index_version_hash="hash123",
@@ -480,7 +504,9 @@ class TestEmbeddingArtifactInvariants:
         assert not re.search(float_pattern, json_str), "Float values found in representation"
 
     def test_lists_preserve_deterministic_order(self):
+#  # MOVED: from system_learning.types.embedding_artifact import EmbeddingArtifact
         """Lists are serialized in their stored (deterministic) order."""
+#  # MOVED: from system_learning.types.embedding_artifact import EmbeddingArtifact
         artifact = EmbeddingArtifact(
             namespace="test",
             seed_index_version_hash="hash123",

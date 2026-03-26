@@ -11,7 +11,7 @@ Covers:
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -74,8 +74,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_lineage_validator", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_lineage_validator", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_lineage_validator", "exec_snapshot_link")
-from system_learning.engines.l4_version_store import L4VersionStore
-from system_learning.validators.lineage_validator import (
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore
+#  # MOVED: from system_learning.validators.lineage_validator import (
     CycleDetected,
     LineageValidator,
     ParentNotFound,
@@ -85,7 +85,7 @@ from system_learning.validators.lineage_validator import (
 # REMOVED: _emit_applies_guardrail("p0", "test_lineage_validator", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_lineage_validator", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_lineage_validator", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -203,6 +203,12 @@ class FakeChangePackage:
 
 class TestValidateLineage:
     def test_genesis_version_valid(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.l4_version_store import L4VersionStore
+        from system_learning.validators.lineage_validator import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.l4_version_store import VersionedPackage
+        from system_learning.engines.l4_version_store import VersionedPackage
         store = L4VersionStore()
         pkg = FakeChangePackage("genesis-content")
         version_id = store.commit_change_package(pkg, None, "hash", 1700000000)
@@ -266,7 +272,7 @@ class TestValidateLineage:
         # In production, this is impossible due to write-once semantics
         versioned_v1 = store.get_change_package(v1)
         # Create a modified version with v2 as parent (creating v1 -> v2 -> v1 cycle)
-        from system_learning.engines.l4_version_store import VersionedPackage
+#  # MOVED: from system_learning.engines.l4_version_store import VersionedPackage
 
         tampered_v1 = VersionedPackage(
             version_id=v1,
@@ -332,7 +338,7 @@ class TestValidateChain:
         )
 
         # Manually create a cycle (for test purposes only)
-        from system_learning.engines.l4_version_store import VersionedPackage
+#  # MOVED: from system_learning.engines.l4_version_store import VersionedPackage
 
         versioned_v1 = store.get_change_package(v1)
         tampered_v1 = VersionedPackage(

@@ -5,9 +5,15 @@ import pytest
 
 @pytest.mark.smoke
 def test_base_dispatch_agent_is_class():
+    from apps_shared.reasoning.BaseDispatchAgent import BaseDispatchAgent
+    from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
+    from apps_shared.reasoning.BaseProactiveAgent import BaseProactiveAgent
+    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+    from apps_shared.config.app_guardian_registry import APP_GUARDIAN_REGISTRY
+    from apps_shared.config.environment_config import EnvironmentConfig
     """BaseDispatchAgent is a proper class with expected interface."""
     try:
-        from apps_shared.reasoning.BaseDispatchAgent import BaseDispatchAgent
+#  # MOVED: from apps_shared.reasoning.BaseDispatchAgent import BaseDispatchAgent
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     assert isinstance(BaseDispatchAgent, type), "BaseDispatchAgent should be a class"
@@ -19,7 +25,7 @@ def test_base_dispatch_agent_is_class():
 def test_base_healing_orchestrator_is_class():
     """BaseHealingOrchestrator is a proper class with expected interface."""
     try:
-        from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
+#  # MOVED: from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     assert isinstance(BaseHealingOrchestrator, type), "BaseHealingOrchestrator should be a class"
@@ -31,7 +37,7 @@ def test_base_healing_orchestrator_is_class():
 def test_base_proactive_agent_is_class():
     """BaseProactiveAgent is a proper class with expected interface."""
     try:
-        from apps_shared.reasoning.BaseProactiveAgent import BaseProactiveAgent
+#  # MOVED: from apps_shared.reasoning.BaseProactiveAgent import BaseProactiveAgent
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     assert isinstance(BaseProactiveAgent, type), "BaseProactiveAgent should be a class"
@@ -43,7 +49,7 @@ def test_base_proactive_agent_is_class():
 def test_sovereign_base_agent_is_class():
     """SovereignBaseAgent is a proper class."""
     try:
-        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     assert isinstance(SovereignBaseAgent, type), "SovereignBaseAgent should be a class"
@@ -58,7 +64,7 @@ def test_sovereign_base_agent_is_class():
 def test_apps_shared_config_has_guardian_registry():
     """apps_shared config exposes the guardian registry."""
     try:
-        from apps_shared.config.app_guardian_registry import APP_GUARDIAN_REGISTRY
+#  # MOVED: from apps_shared.config.app_guardian_registry import APP_GUARDIAN_REGISTRY
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     assert isinstance(APP_GUARDIAN_REGISTRY, (tuple, list, dict)), (
@@ -71,7 +77,7 @@ def test_apps_shared_config_has_guardian_registry():
 def test_apps_shared_environment_config_has_class():
     """apps_shared environment config provides EnvironmentConfig class."""
     try:
-        from apps_shared.config.environment_config import EnvironmentConfig
+#  # MOVED: from apps_shared.config.environment_config import EnvironmentConfig
     except ImportError as e:
         pytest.skip(f"environment_config not available: {e}")
 

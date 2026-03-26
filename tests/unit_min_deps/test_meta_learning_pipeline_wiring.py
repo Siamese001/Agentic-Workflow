@@ -20,7 +20,7 @@ from unittest.mock import MagicMock, Mock
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -104,7 +104,7 @@ pytestmark = pytest.mark.unit_min_deps
 # Top-level imports (shared across all sections)
 # ---------------------------------------------------------------------------
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -142,14 +142,14 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
-from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
-from system_learning.engines.l4_state_writer import L4StateWriter
-from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
-from system_learning.engines.rlhf_optimizer import DefaultDeterministicRLHFOptimizer
-from system_learning.pipelines.approval_gates import ApprovalDecision
-from system_learning.pipelines.meta_learning_pipeline import (
+#  # MOVED: from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
+#  # MOVED: from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+#  # MOVED: from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+#  # MOVED: from system_learning.engines.l4_state_writer import L4StateWriter
+#  # MOVED: from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
+#  # MOVED: from system_learning.engines.rlhf_optimizer import DefaultDeterministicRLHFOptimizer
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import (
     AuditStore,
     BaselineMetricsProvider,
     ConfigProvider,
@@ -159,22 +159,22 @@ from system_learning.pipelines.meta_learning_pipeline import (
     TelemetryStore,
     run_pipeline,
 )
-from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
-from system_learning.types.healing_outcome_learning_types import (
+#  # MOVED: from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import (
     HealingOutcomeAggregate,
     HealingOutcomeAggregateKey,
     HealingOutcomeAggregateSnapshot,
 )
-from system_learning.types.healing_outcome_types import HealingOutcomeProposal, HealingOutcomeStats
-from system_learning.types.pattern_analysis_types import (
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.types.pattern_analysis_types import (
     PatternFinding,
     PatternFindingKey,
     PatternFindingReport,
     PatternSourceIds,
 )
-from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
-from system_learning.validators.oscillation_detector import OscillationPolicy
-from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowThresholds
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy
+#  # MOVED: from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowThresholds
 
 # REMOVED: _emit_emits_metric_event("test_meta_learning_pipeline_wiring", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_meta_learning_pipeline_wiring", "p4obs", "metric_2")
@@ -379,6 +379,27 @@ def _commit_deps(**kw):
 
 class TestCommitPath:
     def test_commit_path_requires_version_store(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
+        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+        from system_learning.engines.l4_state_writer import L4StateWriter
+        from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
+        from system_learning.engines.rlhf_optimizer import DefaultDeterministicRLHFOptimizer
+        from system_learning.pipelines.approval_gates import ApprovalDecision
+        from system_learning.pipelines.meta_learning_pipeline import (
+        from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
+        from system_learning.types.healing_outcome_learning_types import (
+        from system_learning.types.healing_outcome_types import HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.types.pattern_analysis_types import (
+        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+        from system_learning.validators.oscillation_detector import OscillationPolicy
+        from system_learning.validators.shadow_evaluator import ShadowMetrics, ShadowThresholds
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+        from system_learning.engines.healing_config_optimizer import (
+        from system_learning.engines.healing_config_optimizer import ThresholdAdjustmentProposal
     """Test commit_path_requires_version_store runtime behavior."""
     # Arrange
     # TODO: Set up test data for commit_path_requires_version_store
@@ -468,8 +489,8 @@ class TestMetaLearningPipelineHealingIntakeWiring:
         return audit_store, telemetry_store, config_provider, baseline_metrics_provider
 
     def test_pipeline_with_healing_intake_adapter_persists_record(self) -> None:
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent
 
         store = InMemoryHealingOutcomeIntakeStore()
         adapter = HealingOutcomeIntakeAdapter(store)
@@ -961,7 +982,7 @@ class _PatternFakeHealingConfigOptimizer(HealingConfigOptimizer):
     def propose_threshold_adjustments_with_patterns(self, snapshot, pattern_report=None):
         if pattern_report:
             self.pattern_reports_received.append(pattern_report)
-        from system_learning.engines.healing_config_optimizer import (
+#  # MOVED: from system_learning.engines.healing_config_optimizer import (
             ThresholdAdjustment,
             ThresholdAdjustmentProposal,
         )
@@ -1385,7 +1406,7 @@ class _L4BFakeHealingConfigOptimizer:
         return self.snapshot_to_return
 
     def propose_threshold_adjustments(self, snapshot):
-        from system_learning.engines.healing_config_optimizer import ThresholdAdjustmentProposal
+#  # MOVED: from system_learning.engines.healing_config_optimizer import ThresholdAdjustmentProposal
 
         return ThresholdAdjustmentProposal(
             snapshot_version_id=snapshot.version_id,

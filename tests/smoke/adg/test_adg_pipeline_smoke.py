@@ -6,6 +6,7 @@ import pytest
 
 @pytest.mark.smoke
 def test_generate_full_adg_importable():
+    from agentic_core.adg.artifact.builder import ADGArtifactBuilder
     """Verify tools.generate_full_adg imports without error."""
     try:
         from tools.generate_full_adg import main as generate_adg_main
@@ -98,7 +99,7 @@ def test_sqlite_nonzero_counts():
 def test_adg_artifact_builder_imports():
     """Verify agentic_core.adg.artifact.builder imports."""
     try:
-        from agentic_core.adg.artifact.builder import ADGArtifactBuilder
+#  # MOVED: from agentic_core.adg.artifact.builder import ADGArtifactBuilder
         assert ADGArtifactBuilder is not None
     except ImportError as e:
         pytest.skip(f"ADGArtifactBuilder not available: {e}")

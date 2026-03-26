@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -90,7 +90,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -128,18 +128,18 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.healing_config_optimizer import (
+#  # MOVED: from system_learning.engines.healing_config_optimizer import (
     HealingConfigOptimizer,
     ThresholdAdjustment,
     ThresholdAdjustmentProposal,
 )
-from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
-from system_learning.types.healing_outcome_learning_types import (
+#  # MOVED: from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import (
     HealingOutcomeAggregate,
     HealingOutcomeAggregateKey,
     HealingOutcomeAggregateSnapshot,
 )
-from system_learning.types.healing_outcome_types import HealingOutcomeStats
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeStats
 
 # REMOVED: _emit_emits_metric_event("test_healing_config_optimizer", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_healing_config_optimizer", "p4obs", "metric_2")
@@ -197,6 +197,29 @@ class TestHealingConfigOptimizer:
     """Test suite for HealingConfigOptimizer."""
 
     def test_threshold_proposal_deterministic(self):
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.healing_outcome_types import HealingOutcomeStats
+        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+        from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
         """Test that proposals are deterministic given same input."""
         optimizer = HealingConfigOptimizer(
             min_sample_size=10, low_success_rate_threshold=0.6, escalation_delta=0.1, max_threshold=1.0
@@ -237,6 +260,10 @@ class TestHealingConfigOptimizer:
 
     def test_no_direct_config_mutation(self):
         """Test that optimizer doesn't directly mutate any config."""
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
         optimizer = HealingConfigOptimizer()
 
         # Create empty snapshot
@@ -250,6 +277,8 @@ class TestHealingConfigOptimizer:
 
     def test_minimum_sample_size_enforced(self):
         """Test that proposals require minimum sample size."""
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
         optimizer = HealingConfigOptimizer(min_sample_size=50)
 
         # Create snapshot with insufficient samples
@@ -270,6 +299,10 @@ class TestHealingConfigOptimizer:
 
     def test_max_threshold_capped(self):
         """Test that proposed thresholds are capped at max_threshold."""
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
         optimizer = HealingConfigOptimizer(
             min_sample_size=10,
             low_success_rate_threshold=0.6,
@@ -298,6 +331,10 @@ class TestHealingConfigOptimizer:
 
     def test_create_snapshot_from_intake(self):
         """Test creating aggregate snapshot from intake record."""
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
         optimizer = HealingConfigOptimizer()
 
         # Create mock intake record
@@ -342,6 +379,9 @@ class TestHealingConfigOptimizer:
 
     def test_confidence_computation(self):
         """Test confidence score computation."""
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeStats
+#  # MOVED: from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+#  # MOVED: from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
         optimizer = HealingConfigOptimizer(min_sample_size=10)
 
         # Test with different sample sizes
@@ -358,6 +398,8 @@ class TestHealingConfigOptimizer:
 
     def test_adjustment_canonical_bytes(self):
         """Test that adjustments have stable canonical bytes."""
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
         adjustment = ThresholdAdjustment(
             healer_name="healer1",
             tier="LOCAL_AGENT",
@@ -383,6 +425,7 @@ class TestHealingConfigOptimizer:
 
     def test_proposal_canonical_bytes(self):
         """Test that proposals have stable canonical bytes."""
+#  # MOVED: from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
         adjustment = ThresholdAdjustment(
             healer_name="healer1",
             tier="LOCAL_AGENT",
@@ -411,7 +454,10 @@ class TestHealingConfigOptimizer:
         assert len(data["adjustments"]) == 1
 
     def test_optimizer_initialization_validation(self):
+#  # MOVED: from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
         """Test optimizer parameter validation."""
+#  # MOVED: from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
+#  # MOVED: from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer, ThresholdAdjustment, ThresholdAdjustmentProposal
         # Valid initialization
         optimizer = HealingConfigOptimizer(
             min_sample_size=10, low_success_rate_threshold=0.6, escalation_delta=0.1, max_threshold=1.0

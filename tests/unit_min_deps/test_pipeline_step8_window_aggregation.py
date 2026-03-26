@@ -2,7 +2,7 @@
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -65,7 +65,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_pipeline_step8_window_aggregation", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_pipeline_step8_window_aggregation", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_pipeline_step8_window_aggregation", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -103,12 +103,12 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-from system_learning.engines.in_memory_healing_outcome_intake_store import (
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+#  # MOVED: from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+#  # MOVED: from system_learning.engines.in_memory_healing_outcome_intake_store import (
     InMemoryHealingOutcomeIntakeStore,
 )
-from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent
 
 # REMOVED: _emit_emits_metric_event("test_pipeline_step8_window_aggregation", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_pipeline_step8_window_aggregation", "p4obs", "metric_2")
@@ -235,6 +235,12 @@ def _reconstruct_window_aggregator(adapter, window_start, window_end, now_utc):
 @pytest.mark.unit_min_deps
 class TestStep8WindowAggregation:
     def test_window_aggregate_sums_counts_across_records(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+        from system_learning.engines.in_memory_healing_outcome_intake_store import (
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
     """Test window_aggregate_sums_counts_across_records runtime behavior."""
     # Arrange
     # TODO: Set up test data for window_aggregate_sums_counts_across_records

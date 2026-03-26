@@ -9,12 +9,12 @@ from __future__ import annotations
 import ast
 import textwrap
 
-from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
     Edge,
     _DecoratorVisitor,
     _ImportVisitor,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -61,7 +61,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_p2_enhancements", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_p2_enhancements", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_p2_enhancements", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -203,6 +203,14 @@ class TestTypeCheckingGuard:
     """E7: Imports under TYPE_CHECKING should be tagged type_checking_import."""
 
     def test_type_checking_import_tagged(self):
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
         source = """
         from __future__ import annotations
         from typing import TYPE_CHECKING
@@ -547,7 +555,7 @@ class TestConfidenceScoringP2Edges:
         )
 
     def test_type_checking_import_lower_confidence(self):
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+#  # MOVED: from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         edge = self._make_edge("imports", "type_checking_import")
         ec = score_edge(edge)
@@ -555,7 +563,7 @@ class TestConfidenceScoringP2Edges:
         assert ec.confidence < base_import.confidence
 
     def test_optional_import_lower_confidence(self):
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+#  # MOVED: from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         edge = self._make_edge("imports", "optional_import")
         ec = score_edge(edge)
@@ -563,7 +571,7 @@ class TestConfidenceScoringP2Edges:
         assert ec.confidence < base_import.confidence
 
     def test_star_import_lower_confidence(self):
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+#  # MOVED: from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         edge = self._make_edge("imports", "star_import")
         ec = score_edge(edge)
@@ -571,7 +579,7 @@ class TestConfidenceScoringP2Edges:
         assert ec.confidence < base_import.confidence
 
     def test_decorator_edge_confidence(self):
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+#  # MOVED: from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         edge = self._make_edge("influences", "decorator")
         ec = score_edge(edge)
@@ -579,7 +587,7 @@ class TestConfidenceScoringP2Edges:
         assert ec.provenance == "ast_call_dynamic"
 
     def test_version_guard_import_lower_confidence(self):
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+#  # MOVED: from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         edge = self._make_edge("imports", "version_guard_import")
         ec = score_edge(edge)

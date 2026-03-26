@@ -5,9 +5,14 @@ import pytest
 
 @pytest.mark.smoke
 def test_sovereignty_bootstrap_class_interface():
+    from agentic_core.runtime.sovereignty_bootstrap import (
+    from agentic_core.runtime.boundary_validator import (
+    from agentic_core.runtime.sovereignty_exceptions import (
+    import agentic_core.runtime.state as mod
+    import agentic_core.runtime.tools as mod
     """Verify SovereigntyBootstrap is a class with expected public interface."""
     try:
-        from agentic_core.runtime.sovereignty_bootstrap import (
+#  # MOVED: from agentic_core.runtime.sovereignty_bootstrap import (
             SovereigntyBootstrap,
             get_hierarchy_validator,
         )
@@ -29,7 +34,7 @@ def test_boundary_validator_functions_have_signatures():
     import inspect
 
     try:
-        from agentic_core.runtime.boundary_validator import (
+#  # MOVED: from agentic_core.runtime.boundary_validator import (
             assert_no_apps_imports,
             check_runtime_boundaries,
             validate_layer_direction,
@@ -46,7 +51,7 @@ def test_boundary_validator_functions_have_signatures():
 def test_sovereignty_exceptions_raise_with_message():
     """Verify sovereignty exceptions carry messages and inherit from Exception."""
     try:
-        from agentic_core.runtime.sovereignty_exceptions import (
+#  # MOVED: from agentic_core.runtime.sovereignty_exceptions import (
             CapabilityTokenError,
             DeterminismViolationError,
             IsolationViolationError,
@@ -71,7 +76,7 @@ def test_sovereignty_exceptions_raise_with_message():
 def test_runtime_state_has_public_api():
     """Verify runtime.state module exposes public symbols."""
     try:
-        import agentic_core.runtime.state as mod
+#  # MOVED: import agentic_core.runtime.state as mod
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     public = [n for n in dir(mod) if not n.startswith("_")]
@@ -82,7 +87,7 @@ def test_runtime_state_has_public_api():
 def test_runtime_tools_has_public_api():
     """Verify runtime.tools module exposes public symbols."""
     try:
-        import agentic_core.runtime.tools as mod
+#  # MOVED: import agentic_core.runtime.tools as mod
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     public = [n for n in dir(mod) if not n.startswith("_")]

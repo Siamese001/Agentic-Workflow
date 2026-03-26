@@ -13,16 +13,16 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.adg.extraction.scan_cache import (
+#  # MOVED: from agentic_core.adg.extraction.scan_cache import (
     CACHE_VERSION,
     ScanCache,
     file_hash,
 )
-from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
     Edge,
     _TypeAnnotationVisitor,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -69,7 +69,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_p3_enhancements", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_p3_enhancements", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_p3_enhancements", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -223,6 +223,12 @@ class TestScanCacheBasic:
     """E9: Core cache get/put/save/load behaviour."""
 
     def test_empty_cache_is_miss(self):
+        from agentic_core.adg.extraction.scan_cache import (
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
         cache = ScanCache()
         edges, hit = cache.get("foo/bar.py", "abc123")
         assert hit is False
@@ -581,13 +587,13 @@ class TestConfidenceScoringP3Edges:
         )
 
     def test_type_annotation_edge_confidence(self):
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+#  # MOVED: from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         ec = score_edge(self._make_type_ann_edge())
         assert 0.0 < ec.confidence <= 1.0
 
     def test_type_annotation_same_confidence_as_reads_from(self):
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+#  # MOVED: from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         ann_edge = self._make_type_ann_edge()
         base_edge = Edge(

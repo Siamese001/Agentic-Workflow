@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -87,7 +87,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -125,15 +125,15 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.healing_config_optimizer import (
+#  # MOVED: from system_learning.engines.healing_config_optimizer import (
     HealingConfigOptimizer,
 )
-from system_learning.types.healing_outcome_learning_types import (
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import (
     HealingOutcomeAggregate,
     HealingOutcomeAggregateKey,
     HealingOutcomeAggregateSnapshot,
 )
-from system_learning.types.pattern_analysis_types import (
+#  # MOVED: from system_learning.types.pattern_analysis_types import (
     PatternFinding,
     PatternFindingKey,
     PatternFindingReport,
@@ -196,6 +196,38 @@ class TestHealingConfigOptimizerWithPatterns:
     """Test suite for Healing Config Optimizer with pattern findings."""
 
     def test_bounded_delta_applied(self):
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+        from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+        from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+        from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+        from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+        from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
         """Test that pattern findings trigger bounded adjustments."""
         optimizer = HealingConfigOptimizer(
             escalation_delta=0.1,
@@ -256,6 +288,14 @@ class TestHealingConfigOptimizerWithPatterns:
 
     def test_multiple_findings_deterministic_application_order(self):
         """Test that multiple findings are applied in deterministic order."""
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+#  # MOVED: from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+#  # MOVED: from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
         optimizer = HealingConfigOptimizer(escalation_delta=0.1, max_delta=0.3, max_threshold=THRESHOLD)
 
         # Create snapshot
@@ -320,6 +360,14 @@ class TestHealingConfigOptimizerWithPatterns:
 
     def test_routing_drift_tightens_thresholds(self):
         """Test that ROUTING_DRIFT_HIGH finding tightens thresholds."""
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+#  # MOVED: from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+#  # MOVED: from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
         optimizer = HealingConfigOptimizer(escalation_delta=0.1, max_delta=0.2, max_threshold=THRESHOLD)
 
         # Create snapshot
@@ -367,7 +415,23 @@ class TestHealingConfigOptimizerWithPatterns:
         assert "ROUTING_DRIFT_HIGH" in adj.reason
 
     def test_max_delta_clamping(self):
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+#  # MOVED: from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+#  # MOVED: from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
         """Test that adjustments are clamped to max_delta per healer."""
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+#  # MOVED: from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+#  # MOVED: from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.types.pattern_analysis_types import PatternFinding, PatternFindingKey, PatternFindingReport, PatternSourceIds
         optimizer = HealingConfigOptimizer(
             escalation_delta=0.2,  # Large delta
             max_delta=0.1,  # Small max delta

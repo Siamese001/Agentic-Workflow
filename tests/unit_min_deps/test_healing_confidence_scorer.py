@@ -9,7 +9,7 @@ import tempfile
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -92,7 +92,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -130,8 +130,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.confidence.engine import HealingConfidenceScorer
-from system_learning.confidence.types import (
+#  # MOVED: from system_learning.confidence.engine import HealingConfidenceScorer
+#  # MOVED: from system_learning.confidence.types import (
     HealingAttempt,
     HealingConfidenceReport,
 )
@@ -192,6 +192,12 @@ class TestHealingConfidenceScorer:
     """Test healing confidence scoring deterministic behavior."""
 
     def test_deterministic_fingerprint_same_input(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.confidence.engine import HealingConfidenceScorer
+        from system_learning.confidence.types import (
+        from system_learning.confidence.engine import HealingConfidenceScorer
+        from system_learning.confidence.types import HealingAttempt
         """Proves same input twice yields identical SHA256."""
         scorer = HealingConfidenceScorer()
 
@@ -282,8 +288,8 @@ import sys
 import json
 sys.path.insert(0, r"C:\\Git\\Agentic-Workflow")
 
-from system_learning.confidence.engine import HealingConfidenceScorer
-from system_learning.confidence.types import HealingAttempt
+#  # MOVED: from system_learning.confidence.engine import HealingConfidenceScorer
+#  # MOVED: from system_learning.confidence.types import HealingAttempt
 
 attempts = [HealingAttempt(**a) for a in {attempts_data}]
 scorer = HealingConfidenceScorer()

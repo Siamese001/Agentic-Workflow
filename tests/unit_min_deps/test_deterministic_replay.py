@@ -2,7 +2,7 @@
 
 import pytest
 
-from agentic_core.L3_orchestration.replay.deterministic_replay import (
+#  # MOVED: from agentic_core.L3_orchestration.replay.deterministic_replay import (
     ReplayCommand,
     ReplayRecord,
     ReplayResult,
@@ -11,7 +11,7 @@ from agentic_core.L3_orchestration.replay.deterministic_replay import (
     replay_and_compare,
     run_and_record,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -58,7 +58,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_deterministic_replay", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_deterministic_replay", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_deterministic_replay", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -174,6 +174,11 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 @pytest.mark.unit_min_deps
 def test_deterministic_json_output():
+    from agentic_core.L3_orchestration.replay.deterministic_replay import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L3_orchestration.replay.deterministic_replay import _hash_command_result
+    from agentic_core.L3_orchestration.replay.deterministic_replay import _normalize_output
     """Test that JSON serialization is deterministic byte-for-byte."""
     # Create identical records
     record1 = ReplayRecord(
@@ -231,7 +236,7 @@ def test_sha256_stable_and_correct():
     result = ReplayResult(exit_code=0, stdout="test\n", stderr="")
 
     # Compute hash twice
-    from agentic_core.L3_orchestration.replay.deterministic_replay import _hash_command_result
+#  # MOVED: from agentic_core.L3_orchestration.replay.deterministic_replay import _hash_command_result
 
     hash1 = _hash_command_result(command, result)
     hash2 = _hash_command_result(command, result)
@@ -356,7 +361,7 @@ def test_replay_detects_nondeterminism():
 @pytest.mark.unit_min_deps
 def test_normalize_output_strips_timestamps_and_paths():
     """Test output normalization strips timestamps and absolute paths."""
-    from agentic_core.L3_orchestration.replay.deterministic_replay import _normalize_output
+#  # MOVED: from agentic_core.L3_orchestration.replay.deterministic_replay import _normalize_output
 
     # Test timestamp normalization
     input_with_timestamp = "2026-02-23T04:18:00.123Z INFO: Test message"

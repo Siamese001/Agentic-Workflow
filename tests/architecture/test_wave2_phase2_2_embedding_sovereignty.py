@@ -26,7 +26,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -110,7 +110,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -247,6 +247,8 @@ def _make_analyzer_with_files(file_map: dict[Path, FileAnalysis]) -> SemanticGap
 
 @pytest.mark.architecture
 def test_no_embedding_mentions_produces_no_gap():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """File with empty embedding_mentions is skipped — no EMBEDDING-PLACEMENT-GAP."""
     fake_path = AGENTIC_CORE / "L0_routing" / "engines" / "fake_router.py"
     fake_analysis = _ok_analysis(fake_path, embedding_mentions=set())

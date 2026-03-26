@@ -12,8 +12,8 @@ E19: CLI refactor sub-command
 
 from __future__ import annotations
 
-from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -60,7 +60,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_p5_enhancements", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_p5_enhancements", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_p5_enhancements", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -220,7 +220,72 @@ def _result(*edges, modules=None) -> ScanResult:
 
 class TestRenameSafetyAnalyzer:
     def test_no_importers_is_safe(self):
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         from agentic_core.adg.applications.rename_safety_types import analyze_rename
+        from agentic_core.adg.applications.rename_safety_types import analyze_rename
+        from agentic_core.adg.applications.rename_safety_types import analyze_rename
+        from agentic_core.adg.applications.rename_safety_types import analyze_rename
+        from agentic_core.adg.applications.rename_safety_types import analyze_rename
+        from agentic_core.adg.applications.rename_safety_types import analyze_rename
+        from agentic_core.adg.applications.rename_safety_types import analyze_rename
+        from agentic_core.adg.applications.rename_safety_types import analyze_rename
+        from agentic_core.adg.applications.rename_safety_types import analyze_rename
+        from agentic_core.adg.applications.api_surface_types import build_api_surface
+        from agentic_core.adg.applications.api_surface_types import build_api_surface
+        from agentic_core.adg.applications.api_surface_types import build_api_surface
+        from agentic_core.adg.applications.api_surface_types import build_api_surface
+        from agentic_core.adg.applications.api_surface_types import build_api_surface
+        from agentic_core.adg.applications.api_surface_types import build_api_surface
+        from agentic_core.adg.applications.api_surface_types import build_api_surface
+        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+        from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
+        from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
+        from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
+        from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
+        from agentic_core.adg.analysis.coupling_metrics import ModuleMetrics
+        from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
+        from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
+        from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
+        from agentic_core.adg.applications.refactoring_planner_config import build_refactoring_plan
+        from agentic_core.adg.applications.refactoring_planner_config import build_refactoring_plan
+        from agentic_core.adg.applications.refactoring_planner_config import build_refactoring_plan
+        from agentic_core.adg.applications.refactoring_planner_config import build_refactoring_plan
+        from agentic_core.adg.applications.refactoring_planner_config import build_refactoring_plan
+        from agentic_core.adg.applications.refactoring_planner_config import build_refactoring_plan
+        from agentic_core.adg.analysis.dep_inversion_types import detect_dip_violations
+        from agentic_core.adg.analysis.dep_inversion_types import detect_dip_violations
+        from agentic_core.adg.analysis.dep_inversion_types import detect_dip_violations
+        from agentic_core.adg.analysis.dep_inversion_types import detect_dip_violations
+        from agentic_core.adg.analysis.dep_inversion_types import detect_dip_violations
+        from agentic_core.adg.analysis.dep_inversion_types import detect_dip_violations
+        from agentic_core.adg.cli import main
+        from agentic_core.adg.cli import _cmd_refactor
+        from agentic_core.adg.cli import _cmd_refactor
+        from agentic_core.adg.cli import _cmd_refactor
+        from agentic_core.adg.cli import _cmd_hotspots
+        from agentic_core.adg.cli import _cmd_test_gaps
+        from agentic_core.adg.cli import _cmd_coupling
+#  # MOVED: from agentic_core.adg.applications.rename_safety_types import analyze_rename
 
         result = _result(modules=["agentic_core/L2_execution/foo.py"])
         report = analyze_rename(
@@ -232,7 +297,7 @@ class TestRenameSafetyAnalyzer:
         assert report.risk_label == "LOW"
 
     def test_same_layer_rename_detects_importers(self):
-        from agentic_core.adg.applications.rename_safety_types import analyze_rename
+#  # MOVED: from agentic_core.adg.applications.rename_safety_types import analyze_rename
 
         result = _result(
             _edge(
@@ -251,7 +316,7 @@ class TestRenameSafetyAnalyzer:
         assert "agentic_core/L3_orchestration/caller.py" in report.direct_importers
 
     def test_cross_layer_move_flags_violations(self):
-        from agentic_core.adg.applications.rename_safety_types import analyze_rename
+#  # MOVED: from agentic_core.adg.applications.rename_safety_types import analyze_rename
 
         result = _result(
             _edge(
@@ -272,7 +337,7 @@ class TestRenameSafetyAnalyzer:
         assert report.is_safe is False
 
     def test_repair_sequence_starts_with_rename_file(self):
-        from agentic_core.adg.applications.rename_safety_types import analyze_rename
+#  # MOVED: from agentic_core.adg.applications.rename_safety_types import analyze_rename
 
         result = _result(modules=["agentic_core/L2_execution/foo.py"])
         report = analyze_rename(
@@ -284,7 +349,7 @@ class TestRenameSafetyAnalyzer:
         assert report.repair_sequence[0].target_file == "agentic_core/L2_execution/foo.py"
 
     def test_repair_sequence_includes_update_import_step(self):
-        from agentic_core.adg.applications.rename_safety_types import analyze_rename
+#  # MOVED: from agentic_core.adg.applications.rename_safety_types import analyze_rename
 
         result = _result(
             _edge(
@@ -303,7 +368,7 @@ class TestRenameSafetyAnalyzer:
         assert "update_import" in actions
 
     def test_same_layer_no_violations(self):
-        from agentic_core.adg.applications.rename_safety_types import analyze_rename
+#  # MOVED: from agentic_core.adg.applications.rename_safety_types import analyze_rename
 
         result = _result(modules=["agentic_core/L2_execution/old.py"])
         report = analyze_rename(
@@ -314,7 +379,7 @@ class TestRenameSafetyAnalyzer:
         assert report.new_layer_violations == []
 
     def test_risk_label_scales_with_importer_count(self):
-        from agentic_core.adg.applications.rename_safety_types import analyze_rename
+#  # MOVED: from agentic_core.adg.applications.rename_safety_types import analyze_rename
 
         edges = [
             _edge(
@@ -333,7 +398,7 @@ class TestRenameSafetyAnalyzer:
         assert report.risk_label in ("HIGH", "CRITICAL")
 
     def test_layer_unchanged_when_same_directory(self):
-        from agentic_core.adg.applications.rename_safety_types import analyze_rename
+#  # MOVED: from agentic_core.adg.applications.rename_safety_types import analyze_rename
 
         result = _result(modules=["agentic_core/L1_cognition/a.py"])
         report = analyze_rename(
@@ -347,7 +412,7 @@ class TestRenameSafetyAnalyzer:
     def test_to_dict_is_serialisable(self):
         import json
 
-        from agentic_core.adg.applications.rename_safety_types import analyze_rename
+#  # MOVED: from agentic_core.adg.applications.rename_safety_types import analyze_rename
 
         result = _result(modules=["agentic_core/L2_execution/foo.py"])
         report = analyze_rename(
@@ -364,7 +429,7 @@ class TestRenameSafetyAnalyzer:
 
 class TestAPISurface:
     def test_public_symbols_detected(self):
-        from agentic_core.adg.applications.api_surface_types import build_api_surface
+#  # MOVED: from agentic_core.adg.applications.api_surface_types import build_api_surface
 
         result = _result(
             _edge(_mod("pkg/mod.py"), "exports", _sym("pkg.mod.MyClass"), symbol="MyClass"),
@@ -377,7 +442,7 @@ class TestAPISurface:
         assert "helper" in surf.public_symbols
 
     def test_internal_symbols_detected(self):
-        from agentic_core.adg.applications.api_surface_types import build_api_surface
+#  # MOVED: from agentic_core.adg.applications.api_surface_types import build_api_surface
 
         result = _result(
             _edge(_mod("pkg/mod.py"), "exports", _sym("pkg.mod._internal"), symbol="_internal"),
@@ -389,7 +454,7 @@ class TestAPISurface:
         assert "Public" in surf.public_symbols
 
     def test_re_exports_tracked_separately(self):
-        from agentic_core.adg.applications.api_surface_types import build_api_surface
+#  # MOVED: from agentic_core.adg.applications.api_surface_types import build_api_surface
 
         result = _result(
             _edge(_mod("pkg/__init__.py"), "re_exports", _sym("pkg.sub.Foo"), symbol="Foo"),
@@ -400,7 +465,7 @@ class TestAPISurface:
         assert "Foo" in surf.re_exported_symbols
 
     def test_total_counts_correct(self):
-        from agentic_core.adg.applications.api_surface_types import build_api_surface
+#  # MOVED: from agentic_core.adg.applications.api_surface_types import build_api_surface
 
         result = _result(
             _edge(_mod("a.py"), "exports", _sym("a.X"), symbol="X"),
@@ -412,7 +477,7 @@ class TestAPISurface:
         assert report.total_internal_symbols == 1
 
     def test_empty_result_empty_surface(self):
-        from agentic_core.adg.applications.api_surface_types import build_api_surface
+#  # MOVED: from agentic_core.adg.applications.api_surface_types import build_api_surface
 
         result = _result()
         report = build_api_surface(result)
@@ -420,7 +485,7 @@ class TestAPISurface:
         assert report.boundary_violations == []
 
     def test_public_modules_property(self):
-        from agentic_core.adg.applications.api_surface_types import build_api_surface
+#  # MOVED: from agentic_core.adg.applications.api_surface_types import build_api_surface
 
         result = _result(
             _edge(_mod("exposed.py"), "exports", _sym("exposed.Foo"), symbol="Foo"),
@@ -431,7 +496,7 @@ class TestAPISurface:
     def test_to_dict_serialisable(self):
         import json
 
-        from agentic_core.adg.applications.api_surface_types import build_api_surface
+#  # MOVED: from agentic_core.adg.applications.api_surface_types import build_api_surface
 
         result = _result(
             _edge(_mod("mod.py"), "exports", _sym("mod.A"), symbol="A"),
@@ -447,7 +512,7 @@ class TestAPISurface:
 
 class TestHotspotIndex:
     def test_fan_in_counts_distinct_importers(self):
-        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+#  # MOVED: from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
 
         result = _result(
             _edge(_mod("agentic_core/L1_cognition/a.py"), "imports", _mod("agentic_core/L0_routing/core.py")),
@@ -457,7 +522,7 @@ class TestHotspotIndex:
         assert idx.fan_in("agentic_core/L0_routing/core.py") == 2
 
     def test_fan_out_counts_distinct_dependencies(self):
-        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+#  # MOVED: from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
 
         result = _result(
             _edge(_mod("agentic_core/L2_execution/x.py"), "imports", _mod("agentic_core/L1_cognition/a.py")),
@@ -467,7 +532,7 @@ class TestHotspotIndex:
         assert idx.fan_out("agentic_core/L2_execution/x.py") == 2
 
     def test_instability_fully_stable(self):
-        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+#  # MOVED: from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
 
         result = _result(
             _edge(
@@ -481,7 +546,7 @@ class TestHotspotIndex:
         assert idx.instability("agentic_core/L0_routing/stable.py") == 0.0
 
     def test_instability_fully_unstable(self):
-        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+#  # MOVED: from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
 
         result = _result(
             _edge(
@@ -494,7 +559,7 @@ class TestHotspotIndex:
         assert inst == 1.0
 
     def test_coupling_is_sum_of_fan_in_and_fan_out(self):
-        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+#  # MOVED: from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
 
         result = _result(
             _edge(_mod("agentic_core/L1_cognition/a.py"), "imports", _mod("agentic_core/L0_routing/m.py")),
@@ -506,7 +571,7 @@ class TestHotspotIndex:
         ) + idx.fan_out("agentic_core/L0_routing/m.py")
 
     def test_top_hotspots_sorted_by_coupling(self):
-        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+#  # MOVED: from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
 
         # Make core.py have higher coupling than other.py
         result = _result(
@@ -521,7 +586,7 @@ class TestHotspotIndex:
         assert hotspots[0].coupling >= hotspots[1].coupling
 
     def test_importers_of_returns_sorted_list(self):
-        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+#  # MOVED: from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
 
         result = _result(
             _edge(_mod("agentic_core/L1_cognition/b.py"), "imports", _mod("agentic_core/L0_routing/x.py")),
@@ -532,7 +597,7 @@ class TestHotspotIndex:
         assert importers == sorted(importers)
 
     def test_unknown_module_returns_zero(self):
-        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+#  # MOVED: from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
 
         result = _result()
         idx = HotspotIndex.build(result)
@@ -541,7 +606,7 @@ class TestHotspotIndex:
         assert idx.coupling("does/not/exist.py") == 0
 
     def test_stats_contains_expected_keys(self):
-        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+#  # MOVED: from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
 
         result = _result(
             _edge(_mod("agentic_core/L1_cognition/a.py"), "imports", _mod("agentic_core/L0_routing/x.py")),
@@ -552,7 +617,7 @@ class TestHotspotIndex:
             assert key in stats
 
     def test_self_imports_not_counted(self):
-        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+#  # MOVED: from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
 
         result = _result(
             _edge(_mod("agentic_core/L0_routing/x.py"), "imports", _mod("agentic_core/L0_routing/x.py")),
@@ -569,7 +634,7 @@ class TestHotspotIndex:
 
 class TestTestGapDetector:
     def test_covered_module_not_in_gaps(self):
-        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+#  # MOVED: from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 
         result = _result(
             _edge(_mod("tests/test_foo.py"), "covers", _mod("agentic_core/L1_cognition/foo.py")),
@@ -580,7 +645,7 @@ class TestTestGapDetector:
         assert "agentic_core/L1_cognition/foo.py" not in gap_paths
 
     def test_uncovered_module_in_gaps(self):
-        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+#  # MOVED: from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 
         result = _result(
             modules=["agentic_core/L2_execution/bar.py"],
@@ -590,7 +655,7 @@ class TestTestGapDetector:
         assert "agentic_core/L2_execution/bar.py" in gap_paths
 
     def test_test_files_excluded_from_production(self):
-        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+#  # MOVED: from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 
         result = _result(
             modules=["tests/test_x.py"],
@@ -600,14 +665,14 @@ class TestTestGapDetector:
         assert "tests/test_x.py" not in gap_paths
 
     def test_coverage_rate_zero_when_no_covers(self):
-        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+#  # MOVED: from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 
         result = _result(modules=["agentic_core/L1_cognition/a.py", "agentic_core/L2_execution/b.py"])
         report = detect_test_gaps(result)
         assert report.coverage_rate == 0.0
 
     def test_coverage_rate_one_when_all_covered(self):
-        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+#  # MOVED: from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 
         result = _result(
             _edge(_mod("tests/t.py"), "covers", _mod("agentic_core/L1_cognition/a.py")),
@@ -618,8 +683,8 @@ class TestTestGapDetector:
         assert report.coverage_rate == 1.0
 
     def test_highest_risk_gaps_sorted_by_fan_in(self):
-        from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
-        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+#  # MOVED: from agentic_core.adg.analysis.hotspot_index_types import HotspotIndex
+#  # MOVED: from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 
         edges = [
             _edge(
@@ -640,7 +705,7 @@ class TestTestGapDetector:
             assert report.highest_risk_gaps[0].fan_in >= report.highest_risk_gaps[1].fan_in
 
     def test_gap_by_layer_populated(self):
-        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+#  # MOVED: from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 
         result = _result(
             modules=["agentic_core/L1_cognition/a.py", "agentic_core/L2_execution/b.py"],
@@ -651,7 +716,7 @@ class TestTestGapDetector:
     def test_to_dict_serialisable(self):
         import json
 
-        from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
+#  # MOVED: from agentic_core.adg.analysis.test_gap_types import detect_test_gaps
 
         result = _result(modules=["agentic_core/L1_cognition/a.py"])
         report = detect_test_gaps(result)
@@ -665,7 +730,7 @@ class TestTestGapDetector:
 
 class TestCouplingMetrics:
     def test_ca_ce_computed_correctly(self):
-        from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
+#  # MOVED: from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
 
         result = _result(
             _edge(_mod("agentic_core/L1_cognition/a.py"), "imports", _mod("agentic_core/L0_routing/x.py")),
@@ -682,7 +747,7 @@ class TestCouplingMetrics:
         assert m.ce == 0
 
     def test_instability_leaf_is_one(self):
-        from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
+#  # MOVED: from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
 
         result = _result(
             _edge(
@@ -695,7 +760,7 @@ class TestCouplingMetrics:
         assert m.instability == 1.0
 
     def test_instability_stable_root_is_zero(self):
-        from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
+#  # MOVED: from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
 
         result = _result(
             _edge(_mod("agentic_core/L1_cognition/a.py"), "imports", _mod("agentic_core/L0_routing/root.py")),
@@ -706,7 +771,7 @@ class TestCouplingMetrics:
         assert m.instability == 0.0
 
     def test_zone_uselessness_for_stable_and_concrete(self):
-        from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
+#  # MOVED: from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
 
         # abstractness=0 (no abstract classes), instability=0 (only Ca, no Ce)
         # D = |0 + 0 - 1| = 1.0 → USELESSNESS zone
@@ -727,7 +792,7 @@ class TestCouplingMetrics:
         assert m.zone == "USELESSNESS"
 
     def test_distance_on_main_sequence_is_zero(self):
-        from agentic_core.adg.analysis.coupling_metrics import ModuleMetrics
+#  # MOVED: from agentic_core.adg.analysis.coupling_metrics import ModuleMetrics
 
         m = ModuleMetrics(
             module_path="test.py",
@@ -741,7 +806,7 @@ class TestCouplingMetrics:
         assert m.distance == 0.0
 
     def test_top_pain_zone_property(self):
-        from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
+#  # MOVED: from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
 
         result = _result(
             _edge(
@@ -759,7 +824,7 @@ class TestCouplingMetrics:
     def test_to_dict_serialisable(self):
         import json
 
-        from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
+#  # MOVED: from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
 
         result = _result(
             _edge(_mod("agentic_core/L1_cognition/a.py"), "imports", _mod("agentic_core/L0_routing/x.py")),
@@ -769,7 +834,7 @@ class TestCouplingMetrics:
         assert json.dumps(report.to_dict())
 
     def test_empty_result_empty_metrics(self):
-        from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
+#  # MOVED: from agentic_core.adg.analysis.coupling_metrics import compute_coupling_metrics
 
         result = _result()
         report = compute_coupling_metrics(result)
@@ -804,7 +869,7 @@ class TestRefactoringPlanner:
         return _result(*edges, modules=modules)
 
     def test_plan_generated_for_target_files(self):
-        from agentic_core.adg.applications.refactoring_planner_config import build_refactoring_plan
+#  # MOVED: from agentic_core.adg.applications.refactoring_planner_config import build_refactoring_plan
 
         result = self._high_coupling_result()
         plan = build_refactoring_plan(result, target_files=["agentic_core/L2_execution/hotspot.py"])
@@ -812,7 +877,7 @@ class TestRefactoringPlanner:
         assert len(plan.steps) > 0
 
     def test_extract_module_step_for_high_coupling(self):
-        from agentic_core.adg.applications.refactoring_planner_config import build_refactoring_plan
+#  # MOVED: from agentic_core.adg.applications.refactoring_planner_config import build_refactoring_plan
 
         result = self._high_coupling_result()
         plan = build_refactoring_plan(result, target_files=["agentic_core/L2_execution/hotspot.py"])
@@ -821,7 +886,7 @@ class TestRefactoringPlanner:
         assert "EXTRACT_MODULE" in ops or "ADD_TESTS" in ops or "STABILISE_MODULE" in ops
 
     def test_add_tests_step_for_uncovered_module(self):
-        from agentic_core.adg.applications.refactoring_planner_config import build_refactoring_plan
+#  # MOVED: from agentic_core.adg.applications.refactoring_planner_config import build_refactoring_plan
 
         edges = [
             _edge(
@@ -838,7 +903,7 @@ class TestRefactoringPlanner:
         assert "ADD_TESTS" in ops
 
     def test_inline_module_for_orphan(self):
-        from agentic_core.adg.applications.refactoring_planner_config import build_refactoring_plan
+#  # MOVED: from agentic_core.adg.applications.refactoring_planner_config import build_refactoring_plan
 
         result = _result(
             _edge(_mod("tests/test_orphan.py"), "covers", _mod("agentic_core/L1_cognition/orphan.py")),
@@ -871,14 +936,14 @@ class TestRefactoringPlanner:
     def test_to_dict_serialisable(self):
         import json
 
-        from agentic_core.adg.applications.refactoring_planner_config import build_refactoring_plan
+#  # MOVED: from agentic_core.adg.applications.refactoring_planner_config import build_refactoring_plan
 
         result = self._high_coupling_result()
         plan = build_refactoring_plan(result, target_files=["agentic_core/L2_execution/hotspot.py"])
         assert json.dumps(plan.to_dict())
 
     def test_auto_target_selection_when_no_files(self):
-        from agentic_core.adg.applications.refactoring_planner_config import build_refactoring_plan
+#  # MOVED: from agentic_core.adg.applications.refactoring_planner_config import build_refactoring_plan
 
         result = self._high_coupling_result()
         plan = build_refactoring_plan(result, target_files=None)
@@ -892,7 +957,7 @@ class TestRefactoringPlanner:
 
 class TestDepInversionDetector:
     def test_no_violations_on_empty_result(self):
-        from agentic_core.adg.analysis.dep_inversion_types import detect_dip_violations
+#  # MOVED: from agentic_core.adg.analysis.dep_inversion_types import detect_dip_violations
 
         result = _result()
         report = detect_dip_violations(result)
@@ -900,7 +965,7 @@ class TestDepInversionDetector:
         assert report.violations == []
 
     def test_abstract_bases_detected_from_implements(self):
-        from agentic_core.adg.analysis.dep_inversion_types import detect_dip_violations
+#  # MOVED: from agentic_core.adg.analysis.dep_inversion_types import detect_dip_violations
 
         result = _result(
             _edge(
@@ -915,7 +980,7 @@ class TestDepInversionDetector:
         assert "ABC" in report.abstract_bases
 
     def test_concrete_to_abstract_mapping_built(self):
-        from agentic_core.adg.analysis.dep_inversion_types import detect_dip_violations
+#  # MOVED: from agentic_core.adg.analysis.dep_inversion_types import detect_dip_violations
 
         result = _result(
             _edge(
@@ -930,7 +995,7 @@ class TestDepInversionDetector:
         assert "Protocol" in report.abstract_bases
 
     def test_dip_violation_detected_when_abstract_accessible(self):
-        from agentic_core.adg.analysis.dep_inversion_types import detect_dip_violations
+#  # MOVED: from agentic_core.adg.analysis.dep_inversion_types import detect_dip_violations
 
         result = _result(
             _edge(
@@ -955,14 +1020,14 @@ class TestDepInversionDetector:
     def test_to_dict_serialisable(self):
         import json
 
-        from agentic_core.adg.analysis.dep_inversion_types import detect_dip_violations
+#  # MOVED: from agentic_core.adg.analysis.dep_inversion_types import detect_dip_violations
 
         result = _result(modules=["agentic_core/L0_routing/x.py"])
         report = detect_dip_violations(result)
         assert json.dumps(report.to_dict())
 
     def test_summary_string(self):
-        from agentic_core.adg.analysis.dep_inversion_types import detect_dip_violations
+#  # MOVED: from agentic_core.adg.analysis.dep_inversion_types import detect_dip_violations
 
         result = _result()
         report = detect_dip_violations(result)
@@ -979,7 +1044,7 @@ class TestCLIRefactorSubcommand:
         import io
         from contextlib import redirect_stdout
 
-        from agentic_core.adg.cli import main
+#  # MOVED: from agentic_core.adg.cli import main
 
         buf = io.StringIO()
         try:
@@ -994,7 +1059,7 @@ class TestCLIRefactorSubcommand:
         import argparse
         import unittest.mock as mock
 
-        from agentic_core.adg.cli import _cmd_refactor
+#  # MOVED: from agentic_core.adg.cli import _cmd_refactor
 
         args = argparse.Namespace(
             repo_root=".",
@@ -1012,7 +1077,7 @@ class TestCLIRefactorSubcommand:
         import argparse
         import unittest.mock as mock
 
-        from agentic_core.adg.cli import _cmd_refactor
+#  # MOVED: from agentic_core.adg.cli import _cmd_refactor
 
         args = argparse.Namespace(
             repo_root=".",
@@ -1030,7 +1095,7 @@ class TestCLIRefactorSubcommand:
         import argparse
         import unittest.mock as mock
 
-        from agentic_core.adg.cli import _cmd_refactor
+#  # MOVED: from agentic_core.adg.cli import _cmd_refactor
 
         args = argparse.Namespace(
             repo_root=".",
@@ -1048,7 +1113,7 @@ class TestCLIRefactorSubcommand:
         import argparse
         import unittest.mock as mock
 
-        from agentic_core.adg.cli import _cmd_hotspots
+#  # MOVED: from agentic_core.adg.cli import _cmd_hotspots
 
         args = argparse.Namespace(repo_root=".", top=5, key="coupling")
         with mock.patch("agentic_core.adg.runtime.cache_loader.load_or_scan") as mock_scan:
@@ -1064,7 +1129,7 @@ class TestCLIRefactorSubcommand:
         import argparse
         import unittest.mock as mock
 
-        from agentic_core.adg.cli import _cmd_test_gaps
+#  # MOVED: from agentic_core.adg.cli import _cmd_test_gaps
 
         args = argparse.Namespace(repo_root=".")
         with mock.patch("agentic_core.adg.runtime.cache_loader.load_or_scan") as mock_scan:
@@ -1076,7 +1141,7 @@ class TestCLIRefactorSubcommand:
         import argparse
         import unittest.mock as mock
 
-        from agentic_core.adg.cli import _cmd_coupling
+#  # MOVED: from agentic_core.adg.cli import _cmd_coupling
 
         args = argparse.Namespace(repo_root=".")
         with mock.patch("agentic_core.adg.runtime.cache_loader.load_or_scan") as mock_scan:

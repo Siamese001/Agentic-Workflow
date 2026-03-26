@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -90,7 +90,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -128,12 +128,12 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.l4_state_writer import (
+#  # MOVED: from system_learning.engines.l4_state_writer import (
     DefaultL4StateWriter,
     NoOpL4StateWriter,
     SimpleChangePackage,
 )
-from system_learning.engines.l4_version_store import L4VersionStore
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore
 
 # REMOVED: _emit_emits_metric_event("test_l4_state_writer", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_l4_state_writer", "p4obs", "metric_2")
@@ -235,6 +235,12 @@ class TestL4StateWriter:
     """Test suite for L4 State Writer implementations."""
 
     def test_default_writer_write_once_idempotent_same_payload(self):
+        from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
+        from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
+        from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
+        from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
+        from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
+        from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
         """Test that writing the same payload twice returns the same version ID."""
         fake_store = FakeL4VersionStore()
         writer = DefaultL4StateWriter(fake_store)
@@ -258,6 +264,7 @@ class TestL4StateWriter:
 
     def test_default_writer_version_id_stable_from_content_hash(self):
         """Test that version ID is deterministic from content hash."""
+#  # MOVED: from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
         fake_store = FakeL4VersionStore()
         writer = DefaultL4StateWriter(fake_store)
 
@@ -286,6 +293,7 @@ class TestL4StateWriter:
 
     def test_default_writer_different_payloads_different_versions(self):
         """Test that different payloads produce different version IDs."""
+#  # MOVED: from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
         fake_store = FakeL4VersionStore()
         writer = DefaultL4StateWriter(fake_store)
 
@@ -308,6 +316,7 @@ class TestL4StateWriter:
 
     def test_noop_writer_returns_placeholder_ids(self):
         """Test that NoOpL4StateWriter returns placeholder version IDs."""
+#  # MOVED: from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
         writer = NoOpL4StateWriter()
 
         payload_bytes = b"any payload"
@@ -328,6 +337,7 @@ class TestL4StateWriter:
 
     def test_default_writer_component_name_in_package(self):
         """Test that component name is correctly stored in the package."""
+#  # MOVED: from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
         fake_store = FakeL4VersionStore()
         writer = DefaultL4StateWriter(fake_store)
 
@@ -347,7 +357,9 @@ class TestL4StateWriter:
         assert package.metadata["type"] == "detection_signal"
 
     def test_default_writer_l4b_snapshot_metadata(self):
+#  # MOVED: from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
         """Test that L4B snapshots have correct metadata."""
+#  # MOVED: from system_learning.engines.l4_state_writer import DefaultL4StateWriter, NoOpL4StateWriter, SimpleChangePackage
         fake_store = FakeL4VersionStore()
         writer = DefaultL4StateWriter(fake_store)
 

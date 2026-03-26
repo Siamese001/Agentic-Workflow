@@ -9,7 +9,7 @@ import tempfile
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -90,7 +90,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -128,8 +128,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.arbitration.engine import ArbitrationEngine
-from system_learning.arbitration.types import (
+#  # MOVED: from system_learning.arbitration.engine import ArbitrationEngine
+#  # MOVED: from system_learning.arbitration.types import (
     ArbitrationCandidate,
     ArbitrationDecision,
     ArbitrationPolicy,
@@ -191,6 +191,25 @@ class TestArbitrationEngine:
     """Test arbitration engine deterministic behavior."""
 
     def test_deterministic_ordering_total(self):
+        from system_learning.arbitration.engine import ArbitrationEngine
+        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+        from system_learning.arbitration.engine import ArbitrationEngine
+        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+        from system_learning.arbitration.engine import ArbitrationEngine
+        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+        from system_learning.arbitration.engine import ArbitrationEngine
+        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+        from system_learning.arbitration.engine import ArbitrationEngine
+        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+        from system_learning.arbitration.engine import ArbitrationEngine
+        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+        from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
         """Total ordering with score-primary, cost-secondary, kind-tertiary, id-final tie-break."""
         engine = ArbitrationEngine()
         policy = ArbitrationPolicy(
@@ -244,6 +263,9 @@ class TestArbitrationEngine:
 
     def test_negative_control_lexicographic_tie_break(self):
         """Negative control that fails if lexicographic id tie-break is removed."""
+#  # MOVED: from system_learning.arbitration.engine import ArbitrationEngine
+#  # MOVED: from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+#  # MOVED: from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
         engine = ArbitrationEngine()
         policy = ArbitrationPolicy(
             weights={"healing": 1.0},
@@ -281,6 +303,9 @@ class TestArbitrationEngine:
 
     def test_permutation_invariance_large_n(self):
         """Proves 50+ candidates permuted 10 times yield identical decision fingerprint."""
+#  # MOVED: from system_learning.arbitration.engine import ArbitrationEngine
+#  # MOVED: from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+#  # MOVED: from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
         engine = ArbitrationEngine()
         policy = ArbitrationPolicy(
             weights={"healing": 1.0, "threshold": 0.8, "resource": 0.6},
@@ -325,6 +350,9 @@ class TestArbitrationEngine:
 
     def test_cross_process_determinism(self):
         """Proves cross-process determinism via subprocess fingerprint comparison."""
+#  # MOVED: from system_learning.arbitration.engine import ArbitrationEngine
+#  # MOVED: from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+#  # MOVED: from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
         # Test data
         candidates_data = [
             {
@@ -354,13 +382,16 @@ class TestArbitrationEngine:
 
         # Write test script
         script_content = f"""
+#  # MOVED: from system_learning.arbitration.engine import ArbitrationEngine
+#  # MOVED: from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+#  # MOVED: from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
 import sys
 import json
 import hashlib
 sys.path.insert(0, r"C:\\Git\\Agentic-Workflow")
 
-from system_learning.arbitration.engine import ArbitrationEngine
-from system_learning.arbitration.types import (
+#  # MOVED: from system_learning.arbitration.engine import ArbitrationEngine
+#  # MOVED: from system_learning.arbitration.types import (
     ArbitrationCandidate,
     ArbitrationPolicy,
 )
@@ -493,7 +524,14 @@ print(f"WINNERS: {{decision.winner_ids}}")
         assert len(malformed_cases) == 5
 
     def test_proposal_only_purity(self):
+#  # MOVED: from system_learning.arbitration.engine import ArbitrationEngine
+#  # MOVED: from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+#  # MOVED: from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+#  # MOVED: from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
         """Proves arbitration engine is pure and returns only decision objects."""
+#  # MOVED: from system_learning.arbitration.engine import ArbitrationEngine
+#  # MOVED: from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
+#  # MOVED: from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationDecision, ArbitrationPolicy
         engine = ArbitrationEngine()
         policy = ArbitrationPolicy(
             weights={"healing": 1.0},

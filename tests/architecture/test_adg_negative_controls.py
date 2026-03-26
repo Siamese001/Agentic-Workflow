@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -59,7 +59,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_negative_controls", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_negative_controls", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_negative_controls", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -193,8 +193,8 @@ def _make_edge(
     line_no: int = 1,
     symbol: str = "",
 ) -> Edge:  # noqa: F821
-    from agentic_core.adg.extraction.static_scanner import Edge
-    from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
     return Edge(
         from_name=canonical_name("Module", from_rel),
@@ -214,8 +214,8 @@ def _make_module_edge(
     edge_kind: str = "import",
     line_no: int = 1,
 ) -> Edge:  # noqa: F821
-    from agentic_core.adg.extraction.static_scanner import Edge
-    from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
     return Edge(
         from_name=canonical_name("Module", from_rel),
@@ -236,9 +236,44 @@ def _make_module_edge(
 @pytest.mark.architecture
 @pytest.mark.negative_control
 def test_negative_rule_a_direct_openai_import_flagged() -> None:
-    """Direct openai import outside SovereignLLMGateway must trigger RULE_A."""
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.adg.extraction.static_scanner import Edge
+    from agentic_core.adg.schema_util import canonical_name
+    from agentic_core.adg.extraction.static_scanner import Edge
+    from agentic_core.adg.schema_util import canonical_name
     from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
     from agentic_core.adg.extraction.static_scanner import ScanResult
+    from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+    from agentic_core.adg.extraction.static_scanner import ScanResult
+    from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+    from agentic_core.adg.extraction.static_scanner import ScanResult
+    from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+    from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+    from agentic_core.adg.schema_util import canonical_name
+    from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+    from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+    from agentic_core.adg.schema_util import canonical_name
+    from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+    from agentic_core.adg.extraction.static_scanner import ScanResult
+    from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+    from agentic_core.adg.extraction.static_scanner import ScanResult
+    from agentic_core.adg.applications.gateway_topology_validator import check_gateway_topology
+    from agentic_core.adg.extraction.static_scanner import ScanResult
+    from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
+    from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+    from agentic_core.adg.schema_util import canonical_name
+    from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+    from agentic_core.adg.extraction.static_scanner import ScanResult
+    from agentic_core.adg.schema_util import canonical_name
+    from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+    from agentic_core.adg.extraction.static_scanner import ScanResult
+    from agentic_core.adg.schema_util import canonical_name
+    from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
+    from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+    """Direct openai import outside SovereignLLMGateway must trigger RULE_A."""
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
     result = ScanResult(commit_sha="neg-test-a")
     result.edges = [
@@ -259,8 +294,8 @@ def test_negative_rule_a_direct_openai_import_flagged() -> None:
 @pytest.mark.negative_control
 def test_negative_rule_a_direct_anthropic_import_flagged() -> None:
     """Direct anthropic import outside gateway must trigger RULE_A."""
-    from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-    from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
     result = ScanResult(commit_sha="neg-test-a-anthropic")
     result.edges = [
@@ -285,8 +320,8 @@ def test_negative_rule_a_direct_anthropic_import_flagged() -> None:
 @pytest.mark.negative_control
 def test_negative_rule_a_vertexai_flagged() -> None:
     """Direct vertexai import outside gateway must trigger RULE_A."""
-    from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-    from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
     result = ScanResult(commit_sha="neg-test-a-vertex")
     result.edges = [
@@ -316,9 +351,9 @@ def test_negative_rule_a_vertexai_flagged() -> None:
 @pytest.mark.negative_control
 def test_negative_rule_b_embedding_bypass_flagged() -> None:
     """Direct OpenAIEmbeddings instantiation outside EmbeddingSovereignAgent is flagged."""
-    from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-    from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-    from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
     result = ScanResult(commit_sha="neg-test-b")
     result.edges = [
@@ -347,9 +382,9 @@ def test_negative_rule_b_embedding_bypass_flagged() -> None:
 @pytest.mark.negative_control
 def test_negative_rule_b_huggingface_bypass_flagged() -> None:
     """HuggingFaceEmbeddings instantiation outside EmbeddingSovereignAgent is flagged."""
-    from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-    from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-    from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
     result = ScanResult(commit_sha="neg-test-b-hf")
     result.edges = [
@@ -380,8 +415,8 @@ def test_negative_rule_b_huggingface_bypass_flagged() -> None:
 @pytest.mark.negative_control
 def test_negative_rule_c_upward_layer_edge_flagged() -> None:
     """L0 importing from L5 must be flagged as upward layer violation."""
-    from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-    from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
     result = ScanResult(commit_sha="neg-test-c")
     result.edges = [
@@ -410,8 +445,8 @@ def test_negative_rule_c_upward_layer_edge_flagged() -> None:
 @pytest.mark.negative_control
 def test_negative_rule_c_l1_importing_l6_flagged() -> None:
     """L1 importing L6 is an upward violation."""
-    from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-    from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
     result = ScanResult(commit_sha="neg-test-c-l1l6")
     result.edges = [
@@ -442,8 +477,8 @@ def test_negative_rule_c_l1_importing_l6_flagged() -> None:
 @pytest.mark.negative_control
 def test_negative_gateway_bypass_flagged() -> None:
     """Module directly invoking openai outside gateway must be flagged."""
-    from agentic_core.adg.applications.gateway_topology_validator import check_gateway_topology
-    from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.applications.gateway_topology_validator import check_gateway_topology
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
     result = ScanResult(commit_sha="neg-gw-bypass")
     result.edges = [
@@ -473,9 +508,9 @@ def test_negative_gateway_bypass_flagged() -> None:
 @pytest.mark.negative_control
 def test_negative_uwg_bypass_flagged() -> None:
     """Direct filesystem write outside UWG must be flagged."""
-    from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
-    from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-    from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
     result = ScanResult(commit_sha="neg-uwg-bypass")
     result.edges = [
@@ -533,9 +568,9 @@ assert len(processed_result) >= 0, "Processed result should be measurable"
 @pytest.mark.negative_control
 def test_negative_rag_c0_influences_routing_decision_flagged() -> None:
     """C0Context influences RoutingDecision edge must be flagged."""
-    from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
-    from agentic_core.adg.extraction.static_scanner import ScanResult
-    from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
     result = ScanResult(commit_sha="neg-rag-c0")
     result.compute_digest()
@@ -558,9 +593,9 @@ def test_negative_rag_c0_influences_routing_decision_flagged() -> None:
 @pytest.mark.negative_control
 def test_negative_rag_c0_influences_safety_threshold_flagged() -> None:
     """C0Context influences SafetyThreshold must be flagged."""
-    from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
-    from agentic_core.adg.extraction.static_scanner import ScanResult
-    from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
     result = ScanResult(commit_sha="neg-rag-safety")
     result.compute_digest()
@@ -588,8 +623,8 @@ def test_negative_rag_c0_influences_safety_threshold_flagged() -> None:
 @pytest.mark.negative_control
 def test_negative_blast_radius_high_risk_escalates_mode() -> None:
     """Changing many high-weight L0+L2+L5 modules must produce positive risk_score."""
-    from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
-    from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
     scanner = ADGStaticScanner(repo_root=REPO_ROOT)
     result = scanner.scan(commit_sha="br-high-risk")

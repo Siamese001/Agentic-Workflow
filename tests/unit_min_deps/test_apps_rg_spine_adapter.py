@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -67,7 +67,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_apps_rg_spine_adapter", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_apps_rg_spine_adapter", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_apps_rg_spine_adapter", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -105,7 +105,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
+#  # MOVED: from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
 
 # REMOVED: _emit_emits_metric_event("test_apps_rg_spine_adapter", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_apps_rg_spine_adapter", "p4obs", "metric_2")
@@ -179,6 +179,13 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit_min_deps
 def test_adapter_returns_cid():
+    from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
+    from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
+    from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
+    from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
+    from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
+    from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
+    from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
     """Adapter returns a cid in result."""
     with patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_orch:
         # Return a fresh dict each time to avoid mutation
@@ -195,6 +202,7 @@ def test_adapter_returns_cid():
 @pytest.mark.unit_min_deps
 def test_cid_has_rg_prefix():
     """CID has 'rg-' prefix."""
+#  # MOVED: from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
     with patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_orch:
         # Return a fresh dict each time to avoid mutation
         mock_orch.return_value.execute.return_value = {"status": "ok"}
@@ -208,6 +216,7 @@ def test_cid_has_rg_prefix():
 @pytest.mark.unit_min_deps
 def test_cid_is_deterministic():
     """Calling adapter twice with identical intent_input produces same cid."""
+#  # MOVED: from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
     with patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_orch:
         # Return a fresh dict each time to avoid mutation
         mock_orch.return_value.execute.return_value = {"status": "ok"}
@@ -222,6 +231,7 @@ def test_cid_is_deterministic():
 @pytest.mark.unit_min_deps
 def test_different_inputs_produce_different_cids():
     """Different intent_inputs produce different cids."""
+#  # MOVED: from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
     with patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_orch:
         # Return a fresh dict each time to avoid mutation
         def fresh_result(*args, **kwargs):
@@ -241,6 +251,7 @@ def test_different_inputs_produce_different_cids():
 @pytest.mark.unit_min_deps
 def test_cid_registered_before_orchestrator_execute():
     """CIDRegistry.new_cycle called before ExecutionOrchestrator.execute."""
+#  # MOVED: from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
     with patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_orch:
         with patch("apps_rg.engines.rg_spine_adapter.CIDRegistry") as mock_registry:
             mock_cycle = MagicMock()
@@ -268,6 +279,7 @@ def test_cid_registered_before_orchestrator_execute():
 @pytest.mark.unit_min_deps
 def test_cid_passed_to_orchestrator():
     """CID is passed to orchestrator in enriched intent_input."""
+#  # MOVED: from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
     with patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_orch:
         with patch("apps_rg.engines.rg_spine_adapter.CIDRegistry") as mock_registry:
             mock_cycle = MagicMock()
@@ -287,7 +299,9 @@ def test_cid_passed_to_orchestrator():
 
 @pytest.mark.unit_min_deps
 def test_adapter_state_success_on_clean_input():
+#  # MOVED: from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
     """Adapter succeeds on clean input without side effects."""
+#  # MOVED: from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
     with patch("apps_rg.engines.rg_spine_adapter.ExecutionOrchestrator") as mock_orch:
         # Return a fresh dict each time to avoid mutation
         mock_orch.return_value.execute.return_value = {"status": "ok"}

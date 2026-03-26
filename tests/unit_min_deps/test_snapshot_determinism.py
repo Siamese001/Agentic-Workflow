@@ -12,8 +12,8 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -75,7 +75,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_snapshot_determinism", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_snapshot_determinism", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_snapshot_determinism", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -113,8 +113,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.snapshots.snapshot_factory import create_snapshot
-from system_learning.types.snapshot_types import MetaLearningSnapshot
+#  # MOVED: from system_learning.snapshots.snapshot_factory import create_snapshot
+#  # MOVED: from system_learning.types.snapshot_types import MetaLearningSnapshot
 
 # REMOVED: _emit_emits_metric_event("test_snapshot_determinism", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_snapshot_determinism", "p4obs", "metric_2")
@@ -227,6 +227,11 @@ def _make_snapshot(**overrides) -> MetaLearningSnapshot:
 
 class TestSnapshotDeterminism:
     def test_same_inputs_produce_identical_snapshot_id(self):
+        from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.snapshots.snapshot_factory import create_snapshot
+        from system_learning.types.snapshot_types import MetaLearningSnapshot
         snap1 = _make_snapshot()
         snap2 = _make_snapshot()
         assert snap1.snapshot_id == snap2.snapshot_id

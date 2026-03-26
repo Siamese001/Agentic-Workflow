@@ -9,7 +9,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -56,7 +56,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_discovery_cache", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_discovery_cache", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_discovery_cache", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -193,8 +193,29 @@ def _make_fake_cache():
 
 
 def test_agent_discovery_cache_has_get_or_fetch():
-    """AgentDiscoveryCache must have get_or_fetch method."""
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+    """AgentDiscoveryCache must have get_or_fetch method."""
+#  # MOVED: from agentic_core.cache.discovery_cache import AgentDiscoveryCache
 
     cache = AgentDiscoveryCache(cache=_make_fake_cache())
     assert hasattr(cache, "get_or_fetch")
@@ -203,7 +224,7 @@ def test_agent_discovery_cache_has_get_or_fetch():
 
 def test_agent_discovery_cache_miss_calls_fetch():
     """Cache miss must call fetch_from_disk exactly once."""
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+#  # MOVED: from agentic_core.cache.discovery_cache import AgentDiscoveryCache
 
     fake = _make_fake_cache()
     cache = AgentDiscoveryCache(cache=fake)
@@ -228,7 +249,7 @@ def test_agent_discovery_cache_miss_calls_fetch():
 
 def test_agent_discovery_cache_hit_skips_fetch():
     """Cache hit must NOT call fetch_from_disk."""
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+#  # MOVED: from agentic_core.cache.discovery_cache import AgentDiscoveryCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = [{"name": "CachedAgent", "path": "cached.py"}]
@@ -259,7 +280,7 @@ def test_agent_discovery_cache_hit_skips_fetch():
 
 def test_agent_discovery_cache_file_not_found_propagates():
     """FileNotFoundError must propagate when discovery file missing."""
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+#  # MOVED: from agentic_core.cache.discovery_cache import AgentDiscoveryCache
 
     fake = _make_fake_cache()
     cache = AgentDiscoveryCache(cache=fake)
@@ -271,7 +292,7 @@ def test_agent_discovery_cache_file_not_found_propagates():
 
 def test_agent_discovery_cache_fetch_exception_propagates():
     """Exceptions from fetch_from_disk must propagate."""
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+#  # MOVED: from agentic_core.cache.discovery_cache import AgentDiscoveryCache
 
     fake = _make_fake_cache()
     cache = AgentDiscoveryCache(cache=fake)
@@ -311,7 +332,7 @@ assert isinstance(result, (dict, list, str, int, float, bool)), "Result should b
 
 def test_agent_discovery_cache_replay_mode_bypasses_cache():
     """replay_mode=True must skip cache read and write."""
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+#  # MOVED: from agentic_core.cache.discovery_cache import AgentDiscoveryCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = [{"name": "StaleAgent"}]
@@ -338,7 +359,7 @@ def test_agent_discovery_cache_replay_mode_bypasses_cache():
 
 def test_agent_discovery_cache_empty_list_is_valid():
     """fetch_from_disk returning empty list is valid and must be cached."""
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+#  # MOVED: from agentic_core.cache.discovery_cache import AgentDiscoveryCache
 
     fake = _make_fake_cache()
     cache = AgentDiscoveryCache(cache=fake)
@@ -357,7 +378,7 @@ def test_agent_discovery_cache_empty_list_is_valid():
 
 def test_agent_discovery_cache_content_hash_changes_invalidate():
     """Changing file content must invalidate cache via different hash."""
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+#  # MOVED: from agentic_core.cache.discovery_cache import AgentDiscoveryCache
 
     fake = _make_fake_cache()
     cache = AgentDiscoveryCache(cache=fake)
@@ -386,7 +407,7 @@ def test_agent_discovery_cache_content_hash_changes_invalidate():
 
 def test_agent_discovery_cache_handles_cache_get_exception():
     """If cache.get_json raises, must fall through to fetch."""
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+#  # MOVED: from agentic_core.cache.discovery_cache import AgentDiscoveryCache
 
     fake = _make_fake_cache()
     fake.get_json.side_effect = RuntimeError("Redis connection lost")
@@ -412,7 +433,7 @@ def test_agent_discovery_cache_handles_cache_get_exception():
 
 def test_agent_discovery_cache_handles_cache_set_exception():
     """If cache.set_json raises, fetch result must still be returned."""
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+#  # MOVED: from agentic_core.cache.discovery_cache import AgentDiscoveryCache
 
     fake = _make_fake_cache()
     fake.set_json.side_effect = RuntimeError("Redis write failed")
@@ -455,7 +476,7 @@ assert isinstance(result, (dict, list, str, int, float, bool)), "Result should b
 
 def test_agent_discovery_cache_invalidate_all_is_noop():
     """invalidate_all must be a no-op for content-addressed cache."""
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+#  # MOVED: from agentic_core.cache.discovery_cache import AgentDiscoveryCache
 
     fake = _make_fake_cache()
     cache = AgentDiscoveryCache(cache=fake)
@@ -469,7 +490,7 @@ def test_agent_discovery_cache_invalidate_all_is_noop():
 
 def test_agent_discovery_cache_same_file_gives_identical_key_twice():
     """Same file content must produce identical cache key on two successive calls (§4:124-125)."""
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+#  # MOVED: from agentic_core.cache.discovery_cache import AgentDiscoveryCache
 
     fake = _make_fake_cache()
     cache = AgentDiscoveryCache(cache=fake)
@@ -493,7 +514,7 @@ def test_agent_discovery_cache_same_file_gives_identical_key_twice():
 
 def test_agent_discovery_cache_replay_warm_cache_get_json_never_called():
     """replay_mode=True with warm cache must NEVER call get_json (§4:155-156 matrix: warm×replay)."""
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+#  # MOVED: from agentic_core.cache.discovery_cache import AgentDiscoveryCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = [{"name": "StaleAgent"}]  # warm cache
@@ -514,7 +535,7 @@ def test_agent_discovery_cache_replay_warm_cache_get_json_never_called():
 
 def test_agent_discovery_cache_hit_side_effect_envelope():
     """On cache hit: get_json called once, set_json never called, fetch never called (§4:134-138)."""
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+#  # MOVED: from agentic_core.cache.discovery_cache import AgentDiscoveryCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = [{"name": "Cached"}]
@@ -541,7 +562,7 @@ def test_agent_discovery_cache_hit_side_effect_envelope():
 
 def test_agent_discovery_cache_file_not_found_no_set_json_side_effect():
     """FileNotFoundError must propagate before any set_json call (§4:131-133 fail-closed)."""
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+#  # MOVED: from agentic_core.cache.discovery_cache import AgentDiscoveryCache
 
     fake = _make_fake_cache()
     cache = AgentDiscoveryCache(cache=fake)
@@ -558,7 +579,7 @@ def test_agent_discovery_cache_broad_except_does_not_swallow_custom_sentinel():
     The cache read except-block targets cache.get_json failures only.
     A ValueError raised by fetch_from_disk must still propagate out.
     """
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+#  # MOVED: from agentic_core.cache.discovery_cache import AgentDiscoveryCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = None  # cache miss — fetch will be called
@@ -579,7 +600,7 @@ def test_agent_discovery_cache_broad_except_does_not_swallow_custom_sentinel():
 
 def test_agent_discovery_cache_stale_cache_path_returns_fresh_after_miss():
     """After TTL expiry (get_json returns None again), fetch is called and result re-cached (§4:179-183)."""
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+#  # MOVED: from agentic_core.cache.discovery_cache import AgentDiscoveryCache
 
     fake = _make_fake_cache()
     cache = AgentDiscoveryCache(cache=fake)
@@ -622,7 +643,7 @@ def test_agent_discovery_cache_malformed_plausible_path_object():
     """
     import tempfile as tf
 
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+#  # MOVED: from agentic_core.cache.discovery_cache import AgentDiscoveryCache
 
     fake = _make_fake_cache()
     cache = AgentDiscoveryCache(cache=fake)
@@ -645,7 +666,7 @@ def test_agent_discovery_cache_malformed_plausible_path_object():
 
 def test_agent_discovery_cache_distinct_files_produce_distinct_keys():
     """Two files with different content must produce distinct cache keys (§4:127)."""
-    from agentic_core.cache.discovery_cache import AgentDiscoveryCache
+#  # MOVED: from agentic_core.cache.discovery_cache import AgentDiscoveryCache
 
     fake = _make_fake_cache()
     cache = AgentDiscoveryCache(cache=fake)

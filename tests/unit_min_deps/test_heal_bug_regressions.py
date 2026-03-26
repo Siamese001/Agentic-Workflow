@@ -15,10 +15,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L0_ROUTING_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -65,7 +65,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_heal_bug_regressions", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_heal_bug_regressions", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_heal_bug_regressions", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -224,8 +224,21 @@ def _make_state_mgr(**extra_state):
 class TestBug1LocationAgentRegistry:
     
     def test_location_validator_raises_not_implemented(self):
-        """LocationValidatorAgent.heal_repository() must raise NotImplementedError."""
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
+        from agentic_core.L0_routing.scripts.execute_ssot import _get_l5_agent_roster
+        from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+        from agentic_core.L0_routing.scripts.execute_ssot import _get_location_healer_agent
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+        from agentic_core.L0_routing.scripts.execute_ssot import execute_phase2_reconciliation
+        from agentic_core.L0_routing.scripts.execute_ssot import save_comprehensive_reports
+        from agentic_core.L0_routing.scripts.execute_ssot import save_comprehensive_reports
+        from agentic_core.L0_routing.scripts.execute_ssot import save_aggregate_report
+        """LocationValidatorAgent.heal_repository() must raise NotImplementedError."""
+#  # MOVED: from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
 
         agent = LocationValidatorAgent(project_root=REPO_ROOT)
         with pytest.raises(NotImplementedError):
@@ -233,9 +246,9 @@ class TestBug1LocationAgentRegistry:
 
     def test_get_l5_agent_roster_returns_healer_not_validator(self):
         """_get_l5_agent_roster must include LocationHealerAgent, not LocationValidatorAgent."""
-        from agentic_core.L0_routing.scripts.execute_ssot import _get_l5_agent_roster
-        from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import _get_l5_agent_roster
+#  # MOVED: from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
         roster = list(_get_l5_agent_roster())
         assert LocationHealerAgent in roster, "LocationHealerAgent must be in the roster"
@@ -245,8 +258,8 @@ class TestBug1LocationAgentRegistry:
 
     def test_lazy_loader_returns_healer(self):
         """_get_location_healer_agent() must exist and return LocationHealerAgent."""
-        from agentic_core.L0_routing.scripts.execute_ssot import _get_location_healer_agent
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import _get_location_healer_agent
+#  # MOVED: from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
         assert _get_location_healer_agent() is LocationHealerAgent
 
@@ -259,7 +272,7 @@ class TestBug1LocationAgentRegistry:
 class TestBug2ViolationsFixedTally:
     def test_phase2_reconciliation_stores_fixed_count_in_state(self):
         """execute_phase2_reconciliation must accumulate violations_fixed in state_mgr.state."""
-        from agentic_core.L0_routing.scripts.execute_ssot import execute_phase2_reconciliation
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import execute_phase2_reconciliation
 
         # Spy state_mgr — we need real dict so state mutations are visible
         state_mgr = _make_state_mgr()
@@ -389,7 +402,7 @@ class TestBug3LocationViolationFilePath:
 class TestBug4JsonPathSerialisation:
     def test_per_territory_report_is_loadable(self, tmp_path):
         """compliance_report_*.json must be json.load()-able after save_comprehensive_reports."""
-        from agentic_core.L0_routing.scripts.execute_ssot import save_comprehensive_reports
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import save_comprehensive_reports
 
         detailed_cert = {
             "meta": {"territory": "test", "status": "COMPLIANT"},
@@ -419,7 +432,7 @@ class TestBug4JsonPathSerialisation:
 
     def test_windows_path_in_violations_no_backslash_in_json(self, tmp_path):
         """Path object in a violation dict must not produce backslashes in JSON output."""
-        from agentic_core.L0_routing.scripts.execute_ssot import save_comprehensive_reports
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import save_comprehensive_reports
 
         detailed_cert = {
             "meta": {"territory": "test", "status": "NON-COMPLIANT"},
@@ -458,7 +471,7 @@ class TestBug4JsonPathSerialisation:
         """
         import json as _json
 
-        from agentic_core.L0_routing.scripts.execute_ssot import save_aggregate_report
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import save_aggregate_report
 
         reports_dir = tmp_path / "logs" / "compliance_reports"
         reports_dir.mkdir(parents=True)

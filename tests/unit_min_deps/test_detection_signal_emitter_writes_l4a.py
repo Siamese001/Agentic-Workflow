@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -90,11 +90,11 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L6_observability.engines.detection_signal_emitter import (
+#  # MOVED: from agentic_core.L6_observability.engines.detection_signal_emitter import (
     emit_detection_signal_with_l4a,
 )
-from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -212,6 +212,10 @@ class TestDetectionSignalEmitterWritesL4A:
     """Test suite for detection signal L4A writing."""
 
     def test_emit_with_l4a_writer_calls_write_exactly_once(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L6_observability.engines.detection_signal_emitter import (
+        from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test emit_with_l4a_writer_calls_write_exactly_once runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -75,7 +75,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_meta_learning_embedding_service_b2", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_meta_learning_embedding_service_b2", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_meta_learning_embedding_service_b2", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -113,15 +113,15 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.meta_learning_embedding_service import (
+#  # MOVED: from system_learning.engines.meta_learning_embedding_service import (
     IntegrityError,
     MetaLearningEmbeddingService,
 )
-from system_learning.engines.seed_embedding_pack_builder import (
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import (
     DeterministicHashEmbedder,
     build_seed_embedding_pack,
 )
-from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+#  # MOVED: from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
 
 # REMOVED: _emit_emits_metric_event("test_meta_learning_embedding_service_b2", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_meta_learning_embedding_service_b2", "p4obs", "metric_2")
@@ -189,6 +189,11 @@ class TestMetaLearningEmbeddingService:
     """Test MetaLearningEmbeddingService functionality."""
 
     def test_missing_pack_returns_neutral_none(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.meta_learning_embedding_service import (
+        from system_learning.engines.seed_embedding_pack_builder import (
+        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
         """Nonexistent pack path => retrieve returns None and does not create files."""
         base_path = Path(tempfile.mkdtemp())
 

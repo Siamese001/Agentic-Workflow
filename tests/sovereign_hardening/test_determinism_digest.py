@@ -5,13 +5,13 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L2_execution.determinism import (
+#  # MOVED: from agentic_core.L2_execution.determinism import (
     compute_lockdown_determinism_digest,
     generate_lockdown_determinism_digest,
     get_embedding_config_surface,
     get_meta_learning_config_surface,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -58,7 +58,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_determinism_digest", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_determinism_digest", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_determinism_digest", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -176,6 +176,9 @@ class TestDeterminismDigest:
     """Tests for determinism digest calculation and emission."""
 
     def test_digest_calculation(self):
+        from agentic_core.L2_execution.determinism import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """Test that determinism digest is calculated correctly."""
         digest = compute_lockdown_determinism_digest()
 

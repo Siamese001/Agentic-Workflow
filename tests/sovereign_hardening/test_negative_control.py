@@ -5,11 +5,11 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L2_execution.determinism import (
+#  # MOVED: from agentic_core.L2_execution.determinism import (
     compute_lockdown_determinism_digest,
     get_embedding_config_surface,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -158,6 +158,8 @@ class TestNegativeControl:
     """Tests for negative control tampering detection."""
 
     def test_tamper_environment_detection(self):
+        from agentic_core.L2_execution.determinism import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """Test that tampering environment variable is detected."""
         # Test with tampering enabled
         with patch.dict(os.environ, {"W_HARDEN_NEGCTRL_TAMPER": "1"}):

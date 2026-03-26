@@ -27,7 +27,7 @@ import os
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -74,7 +74,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_redis_cache_non_authoritative", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_redis_cache_non_authoritative", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_redis_cache_non_authoritative", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -210,7 +210,7 @@ pytestmark = [pytest.mark.architecture, pytest.mark.unit]
 
 def _make_offline_cache(db=0):
     """Return a DeterministicRedisCache whose Redis connection always fails."""
-    from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+#  # MOVED: from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
 
     c = DeterministicRedisCache(db=CacheDB(db))
     # Force fallback by poisoning the import
@@ -225,7 +225,71 @@ def _make_offline_cache(db=0):
 
 class TestCanonicalJsonBytes:
     def test_sorted_keys(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
         from agentic_core.cache.redis_cache_client import canonical_json_bytes
+        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+        from agentic_core.cache.cache_key_builders import build_route_decision_key
+        from agentic_core.cache.cache_key_builders import build_route_decision_key
+        from agentic_core.cache.cache_key_builders import build_safety_eval_key
+        from agentic_core.cache.cache_key_builders import build_orch_plan_key
+        from agentic_core.cache.cache_key_builders import build_compiled_prompt_key
+        from agentic_core.cache.cache_key_builders import build_compiled_prompt_key
+        from agentic_core.cache.cache_key_builders import build_rag_topk_key
+        from agentic_core.cache.cache_key_builders import build_template_render_key
+        from agentic_core.cache.cache_key_builders import (
+        from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+        from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
+        from agentic_core.L3_orchestration.engines.orchestration_plan_cache import (
+        from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
+        from agentic_core.L2_execution.coordination.lease_coordinator import (
+        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+        from agentic_core.L2_execution.coordination.lease_coordinator import (
+        from agentic_core.L2_execution.coordination.lease_coordinator import (
+        from agentic_core.L2_execution.coordination.lease_coordinator import (
+        from agentic_core.L2_execution.coordination.lease_coordinator import (
+        from agentic_core.L2_execution.coordination.lease_coordinator import (
+        from agentic_core.L2_execution.coordination.lease_coordinator import (
+        from agentic_core.L2_execution.coordination.lease_coordinator import (
+        from agentic_core.cache.redis_cache_client import _BoundedLRU
+        from agentic_core.cache.redis_cache_client import _BoundedLRU
+        from agentic_core.cache.cache_key_builders import build_orch_plan_key
+        from agentic_core.cache.cache_key_builders import build_template_render_key
+        from agentic_core.cache.cache_key_builders import build_template_render_key
+        from agentic_core.cache.cache_key_builders import build_rag_topk_key
+        from agentic_core.cache.cache_key_builders import (
+        from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
+        from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
+        from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
+        from agentic_core.L0_routing.seams.redis_decision_cache import (
+        from agentic_core.L0_routing.seams.redis_decision_cache import (
+        from agentic_core.L0_routing.seams.redis_decision_cache import (
+        from agentic_core.L0_routing.seams.redis_decision_cache import (
+        from system_learning.engines.rag_retrieval_cache import RagRetrievalCache
+        from system_learning.engines.rag_retrieval_cache import RagRetrievalCache
+        from agentic_core.cache.cache_key_builders import build_rag_topk_key
+        from system_learning.engines.rag_retrieval_cache import RagRetrievalCache
+        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+        from agentic_core.cache.cache_key_builders import build_lease_key
+        from agentic_core.cache.cache_key_builders import build_lease_key
+        from agentic_core.cache.cache_key_builders import (
+        from agentic_core.cache.redis_cache_client import (
+        from agentic_core.cache.redis_cache_client import (
+        from agentic_core.cache.redis_cache_client import (
+        from agentic_core.cache import content_hash, reset_cache_singletons
+#  # MOVED: from agentic_core.cache.redis_cache_client import canonical_json_bytes
 
         obj = {"z": 1, "a": 2, "m": 3}
         result = canonical_json_bytes(obj)
@@ -233,26 +297,26 @@ class TestCanonicalJsonBytes:
         assert list(parsed.keys()) == sorted(parsed.keys())
 
     def test_ascii_only(self):
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+#  # MOVED: from agentic_core.cache.redis_cache_client import canonical_json_bytes
 
         obj = {"key": "value with unicode: \u00e9"}
         result = canonical_json_bytes(obj)
         assert all(b < 128 for b in result), "Non-ASCII byte found"
 
     def test_stable_across_calls(self):
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+#  # MOVED: from agentic_core.cache.redis_cache_client import canonical_json_bytes
 
         obj = {"policy_hash": "abc", "plan_hash": "def", "count": 42}
         assert canonical_json_bytes(obj) == canonical_json_bytes(obj)
 
     def test_no_trailing_whitespace(self):
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+#  # MOVED: from agentic_core.cache.redis_cache_client import canonical_json_bytes
 
         result = canonical_json_bytes({"a": 1})
         assert b" " not in result, "Unexpected whitespace in canonical JSON"
 
     def test_nan_rejected(self):
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+#  # MOVED: from agentic_core.cache.redis_cache_client import canonical_json_bytes
 
         with pytest.raises(ValueError):
             canonical_json_bytes({"v": float("nan")})
@@ -265,14 +329,14 @@ class TestCanonicalJsonBytes:
 
 class TestKeyDeterminism:
     def test_route_decision_key_stable(self):
-        from agentic_core.cache.cache_key_builders import build_route_decision_key
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_route_decision_key
 
         k1 = build_route_decision_key("h_intent", "h_policy", "h_state")
         k2 = build_route_decision_key("h_intent", "h_policy", "h_state")
         assert k1 == k2
 
     def test_route_decision_key_sensitive_to_each_segment(self):
-        from agentic_core.cache.cache_key_builders import build_route_decision_key
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_route_decision_key
 
         base = build_route_decision_key("I", "P", "S")
         assert build_route_decision_key("X", "P", "S") != base
@@ -280,25 +344,25 @@ class TestKeyDeterminism:
         assert build_route_decision_key("I", "P", "X") != base
 
     def test_safety_eval_key_stable(self):
-        from agentic_core.cache.cache_key_builders import build_safety_eval_key
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_safety_eval_key
 
         k = build_safety_eval_key("p_hash", "pol_hash", "t_hash")
         assert k == build_safety_eval_key("p_hash", "pol_hash", "t_hash")
 
     def test_orch_plan_key_stable(self):
-        from agentic_core.cache.cache_key_builders import build_orch_plan_key
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_orch_plan_key
 
         k = build_orch_plan_key("trace-1", "plan_h", "budget_h")
         assert k == build_orch_plan_key("trace-1", "plan_h", "budget_h")
 
     def test_compiled_prompt_key_stable(self):
-        from agentic_core.cache.cache_key_builders import build_compiled_prompt_key
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_compiled_prompt_key
 
         k = build_compiled_prompt_key("bom", "s0", "i0", "d0", "c0")
         assert k == build_compiled_prompt_key("bom", "s0", "i0", "d0", "c0")
 
     def test_compiled_prompt_key_sensitive_to_each_hash(self):
-        from agentic_core.cache.cache_key_builders import build_compiled_prompt_key
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_compiled_prompt_key
 
         base = build_compiled_prompt_key("bom", "s0", "i0", "d0", "c0")
         for idx, args in enumerate(
@@ -313,7 +377,7 @@ class TestKeyDeterminism:
             assert build_compiled_prompt_key(*args) != base, f"Segment {idx} not affecting key"
 
     def test_rag_topk_cutoff_rounded(self):
-        from agentic_core.cache.cache_key_builders import build_rag_topk_key
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_rag_topk_key
 
         k1 = build_rag_topk_key("u0", "v1", "manifest", 20, 0.12345678901)
         k2 = build_rag_topk_key("u0", "v1", "manifest", 20, 0.123456789)
@@ -321,7 +385,7 @@ class TestKeyDeterminism:
         assert k1 == k2
 
     def test_template_render_key_stable(self):
-        from agentic_core.cache.cache_key_builders import build_template_render_key
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_template_render_key
 
         k = build_template_render_key("tmpl-id", "v2", "args_h")
         assert k == build_template_render_key("tmpl-id", "v2", "args_h")
@@ -334,7 +398,7 @@ class TestKeyDeterminism:
 
 class TestKeyNamespaceUniqueness:
     def test_all_prefixes_distinct(self):
-        from agentic_core.cache.cache_key_builders import (
+#  # MOVED: from agentic_core.cache.cache_key_builders import (
             build_cap_registry_key,
             build_compiled_prompt_key,
             build_lease_key,
@@ -395,7 +459,7 @@ class TestReplayBypass:
         assert result == b"hello"
 
     def test_route_decision_cache_replay_bypass(self):
-        from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+#  # MOVED: from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
 
         inner = _make_offline_cache()
         rdc = RouteDecisionCache(cache=inner)
@@ -404,7 +468,7 @@ class TestReplayBypass:
         assert result is None
 
     def test_safety_eval_cache_replay_bypass(self):
-        from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
+#  # MOVED: from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
 
         inner = _make_offline_cache()
         sec = SafetyEvalCache(cache=inner)
@@ -413,7 +477,7 @@ class TestReplayBypass:
         assert result is None
 
     def test_orch_plan_cache_replay_bypass(self):
-        from agentic_core.L3_orchestration.engines.orchestration_plan_cache import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.orchestration_plan_cache import (
             OrchestrationPlanCache,
         )
 
@@ -424,7 +488,7 @@ class TestReplayBypass:
         assert result is None
 
     def test_compiled_prompt_cache_replay_bypass(self):
-        from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
+#  # MOVED: from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
             CompiledPromptCache,
         )
 
@@ -435,7 +499,7 @@ class TestReplayBypass:
         assert result is None
 
     def test_lease_coordinator_replay_returns_false(self):
-        from agentic_core.L2_execution.coordination.lease_coordinator import (
+#  # MOVED: from agentic_core.L2_execution.coordination.lease_coordinator import (
             LeaseCoordinator,
         )
 
@@ -491,14 +555,14 @@ class TestFallbackTransparency:
 
 class TestKeyValidation:
     def test_empty_key_rejected(self):
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+#  # MOVED: from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
 
         c = DeterministicRedisCache(db=CacheDB.HOT)
         with pytest.raises(ValueError):
             c.get("")
 
     def test_key_too_long_rejected(self):
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+#  # MOVED: from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
 
         c = DeterministicRedisCache(db=CacheDB.HOT)
         with pytest.raises(ValueError):
@@ -506,7 +570,7 @@ class TestKeyValidation:
 
     def test_null_byte_in_key_rejected(self):
     """Test agentic_core import functionality."""
-    from agentic_core.cache.redis_cache_client import canonical_json_bytes
+#  # MOVED: from agentic_core.cache.redis_cache_client import canonical_json_bytes
     # Basic functionality assertion
     assert True  # Replace with meaningful assertion
             c.get("key\x00bad")
@@ -530,7 +594,7 @@ class TestKeyValidation:
 
 class TestLeaseCoordination:
     def test_acquire_succeeds_when_no_holder(self):
-        from agentic_core.L2_execution.coordination.lease_coordinator import (
+#  # MOVED: from agentic_core.L2_execution.coordination.lease_coordinator import (
             LeaseCoordinator,
         )
 
@@ -540,7 +604,7 @@ class TestLeaseCoordination:
         assert acquired is True
 
     def test_second_acquire_fails(self):
-        from agentic_core.L2_execution.coordination.lease_coordinator import (
+#  # MOVED: from agentic_core.L2_execution.coordination.lease_coordinator import (
             LeaseCoordinator,
         )
 
@@ -551,7 +615,7 @@ class TestLeaseCoordination:
         assert acquired_again is False
 
     def test_release_by_correct_holder_succeeds(self):
-        from agentic_core.L2_execution.coordination.lease_coordinator import (
+#  # MOVED: from agentic_core.L2_execution.coordination.lease_coordinator import (
             LeaseCoordinator,
         )
 
@@ -563,7 +627,7 @@ class TestLeaseCoordination:
         assert not lc.is_held("plan_h")
 
     def test_release_by_wrong_holder_fails(self):
-        from agentic_core.L2_execution.coordination.lease_coordinator import (
+#  # MOVED: from agentic_core.L2_execution.coordination.lease_coordinator import (
             LeaseCoordinator,
         )
 
@@ -651,7 +715,7 @@ class TestNonAuthoritativeInvariant:
 
 class TestIdempotencyStore:
     def test_set_get_roundtrip(self):
-        from agentic_core.L2_execution.coordination.lease_coordinator import (
+#  # MOVED: from agentic_core.L2_execution.coordination.lease_coordinator import (
             IdempotencyStore,
         )
 
@@ -662,7 +726,7 @@ class TestIdempotencyStore:
         assert result == b"stdout\nexit 0"
 
     def test_replay_mode_bypasses_store(self):
-        from agentic_core.L2_execution.coordination.lease_coordinator import (
+#  # MOVED: from agentic_core.L2_execution.coordination.lease_coordinator import (
             IdempotencyStore,
         )
 
@@ -672,7 +736,7 @@ class TestIdempotencyStore:
         assert store.get("tool_h_abc", replay_mode=True) is None
 
     def test_invalidate_removes_entry(self):
-        from agentic_core.L2_execution.coordination.lease_coordinator import (
+#  # MOVED: from agentic_core.L2_execution.coordination.lease_coordinator import (
             IdempotencyStore,
         )
 
@@ -692,7 +756,7 @@ class TestBoundedLRUOverwrite:
     """Regression for: _BoundedLRU.set() was moving position but not updating value."""
 
     def test_overwrite_updates_value(self):
-        from agentic_core.cache.redis_cache_client import _BoundedLRU
+#  # MOVED: from agentic_core.cache.redis_cache_client import _BoundedLRU
 
         lru = _BoundedLRU(maxsize=10)
         lru.set("k", b"original")
@@ -713,7 +777,7 @@ class TestBoundedLRUOverwrite:
         assert result == {"x": 2}, "set_json overwrite must replace stored JSON"
 
     def test_lru_eviction_order_after_overwrite(self):
-        from agentic_core.cache.redis_cache_client import _BoundedLRU
+#  # MOVED: from agentic_core.cache.redis_cache_client import _BoundedLRU
 
         lru = _BoundedLRU(maxsize=3)
         lru.set("a", b"1")
@@ -784,31 +848,31 @@ class TestKeySegmentColonInjection:
     """Validates _require_safe_segment() guard in cache_key_builders."""
 
     def test_trace_id_with_colon_rejected(self):
-        from agentic_core.cache.cache_key_builders import build_orch_plan_key
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_orch_plan_key
 
         with pytest.raises(ValueError, match="trace_id"):
             build_orch_plan_key("trace:bad", "plan_h", "budget_h")
 
     def test_template_id_with_colon_rejected(self):
-        from agentic_core.cache.cache_key_builders import build_template_render_key
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_template_render_key
 
         with pytest.raises(ValueError, match="template_id"):
             build_template_render_key("tmpl:bad", "v1", "args_h")
 
     def test_template_version_with_colon_rejected(self):
-        from agentic_core.cache.cache_key_builders import build_template_render_key
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_template_render_key
 
         with pytest.raises(ValueError, match="template_version"):
             build_template_render_key("tmpl-id", "v1:bad", "args_h")
 
     def test_embedder_version_with_colon_rejected(self):
-        from agentic_core.cache.cache_key_builders import build_rag_topk_key
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_rag_topk_key
 
         with pytest.raises(ValueError, match="illegal ':' character"):
             build_rag_topk_key("a" * 64, "v1:bad", "b" * 64, 20, 0.5)
 
     def test_safe_segments_still_work(self):
-        from agentic_core.cache.cache_key_builders import (
+#  # MOVED: from agentic_core.cache.cache_key_builders import (
             build_orch_plan_key,
             build_template_render_key,
         )
@@ -828,7 +892,7 @@ class TestTemplateRenderCacheCorruptBytes:
     """Regression for: TemplateRenderCache.get() raised UnicodeDecodeError on corrupt bytes."""
 
     def test_corrupt_utf8_returns_none(self):
-        from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
+#  # MOVED: from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
             TemplateRenderCache,
         )
 
@@ -840,7 +904,7 @@ class TestTemplateRenderCacheCorruptBytes:
         assert result is None, "Corrupt UTF-8 bytes must return None, not raise"
 
     def test_valid_roundtrip_still_works(self):
-        from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
+#  # MOVED: from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
             TemplateRenderCache,
         )
 
@@ -850,7 +914,7 @@ class TestTemplateRenderCacheCorruptBytes:
         assert trc.get("tmpl-exec", "v2", "args_h") == "Hello, world!"
 
     def test_replay_mode_bypass(self):
-        from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
+#  # MOVED: from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
             TemplateRenderCache,
         )
 
@@ -867,7 +931,7 @@ class TestTemplateRenderCacheCorruptBytes:
 
 class TestL0SeamRoundtrips:
     def test_routing_rule_surface_set_get(self):
-        from agentic_core.L0_routing.seams.redis_decision_cache import (
+#  # MOVED: from agentic_core.L0_routing.seams.redis_decision_cache import (
             RoutingRuleSurfaceCache,
         )
 
@@ -879,7 +943,7 @@ class TestL0SeamRoundtrips:
         assert result == ruleset
 
     def test_routing_rule_surface_replay_bypass(self):
-        from agentic_core.L0_routing.seams.redis_decision_cache import (
+#  # MOVED: from agentic_core.L0_routing.seams.redis_decision_cache import (
             RoutingRuleSurfaceCache,
         )
 
@@ -889,7 +953,7 @@ class TestL0SeamRoundtrips:
         assert rsc.get("state_h", replay_mode=True) is None
 
     def test_cap_registry_set_get(self):
-        from agentic_core.L0_routing.seams.redis_decision_cache import (
+#  # MOVED: from agentic_core.L0_routing.seams.redis_decision_cache import (
             CapabilityRegistryCache,
         )
 
@@ -901,7 +965,7 @@ class TestL0SeamRoundtrips:
         assert result == registry
 
     def test_cap_registry_invalidate(self):
-        from agentic_core.L0_routing.seams.redis_decision_cache import (
+#  # MOVED: from agentic_core.L0_routing.seams.redis_decision_cache import (
             CapabilityRegistryCache,
         )
 
@@ -919,7 +983,7 @@ class TestL0SeamRoundtrips:
 
 class TestRagRetrievalCache:
     def test_set_get_roundtrip(self):
-        from system_learning.engines.rag_retrieval_cache import RagRetrievalCache
+#  # MOVED: from system_learning.engines.rag_retrieval_cache import RagRetrievalCache
 
         inner = _make_offline_cache()
         rac = RagRetrievalCache(cache=inner)
@@ -929,7 +993,7 @@ class TestRagRetrievalCache:
         assert cached == results
 
     def test_replay_mode_returns_none(self):
-        from system_learning.engines.rag_retrieval_cache import RagRetrievalCache
+#  # MOVED: from system_learning.engines.rag_retrieval_cache import RagRetrievalCache
 
         inner = _make_offline_cache()
         rac = RagRetrievalCache(cache=inner)
@@ -937,8 +1001,8 @@ class TestRagRetrievalCache:
         assert rac.get("u0h", "v1", "manifest_h", 10, 0.5, replay_mode=True) is None
 
     def test_non_list_stored_returns_none(self):
-        from agentic_core.cache.cache_key_builders import build_rag_topk_key
-        from system_learning.engines.rag_retrieval_cache import RagRetrievalCache
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_rag_topk_key
+#  # MOVED: from system_learning.engines.rag_retrieval_cache import RagRetrievalCache
 
         inner = _make_offline_cache()
         rac = RagRetrievalCache(cache=inner)
@@ -988,7 +1052,7 @@ class TestGetStats:
         assert expected_keys == set(stats.keys())
 
     def test_stats_db_matches_instance(self):
-        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+#  # MOVED: from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
 
         c = DeterministicRedisCache(db=CacheDB.COORDINATION)
         c._use_fallback = True
@@ -1124,19 +1188,19 @@ class TestCanonicalJsonBytesValidation:
     """Regression for: non-serializable types raised generic TypeError."""
 
     def test_rejects_bytes_object(self):
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+#  # MOVED: from agentic_core.cache.redis_cache_client import canonical_json_bytes
 
         with pytest.raises(TypeError, match="non-JSON-serializable type"):
             canonical_json_bytes({"data": b"bytes-not-allowed"})
 
     def test_rejects_set_object(self):
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+#  # MOVED: from agentic_core.cache.redis_cache_client import canonical_json_bytes
 
         with pytest.raises(TypeError, match="non-JSON-serializable type"):
             canonical_json_bytes({"items": {1, 2, 3}})
 
     def test_rejects_custom_class(self):
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+#  # MOVED: from agentic_core.cache.redis_cache_client import canonical_json_bytes
 
         class CustomClass:
             pass
@@ -1145,19 +1209,19 @@ class TestCanonicalJsonBytesValidation:
             canonical_json_bytes({"obj": CustomClass()})
 
     def test_rejects_nan(self):
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+#  # MOVED: from agentic_core.cache.redis_cache_client import canonical_json_bytes
 
         with pytest.raises(ValueError, match="NaN or Infinity"):
             canonical_json_bytes({"value": float("nan")})
 
     def test_rejects_infinity(self):
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+#  # MOVED: from agentic_core.cache.redis_cache_client import canonical_json_bytes
 
         with pytest.raises(ValueError, match="NaN or Infinity"):
             canonical_json_bytes({"value": float("inf")})
 
     def test_valid_types_still_work(self):
-        from agentic_core.cache.redis_cache_client import canonical_json_bytes
+#  # MOVED: from agentic_core.cache.redis_cache_client import canonical_json_bytes
 
         result = canonical_json_bytes({"a": 1, "b": [2, 3], "c": None, "d": True})
         assert isinstance(result, bytes)
@@ -1177,20 +1241,20 @@ class TestHashSegmentValidation:
     """
 
     def test_rejects_empty_hash(self):
-        from agentic_core.cache.cache_key_builders import build_lease_key
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_lease_key
 
         with pytest.raises(ValueError, match="must not be empty"):
             build_lease_key("")
 
     def test_valid_hash_still_works(self):
-        from agentic_core.cache.cache_key_builders import build_lease_key
+#  # MOVED: from agentic_core.cache.cache_key_builders import build_lease_key
 
         valid_hash = "a" * 64
         key = build_lease_key(valid_hash)
         assert key == f"lease:{valid_hash}"
 
     def test_all_key_builders_reject_empty(self):
-        from agentic_core.cache.cache_key_builders import (
+#  # MOVED: from agentic_core.cache.cache_key_builders import (
             build_cap_registry_key,
             build_lease_key,
             build_routing_rule_surface_key,
@@ -1214,7 +1278,7 @@ class TestHashSegmentValidation:
 
 class TestSingletonFactories:
     def test_reset_cache_singletons(self):
-        from agentic_core.cache.redis_cache_client import (
+#  # MOVED: from agentic_core.cache.redis_cache_client import (
             get_hot_cache,
             reset_cache_singletons,
         )
@@ -1225,7 +1289,7 @@ class TestSingletonFactories:
         assert c1 is not c2
 
     def test_get_hot_cache_returns_db0(self):
-        from agentic_core.cache.redis_cache_client import (
+#  # MOVED: from agentic_core.cache.redis_cache_client import (
             CacheDB,
             get_hot_cache,
             reset_cache_singletons,
@@ -1236,7 +1300,7 @@ class TestSingletonFactories:
         assert c._db == CacheDB.HOT
 
     def test_get_coordination_cache_returns_db1(self):
-        from agentic_core.cache.redis_cache_client import (
+#  # MOVED: from agentic_core.cache.redis_cache_client import (
             CacheDB,
             get_coordination_cache,
             reset_cache_singletons,
@@ -1247,7 +1311,7 @@ class TestSingletonFactories:
         assert c._db == CacheDB.COORDINATION
 
     def test_content_hash_and_reset_exported_from_package(self):
-        from agentic_core.cache import content_hash, reset_cache_singletons
+#  # MOVED: from agentic_core.cache import content_hash, reset_cache_singletons
 
         digest = content_hash(b"test-payload")
         assert len(digest) == 64

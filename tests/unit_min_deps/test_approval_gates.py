@@ -2,7 +2,7 @@
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -65,7 +65,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_approval_gates", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_approval_gates", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_approval_gates", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -103,7 +103,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.pipelines.approval_gates import (
+#  # MOVED: from system_learning.pipelines.approval_gates import (
     ApprovalDecision,
     DefaultRiskClassifier,
     DefaultRuleBasedGate,
@@ -202,6 +202,27 @@ class MockChangePackage:
 
 class TestDefaultRiskClassifier:
     def test_low_impact_single_surface_small_delta(self):
+        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+        from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
         """Single surface with small delta is low impact (tier 1)."""
         classifier = DefaultRiskClassifier()
         pkg = MockChangePackage(num_surfaces=1, max_delta=0.03, affects_l5=False)
@@ -212,6 +233,7 @@ class TestDefaultRiskClassifier:
 
     def test_medium_impact_multiple_surfaces(self):
         """Multiple surfaces is medium impact (tier 2)."""
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
         classifier = DefaultRiskClassifier()
         pkg = MockChangePackage(num_surfaces=2, max_delta=0.03, affects_l5=False)
 
@@ -221,6 +243,7 @@ class TestDefaultRiskClassifier:
 
     def test_medium_impact_moderate_delta(self):
         """Moderate delta is medium impact (tier 2)."""
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
         classifier = DefaultRiskClassifier()
         pkg = MockChangePackage(num_surfaces=1, max_delta=0.08, affects_l5=False)
 
@@ -230,6 +253,7 @@ class TestDefaultRiskClassifier:
 
     def test_high_impact_affects_l5(self):
         """Affecting L5 is high impact (tier 3)."""
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
         classifier = DefaultRiskClassifier()
         pkg = MockChangePackage(num_surfaces=1, max_delta=0.03, affects_l5=True)
 
@@ -239,6 +263,7 @@ class TestDefaultRiskClassifier:
 
     def test_high_impact_many_surfaces(self):
         """Many surfaces is high impact (tier 3)."""
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
         classifier = DefaultRiskClassifier()
         pkg = MockChangePackage(num_surfaces=5, max_delta=0.03, affects_l5=False)
 
@@ -248,6 +273,7 @@ class TestDefaultRiskClassifier:
 
     def test_critical_impact_l5_large_delta(self):
         """L5 + large delta is critical impact (tier 4)."""
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
         classifier = DefaultRiskClassifier()
         pkg = MockChangePackage(num_surfaces=1, max_delta=0.15, affects_l5=True)
 
@@ -259,6 +285,7 @@ class TestDefaultRiskClassifier:
 class TestDefaultRuleBasedGate:
     def test_high_impact_rejects_by_default(self):
         """High impact changes are REJECTED by default."""
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
         classifier = DefaultRiskClassifier()
         gate = DefaultRuleBasedGate(classifier, allow_high_impact=False)
 
@@ -271,6 +298,9 @@ class TestDefaultRuleBasedGate:
 
     def test_low_impact_approves(self):
         """Low impact changes are APPROVED."""
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
         classifier = DefaultRiskClassifier()
         gate = DefaultRuleBasedGate(classifier, allow_high_impact=False)
 
@@ -283,6 +313,9 @@ class TestDefaultRuleBasedGate:
 
     def test_high_impact_approves_when_allowed(self):
         """High impact changes are APPROVED when allow_high_impact=True."""
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
         classifier = DefaultRiskClassifier()
         gate = DefaultRuleBasedGate(classifier, allow_high_impact=True)
 
@@ -295,6 +328,9 @@ class TestDefaultRuleBasedGate:
 
     def test_medium_impact_approves(self):
         """Medium impact changes are APPROVED (below threshold)."""
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
         classifier = DefaultRiskClassifier()
         gate = DefaultRuleBasedGate(classifier, high_impact_threshold=3, allow_high_impact=False)
 
@@ -309,6 +345,9 @@ class TestDefaultRuleBasedGate:
 class TestDeterminism:
     def test_classifier_deterministic(self):
         """Risk classifier produces identical results."""
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
         classifier = DefaultRiskClassifier()
         pkg = MockChangePackage(num_surfaces=2, max_delta=0.08, affects_l5=False)
 
@@ -319,7 +358,10 @@ class TestDeterminism:
         assert tier1 == tier2 == tier3
 
     def test_gate_deterministic(self):
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
         """Approval gate produces identical results."""
+#  # MOVED: from system_learning.pipelines.approval_gates import ApprovalDecision, DefaultRiskClassifier, DefaultRuleBasedGate
         classifier = DefaultRiskClassifier()
         gate = DefaultRuleBasedGate(classifier, allow_high_impact=False)
         pkg = MockChangePackage(num_surfaces=1, max_delta=0.03, affects_l5=False)

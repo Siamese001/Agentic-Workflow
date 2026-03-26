@@ -6,18 +6,18 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     TESTS_DIR,
 )
-from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.mutation_prohibition import (
     ProtectedRootPolicy,
     SourceMutationBlocked,
     enforce_protected_root,
     get_default_protected_root_policy,
 )
-from agentic_core.L2_execution.tools import write_gateway
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L2_execution.tools import write_gateway
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -62,7 +62,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_ssot_mutation_fence")
 # REMOVED: _emit_applies_guardrail("p0", "test_ssot_mutation_fence", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_ssot_mutation_fence", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -190,6 +190,16 @@ class TestProtectedRootEnforcement:
     """Test protected-root enforcement primitives."""
 
     def test_enforce_protected_root_blocks_agentic_core(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+        from agentic_core.L2_execution.tools import write_gateway
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+        import agentic_core.L0_routing.scripts.execute_ssot as execute_ssot_module
+        from agentic_core.L2_execution.tools import write_gateway
+        from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+        from agentic_core.L0_routing.enforcement.mutation_prohibition import (
         """Test that writes to agentic_core are blocked."""
         target_path = Path("agentic_core/test_file.py")
         with pytest.raises(SourceMutationBlocked, match="Protected root mutation blocked"):
@@ -484,7 +494,7 @@ class TestFenceSelfCheck:
 
     def test_self_check_fails_with_bad_log_path(self, monkeypatch):
         """Test that self-check fails when log_path is under agentic_core."""
-        from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.mutation_prohibition import (
             ProtectedRootPolicy,
         )
 
@@ -495,7 +505,7 @@ class TestFenceSelfCheck:
                 log_path="agentic_core/bad_log.jsonl",  # Under protected root!
             )
 
-        import agentic_core.L0_routing.scripts.execute_ssot as execute_ssot_module
+#  # MOVED: import agentic_core.L0_routing.scripts.execute_ssot as execute_ssot_module
 
         monkeypatch.setattr(
             "agentic_core.L0_routing.enforcement.mutation_prohibition.get_default_protected_root_policy",
@@ -513,7 +523,7 @@ class TestFenceSelfCheck:
         """Test that self-check validates write_gateway has enforce_protected_root calls."""
         import inspect
 
-        from agentic_core.L2_execution.tools import write_gateway
+#  # MOVED: from agentic_core.L2_execution.tools import write_gateway
 
         # Verify write_text has allow_override parameter
         sig = inspect.signature(write_gateway.write_text)
@@ -530,7 +540,7 @@ class TestDeterministicReplay:
 
     def test_replay_block_event_is_identical_under_fixed_clock(self, tmp_path, monkeypatch):
         """Test that blocked-write telemetry is identical across runs with fixed timestamp."""
-        from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.mutation_prohibition import (
             _emit_block_event,
         )
 
@@ -595,7 +605,7 @@ class TestDeterministicReplay:
         """Test that block events without override use real UTC time (not deterministic)."""
         import time
 
-        from agentic_core.L0_routing.enforcement.mutation_prohibition import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.mutation_prohibition import (
             _emit_block_event,
         )
 

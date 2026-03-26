@@ -12,12 +12,12 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
-from agentic_core.L3_orchestration.engines.deterministic_orchestrator import (
+#  # MOVED: from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
+#  # MOVED: from agentic_core.L3_orchestration.engines.deterministic_orchestrator import (
     DeterministicOrchestrator,
     compute_determinism_digest,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -64,7 +64,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_determinism_digest", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_determinism_digest", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_determinism_digest", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -199,6 +199,10 @@ class TestW5DeterminismDigest:
         )
 
     def test_determinism_digest_computation(self):
+        from agentic_core.L3_orchestration.engines.deterministic_orchestrator import DeterministicOrchestrator, compute_determinism_digest
+        from agentic_core.L3_orchestration.engines.deterministic_orchestrator import DeterministicOrchestrator, compute_determinism_digest
+        from agentic_core.L3_orchestration.engines.deterministic_orchestrator import DeterministicOrchestrator, compute_determinism_digest
+        from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
         """Test determinism digest computation from components."""
         plan_hash = "plan_hash_001"
         agent_registry_hash = "agent_hash_001"
@@ -232,6 +236,7 @@ class TestW5DeterminismDigest:
 
     def test_determinism_digest_deterministic(self):
         """Test determinism digest is deterministic with same inputs."""
+#  # MOVED: from agentic_core.L3_orchestration.engines.deterministic_orchestrator import DeterministicOrchestrator, compute_determinism_digest
         inputs = {
             "plan_hash": "plan_hash_001",
             "agent_registry_hash": "agent_hash_001",
@@ -246,6 +251,7 @@ class TestW5DeterminismDigest:
 
     def test_determinism_digest_changes_with_inputs(self):
         """Test determinism digest changes with different inputs."""
+#  # MOVED: from agentic_core.L3_orchestration.engines.deterministic_orchestrator import DeterministicOrchestrator, compute_determinism_digest
         base_inputs = {
             "plan_hash": "plan_hash_001",
             "agent_registry_hash": "agent_hash_001",
@@ -281,6 +287,7 @@ class TestW5DeterminismDigest:
 
     def test_orchestrator_emits_determinism_digest(self, orchestrator, sample_payload):
         """Test that orchestrator emits determinism digest during orchestration."""
+#  # MOVED: from agentic_core.L3_orchestration.engines.deterministic_orchestrator import DeterministicOrchestrator, compute_determinism_digest
         result = orchestrator.orchestrate(
             governed_payload=sample_payload,
             route_mode="B",
@@ -366,6 +373,7 @@ class TestW5DeterminismDigest:
     @pytest.mark.xfail(strict=True, reason="Negative control: tampered digest differs from canonical")
     def test_negative_control_tamper_detection(self, orchestrator, sample_payload):
         """Test negative control: tamper toggle produces different digest, assertion fails."""
+#  # MOVED: from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
         params = {
             "governed_payload": sample_payload,
             "route_mode": "B",

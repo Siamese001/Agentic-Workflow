@@ -11,7 +11,7 @@ import tempfile
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -94,21 +94,21 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L2_execution.engines.resource_predictor import (
+#  # MOVED: from agentic_core.L2_execution.engines.resource_predictor import (
     DefaultDeterministicResourcePredictor,
 )
-from agentic_core.L2_execution.engines.rollback_refiner import (
+#  # MOVED: from agentic_core.L2_execution.engines.rollback_refiner import (
     DefaultDeterministicRollbackRefiner,
 )
-from agentic_core.L2_execution.types.resource_prediction_types import (
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import (
     FailureSignature,
     ResourcePrediction,
 )
-from agentic_core.L2_execution.types.rollback_refinement_types import (
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import (
     RollbackRefinementRequest,
     RollbackStrategyId,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -175,6 +175,27 @@ class TestPhase9Hardening:
     """Phase 9 hardening tests for resource bounds and rollback determinism."""
 
     def test_boundary_envelope_saturation(self):
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
+        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
+        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementRequest, RollbackStrategyId
+        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementRequest, RollbackStrategyId
+        from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
+        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
+        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
+        from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementRequest, RollbackStrategyId
+        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementRequest, RollbackStrategyId
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
+        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
         """Boundary envelope saturation: extreme, zero, and negative inputs."""
         # Test with very tight bounds
         predictor = DefaultDeterministicResourcePredictor(
@@ -273,6 +294,9 @@ class TestPhase9Hardening:
 
     def test_tie_break_determinism_under_collision(self):
         """Tie-break determinism: 10 rollback candidates with identical scores."""
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
+#  # MOVED: from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+#  # MOVED: from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
         refiner = DefaultDeterministicRollbackRefiner()
 
         signature = FailureSignature(
@@ -317,13 +341,21 @@ class TestPhase9Hardening:
 
     def test_proposal_only_enforcement_guard(self):
         """Proposal-only enforcement: dispatcher does not mutate VM config."""
-        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementRequest, RollbackStrategyId
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementRequest, RollbackStrategyId
+#  # MOVED: from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+#  # MOVED: from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
 
         # Create a spy to detect VM config mutations
         mutation_log = []
 
         class SpyVMConfig:
             """Spy VM config that detects mutations."""
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
+#  # MOVED: from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+#  # MOVED: from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
 
             def __init__(self):
                 self.cpu_cores = 2
@@ -391,13 +423,16 @@ class TestPhase9Hardening:
 
         # Write test script
         script_content = f'''
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
+#  # MOVED: from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+#  # MOVED: from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
 import sys
 import json
 import hashlib
 sys.path.insert(0, r"{os.getcwd()}")
 
-from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
-from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+#  # MOVED: from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
 
 signature = FailureSignature(**{test_signature})
 history_bytes = json.dumps({test_history}).encode()
@@ -463,15 +498,19 @@ print(f"TIMEOUT_S: {{prediction.envelope.timeout_s}}")
 
         # Write test script
         script_content = f'''
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
+#  # MOVED: from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementRequest, RollbackStrategyId
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementRequest, RollbackStrategyId
 import sys
 import json
 import hashlib
 sys.path.insert(0, r"{os.getcwd()}")
 
-from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
-from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
-from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementRequest, RollbackStrategyId
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementRequest, RollbackStrategyId
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_execution_terminates_at_uwg,
     _emit_writes_through,
@@ -576,6 +615,9 @@ print(f"RANKED_COUNT: {{len(decision.ranked)}}")
             os.unlink(script_path)
 
     def test_malformed_input_classification_stability(self):
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourcePrediction
+#  # MOVED: from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+#  # MOVED: from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
         """Malformed inputs produce deterministic exceptions."""
         predictor = DefaultDeterministicResourcePredictor()
 

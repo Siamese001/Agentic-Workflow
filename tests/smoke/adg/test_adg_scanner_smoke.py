@@ -3,9 +3,12 @@ import pytest
 
 @pytest.mark.smoke
 def test_scanner_importable():
+    from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+    from agentic_core.adg.schema import RelationType
+    from agentic_core.adg.schema import EdgeKind
     """Verify ADGStaticScanner class imports without error."""
     try:
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
         assert ADGStaticScanner is not None
         assert callable(ADGStaticScanner)
     except ImportError as e:
@@ -14,7 +17,7 @@ def test_scanner_importable():
 def test_schema_relation_types():
     """Verify RelationType literals are present."""
     try:
-        from agentic_core.adg.schema import RelationType
+#  # MOVED: from agentic_core.adg.schema import RelationType
 
         # Check that RelationType has core expected literals
         required_relations = {
@@ -39,7 +42,7 @@ def test_schema_relation_types():
 def test_schema_edge_kinds():
     """Verify EdgeKind literals are present."""
     try:
-        from agentic_core.adg.schema import EdgeKind
+#  # MOVED: from agentic_core.adg.schema import EdgeKind
 
         # Check that EdgeKind has expected literals (actual values are lowercase action nouns)
         required_kinds = {'import', 'call', 'write', 'export'}

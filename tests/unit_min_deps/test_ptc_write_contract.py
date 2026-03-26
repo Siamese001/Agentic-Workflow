@@ -20,7 +20,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     TESTS_DIR,
 )
@@ -31,6 +31,7 @@ class TestPTCWriteContract:
     """Test that PTC/tool infrastructure cannot bypass protected-root enforcement."""
 
     def test_tool_registry_exists_and_must_route_via_write_gateway(self):
+        from agentic_core.L0_routing.config.path_constants import (
         """Test that tool registry infrastructure exists and validates write routing.
 
         FINDING: Tool registry infrastructure exists in agentic_core.

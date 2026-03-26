@@ -12,15 +12,15 @@ from dataclasses import dataclass
 
 import pytest
 
-from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
     InvariantId,
     InvariantSeverity,
     InvariantViolation,
 )
-from agentic_core.L2_execution.types.vllm_invariant_verifier_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_invariant_verifier_types import (
     verify_gateway_invariants,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -173,6 +173,9 @@ pytestmark = pytest.mark.unit_min_deps
 
 
 def test_invariant_violation_canonical_json_stable():
+    from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
+    from agentic_core.L2_execution.types.vllm_invariant_verifier_types import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     violation = InvariantViolation(
         invariant_id=InvariantId.INV_LOCAL_REQUEST_HAS_EXPLICIT_MAX_TOKENS.value,
         severity=InvariantSeverity.FAIL.value,

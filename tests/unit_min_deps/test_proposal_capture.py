@@ -7,10 +7,10 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L0_ROUTING_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -57,7 +57,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_proposal_capture", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_proposal_capture", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_proposal_capture", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -176,6 +176,13 @@ EXECUTE_SSOT_PATH = Path(__file__).parent.parent.parent / L0_ROUTING_DIR / "scri
 @pytest.mark.unit_min_deps
 class TestProposalCapture:
     def test_pipeline_call_assigned_not_bare_in_source(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.change_package_impl import ChangePackage
+        from system_learning.engines.change_package_impl import ChangePackage
+        from system_learning.engines.change_package_impl import ChangePackage
+        from system_learning.engines.change_package_impl import ChangePackage
     """Test pipeline_call_assigned_not_bare_in_source runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters
@@ -203,7 +210,7 @@ class TestProposalCapture:
 
     def test_change_package_canonical_bytes_is_deterministic(self):
         """ChangePackage.canonical_bytes() produces identical output for identical input."""
-        from system_learning.engines.change_package_impl import ChangePackage
+#  # MOVED: from system_learning.engines.change_package_impl import ChangePackage
 
         pkg = ChangePackage(
             source="L0",
@@ -221,7 +228,7 @@ class TestProposalCapture:
     def test_proposal_jsonl_structure(self, tmp_path):
         """Written JSONL line must have schema_version, created_utc, payload keys."""
         # Simulate what the write block does
-        from system_learning.engines.change_package_impl import ChangePackage
+#  # MOVED: from system_learning.engines.change_package_impl import ChangePackage
 
         pkg = ChangePackage(
             source="L0",
@@ -260,7 +267,7 @@ class TestProposalCapture:
 
     def test_proposal_jsonl_determinism(self, tmp_path):
         """Same ChangePackage + same now_utc → identical JSONL bytes on two writes."""
-        from system_learning.engines.change_package_impl import ChangePackage
+#  # MOVED: from system_learning.engines.change_package_impl import ChangePackage
 
         pkg = ChangePackage(
             source="L1",
@@ -306,7 +313,7 @@ class TestProposalCapture:
         """IOError during proposal write must be caught and logged as warning, not raised."""
         import logging
 
-        from system_learning.engines.change_package_impl import ChangePackage
+#  # MOVED: from system_learning.engines.change_package_impl import ChangePackage
 
         pkg = ChangePackage(
             source="L5",

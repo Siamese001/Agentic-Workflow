@@ -7,12 +7,12 @@ from __future__ import annotations
 
 import ast
 
-from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
     Edge,
     _InheritanceVisitor,
     run_scanner_self_test,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -172,6 +172,8 @@ class TestInheritanceGraph:
     """Graph 3 — class inheritance (implements) edges."""
 
     def test_single_base_class(self):
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         src = """
 class ConcreteAgent(SovereignBaseAgent):
     pass

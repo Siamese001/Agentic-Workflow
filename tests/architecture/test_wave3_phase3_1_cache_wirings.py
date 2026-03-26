@@ -51,7 +51,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -135,7 +135,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -289,6 +289,8 @@ def _make_analyzer(
 
 @pytest.mark.architecture
 def test_analysis_mentions_cache_module_hint_match():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """_analysis_mentions_cache returns True when module_hint found in imported_module_names."""
     p = AGENTIC_CORE / "utils" / "fake.py"
     analysis = _ok_analysis(p, imported_module_names={"core.discovery_cache"})

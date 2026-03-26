@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
@@ -73,6 +73,7 @@ class TestManifestCompleteness:
     """Every quarantined test file must be listed in the manifest."""
 
     def test_no_unlisted_quarantine_files(self) -> None:
+        from agentic_core.L0_routing.config.path_constants import TESTS_DIR
     """Test no_unlisted_quarantine_files contract compliance."""
     # Arrange
     # TODO: Set up contract parties and terms

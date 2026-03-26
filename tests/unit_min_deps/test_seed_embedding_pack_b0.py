@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -77,7 +77,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_seed_embedding_pack_b0", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_seed_embedding_pack_b0", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_seed_embedding_pack_b0", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -115,11 +115,11 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.seed_embedding_pack_builder import (
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import (
     DeterministicHashEmbedder,
     build_seed_embedding_pack,
 )
-from system_learning.types.seed_embedding_pack_types import (
+#  # MOVED: from system_learning.types.seed_embedding_pack_types import (
     SeedEmbeddingPackConfig,
 )
 
@@ -189,6 +189,39 @@ class TestDeterministicMinimalSeed:
     """Test minimal seed mode produces deterministic hashes."""
 
     def test_minimal_seed_deterministic(self):
+        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+        from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
         """Same corpus + same N → same row_index + same matrix_hash."""
         # Setup
         base_path1 = Path(tempfile.mkdtemp())
@@ -252,6 +285,9 @@ class TestDeterministicMinimalSeed:
 
 class TestDeterministicCuratedSeed:
     """Test curated seed mode produces deterministic hashes."""
+#  # MOVED: from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
 
     def test_curated_seed_deterministic(self):
         """Same curated list → same output."""
@@ -316,6 +352,9 @@ class TestDeterministicCuratedSeed:
 
 class TestCanonicalSortValidation:
     """Test canonical sorting by (content_hash, trace_id, row_id)."""
+#  # MOVED: from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
 
     def test_row_index_canonical_sort(self):
         """Rows sorted by (content_hash, trace_id, row_id)."""
@@ -385,6 +424,9 @@ class TestCanonicalSortValidation:
 
 class TestByteLengthInvariant:
     """Test embeddings.f32 size invariant."""
+#  # MOVED: from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
 
     def test_embeddings_f32_byte_length(self):
         """embeddings.f32 size == vector_count * dimensions * 4."""
@@ -441,6 +483,9 @@ class TestByteLengthInvariant:
 
 class TestHashVerification:
     """Test row_index_hash and matrix_hash computation."""
+#  # MOVED: from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
 
     def test_row_index_hash_verification(self):
         """manifest.row_index_hash matches SHA-256 of row_index.jsonl."""
@@ -489,6 +534,9 @@ class TestHashVerification:
 
     def test_matrix_hash_verification(self):
         """manifest.matrix_hash matches SHA-256 of embeddings.f32."""
+#  # MOVED: from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
         base_path = Path(tempfile.mkdtemp())
 
         corpus_rows = [
@@ -535,6 +583,9 @@ class TestHashVerification:
 
 class TestBuiltAtUtcExclusion:
     """Test built_at_utc is excluded from hash computation."""
+#  # MOVED: from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
 
     def test_built_at_utc_exclusion_from_hash_material(self):
         """Different built_at_utc produces same seed_index_version_hash."""
@@ -587,6 +638,9 @@ class TestBuiltAtUtcExclusion:
 
 class TestAtomicWriteInvariant:
     """Test atomic write behavior."""
+#  # MOVED: from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
 
     def test_atomic_write_no_partial_files_on_failure(self):
         """If build fails mid-process → no version directory created."""
@@ -622,6 +676,9 @@ class TestAtomicWriteInvariant:
 
     def test_no_overwrite_existing_directory(self):
         """If directory exists → build must fail."""
+#  # MOVED: from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
         base_path = Path(tempfile.mkdtemp())
 
         corpus_rows = [
@@ -666,6 +723,9 @@ class TestAtomicWriteInvariant:
 
 class TestReadOnlyMtimeInvariant:
     """Test read-only constraints and mtime behavior."""
+#  # MOVED: from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
 
     def test_seed_pack_read_only_enforced(self):
         """Seed pack files are read-only after creation."""
@@ -711,6 +771,9 @@ class TestReadOnlyMtimeInvariant:
 
 class TestDeterministicHashEmbedder:
     """Test the deterministic embedder used in tests."""
+#  # MOVED: from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
 
     def test_deterministic_hash_embedder_same_input(self):
         """Same content_hash produces same vector."""
@@ -723,6 +786,7 @@ class TestDeterministicHashEmbedder:
 
     def test_deterministic_hash_embedder_different_input(self):
         """Different content_hash produces different vectors."""
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
         embedder = DeterministicHashEmbedder(dimensions=4)
 
         vectors1 = embedder.embed_batch(["test1"], 4)
@@ -731,7 +795,9 @@ class TestDeterministicHashEmbedder:
         assert vectors1 != vectors2
 
     def test_deterministic_hash_embedder_dimensions(self):
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
         """Vector dimensions match requested dimensions."""
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder, build_seed_embedding_pack
         dimensions = 8
         embedder = DeterministicHashEmbedder(dimensions=dimensions)
 

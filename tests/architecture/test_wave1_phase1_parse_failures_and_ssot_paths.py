@@ -34,14 +34,14 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     L0_ROUTING_DIR,
     L2_EXECUTION_DIR,
     SYSTEM_LEARNING_DIR,
     TOOLS_DIR,
 )
-from agentic_core.L5_safety.enforcement.import_guard import get_import_guard
+#  # MOVED: from agentic_core.L5_safety.enforcement.import_guard import get_import_guard
 
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_wave1_phase1_parse_failures_and_ssot_paths")
 # REMOVED: _emit_applies_guardrail("p0", "test_wave1_phase1_parse_failures_and_ssot_paths", "p0_governance")
@@ -153,6 +153,8 @@ def _ast_parse_raises(source: str) -> bool:
 @pytest.mark.architecture
 @pytest.mark.parametrize("filepath", PARSE_FAILURE_FILES, ids=[p.name for p in PARSE_FAILURE_FILES])
 def test_parse_failure_file_parses_cleanly(filepath):
+    from agentic_core.L0_routing.config.path_constants import (
+    from agentic_core.L5_safety.enforcement.import_guard import get_import_guard
     """Success: each formerly-broken file must now parse without SyntaxError."""
     assert filepath.exists(), f"File missing: {filepath}"
     ok, err = _ast_parse_ok(filepath)

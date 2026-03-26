@@ -31,7 +31,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -78,7 +78,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_injection_canon_completeness", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_injection_canon_completeness", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_injection_canon_completeness", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -268,7 +268,7 @@ def canon_names() -> list[str]:
 
 @pytest.fixture(scope="module")
 def loaded_patterns() -> list[Any]:
-    from agentic_core.runtime.config.instructional_injections import (
+#  # MOVED: from agentic_core.runtime.config.instructional_injections import (
         get_instructional_injections,
     )
 
@@ -282,6 +282,9 @@ def loaded_patterns() -> list[Any]:
 
 @pytest.mark.architecture
 def test_markdown_parses_to_exactly_30_entries(canon_names: list[str]) -> None:
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.runtime.config.instructional_injections import (
     """Pure parse test — no YAML, no imports."""
     count = len(canon_names)
     assert count == _EXPECTED_COUNT, (

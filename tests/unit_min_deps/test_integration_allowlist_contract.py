@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
 )
 
@@ -66,6 +66,7 @@ class TestNoOrphanIntegrationTests:
     """Every integration test file must be under an allowed root from pytest.ini."""
 
     def test_all_integration_tests_under_allowed_roots(self) -> None:
+        from agentic_core.L0_routing.config.path_constants import (
     """Test all_integration_tests_under_allowed_roots contract compliance."""
     # Arrange
     # TODO: Set up contract parties and terms

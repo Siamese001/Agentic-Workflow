@@ -35,7 +35,7 @@ from textwrap import dedent
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -119,11 +119,11 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     TESTS_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -243,6 +243,9 @@ def _make_analysis_from_source(source: str, file_path: Path | None = None) -> Fi
 
 @pytest.mark.architecture
 def test_import_openai_flagged_as_direct_provider():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L0_routing.config.path_constants import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Success: bare 'import openai' is flagged as a direct provider import."""
     analysis = _make_analysis_from_source("import openai\n")
     assert "openai" in analysis.direct_provider_imports

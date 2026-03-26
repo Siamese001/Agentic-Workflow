@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     L3_ORCHESTRATION_DIR,
 )
@@ -80,6 +80,7 @@ class TestNoSelfConfigAssignInInit:
         ids=[p.stem for p in INSPECTOR_FILES],
     )
     def test_no_self_config_assign(self, inspector_file: Path) -> None:
+        from agentic_core.L0_routing.config.path_constants import (
         tree = _parse_file(inspector_file)
         assert tree is not None, f"Cannot parse {inspector_file.name}"
 

@@ -22,11 +22,11 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L4_STATE_DIR,
     TOOLS_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -73,7 +73,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_redis_cache_wiring_invariants", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_redis_cache_wiring_invariants", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_redis_cache_wiring_invariants", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -220,13 +220,56 @@ def _make_fake_cache() -> MagicMock:
 
 
 def test_route_decision_cache_has_get_or_fetch():
+    from agentic_core.L0_routing.config.path_constants import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+    from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+    from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+    from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+    from agentic_core.L0_routing.seams.redis_decision_cache import RoutingRuleSurfaceCache
+    from agentic_core.L0_routing.seams.redis_decision_cache import RoutingRuleSurfaceCache
+    from agentic_core.L0_routing.seams.redis_decision_cache import CapabilityRegistryCache
+    from agentic_core.L0_routing.seams.redis_decision_cache import CapabilityRegistryCache
+    from agentic_core.L1_cognition.engines.prompt_artifact_cache import CompiledPromptCache
+    from agentic_core.L1_cognition.engines.prompt_artifact_cache import CompiledPromptCache
+    from agentic_core.L1_cognition.engines.prompt_artifact_cache import CompiledPromptCache
+    from agentic_core.L1_cognition.engines.prompt_artifact_cache import TemplateRenderCache
+    from agentic_core.L1_cognition.engines.prompt_artifact_cache import TemplateRenderCache
+    from agentic_core.L1_cognition.engines.prompt_artifact_cache import TemplateRenderCache
+    from agentic_core.L3_orchestration.engines.orchestration_plan_cache import OrchestrationPlanCache
+    from agentic_core.L3_orchestration.engines.orchestration_plan_cache import OrchestrationPlanCache
+    from agentic_core.L3_orchestration.engines.orchestration_plan_cache import OrchestrationPlanCache
+    from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
+    from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
+    from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
+    from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
+    from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+    from agentic_core.L3_orchestration.engines.orchestration_plan_cache import OrchestrationPlanCache
+    from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
+    from agentic_core.L1_cognition.engines.prompt_artifact_cache import TemplateRenderCache
+    from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+    from agentic_core.L4_state.memory import blob_storage_provider as bsp
+    from agentic_core.L4_state.memory import blob_storage_provider as bsp
+    from agentic_core.L4_state.memory import blob_storage_provider as bsp
+    from agentic_core.L4_state.memory import blob_storage_provider as bsp
+    from agentic_core.cache.cache_key_builders import _require_hash_segment
+    from agentic_core.cache.cache_key_builders import _require_hash_segment
+    from agentic_core.cache.cache_key_builders import _require_hash_segment
+    from agentic_core.cache.cache_key_builders import _require_hash_segment
+    from agentic_core.cache.cache_key_builders import _require_hash_segment
+    from agentic_core.cache.cache_key_builders import _require_hash_segment
+    from agentic_core.cache.cache_key_builders import _require_hash_segment
+    from agentic_core.cache.cache_key_builders import _require_hash_segment
+    from agentic_core.cache.cache_key_builders import _require_hash_segment
+    from agentic_core.cache.cache_key_builders import _require_hash_segment
+#  # MOVED: from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
 
     assert hasattr(RouteDecisionCache, "get_or_fetch"), "RouteDecisionCache must expose get_or_fetch()"
 
 
 def test_route_decision_cache_get_or_fetch_on_miss():
-    from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+#  # MOVED: from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
 
     fake = _make_fake_cache()
     cache = RouteDecisionCache(cache=fake)
@@ -245,7 +288,7 @@ def test_route_decision_cache_get_or_fetch_on_miss():
 
 
 def test_route_decision_cache_get_or_fetch_on_hit():
-    from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+#  # MOVED: from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
 
     fake = _make_fake_cache()
     cached_val = {"decision": "cached"}
@@ -260,7 +303,7 @@ def test_route_decision_cache_get_or_fetch_on_hit():
 
 
 def test_route_decision_cache_get_or_fetch_replay_bypasses_cache():
-    from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+#  # MOVED: from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = {"decision": "stale"}
@@ -281,13 +324,13 @@ def test_route_decision_cache_get_or_fetch_replay_bypasses_cache():
 
 
 def test_routing_rule_surface_cache_has_get_or_fetch():
-    from agentic_core.L0_routing.seams.redis_decision_cache import RoutingRuleSurfaceCache
+#  # MOVED: from agentic_core.L0_routing.seams.redis_decision_cache import RoutingRuleSurfaceCache
 
     assert hasattr(RoutingRuleSurfaceCache, "get_or_fetch")
 
 
 def test_routing_rule_surface_get_or_fetch_miss():
-    from agentic_core.L0_routing.seams.redis_decision_cache import RoutingRuleSurfaceCache
+#  # MOVED: from agentic_core.L0_routing.seams.redis_decision_cache import RoutingRuleSurfaceCache
 
     fake = _make_fake_cache()
     cache = RoutingRuleSurfaceCache(cache=fake)
@@ -301,13 +344,13 @@ def test_routing_rule_surface_get_or_fetch_miss():
 
 
 def test_cap_registry_cache_has_get_or_fetch():
-    from agentic_core.L0_routing.seams.redis_decision_cache import CapabilityRegistryCache
+#  # MOVED: from agentic_core.L0_routing.seams.redis_decision_cache import CapabilityRegistryCache
 
     assert hasattr(CapabilityRegistryCache, "get_or_fetch")
 
 
 def test_cap_registry_get_or_fetch_miss():
-    from agentic_core.L0_routing.seams.redis_decision_cache import CapabilityRegistryCache
+#  # MOVED: from agentic_core.L0_routing.seams.redis_decision_cache import CapabilityRegistryCache
 
     fake = _make_fake_cache()
     cache = CapabilityRegistryCache(cache=fake)
@@ -321,13 +364,13 @@ def test_cap_registry_get_or_fetch_miss():
 
 
 def test_compiled_prompt_cache_has_get_or_fetch():
-    from agentic_core.L1_cognition.engines.prompt_artifact_cache import CompiledPromptCache
+#  # MOVED: from agentic_core.L1_cognition.engines.prompt_artifact_cache import CompiledPromptCache
 
     assert hasattr(CompiledPromptCache, "get_or_fetch")
 
 
 def test_compiled_prompt_get_or_fetch_miss():
-    from agentic_core.L1_cognition.engines.prompt_artifact_cache import CompiledPromptCache
+#  # MOVED: from agentic_core.L1_cognition.engines.prompt_artifact_cache import CompiledPromptCache
 
     fake = _make_fake_cache()
     cache = CompiledPromptCache(cache=fake)
@@ -339,7 +382,7 @@ def test_compiled_prompt_get_or_fetch_miss():
 
 
 def test_compiled_prompt_get_or_fetch_hit():
-    from agentic_core.L1_cognition.engines.prompt_artifact_cache import CompiledPromptCache
+#  # MOVED: from agentic_core.L1_cognition.engines.prompt_artifact_cache import CompiledPromptCache
 
     fake = _make_fake_cache()
     hit = {"artifact_signature": "cached_sig"}
@@ -357,13 +400,13 @@ def test_compiled_prompt_get_or_fetch_hit():
 
 
 def test_template_render_cache_has_get_or_fetch():
-    from agentic_core.L1_cognition.engines.prompt_artifact_cache import TemplateRenderCache
+#  # MOVED: from agentic_core.L1_cognition.engines.prompt_artifact_cache import TemplateRenderCache
 
     assert hasattr(TemplateRenderCache, "get_or_fetch")
 
 
 def test_template_render_get_or_fetch_miss():
-    from agentic_core.L1_cognition.engines.prompt_artifact_cache import TemplateRenderCache
+#  # MOVED: from agentic_core.L1_cognition.engines.prompt_artifact_cache import TemplateRenderCache
 
     fake = _make_fake_cache()
     fake.get.return_value = None
@@ -374,7 +417,7 @@ def test_template_render_get_or_fetch_miss():
 
 
 def test_template_render_get_or_fetch_hit():
-    from agentic_core.L1_cognition.engines.prompt_artifact_cache import TemplateRenderCache
+#  # MOVED: from agentic_core.L1_cognition.engines.prompt_artifact_cache import TemplateRenderCache
 
     fake = _make_fake_cache()
     fake.get.return_value = b"cached rendered text"
@@ -390,13 +433,13 @@ def test_template_render_get_or_fetch_hit():
 
 
 def test_orch_plan_cache_has_get_or_fetch():
-    from agentic_core.L3_orchestration.engines.orchestration_plan_cache import OrchestrationPlanCache
+#  # MOVED: from agentic_core.L3_orchestration.engines.orchestration_plan_cache import OrchestrationPlanCache
 
     assert hasattr(OrchestrationPlanCache, "get_or_fetch")
 
 
 def test_orch_plan_get_or_fetch_miss():
-    from agentic_core.L3_orchestration.engines.orchestration_plan_cache import OrchestrationPlanCache
+#  # MOVED: from agentic_core.L3_orchestration.engines.orchestration_plan_cache import OrchestrationPlanCache
 
     fake = _make_fake_cache()
     cache = OrchestrationPlanCache(cache=fake)
@@ -407,7 +450,7 @@ def test_orch_plan_get_or_fetch_miss():
 
 
 def test_orch_plan_get_or_fetch_hit():
-    from agentic_core.L3_orchestration.engines.orchestration_plan_cache import OrchestrationPlanCache
+#  # MOVED: from agentic_core.L3_orchestration.engines.orchestration_plan_cache import OrchestrationPlanCache
 
     fake = _make_fake_cache()
     hit = {"step_dag": ["step1"], "plan_hash": "a" * 64}
@@ -424,13 +467,13 @@ def test_orch_plan_get_or_fetch_hit():
 
 
 def test_safety_eval_cache_has_get_or_fetch():
-    from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
+#  # MOVED: from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
 
     assert hasattr(SafetyEvalCache, "get_or_fetch")
 
 
 def test_safety_eval_get_or_fetch_miss():
-    from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
+#  # MOVED: from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
 
     fake = _make_fake_cache()
     cache = SafetyEvalCache(cache=fake)
@@ -441,7 +484,7 @@ def test_safety_eval_get_or_fetch_miss():
 
 
 def test_safety_eval_get_or_fetch_hit():
-    from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
+#  # MOVED: from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
 
     fake = _make_fake_cache()
     hit = {"decision": "block", "compliance_hash": "d" * 64}
@@ -455,7 +498,7 @@ def test_safety_eval_get_or_fetch_hit():
 
 
 def test_safety_eval_get_or_fetch_replay_bypasses_cache():
-    from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
+#  # MOVED: from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
 
     fake = _make_fake_cache()
     fake.get_json.return_value = {"decision": "stale", "compliance_hash": "e" * 64}
@@ -479,7 +522,7 @@ def test_safety_eval_get_or_fetch_replay_bypasses_cache():
 
 def test_route_decision_cache_get_or_fetch_propagates_fetch_exception():
     """fetch_from_l4 exceptions must propagate, not be swallowed."""
-    from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+#  # MOVED: from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
 
     fake = _make_fake_cache()
     cache = RouteDecisionCache(cache=fake)
@@ -505,7 +548,7 @@ result = None  # Replace with actual execution
 assert result is not None, f"{function_name} should return a result"
 assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
 # TODO: Add specific execution assertions
-    from agentic_core.L3_orchestration.engines.orchestration_plan_cache import OrchestrationPlanCache
+#  # MOVED: from agentic_core.L3_orchestration.engines.orchestration_plan_cache import OrchestrationPlanCache
 
     fake = _make_fake_cache()
     cache = OrchestrationPlanCache(cache=fake)
@@ -517,7 +560,7 @@ assert isinstance(result, (dict, list, str, int, float, bool)), "Result should b
 
 def test_safety_eval_cache_get_or_fetch_wrong_return_type_from_fetch():
     """fetch_from_l5 returning wrong type (e.g., None) must not crash set()."""
-    from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
+#  # MOVED: from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
 
     fake = _make_fake_cache()
     cache = SafetyEvalCache(cache=fake)
@@ -533,7 +576,7 @@ def test_safety_eval_cache_get_or_fetch_wrong_return_type_from_fetch():
 
 def test_template_render_cache_get_or_fetch_empty_string_is_valid():
     """fetch_from_l4 returning empty string is valid and must be cached."""
-    from agentic_core.L1_cognition.engines.prompt_artifact_cache import TemplateRenderCache
+#  # MOVED: from agentic_core.L1_cognition.engines.prompt_artifact_cache import TemplateRenderCache
 
     fake = _make_fake_cache()
     fake.get.return_value = None
@@ -562,7 +605,7 @@ assert isinstance(result, (dict, list, str, int, float, bool)), "Result should b
 
 def test_route_decision_cache_get_or_fetch_cache_exception_propagates():
     """If underlying cache.get_json raises, exception must propagate."""
-    from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+#  # MOVED: from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
 
     fake = _make_fake_cache()
     fake.get_json.side_effect = RuntimeError("Redis connection lost")
@@ -631,7 +674,7 @@ def test_no_live_redis_client_in_l4_state():
     )
 def test_tombstoned_redis_classes_raise_on_instantiation():
     """Tombstoned shadow-Redis classes must raise RuntimeError, not silently succeed."""
-    from agentic_core.L4_state.memory import blob_storage_provider as bsp
+#  # MOVED: from agentic_core.L4_state.memory import blob_storage_provider as bsp
     assert hasattr(bsp, "_TombstonedRedisDistributedLock")
     assert hasattr(bsp, "_TombstonedRedisHotCache")
     assert hasattr(bsp, "_TombstonedHotBrainCache")
@@ -643,7 +686,7 @@ def test_tombstoned_redis_classes_raise_on_instantiation():
         bsp._TombstonedHotBrainCache()
 def test_tombstoned_classes_reject_positional_args():
     """Tombstoned classes must reject instantiation with positional args."""
-    from agentic_core.L4_state.memory import blob_storage_provider as bsp
+#  # MOVED: from agentic_core.L4_state.memory import blob_storage_provider as bsp
     with pytest.raises(RuntimeError, match="tombstoned"):
         bsp._TombstonedRedisDistributedLock("arg1", "arg2")
     with pytest.raises(RuntimeError, match="tombstoned"):
@@ -652,7 +695,7 @@ def test_tombstoned_classes_reject_positional_args():
         bsp._TombstonedHotBrainCache("redis://localhost")
 def test_tombstoned_classes_reject_keyword_args():
     """Tombstoned classes must reject instantiation with keyword args."""
-    from agentic_core.L4_state.memory import blob_storage_provider as bsp
+#  # MOVED: from agentic_core.L4_state.memory import blob_storage_provider as bsp
     with pytest.raises(RuntimeError, match="tombstoned"):
         bsp._TombstonedRedisDistributedLock(redis_client=None, lock_timeout=DEFAULT_TIMEOUT)
     with pytest.raises(RuntimeError, match="tombstoned"):
@@ -661,7 +704,7 @@ def test_tombstoned_classes_reject_keyword_args():
         bsp._TombstonedHotBrainCache(redis_url="redis://localhost")
 def test_tombstoned_classes_reject_mixed_args():
     """Tombstoned classes must reject instantiation with mixed positional + keyword args."""
-    from agentic_core.L4_state.memory import blob_storage_provider as bsp
+#  # MOVED: from agentic_core.L4_state.memory import blob_storage_provider as bsp
     with pytest.raises(RuntimeError, match="tombstoned"):
         bsp._TombstonedRedisDistributedLock(None, lock_timeout=DEFAULT_TIMEOUT)
     with pytest.raises(RuntimeError, match="tombstoned"):
@@ -693,7 +736,7 @@ def test_require_hash_segment_strict_mode_rejects_short_strings(monkeypatch):
     """In strict mode, non-64-hex strings must raise ValueError."""
     monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "1")
     # Force reimport to pick up env-var at call time (function reads env inline)
-    from agentic_core.cache.cache_key_builders import _require_hash_segment
+#  # MOVED: from agentic_core.cache.cache_key_builders import _require_hash_segment
     with pytest.raises(ValueError, match="64-char"):
         _require_hash_segment("test_hash", "abc123")
     with pytest.raises(ValueError, match="64-char"):
@@ -702,44 +745,44 @@ def test_require_hash_segment_strict_mode_rejects_short_strings(monkeypatch):
         _require_hash_segment("test_hash", "a" * 63)  # one short
 def test_require_hash_segment_strict_mode_accepts_valid_sha256(monkeypatch):
     monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "1")
-    from agentic_core.cache.cache_key_builders import _require_hash_segment
+#  # MOVED: from agentic_core.cache.cache_key_builders import _require_hash_segment
     valid = "a" * 64
     _require_hash_segment("test_hash", valid)  # must not raise
 def test_require_hash_segment_permissive_mode_accepts_short_strings(monkeypatch):
     """With REDIS_CACHE_STRICT_HASH_VALIDATION=0, any non-empty string is accepted."""
     monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "0")
-    from agentic_core.cache.cache_key_builders import _require_hash_segment
+#  # MOVED: from agentic_core.cache.cache_key_builders import _require_hash_segment
     _require_hash_segment("test_hash", "short-placeholder")  # must not raise
     _require_hash_segment("test_hash", "x" * 10)
 def test_require_hash_segment_rejects_empty_in_all_modes(monkeypatch):
     """Empty string must always be rejected regardless of strict mode."""
     for val in ("0", "1"):
         monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", val)
-        from agentic_core.cache.cache_key_builders import _require_hash_segment
+#  # MOVED: from agentic_core.cache.cache_key_builders import _require_hash_segment
         with pytest.raises(ValueError, match="must not be empty"):
             _require_hash_segment("test_hash", "")
 def test_require_hash_segment_strict_rejects_uppercase_hex(monkeypatch):
     """Strict mode must reject uppercase hex (SHA-256 must be lowercase)."""
     monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "1")
-    from agentic_core.cache.cache_key_builders import _require_hash_segment
+#  # MOVED: from agentic_core.cache.cache_key_builders import _require_hash_segment
     with pytest.raises(ValueError, match="64-char"):
         _require_hash_segment("test_hash", "A" * 64)
 def test_require_hash_segment_strict_rejects_mixed_case(monkeypatch):
     """Strict mode must reject mixed case hex."""
     monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "1")
-    from agentic_core.cache.cache_key_builders import _require_hash_segment
+#  # MOVED: from agentic_core.cache.cache_key_builders import _require_hash_segment
     with pytest.raises(ValueError, match="64-char"):
         _require_hash_segment("test_hash", "aB" * 32)
 def test_require_hash_segment_strict_rejects_65_chars(monkeypatch):
     """Strict mode must reject 65-char strings (one too long)."""
     monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "1")
-    from agentic_core.cache.cache_key_builders import _require_hash_segment
+#  # MOVED: from agentic_core.cache.cache_key_builders import _require_hash_segment
     with pytest.raises(ValueError, match="64-char"):
         _require_hash_segment("test_hash", "a" * 65)
 def test_require_hash_segment_strict_rejects_non_hex_chars(monkeypatch):
     """Strict mode must reject strings with non-hex characters."""
     monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "1")
-    from agentic_core.cache.cache_key_builders import _require_hash_segment
+#  # MOVED: from agentic_core.cache.cache_key_builders import _require_hash_segment
     invalid_chars = ["g", "z", "@", " ", "-"]
     for char in invalid_chars:
         bad_hash = "a" * 63 + char
@@ -748,10 +791,10 @@ def test_require_hash_segment_strict_rejects_non_hex_chars(monkeypatch):
 def test_require_hash_segment_permissive_accepts_uppercase(monkeypatch):
     """Permissive mode accepts uppercase (for test placeholders)."""
     monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "0")
-    from agentic_core.cache.cache_key_builders import _require_hash_segment
+#  # MOVED: from agentic_core.cache.cache_key_builders import _require_hash_segment
     _require_hash_segment("test_hash", "PLACEHOLDER")  # must not raise
 def test_require_hash_segment_permissive_accepts_single_char(monkeypatch):
     """Permissive mode accepts single-char placeholders."""
     monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "0")
-    from agentic_core.cache.cache_key_builders import _require_hash_segment
+#  # MOVED: from agentic_core.cache.cache_key_builders import _require_hash_segment
     _require_hash_segment("test_hash", "x")  # must not raise

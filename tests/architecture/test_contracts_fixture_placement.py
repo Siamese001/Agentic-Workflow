@@ -23,11 +23,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     TESTS_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -74,7 +74,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_contracts_fixture_placement", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_contracts_fixture_placement", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_contracts_fixture_placement", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -224,6 +224,13 @@ class TestNoAgentFilesInContractsRoot:
     """*Agent.py files must never reside directly in tests/contracts/."""
 
     def test_no_agent_py_in_contracts_root(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+        from agentic_core.L5_safety.config.structure_blueprint import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
     """Test no_agent_py_in_contracts_root contract compliance."""
     # Arrange
     # TODO: Set up contract scenario
@@ -374,7 +381,7 @@ class TestNoAgentFilesInContractsRoot:
     assert isinstance(contract_result, dict), "Contract result should be structured"
     # TODO: Add specific contract assertions
     # assert contract_result.get("enforced", False), "Contract terms should be enforced"
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
         agent = LocationHealerAgent.__new__(LocationHealerAgent)
         agent.project_root = PROJECT_ROOT
@@ -438,7 +445,7 @@ assert contract_result is not None, "Contract operation should produce a result"
 assert isinstance(contract_result, dict), "Contract result should be structured"
 # TODO: Add specific contract assertions
 # assert contract_result.get("enforced", False), "Contract terms should be enforced"
-        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+#  # MOVED: from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
         agent = LocationHealerAgent.__new__(LocationHealerAgent)
         agent.project_root = PROJECT_ROOT
@@ -512,7 +519,7 @@ assert isinstance(contract_result, dict), "Contract result should be structured"
 
     def test_contracts_has_forbidden_patterns(self):
         """Success path: contracts entry has forbidden_patterns key."""
-        from agentic_core.L5_safety.config.structure_blueprint import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint import (
             get_all_territories,
         )
 
@@ -549,7 +556,7 @@ assert isinstance(contract_result, dict), "Contract result should be structured"
     assert isinstance(behavior_result, (dict, list, str, int, float, bool)), "Result should be serializable"
     # TODO: Add specific behavioral contract assertions
     # assert behavior_result.get("complies", False), "Behavior should comply with contract"
-        from agentic_core.L5_safety.config.structure_blueprint import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint import (
             get_all_territories,
         )
 

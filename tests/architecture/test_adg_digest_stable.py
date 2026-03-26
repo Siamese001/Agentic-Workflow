@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -56,7 +56,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_digest_stable", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_digest_stable", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_digest_stable", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -188,7 +188,7 @@ def scan_cache_path(tmp_path_factory: pytest.TempPathFactory) -> Path:
 
 
 def _make_scanner(cache_path: Path):
-    from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
     return ADGStaticScanner(repo_root=REPO_ROOT, cache_path=cache_path)
 
@@ -202,6 +202,10 @@ def full_scan_result(scan_cache_path: Path):
 @pytest.mark.determinism
 @pytest.mark.timeout(420)
 def test_adg_digest_stable_two_runs(full_scan_result, scan_cache_path: Path) -> None:
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+    from agentic_core.adg.artifact.builder_types import build_artifact
     """Scanner digest must be identical across two independent invocations."""
     result_1 = full_scan_result
     result_2 = _make_scanner(scan_cache_path).scan(commit_sha="test-run-2")
@@ -218,7 +222,7 @@ def test_adg_digest_stable_two_runs(full_scan_result, scan_cache_path: Path) -> 
 @pytest.mark.determinism
 @pytest.mark.timeout(300)
 def test_adg_artifact_digest_stable_two_builds(full_scan_result) -> None:
-    from agentic_core.adg.artifact.builder_types import build_artifact
+#  # MOVED: from agentic_core.adg.artifact.builder_types import build_artifact
 
     artifact_1 = build_artifact(full_scan_result)
     artifact_2 = build_artifact(full_scan_result)

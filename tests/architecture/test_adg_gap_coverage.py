@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import ast
 
-from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
     Edge,
     ScanResult,
     _emit_layer_violation_edges,
@@ -22,7 +22,7 @@ from agentic_core.adg.extraction.static_scanner import (
     _propagate_violations,
     _TestTraceabilityVisitor,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -69,7 +69,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_gap_coverage", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_gap_coverage", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_gap_coverage", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -225,6 +225,21 @@ class TestInternalCallGraphVisitor:
     """G4: Calls between internal modules."""
 
     def test_calls_edge_emitted_for_imported_internal_symbol(self):
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
+        from apps_shared.reasoning import InfrastructureOrchestrator
+        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.extraction.static_scanner import ScanManifest
+        from agentic_core.adg.extraction.static_scanner import ScanManifest
+        from agentic_core.adg.extraction.static_scanner import ScanManifest
+        from agentic_core.adg.extraction.static_scanner import ScanManifest
+        from agentic_core.adg.extraction.static_scanner import run_scanner_self_test
     """Test calls_edge_emitted_for_imported_internal_symbol runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters
@@ -308,7 +323,7 @@ class TestTestTraceabilityVisitor:
 
     def test_covers_edge_for_internal_import_from(self):
         src = """
-from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 """
         edges = _run_tt(src)
         assert len(edges) == 1
@@ -324,7 +339,7 @@ import agentic_core
 
     def test_no_covers_edge_for_non_test_file(self):
         src = """
-from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 """
         tree = _parse(src)
         visitor = _TestTraceabilityVisitor(
@@ -344,14 +359,14 @@ from pathlib import Path
 
     def test_covers_edge_for_apps_shared_import(self):
         src = """
-from apps_shared.reasoning import InfrastructureOrchestrator
+#  # MOVED: from apps_shared.reasoning import InfrastructureOrchestrator
 """
         edges = _run_tt(src)
         assert any(e.relation_type == "covers" for e in edges)
 
     def test_covers_edge_uses_module_not_symbol(self):
         src = """
-from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+#  # MOVED: from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
 """
         edges = _run_tt(src)
         assert len(edges) == 1
@@ -360,7 +375,7 @@ from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGatewa
 
     def test_test_file_under_nested_path(self):
         src = """
-from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 """
         tree = _parse(src)
         visitor = _TestTraceabilityVisitor(
@@ -385,7 +400,7 @@ class TestLayerViolationEdges:
         sym: str,
         line_no: int = 1,
     ) -> Edge:
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         return Edge(
             from_name=canonical_name("Module", from_rel),
@@ -454,7 +469,7 @@ class TestLayerViolationEdges:
         assert violations[0].symbol == "L0->L5"
 
     def test_non_import_edges_ignored(self):
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         non_import = Edge(
             from_name=canonical_name("Module", "agentic_core/L0_routing/engines/router.py"),
@@ -592,14 +607,14 @@ class TestScanManifestNewFields:
     """Verify new manifest fields exist and are initialized correctly."""
 
     def test_manifest_has_layer_violation_count(self):
-        from agentic_core.adg.extraction.static_scanner import ScanManifest
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanManifest
 
         m = ScanManifest()
         assert hasattr(m, "layer_violation_count")
         assert m.layer_violation_count == 0
 
     def test_manifest_has_test_covers_count(self):
-        from agentic_core.adg.extraction.static_scanner import ScanManifest
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanManifest
 
         m = ScanManifest()
         assert hasattr(m, "test_covers_count")
@@ -620,7 +635,7 @@ class TestScanManifestNewFields:
     assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
     # TODO: Add specific execution assertions
     def test_manifest_has_closure_evidence_fields(self):
-        from agentic_core.adg.extraction.static_scanner import ScanManifest
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanManifest
 
         m = ScanManifest()
         for field_name in (
@@ -644,7 +659,7 @@ class TestScanManifestNewFields:
             assert getattr(m, field_name) == 0
 
     def test_manifest_to_dict_includes_new_fields(self):
-        from agentic_core.adg.extraction.static_scanner import ScanManifest
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanManifest
 
         m = ScanManifest(
             layer_violation_count=3,
@@ -674,6 +689,6 @@ class TestScannerSelfTest:
     """Verify that run_scanner_self_test still passes with new graph types."""
 
     def test_self_test_passes(self):
-        from agentic_core.adg.extraction.static_scanner import run_scanner_self_test
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import run_scanner_self_test
 
         assert run_scanner_self_test() is True

@@ -7,9 +7,14 @@ import pytest
 
 @pytest.mark.smoke
 def test_adg_static_scanner_instantiable():
+    from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+    from agentic_core import adg as pkg
+    from agentic_core.adg import schema
+    import system_learning.adapters.l1_meta_adapter as mod
+    import system_learning.config.semantic_memory_config as mod
     """ADGStaticScanner can be instantiated with a repo root."""
     try:
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     repo_root = Path(__file__).resolve().parents[3]
@@ -32,7 +37,7 @@ def test_adg_artifact_builder_missing():
 
     # Verify adg package exists but has no builder submodule
     try:
-        from agentic_core import adg as pkg
+#  # MOVED: from agentic_core import adg as pkg
         assert "builder" not in dir(pkg), "builder should not be in adg package"
     except ImportError as e:
         pytest.skip(f"pipeline not available: {e}")
@@ -40,7 +45,7 @@ def test_adg_artifact_builder_missing():
 def test_adg_schema_relation_types_present():
     """ADG schema module exposes RelationType and EdgeKind literals."""
     try:
-        from agentic_core.adg import schema
+#  # MOVED: from agentic_core.adg import schema
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     assert hasattr(schema, "RelationType"), "schema must have RelationType"
@@ -90,7 +95,7 @@ def test_adg_sqlite_artifact_exists():
 def test_system_learning_l1_meta_adapter_importable():
     """system_learning l1_meta_adapter imports and exposes public API."""
     try:
-        import system_learning.adapters.l1_meta_adapter as mod
+#  # MOVED: import system_learning.adapters.l1_meta_adapter as mod
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     public = [n for n in dir(mod) if not n.startswith("_")]
@@ -101,7 +106,7 @@ def test_system_learning_l1_meta_adapter_importable():
 def test_system_learning_config_importable():
     """system_learning config modules import without error."""
     try:
-        import system_learning.config.semantic_memory_config as mod
+#  # MOVED: import system_learning.config.semantic_memory_config as mod
     except ImportError as e:
         pytest.skip(f"semantic_memory_config not available: {e}")
 

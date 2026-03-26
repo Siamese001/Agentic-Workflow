@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -63,7 +63,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_sovereignty_interfaces", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_sovereignty_interfaces", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_sovereignty_interfaces", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -196,11 +196,26 @@ pytestmark = pytest.mark.unit_min_deps
 
 class TestChangePackageJSONOnly:
     def _make(self):
-        from agentic_core.interfaces.meta_learning import ChangePackage
+#  # MOVED: from agentic_core.interfaces.meta_learning import ChangePackage
 
         return ChangePackage
 
     def test_valid_json_payload_accepted(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.interfaces.meta_learning import ChangePackage
+        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+        from agentic_core.interfaces.meta_learning import ChangePackage
+        from agentic_core.interfaces.meta_learning import ChangePackage
+        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+        from agentic_core.enforcement.sealed_interface_check_enforcer import run_check
+        from agentic_core.enforcement.sealed_interface_check_enforcer import check_file
+        from agentic_core.enforcement.sealed_interface_check_enforcer import check_file
+        from agentic_core.enforcement.sealed_interface_check_enforcer import check_file
         CP = self._make()
         pkg = CP(
             proposal_id="test-1",
@@ -257,7 +272,7 @@ class TestChangePackageJSONOnly:
 
 class TestReflectionHardening:
     def _make_client(self):
-        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+#  # MOVED: from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
 
         class _FakeInner:
             pass
@@ -303,7 +318,7 @@ class TestReflectionHardening:
 
 class TestAuthorityBlocks:
     def _make_client(self):
-        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+#  # MOVED: from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
 
         class _FakeInner:
             pass
@@ -338,7 +353,7 @@ class TestAuthorityBlocks:
 
 class TestProposalOnly:
     def _make_client(self):
-        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+#  # MOVED: from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
 
         class _FakeInner:
             pass
@@ -346,7 +361,7 @@ class TestProposalOnly:
         return SovereignMetaLearningClient(_FakeInner(), proposal_only=True)
 
     def test_propose_healing_returns_change_package(self):
-        from agentic_core.interfaces.meta_learning import ChangePackage
+#  # MOVED: from agentic_core.interfaces.meta_learning import ChangePackage
 
         client = self._make_client()
         result = client.propose_healing_pattern({"test": "data"})
@@ -355,7 +370,7 @@ class TestProposalOnly:
         assert result.change_type == "healing_pattern"
 
     def test_propose_threshold_returns_change_package(self):
-        from agentic_core.interfaces.meta_learning import ChangePackage
+#  # MOVED: from agentic_core.interfaces.meta_learning import ChangePackage
 
         client = self._make_client()
         result = client.suggest_threshold_adjustment(0.85)
@@ -377,7 +392,7 @@ class TestProposalOnly:
 
 class TestDualInjectionRequirement:
     def test_proposal_only_false_without_gates_raises(self):
-        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+#  # MOVED: from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
 
         class _FakeInner:
             pass
@@ -391,7 +406,7 @@ class TestDualInjectionRequirement:
             )
 
     def test_proposal_only_false_with_gates_allowed(self):
-        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+#  # MOVED: from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
 
         class _FakeInner:
             pass
@@ -408,7 +423,7 @@ class TestDualInjectionRequirement:
         assert client is not None
 
     def test_proposal_only_true_no_gates_allowed(self):
-        from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
+#  # MOVED: from agentic_core.interfaces.meta_learning import SovereignMetaLearningClient
 
         class _FakeInner:
             pass
@@ -424,13 +439,13 @@ class TestDualInjectionRequirement:
 
 class TestSealedInterfaceCheck:
     def test_no_violations_in_apps_packages(self):
-        from agentic_core.enforcement.sealed_interface_check_enforcer import run_check
+#  # MOVED: from agentic_core.enforcement.sealed_interface_check_enforcer import run_check
 
         violations = run_check()
         assert violations == [], "Sovereignty violations found:\n" + "\n".join(violations)
 
     def test_direct_layer_import_is_detected(self, tmp_path):
-        from agentic_core.enforcement.sealed_interface_check_enforcer import check_file
+#  # MOVED: from agentic_core.enforcement.sealed_interface_check_enforcer import check_file
 
         bad_file = tmp_path / "bad_module.py"
         bad_file.write_text("from agentic_core.L1_cognition.engines.meta_client import MetaLearningClient\n")
@@ -438,7 +453,7 @@ class TestSealedInterfaceCheck:
         assert any("DIRECT_LAYER_IMPORT" in v for v in violations)
 
     def test_sealed_impl_import_is_detected(self, tmp_path):
-        from agentic_core.enforcement.sealed_interface_check_enforcer import check_file
+#  # MOVED: from agentic_core.enforcement.sealed_interface_check_enforcer import check_file
 
         bad_file = tmp_path / "bypass_attempt.py"
         bad_file.write_text(
@@ -448,7 +463,7 @@ class TestSealedInterfaceCheck:
         assert any("SEALED_IMPL_BYPASS" in v for v in violations)
 
     def test_clean_interface_import_not_flagged(self, tmp_path):
-        from agentic_core.enforcement.sealed_interface_check_enforcer import check_file
+#  # MOVED: from agentic_core.enforcement.sealed_interface_check_enforcer import check_file
 
         good_file = tmp_path / "good_module.py"
         good_file.write_text("from agentic_core.interfaces.meta_learning import get_sovereign_meta_client\n")

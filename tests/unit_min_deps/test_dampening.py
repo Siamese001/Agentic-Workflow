@@ -2,7 +2,7 @@
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -64,7 +64,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_dampening", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_dampening", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_dampening", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -102,7 +102,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.validators.dampening import (
+#  # MOVED: from system_learning.validators.dampening import (
     CooldownPolicy,
     CooldownViolation,
     SampleSizePolicy,
@@ -174,12 +174,35 @@ pytestmark = pytest.mark.unit_min_deps
 
 class TestCooldownPolicy:
     def test_cooldown_elapsed_passes(self):
+        from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+        from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+        from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+        from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+        from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+        from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+        from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+        from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+        from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+        from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+        from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+        from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+        from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+        from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+        from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+        from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+        from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+        from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
         policy = CooldownPolicy(min_seconds_between_updates=3600)
         last_update = 1700000000
         now = 1700003600
         assert_cooldown_ok(last_update, now, policy)
 
     def test_cooldown_not_elapsed_raises(self):
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
         policy = CooldownPolicy(min_seconds_between_updates=3600)
         last_update = 1700000000
         now = 1700001800
@@ -187,6 +210,8 @@ class TestCooldownPolicy:
             assert_cooldown_ok(last_update, now, policy)
 
     def test_cooldown_exactly_elapsed_passes(self):
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
         policy = CooldownPolicy(min_seconds_between_updates=3600)
         last_update = 1700000000
         now = 1700003600
@@ -195,26 +220,37 @@ class TestCooldownPolicy:
 
 class TestSampleSizePolicy:
     def test_sufficient_samples_passes(self):
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
         policy = SampleSizePolicy(min_observations=1000)
         assert_min_sample_size(1500, policy)
 
     def test_insufficient_samples_raises(self):
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
         policy = SampleSizePolicy(min_observations=1000)
         with pytest.raises(SampleSizeViolation, match="SAMPLE_SIZE_VIOLATION"):
             assert_min_sample_size(500, policy)
 
     def test_exactly_min_samples_passes(self):
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
         policy = SampleSizePolicy(min_observations=1000)
         assert_min_sample_size(1000, policy)
 
 
 class TestDeterminism:
     def test_cooldown_deterministic(self):
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
         policy = CooldownPolicy(min_seconds_between_updates=3600)
         assert_cooldown_ok(1700000000, 1700003600, policy)
         assert_cooldown_ok(1700000000, 1700003600, policy)
 
     def test_sample_size_deterministic(self):
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, CooldownViolation, SampleSizePolicy, SampleSizeViolation, assert_cooldown_ok, assert_min_sample_size
         policy = SampleSizePolicy(min_observations=1000)
         assert_min_sample_size(1500, policy)
         assert_min_sample_size(1500, policy)

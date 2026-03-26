@@ -18,7 +18,7 @@ from __future__ import annotations
 import asyncio
 from unittest.mock import AsyncMock, MagicMock
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -65,7 +65,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_llm_workflow_patterns", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_llm_workflow_patterns", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_llm_workflow_patterns", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -185,6 +185,37 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 class TestRewooTypes:
     def test_rewoo_task_list_ready_tasks_no_deps(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L3_orchestration.types.rewoo_types import (
+        from agentic_core.L3_orchestration.types.reflexion_types import (
+        from agentic_core.L3_orchestration.engines.rewoo_engine import (
+        from agentic_core.L3_orchestration.types.rewoo_types import RewooTaskStatus
+        from agentic_core.L3_orchestration.engines.reflexion_engine import ReflexionEngine
+        from agentic_core.L3_orchestration.engines.evaluator_optimizer_engine import (
+        from agentic_core.L3_orchestration.engines.parallelization_engine import (
+        from agentic_core.L3_orchestration.engines.parallelization_engine import (
+        from agentic_core.L3_orchestration.engines.parallelization_engine import (
+        from agentic_core.L3_orchestration.engines.parallelization_engine import (
+        from agentic_core.L3_orchestration.engines.parallelization_engine import (
+        from agentic_core.L3_orchestration.engines.autonomous_workflow_engine import (
+        from agentic_core.L3_orchestration.engines.autonomous_workflow_engine import StopSignal
+        from agentic_core.L3_orchestration.engines.autonomous_workflow_engine import StopSignal
+        from agentic_core.L3_orchestration.engines.autonomous_workflow_engine import (
+        from agentic_core.L3_orchestration.engines.autonomous_workflow_engine import (
+        from agentic_core.L0_routing.engines.agentic_router import AgenticRouter
+        from agentic_core.L0_routing.engines.agentic_router import AgenticRouter
+        from agentic_core.L0_routing.engines.agentic_router import AgenticRouter
+        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
+        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import WorkerPool
+        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import WorkerPool
+        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
+        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
     """Test rewoo_task_list_ready_tasks_no_deps runtime behavior."""
     # Arrange
     # TODO: Set up test data for rewoo_task_list_ready_tasks_no_deps
@@ -214,7 +245,7 @@ class TestRewooTypes:
         assert ready[0].task_id == "t2"
 
     def test_rewoo_context_accumulates_results(self):
-        from agentic_core.L3_orchestration.types.rewoo_types import (
+#  # MOVED: from agentic_core.L3_orchestration.types.rewoo_types import (
             RewooContext,
             RewooTaskList,
         )
@@ -225,7 +256,7 @@ class TestRewooTypes:
         assert ctx.results["t1"] == "result_a"
 
     def test_rewoo_memory_best_response(self):
-        from agentic_core.L3_orchestration.types.reflexion_types import (
+#  # MOVED: from agentic_core.L3_orchestration.types.reflexion_types import (
             ReflexionCritique,
             ReflexionMemory,
         )
@@ -239,7 +270,7 @@ class TestRewooTypes:
 
 class TestRewooEngine:
     def _make_engine(self, tasks_spec):
-        from agentic_core.L3_orchestration.engines.rewoo_engine import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.rewoo_engine import (
             RewooEngine,
             RewooPlanner,
             RewooSolver,
@@ -315,7 +346,7 @@ class TestRewooEngine:
             ]
         )
         ctx = asyncio.get_event_loop().run_until_complete(engine.run("goal", synthesizer_fn=None))
-        from agentic_core.L3_orchestration.types.rewoo_types import RewooTaskStatus
+#  # MOVED: from agentic_core.L3_orchestration.types.rewoo_types import RewooTaskStatus
 
         assert ctx.task_list.tasks[0].status == RewooTaskStatus.FAILED
         assert not ctx.success
@@ -358,7 +389,7 @@ class TestRewooEngine:
 
 class TestReflexionEngine:
     def _make_engine(self, scores):
-        from agentic_core.L3_orchestration.engines.reflexion_engine import ReflexionEngine
+#  # MOVED: from agentic_core.L3_orchestration.engines.reflexion_engine import ReflexionEngine
 
         call_count = {"n": 0}
 
@@ -415,7 +446,7 @@ class TestReflexionEngine:
 
 class TestEvaluatorOptimizerEngine:
     def _make_engine(self, scores, threshold=80.0):
-        from agentic_core.L3_orchestration.engines.evaluator_optimizer_engine import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.evaluator_optimizer_engine import (
             EvaluatorOptimizerEngine,
         )
 
@@ -472,7 +503,7 @@ class TestEvaluatorOptimizerEngine:
 
 class TestParallelizationEngine:
     def test_sectioning_collect_all(self):
-        from agentic_core.L3_orchestration.engines.parallelization_engine import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.parallelization_engine import (
             AggregationStrategy,
             ParallelizationEngine,
             ParallelMode,
@@ -491,7 +522,7 @@ class TestParallelizationEngine:
         assert result["mode"] == "sectioning"
 
     def test_sampling_majority_vote(self):
-        from agentic_core.L3_orchestration.engines.parallelization_engine import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.parallelization_engine import (
             AggregationStrategy,
             ParallelizationEngine,
             ParallelMode,
@@ -507,7 +538,7 @@ class TestParallelizationEngine:
         assert result["result"] == "answer_x"
 
     def test_first_pass_aggregation(self):
-        from agentic_core.L3_orchestration.engines.parallelization_engine import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.parallelization_engine import (
             AggregationStrategy,
             ParallelizationEngine,
             ParallelMode,
@@ -526,7 +557,7 @@ class TestParallelizationEngine:
         assert result["result"] == 1
 
     def test_llm_synthesize_aggregation(self):
-        from agentic_core.L3_orchestration.engines.parallelization_engine import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.parallelization_engine import (
             AggregationStrategy,
             ParallelizationEngine,
             ParallelMode,
@@ -548,7 +579,7 @@ class TestParallelizationEngine:
         assert result["result"].startswith("synthesized:")
 
     def test_branch_error_returns_none_slot(self):
-        from agentic_core.L3_orchestration.engines.parallelization_engine import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.parallelization_engine import (
             AggregationStrategy,
             ParallelizationEngine,
             ParallelMode,
@@ -573,7 +604,7 @@ class TestParallelizationEngine:
 
 class TestAutonomousWorkflowEngine:
     def _make_engine(self, actions, goal_after=None):
-        from agentic_core.L3_orchestration.engines.autonomous_workflow_engine import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.autonomous_workflow_engine import (
             AutonomousWorkflowEngine,
         )
 
@@ -601,7 +632,7 @@ class TestAutonomousWorkflowEngine:
 
     def test_explicit_stop(self):
         engine = self._make_engine([("STOP", {})])
-        from agentic_core.L3_orchestration.engines.autonomous_workflow_engine import StopSignal
+#  # MOVED: from agentic_core.L3_orchestration.engines.autonomous_workflow_engine import StopSignal
 
         result = asyncio.get_event_loop().run_until_complete(engine.run("goal"))
         assert result.stop_signal == StopSignal.EXPLICIT_STOP
@@ -612,14 +643,14 @@ class TestAutonomousWorkflowEngine:
             [("action_a", {"p": 1}), ("action_b", {"p": 2})],
             goal_after=1,
         )
-        from agentic_core.L3_orchestration.engines.autonomous_workflow_engine import StopSignal
+#  # MOVED: from agentic_core.L3_orchestration.engines.autonomous_workflow_engine import StopSignal
 
         result = asyncio.get_event_loop().run_until_complete(engine.run("goal"))
         assert result.stop_signal == StopSignal.GOAL_ACHIEVED
         assert result.success
 
     def test_max_iterations_stop(self):
-        from agentic_core.L3_orchestration.engines.autonomous_workflow_engine import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.autonomous_workflow_engine import (
             AutonomousWorkflowEngine,
             StopSignal,
         )
@@ -643,7 +674,7 @@ class TestAutonomousWorkflowEngine:
         assert len(result.steps) == 3
 
     def test_circuit_breaker(self):
-        from agentic_core.L3_orchestration.engines.autonomous_workflow_engine import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.autonomous_workflow_engine import (
             AutonomousWorkflowEngine,
             StopSignal,
         )
@@ -723,7 +754,7 @@ assert isinstance(result, object), "Result should be an object"
 
 class TestAgenticRouter:
     def test_dispatch_to_correct_target(self):
-        from agentic_core.L0_routing.engines.agentic_router import AgenticRouter
+#  # MOVED: from agentic_core.L0_routing.engines.agentic_router import AgenticRouter
 
         router = AgenticRouter()
         results = {}
@@ -744,7 +775,7 @@ class TestAgenticRouter:
         assert decision.result == "b_result"
 
     def test_fallback_on_no_match(self):
-        from agentic_core.L0_routing.engines.agentic_router import AgenticRouter
+#  # MOVED: from agentic_core.L0_routing.engines.agentic_router import AgenticRouter
 
         called = []
 
@@ -760,7 +791,7 @@ class TestAgenticRouter:
         assert decision.result == "fallback_result"
 
     def test_mad_handler_gathers_debaters(self):
-        from agentic_core.L0_routing.engines.agentic_router import AgenticRouter
+#  # MOVED: from agentic_core.L0_routing.engines.agentic_router import AgenticRouter
 
         router = AgenticRouter()
 
@@ -806,7 +837,7 @@ class TestAgenticRouter:
 
 class TestPromptChainEngine:
     def test_simple_chain_runs(self):
-        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+#  # MOVED: from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
 
         chain = PromptChainEngine()
 
@@ -822,7 +853,7 @@ class TestPromptChainEngine:
         assert result.output["s2"] == "done_s2"
 
     def test_gate_pass_continues(self):
-        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+#  # MOVED: from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
 
         chain = PromptChainEngine()
 
@@ -838,7 +869,7 @@ class TestPromptChainEngine:
         assert "q" not in result.gate_failures
 
     def test_gate_fail_stops_chain(self):
-        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+#  # MOVED: from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
 
         chain = PromptChainEngine(stop_on_gate_failure=True)
         reached = []
@@ -859,7 +890,7 @@ class TestPromptChainEngine:
         assert not reached
 
     def test_gate_fail_uses_fail_branch(self):
-        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+#  # MOVED: from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
 
         chain = PromptChainEngine(stop_on_gate_failure=True)
 
@@ -877,7 +908,7 @@ class TestPromptChainEngine:
         assert result.success
 
     def test_steps_completed_tracks_names(self):
-        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+#  # MOVED: from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
 
         chain = PromptChainEngine()
 
@@ -899,7 +930,7 @@ class TestPromptChainEngine:
 
 class TestWorkerPool:
     def _make_plan(self):
-        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
             AtomicTask,
             MissionPlan,
         )
@@ -917,7 +948,7 @@ class TestWorkerPool:
         return plan
 
     def test_dispatch_success(self):
-        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import WorkerPool
+#  # MOVED: from agentic_core.L3_orchestration.engines.decomposition_orchestrator import WorkerPool
 
         pool = WorkerPool()
         call_log = []
@@ -934,7 +965,7 @@ class TestWorkerPool:
         assert "t1" in call_log
 
     def test_dispatch_missing_worker_returns_error(self):
-        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import WorkerPool
+#  # MOVED: from agentic_core.L3_orchestration.engines.decomposition_orchestrator import WorkerPool
 
         pool = WorkerPool()
         plan = self._make_plan()
@@ -976,7 +1007,7 @@ class TestWorkerPool:
         assert parsed["tasks_failed"] == 1
 
     def test_synthesizer_node_custom_fn(self):
-        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
             SynthesizerNode,
             WorkerResult,
         )
@@ -1001,7 +1032,7 @@ class TestWorkerPool:
 
 class TestReplanOnFailure:
     def _make_plan_and_mock_orch(self):
-        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
             AtomicTask,
             MissionPlan,
         )

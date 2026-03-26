@@ -5,9 +5,14 @@ import pytest
 
 @pytest.mark.smoke
 def test_path_constants_importable():
+    from agentic_core.L0_routing.config.path_constants import (
+    from agentic_core.L5_safety.config.structure_blueprint_config import (
+    from agentic_core.L0_routing.config.ssot_tier_constants import (
+    from agentic_core.config.core.config_loader import (
+    import agentic_core.config.agent_configs as mod
     """Verify path_constants imports and has required constants."""
     try:
-        from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
             BATCH_SIZE,
             BUFFER_SIZE,
             DEFAULT_SLEEP,
@@ -46,7 +51,7 @@ def test_path_constants_importable():
 def test_structure_blueprint_importable():
     """Verify structure_blueprint_config imports without error."""
     try:
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint_config import (
             DOCS_REPORTS_PLANS,
             PROJECT_ROOT_WHITELIST,
             SOVEREIGN_TERRITORIES,
@@ -79,7 +84,7 @@ def test_structure_blueprint_importable():
 def test_ssot_tier_constants_importable():
     """Verify ssot_tier_constants imports without error."""
     try:
-        from agentic_core.L0_routing.config.ssot_tier_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.ssot_tier_constants import (
             HEALING_CONFIDENCE_X,
             HEALING_CONFIDENCE_Y,
             QWEN_14B_MODEL_ID,
@@ -109,7 +114,7 @@ def test_ssot_tier_constants_importable():
 def test_config_core_load_json_returns_dict():
     """Verify _load_json_config returns a dict when given a valid JSON path."""
     try:
-        from agentic_core.config.core.config_loader import (
+#  # MOVED: from agentic_core.config.core.config_loader import (
             _load_json_config,
         )
     except ImportError as e:
@@ -126,7 +131,7 @@ def test_config_core_load_json_returns_dict():
 def test_agent_configs_is_importable_package():
     """Verify agent_configs imports as a valid package with submodules."""
     try:
-        import agentic_core.config.agent_configs as mod
+#  # MOVED: import agentic_core.config.agent_configs as mod
     except ImportError as e:
         pytest.skip(f"agent_configs not available: {e}")
 

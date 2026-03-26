@@ -5,9 +5,14 @@ import pytest
 
 @pytest.mark.smoke
 def test_execution_trace_manager_instantiable():
+    from agentic_core.runtime.execution_trace import (
+    from agentic_core.runtime.trace_emitter import TraceEmitter
+    from agentic_core.runtime.mathematical_determinism import (
+    import agentic_core.runtime.trace_context as mod
+    import agentic_core.runtime.execution_bound_token as mod
     """Verify ExecutionTraceManager can be instantiated and has expected interface."""
     try:
-        from agentic_core.runtime.execution_trace import (
+#  # MOVED: from agentic_core.runtime.execution_trace import (
             ExecutionTrace,
             ExecutionTraceManager,
             get_execution_trace_manager,
@@ -25,7 +30,7 @@ def test_execution_trace_manager_instantiable():
 def test_trace_emitter_is_instantiable_class():
     """Verify TraceEmitter is a class with expected interface."""
     try:
-        from agentic_core.runtime.trace_emitter import TraceEmitter
+#  # MOVED: from agentic_core.runtime.trace_emitter import TraceEmitter
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     assert isinstance(TraceEmitter, type), "TraceEmitter should be a class"
@@ -38,7 +43,7 @@ def test_trace_emitter_is_instantiable_class():
 def test_mathematical_determinism_engine_instantiable():
     """Verify MathematicalDeterminismEngine can be instantiated."""
     try:
-        from agentic_core.runtime.mathematical_determinism import (
+#  # MOVED: from agentic_core.runtime.mathematical_determinism import (
             DeterminismProof,
             DeterministicArtifact,
             MathematicalDeterminismEngine,
@@ -57,7 +62,7 @@ def test_mathematical_determinism_engine_instantiable():
 def test_trace_context_has_public_api():
     """Verify trace_context module exposes public symbols."""
     try:
-        import agentic_core.runtime.trace_context as mod
+#  # MOVED: import agentic_core.runtime.trace_context as mod
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     public = [n for n in dir(mod) if not n.startswith("_")]
@@ -68,7 +73,7 @@ def test_trace_context_has_public_api():
 def test_execution_bound_token_has_public_api():
     """Verify execution_bound_token module exposes public symbols."""
     try:
-        import agentic_core.runtime.execution_bound_token as mod
+#  # MOVED: import agentic_core.runtime.execution_bound_token as mod
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     public = [n for n in dir(mod) if not n.startswith("_")]

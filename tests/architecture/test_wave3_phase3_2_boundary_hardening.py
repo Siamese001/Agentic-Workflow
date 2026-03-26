@@ -75,7 +75,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -159,7 +159,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -331,6 +331,8 @@ def _make_gap(
 
 @pytest.mark.architecture
 def test_l2_validator_cache_in_name_skipped():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """L2: validator file with 'cache' in name is excluded from L2-GAP-VALIDATOR."""
     val_path = AGENTIC_CORE / "L2_execution" / "schema_validator_cache.py"
     val_analysis = _ok_analysis(val_path, imported_module_names={"os"}, imported_symbol_names=set())

@@ -28,7 +28,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     L0_ROUTING_DIR,
 )
@@ -95,6 +95,7 @@ class TestNoShimImportsRepoWide:
     """No agentic_core module (except the shims themselves) may import from shim paths."""
 
     def test_no_forbidden_imports_from_shim_locations(self) -> None:
+        from agentic_core.L0_routing.config.path_constants import (
         violations: list[str] = []
 
         for py_file in AGENTIC_CORE.rglob("*.py"):

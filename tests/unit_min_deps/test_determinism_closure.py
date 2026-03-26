@@ -18,11 +18,11 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L0_ROUTING_DIR,
     L6_OBSERVABILITY_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -69,7 +69,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_determinism_closure", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_determinism_closure", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_determinism_closure", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -195,7 +195,7 @@ class TestDeterminismDigestEmitter:
         return char * 64
 
     def _emitter(self):
-        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+#  # MOVED: from agentic_core.L6_observability.engines.determinism_digest_emitter import (
             DeterminismDigestEmitter,
         )
 
@@ -203,6 +203,49 @@ class TestDeterminismDigestEmitter:
 
     @pytest.mark.unit_min_deps
     def test_compute_returns_64_hex(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+        from agentic_core.L2_execution.determinism.negative_control_harness import (
+        from agentic_core.L2_execution.determinism.negative_control_harness import (
+        from agentic_core.L2_execution.determinism.negative_control_harness import (
+        from agentic_core.L2_execution.determinism.negative_control_harness import (
+        from agentic_core.L2_execution.determinism.negative_control_harness import (
+        from agentic_core.L2_execution.determinism.negative_control_harness import (
+        from agentic_core.L2_execution.determinism.negative_control_harness import (
+        from agentic_core.L2_execution.determinism.negative_control_harness import (
+        from agentic_core.L0_routing.types.determinism_types import (
+        from agentic_core.L6_observability.engines.semantic_clock_validator import (
+        from agentic_core.L6_observability.engines.semantic_clock_validator import (
+        from agentic_core.L6_observability.engines.semantic_clock_validator import (
+        from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
+        from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
+        from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
+        from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
+        from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+        from agentic_core.L2_execution.determinism.negative_control_harness import assert_digest_differs
+        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+        from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
+        from agentic_core.L2_execution.determinism.negative_control_harness import assert_digest_stable
+        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
         e = self._emitter()
         digest = e.compute(
             policy_hash=self._zero("a"),
@@ -255,7 +298,7 @@ class TestDeterminismDigestEmitter:
 
     @pytest.mark.unit_min_deps
     def test_emit_once_raises_on_second_call(self):
-        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+#  # MOVED: from agentic_core.L6_observability.engines.determinism_digest_emitter import (
             DuplicateEmissionError,
         )
 
@@ -280,7 +323,7 @@ class TestDeterminismDigestEmitter:
 
     @pytest.mark.unit_min_deps
     def test_stable_config_surface_is_deterministic(self):
-        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+#  # MOVED: from agentic_core.L6_observability.engines.determinism_digest_emitter import (
             build_stable_config_surface,
             hash_config_surface,
         )
@@ -292,7 +335,7 @@ class TestDeterminismDigestEmitter:
 
     @pytest.mark.unit_min_deps
     def test_stable_config_surface_no_wallclock_keys(self):
-        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+#  # MOVED: from agentic_core.L6_observability.engines.determinism_digest_emitter import (
             build_stable_config_surface,
         )
 
@@ -311,7 +354,7 @@ class TestDeterminismDigestEmitter:
 class TestNegativeControlHarness:
     @pytest.mark.unit_min_deps
     def test_tamper_active_only_when_env_is_1(self):
-        from agentic_core.L2_execution.determinism.negative_control_harness import (
+#  # MOVED: from agentic_core.L2_execution.determinism.negative_control_harness import (
             is_tamper_active,
         )
 
@@ -325,7 +368,7 @@ class TestNegativeControlHarness:
 
     @pytest.mark.unit_min_deps
     def test_tampered_surface_differs_from_clean(self):
-        from agentic_core.L2_execution.determinism.negative_control_harness import (
+#  # MOVED: from agentic_core.L2_execution.determinism.negative_control_harness import (
             get_config_surface,
             hash_config_surface,
         )
@@ -338,7 +381,7 @@ class TestNegativeControlHarness:
 
     @pytest.mark.unit_min_deps
     def test_restore_returns_clean_digest(self):
-        from agentic_core.L2_execution.determinism.negative_control_harness import (
+#  # MOVED: from agentic_core.L2_execution.determinism.negative_control_harness import (
             get_config_surface,
             hash_config_surface,
         )
@@ -353,7 +396,7 @@ class TestNegativeControlHarness:
 
     @pytest.mark.unit_min_deps
     def test_assert_digest_differs_raises_on_equal(self):
-        from agentic_core.L2_execution.determinism.negative_control_harness import (
+#  # MOVED: from agentic_core.L2_execution.determinism.negative_control_harness import (
             assert_digest_differs,
         )
 
@@ -363,7 +406,7 @@ class TestNegativeControlHarness:
 
     @pytest.mark.unit_min_deps
     def test_assert_digest_differs_passes_on_unequal(self):
-        from agentic_core.L2_execution.determinism.negative_control_harness import (
+#  # MOVED: from agentic_core.L2_execution.determinism.negative_control_harness import (
             assert_digest_differs,
         )
 
@@ -371,7 +414,7 @@ class TestNegativeControlHarness:
 
     @pytest.mark.unit_min_deps
     def test_assert_digest_stable_passes_on_equal(self):
-        from agentic_core.L2_execution.determinism.negative_control_harness import (
+#  # MOVED: from agentic_core.L2_execution.determinism.negative_control_harness import (
             assert_digest_stable,
         )
 
@@ -380,7 +423,7 @@ class TestNegativeControlHarness:
 
     @pytest.mark.unit_min_deps
     def test_assert_digest_stable_raises_on_unequal(self):
-        from agentic_core.L2_execution.determinism.negative_control_harness import (
+#  # MOVED: from agentic_core.L2_execution.determinism.negative_control_harness import (
             assert_digest_stable,
         )
 
@@ -389,7 +432,7 @@ class TestNegativeControlHarness:
 
     @pytest.mark.unit_min_deps
     def test_tampered_surface_has_marker(self):
-        from agentic_core.L2_execution.determinism.negative_control_harness import (
+#  # MOVED: from agentic_core.L2_execution.determinism.negative_control_harness import (
             get_config_surface,
         )
 
@@ -407,7 +450,7 @@ class TestNegativeControlHarness:
 
 class TestSemanticClockHashValidator:
     def _make_artifact(self, **kwargs):
-        from agentic_core.L0_routing.types.determinism_types import (
+#  # MOVED: from agentic_core.L0_routing.types.determinism_types import (
             SemanticClockAdvancementArtifact,
         )
 
@@ -425,7 +468,7 @@ class TestSemanticClockHashValidator:
 
     @pytest.mark.unit_min_deps
     def test_valid_artifact_passes_validation(self):
-        from agentic_core.L6_observability.engines.semantic_clock_validator import (
+#  # MOVED: from agentic_core.L6_observability.engines.semantic_clock_validator import (
             validate_artifact,
         )
 
@@ -456,7 +499,7 @@ class TestSemanticClockHashValidator:
     def test_scan_module_finds_no_wallclock_in_clock_types(self):
         from pathlib import Path
 
-        from agentic_core.L6_observability.engines.semantic_clock_validator import (
+#  # MOVED: from agentic_core.L6_observability.engines.semantic_clock_validator import (
             scan_module_for_wallclock,
         )
 
@@ -468,7 +511,7 @@ class TestSemanticClockHashValidator:
     def test_validator_module_itself_has_no_wallclock(self):
         from pathlib import Path
 
-        from agentic_core.L6_observability.engines.semantic_clock_validator import (
+#  # MOVED: from agentic_core.L6_observability.engines.semantic_clock_validator import (
             scan_module_for_wallclock,
         )
 
@@ -492,7 +535,7 @@ class TestSemanticClockHashValidator:
 class TestProviderBindingFingerprint:
     @pytest.mark.unit_min_deps
     def test_fingerprint_is_64_hex(self):
-        from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
+#  # MOVED: from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
             capture_provider_bindings,
         )
 
@@ -503,7 +546,7 @@ class TestProviderBindingFingerprint:
 
     @pytest.mark.unit_min_deps
     def test_two_clean_captures_identical(self):
-        from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
+#  # MOVED: from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
             capture_provider_bindings,
             fingerprint_matches,
         )
@@ -514,7 +557,7 @@ class TestProviderBindingFingerprint:
 
     @pytest.mark.unit_min_deps
     def test_override_changes_fingerprint(self):
-        from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
+#  # MOVED: from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
             capture_provider_bindings,
             fingerprint_matches,
         )
@@ -525,7 +568,7 @@ class TestProviderBindingFingerprint:
 
     @pytest.mark.unit_min_deps
     def test_bindings_are_sorted(self):
-        from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
+#  # MOVED: from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
             capture_provider_bindings,
         )
 
@@ -535,7 +578,7 @@ class TestProviderBindingFingerprint:
 
     @pytest.mark.unit_min_deps
     def test_deterministic_provider_is_present(self):
-        from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
+#  # MOVED: from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
             capture_provider_bindings,
         )
 
@@ -552,7 +595,7 @@ class TestProviderBindingFingerprint:
 class TestEmbeddingNonInterferenceGuard:
     @pytest.mark.unit_min_deps
     def test_clean_routing_inputs_pass(self):
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             assert_no_c0_influence,
         )
 
@@ -561,7 +604,7 @@ class TestEmbeddingNonInterferenceGuard:
 
     @pytest.mark.unit_min_deps
     def test_c0_marker_key_raises(self):
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             C0InterferenceViolation,
             assert_no_c0_influence,
         )
@@ -572,7 +615,7 @@ class TestEmbeddingNonInterferenceGuard:
 
     @pytest.mark.unit_min_deps
     def test_c0_value_fragment_raises(self):
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             C0InterferenceViolation,
             assert_no_c0_influence,
         )
@@ -583,7 +626,7 @@ class TestEmbeddingNonInterferenceGuard:
 
     @pytest.mark.unit_min_deps
     def test_c0_key_collision_raises(self):
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             C0InterferenceViolation,
             assert_no_c0_influence,
         )
@@ -595,7 +638,7 @@ class TestEmbeddingNonInterferenceGuard:
 
     @pytest.mark.unit_min_deps
     def test_verify_routing_decision_clean_returns_bool(self):
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             verify_routing_decision_clean,
         )
 
@@ -606,7 +649,7 @@ class TestEmbeddingNonInterferenceGuard:
 
     @pytest.mark.unit_min_deps
     def test_assert_routing_decision_clean_raises_on_dirty(self):
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             C0InterferenceViolation,
             assert_routing_decision_clean,
         )
@@ -623,7 +666,7 @@ class TestEmbeddingNonInterferenceGuard:
 
 class TestOscillationFirewall:
     def _fw(self, cooldown=4, freeze=3):
-        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
             OscillationFirewall,
             OscillationFirewallConfig,
         )
@@ -634,7 +677,7 @@ class TestOscillationFirewall:
 
     @pytest.mark.unit_min_deps
     def test_stable_sequence_does_not_trip(self):
-        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
             OscillationFirewall,
             OscillationFirewallConfig,
         )
@@ -646,7 +689,7 @@ class TestOscillationFirewall:
 
     @pytest.mark.unit_min_deps
     def test_oscillating_sequence_trips_firewall(self):
-        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
             OscillationFirewall,
             OscillationFirewallConfig,
             OscillationFirewallTripped,
@@ -662,7 +705,7 @@ class TestOscillationFirewall:
 
     @pytest.mark.unit_min_deps
     def test_reset_clears_frozen_state(self):
-        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
             OscillationFirewall,
             OscillationFirewallConfig,
             OscillationFirewallTripped,
@@ -680,7 +723,7 @@ class TestOscillationFirewall:
 
     @pytest.mark.unit_min_deps
     def test_validate_threshold_stable_sequence(self):
-        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
             validate_threshold,
         )
 
@@ -689,7 +732,7 @@ class TestOscillationFirewall:
 
     @pytest.mark.unit_min_deps
     def test_validate_threshold_oscillating_sequence(self):
-        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
             OscillationFirewallConfig,
             validate_threshold,
         )
@@ -700,7 +743,7 @@ class TestOscillationFirewall:
 
     @pytest.mark.unit_min_deps
     def test_config_rejects_small_cooldown(self):
-        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
             OscillationFirewallConfig,
         )
 
@@ -709,7 +752,7 @@ class TestOscillationFirewall:
 
     @pytest.mark.unit_min_deps
     def test_config_rejects_zero_freeze(self):
-        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
+#  # MOVED: from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
             OscillationFirewallConfig,
         )
 
@@ -728,14 +771,14 @@ class TestTwoRunIdenticalDigest:
     def _compute_full_digest(self) -> str:
         import hashlib
         """Test agentic_core import functionality."""
-        from agentic_core.L2_execution.determinism.negative_control_harness import assert_digest_differs
+#  # MOVED: from agentic_core.L2_execution.determinism.negative_control_harness import assert_digest_differs
         # Basic functionality assertion
         assert True  # Replace with meaningful assertion
         )
-        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+#  # MOVED: from agentic_core.L6_observability.engines.determinism_digest_emitter import (
             DeterminismDigestEmitter,
         )
-        from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
+#  # MOVED: from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
             capture_provider_bindings,
         )
 
@@ -762,7 +805,7 @@ class TestTwoRunIdenticalDigest:
             config_surface_hash=config_hash,
             transcript_hash=transcript_hash,
             """Test agentic_core import functionality."""
-            from agentic_core.L2_execution.determinism.negative_control_harness import assert_digest_stable
+#  # MOVED: from agentic_core.L2_execution.determinism.negative_control_harness import assert_digest_stable
             # Basic functionality assertion
             assert True  # Replace with meaningful assertion
     def test_two_independent_runs_identical_digest(self):
@@ -778,7 +821,7 @@ class TestTwoRunIdenticalDigest:
     @pytest.mark.unit_min_deps
     def test_digest_format_is_emission_ready(self):
         """Digest can be wrapped in emit_once and returns the canonical line."""
-        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+#  # MOVED: from agentic_core.L6_observability.engines.determinism_digest_emitter import (
             DeterminismDigestEmitter,
         )
 

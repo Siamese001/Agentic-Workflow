@@ -5,15 +5,21 @@ import pytest
 
 @pytest.mark.smoke
 def test_test_quality_detector_scans_code():
+    from agentic_core.L5_safety.validators.base_detector_validator import (
+    from agentic_core.L5_safety.validators.test_quality_detector_validator import (
+    from agentic_core.L5_safety.validators.base_detector_validator import (
+    from agentic_core.L5_safety.validators.base_detector_validator import (
+    from agentic_core.runtime.boundary_validator import (
+    from agentic_core.L5_safety.config.structure_blueprint_config import (
     """TestQualityDetector can scan a code snippet and return a result."""
     import os
     import tempfile
 
     try:
-        from agentic_core.L5_safety.validators.base_detector_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.base_detector_validator import (
             EnforcementLevel,
         )
-        from agentic_core.L5_safety.validators.test_quality_detector_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.test_quality_detector_validator import (
             TestQualityDetector,
         )
     except ImportError as e:
@@ -39,7 +45,7 @@ def test_test_quality_detector_scans_code():
 def test_antipattern_category_enum_values():
     """AntiPatternCategory enum has expected values."""
     try:
-        from agentic_core.L5_safety.validators.base_detector_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.base_detector_validator import (
             AntiPatternCategory,
         )
     except ImportError as e:
@@ -52,7 +58,7 @@ def test_antipattern_category_enum_values():
 def test_enforcement_level_enum_values():
     """EnforcementLevel enum has WARNING and ERROR."""
     try:
-        from agentic_core.L5_safety.validators.base_detector_validator import (
+#  # MOVED: from agentic_core.L5_safety.validators.base_detector_validator import (
             EnforcementLevel,
         )
     except ImportError as e:
@@ -76,7 +82,7 @@ def test_constitutional_validator_importable():
 def test_layer_boundary_enforcement():
     """Layer boundary validation infrastructure is importable."""
     try:
-        from agentic_core.runtime.boundary_validator import (
+#  # MOVED: from agentic_core.runtime.boundary_validator import (
             validate_layer_direction,
         )
     except ImportError as e:
@@ -92,7 +98,7 @@ def test_layer_boundary_enforcement():
 def test_structure_blueprint_sovereign_territories():
     """SOVEREIGN_TERRITORIES is a non-empty mapping with string keys."""
     try:
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint_config import (
             SOVEREIGN_TERRITORIES,
         )
     except ImportError as e:

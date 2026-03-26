@@ -2,16 +2,16 @@
 
 import pytest
 
-from agentic_core.L2_execution.engines.rollback_refiner import (
+#  # MOVED: from agentic_core.L2_execution.engines.rollback_refiner import (
     DefaultDeterministicRollbackRefiner,
 )
-from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
-from agentic_core.L2_execution.types.rollback_refinement_types import (
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import (
     RollbackRefinementDecision,
     RollbackRefinementRequest,
     RollbackStrategyId,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -162,6 +162,35 @@ class TestRollbackRefiner:
     """Test suite for RollbackRefiner deterministic behavior."""
 
     def test_determinism_and_tie_break(self):
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+        from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+        from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+        from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+        from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+        from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+        from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+        from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+        from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
         """Same inputs must produce identical decisions with deterministic tie-breaking."""
         refiner = DefaultDeterministicRollbackRefiner()
 
@@ -198,6 +227,10 @@ class TestRollbackRefiner:
 
     def test_permutation_invariance_candidates(self):
         """Candidate order permutation should not affect final ranking."""
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+#  # MOVED: from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
         refiner = DefaultDeterministicRollbackRefiner()
 
         signature = FailureSignature(
@@ -240,6 +273,10 @@ class TestRollbackRefiner:
 
     def test_history_influence_deterministic(self):
         """History should influence decisions deterministically."""
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+#  # MOVED: from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
         refiner = DefaultDeterministicRollbackRefiner()
 
         signature = FailureSignature(
@@ -287,6 +324,10 @@ class TestRollbackRefiner:
 
     def test_failure_type_preferences(self):
         """Different failure types should prefer different strategies."""
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+#  # MOVED: from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
         refiner = DefaultDeterministicRollbackRefiner()
 
         candidates = (
@@ -329,6 +370,10 @@ class TestRollbackRefiner:
 
     def test_ranked_order_deterministic(self):
         """Ranked strategies must be in deterministic order."""
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+#  # MOVED: from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
         refiner = DefaultDeterministicRollbackRefiner()
 
         signature = FailureSignature(
@@ -358,6 +403,10 @@ class TestRollbackRefiner:
 
     def test_canonical_bytes_stability(self):
         """canonical_bytes() must be stable and ASCII-only."""
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+#  # MOVED: from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
         candidates = (RollbackStrategyId("test_strategy"),)
 
         decision = RollbackRefinementDecision(
@@ -382,6 +431,8 @@ class TestRollbackRefiner:
 
     def test_empty_candidates_handling(self):
         """Should handle empty candidates gracefully."""
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
         refiner = DefaultDeterministicRollbackRefiner()
 
         signature = FailureSignature(
@@ -407,7 +458,14 @@ class TestRollbackRefiner:
             pass
 
     def test_single_candidate(self):
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+#  # MOVED: from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
         """Single candidate should always be chosen."""
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+#  # MOVED: from agentic_core.L2_execution.types.rollback_refinement_types import RollbackRefinementDecision, RollbackRefinementRequest, RollbackStrategyId
+#  # MOVED: from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
         refiner = DefaultDeterministicRollbackRefiner()
 
         signature = FailureSignature(

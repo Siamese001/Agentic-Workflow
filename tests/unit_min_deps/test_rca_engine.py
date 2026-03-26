@@ -2,7 +2,7 @@
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -65,7 +65,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_rca_engine", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_rca_engine", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_rca_engine", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -103,7 +103,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+#  # MOVED: from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
 
 # REMOVED: _emit_emits_metric_event("test_rca_engine", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_rca_engine", "p4obs", "metric_2")
@@ -192,6 +192,16 @@ SourceMutationBlocked: cannot modify protected file
 
 class TestRCAEngine:
     def test_analyze_failures_basic(self):
+        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+        from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
         """Basic RCA analysis produces expected findings."""
         report = analyze_failures(
             snapshot_id="snap123",
@@ -213,6 +223,7 @@ class TestRCAEngine:
 
     def test_exact_findings_counts(self):
         """Exact findings match expected categories, signatures, and counts."""
+#  # MOVED: from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
         report = analyze_failures(
             snapshot_id="snap123",
             audit_slice=AUDIT_SLICE_FIXTURE,
@@ -241,6 +252,7 @@ class TestRCAEngine:
 
     def test_determinism_same_slice_identical_report_id(self):
         """Same audit_slice produces identical report_id."""
+#  # MOVED: from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
         report1 = analyze_failures(
             snapshot_id="snap123",
             audit_slice=AUDIT_SLICE_FIXTURE,
@@ -260,6 +272,7 @@ class TestRCAEngine:
 
     def test_invalid_window_rejected(self):
         """Invalid window (start >= end) raises RCAAnalysisError."""
+#  # MOVED: from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
         with pytest.raises(RCAAnalysisError, match="Invalid window"):
             analyze_failures(
                 snapshot_id="snap123",
@@ -270,6 +283,8 @@ class TestRCAEngine:
 
     def test_malformed_utf8_rejected(self):
         """Malformed UTF-8 raises RCAAnalysisError."""
+#  # MOVED: from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+#  # MOVED: from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
         malformed_bytes = b"\xff\xfe invalid utf-8"
 
         with pytest.raises(RCAAnalysisError, match="Failed to decode"):
@@ -282,6 +297,8 @@ class TestRCAEngine:
 
     def test_empty_slice_produces_unknown_category(self):
         """Empty audit slice produces UNKNOWN category."""
+#  # MOVED: from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
+#  # MOVED: from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
         report = analyze_failures(
             snapshot_id="snap123",
             audit_slice=b"",
@@ -296,6 +313,7 @@ class TestRCAEngine:
 
     def test_no_matching_patterns_produces_unknown(self):
         """Audit slice with no matching patterns produces UNKNOWN."""
+#  # MOVED: from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
         report = analyze_failures(
             snapshot_id="snap123",
             audit_slice=b"some random text\nwith no patterns\n",
@@ -310,7 +328,9 @@ class TestRCAEngine:
 
 class TestDeterminism:
     def test_analyze_failures_deterministic(self):
+#  # MOVED: from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
         """analyze_failures produces identical results across multiple calls."""
+#  # MOVED: from system_learning.engines.rca_engine import RCAAnalysisError, analyze_failures
         report1 = analyze_failures(
             snapshot_id="snap123",
             audit_slice=AUDIT_SLICE_FIXTURE,

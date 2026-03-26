@@ -2,7 +2,7 @@
 
 import pytest
 
-from agentic_core.L3_orchestration.arbitration.arbitration_contract import (
+#  # MOVED: from agentic_core.L3_orchestration.arbitration.arbitration_contract import (
     AdvisorProposal,
     ArbitrationDecision,
     ArbitrationInput,
@@ -11,8 +11,8 @@ from agentic_core.L3_orchestration.arbitration.arbitration_contract import (
     proposal_from_json,
     proposal_to_json,
 )
-from agentic_core.L3_orchestration.arbitration.arbitrator import Arbitrator
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L3_orchestration.arbitration.arbitrator import Arbitrator
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -59,7 +59,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_arbitration", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_arbitration", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_arbitration", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -175,6 +175,11 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 @pytest.mark.unit_min_deps
 def test_advisor_proposal_validation():
+    from agentic_core.L3_orchestration.arbitration.arbitration_contract import (
+    from agentic_core.L3_orchestration.arbitration.arbitrator import Arbitrator
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L3_orchestration.arbitration.advisors import (
     """Test AdvisorProposal validation."""
     # Valid proposal
     proposal = AdvisorProposal(
@@ -452,7 +457,7 @@ assert isinstance(result, (dict, list, str, int, float, bool)), "Result should b
 @pytest.mark.unit_min_deps
 def test_advisor_deterministic_outputs():
     """Test that advisors produce deterministic outputs."""
-    from agentic_core.L3_orchestration.arbitration.advisors import (
+#  # MOVED: from agentic_core.L3_orchestration.arbitration.advisors import (
         risk_averse_advisor,
         throughput_advisor,
     )

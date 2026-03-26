@@ -26,12 +26,12 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_SHARED_DIR,
     SYSTEM_LEARNING_DIR,
 )
-from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     DISCOVERY_EXCLUDED_TERRITORIES,
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
@@ -68,6 +68,8 @@ class TestSingleThresholdSource:
         }
 
     def test_healing_confidence_x_defined_only_in_tier_config(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L5_safety.config.structure_blueprint.ssot import (
         qwen_names = self._assignment_names(self._QWEN_ML)
         assert "HEALING_CONFIDENCE_X" not in qwen_names, (
             "HEALING_CONFIDENCE_X must not be re-defined in qwen_meta_learning.py; "

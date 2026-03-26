@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -76,15 +76,15 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_offline_healing_outcome_evaluator", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_offline_healing_outcome_evaluator", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_offline_healing_outcome_evaluator", "exec_snapshot_link")
-from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
-from system_learning.engines.in_memory_scoring_report_store import InMemoryScoringReportStore
-from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
-from system_learning.types.healing_outcome_scoring_types import (
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+#  # MOVED: from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+#  # MOVED: from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+#  # MOVED: from system_learning.engines.in_memory_scoring_report_store import InMemoryScoringReportStore
+#  # MOVED: from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+#  # MOVED: from system_learning.types.healing_outcome_scoring_types import (
     ScoringWeights,
 )
-from system_learning.types.healing_outcome_types import (
+#  # MOVED: from system_learning.types.healing_outcome_types import (
     HealingOutcomeEvent,
     HealingOutcomeProposal,
     HealingOutcomeStats,
@@ -94,7 +94,7 @@ from system_learning.types.healing_outcome_types import (
 # REMOVED: _emit_applies_guardrail("p0", "test_offline_healing_outcome_evaluator", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_offline_healing_outcome_evaluator", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_offline_healing_outcome_evaluator", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -193,6 +193,78 @@ class TestOfflineHealingOutcomeEvaluator:
     """Test suite for OfflineHealingOutcomeEvaluator."""
 
     def test_evaluate_deterministic_same_input_same_output(self) -> None:
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+        from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+        from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+        from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+        from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+        from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+        from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.in_memory_scoring_report_store import InMemoryScoringReportStore
+        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+        from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+        from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
         """Test that same input produces identical output."""
         # Setup
         weights = ScoringWeights(
@@ -270,6 +342,14 @@ class TestOfflineHealingOutcomeEvaluator:
 
     def test_evaluate_sorting_stable_under_candidate_permutation(self) -> None:
         """Test that recommendations order is stable under candidate permutation."""
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+#  # MOVED: from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
         # Setup
         weights = ScoringWeights(
             success_rate_weight=1.0,
@@ -332,6 +412,14 @@ class TestOfflineHealingOutcomeEvaluator:
 
     def test_evaluate_validator_rejection_reasons_deterministic(self) -> None:
         """Test that validator rejection reasons are deterministic."""
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+#  # MOVED: from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
         # Setup
         weights = ScoringWeights(
             success_rate_weight=1.0,
@@ -386,6 +474,14 @@ class TestOfflineHealingOutcomeEvaluator:
 
     def test_evaluate_score_rounding_deterministic(self) -> None:
         """Test that score rounding follows deterministic rule."""
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+#  # MOVED: from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
         # Setup
         weights = ScoringWeights(
             success_rate_weight=1.0,
@@ -448,6 +544,14 @@ class TestOfflineHealingOutcomeEvaluator:
 
     def test_determinism_across_processes(self) -> None:
         """Test that evaluator produces identical results across different processes."""
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+#  # MOVED: from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
         # Create test fixture data
         weights = ScoringWeights(
             success_rate_weight=1.0,
@@ -501,14 +605,21 @@ class TestOfflineHealingOutcomeEvaluator:
         results = []
         for run in range(2):
             script = f"""
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
 import sys
 sys.path.insert(0, '{Path(__file__).parent.parent.parent}')
 
 import json
-from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
-from system_learning.types.healing_outcome_scoring_types import ScoringWeights
-from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
-from system_learning.types.healing_outcome_types import HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+#  # MOVED: from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+#  # MOVED: from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeProposal, HealingOutcomeStats
 
 # Load fixture
 fixture = json.loads('''{json.dumps(fixture)}''')
@@ -671,6 +782,14 @@ print(json.dumps(result))
 
     def test_corrupted_record_handling(self) -> None:
         """Test that corrupted/partial records are handled deterministically."""
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+#  # MOVED: from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
         # Setup
         weights = ScoringWeights(
             success_rate_weight=1.0,
@@ -785,6 +904,14 @@ print(json.dumps(result))
 
     def test_canonical_bytes_stability(self) -> None:
         """Test that canonical_bytes() produces stable bytes across calls."""
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+#  # MOVED: from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
         # Setup
         weights = ScoringWeights(
             success_rate_weight=1.0,
@@ -864,7 +991,24 @@ print(json.dumps(result))
         assert hash_list[0] == expected_hash, "content_hash doesn't match SHA-256 of canonical_bytes"
 
     def test_storage_write_once_idempotency(self) -> None:
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.in_memory_scoring_report_store import InMemoryScoringReportStore
+#  # MOVED: from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+#  # MOVED: from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
         """Test that storage write is idempotent and keyed by content hash."""
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
+#  # MOVED: from system_learning.types.healing_outcome_scoring_types import ScoringWeights
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
         # Setup
         weights = ScoringWeights(
             success_rate_weight=1.0,

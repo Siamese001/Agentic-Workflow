@@ -17,7 +17,7 @@ import hashlib
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -80,7 +80,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_version_store", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_version_store", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_version_store", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -118,7 +118,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.l4_version_store import (
+#  # MOVED: from system_learning.engines.l4_version_store import (
     L4VersionStore,
     ParentVersionNotFound,
     VersionNotFound,
@@ -208,6 +208,36 @@ class FakeChangePackage:
 
 class TestCommitChangePackage:
     def test_commit_returns_sha256_version_id(self):
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+        from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         pkg = FakeChangePackage("test-content")
         version_id = store.commit_change_package(
@@ -220,6 +250,7 @@ class TestCommitChangePackage:
         assert version_id == expected
 
     def test_same_content_produces_same_version_id(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         pkg1 = FakeChangePackage("identical-content")
         pkg2 = FakeChangePackage("identical-content")
@@ -230,6 +261,7 @@ class TestCommitChangePackage:
         assert v1 == v2
 
     def test_different_content_produces_different_version_id(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         pkg1 = FakeChangePackage("content-v1")
         pkg2 = FakeChangePackage("content-v2")
@@ -240,6 +272,7 @@ class TestCommitChangePackage:
         assert v1 != v2
 
     def test_write_once_semantics_idempotent_on_same_content(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         pkg = FakeChangePackage("test-content")
 
@@ -249,6 +282,8 @@ class TestCommitChangePackage:
         assert v1 == v2
 
     def test_parent_version_not_found_raises(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         pkg = FakeChangePackage("test-content")
 
@@ -258,6 +293,7 @@ class TestCommitChangePackage:
             )
 
     def test_genesis_version_allowed(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         pkg = FakeChangePackage("genesis-content")
 
@@ -270,6 +306,7 @@ class TestCommitChangePackage:
         assert retrieved.parent_version_id is None
 
     def test_child_version_with_valid_parent(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         parent_pkg = FakeChangePackage("parent-content")
         child_pkg = FakeChangePackage("child-content")
@@ -285,6 +322,7 @@ class TestCommitChangePackage:
 
 class TestGetChangePackage:
     def test_get_existing_version(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         pkg = FakeChangePackage("test-content")
         version_id = store.commit_change_package(pkg, None, "hash", 1700000000)
@@ -294,11 +332,14 @@ class TestGetChangePackage:
         assert retrieved.package_bytes == b"test-content"
 
     def test_get_nonexistent_version_raises(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         with pytest.raises(VersionNotFound, match="VERSION_NOT_FOUND"):
             store.get_change_package("nonexistent-version-id")
 
     def test_retrieved_package_is_immutable(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         pkg = FakeChangePackage("test-content")
         version_id = store.commit_change_package(pkg, None, "hash", 1700000000)
@@ -311,6 +352,7 @@ class TestGetChangePackage:
 
 class TestListVersions:
     def test_list_all_versions(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         pkg1 = FakeChangePackage("content-1")
         pkg2 = FakeChangePackage("content-2")
@@ -322,10 +364,12 @@ class TestListVersions:
         assert sorted(versions) == sorted([v1, v2])
 
     def test_list_versions_empty_store(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         assert store.list_versions() == []
 
     def test_list_versions_deterministic_order(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         for i in range(5):
             pkg = FakeChangePackage(f"content-{i}")
@@ -343,6 +387,7 @@ class TestListVersions:
 
 class TestUpdateActivationPointer:
     def test_activate_version(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         pkg = FakeChangePackage("test-content")
         version_id = store.commit_change_package(pkg, None, "hash", 1700000000)
@@ -352,11 +397,14 @@ class TestUpdateActivationPointer:
         assert active == version_id
 
     def test_activate_nonexistent_version_raises(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         with pytest.raises(VersionNotFound, match="ACTIVATION_TARGET_NOT_FOUND"):
             store.update_activation_pointer("routing_config", "nonexistent-version")
 
     def test_activation_does_not_mutate_package(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         pkg = FakeChangePackage("test-content")
         version_id = store.commit_change_package(pkg, None, "hash", 1700000000)
@@ -368,6 +416,7 @@ class TestUpdateActivationPointer:
         assert original == after_activation
 
     def test_atomic_pointer_update(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         pkg1 = FakeChangePackage("content-v1")
         pkg2 = FakeChangePackage("content-v2")
@@ -384,6 +433,7 @@ class TestUpdateActivationPointer:
 
 class TestGetActiveVersion:
     def test_get_active_version_when_set(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         pkg = FakeChangePackage("test-content")
         version_id = store.commit_change_package(pkg, None, "hash", 1700000000)
@@ -392,10 +442,12 @@ class TestGetActiveVersion:
         assert store.get_active_version("routing_config") == version_id
 
     def test_get_active_version_when_not_set(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         assert store.get_active_version("routing_config") is None
 
     def test_multiple_components_independent(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         pkg1 = FakeChangePackage("content-1")
         pkg2 = FakeChangePackage("content-2")
@@ -412,6 +464,7 @@ class TestGetActiveVersion:
 
 class TestRollback:
     def test_rollback_to_parent(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         parent_pkg = FakeChangePackage("parent-content")
         child_pkg = FakeChangePackage("child-content")
@@ -428,6 +481,7 @@ class TestRollback:
         assert store.get_active_version("routing_config") == parent_id
 
     def test_rollback_is_o1_pointer_reversion(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         pkg1 = FakeChangePackage("content-v1")
         pkg2 = FakeChangePackage("content-v2")
@@ -444,11 +498,14 @@ class TestRollback:
         assert store.get_active_version("routing_config") == v1
 
     def test_rollback_to_nonexistent_version_raises(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         with pytest.raises(VersionNotFound):
             store.rollback("routing_config", "nonexistent-version")
 
     def test_no_deletion_of_historical_versions(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         store = L4VersionStore()
         pkg1 = FakeChangePackage("content-v1")
         pkg2 = FakeChangePackage("content-v2")
@@ -478,6 +535,7 @@ class TestRollback:
 
 class TestVersionIdDeterminism:
     def test_version_id_determinism_assertion(self):
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore, ParentVersionNotFound, VersionNotFound
         """Canonical determinism assertion: same content → same version_id."""
         store1 = L4VersionStore()
         store2 = L4VersionStore()

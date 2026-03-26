@@ -10,14 +10,14 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L2_execution.engines.execution_gateway import ExecutionGateway, SignatureBoundaryError
-from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
-from agentic_core.L2_execution.UniversalWriteGateway import (
+#  # MOVED: from agentic_core.L2_execution.engines.execution_gateway import ExecutionGateway, SignatureBoundaryError
+#  # MOVED: from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
+#  # MOVED: from agentic_core.L2_execution.UniversalWriteGateway import (
     MutationRecord,
     SimulationResult,
     UniversalWriteGateway,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -64,7 +64,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_signature_boundary", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_signature_boundary", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_signature_boundary", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -187,7 +187,7 @@ def execution_gateway():
 @pytest.fixture
 def sample_envelope():
     """Create a sample SandboxEnvelope for testing."""
-    from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
+#  # MOVED: from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
 
     return SandboxEnvelope(
         envelope_id="test_envelope_1",
@@ -223,7 +223,7 @@ class TestSignatureBoundary:
         get_current_secret in the gateway to return the same key so verify()
         succeeds, and assert no SignatureBoundaryError is raised.
         """
-        from agentic_core.L2_execution.enforcement.key_source import TestKeySource
+#  # MOVED: from agentic_core.L2_execution.enforcement.key_source import TestKeySource
 
         correct_secret = TestKeySource.TEST_SECRET
 
@@ -273,8 +273,8 @@ class TestSignatureBoundary:
         SandboxEnvelope is a frozen dataclass so we use object.__setattr__
         to force-clear the signature field on a fresh instance.
         """
-        from agentic_core.L2_execution.enforcement.key_source import TestKeySource
-        from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
+#  # MOVED: from agentic_core.L2_execution.enforcement.key_source import TestKeySource
+#  # MOVED: from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
 
         unsigned_envelope = SandboxEnvelope(
             envelope_id="unsigned_envelope",
@@ -307,6 +307,15 @@ class TestUniversalWriteGateway:
     """Tests for Universal Write Gateway enforcement."""
 
     def test_default_permissions_blocked(self, write_gateway):
+        from agentic_core.L2_execution.engines.execution_gateway import ExecutionGateway, SignatureBoundaryError
+        from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
+        from agentic_core.L2_execution.UniversalWriteGateway import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
+        from agentic_core.L2_execution.enforcement.key_source import TestKeySource
+        from agentic_core.L2_execution.enforcement.key_source import TestKeySource
+        from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
         """Test that default write permissions are blocked."""
         assert not write_gateway.check_write_permission("test.py")
         assert not write_gateway.check_write_permission("/etc/config")

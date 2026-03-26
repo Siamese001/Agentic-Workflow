@@ -7,10 +7,10 @@ import ast
 from pathlib import Path
 from unittest.mock import MagicMock
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L0_ROUTING_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -57,7 +57,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_meta_learning_intake_wiring", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_meta_learning_intake_wiring", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_meta_learning_intake_wiring", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -174,6 +174,11 @@ EXECUTE_SSOT_PATH = Path(__file__).parent.parent.parent / L0_ROUTING_DIR / "scri
 
 
 def test_fire_meta_learning_intake_defined_in_execute_ssot():
+    from agentic_core.L0_routing.config.path_constants import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from system_learning.engines.in_memory_healing_outcome_intake_store import (
+    import agentic_core.L0_routing.scripts.execute_ssot as execute_ssot
 """Test fire_meta_learning_intake_defined_in_execute_ssot runtime behavior."""
 # Arrange
 # TODO: Set up execution parameters
@@ -234,7 +239,7 @@ assert isinstance(result, object), "Result should be an object"
 
 def test_intake_adapter_no_persist_when_empty():
     """_fire_meta_learning_intake must not call build_record when healing_actions is empty."""
-    from system_learning.engines.in_memory_healing_outcome_intake_store import (
+#  # MOVED: from system_learning.engines.in_memory_healing_outcome_intake_store import (
         InMemoryHealingOutcomeIntakeStore,
     )
 
@@ -279,7 +284,7 @@ def test_fire_meta_learning_intake_noop_on_import_error():
         if "agentic_core.L0_routing.scripts.execute_ssot" in sys.modules:
             execute_ssot = sys.modules["agentic_core.L0_routing.scripts.execute_ssot"]
         else:
-            import agentic_core.L0_routing.scripts.execute_ssot as execute_ssot
+#  # MOVED: import agentic_core.L0_routing.scripts.execute_ssot as execute_ssot
 
         # Should not raise
         execute_ssot._fire_meta_learning_intake(fake_state_mgr, now_utc=0)

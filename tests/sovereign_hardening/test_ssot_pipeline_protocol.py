@@ -16,17 +16,17 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L0_routing.scripts.execute_ssot import (
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import (
     AGENT_PIPELINE,
     run_pipeline,
 )
-from agentic_core.L2_execution.protocol import (
+#  # MOVED: from agentic_core.L2_execution.protocol import (
     PIPELINE_SUBPHASES,
     SubphaseResult,
     compute_pipeline_digest,
     emit_pipeline_digest,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -236,6 +236,9 @@ class TestAllSubphasesPresent:
     """Every AgentRunResult must have exactly the four subphase keys."""
 
     def test_all_four_slots_populated(self, mock_ctx, mock_decision_engine, mock_state_mgr):
+        from agentic_core.L0_routing.scripts.execute_ssot import (
+        from agentic_core.L2_execution.protocol import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         adapter = MagicMock()
         adapter.pre_commit.return_value = SubphaseResult()
         adapter.validate.return_value = SubphaseResult()

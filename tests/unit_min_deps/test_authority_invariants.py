@@ -12,7 +12,7 @@ Covers:
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -75,7 +75,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_authority_invariants", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_authority_invariants", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_authority_invariants", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -113,7 +113,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.enforcement.authority_invariants import (
+#  # MOVED: from system_learning.enforcement.authority_invariants import (
     AuthorityContext,
     AuthorityViolation,
     assert_no_side_channel_activation,
@@ -190,6 +190,9 @@ pytestmark = pytest.mark.unit_min_deps
 
 class TestAssertZeroExecutionAuthority:
     def test_execute_mode_raises(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.enforcement.authority_invariants import (
     """Test execute_mode_raises runtime behavior."""
     # Arrange
     # TODO: Set up execution parameters

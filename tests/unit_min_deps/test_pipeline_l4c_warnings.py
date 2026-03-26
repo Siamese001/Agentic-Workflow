@@ -7,10 +7,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     SYSTEM_LEARNING_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -55,7 +55,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_pipeline_l4c_warnings")
 # REMOVED: _emit_applies_guardrail("p0", "test_pipeline_l4c_warnings", "p0_governance")
 # REMOVED: _emit_snapshots_state("p0", "test_pipeline_l4c_warnings", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -197,6 +197,14 @@ class TestPipelineL4cWarnings:
         return silent_count
 
     def test_no_silent_pass_in_l4c_helpers_ast(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.pipelines.meta_learning_pipeline import (
+        from system_learning.pipelines.meta_learning_pipeline import (
+        from system_learning.pipelines.meta_learning_pipeline import (
+        from system_learning.pipelines.meta_learning_pipeline import (
+        from system_learning.pipelines.meta_learning_pipeline import (
     """Test no_silent_pass_in_l4c_helpers_ast runtime behavior."""
     # Arrange
     # TODO: Set up test data for no_silent_pass_in_l4c_helpers_ast
@@ -239,7 +247,7 @@ class TestPipelineL4cWarnings:
 
     def test_policy_recommendation_helper_warns_on_exception(self, caplog):
         """_generate_policy_recommendation_and_write emits logger.warning when L4 write raises."""
-        from system_learning.pipelines.meta_learning_pipeline import (
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import (
             _generate_policy_recommendation_and_write,
         )
 
@@ -274,7 +282,7 @@ class TestPipelineL4cWarnings:
 
     def test_create_proposal_helper_warns_on_exception(self, caplog):
         """_create_proposal_and_write emits logger.warning when L4 write raises."""
-        from system_learning.pipelines.meta_learning_pipeline import (
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import (
             _create_proposal_and_write,
         )
 
@@ -309,7 +317,7 @@ class TestPipelineL4cWarnings:
 
     def test_pipeline_continues_after_l4c_failure(self, caplog):
         """L4C write failure must not propagate — pipeline returns normally."""
-        from system_learning.pipelines.meta_learning_pipeline import (
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import (
             _create_proposal_and_write,
         )
 
@@ -338,7 +346,7 @@ class TestPipelineL4cWarnings:
 
     def test_none_drift_summary_short_circuits_policy_helper(self):
         """Passing None drift_summary to _generate_policy_recommendation_and_write returns None."""
-        from system_learning.pipelines.meta_learning_pipeline import (
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import (
             _generate_policy_recommendation_and_write,
         )
 
@@ -352,7 +360,7 @@ class TestPipelineL4cWarnings:
 
     def test_none_policy_rec_short_circuits_proposal_helper(self):
         """Passing None policy_recommendation to _create_proposal_and_write returns None."""
-        from system_learning.pipelines.meta_learning_pipeline import (
+#  # MOVED: from system_learning.pipelines.meta_learning_pipeline import (
             _create_proposal_and_write,
         )
 

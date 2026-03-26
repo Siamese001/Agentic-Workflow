@@ -40,7 +40,7 @@ from textwrap import dedent
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -124,8 +124,8 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
-from agentic_core.L0_routing.config.path_constants import TESTS_DIR
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -264,6 +264,9 @@ def _make_analysis(source: str) -> FileAnalysis:
 
 @pytest.mark.architecture
 def test_governance_hint_in_string_literal_detected():
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Success: string literal containing 'compliance_hash' adds to governance_mentions."""
     analysis = _make_analysis('x = "compliance_hash check"\n')
     assert analysis.governance_mentions, "Expected governance_mentions to be non-empty"

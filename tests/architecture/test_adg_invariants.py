@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -56,7 +56,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_invariants", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_invariants", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_invariants", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -191,61 +191,125 @@ REPO_ROOT = Path(__file__).parent.parent.parent
 @pytest.mark.unit
 class TestADGSchema:
     def test_canonical_name_module(self) -> None:
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.schema_util import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
+        from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES
+        from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.ci.invariant_scanner_config import ScanReport, Violation
+        from agentic_core.adg.applications.gateway_topology_validator import check_gateway_topology
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.applications.gateway_topology_validator import check_gateway_topology
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.applications.gateway_topology_validator import check_gateway_topology
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.extraction.graph_persister import persist_scan_result
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.extraction.graph_persister import persist_scan_result
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.extraction.graph_persister import persist_scan_result
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         result = canonical_name("Module", "agentic_core/L0_routing/engines/path_router.py")
         assert result == "ADG::Module::agentic_core/L0_routing/engines/path_router.py"
 
     def test_canonical_name_layer(self) -> None:
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         assert canonical_name("Layer", "L2") == "ADG::Layer::L2"
 
     def test_canonical_name_snapshot(self) -> None:
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         assert canonical_name("Snapshot", "abc123", "deadbeef") == "ADG::Snapshot::abc123::deadbeef"
 
     def test_canonical_name_backslash_normalized(self) -> None:
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         result = canonical_name("Module", "agentic_core\\L0_routing\\path.py")
         assert "\\" not in result
 
     def test_layer_mapping_l0(self) -> None:
-        from agentic_core.adg.schema_util import module_path_to_layer
+#  # MOVED: from agentic_core.adg.schema_util import module_path_to_layer
 
         assert module_path_to_layer("agentic_core/L0_routing/engines/path_router.py") == "L0"
 
     def test_layer_mapping_l2(self) -> None:
-        from agentic_core.adg.schema_util import module_path_to_layer
+#  # MOVED: from agentic_core.adg.schema_util import module_path_to_layer
 
         assert module_path_to_layer("agentic_core/L2_execution/UniversalWriteGateway.py") == "L2"
 
     def test_layer_mapping_l5(self) -> None:
-        from agentic_core.adg.schema_util import module_path_to_layer
+#  # MOVED: from agentic_core.adg.schema_util import module_path_to_layer
 
         assert module_path_to_layer("agentic_core/L5_safety/enforcement/some_guard.py") == "L5"
 
     def test_layer_mapping_apps(self) -> None:
-        from agentic_core.adg.schema_util import module_path_to_layer
+#  # MOVED: from agentic_core.adg.schema_util import module_path_to_layer
 
         assert module_path_to_layer("apps_rg/engines/SomeAgent.py") == "L_APP"
 
     def test_layer_mapping_unknown(self) -> None:
-        from agentic_core.adg.schema_util import module_path_to_layer
+#  # MOVED: from agentic_core.adg.schema_util import module_path_to_layer
 
         assert module_path_to_layer("random/unknown/path.py") == "L_UNKNOWN"
 
     def test_allowed_layer_edges_contains_downward(self) -> None:
-        from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES
+#  # MOVED: from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES
 
         assert ("L2", "L0") in ALLOWED_LAYER_EDGES
         assert ("L5", "L2") in ALLOWED_LAYER_EDGES
         assert ("L6", "L0") in ALLOWED_LAYER_EDGES
 
     def test_allowed_layer_edges_excludes_upward(self) -> None:
-        from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES
+#  # MOVED: from agentic_core.adg.schema_util import ALLOWED_LAYER_EDGES
 
         assert ("L0", "L2") not in ALLOWED_LAYER_EDGES
         assert ("L1", "L5") not in ALLOWED_LAYER_EDGES
@@ -260,7 +324,7 @@ class TestADGSchema:
 @pytest.mark.unit
 class TestADGMCPClient:
     def test_upsert_entity_idempotent(self) -> None:
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 
         client = ADGMCPClient()
         name = "ADG::Module::test/module.py"
@@ -270,7 +334,7 @@ class TestADGMCPClient:
         assert len(matching) == 1
 
     def test_upsert_relation_idempotent(self) -> None:
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 
         client = ADGMCPClient()
         client.upsert_relation("ADG::Module::a.py", "imports", "ADG::Symbol::b")
@@ -280,7 +344,7 @@ class TestADGMCPClient:
         assert len(matching) == 1
 
     def test_add_observation_idempotent(self) -> None:
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 
         client = ADGMCPClient()
         client.upsert_entity("ADG::Module::x.py", "module", ["path:x.py"])
@@ -291,7 +355,7 @@ class TestADGMCPClient:
         assert len([o for o in e["observations"] if o == "commit:abc123"]) == 1
 
     def test_search_nodes_returns_matches(self) -> None:
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 
         client = ADGMCPClient()
         client.upsert_entity("ADG::Module::search_target.py", "module", ["path:search_target.py"])
@@ -299,7 +363,7 @@ class TestADGMCPClient:
         assert any("search_target" in r["name"] for r in results)
 
     def test_open_nodes_returns_relations(self) -> None:
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 
         client = ADGMCPClient()
         client.upsert_entity("ADG::Module::a.py", "module", [])
@@ -310,7 +374,7 @@ class TestADGMCPClient:
         assert "imports" in [r["relationType"] for r in nodes[0]["relations"]]
 
     def test_bulk_upsert_deterministic_order(self) -> None:
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 
         client = ADGMCPClient()
         client.bulk_upsert_entities(
@@ -332,7 +396,7 @@ class TestADGMCPClient:
 @pytest.mark.architecture
 class TestADGStaticScanner:
     def test_scan_produces_edges(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=REPO_ROOT)
         result = scanner.scan(commit_sha="test")
@@ -340,7 +404,7 @@ class TestADGStaticScanner:
         assert len(result.modules) > 0
 
     def test_scan_files_empty_list(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=REPO_ROOT)
         result = scanner.scan_files([], commit_sha="test-empty")
@@ -349,7 +413,7 @@ class TestADGStaticScanner:
         assert len(result.digest) == 64
 
     def test_scan_known_file_has_import_edge(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=REPO_ROOT)
         result = scanner.scan_files(
@@ -360,7 +424,7 @@ class TestADGStaticScanner:
         assert len(import_edges) > 0
 
     def test_reverse_import_graph_populated(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=REPO_ROOT)
         result = scanner.scan(commit_sha="test-reverse")
@@ -368,7 +432,7 @@ class TestADGStaticScanner:
         assert len(reverse) > 0
 
     def test_module_layer_map_populated(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=REPO_ROOT)
         result = scanner.scan(commit_sha="test-layer")
@@ -387,8 +451,8 @@ class TestADGStaticScanner:
 class TestCIInvariantScanner:
     def test_rule_a_gateway_passes_for_sovereign_llm_gw(self) -> None:
         """SovereignLLMGateway itself must NOT trigger Rule A."""
-        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=REPO_ROOT)
         result = scanner.scan_files(
@@ -404,8 +468,8 @@ class TestCIInvariantScanner:
 
     def test_rule_c_no_violations_for_uwg(self) -> None:
         """UWG (L2) has no upward layer violations."""
-        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=REPO_ROOT)
         result = scanner.scan_files(
@@ -418,8 +482,8 @@ class TestCIInvariantScanner:
         assert len(rule_c) == 0, "Unexpected layer violations:\n" + "\n".join(v.format() for v in rule_c)
 
     def test_scan_report_exit_code_pass(self) -> None:
-        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-        from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="test")
         result.compute_digest()
@@ -428,7 +492,7 @@ class TestCIInvariantScanner:
         assert report.passed
 
     def test_scan_report_exit_code_fail(self) -> None:
-        from agentic_core.adg.ci.invariant_scanner_config import ScanReport, Violation
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import ScanReport, Violation
 
         report = ScanReport()
         report.violations.append(
@@ -456,16 +520,16 @@ class TestCIInvariantScanner:
 @pytest.mark.governance
 class TestGatewayTopology:
     def test_empty_result_passes(self) -> None:
-        from agentic_core.adg.applications.gateway_topology_validator import check_gateway_topology
-        from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.applications.gateway_topology_validator import check_gateway_topology
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="test-empty")
         result.compute_digest()
         assert check_gateway_topology(result).passed
 
     def test_gateway_module_itself_is_allowed(self) -> None:
-        from agentic_core.adg.applications.gateway_topology_validator import check_gateway_topology
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.applications.gateway_topology_validator import check_gateway_topology
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=REPO_ROOT)
         result = scanner.scan_files(
@@ -478,8 +542,8 @@ class TestGatewayTopology:
         )
 
     def test_report_has_proof_digest(self) -> None:
-        from agentic_core.adg.applications.gateway_topology_validator import check_gateway_topology
-        from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.applications.gateway_topology_validator import check_gateway_topology
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="test-proof")
         result.compute_digest()
@@ -496,16 +560,16 @@ class TestGatewayTopology:
 @pytest.mark.governance
 class TestUWGWriteAuthority:
     def test_empty_result_passes(self) -> None:
-        from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
-        from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="test-empty")
         result.compute_digest()
         assert check_uwg_write_authority(result).passed
 
     def test_uwg_module_itself_is_allowed(self) -> None:
-        from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=REPO_ROOT)
         result = scanner.scan_files(
@@ -527,16 +591,16 @@ class TestUWGWriteAuthority:
 @pytest.mark.governance
 class TestRAGSovereignty:
     def test_empty_result_passes(self) -> None:
-        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
-        from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="test-rag-empty")
         result.compute_digest()
         assert check_rag_sovereignty(result).passed
 
     def test_rag_module_scan_passes(self) -> None:
-        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=REPO_ROOT)
         result = scanner.scan_files(
@@ -549,8 +613,8 @@ class TestRAGSovereignty:
         )
 
     def test_proof_digest_is_sha256(self) -> None:
-        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
-        from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="test-proof")
         result.compute_digest()
@@ -567,8 +631,8 @@ class TestRAGSovereignty:
 @pytest.mark.determinism
 class TestBlastRadius:
     def test_blast_radius_empty_changed(self) -> None:
-        from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=REPO_ROOT)
         result = scanner.scan_files(
@@ -581,8 +645,8 @@ class TestBlastRadius:
         assert len(br.impact_digest) == 64
 
     def test_blast_radius_deterministic_same_input(self) -> None:
-        from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=REPO_ROOT)
         result = scanner.scan(commit_sha="br-full")
@@ -594,8 +658,8 @@ class TestBlastRadius:
         )
 
     def test_blast_radius_l0_is_high_risk(self) -> None:
-        from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=REPO_ROOT)
         result = scanner.scan(commit_sha="br-l0")
@@ -607,8 +671,8 @@ class TestBlastRadius:
         assert br.risk_score > 0
 
     def test_blast_radius_impact_digest_is_sha256(self) -> None:
-        from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=REPO_ROOT)
         result = scanner.scan(commit_sha="br-digest")
@@ -630,9 +694,9 @@ class TestBlastRadius:
 @pytest.mark.unit
 class TestGraphPersister:
     def test_persist_scan_result_creates_layer_nodes(self) -> None:
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.extraction.graph_persister import persist_scan_result
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import persist_scan_result
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=REPO_ROOT)
         result = scanner.scan_files(
@@ -645,9 +709,9 @@ class TestGraphPersister:
         assert len(layer_nodes) >= 7
 
     def test_persist_scan_result_creates_commit_node(self) -> None:
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.extraction.graph_persister import persist_scan_result
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import persist_scan_result
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=REPO_ROOT)
         result = scanner.scan_files(
@@ -660,9 +724,9 @@ class TestGraphPersister:
         assert len(results) > 0
 
     def test_persist_is_idempotent(self) -> None:
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.extraction.graph_persister import persist_scan_result
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import persist_scan_result
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=REPO_ROOT)
         result = scanner.scan_files(

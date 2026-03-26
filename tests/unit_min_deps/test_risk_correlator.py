@@ -9,7 +9,7 @@ import tempfile
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -90,7 +90,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -128,8 +128,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.correlation.engine import RiskCorrelator
-from system_learning.correlation.types import CorrelatedRiskReport
+#  # MOVED: from system_learning.correlation.engine import RiskCorrelator
+#  # MOVED: from system_learning.correlation.types import CorrelatedRiskReport
 
 # REMOVED: _emit_emits_metric_event("test_risk_correlator", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_risk_correlator", "p4obs", "metric_2")
@@ -195,6 +195,15 @@ class TestRiskCorrelator:
     """Test risk correlation deterministic behavior."""
 
     def test_deterministic_fingerprint_same_input(self):
+        from system_learning.correlation.engine import RiskCorrelator
+        from system_learning.correlation.engine import RiskCorrelator
+        from system_learning.correlation.engine import RiskCorrelator
+        from system_learning.correlation.engine import RiskCorrelator
+        from system_learning.correlation.engine import RiskCorrelator
+        from system_learning.correlation.engine import RiskCorrelator
+        from system_learning.correlation.types import CorrelatedRiskReport
+        from system_learning.correlation.engine import RiskCorrelator
+        from system_learning.correlation.engine import RiskCorrelator
         """Proves same input twice yields identical SHA256."""
         correlator = RiskCorrelator()
 
@@ -214,6 +223,7 @@ class TestRiskCorrelator:
 
     def test_permutation_invariance_inputs_order(self):
         """Proves shuffling input order yields same SHA256."""
+#  # MOVED: from system_learning.correlation.engine import RiskCorrelator
         correlator = RiskCorrelator()
 
         fingerprints = ["fp1_policyA", "fp2_policyB"]
@@ -234,6 +244,7 @@ class TestRiskCorrelator:
 
     def test_cross_process_determinism(self):
         """Proves subprocess SHA256 equals parent process SHA256."""
+#  # MOVED: from system_learning.correlation.engine import RiskCorrelator
         # Test data
         fingerprints_data = ["fp1_policyA", "fp2_policyB"]
         drift_events_data = [
@@ -243,11 +254,12 @@ class TestRiskCorrelator:
 
         # Write test script
         script_content = f"""
+#  # MOVED: from system_learning.correlation.engine import RiskCorrelator
 import sys
 import json
 sys.path.insert(0, r"C:\\Git\\Agentic-Workflow")
 
-from system_learning.correlation.engine import RiskCorrelator
+#  # MOVED: from system_learning.correlation.engine import RiskCorrelator
 
 class MockDriftEvent:
     def __init__(self, policy_id, drift_type, severity):
@@ -317,6 +329,7 @@ print(f"FINGERPRINT: {{report.correlation_fingerprint}}")
 
     def test_stable_ordering_rows(self):
         """Proves rows are sorted by (fingerprint, policy_id, drift_type)."""
+#  # MOVED: from system_learning.correlation.engine import RiskCorrelator
         correlator = RiskCorrelator()
 
         fingerprints = ["fp2_policyB", "fp1_policyA"]  # Intentionally unsorted
@@ -338,6 +351,7 @@ print(f"FINGERPRINT: {{report.correlation_fingerprint}}")
 
     def test_negative_control_disable_sorting(self):
         """Negative control that fails if sorting is removed."""
+#  # MOVED: from system_learning.correlation.engine import RiskCorrelator
         correlator = RiskCorrelator()
 
         fingerprints = ["fp2_policyB", "fp1_policyA"]
@@ -358,6 +372,7 @@ print(f"FINGERPRINT: {{report.correlation_fingerprint}}")
 
     def test_malformed_input_classification_stability(self):
         """Proves stable exception types for malformed inputs."""
+#  # MOVED: from system_learning.correlation.engine import RiskCorrelator
         correlator = RiskCorrelator()
 
         # Test malformed inputs
@@ -375,7 +390,10 @@ print(f"FINGERPRINT: {{report.correlation_fingerprint}}")
         assert len(malformed_cases) == 3
 
     def test_proposal_only_purity(self):
+#  # MOVED: from system_learning.correlation.types import CorrelatedRiskReport
+#  # MOVED: from system_learning.correlation.engine import RiskCorrelator
         """Proves correlator is pure and returns only report objects."""
+#  # MOVED: from system_learning.correlation.engine import RiskCorrelator
         correlator = RiskCorrelator()
 
         fingerprints = ["fp1_policyA"]

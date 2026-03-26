@@ -10,7 +10,7 @@ from tempfile import TemporaryDirectory
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -93,7 +93,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L0_routing.meta_control.config_store import (
+#  # MOVED: from agentic_core.L0_routing.meta_control.config_store import (
     _clear_start_of_run_cache,
     activate_version,
     get_active_version,
@@ -101,8 +101,8 @@ from agentic_core.L0_routing.meta_control.config_store import (
     read_version_payload,
     write_next_version,
 )
-from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -197,6 +197,10 @@ class TestTimeShiftedConsumption:
     """Test suite for time-shifted consumption behavior."""
 
     def test_time_shifted_behavior_t_reads_old_t1_reads_new(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.meta_control.config_store import (
+        from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test time_shifted_behavior_t_reads_old_t1_reads_new runtime behavior."""
     # Arrange
     # TODO: Set up test data for time_shifted_behavior_t_reads_old_t1_reads_new

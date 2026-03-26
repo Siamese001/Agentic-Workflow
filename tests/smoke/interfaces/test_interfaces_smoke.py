@@ -5,9 +5,21 @@ import pytest
 
 @pytest.mark.smoke
 def test_interfaces_package_exposes_public_api():
+    import agentic_core.interfaces as mod
+    from agentic_core.interfaces.determinism import canonical_hash
+    from agentic_core.interfaces.determinism import strip_nondeterministic
+    from agentic_core.interfaces.embeddings import SimilarityResult
+    from agentic_core.interfaces.gateway import (
+    from agentic_core.interfaces.IHealerProtocol import IHealerProtocol
+    from agentic_core.interfaces.IMemoryStoreProtocol import IMemoryStoreProtocol
+    from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
+    from agentic_core.interfaces.IValidatorProtocol import ValidatorProtocol
+    from agentic_core.interfaces.mixins import HealerMixin, MetaLearningMixin
+    from agentic_core.interfaces.validators import RuleFailure
+    from agentic_core.interfaces.write_gateway import compute_replay_key
     """Interfaces package exposes at least one public symbol."""
     try:
-        import agentic_core.interfaces as mod
+#  # MOVED: import agentic_core.interfaces as mod
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     public = [n for n in dir(mod) if not n.startswith("_")]
@@ -18,7 +30,7 @@ def test_interfaces_package_exposes_public_api():
 def test_determinism_canonical_hash_is_deterministic():
     """canonical_hash returns identical output for identical input."""
     try:
-        from agentic_core.interfaces.determinism import canonical_hash
+#  # MOVED: from agentic_core.interfaces.determinism import canonical_hash
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     result1 = canonical_hash({"key": "value", "num": 42})
@@ -32,7 +44,7 @@ def test_determinism_canonical_hash_is_deterministic():
 def test_determinism_strip_nondeterministic_removes_timestamps():
     """strip_nondeterministic produces stable output from dynamic input."""
     try:
-        from agentic_core.interfaces.determinism import strip_nondeterministic
+#  # MOVED: from agentic_core.interfaces.determinism import strip_nondeterministic
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     data = {"key": "value", "timestamp": "2026-03-25T18:00:00Z"}
@@ -44,7 +56,7 @@ def test_determinism_strip_nondeterministic_removes_timestamps():
 def test_embeddings_interface_similarity_result_is_type():
     """SimilarityResult is a proper type/class."""
     try:
-        from agentic_core.interfaces.embeddings import SimilarityResult
+#  # MOVED: from agentic_core.interfaces.embeddings import SimilarityResult
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     assert isinstance(SimilarityResult, type), "SimilarityResult should be a class"
@@ -54,7 +66,7 @@ def test_embeddings_interface_similarity_result_is_type():
 def test_gateway_classes_are_types():
     """SovereignLLMGateway and GenerationRequest are proper classes."""
     try:
-        from agentic_core.interfaces.gateway import (
+#  # MOVED: from agentic_core.interfaces.gateway import (
             GenerationRequest,
             SovereignLLMGateway,
         )
@@ -68,10 +80,10 @@ def test_gateway_classes_are_types():
 def test_protocols_are_abstract_types():
     """Protocol interfaces are proper types suitable for isinstance checks."""
     try:
-        from agentic_core.interfaces.IHealerProtocol import IHealerProtocol
-        from agentic_core.interfaces.IMemoryStoreProtocol import IMemoryStoreProtocol
-        from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
-        from agentic_core.interfaces.IValidatorProtocol import ValidatorProtocol
+#  # MOVED: from agentic_core.interfaces.IHealerProtocol import IHealerProtocol
+#  # MOVED: from agentic_core.interfaces.IMemoryStoreProtocol import IMemoryStoreProtocol
+#  # MOVED: from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
+#  # MOVED: from agentic_core.interfaces.IValidatorProtocol import ValidatorProtocol
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     for proto in [ValidatorProtocol, IHealerProtocol, IOrchestratorProtocol, IMemoryStoreProtocol]:
@@ -82,7 +94,7 @@ def test_protocols_are_abstract_types():
 def test_mixins_are_instantiable_protocol_stubs():
     """HealerMixin and MetaLearningMixin are instantiable mixin classes."""
     try:
-        from agentic_core.interfaces.mixins import HealerMixin, MetaLearningMixin
+#  # MOVED: from agentic_core.interfaces.mixins import HealerMixin, MetaLearningMixin
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     for mixin in [HealerMixin, MetaLearningMixin]:
@@ -95,7 +107,7 @@ def test_mixins_are_instantiable_protocol_stubs():
 def test_validators_rule_failure_is_instantiable():
     """RuleFailure is a class that can be instantiated to represent a validation failure."""
     try:
-        from agentic_core.interfaces.validators import RuleFailure
+#  # MOVED: from agentic_core.interfaces.validators import RuleFailure
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     assert isinstance(RuleFailure, type)
@@ -108,7 +120,7 @@ def test_validators_rule_failure_is_instantiable():
 def test_write_gateway_compute_replay_key_returns_string():
     """compute_replay_key returns a non-empty string for valid inputs."""
     try:
-        from agentic_core.interfaces.write_gateway import compute_replay_key
+#  # MOVED: from agentic_core.interfaces.write_gateway import compute_replay_key
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     result = compute_replay_key(

@@ -14,27 +14,27 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L2_execution.types.vllm_gateway_adapter_types import VLLMGatewayAdapter
-from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_gateway_adapter_types import VLLMGatewayAdapter
+#  # MOVED: from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
     VLLMCircuitBreakerRegistry,
     VLLMGatewayCallResult,
     VLLMGatewayTelemetry,
     VLLMQueueController,
 )
-from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
     VLLMInfrastructureFingerprint,
 )
-from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
     InvariantId,
     InvariantSeverity,
     InvariantViolation,
 )
-from agentic_core.L2_execution.types.vllm_replay_validator_types import (
+#  # MOVED: from agentic_core.L2_execution.types.vllm_replay_validator_types import (
     VLLMReplayArtifact,
     VLLMReplayValidator,
     compute_replay_hash,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -81,7 +81,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_vllm_replay", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_vllm_replay", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_vllm_replay", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -203,7 +203,7 @@ pytestmark = pytest.mark.unit_min_deps
 
 
 def _reset_singletons():
-    from agentic_core.L2_execution.types.vllm_gateway_adapter_types import reset_singletons
+#  # MOVED: from agentic_core.L2_execution.types.vllm_gateway_adapter_types import reset_singletons
 
     reset_singletons()
 
@@ -316,6 +316,14 @@ def _create_mutated_artifact(original: VLLMReplayArtifact) -> VLLMReplayArtifact
 
 
 def test_canonical_payload_stability_pass():
+    from agentic_core.L2_execution.types.vllm_gateway_adapter_types import VLLMGatewayAdapter
+    from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
+    from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
+    from agentic_core.L2_execution.types.vllm_replay_validator_types import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.types.vllm_gateway_adapter_types import reset_singletons
     artifact_1 = _create_test_artifact()
     replay_hash_1 = artifact_1.replay_hash
     canonical_payload_hash_1 = artifact_1.canonical_payload_hash()

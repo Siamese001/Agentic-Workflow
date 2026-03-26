@@ -21,12 +21,12 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     SYSTEM_LEARNING_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -73,7 +73,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_execute_ssot_digest_emission", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_execute_ssot_digest_emission", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_execute_ssot_digest_emission", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -196,14 +196,14 @@ pytestmark = pytest.mark.unit_min_deps
 
 def _get_compute_fn():
     """Import _compute_pipeline_digest from execute_ssot."""
-    from agentic_core.L0_routing.scripts.execute_ssot import _compute_pipeline_digest
+#  # MOVED: from agentic_core.L0_routing.scripts.execute_ssot import _compute_pipeline_digest
 
     return _compute_pipeline_digest
 
 
 def _emit_for_targets(targets: list[str]) -> str:
     """Run the full emit path: compute + emit_once. Return the printed line."""
-    from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+#  # MOVED: from agentic_core.L6_observability.engines.determinism_digest_emitter import (
         DeterminismDigestEmitter,
     )
 
@@ -232,6 +232,11 @@ class TestComputePipelineDigestExists:
     
     @pytest.mark.unit_min_deps
     def test_returns_64_hex_string(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L0_routing.scripts.execute_ssot import _compute_pipeline_digest
+        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
         fn = _get_compute_fn()
         result = fn([AGENTIC_CORE_DIR])
         assert isinstance(result, str)

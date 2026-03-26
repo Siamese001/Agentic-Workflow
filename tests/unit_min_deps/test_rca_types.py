@@ -2,7 +2,7 @@
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -65,7 +65,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_rca_types", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_rca_types", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_rca_types", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -103,7 +103,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.types.rca_types import (
+#  # MOVED: from system_learning.types.rca_types import (
     RCAFinding,
     canonical_bytes,
     compute_report_hash,
@@ -174,6 +174,21 @@ pytestmark = pytest.mark.unit_min_deps
 
 class TestRCATypes:
     def test_deterministic_hash_stability(self):
+        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+        from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
         """Same inputs produce identical report_hash across two constructions."""
         findings = (
             RCAFinding(
@@ -210,6 +225,8 @@ class TestRCATypes:
 
     def test_findings_ordering_canonical(self):
         """Findings are sorted deterministically by (category, signature)."""
+#  # MOVED: from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+#  # MOVED: from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
         # Create findings in non-canonical order
         findings = (
             RCAFinding(
@@ -243,6 +260,9 @@ class TestRCATypes:
 
     def test_changing_evidence_changes_hash(self):
         """Changing one byte in evidence changes report_hash."""
+#  # MOVED: from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+#  # MOVED: from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+#  # MOVED: from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
         findings1 = (
             RCAFinding(
                 category="SYNTAX",
@@ -279,6 +299,8 @@ class TestRCATypes:
 
     def test_report_id_equals_report_hash(self):
         """report_id is always equal to report_hash."""
+#  # MOVED: from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+#  # MOVED: from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
         findings = (
             RCAFinding(
                 category="TIMEOUT",
@@ -301,6 +323,8 @@ class TestRCATypes:
 class TestDeterminism:
     def test_canonical_bytes_deterministic(self):
         """canonical_bytes produces identical output for same report."""
+#  # MOVED: from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+#  # MOVED: from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
         findings = (
             RCAFinding(
                 category="SYNTAX",
@@ -330,7 +354,13 @@ class TestDeterminism:
         assert canonical1 == canonical2 == canonical3
 
     def test_compute_report_hash_deterministic(self):
+#  # MOVED: from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+#  # MOVED: from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+#  # MOVED: from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
         """compute_report_hash produces identical output for same report."""
+#  # MOVED: from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+#  # MOVED: from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
+#  # MOVED: from system_learning.types.rca_types import RCAFinding, canonical_bytes, compute_report_hash, create_rca_report
         findings = (
             RCAFinding(
                 category="SYNTAX",

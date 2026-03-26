@@ -2,7 +2,7 @@
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -64,7 +64,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_oscillation_detector", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_oscillation_detector", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_oscillation_detector", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -102,7 +102,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.validators.oscillation_detector import (
+#  # MOVED: from system_learning.validators.oscillation_detector import (
     OscillationPolicy,
     compute_freeze_decision,
     detect_oscillation,
@@ -171,6 +171,30 @@ pytestmark = pytest.mark.unit_min_deps
 
 class TestDetectOscillation:
     def test_oscillation_true_pattern(self):
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+        from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
         """Alternating values detected as oscillation."""
         policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=3600)
         values = (0.8, 0.85, 0.8, 0.85, 0.8)
@@ -178,30 +202,40 @@ class TestDetectOscillation:
 
     def test_oscillation_true_pattern_reverse(self):
         """Alternating values (reverse) detected as oscillation."""
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
         policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=3600)
         values = (0.85, 0.8, 0.85, 0.8, 0.85)
         assert detect_oscillation(values, policy) is True
 
     def test_non_oscillation_pattern(self):
         """Monotonic increasing values not detected as oscillation."""
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
         policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=3600)
         values = (0.8, 0.81, 0.82, 0.83, 0.84)
         assert detect_oscillation(values, policy) is False
 
     def test_non_oscillation_all_same(self):
         """All same values not detected as oscillation."""
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
         policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=3600)
         values = (0.8, 0.8, 0.8, 0.8, 0.8)
         assert detect_oscillation(values, policy) is False
 
     def test_insufficient_data(self):
         """Insufficient data returns False."""
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
         policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=3600)
         values = (0.8, 0.85, 0.8)
         assert detect_oscillation(values, policy) is False
 
     def test_oscillation_with_epsilon_tolerance(self):
         """Values within epsilon tolerance detected as oscillation."""
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
         policy = OscillationPolicy(window=5, epsilon=0.02, freeze_seconds=3600)
         # 0.8 and 0.801 are within epsilon, 0.85 and 0.851 are within epsilon
         values = (0.8, 0.851, 0.801, 0.85, 0.8)
@@ -209,6 +243,8 @@ class TestDetectOscillation:
 
     def test_non_oscillation_three_values(self):
         """Three distinct values not detected as oscillation."""
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
         policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=3600)
         values = (0.8, 0.85, 0.9, 0.8, 0.85)
         assert detect_oscillation(values, policy) is False
@@ -217,6 +253,8 @@ class TestDetectOscillation:
 class TestComputeFreezeDecision:
     def test_freeze_decision_on_oscillation(self):
         """Oscillation triggers freeze decision."""
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
         policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=3600)
         values = (0.8, 0.85, 0.8, 0.85, 0.8)
         last_update_utc = 1700000000
@@ -229,6 +267,8 @@ class TestComputeFreezeDecision:
 
     def test_no_freeze_on_non_oscillation(self):
         """Non-oscillation does not trigger freeze."""
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
         policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=3600)
         values = (0.8, 0.81, 0.82, 0.83, 0.84)
         last_update_utc = 1700000000
@@ -241,6 +281,8 @@ class TestComputeFreezeDecision:
 
     def test_freeze_until_utc_computation(self):
         """freeze_until_utc correctly computed."""
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
         policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=7200)
         values = (0.8, 0.85, 0.8, 0.85, 0.8)
         last_update_utc = 1700000000
@@ -253,6 +295,8 @@ class TestComputeFreezeDecision:
 
     def test_freeze_decision_deterministic(self):
         """compute_freeze_decision is deterministic."""
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
         policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=3600)
         values = (0.8, 0.85, 0.8, 0.85, 0.8)
         last_update_utc = 1700000000
@@ -267,7 +311,11 @@ class TestComputeFreezeDecision:
 
 class TestDeterminism:
     def test_detect_oscillation_deterministic(self):
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
         """detect_oscillation produces consistent results."""
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
+#  # MOVED: from system_learning.validators.oscillation_detector import OscillationPolicy, compute_freeze_decision, detect_oscillation
         policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=3600)
         values = (0.8, 0.85, 0.8, 0.85, 0.8)
 

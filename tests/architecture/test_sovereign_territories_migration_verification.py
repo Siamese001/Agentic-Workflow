@@ -100,8 +100,22 @@ class TestNewTerritoryAPI:
     """Verify new territory API functions work correctly."""
 
     def test_get_all_territories_returns_mapping(self):
-        """get_all_territories() returns a Mapping with expected territories."""
         from agentic_core.L5_safety.config.structure_blueprint.territories import (
+        from agentic_core.L5_safety.config.structure_blueprint.territories import (
+        from agentic_core.L5_safety.config.structure_blueprint.territories import (
+        from agentic_core.L5_safety.config.structure_blueprint.territories import (
+        from agentic_core.L5_safety.config.structure_blueprint.territories import (
+        from agentic_core.L5_safety.config.structure_blueprint import __all__
+        from agentic_core.L5_safety.config.structure_blueprint import __all__
+        from agentic_core.L5_safety.config.structure_blueprint import __all__
+        import agentic_core.L5_safety.config.structure_blueprint._constants as const_mod
+        from agentic_core.L5_safety.config.structure_blueprint._constants import (
+        from agentic_core.L5_safety.config.structure_blueprint.derived import DEPTH_RULES
+        from agentic_core.L5_safety.config.structure_blueprint.derived import (
+        from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+        from agentic_core.L5_safety.config.structure_blueprint.territories import (
+        """get_all_territories() returns a Mapping with expected territories."""
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.territories import (
             get_all_territories,
         )
 
@@ -116,7 +130,7 @@ class TestNewTerritoryAPI:
 
     def test_get_territory_metadata_returns_dict(self):
         """get_territory_metadata() returns territory definition dict or mappingproxy."""
-        from agentic_core.L5_safety.config.structure_blueprint.territories import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.territories import (
             get_territory_metadata,
         )
 
@@ -127,7 +141,7 @@ class TestNewTerritoryAPI:
 
     def test_get_territory_metadata_returns_none_for_invalid(self):
         """get_territory_metadata() returns None for invalid territory."""
-        from agentic_core.L5_safety.config.structure_blueprint.territories import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.territories import (
             get_territory_metadata,
         )
 
@@ -136,7 +150,7 @@ class TestNewTerritoryAPI:
 
     def test_is_valid_root_folder_accepts_valid(self):
         """is_valid_root_folder() returns True for valid root folders."""
-        from agentic_core.L5_safety.config.structure_blueprint.territories import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.territories import (
             is_valid_root_folder,
         )
 
@@ -146,7 +160,7 @@ class TestNewTerritoryAPI:
 
     def test_is_valid_root_folder_rejects_invalid(self):
         """is_valid_root_folder() returns False for invalid folders."""
-        from agentic_core.L5_safety.config.structure_blueprint.territories import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.territories import (
             is_valid_root_folder,
         )
 
@@ -160,7 +174,7 @@ class TestPublicAPINoSovereignTerritories:
     @pytest.mark.xfail(reason="SOVEREIGN_TERRITORIES migration pending", strict=True)
     def test_sovereign_territories_not_in_init_all(self):
         """SOVEREIGN_TERRITORIES should not be in __all__ export list."""
-        from agentic_core.L5_safety.config.structure_blueprint import __all__
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint import __all__
 
         assert "SOVEREIGN_TERRITORIES" not in __all__, (
             "SOVEREIGN_TERRITORIES should be removed from public __all__ list"
@@ -174,7 +188,7 @@ class TestPublicAPINoSovereignTerritories:
 
     def test_build_sovereign_territories_not_in_init_all(self):
         """build_sovereign_territories should not be in __all__."""
-        from agentic_core.L5_safety.config.structure_blueprint import __all__
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint import __all__
 
         assert "build_sovereign_territories" not in __all__, (
             "build_sovereign_territories should be removed from public __all__"
@@ -182,7 +196,7 @@ class TestPublicAPINoSovereignTerritories:
 
     def test_new_api_functions_in_init_all(self):
         """New API functions should be in __all__."""
-        from agentic_core.L5_safety.config.structure_blueprint import __all__
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint import __all__
 
         assert "get_all_territories" in __all__
         assert "get_territory_metadata" in __all__
@@ -199,7 +213,7 @@ class TestDeprecationWarning:
             # Force reimport to trigger warning
             import importlib
 
-            import agentic_core.L5_safety.config.structure_blueprint._constants as const_mod
+#  # MOVED: import agentic_core.L5_safety.config.structure_blueprint._constants as const_mod
 
             importlib.reload(const_mod)
 
@@ -290,7 +304,7 @@ class TestInternalTestingAccess:
     def test_verify_py_can_import_sovereign_territories(self):
         """_verify.py should still be able to import SOVEREIGN_TERRITORIES for testing."""
         # This is allowed because _verify.py tests the implementation itself
-        from agentic_core.L5_safety.config.structure_blueprint._constants import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint._constants import (
             SOVEREIGN_TERRITORIES,
         )
 
@@ -303,7 +317,7 @@ class TestDerivedRegistriesNoRegression:
 
     def test_depth_rules_derived_correctly(self):
         """DEPTH_RULES should still be derived correctly."""
-        from agentic_core.L5_safety.config.structure_blueprint.derived import DEPTH_RULES
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.derived import DEPTH_RULES
 
         assert len(DEPTH_RULES) > 0, "DEPTH_RULES should have entries"
         assert "agentic_core" in DEPTH_RULES
@@ -311,7 +325,7 @@ class TestDerivedRegistriesNoRegression:
 
     def test_core_subfolder_map_derived_correctly(self):
         """CORE_SUBFOLDER_MAP should still be derived correctly."""
-        from agentic_core.L5_safety.config.structure_blueprint.derived import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.derived import (
             CORE_SUBFOLDER_MAP,
         )
 
@@ -319,7 +333,7 @@ class TestDerivedRegistriesNoRegression:
 
     def test_allow_root_py_territories_derived_correctly(self):
         """ALLOW_ROOT_PY_TERRITORIES should still be derived correctly."""
-        from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.ssot import (
             ALLOW_ROOT_PY_TERRITORIES,
         )
 
@@ -393,7 +407,7 @@ class TestMigrationCompleteness:
 
     def test_phase2_new_api_functions_exist(self):
         """Phase 2: New API functions should exist and be importable."""
-        from agentic_core.L5_safety.config.structure_blueprint.territories import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint.territories import (
             get_all_territories,
             get_territory_metadata,
             is_valid_root_folder,

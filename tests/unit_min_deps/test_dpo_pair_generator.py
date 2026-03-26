@@ -2,11 +2,11 @@
 
 import pytest
 
-from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import (
+#  # MOVED: from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import (
     DefaultDeterministicDPOPairGenerator,
 )
-from agentic_core.L6_observability.types.dpo_types import DPOExampleId
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L6_observability.types.dpo_types import DPOExampleId
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -157,6 +157,14 @@ class TestDPOPairGenerator:
     """Test suite for DPO Pair Generator deterministic behavior."""
 
     def test_hash_stable_same_inputs(self):
+        from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
+        from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
+        from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
+        from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
+        from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
+        from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
+        from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
+        from agentic_core.L6_observability.types.dpo_types import DPOExampleId
         """Same inputs must produce identical hashes and content_hash."""
         generator = DefaultDeterministicDPOPairGenerator()
 
@@ -189,6 +197,7 @@ class TestDPOPairGenerator:
 
     def test_different_inputs_different_hashes(self):
         """Different inputs must produce different hashes."""
+#  # MOVED: from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
         generator = DefaultDeterministicDPOPairGenerator()
 
         control_output1 = b"control_output_1"
@@ -218,6 +227,7 @@ class TestDPOPairGenerator:
 
     def test_approve_vs_reject_different_pairs(self):
         """APPROVE and REJECT decisions should create different pairs."""
+#  # MOVED: from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
         generator = DefaultDeterministicDPOPairGenerator()
 
         control_output = b"same_control"
@@ -245,6 +255,7 @@ class TestDPOPairGenerator:
 
     def test_invalid_human_decision_raises_error(self):
         """Invalid human decision should raise ValueError."""
+#  # MOVED: from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
         generator = DefaultDeterministicDPOPairGenerator()
 
         with pytest.raises(ValueError, match="human_decision must be 'APPROVE' or 'REJECT'"):
@@ -257,6 +268,7 @@ class TestDPOPairGenerator:
 
     def test_canonical_bytes_ascii_only(self):
         """canonical_bytes() must be ASCII-only."""
+#  # MOVED: from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
         generator = DefaultDeterministicDPOPairGenerator()
 
         pair = generator.generate(
@@ -282,6 +294,7 @@ class TestDPOPairGenerator:
 
     def test_content_hash_stability(self):
         """content_hash() must be stable 64-character hex string."""
+#  # MOVED: from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
         generator = DefaultDeterministicDPOPairGenerator()
 
         pair = generator.generate(
@@ -303,6 +316,7 @@ class TestDPOPairGenerator:
 
     def test_example_id_deterministic_construction(self):
         """DPOExampleId should be deterministic from hashes."""
+#  # MOVED: from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
         control_hash = "a1b2c3d4" * 8  # 32 chars * 8 = 256 chars, but we need 64
         control_hash = "a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456"
         candidate_hash = "fedcba09" * 8
@@ -323,7 +337,9 @@ class TestDPOPairGenerator:
         assert content_hash == example_id.content_hash()
 
     def test_reason_codes_preserved(self):
+#  # MOVED: from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import DefaultDeterministicDPOPairGenerator
         """Reason codes should be preserved exactly as provided."""
+#  # MOVED: from agentic_core.L6_observability.types.dpo_types import DPOExampleId
         generator = DefaultDeterministicDPOPairGenerator()
 
         reason_codes = ("performance", "accuracy", "user_satisfaction")

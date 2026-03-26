@@ -4,14 +4,14 @@ import tempfile
 
 import pytest
 
-from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
-from agentic_core.L4_state.storage.persistent_store import (
+#  # MOVED: from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
+#  # MOVED: from agentic_core.L4_state.storage.persistent_store import (
     _canonicalize_payload,
     _compute_sha256,
     _sanitize_id,
     create_artifact,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -158,6 +158,22 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 @pytest.mark.unit_min_deps
 def test_sanitize_id():
+    from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+    from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+    from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+    from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+    from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+    from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
+    from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+    from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
+    from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+    from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
+    from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+    from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
+    from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+    from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
+    from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+    from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
     """Test ID sanitization prevents path traversal."""
     # Normal IDs pass through
     assert _sanitize_id("test_id") == "test_id"
@@ -176,6 +192,7 @@ def test_sanitize_id():
 @pytest.mark.unit_min_deps
 def test_canonicalize_payload():
     """Test payload canonicalization is deterministic."""
+#  # MOVED: from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
     payload1 = {"b": 2, "a": 1}
     payload2 = {"a": 1, "b": 2}
 
@@ -190,6 +207,7 @@ def test_canonicalize_payload():
 @pytest.mark.unit_min_deps
 def test_compute_sha256():
     """Test SHA256 computation is stable."""
+#  # MOVED: from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
     data = "test data"
     hash1 = _compute_sha256(data)
     hash2 = _compute_sha256(data)
@@ -202,6 +220,7 @@ def test_compute_sha256():
 @pytest.mark.unit_min_deps
 def test_create_artifact():
     """Test artifact creation with computed hashes."""
+#  # MOVED: from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
     payload = {"test": "data"}
     artifact = create_artifact("test_kind", "test_id", payload)
 
@@ -216,6 +235,7 @@ def test_create_artifact():
 @pytest.mark.unit_min_deps
 def test_filesystem_store_put_creates_v0001_then_v0002():
     """Test that put creates v0001 then v0002 deterministically."""
+#  # MOVED: from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
     with tempfile.TemporaryDirectory() as temp_dir:
         store = FileSystemStore(temp_dir)
 
@@ -235,6 +255,8 @@ def test_filesystem_store_put_creates_v0001_then_v0002():
 @pytest.mark.unit_min_deps
 def test_filesystem_store_get_round_trip():
     """Test that get returns exactly what was put."""
+#  # MOVED: from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+#  # MOVED: from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
     with tempfile.TemporaryDirectory() as temp_dir:
         store = FileSystemStore(temp_dir)
 
@@ -250,6 +272,8 @@ def test_filesystem_store_get_round_trip():
 @pytest.mark.unit_min_deps
 def test_filesystem_store_list_ordering():
     """Test that list returns deterministically sorted results."""
+#  # MOVED: from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+#  # MOVED: from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
     with tempfile.TemporaryDirectory() as temp_dir:
         store = FileSystemStore(temp_dir)
 
@@ -283,6 +307,8 @@ def test_filesystem_store_list_ordering():
 @pytest.mark.unit_min_deps
 def test_filesystem_store_rejects_path_traversal():
     """Test that path traversal attempts are blocked."""
+#  # MOVED: from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+#  # MOVED: from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
     with tempfile.TemporaryDirectory() as temp_dir:
         store = FileSystemStore(temp_dir)
 
@@ -298,6 +324,8 @@ def test_filesystem_store_rejects_path_traversal():
 @pytest.mark.unit_min_deps
 def test_filesystem_store_size_cap_enforced():
     """Test that maximum artifact size is enforced."""
+#  # MOVED: from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+#  # MOVED: from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
     with tempfile.TemporaryDirectory() as temp_dir:
         # Create store with tiny size limit
         store = FileSystemStore(temp_dir, max_artifact_size=100)
@@ -312,7 +340,11 @@ def test_filesystem_store_size_cap_enforced():
 
 @pytest.mark.unit_min_deps
 def test_filesystem_store_list_filter_by_kind():
+#  # MOVED: from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+#  # MOVED: from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
     """Test that list can filter by artifact kind."""
+#  # MOVED: from agentic_core.L4_state.storage.persistent_store import _canonicalize_payload, _compute_sha256, _sanitize_id, create_artifact
+#  # MOVED: from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
     with tempfile.TemporaryDirectory() as temp_dir:
         store = FileSystemStore(temp_dir)
 

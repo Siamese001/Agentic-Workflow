@@ -4,22 +4,22 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     L3_ORCHESTRATION_DIR,
     L4_STATE_DIR,
     TOOLS_DIR,
 )
-from agentic_core.L5_safety.static_checks.determinism_serialization_check import (
+#  # MOVED: from agentic_core.L5_safety.static_checks.determinism_serialization_check import (
     scan_repository_for_determinism,
 )
-from agentic_core.L5_safety.static_checks.powershell_ban import (
+#  # MOVED: from agentic_core.L5_safety.static_checks.powershell_ban import (
     scan_repository_for_powershell,
 )
-from agentic_core.L5_safety.static_checks.write_gateway_enforcer import (
+#  # MOVED: from agentic_core.L5_safety.static_checks.write_gateway_enforcer import (
     scan_repository_for_writes,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -166,6 +166,19 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 @pytest.mark.unit_min_deps
 def test_repo_no_powershell_violations():
+    from agentic_core.L5_safety.static_checks.powershell_ban import scan_repository_for_powershell
+    from agentic_core.L5_safety.static_checks.write_gateway_enforcer import scan_repository_for_writes
+    from agentic_core.L5_safety.static_checks.determinism_serialization_check import scan_repository_for_determinism
+    from agentic_core.L5_safety.static_checks.determinism_serialization_check import scan_repository_for_determinism
+    from agentic_core.L5_safety.static_checks.write_gateway_enforcer import scan_repository_for_writes
+    from agentic_core.L5_safety.static_checks.powershell_ban import scan_repository_for_powershell
+    from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, L3_ORCHESTRATION_DIR, L4_STATE_DIR, TOOLS_DIR
+    from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, L3_ORCHESTRATION_DIR, L4_STATE_DIR, TOOLS_DIR
+    from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, L3_ORCHESTRATION_DIR, L4_STATE_DIR, TOOLS_DIR
+    from agentic_core.L5_safety.static_checks.determinism_serialization_check import scan_repository_for_determinism
+    from agentic_core.L5_safety.static_checks.write_gateway_enforcer import scan_repository_for_writes
+    from agentic_core.L5_safety.static_checks.powershell_ban import scan_repository_for_powershell
+    from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, L3_ORCHESTRATION_DIR, L4_STATE_DIR, TOOLS_DIR
     """Test that repository has no PowerShell violations."""
     repo_root = Path.cwd()
 
@@ -182,6 +195,7 @@ def test_repo_no_powershell_violations():
 @pytest.mark.unit_min_deps
 def test_repo_no_write_gateway_violations():
     """Test that repository has no write gateway violations in scope."""
+#  # MOVED: from agentic_core.L5_safety.static_checks.powershell_ban import scan_repository_for_powershell
     repo_root = Path.cwd()
 
     violations = scan_repository_for_writes(repo_root)
@@ -197,6 +211,7 @@ def test_repo_no_write_gateway_violations():
 @pytest.mark.unit_min_deps
 def test_repo_no_determinism_violations():
     """Test that repository has no determinism violations in replay/storage."""
+#  # MOVED: from agentic_core.L5_safety.static_checks.write_gateway_enforcer import scan_repository_for_writes
     repo_root = Path.cwd()
 
     violations = scan_repository_for_determinism(repo_root)
@@ -212,6 +227,7 @@ def test_repo_no_determinism_violations():
 @pytest.mark.unit_min_deps
 def test_scanner_coverage():
     """Test that scanners cover expected directories."""
+#  # MOVED: from agentic_core.L5_safety.static_checks.determinism_serialization_check import scan_repository_for_determinism
     repo_root = Path.cwd()
 
     # Test PowerShell scanner coverage
@@ -254,7 +270,17 @@ def test_scanner_coverage():
 
 @pytest.mark.unit_min_deps
 def test_scanner_deterministic_output():
+#  # MOVED: from agentic_core.L5_safety.static_checks.determinism_serialization_check import scan_repository_for_determinism
+#  # MOVED: from agentic_core.L5_safety.static_checks.write_gateway_enforcer import scan_repository_for_writes
+#  # MOVED: from agentic_core.L5_safety.static_checks.powershell_ban import scan_repository_for_powershell
     """Test that scanners produce deterministic output across runs."""
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, L3_ORCHESTRATION_DIR, L4_STATE_DIR, TOOLS_DIR
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, L3_ORCHESTRATION_DIR, L4_STATE_DIR, TOOLS_DIR
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, L3_ORCHESTRATION_DIR, L4_STATE_DIR, TOOLS_DIR
+#  # MOVED: from agentic_core.L5_safety.static_checks.determinism_serialization_check import scan_repository_for_determinism
+#  # MOVED: from agentic_core.L5_safety.static_checks.write_gateway_enforcer import scan_repository_for_writes
+#  # MOVED: from agentic_core.L5_safety.static_checks.powershell_ban import scan_repository_for_powershell
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, L3_ORCHESTRATION_DIR, L4_STATE_DIR, TOOLS_DIR
     repo_root = Path.cwd()
 
     # Run each scanner twice

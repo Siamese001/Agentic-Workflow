@@ -6,10 +6,10 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L0_ROUTING_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -56,7 +56,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_fire_meta_learning_timestamps", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_fire_meta_learning_timestamps", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_fire_meta_learning_timestamps", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -186,6 +186,14 @@ class TestFireMetaLearningTimestamps:
         return mgr
 
     def test_signature_accepts_now_utc_parameter(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+        from system_learning.engines.in_memory_healing_outcome_intake_store import (
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
         """_fire_meta_learning_intake must accept now_utc as a parameter (not read wall-clock internally)."""
         src = EXECUTE_SSOT_PATH.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(src)
@@ -250,7 +258,7 @@ class TestFireMetaLearningTimestamps:
     assert isinstance(result, object), "Result should be an object"
     # TODO: Add specific runtime behavior assertions
         )
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent
 
         injected_ts = 9_000_000
 
@@ -275,12 +283,12 @@ class TestFireMetaLearningTimestamps:
 
     def test_determinism_same_input_same_bytes(self):
         """Same now_utc + same healing event → identical canonical_bytes() across two calls."""
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.in_memory_healing_outcome_intake_store import (
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+#  # MOVED: from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+#  # MOVED: from system_learning.engines.in_memory_healing_outcome_intake_store import (
             InMemoryHealingOutcomeIntakeStore,
         )
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent
 
         fixed_ts = 5_000_000
 

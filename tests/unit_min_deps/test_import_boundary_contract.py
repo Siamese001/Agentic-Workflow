@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     OPS_SCRIPTS_DIR,
 )
@@ -50,6 +50,7 @@ class TestAgenticCoreOpsScriptsBoundary:
     """Hard gate: agentic_core must not import ops_scripts."""
 
     def test_no_agentic_core_imports_ops_scripts(self) -> None:
+        from agentic_core.L0_routing.config.path_constants import (
     """Test no_agentic_core_imports_ops_scripts contract compliance."""
     # Arrange
     # TODO: Set up contract parties and terms

@@ -32,7 +32,7 @@ from dataclasses import dataclass, field
 from typing import Any
 from unittest.mock import MagicMock
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -84,7 +84,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_validates_agent_capability("p1", "test_llm_workflow_creative", "test")
 # REMOVED: _emit_checks_agent_registry("p1", "test_llm_workflow_creative", "test")
 # REMOVED: _emit_snapshots_state("p0", "test_llm_workflow_creative", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -232,6 +232,34 @@ class TestScriptedLLMSimulator:
     """Verify the simulator itself and use it to drive RewooEngine end-to-end."""
 
     def test_simulator_returns_script_entries(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L3_orchestration.engines.reflexion_engine import ReflexionEngine
+        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+        from agentic_core.L3_orchestration.engines.rewoo_engine import (
+        from agentic_core.L3_orchestration.types.rewoo_types import RewooTaskStatus
+        from agentic_core.L3_orchestration.engines.rewoo_engine import (
+        from agentic_core.L3_orchestration.types.rewoo_types import RewooTaskStatus
+        from agentic_core.L3_orchestration.engines.parallelization_engine import (
+        from agentic_core.L3_orchestration.engines.autonomous_workflow_engine import (
+        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
+        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+        from agentic_core.L0_routing.engines.agentic_router import AgenticRouter
+        from agentic_core.L3_orchestration.types.reflexion_types import (
+        from agentic_core.L3_orchestration.types.rewoo_types import (
+        from agentic_core.L3_orchestration.engines.parallelization_engine import (
+        from agentic_core.L3_orchestration.engines.evaluator_optimizer_engine import (
+        from agentic_core.L3_orchestration.engines.rewoo_engine import (
+        from agentic_core.L3_orchestration.types.rewoo_types import RewooTaskStatus
+        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+        from agentic_core.L3_orchestration.engines.reflexion_engine import ReflexionEngine
+        from agentic_core.L3_orchestration.engines.rewoo_engine import (
+        from agentic_core.L3_orchestration.engines.evaluator_optimizer_engine import (
+        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
+        from agentic_core.L3_orchestration.engines.parallelization_engine import (
+        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+        from agentic_core.L3_orchestration.types.reflexion_types import (
     """Test simulator_returns_script_entries runtime behavior."""
     # Arrange
     # TODO: Set up test data for simulator_returns_script_entries
@@ -304,7 +332,7 @@ class TestScriptedLLMSimulator:
 
     def test_reflexion_driven_by_simulator(self):
         """ReflexionEngine driven by scripted generator + evaluator."""
-        from agentic_core.L3_orchestration.engines.reflexion_engine import ReflexionEngine
+#  # MOVED: from agentic_core.L3_orchestration.engines.reflexion_engine import ReflexionEngine
 
         gen_llm = ScriptedLLM(["draft_1", "draft_2", "draft_3"])
         eval_scores = ScriptedLLM(
@@ -330,7 +358,7 @@ class TestScriptedLLMSimulator:
 
     def test_prompt_chain_driven_by_simulator(self):
         """PromptChainEngine with each step backed by ScriptedLLM responses."""
-        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+#  # MOVED: from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
 
         llm = ScriptedLLM(
             [
@@ -388,13 +416,13 @@ class TestChaosAndFaultInjection:
 
     def test_rewoo_chaos_tool_marks_failed_not_crash(self):
         """RewooEngine must not raise when a tool raises."""
-        from agentic_core.L3_orchestration.engines.rewoo_engine import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.rewoo_engine import (
             RewooEngine,
             RewooPlanner,
             RewooSolver,
             RewooWorker,
         )
-        from agentic_core.L3_orchestration.types.rewoo_types import RewooTaskStatus
+#  # MOVED: from agentic_core.L3_orchestration.types.rewoo_types import RewooTaskStatus
 
         chaos = ChaosTool(fail_rate=1.0)
 
@@ -421,13 +449,13 @@ class TestChaosAndFaultInjection:
 
     def test_rewoo_partial_failure_completes_independent_tasks(self):
         """Tasks with no dependency on failed task should still complete."""
-        from agentic_core.L3_orchestration.engines.rewoo_engine import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.rewoo_engine import (
             RewooEngine,
             RewooPlanner,
             RewooSolver,
             RewooWorker,
         )
-        from agentic_core.L3_orchestration.types.rewoo_types import RewooTaskStatus
+#  # MOVED: from agentic_core.L3_orchestration.types.rewoo_types import RewooTaskStatus
 
         async def plan(goal, ctx):
             return [
@@ -494,7 +522,7 @@ class TestChaosAndFaultInjection:
 
     def test_parallelization_all_branches_fail(self):
         """ParallelizationEngine must not raise when every branch errors."""
-        from agentic_core.L3_orchestration.engines.parallelization_engine import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.parallelization_engine import (
             AggregationStrategy,
             ParallelizationEngine,
             ParallelMode,
@@ -515,7 +543,7 @@ class TestChaosAndFaultInjection:
 
     def test_autonomous_circuit_breaker_fires_at_threshold(self):
         """Circuit breaker must fire exactly at max_consecutive_failures."""
-        from agentic_core.L3_orchestration.engines.autonomous_workflow_engine import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.autonomous_workflow_engine import (
             AutonomousWorkflowEngine,
             StopSignal,
         )
@@ -546,7 +574,7 @@ class TestChaosAndFaultInjection:
 
     def test_worker_pool_exception_in_worker_captured_not_raised(self):
         """WorkerPool.dispatch must return WorkerResult(error=...) not raise."""
-        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
             AtomicTask,
             WorkerPool,
         )
@@ -565,7 +593,7 @@ class TestChaosAndFaultInjection:
 
     def test_prompt_chain_step_exception_surfaces_in_result(self):
         """PromptChainEngine step exception should be captured in result."""
-        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+#  # MOVED: from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
 
         chain = PromptChainEngine()
 
@@ -582,7 +610,7 @@ class TestChaosAndFaultInjection:
 
     def test_agentic_router_handler_exception_stored_in_decision(self):
         """AgenticRouter must not raise if handler raises; error in decision."""
-        from agentic_core.L0_routing.engines.agentic_router import AgenticRouter
+#  # MOVED: from agentic_core.L0_routing.engines.agentic_router import AgenticRouter
 
         router = AgenticRouter()
 
@@ -605,7 +633,7 @@ class TestPropertyInvariants:
 
     def test_reflexion_score_is_monotonically_non_decreasing_best(self):
         """best_response() should always equal highest-scored response."""
-        from agentic_core.L3_orchestration.types.reflexion_types import (
+#  # MOVED: from agentic_core.L3_orchestration.types.reflexion_types import (
             ReflexionCritique,
             ReflexionMemory,
         )
@@ -626,7 +654,7 @@ class TestPropertyInvariants:
 
     def test_rewoo_task_list_ready_tasks_never_includes_completed(self):
         """ready_tasks() must never return already-COMPLETED tasks."""
-        from agentic_core.L3_orchestration.types.rewoo_types import (
+#  # MOVED: from agentic_core.L3_orchestration.types.rewoo_types import (
             RewooTask,
             RewooTaskList,
             RewooTaskStatus,
@@ -666,7 +694,7 @@ class TestPropertyInvariants:
 
     def test_parallelization_collect_all_length_matches_n_samples(self):
         """COLLECT_ALL output list length must always equal n_samples."""
-        from agentic_core.L3_orchestration.engines.parallelization_engine import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.parallelization_engine import (
             AggregationStrategy,
             ParallelizationEngine,
             ParallelMode,
@@ -724,7 +752,7 @@ class TestPropertyInvariants:
 
     def test_evaluator_optimizer_history_length_equals_iterations(self):
         """history list length must equal iterations performed."""
-        from agentic_core.L3_orchestration.engines.evaluator_optimizer_engine import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.evaluator_optimizer_engine import (
             EvaluatorOptimizerEngine,
         )
 
@@ -766,13 +794,13 @@ class TestStateMachineFuzzer:
 
     def test_rewoo_all_task_statuses_reachable(self):
         """Every RewooTaskStatus value must be reachable from a fresh engine run."""
-        from agentic_core.L3_orchestration.engines.rewoo_engine import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.rewoo_engine import (
             RewooEngine,
             RewooPlanner,
             RewooSolver,
             RewooWorker,
         )
-        from agentic_core.L3_orchestration.types.rewoo_types import RewooTaskStatus
+#  # MOVED: from agentic_core.L3_orchestration.types.rewoo_types import RewooTaskStatus
 
         seen_statuses: set[RewooTaskStatus] = set()
 
@@ -904,7 +932,7 @@ class TestStateMachineFuzzer:
 
     def test_prompt_chain_all_outcomes_reachable(self):
         """PromptChainEngine must be able to reach success, gate-fail, and step-error."""
-        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+#  # MOVED: from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
 
         outcomes = set()
 
@@ -989,8 +1017,8 @@ class TestPipelineComposition:
 
     def test_rewoo_feeds_reflexion(self):
         """Rewoo synthesized output feeds into Reflexion as the initial draft."""
-        from agentic_core.L3_orchestration.engines.reflexion_engine import ReflexionEngine
-        from agentic_core.L3_orchestration.engines.rewoo_engine import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.reflexion_engine import ReflexionEngine
+#  # MOVED: from agentic_core.L3_orchestration.engines.rewoo_engine import (
             RewooEngine,
             RewooPlanner,
             RewooSolver,
@@ -1080,10 +1108,10 @@ class TestPipelineComposition:
 
     def test_prompt_chain_feeds_evaluator_optimizer(self):
         """PromptChain output feeds as initial content to EvaluatorOptimizer."""
-        from agentic_core.L3_orchestration.engines.evaluator_optimizer_engine import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.evaluator_optimizer_engine import (
             EvaluatorOptimizerEngine,
         )
-        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+#  # MOVED: from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
 
         # Stage 1: PromptChain generates initial content
         chain = PromptChainEngine()
@@ -1121,7 +1149,7 @@ class TestPipelineComposition:
 
     def test_workerPool_replan_pipeline(self):
         """WorkerPool failure triggers replan; new tasks execute successfully."""
-        from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.decomposition_orchestrator import (
             AtomicTask,
             MissionPlan,
             SynthesizerNode,
@@ -1309,7 +1337,7 @@ class TestTemporalAndOrdering:
 
     def test_parallelization_wall_time_less_than_sequential(self):
         """Fan-out branches must run concurrently — wall time < sum of branch times."""
-        from agentic_core.L3_orchestration.engines.parallelization_engine import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.parallelization_engine import (
             AggregationStrategy,
             ParallelizationEngine,
             ParallelMode,
@@ -1374,7 +1402,7 @@ class TestTemporalAndOrdering:
 
     def test_prompt_chain_step_results_accumulate_correctly(self):
         """Each step receives accumulated context from all prior steps."""
-        from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
+#  # MOVED: from agentic_core.L3_orchestration.engines.prompt_chain_engine import PromptChainEngine
 
         seen_contexts = []
 
@@ -1421,7 +1449,7 @@ class TestTemporalAndOrdering:
         result = run(engine.run("task"))
 
         # Iterate through memory to check iteration monotonicity
-        from agentic_core.L3_orchestration.types.reflexion_types import (
+#  # MOVED: from agentic_core.L3_orchestration.types.reflexion_types import (
             ReflexionCritique,
             ReflexionMemory,
         )

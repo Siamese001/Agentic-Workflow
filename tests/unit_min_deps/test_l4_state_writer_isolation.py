@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -87,10 +87,10 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L6_observability.engines.detection_signal_emitter import (
+#  # MOVED: from agentic_core.L6_observability.engines.detection_signal_emitter import (
     emit_detection_signal_with_l4a,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -128,15 +128,15 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.healing_outcome_aggregator import (
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import (
     HealingOutcomeAggregator,
     InvocationRecord,
 )
-from system_learning.engines.l4_state_writer import (
+#  # MOVED: from system_learning.engines.l4_state_writer import (
     DefaultL4StateWriter,
     SimpleChangePackage,
 )
-from system_learning.engines.l4_version_store import L4VersionStore
+#  # MOVED: from system_learning.engines.l4_version_store import L4VersionStore
 
 # REMOVED: _emit_emits_metric_event("test_l4_state_writer_isolation", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_l4_state_writer_isolation", "p4obs", "metric_2")
@@ -235,6 +235,18 @@ class TestPhase7Hardening:
     """Phase 7 hardening tests for L4 state isolation and determinism."""
 
     def test_negative_control_no_activation_pointer_isolation(self):
+        from system_learning.engines.l4_state_writer import DefaultL4StateWriter, SimpleChangePackage
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+        from system_learning.engines.l4_state_writer import DefaultL4StateWriter, SimpleChangePackage
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+        from system_learning.engines.l4_state_writer import DefaultL4StateWriter, SimpleChangePackage
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+        from agentic_core.L6_observability.engines.detection_signal_emitter import emit_detection_signal_with_l4a
+        from agentic_core.L6_observability.engines.detection_signal_emitter import emit_detection_signal_with_l4a
+        from agentic_core.L6_observability.engines.detection_signal_emitter import emit_detection_signal_with_l4a
         """Negative control: L0 does not observe newly written L4B snapshot in same run."""
         # Create L4B writer and aggregator
         version_store = MockL4VersionStore()
@@ -274,6 +286,9 @@ class TestPhase7Hardening:
 
     def test_idempotent_write_determinism(self):
         """Write the same L4B snapshot twice - identical canonical bytes and version."""
+#  # MOVED: from system_learning.engines.l4_state_writer import DefaultL4StateWriter, SimpleChangePackage
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
         version_store = MockL4VersionStore()
         l4_writer = DefaultL4StateWriter(version_store=version_store)
         aggregator = HealingOutcomeAggregator()
@@ -319,6 +334,9 @@ class TestPhase7Hardening:
 
     def test_namespace_isolation_l4a_vs_l4b(self):
         """L4A and L4B maintain distinct namespaces without overwriting."""
+#  # MOVED: from system_learning.engines.l4_state_writer import DefaultL4StateWriter, SimpleChangePackage
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
         version_store = MockL4VersionStore()
         l4_writer = DefaultL4StateWriter(version_store=version_store)
 
@@ -368,6 +386,10 @@ class TestPhase7Hardening:
 
     def test_cross_process_determinism_l4_writes(self):
         """Cross-process determinism for L4 state writes."""
+#  # MOVED: from system_learning.engines.l4_state_writer import DefaultL4StateWriter, SimpleChangePackage
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+#  # MOVED: from agentic_core.L6_observability.engines.detection_signal_emitter import emit_detection_signal_with_l4a
         import os
         import subprocess
         import sys
@@ -382,13 +404,14 @@ class TestPhase7Hardening:
 
         # Write test script
         script_content = f'''
+#  # MOVED: from agentic_core.L6_observability.engines.detection_signal_emitter import emit_detection_signal_with_l4a
 import sys
 import json
 import hashlib
 sys.path.insert(0, r"{os.getcwd()}")
 
-from agentic_core.L6_observability.engines.detection_signal_emitter import emit_detection_signal_with_l4a
-from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
+#  # MOVED: from agentic_core.L6_observability.engines.detection_signal_emitter import emit_detection_signal_with_l4a
+#  # MOVED: from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
 
 class TestWriter:
     def __init__(self):
@@ -468,6 +491,7 @@ print(f"SIGNAL_HASH: {{hashlib.sha256(signal.canonical_bytes()).hexdigest()}}")
             os.unlink(script_path)
 
     def test_malformed_input_classification_stability(self):
+#  # MOVED: from agentic_core.L6_observability.engines.detection_signal_emitter import emit_detection_signal_with_l4a
         """Malformed L4 write inputs produce deterministic exceptions."""
 
         class TestWriter:

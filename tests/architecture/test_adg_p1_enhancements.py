@@ -9,7 +9,7 @@ from __future__ import annotations
 import ast
 import textwrap
 
-from agentic_core.adg.extraction.static_scanner import (
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import (
     Edge,
     ScanResult,
     _detect_cycles,
@@ -17,7 +17,7 @@ from agentic_core.adg.extraction.static_scanner import (
     _tag_dead_imports,
     _UnusedImportVisitor,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -64,7 +64,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_p1_enhancements", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_p1_enhancements", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_p1_enhancements", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -223,6 +223,15 @@ class TestSymbolInventoryVisitor:
     """E1: Verify exports edges are emitted for public top-level symbols."""
 
     def test_public_function_emits_export_edge(self):
+        from agentic_core.adg.extraction.static_scanner import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+        from agentic_core.adg.analysis.RepairRoute import route_violations
+        from agentic_core.adg.analysis.RepairRoute import route_violations
+        from agentic_core.adg.analysis.RepairRoute import route_violations
     """Test public_function_emits_export_edge runtime behavior."""
     # Arrange
     # TODO: Set up test data for public_function_emits_export_edge
@@ -651,7 +660,7 @@ class TestConfidenceScoringNewEdges:
     """Verify confidence.py correctly scores E1/E5/E6 edge types."""
 
     def test_exports_edge_scores_1_0(self):
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+#  # MOVED: from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         edge = Edge(
             from_name="ADG::Module::foo.py",
@@ -667,7 +676,7 @@ class TestConfidenceScoringNewEdges:
         assert ec.provenance == "ast_symbol_inventory"
 
     def test_dead_imports_edge_scores_1_0(self):
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+#  # MOVED: from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         edge = Edge(
             from_name="ADG::Module::foo.py",
@@ -683,7 +692,7 @@ class TestConfidenceScoringNewEdges:
         assert ec.provenance == "ast_dead_import"
 
     def test_in_cycle_edge_scores_0_95(self):
-        from agentic_core.adg.analysis.EdgeConfidence import score_edge
+#  # MOVED: from agentic_core.adg.analysis.EdgeConfidence import score_edge
 
         edge = Edge(
             from_name="ADG::Module::a.py",
@@ -730,7 +739,7 @@ class TestRepairRoutingNewEdges:
         )
 
     def test_cycle_routes_to_architecture_governor(self):
-        from agentic_core.adg.analysis.RepairRoute import route_violations
+#  # MOVED: from agentic_core.adg.analysis.RepairRoute import route_violations
 
         routes = route_violations([self._cycle_edge()])
         assert len(routes) == 1
@@ -739,7 +748,7 @@ class TestRepairRoutingNewEdges:
         assert routes[0].severity == "high"
 
     def test_dead_import_routes_to_dependency_repair(self):
-        from agentic_core.adg.analysis.RepairRoute import route_violations
+#  # MOVED: from agentic_core.adg.analysis.RepairRoute import route_violations
 
         routes = route_violations([self._dead_edge()])
         assert len(routes) == 1
@@ -748,7 +757,7 @@ class TestRepairRoutingNewEdges:
         assert routes[0].severity == "low"
 
     def test_route_violations_sorted_by_severity(self):
-        from agentic_core.adg.analysis.RepairRoute import route_violations
+#  # MOVED: from agentic_core.adg.analysis.RepairRoute import route_violations
 
         routes = route_violations([self._dead_edge(), self._cycle_edge()])
         severities = [r.severity for r in routes]

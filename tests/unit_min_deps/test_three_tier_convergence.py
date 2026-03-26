@@ -13,9 +13,9 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L2_execution.heal_result_adapter import adapt_heal_result
-from agentic_core.L2_execution.types.heal_contract_types import HealCheckResult, HealStatus
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L2_execution.heal_result_adapter import adapt_heal_result
+#  # MOVED: from agentic_core.L2_execution.types.heal_contract_types import HealCheckResult, HealStatus
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -62,7 +62,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_three_tier_convergence", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_three_tier_convergence", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_three_tier_convergence", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -194,11 +194,21 @@ class TestTier1UWG:
     """UWG permission + ledger lifecycle."""
 
     def _fresh_uwg(self):
-        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+#  # MOVED: from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
 
         return UniversalWriteGateway()
 
     def test_grant_then_revoke_permission(self) -> None:
+        from agentic_core.L2_execution.heal_result_adapter import adapt_heal_result
+        from agentic_core.L2_execution.types.heal_contract_types import HealCheckResult, HealStatus
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+        from agentic_core.interfaces.write_gateway import get_write_gateway
+        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+        from agentic_core.L2_execution.healers.healing_tier_config import (
+        from agentic_core.L2_execution.healers.healing_tier_config import (
         uwg = self._fresh_uwg()
         # UWG stores exact normalized key; check_write_permission looks up that exact key.
         test_path = "agentic_core/L2_execution/"
@@ -222,7 +232,7 @@ class TestTier1UWG:
         uwg.revoke_write_permission("nonexistent/territory/")  # must not raise
 
     def test_replay_mode_skips_permission_changes(self) -> None:
-        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+#  # MOVED: from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
 
         uwg = UniversalWriteGateway(replay_mode=True)
         uwg.grant_write_permission("apps_rg/")  # no-op in replay mode
@@ -230,8 +240,8 @@ class TestTier1UWG:
         assert uwg.check_write_permission("apps_rg/engines/foo.py")
 
     def test_get_write_gateway_returns_uwg_instance(self) -> None:
-        from agentic_core.interfaces.write_gateway import get_write_gateway
-        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+#  # MOVED: from agentic_core.interfaces.write_gateway import get_write_gateway
+#  # MOVED: from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
 
         assert isinstance(get_write_gateway(), UniversalWriteGateway)
 
@@ -245,7 +255,7 @@ class TestTier2Thresholds:
     """Canonical thresholds in healing_tier_config must match execute_ssot defaults."""
 
     def test_threshold_values_are_canonical(self) -> None:
-        from agentic_core.L2_execution.healers.healing_tier_config import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_config import (
             HEALING_CONFIDENCE_X,
             HEALING_CONFIDENCE_Y,
         )
@@ -254,7 +264,7 @@ class TestTier2Thresholds:
         assert HEALING_CONFIDENCE_Y == 0.50, "Y threshold drifted from 0.50"
 
     def test_thresholds_are_ordered(self) -> None:
-        from agentic_core.L2_execution.healers.healing_tier_config import (
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_config import (
             HEALING_CONFIDENCE_X,
             HEALING_CONFIDENCE_Y,
         )

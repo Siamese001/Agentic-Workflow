@@ -10,7 +10,7 @@ Covers:
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -73,7 +73,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_config_surface_constraints", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_config_surface_constraints", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_config_surface_constraints", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -111,7 +111,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.constraints.delta_enforcer import (
+#  # MOVED: from system_learning.constraints.delta_enforcer import (
     BoundsViolation,
     DeltaViolation,
     ForbiddenSurface,
@@ -190,6 +190,9 @@ pytestmark = pytest.mark.unit_min_deps
 
 class TestForbiddenSurfaces:
     def test_tool_allowlist_forbidden(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.constraints.delta_enforcer import (
         with pytest.raises(ForbiddenSurface, match="FORBIDDEN_SURFACE"):
             validate_surface_change("tool_allowlist", ["read"], ["read", "write"])
 

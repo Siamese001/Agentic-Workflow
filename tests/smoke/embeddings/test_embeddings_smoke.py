@@ -5,6 +5,10 @@ import pytest
 
 @pytest.mark.smoke
 def test_embeddings_package_has_known_submodules():
+    from agentic_core.embeddings.embedding_factory import (
+    from agentic_core.embeddings.embedding_factory import EmbeddingDisabledError
+    from agentic_core.embeddings.embedding_input_guard import EmbeddingInputGuard
+    from agentic_core.embeddings.tokenization_adapter import TokenCountAdapter
     """Embeddings package contains discoverable submodules (embedding_factory, etc.)."""
     try:
         import importlib
@@ -20,7 +24,7 @@ def test_embeddings_package_has_known_submodules():
 def test_embedding_factory_error_hierarchy():
     """EmbeddingDisabledError and EmbeddingSovereigntyViolationError are proper Exceptions."""
     try:
-        from agentic_core.embeddings.embedding_factory import (
+#  # MOVED: from agentic_core.embeddings.embedding_factory import (
             EmbeddingClient,
             EmbeddingDisabledError,
             EmbeddingSovereigntyViolationError,
@@ -36,7 +40,7 @@ def test_embedding_factory_error_hierarchy():
 def test_embedding_factory_disabled_error_message():
     """EmbeddingDisabledError carries a message when raised."""
     try:
-        from agentic_core.embeddings.embedding_factory import EmbeddingDisabledError
+#  # MOVED: from agentic_core.embeddings.embedding_factory import EmbeddingDisabledError
     except ImportError as e:
         pytest.skip(f"EmbeddingDisabledError not available: {e}")
 
@@ -48,7 +52,7 @@ def test_embedding_factory_disabled_error_message():
 def test_embedding_input_guard_is_class():
     """EmbeddingInputGuard is a class with a public interface."""
     try:
-        from agentic_core.embeddings.embedding_input_guard import EmbeddingInputGuard
+#  # MOVED: from agentic_core.embeddings.embedding_input_guard import EmbeddingInputGuard
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     assert isinstance(EmbeddingInputGuard, type), "EmbeddingInputGuard should be a class"
@@ -58,7 +62,7 @@ def test_embedding_input_guard_is_class():
 def test_tokenization_adapter_is_class():
     """TokenCountAdapter is a class suitable for token counting."""
     try:
-        from agentic_core.embeddings.tokenization_adapter import TokenCountAdapter
+#  # MOVED: from agentic_core.embeddings.tokenization_adapter import TokenCountAdapter
     except ImportError as e:
         pytest.skip(f"module not available: {e}")
     assert isinstance(TokenCountAdapter, type), "TokenCountAdapter should be a class"

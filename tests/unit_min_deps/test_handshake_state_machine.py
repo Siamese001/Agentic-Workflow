@@ -7,12 +7,12 @@ Validates state transitions, guards, and sequence hash computation.
 
 import pytest
 
-from agentic_core.L3_orchestration.engines.handshake_state_machine import (
+#  # MOVED: from agentic_core.L3_orchestration.engines.handshake_state_machine import (
     HandshakeState,
     HandshakeStateMachine,
     create_handshake_machine,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -169,6 +169,8 @@ class TestW5HandshakeStateMachine:
         return HandshakeStateMachine()
 
     def test_initial_state(self, machine):
+        from agentic_core.L3_orchestration.engines.handshake_state_machine import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """Test machine starts in INIT state."""
         assert machine.current_state == HandshakeState.INIT
         assert len(machine.transition_history) == 0

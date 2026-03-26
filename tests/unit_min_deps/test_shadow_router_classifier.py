@@ -6,22 +6,22 @@ Tests proving that the shadow router classifier is non-invasive and deterministi
 
 import pytest
 
-from agentic_core.L0_routing.engines.shadow_router_classifier import ShadowRouterClassifier
-from agentic_core.L0_routing.engines.shadow_routing_wiring import (
+#  # MOVED: from agentic_core.L0_routing.engines.shadow_router_classifier import ShadowRouterClassifier
+#  # MOVED: from agentic_core.L0_routing.engines.shadow_routing_wiring import (
     ShadowRoutingWiring,
     observe_routing_decision,
 )
-from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-from agentic_core.L0_routing.types.routing_artifact_types import (
+#  # MOVED: from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+#  # MOVED: from agentic_core.L0_routing.types.routing_artifact_types import (
     RouteDecisionArtifact,
     RoutePath,
     RoutingRationale,
 )
-from agentic_core.L0_routing.types.shadow_routing_types import (
+#  # MOVED: from agentic_core.L0_routing.types.shadow_routing_types import (
     ShadowRoutingDecision,
     ShadowRoutingRationale,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -166,6 +166,12 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 @pytest.mark.unit_min_deps
 def test_shadow_classifier_non_invasive():
+    from agentic_core.L0_routing.engines.shadow_router_classifier import ShadowRouterClassifier
+    from agentic_core.L0_routing.engines.shadow_routing_wiring import (
+    from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+    from agentic_core.L0_routing.types.routing_artifact_types import (
+    from agentic_core.L0_routing.types.shadow_routing_types import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test that shadow classifier cannot affect actual routing decisions."""
     # Create a routing decision
     route_decision = RouteDecisionArtifact(

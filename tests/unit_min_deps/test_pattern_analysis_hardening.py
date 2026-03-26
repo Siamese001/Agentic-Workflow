@@ -6,7 +6,7 @@ import hashlib
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -89,7 +89,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -127,15 +127,15 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.pattern_analysis_engine import (
+#  # MOVED: from system_learning.engines.pattern_analysis_engine import (
     PatternAnalysisEngine,
 )
-from system_learning.types.healing_outcome_learning_types import (
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import (
     HealingOutcomeAggregate,
     HealingOutcomeAggregateKey,
     HealingOutcomeAggregateSnapshot,
 )
-from system_learning.types.pattern_analysis_types import (
+#  # MOVED: from system_learning.types.pattern_analysis_types import (
     PatternFindingReport,
 )
 
@@ -195,6 +195,27 @@ class TestPhase8Hardening:
     """Phase 8 hardening tests for pattern analysis determinism and bounds."""
 
     def test_large_n_determinism_permutation_invariance(self):
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+        from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
         """Large-N determinism: permutation invariance and stable canonical bytes."""
         engine = PatternAnalysisEngine()
 
@@ -262,6 +283,12 @@ class TestPhase8Hardening:
 
     def test_bounded_delta_monotonicity(self):
         """Bounded delta monotonicity: increasing severity produces non-decreasing delta magnitude."""
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
         engine = PatternAnalysisEngine()
 
         # Create two cases with increasing underperformance severity
@@ -326,6 +353,12 @@ class TestPhase8Hardening:
 
     def _extract_delta_magnitude(self, report: PatternFindingReport) -> float:
         """Helper to extract delta magnitude from pattern findings."""
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
         # In real implementation, this would extract actual threshold adjustment proposals
         # For test purposes, we'll use the number of findings as a proxy
         return float(len(report.findings))
@@ -374,6 +407,8 @@ class TestPhase8Hardening:
 
     def test_cross_process_determinism_pattern_analysis(self):
         """Cross-process determinism for pattern analysis."""
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
         import os
         import subprocess
         import sys
@@ -397,13 +432,19 @@ class TestPhase8Hardening:
 
         # Write test script
         script_content = f'''
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
 import sys
 import json
 import hashlib
 sys.path.insert(0, r"{os.getcwd()}")
 
-from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
-from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
+#  # MOVED: from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey, HealingOutcomeAggregateSnapshot
 
 # Recreate test data
 aggregates = []
@@ -453,7 +494,7 @@ print(f"FINDINGS_COUNT: {{len(report.findings)}}")
             # Run same analysis locally
             local_aggregates = []
             for key_data, agg_data in test_aggregates:
-                from system_learning.types.healing_outcome_learning_types import (
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import (
                     HealingOutcomeAggregate,
                     HealingOutcomeAggregateKey,
                 )
@@ -485,6 +526,7 @@ print(f"FINDINGS_COUNT: {{len(report.findings)}}")
             os.unlink(script_path)
 
     def test_malformed_input_classification_stability(self):
+#  # MOVED: from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
         """Malformed pattern analysis inputs produce deterministic exceptions."""
         engine = PatternAnalysisEngine()
 

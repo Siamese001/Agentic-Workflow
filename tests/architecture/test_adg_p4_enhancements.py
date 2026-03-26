@@ -5,19 +5,19 @@ All tests use synthetic ScanResult/edge fixtures — no filesystem access.
 
 from __future__ import annotations
 
-from agentic_core.adg.analysis.protocol_coverage_validator import (
+#  # MOVED: from agentic_core.adg.analysis.protocol_coverage_validator import (
     check_protocol_coverage,
 )
-from agentic_core.adg.analysis.schema_migration_util import (
+#  # MOVED: from agentic_core.adg.analysis.schema_migration_util import (
     CURRENT_SCHEMA_VERSION,
     get_migration,
     list_migrations,
     migrate_scan_result_dict,
     register_migration,
 )
-from agentic_core.adg.analysis.SymbolIndex import SymbolIndex
-from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.adg.analysis.SymbolIndex import SymbolIndex
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -215,6 +215,11 @@ class TestProtocolCoverageCheck:
     """
 
     def test_abstract_class_with_concrete_implementor_is_covered(self):
+        from agentic_core.adg.analysis.protocol_coverage_validator import (
+        from agentic_core.adg.analysis.schema_migration_util import (
+        from agentic_core.adg.analysis.SymbolIndex import SymbolIndex
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """MyProtocol extends Protocol (abstract). ConcreteImpl extends MyProtocol (covered)."""
         my_protocol_adg = _make_module_adg("iface.py") + "::MyProtocol"
         concrete_adg = _make_module_adg("impl.py") + "::ConcreteImpl"

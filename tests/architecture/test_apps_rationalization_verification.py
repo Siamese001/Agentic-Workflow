@@ -48,6 +48,24 @@ class TestADGInheritanceEdges:
 
     @pytest.mark.xfail(reason="ADG stale — inheritance edges missing until regeneration", strict=True)
     def test_base_reflection_agent_fan_in(self, adg_conn, path_to_node):
+        from apps_shared.reasoning.BaseReflectionAgent import BaseReflectionAgent
+        from apps_lic.reasoning.LicReflectionAgent import LicReflectionAgent
+        from apps_shared.reasoning.BaseReflectionAgent import BaseReflectionAgent
+        from apps_rg.reasoning.RgReflectionAgent import RgReflectionAgent
+        from apps_shared.reasoning.BaseReflectionAgent import BaseReflectionAgent
+        from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
+        from apps_lic.reasoning.LICValidationExecutor import LICValidationExecutor
+        from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
+        from apps_rg.reasoning.RGValidationExecutor import RGValidationExecutor
+        from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
+        from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
+        from apps_lic.reasoning.LicHealingOrchestrator import LicHealingOrchestrator
+        from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
+        from apps_rg.reasoning.RgHealingOrchestrator import RgHealingOrchestrator
+        from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
+        from apps_lic.reasoning.LICValidationExecutor import LICValidationExecutor
+        from apps_rg.reasoning.RGValidationExecutor import RGValidationExecutor
+        from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
         """BaseReflectionAgent has fan-in=2 (LicReflectionAgent + RgReflectionAgent)."""
         base_path = "apps_shared/reasoning/BaseReflectionAgent.py"
         assert base_path in path_to_node, "BaseReflectionAgent not in ADG"
@@ -256,7 +274,7 @@ class TestBaseClassInterfaceContracts:
 
     def test_base_reflection_agent_interface(self):
         """BaseReflectionAgent defines execute() and heal() methods."""
-        from apps_shared.reasoning.BaseReflectionAgent import BaseReflectionAgent
+#  # MOVED: from apps_shared.reasoning.BaseReflectionAgent import BaseReflectionAgent
 
         assert hasattr(BaseReflectionAgent, "execute"), "BaseReflectionAgent missing execute()"
         assert hasattr(BaseReflectionAgent, "heal"), "BaseReflectionAgent missing heal()"
@@ -266,8 +284,8 @@ class TestBaseClassInterfaceContracts:
 
     def test_lic_reflection_agent_inherits_base(self):
         """LicReflectionAgent is a subclass of BaseReflectionAgent."""
-        from apps_lic.reasoning.LicReflectionAgent import LicReflectionAgent
-        from apps_shared.reasoning.BaseReflectionAgent import BaseReflectionAgent
+#  # MOVED: from apps_lic.reasoning.LicReflectionAgent import LicReflectionAgent
+#  # MOVED: from apps_shared.reasoning.BaseReflectionAgent import BaseReflectionAgent
 
         assert issubclass(LicReflectionAgent, BaseReflectionAgent)
         # Should inherit execute() and heal()
@@ -276,22 +294,22 @@ class TestBaseClassInterfaceContracts:
 
     def test_rg_reflection_agent_inherits_base(self):
         """RgReflectionAgent is a subclass of BaseReflectionAgent."""
-        from apps_rg.reasoning.RgReflectionAgent import RgReflectionAgent
-        from apps_shared.reasoning.BaseReflectionAgent import BaseReflectionAgent
+#  # MOVED: from apps_rg.reasoning.RgReflectionAgent import RgReflectionAgent
+#  # MOVED: from apps_shared.reasoning.BaseReflectionAgent import BaseReflectionAgent
 
         assert issubclass(RgReflectionAgent, BaseReflectionAgent)
 
     def test_parameterized_validator_interface(self):
         """ParameterizedValidator defines execute() and collect_issues() methods."""
-        from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
+#  # MOVED: from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
 
         assert hasattr(ParameterizedValidator, "execute")
         assert hasattr(ParameterizedValidator, "collect_issues")
 
     def test_lic_validation_executor_inherits_parameterized_validator(self):
         """LICValidationExecutor is a subclass of ParameterizedValidator."""
-        from apps_lic.reasoning.LICValidationExecutor import LICValidationExecutor
-        from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
+#  # MOVED: from apps_lic.reasoning.LICValidationExecutor import LICValidationExecutor
+#  # MOVED: from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
 
         # Check MRO includes ParameterizedValidator
         assert ParameterizedValidator in inspect.getmro(LICValidationExecutor), (
@@ -300,14 +318,14 @@ class TestBaseClassInterfaceContracts:
 
     def test_rg_validation_executor_inherits_parameterized_validator(self):
         """RGValidationExecutor is a subclass of ParameterizedValidator."""
-        from apps_rg.reasoning.RGValidationExecutor import RGValidationExecutor
-        from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
+#  # MOVED: from apps_rg.reasoning.RGValidationExecutor import RGValidationExecutor
+#  # MOVED: from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
 
         assert issubclass(RGValidationExecutor, ParameterizedValidator)
 
     def test_base_healing_orchestrator_interface(self):
         """BaseHealingOrchestrator defines ml_heal_with_learning_enhanced() and orchestrate_healing_cycle()."""
-        from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
+#  # MOVED: from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
 
         assert hasattr(BaseHealingOrchestrator, "ml_heal_with_learning_enhanced")
         assert hasattr(BaseHealingOrchestrator, "orchestrate_healing_cycle")
@@ -316,15 +334,15 @@ class TestBaseClassInterfaceContracts:
 
     def test_lic_healing_orchestrator_inherits_base(self):
         """LicHealingOrchestrator is a subclass of BaseHealingOrchestrator."""
-        from apps_lic.reasoning.LicHealingOrchestrator import LicHealingOrchestrator
-        from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
+#  # MOVED: from apps_lic.reasoning.LicHealingOrchestrator import LicHealingOrchestrator
+#  # MOVED: from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
 
         assert issubclass(LicHealingOrchestrator, BaseHealingOrchestrator)
 
     def test_rg_healing_orchestrator_inherits_base(self):
         """RgHealingOrchestrator is a subclass of BaseHealingOrchestrator."""
-        from apps_rg.reasoning.RgHealingOrchestrator import RgHealingOrchestrator
-        from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
+#  # MOVED: from apps_rg.reasoning.RgHealingOrchestrator import RgHealingOrchestrator
+#  # MOVED: from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
 
         assert issubclass(RgHealingOrchestrator, BaseHealingOrchestrator)
 
@@ -395,7 +413,7 @@ class TestFileRelocationVerification:
 
     def test_lic_validation_executor_mro(self):
         """LICValidationExecutor MRO: LICEngineValidationCapability → ParameterizedValidator."""
-        from apps_lic.reasoning.LICValidationExecutor import LICValidationExecutor
+#  # MOVED: from apps_lic.reasoning.LICValidationExecutor import LICValidationExecutor
 
         mro = inspect.getmro(LICValidationExecutor)
         mro_names = [c.__name__ for c in mro]
@@ -411,8 +429,8 @@ class TestFileRelocationVerification:
 
     def test_rg_validation_executor_mro(self):
         """RGValidationExecutor MRO: RGValidationExecutor → ParameterizedValidator."""
-        from apps_rg.reasoning.RGValidationExecutor import RGValidationExecutor
-        from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
+#  # MOVED: from apps_rg.reasoning.RGValidationExecutor import RGValidationExecutor
+#  # MOVED: from apps_shared.reasoning.ParameterizedValidator import ParameterizedValidator
 
         mro = inspect.getmro(RGValidationExecutor)
         mro_names = [c.__name__ for c in mro]

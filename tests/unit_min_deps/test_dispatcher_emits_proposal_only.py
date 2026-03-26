@@ -4,12 +4,12 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
-from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
-from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
-from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
-from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+#  # MOVED: from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
+#  # MOVED: from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -56,7 +56,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_dispatcher_emits_proposal_only", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_dispatcher_emits_proposal_only", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_dispatcher_emits_proposal_only", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -186,6 +186,14 @@ class TestDispatcherEmitsProposalOnly:
     """Test that dispatcher emits proposals without runtime mutation."""
 
     def test_resource_predictor_emission(self):
+        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+        from agentic_core.L2_execution.engines.rollback_refiner import DefaultDeterministicRollbackRefiner
+        from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
+        from agentic_core.L2_execution.healers.healing_tier_dispatcher import dispatch_healing
+        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.types.resource_prediction_types import (
         """Dispatcher should emit resource prediction as proposal-only."""
         # Setup
         config = HealingTierConfig(
@@ -452,7 +460,7 @@ class TestDispatcherEmitsProposalOnly:
         def capture_predict(*, signature, history_bytes=None):
             predictions.append(signature)
             # Return a minimal prediction
-            from agentic_core.L2_execution.types.resource_prediction_types import (
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import (
                 ResourceEnvelope,
                 ResourcePrediction,
             )

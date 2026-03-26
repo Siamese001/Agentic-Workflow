@@ -3,9 +3,14 @@ import pytest
 
 @pytest.mark.smoke
 def test_redis_config_loads():
+    from agentic_core.config.redis_config import get_redis_config
+    from agentic_core.config.redis_config import get_adg_cache_config
+    from agentic_core.config.redis_config import get_redis_windows_config
+    from agentic_core.config.redis_config import (
+    import agentic_core.config.redis_config as redis_config_module
     """Verify get_redis_config() returns valid configuration."""
     try:
-        from agentic_core.config.redis_config import get_redis_config
+#  # MOVED: from agentic_core.config.redis_config import get_redis_config
 
         config = get_redis_config()
 
@@ -33,7 +38,7 @@ def test_redis_config_loads():
 def test_adg_cache_config_loads():
     """Verify get_adg_cache_config() returns valid configuration."""
     try:
-        from agentic_core.config.redis_config import get_adg_cache_config
+#  # MOVED: from agentic_core.config.redis_config import get_adg_cache_config
 
         config = get_adg_cache_config()
 
@@ -56,7 +61,7 @@ def test_adg_cache_config_loads():
 def test_redis_windows_config_loads():
     """Verify get_redis_windows_config() returns valid configuration."""
     try:
-        from agentic_core.config.redis_config import get_redis_windows_config
+#  # MOVED: from agentic_core.config.redis_config import get_redis_windows_config
 
         config = get_redis_windows_config()
 
@@ -86,7 +91,7 @@ def test_redis_windows_config_loads():
 def test_redis_config_classes_importable():
     """Verify Redis config classes are importable."""
     try:
-        from agentic_core.config.redis_config import (
+#  # MOVED: from agentic_core.config.redis_config import (
             RedisConnectionConfig,
             ADGCacheConfig,
             RedisWindowsConfig,
@@ -109,7 +114,7 @@ def test_redis_config_classes_importable():
 def test_config_module_exports():
     """Verify config module exports are present."""
     try:
-        import agentic_core.config.redis_config as redis_config_module
+#  # MOVED: import agentic_core.config.redis_config as redis_config_module
 
         # Check __all__ if it exists
         if hasattr(redis_config_module, '__all__'):

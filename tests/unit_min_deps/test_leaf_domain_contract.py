@@ -11,10 +11,10 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -61,7 +61,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_leaf_domain_contract", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_leaf_domain_contract", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_leaf_domain_contract", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -213,7 +213,7 @@ def _get_declared_subfolders(domain: str) -> set[str]:
     """Get subfolders declared in the blueprint for a LEAF_DOMAIN."""
     # Import here to avoid circular deps at module level
     try:
-        from agentic_core.L5_safety.config.structure_blueprint._constants import (
+#  # MOVED: from agentic_core.L5_safety.config.structure_blueprint._constants import (
             build_sovereign_territories,
         )
 
@@ -239,6 +239,10 @@ class TestLeafDomainNoSubdirs:
     """Hard gate: LEAF_DOMAIN folders must not sprout LCD-style subdirectories."""
 
     def test_prompt_governance_no_illegal_subdirs(self) -> None:
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L5_safety.config.structure_blueprint._constants import (
     """Test prompt_governance_no_illegal_subdirs contract compliance."""
     # Arrange
     # TODO: Set up contract parties and terms

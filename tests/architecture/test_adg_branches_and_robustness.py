@@ -19,10 +19,10 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     L2_EXECUTION_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -69,7 +69,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_adg_branches_and_robustness", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adg_branches_and_robustness", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adg_branches_and_robustness", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -195,19 +195,155 @@ class TestCanonicalNameBranches:
 
     @pytest.mark.architecture
     def test_single_part(self) -> None:
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.schema_util import ADG_NS, canonical_name
+        from agentic_core.adg.schema_util import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
+        from agentic_core.adg.schema_util import module_path_to_layer
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.extraction.static_scanner import _scan_file
+        from agentic_core.adg.extraction.static_scanner import _scan_file
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.extraction.static_scanner import _scan_file
+        from agentic_core.adg.extraction.static_scanner import _scan_file
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.extraction.static_scanner import _repo_relative
+        from agentic_core.adg.extraction.static_scanner import Edge
+        from agentic_core.adg.extraction.static_scanner import Edge
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.applications.BlastRadiusResult import (
+        from agentic_core.adg.applications.BlastRadiusResult import _HUMAN_REVIEW_THRESHOLD
+        from agentic_core.adg.applications.BlastRadiusResult import (
+        from agentic_core.adg.applications.BlastRadiusResult import _RESTRICTED_THRESHOLD
+        from agentic_core.adg.applications.BlastRadiusResult import _HUMAN_REVIEW_THRESHOLD
+        from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.applications.BlastRadiusResult import _LAYER_WEIGHTS
+        from agentic_core.adg.applications.BlastRadiusResult import _LAYER_WEIGHTS
+        from agentic_core.adg.applications.BlastRadiusResult import _LAYER_WEIGHTS
+        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.ci.invariant_scanner_config import Violation
+        from agentic_core.adg.ci.invariant_scanner_config import ScanReport
+        from agentic_core.adg.ci.invariant_scanner_config import ScanReport, Violation
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.schema_util import PROVIDER_SDK_SYMBOLS, canonical_name
+        from agentic_core.adg.applications.gateway_topology_validator import check_gateway_topology
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.applications.uwg_write_authority_validator import _classify_side_effect
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.extraction.graph_persister import persist_scan_result
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.extraction.graph_persister import persist_scan_result
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.extraction.graph_persister import persist_scan_result
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+        from agentic_core.adg.extraction.graph_persister import persist_scan_result
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.applications.rag_sovereignty_validator import (
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+        from agentic_core.adg.extraction.static_scanner import ScanResult
+        from agentic_core.adg.schema_util import canonical_name
+        from agentic_core.adg.cli import main
+        from agentic_core.adg.cli import main
+        from agentic_core.adg.cli import main
+        from agentic_core.adg.cli import main
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         assert canonical_name("Module", "a.py") == "ADG::Module::a.py"
 
     @pytest.mark.architecture
     def test_multi_part(self) -> None:
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         assert canonical_name("Snapshot", "sha1", "dig1") == "ADG::Snapshot::sha1::dig1"
 
     @pytest.mark.architecture
     def test_backslash_in_single_part(self) -> None:
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         result = canonical_name("Module", "a\\b\\c.py")
         assert "\\" not in result
@@ -215,28 +351,28 @@ class TestCanonicalNameBranches:
 
     @pytest.mark.architecture
     def test_backslash_in_multi_part(self) -> None:
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         result = canonical_name("Module", "a\\b", "c\\d")
         assert "\\" not in result
 
     @pytest.mark.architecture
     def test_empty_part_preserved(self) -> None:
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         result = canonical_name("Symbol", "")
         assert result == "ADG::Symbol::"
 
     @pytest.mark.architecture
     def test_forward_slash_unchanged(self) -> None:
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         result = canonical_name("Module", "a/b/c.py")
         assert result == "ADG::Module::a/b/c.py"
 
     @pytest.mark.architecture
     def test_namespace_prefix_correct(self) -> None:
-        from agentic_core.adg.schema_util import ADG_NS, canonical_name
+#  # MOVED: from agentic_core.adg.schema_util import ADG_NS, canonical_name
 
         result = canonical_name("Layer", "L0")
         assert result.startswith(f"{ADG_NS}::")
@@ -256,7 +392,7 @@ class TestCanonicalNameBranches:
     assert result is not None, f"{function_name} should return a result"
     assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
     # TODO: Add specific execution assertions
-        from agentic_core.adg.schema_util import module_path_to_layer
+#  # MOVED: from agentic_core.adg.schema_util import module_path_to_layer
 
         cases = [
             ("agentic_core/L0_routing/x.py", "L0"),
@@ -278,26 +414,26 @@ class TestCanonicalNameBranches:
 
     @pytest.mark.architecture
     def test_unknown_prefix_returns_l_unknown(self) -> None:
-        from agentic_core.adg.schema_util import module_path_to_layer
+#  # MOVED: from agentic_core.adg.schema_util import module_path_to_layer
 
         assert module_path_to_layer("totally/random/path.py") == "L_UNKNOWN"
 
     @pytest.mark.architecture
     def test_backslash_path_normalized(self) -> None:
-        from agentic_core.adg.schema_util import module_path_to_layer
+#  # MOVED: from agentic_core.adg.schema_util import module_path_to_layer
 
         assert module_path_to_layer("agentic_core\\L2_execution\\x.py") == "L2"
 
     @pytest.mark.architecture
     def test_empty_path_returns_l_unknown(self) -> None:
-        from agentic_core.adg.schema_util import module_path_to_layer
+#  # MOVED: from agentic_core.adg.schema_util import module_path_to_layer
 
         assert module_path_to_layer("") == "L_UNKNOWN"
 
     @pytest.mark.architecture
     def test_longer_prefix_wins_over_shorter(self) -> None:
         """Longer prefix must win (no false L_UNKNOWN from prefix collision)."""
-        from agentic_core.adg.schema_util import module_path_to_layer
+#  # MOVED: from agentic_core.adg.schema_util import module_path_to_layer
 
         result = module_path_to_layer("agentic_core/L0_routing/engines/deep/path.py")
         assert result == "L0"
@@ -322,7 +458,7 @@ class TestCanonicalNameBranches:
     @pytest.mark.architecture
     def test_syntax_error_file_skipped_no_crash(self, tmp_path: Path) -> None:
         """SyntaxError in source file must not crash the scanner."""
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         bad_file = tmp_path / L2_EXECUTION_DIR / "bad.py"
         bad_file.parent.mkdir(parents=True)
@@ -335,7 +471,7 @@ class TestCanonicalNameBranches:
     @pytest.mark.architecture
     def test_syntax_error_file_produces_no_edges(self, tmp_path: Path) -> None:
         """Syntax-error file contributes zero edges."""
-        from agentic_core.adg.extraction.static_scanner import _scan_file
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _scan_file
 
         bad_file = tmp_path / "bad.py"
         bad_file.write_text("def foo(:\n", encoding="utf-8")
@@ -346,7 +482,7 @@ class TestCanonicalNameBranches:
     @pytest.mark.architecture
     def test_oserror_file_produces_no_edges(self, tmp_path: Path) -> None:
         """OSError reading a file produces zero edges (not an exception)."""
-        from agentic_core.adg.extraction.static_scanner import _scan_file
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _scan_file
 
         missing = tmp_path / "nonexistent.py"
         edges, had_error = _scan_file(missing, tmp_path)
@@ -356,7 +492,7 @@ class TestCanonicalNameBranches:
     @pytest.mark.architecture
     def test_unicode_decode_file_handled(self, tmp_path: Path) -> None:
         """Binary content that fails UTF-8 strict must not crash (errors=replace)."""
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         binary_dir = tmp_path / L2_EXECUTION_DIR
         binary_dir.mkdir(parents=True)
@@ -370,7 +506,7 @@ class TestCanonicalNameBranches:
     @pytest.mark.architecture
     def test_empty_file_produces_no_edges(self, tmp_path: Path) -> None:
         """Empty .py file contributes zero edges."""
-        from agentic_core.adg.extraction.static_scanner import _scan_file
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _scan_file
 
         empty = tmp_path / "empty.py"
         empty.write_text("", encoding="utf-8")
@@ -381,7 +517,7 @@ class TestCanonicalNameBranches:
     @pytest.mark.architecture
     def test_comment_only_file_produces_no_edges(self, tmp_path: Path) -> None:
         """File with only comments contributes zero edges."""
-        from agentic_core.adg.extraction.static_scanner import _scan_file
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _scan_file
 
         f = tmp_path / "comments.py"
         f.write_text("# just a comment\n# another\n", encoding="utf-8")
@@ -396,7 +532,7 @@ class TestStaticScannerMalformedInputs:
     @pytest.mark.architecture
     def test_scan_files_nonexistent_path_skipped(self) -> None:
         """Non-existent file in scan_files list is silently skipped."""
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=REPO_ROOT)
         result = scanner.scan_files(
@@ -409,7 +545,7 @@ class TestStaticScannerMalformedInputs:
     @pytest.mark.architecture
     def test_scan_files_non_py_extension_skipped(self) -> None:
         """Non-.py files in list are skipped."""
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=REPO_ROOT)
         result = scanner.scan_files(
@@ -421,7 +557,7 @@ class TestStaticScannerMalformedInputs:
     @pytest.mark.architecture
     def test_scan_files_duplicate_entries_deduped(self, tmp_path: Path) -> None:
         """Duplicate file entries produce identical result to single entry."""
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         src_dir = tmp_path / L2_EXECUTION_DIR
         src_dir.mkdir(parents=True)
@@ -442,7 +578,7 @@ class TestStaticScannerMalformedInputs:
     @pytest.mark.architecture
     def test_repo_relative_normalizes_backslash(self, tmp_path: Path) -> None:
         """_repo_relative must produce forward-slash paths."""
-        from agentic_core.adg.extraction.static_scanner import _repo_relative
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import _repo_relative
 
         src = tmp_path / "a" / "b" / "c.py"
         result = _repo_relative(src, tmp_path)
@@ -451,7 +587,7 @@ class TestStaticScannerMalformedInputs:
     @pytest.mark.architecture
     def test_edge_dataclass_ordering_stable(self) -> None:
         """Edge ordering is deterministic for sorting."""
-        from agentic_core.adg.extraction.static_scanner import Edge
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge
 
         e1 = Edge("ADG::Module::a.py", "imports", "ADG::Symbol::z", "import", "a.py", 1)
         e2 = Edge("ADG::Module::a.py", "imports", "ADG::Symbol::a", "import", "a.py", 2)
@@ -460,7 +596,7 @@ class TestStaticScannerMalformedInputs:
     @pytest.mark.architecture
     def test_edge_dataclass_equal(self) -> None:
         """Identical edges compare equal."""
-        from agentic_core.adg.extraction.static_scanner import Edge
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge
 
         e1 = Edge("ADG::Module::a.py", "imports", "ADG::Symbol::z", "import", "a.py", 1)
         e2 = Edge("ADG::Module::a.py", "imports", "ADG::Symbol::z", "import", "a.py", 1)
@@ -479,7 +615,7 @@ class TestScanResultDigestBranches:
     @pytest.mark.determinism
     def test_empty_edges_digest_stable(self) -> None:
         """Empty edge list produces same digest on two calls."""
-        from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
         r1 = ScanResult(commit_sha="t")
         r1.compute_digest()
@@ -491,7 +627,7 @@ class TestScanResultDigestBranches:
     @pytest.mark.determinism
     def test_different_edges_different_digest(self) -> None:
         """Adding one more edge changes the digest."""
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
 
         r1 = ScanResult(commit_sha="t")
         r1.edges = [Edge("ADG::Module::a.py", "imports", "ADG::Symbol::b", "import", "a.py", 1)]
@@ -509,7 +645,7 @@ class TestScanResultDigestBranches:
     @pytest.mark.determinism
     def test_edge_order_does_not_change_digest(self) -> None:
         """Inserting edges in different order produces same digest (sorted)."""
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
 
         e1 = Edge("ADG::Module::a.py", "imports", "ADG::Symbol::b", "import", "a.py", 1)
         e2 = Edge("ADG::Module::a.py", "imports", "ADG::Symbol::c", "import", "a.py", 2)
@@ -528,7 +664,7 @@ class TestScanResultDigestBranches:
     @pytest.mark.determinism
     def test_commit_sha_does_not_affect_digest(self) -> None:
         """Different commit_sha values must NOT change the edge digest."""
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
 
         e = Edge("ADG::Module::a.py", "imports", "ADG::Symbol::b", "import", "a.py", 1)
         r1 = ScanResult(commit_sha="sha-aaa")
@@ -544,7 +680,7 @@ class TestScanResultDigestBranches:
     @pytest.mark.architecture
     def test_canonical_edge_text_pipe_separated(self) -> None:
         """canonical_edge_text uses pipe separator."""
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
 
         e = Edge("ADG::Module::a.py", "imports", "ADG::Symbol::b", "import", "a.py", 5, "b")
         r = ScanResult(commit_sha="t")
@@ -564,7 +700,7 @@ class TestBlastRadiusThresholdBoundary:
 
     def _make_result_with_weight(self, total_weight: int) -> ScanResult:  # noqa: F821
         """Build a ScanResult whose impacted modules sum to exactly total_weight."""
-        from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="threshold-test")
         result.compute_digest()
@@ -573,8 +709,8 @@ class TestBlastRadiusThresholdBoundary:
     @pytest.mark.architecture
     @pytest.mark.determinism
     def test_weight_zero_is_normal(self) -> None:
-        from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
-        from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="t")
         result.compute_digest()
@@ -586,7 +722,7 @@ class TestBlastRadiusThresholdBoundary:
     @pytest.mark.determinism
     def test_boundary_exactly_restricted_threshold(self, tmp_path: Path) -> None:
         """risk_score == 300 is RESTRICTED (>= 300, < 700)."""
-        from agentic_core.adg.applications.BlastRadiusResult import (
+#  # MOVED: from agentic_core.adg.applications.BlastRadiusResult import (
             _HUMAN_REVIEW_THRESHOLD,
             _RESTRICTED_THRESHOLD,
         )
@@ -598,7 +734,7 @@ class TestBlastRadiusThresholdBoundary:
     @pytest.mark.determinism
     def test_boundary_exactly_human_review_threshold(self) -> None:
         """_HUMAN_REVIEW_THRESHOLD must be 700."""
-        from agentic_core.adg.applications.BlastRadiusResult import _HUMAN_REVIEW_THRESHOLD
+#  # MOVED: from agentic_core.adg.applications.BlastRadiusResult import _HUMAN_REVIEW_THRESHOLD
 
         assert _HUMAN_REVIEW_THRESHOLD == 700
 
@@ -606,7 +742,7 @@ class TestBlastRadiusThresholdBoundary:
     @pytest.mark.determinism
     def test_route_mode_normal_below_300(self) -> None:
         """risk_score < 300 -> NORMAL."""
-        from agentic_core.adg.applications.BlastRadiusResult import (
+#  # MOVED: from agentic_core.adg.applications.BlastRadiusResult import (
             _RESTRICTED_THRESHOLD,
         )
 
@@ -618,7 +754,7 @@ class TestBlastRadiusThresholdBoundary:
     @pytest.mark.determinism
     def test_route_mode_restricted_at_300(self) -> None:
         """risk_score == 300 -> RESTRICTED."""
-        from agentic_core.adg.applications.BlastRadiusResult import _RESTRICTED_THRESHOLD
+#  # MOVED: from agentic_core.adg.applications.BlastRadiusResult import _RESTRICTED_THRESHOLD
 
         score = _RESTRICTED_THRESHOLD
         mode = "HUMAN_REVIEW" if score >= 700 else "RESTRICTED" if score >= 300 else "NORMAL"
@@ -644,7 +780,7 @@ class TestBlastRadiusThresholdBoundary:
     @pytest.mark.determinism
     def test_route_mode_human_review_at_700(self) -> None:
         """risk_score == 700 -> HUMAN_REVIEW."""
-        from agentic_core.adg.applications.BlastRadiusResult import _HUMAN_REVIEW_THRESHOLD
+#  # MOVED: from agentic_core.adg.applications.BlastRadiusResult import _HUMAN_REVIEW_THRESHOLD
 
         score = _HUMAN_REVIEW_THRESHOLD
         mode = "HUMAN_REVIEW" if score >= 700 else "RESTRICTED" if score >= 300 else "NORMAL"
@@ -662,8 +798,8 @@ class TestBlastRadiusThresholdBoundary:
     @pytest.mark.determinism
     def test_impact_digest_changes_with_different_changed_files(self) -> None:
         """Materially distinct changed files must produce different impact digest."""
-        from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+#  # MOVED: from agentic_core.adg.applications.BlastRadiusResult import compute_blast_radius
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=REPO_ROOT)
         result = scanner.scan(commit_sha="br-distinct")
@@ -685,21 +821,21 @@ class TestBlastRadiusThresholdBoundary:
     @pytest.mark.architecture
     @pytest.mark.determinism
     def test_l0_weight_is_100(self) -> None:
-        from agentic_core.adg.applications.BlastRadiusResult import _LAYER_WEIGHTS
+#  # MOVED: from agentic_core.adg.applications.BlastRadiusResult import _LAYER_WEIGHTS
 
         assert _LAYER_WEIGHTS["L0"] == 100
 
     @pytest.mark.architecture
     @pytest.mark.determinism
     def test_l2_weight_is_90(self) -> None:
-        from agentic_core.adg.applications.BlastRadiusResult import _LAYER_WEIGHTS
+#  # MOVED: from agentic_core.adg.applications.BlastRadiusResult import _LAYER_WEIGHTS
 
         assert _LAYER_WEIGHTS["L2"] == 90
 
     @pytest.mark.architecture
     @pytest.mark.determinism
     def test_l5_weight_is_85(self) -> None:
-        from agentic_core.adg.applications.BlastRadiusResult import _LAYER_WEIGHTS
+#  # MOVED: from agentic_core.adg.applications.BlastRadiusResult import _LAYER_WEIGHTS
 
         assert _LAYER_WEIGHTS["L5"] == 85
 
@@ -716,9 +852,9 @@ class TestInvariantScannerBranches:
     def test_rule_a_skips_l_unknown_modules(self) -> None:
         """Modules with L_UNKNOWN source (no module prefix) must not trigger RULE_A
         for their destination if the destination is also ambiguous."""
-        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         edge = Edge(
             from_name=canonical_name("Module", "totally/random/module.py"),
@@ -741,9 +877,9 @@ class TestInvariantScannerBranches:
     @pytest.mark.architecture
     def test_rule_b_edge_kind_not_embedding_skipped(self) -> None:
         """Non-embedding edge_kind must not trigger RULE_B even for embedding symbol."""
-        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         edge = Edge(
             from_name=canonical_name("Module", "apps_rg/engines/SomeEngine.py"),
@@ -766,9 +902,9 @@ class TestInvariantScannerBranches:
     @pytest.mark.architecture
     def test_rule_c_same_layer_not_flagged(self) -> None:
         """Edge within same layer must not be flagged by RULE_C."""
-        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         edge = Edge(
             from_name=canonical_name("Module", "agentic_core/L2_execution/UniversalWriteGateway.py"),
@@ -794,9 +930,9 @@ class TestInvariantScannerBranches:
     @pytest.mark.architecture
     def test_rule_c_downward_l6_to_l0_not_flagged(self) -> None:
         """L6 importing L0 is allowed (downward)."""
-        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         edge = Edge(
             from_name=canonical_name("Module", "agentic_core/L6_observability/engines/monitor.py"),
@@ -822,9 +958,9 @@ class TestInvariantScannerBranches:
     @pytest.mark.architecture
     def test_rule_c_l_app_to_any_layer_not_flagged(self) -> None:
         """L_APP importing L2 is allowed."""
-        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         edge = Edge(
             from_name=canonical_name("Module", "apps_rg/engines/SomeAgent.py"),
@@ -850,8 +986,8 @@ class TestInvariantScannerBranches:
     @pytest.mark.architecture
     def test_empty_scan_result_no_violations(self) -> None:
         """Empty ScanResult produces zero violations."""
-        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-        from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="empty")
         result.compute_digest()
@@ -862,7 +998,7 @@ class TestInvariantScannerBranches:
     @pytest.mark.architecture
     def test_violation_format_no_crash(self) -> None:
         """Violation.format() must not raise."""
-        from agentic_core.adg.ci.invariant_scanner_config import Violation
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import Violation
 
         v = Violation(
             rule="RULE_A",
@@ -881,7 +1017,7 @@ class TestInvariantScannerBranches:
     @pytest.mark.architecture
     def test_scan_report_print_summary_pass(self, capsys: pytest.CaptureFixture) -> None:
         """ScanReport.print_summary prints PASSED when no violations."""
-        from agentic_core.adg.ci.invariant_scanner_config import ScanReport
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import ScanReport
 
         report = ScanReport(new_edges_count=5, digest="abc123")
         report.print_summary()
@@ -891,7 +1027,7 @@ class TestInvariantScannerBranches:
     @pytest.mark.architecture
     def test_scan_report_print_summary_fail(self, capsys: pytest.CaptureFixture) -> None:
         """ScanReport.print_summary prints FAILED when violations present."""
-        from agentic_core.adg.ci.invariant_scanner_config import ScanReport, Violation
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import ScanReport, Violation
 
         report = ScanReport()
         report.violations.append(
@@ -922,7 +1058,7 @@ class TestADGMCPClientRobustness:
     @pytest.mark.architecture
     def test_upsert_entity_none_observations(self) -> None:
         """upsert_entity with None observations must not crash."""
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 
         client = ADGMCPClient()
         client.upsert_entity("ADG::Module::x.py", "module", None)
@@ -932,7 +1068,7 @@ class TestADGMCPClientRobustness:
     @pytest.mark.architecture
     def test_upsert_entity_empty_observations(self) -> None:
         """upsert_entity with empty list must not crash."""
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 
         client = ADGMCPClient()
         client.upsert_entity("ADG::Module::y.py", "module", [])
@@ -942,7 +1078,7 @@ class TestADGMCPClientRobustness:
     @pytest.mark.architecture
     def test_upsert_entity_duplicate_observations_deduped(self) -> None:
         """Duplicate observations in one call must be stored only once."""
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 
         client = ADGMCPClient()
         client.upsert_entity("ADG::Module::z.py", "module", ["path:z.py", "path:z.py", "path:z.py"])
@@ -953,7 +1089,7 @@ class TestADGMCPClientRobustness:
     @pytest.mark.architecture
     def test_add_observation_nonexistent_entity_creates_it(self) -> None:
         """add_observation on nonexistent entity must create the entity."""
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 
         client = ADGMCPClient()
         client.add_observation("ADG::Symbol::new_sym", ["edge_kind:import"])
@@ -963,7 +1099,7 @@ class TestADGMCPClientRobustness:
     @pytest.mark.architecture
     def test_search_nodes_empty_store_returns_empty(self) -> None:
         """search_nodes on empty store returns empty list."""
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 
         client = ADGMCPClient()
         assert client.search_nodes("anything") == []
@@ -971,7 +1107,7 @@ class TestADGMCPClientRobustness:
     @pytest.mark.architecture
     def test_search_nodes_no_match_returns_empty(self) -> None:
         """search_nodes with non-matching query returns empty list."""
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 
         client = ADGMCPClient()
         client.upsert_entity("ADG::Module::foo.py", "module", [])
@@ -980,7 +1116,7 @@ class TestADGMCPClientRobustness:
     @pytest.mark.architecture
     def test_open_nodes_nonexistent_returns_empty(self) -> None:
         """open_nodes for unknown entity returns empty list."""
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 
         client = ADGMCPClient()
         result = client.open_nodes(["ADG::Module::nonexistent.py"])
@@ -989,7 +1125,7 @@ class TestADGMCPClientRobustness:
     @pytest.mark.architecture
     def test_read_graph_empty(self) -> None:
         """read_graph on empty store returns empty entities and relations."""
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 
         client = ADGMCPClient()
         g = client.read_graph()
@@ -999,7 +1135,7 @@ class TestADGMCPClientRobustness:
     @pytest.mark.architecture
     def test_read_graph_sorted(self) -> None:
         """read_graph entities must be in sorted order."""
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 
         client = ADGMCPClient()
         client.upsert_entity("ADG::Module::z.py", "module", [])
@@ -1011,7 +1147,7 @@ class TestADGMCPClientRobustness:
     @pytest.mark.architecture
     def test_triple_upsert_entity_stays_single(self) -> None:
         """Three upserts of same entity = exactly one entity in store."""
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 
         client = ADGMCPClient()
         for _ in range(3):
@@ -1022,7 +1158,7 @@ class TestADGMCPClientRobustness:
     @pytest.mark.architecture
     def test_triple_upsert_relation_stays_single(self) -> None:
         """Three upserts of same relation = exactly one relation in store."""
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 
         client = ADGMCPClient()
         for _ in range(3):
@@ -1033,7 +1169,7 @@ class TestADGMCPClientRobustness:
     @pytest.mark.architecture
     def test_bulk_upsert_empty_list(self) -> None:
         """bulk_upsert_entities with empty list must not crash."""
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 
         client = ADGMCPClient()
         client.bulk_upsert_entities([])
@@ -1042,7 +1178,7 @@ class TestADGMCPClientRobustness:
     @pytest.mark.architecture
     def test_bulk_upsert_relations_empty_list(self) -> None:
         """bulk_upsert_relations with empty list must not crash."""
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 
         client = ADGMCPClient()
         client.bulk_upsert_relations([])
@@ -1051,7 +1187,7 @@ class TestADGMCPClientRobustness:
     @pytest.mark.architecture
     def test_observations_accumulated_across_upserts(self) -> None:
         """Multiple upserts with different obs must accumulate all unique obs."""
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
 
         client = ADGMCPClient()
         client.upsert_entity("ADG::Module::x.py", "module", ["path:x.py"])
@@ -1098,9 +1234,9 @@ class TestInvariantScannerMatrix:
     @pytest.mark.architecture
     def test_matrix_rule_c_all_upward_pairs_flagged(self) -> None:
         """Every upward L_low -> L_high pair (low num < high num) must be RULE_C."""
-        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         upward_pairs = [
             ("L0", "L1"),
@@ -1144,9 +1280,9 @@ class TestInvariantScannerMatrix:
     @pytest.mark.architecture
     def test_matrix_rule_a_all_provider_sdk_symbols(self) -> None:
         """RULE_A must fire for each provider SDK symbol from a non-gateway module."""
-        from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import PROVIDER_SDK_SYMBOLS, canonical_name
+#  # MOVED: from agentic_core.adg.ci.invariant_scanner_config import InvariantScanner
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import PROVIDER_SDK_SYMBOLS, canonical_name
 
         provider_bases = sorted({s.split(".")[0] for s in PROVIDER_SDK_SYMBOLS})
         for sym_base in provider_bases:
@@ -1180,10 +1316,10 @@ class TestGatewayTopologyBranches:
     @pytest.mark.architecture
     def test_bypass_violation_does_not_persist_to_client(self) -> None:
         """When gateway is bypassed, proof node must be stored but violation must be flagged."""
-        from agentic_core.adg.applications.gateway_topology_validator import check_gateway_topology
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.applications.gateway_topology_validator import check_gateway_topology
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         client = ADGMCPClient()
         bad_edge = Edge(
@@ -1221,7 +1357,7 @@ class TestGatewayTopologyBranches:
     assert result is not None, f"{function_name} should return a result"
     assert isinstance(result, (dict, list, str, int, float, bool)), "Result should be a common type"
     # TODO: Add specific execution assertions
-        from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="gw-proof-hex")
         result.compute_digest()
@@ -1241,9 +1377,9 @@ class TestUWGWriteAuthorityBranches:
     @pytest.mark.architecture
     def test_tests_module_is_allowed(self) -> None:
         """Modules under tests/ prefix must not be flagged."""
-        from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         edge = Edge(
             from_name=canonical_name("Module", "tests/architecture/test_foo.py"),
@@ -1265,9 +1401,9 @@ class TestUWGWriteAuthorityBranches:
     @pytest.mark.architecture
     def test_ops_scripts_module_is_allowed(self) -> None:
         """Modules under ops_scripts/ci/ prefix must not be flagged."""
-        from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         edge = Edge(
             from_name=canonical_name("Module", "ops_scripts/ci/run_contract_gates.py"),
@@ -1289,9 +1425,9 @@ class TestUWGWriteAuthorityBranches:
     @pytest.mark.architecture
     def test_non_write_edge_kind_not_flagged(self) -> None:
         """Only write edge_kind triggers UWG check (not import/network/etc)."""
-        from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         edge = Edge(
             from_name=canonical_name("Module", "agentic_core/L1_cognition/engines/x.py"),
@@ -1313,10 +1449,10 @@ class TestUWGWriteAuthorityBranches:
     @pytest.mark.architecture
     def test_uwg_violation_persisted_to_client(self) -> None:
         """UWG violation must persist a proof snapshot to client."""
-        from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.applications.uwg_write_authority_validator import check_uwg_write_authority
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         client = ADGMCPClient()
         edge = Edge(
@@ -1342,7 +1478,7 @@ class TestUWGWriteAuthorityBranches:
     @pytest.mark.architecture
     def test_violation_classify_filesystem_write(self) -> None:
         """open symbol must be classified as filesystem_write."""
-        from agentic_core.adg.applications.uwg_write_authority_validator import _classify_side_effect
+#  # MOVED: from agentic_core.adg.applications.uwg_write_authority_validator import _classify_side_effect
 
         assert _classify_side_effect("open") == "filesystem_write"
 
@@ -1365,9 +1501,9 @@ class TestUWGWriteAuthorityBranches:
     @pytest.mark.architecture
     def test_persist_empty_result_no_crash(self) -> None:
         """Persisting empty ScanResult must not crash."""
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.extraction.graph_persister import persist_scan_result
-        from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import persist_scan_result
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="")
         result.compute_digest()
@@ -1379,9 +1515,9 @@ class TestUWGWriteAuthorityBranches:
     @pytest.mark.architecture
     def test_persist_no_commit_sha_no_commit_node(self) -> None:
         """Empty commit_sha must not create a commit entity."""
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.extraction.graph_persister import persist_scan_result
-        from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import persist_scan_result
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="")
         result.compute_digest()
@@ -1393,9 +1529,9 @@ class TestUWGWriteAuthorityBranches:
     @pytest.mark.architecture
     def test_persist_with_commit_sha_creates_snapshot(self) -> None:
         """Non-empty commit_sha + digest creates snapshot entity."""
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.extraction.graph_persister import persist_scan_result
-        from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import persist_scan_result
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="deadbeef1234567890abcdef1234567890123456")
         result.compute_digest()
@@ -1407,9 +1543,9 @@ class TestUWGWriteAuthorityBranches:
     @pytest.mark.architecture
     def test_persist_three_times_idempotent(self) -> None:
         """Three calls with same result must not grow the store."""
-        from agentic_core.adg.client.InMemoryStore import ADGMCPClient
-        from agentic_core.adg.extraction.graph_persister import persist_scan_result
-        from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.client.InMemoryStore import ADGMCPClient
+#  # MOVED: from agentic_core.adg.extraction.graph_persister import persist_scan_result
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="triple-test")
         result.compute_digest()
@@ -1433,8 +1569,8 @@ class TestRAGSovereigntyBranches:
 
     @pytest.mark.architecture
     def test_no_extra_edges_no_violations(self) -> None:
-        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
-        from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="rag-none-extra")
         result.compute_digest()
@@ -1443,8 +1579,8 @@ class TestRAGSovereigntyBranches:
 
     @pytest.mark.architecture
     def test_extra_edges_empty_list_no_violations(self) -> None:
-        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
-        from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="rag-empty-extra")
         result.compute_digest()
@@ -1454,9 +1590,9 @@ class TestRAGSovereigntyBranches:
     @pytest.mark.architecture
     def test_extra_edges_non_influences_relation_not_flagged(self) -> None:
         """Extra edges with relation != 'influences' must not be flagged."""
-        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         result = ScanResult(commit_sha="rag-non-influences")
         result.compute_digest()
@@ -1471,9 +1607,9 @@ class TestRAGSovereigntyBranches:
     @pytest.mark.architecture
     def test_extra_edges_influences_non_decision_node_not_flagged(self) -> None:
         """C0Context influences non-decision node must NOT be flagged."""
-        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         result = ScanResult(commit_sha="rag-non-decision")
         result.compute_digest()
@@ -1488,12 +1624,12 @@ class TestRAGSovereigntyBranches:
     @pytest.mark.architecture
     def test_all_three_decision_nodes_are_flagged(self) -> None:
         """All three defined decision nodes must individually trigger the violation."""
-        from agentic_core.adg.applications.rag_sovereignty_validator import (
+#  # MOVED: from agentic_core.adg.applications.rag_sovereignty_validator import (
             _DECISION_NODES,
             check_rag_sovereignty,
         )
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         for decision_node in sorted(_DECISION_NODES):
             result = ScanResult(commit_sha=f"rag-dn-{decision_node[-10:]}")
@@ -1510,9 +1646,9 @@ class TestRAGSovereigntyBranches:
     @pytest.mark.architecture
     def test_snapshot_digest_changes_when_violations_change(self) -> None:
         """Proof digest must differ when violations are present vs absent."""
-        from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.schema_util import canonical_name
+#  # MOVED: from agentic_core.adg.applications.rag_sovereignty_validator import check_rag_sovereignty
+#  # MOVED: from agentic_core.adg.extraction.static_scanner import ScanResult
+#  # MOVED: from agentic_core.adg.schema_util import canonical_name
 
         result = ScanResult(commit_sha="rag-digest-diff")
         result.compute_digest()
@@ -1542,7 +1678,7 @@ class TestCLIBranches:
     @pytest.mark.architecture
     def test_cli_no_command_exits_1(self) -> None:
         """CLI with no subcommand must exit 1."""
-        from agentic_core.adg.cli import main
+#  # MOVED: from agentic_core.adg.cli import main
 
         result = main(["--repo-root", str(REPO_ROOT)])
         assert result == 1
@@ -1550,7 +1686,7 @@ class TestCLIBranches:
     @pytest.mark.architecture
     def test_cli_scan_exits_0_or_1(self) -> None:
         """CLI scan command must exit 0 or 1 (no crash)."""
-        from agentic_core.adg.cli import main
+#  # MOVED: from agentic_core.adg.cli import main
 
         result = main(["--repo-root", str(REPO_ROOT), "scan"])
         assert result in (0, 1)
@@ -1558,7 +1694,7 @@ class TestCLIBranches:
     @pytest.mark.architecture
     def test_cli_blast_radius_exits_0(self) -> None:
         """CLI blast-radius with no changed files exits 0."""
-        from agentic_core.adg.cli import main
+#  # MOVED: from agentic_core.adg.cli import main
 
         result = main(["--repo-root", str(REPO_ROOT), "blast-radius"])
         assert result == 0
@@ -1566,7 +1702,7 @@ class TestCLIBranches:
     @pytest.mark.architecture
     def test_cli_scan_diff_mode_no_crash(self) -> None:
         """CLI scan --diff-files with nonexistent files must not crash."""
-        from agentic_core.adg.cli import main
+#  # MOVED: from agentic_core.adg.cli import main
 
         result = main(
             [

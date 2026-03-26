@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -76,7 +76,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_replay_validator_b3", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_replay_validator_b3", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_replay_validator_b3", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -114,13 +114,13 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.replay_validator import DeterminismViolationError, ReplayValidator
-from system_learning.engines.seed_embedding_pack_builder import (
+#  # MOVED: from system_learning.engines.replay_validator import DeterminismViolationError, ReplayValidator
+#  # MOVED: from system_learning.engines.seed_embedding_pack_builder import (
     DeterministicHashEmbedder,
     build_seed_embedding_pack,
 )
-from system_learning.types.embedding_artifact import EmbeddingArtifact
-from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
+#  # MOVED: from system_learning.types.embedding_artifact import EmbeddingArtifact
+#  # MOVED: from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
 
 # REMOVED: _emit_emits_metric_event("test_replay_validator_b3", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_replay_validator_b3", "p4obs", "metric_2")
@@ -188,6 +188,12 @@ class TestReplayValidatorSeedPack:
     """Test seed pack validation functionality."""
 
     def test_validate_seed_pack_success(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.replay_validator import DeterminismViolationError, ReplayValidator
+        from system_learning.engines.seed_embedding_pack_builder import (
+        from system_learning.types.embedding_artifact import EmbeddingArtifact
+        from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
     """Test validate_seed_pack_success contract compliance."""
     # Arrange
     # TODO: Set up test data

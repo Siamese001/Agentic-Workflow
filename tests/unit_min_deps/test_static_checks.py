@@ -5,19 +5,19 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     TOOLS_DIR,
 )
-from agentic_core.L5_safety.static_checks.determinism_serialization_check import (
+#  # MOVED: from agentic_core.L5_safety.static_checks.determinism_serialization_check import (
     scan_file_for_determinism,
 )
-from agentic_core.L5_safety.static_checks.powershell_ban import (
+#  # MOVED: from agentic_core.L5_safety.static_checks.powershell_ban import (
     scan_file_for_powershell,
 )
-from agentic_core.L5_safety.static_checks.write_gateway_enforcer import (
+#  # MOVED: from agentic_core.L5_safety.static_checks.write_gateway_enforcer import (
     scan_file_for_writes,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -149,6 +149,13 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 
 @pytest.mark.unit_min_deps
 def test_powershell_scanner_detects_subprocess_calls():
+    from agentic_core.L0_routing.config.path_constants import (
+    from agentic_core.L5_safety.static_checks.determinism_serialization_check import (
+    from agentic_core.L5_safety.static_checks.powershell_ban import (
+    from agentic_core.L5_safety.static_checks.write_gateway_enforcer import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L0_routing.config.path_constants import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 """Test powershell_scanner_detects_subprocess_calls runtime behavior."""
 # Arrange
 # TODO: Set up execution parameters
@@ -361,10 +368,10 @@ def test_scanner_deterministic_ordering():
     code = """
 import subprocess
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     TOOLS_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_pulls_context,
     _emit_execution_terminates_at_uwg,
     _emit_writes_through,

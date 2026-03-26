@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -67,7 +67,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_rlhf_optimizer", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_rlhf_optimizer", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_rlhf_optimizer", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -105,8 +105,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.change_package_impl import ChangePackage
-from system_learning.engines.rlhf_optimizer import (
+#  # MOVED: from system_learning.engines.change_package_impl import ChangePackage
+#  # MOVED: from system_learning.engines.rlhf_optimizer import (
     DefaultDeterministicRLHFOptimizer,
 )
 
@@ -186,6 +186,10 @@ class TestRLHFOptimizer:
     """Test suite for RLHF Optimizer deterministic behavior."""
 
     def test_approve_relaxes_within_bounds(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.change_package_impl import ChangePackage
+        from system_learning.engines.rlhf_optimizer import (
         """APPROVE decisions should relax thresholds within bounds."""
         optimizer = DefaultDeterministicRLHFOptimizer(
             min_threshold=0.2,

@@ -2,7 +2,7 @@
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -65,7 +65,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_replay_validator", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_replay_validator", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_replay_validator", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -103,7 +103,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.validators.replay_validator import (
+#  # MOVED: from system_learning.validators.replay_validator import (
     DeterminismViolation,
     replay_validate,
 )
@@ -172,6 +172,9 @@ pytestmark = pytest.mark.unit_min_deps
 
 class TestReplayValidator:
     def test_deterministic_engine_passes(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.validators.replay_validator import (
         """Deterministic engine produces same hash on both runs."""
 
         def deterministic_engine(snapshot):

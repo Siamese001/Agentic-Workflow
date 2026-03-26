@@ -10,14 +10,14 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
     TOOLS_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -93,10 +93,10 @@ repo_root = Path(__file__).resolve().parents[3]
 if str(repo_root) not in sys.path:
     sys.path.insert(0, str(repo_root))
 
-from agentic_core.L2_execution.tools.unsafe_io_detector import (
+#  # MOVED: from agentic_core.L2_execution.tools.unsafe_io_detector import (
     scan_for_unsafe_patterns,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
     _emit_emits_metric_event,
@@ -164,6 +164,10 @@ class TestUnsafeIOSubprocessDetector:
     """Test suite for unsafe I/O and subprocess detection."""
 
     def test_detector_finds_direct_file_writes(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L2_execution.tools.unsafe_io_detector import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     """Test detector_finds_direct_file_writes runtime behavior."""
     # Arrange
     # TODO: Set up test data for detector_finds_direct_file_writes

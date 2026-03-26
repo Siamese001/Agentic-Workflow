@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     OPS_SCRIPTS_DIR,
 )
@@ -72,6 +72,7 @@ class TestImportGraphContract:
     """Hard gate: import graph must not contain forbidden edges."""
 
     def test_no_forbidden_cross_territory_edges(self) -> None:
+        from agentic_core.L0_routing.config.path_constants import (
     """Test no_forbidden_cross_territory_edges contract compliance."""
     # Arrange
     # TODO: Set up contract parties and terms

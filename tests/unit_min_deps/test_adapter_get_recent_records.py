@@ -2,7 +2,7 @@
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -65,18 +65,18 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_adapter_get_recent_records", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_adapter_get_recent_records", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_adapter_get_recent_records", "exec_snapshot_link")
-from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-from system_learning.engines.in_memory_healing_outcome_intake_store import (
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+#  # MOVED: from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+#  # MOVED: from system_learning.engines.in_memory_healing_outcome_intake_store import (
     InMemoryHealingOutcomeIntakeStore,
 )
-from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent
 
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_adapter_get_recent_records")
 # REMOVED: _emit_applies_guardrail("p0", "test_adapter_get_recent_records", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_adapter_get_recent_records", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_adapter_get_recent_records", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -194,6 +194,12 @@ def _persist_record(adapter, created_utc, healer_id="agent_x", success=True):
 @pytest.mark.unit_min_deps
 class TestAdapterGetRecentRecords:
     def test_get_recent_records_method_exists(self):
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+        from system_learning.engines.in_memory_healing_outcome_intake_store import (
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
         """HealingOutcomeIntakeAdapter must expose get_recent_records()."""
         adapter = _make_adapter()
         assert hasattr(adapter, "get_recent_records"), (

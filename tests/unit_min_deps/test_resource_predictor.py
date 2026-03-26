@@ -2,15 +2,15 @@
 
 import pytest
 
-from agentic_core.L2_execution.engines.resource_predictor import (
+#  # MOVED: from agentic_core.L2_execution.engines.resource_predictor import (
     DefaultDeterministicResourcePredictor,
 )
-from agentic_core.L2_execution.types.resource_prediction_types import (
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import (
     FailureSignature,
     ResourceEnvelope,
     ResourcePrediction,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -161,6 +161,21 @@ class TestResourcePredictor:
     """Test suite for ResourcePredictor deterministic behavior."""
 
     def test_determinism_same_input_same_hash(self):
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+        from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+        from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
         """Same inputs must produce identical outputs and hashes."""
         predictor = DefaultDeterministicResourcePredictor()
 
@@ -182,6 +197,8 @@ class TestResourcePredictor:
 
     def test_bounded_clamping(self):
         """Resource envelopes must be clamped to configured bounds."""
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+#  # MOVED: from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
         # Test with very tight bounds
         predictor = DefaultDeterministicResourcePredictor(
             min_cpu_cores=2,
@@ -207,6 +224,8 @@ class TestResourcePredictor:
 
     def test_history_influence_deterministic(self):
         """History must influence predictions deterministically."""
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+#  # MOVED: from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
         predictor = DefaultDeterministicResourcePredictor()
 
         signature = FailureSignature(
@@ -237,6 +256,8 @@ class TestResourcePredictor:
 
     def test_permutation_invariant_healing_inputs(self):
         """Permutation invariance test for healing inputs."""
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+#  # MOVED: from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
         predictor = DefaultDeterministicResourcePredictor()
 
         # Same signature with different object construction should be identical
@@ -261,6 +282,8 @@ class TestResourcePredictor:
 
     def test_failure_type_baseline_envelopes(self):
         """Different failure types should use appropriate baseline envelopes."""
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+#  # MOVED: from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
         predictor = DefaultDeterministicResourcePredictor()
 
         failure_types = ["timeout", "memory_error", "cpu_error", "io_error", "network_error", "unknown"]
@@ -287,6 +310,8 @@ class TestResourcePredictor:
 
     def test_canonical_bytes_stability(self):
         """canonical_bytes() must be stable and ASCII-only."""
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+#  # MOVED: from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
         signature = FailureSignature(
             component="test",
             failure_type="timeout",
@@ -317,7 +342,12 @@ class TestResourcePredictor:
         assert canonical == prediction.canonical_bytes()
 
     def test_confidence_bounds(self):
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+#  # MOVED: from agentic_core.L2_execution.engines.resource_predictor import DefaultDeterministicResourcePredictor
         """Confidence must always be within [0.0, 1.0]."""
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
+#  # MOVED: from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature, ResourceEnvelope, ResourcePrediction
         predictor = DefaultDeterministicResourcePredictor()
 
         signature = FailureSignature(

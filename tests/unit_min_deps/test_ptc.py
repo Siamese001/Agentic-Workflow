@@ -5,13 +5,13 @@ import pytest
 # Tests in this file require external KeySource setup
 pytestmark = [pytest.mark.external]
 
-from agentic_core.L3_orchestration.ptc.ptc_registry import (
+#  # MOVED: from agentic_core.L3_orchestration.ptc.ptc_registry import (
     ToolRegistry,
     get_global_registry,
     list_tools,
     register_tool,
 )
-from agentic_core.L3_orchestration.ptc.tool_contract import (
+#  # MOVED: from agentic_core.L3_orchestration.ptc.tool_contract import (
     ToolArg,
     ToolCall,
     ToolCallResult,
@@ -104,6 +104,28 @@ from agentic_core.L3_orchestration.ptc.tool_contract import (
 
 @pytest.mark.unit_min_deps
 def test_tool_arg_validation():
+    from agentic_core.L3_orchestration.ptc.ptc_registry import (
+    from agentic_core.L3_orchestration.ptc.tool_contract import (
+    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+    from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
+    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+    from agentic_core.L3_orchestration.ptc.tool_call_store import ToolCallStore
+    from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
+    from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
+    from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
+    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+    from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
+    from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
+    from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
+    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+    from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
+    from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
+    from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
+    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+    from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
+    from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry, list_tools
+    from agentic_core.L5_safety.static_checks.ptc_invariants import (
     """Test ToolArg validation."""
     # Valid arg
     arg = ToolArg(name="pattern", kind="str", required=True)
@@ -361,7 +383,7 @@ def test_global_registry():
 @pytest.mark.unit_min_deps
 def test_tool_invoker_validation():
     """Test ToolInvoker argument validation."""
-    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+#  # MOVED: from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
 
     # Use a fresh registry to avoid conflicts with auto-registered tools
     registry = ToolRegistry()
@@ -380,7 +402,7 @@ def test_tool_invoker_validation():
     registry.register(spec, dummy_handler)
 
     # Valid call
-    from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
+#  # MOVED: from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
 
     call = ToolCall(
         call_id=generate_call_id("test_tool", {"pattern": "test"}),
@@ -407,7 +429,7 @@ def test_tool_invoker_validation():
 @pytest.mark.unit_min_deps
 def test_tool_invoker_powershell_ban():
     """Test ToolInvoker PowerShell ban enforcement."""
-    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+#  # MOVED: from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
 
     registry = ToolRegistry()
     invoker = ToolInvoker()
@@ -436,7 +458,7 @@ def test_tool_invoker_powershell_ban():
 @pytest.mark.unit_min_deps
 def test_tool_invoker_truncation():
     """Test ToolInvoker output truncation."""
-    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+#  # MOVED: from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
 
     registry = ToolRegistry()
     invoker = ToolInvoker(max_stdout_bytes=100)  # Small limit for testing
@@ -468,7 +490,7 @@ def test_tool_call_store():
     import shutil
     import tempfile
 
-    from agentic_core.L3_orchestration.ptc.tool_call_store import ToolCallStore
+#  # MOVED: from agentic_core.L3_orchestration.ptc.tool_call_store import ToolCallStore
 
     # Create temporary store
     temp_dir = tempfile.mkdtemp()
@@ -562,10 +584,10 @@ assert isinstance(result, (dict, list, str, int, float, bool)), "Result should b
 def test_builtin_repo_rg_tool():
     """Test repo_rg built-in tool."""
     # Import and register built-in tools
-    from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
-    from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
-    from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
-    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+#  # MOVED: from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
+#  # MOVED: from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
+#  # MOVED: from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
+#  # MOVED: from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
 
     # Register built-in tools
     register_builtin_tools()
@@ -599,10 +621,10 @@ def test_builtin_repo_rg_tool():
 def test_builtin_expr_eval_tool():
     """Test expr_eval built-in tool."""
     # Import and register built-in tools
-    from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
-    from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
-    from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
-    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+#  # MOVED: from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
+#  # MOVED: from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
+#  # MOVED: from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
+#  # MOVED: from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
 
     # Register built-in tools
     register_builtin_tools()
@@ -653,10 +675,10 @@ def test_builtin_expr_eval_tool():
 def test_builtin_tools_deterministic():
     """Test that built-in tools are deterministic across runs."""
     # Import and register built-in tools
-    from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
-    from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
-    from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
-    from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
+#  # MOVED: from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
+#  # MOVED: from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
+#  # MOVED: from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
+#  # MOVED: from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
 
     # Register built-in tools
     register_builtin_tools()
@@ -687,8 +709,8 @@ def test_builtin_tools_deterministic():
 def test_builtin_tools_registration():
     """Test that built-in tools are properly registered."""
     # Import and register built-in tools
-    from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
-    from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry, list_tools
+#  # MOVED: from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
+#  # MOVED: from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry, list_tools
 
     # Register built-in tools
     register_builtin_tools()
@@ -816,7 +838,7 @@ def test_ptc_invariants_scanner():
     """Test PTC invariants scanner."""
     from pathlib import Path
 
-    from agentic_core.L5_safety.static_checks.ptc_invariants import (
+#  # MOVED: from agentic_core.L5_safety.static_checks.ptc_invariants import (
         scan_file_for_ptc_invariants,
         scan_repository_for_ptc_invariants,
     )

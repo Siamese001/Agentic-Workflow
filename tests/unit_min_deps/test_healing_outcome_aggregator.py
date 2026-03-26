@@ -14,7 +14,7 @@ import random
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -97,7 +97,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -135,15 +135,15 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.healing_outcome_aggregator import (
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import (
     HealingOutcomeAggregator,
     InvocationRecord,
 )
-from system_learning.types.healing_outcome_learning_types import (
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import (
     HealingOutcomeAggregate,
     HealingOutcomeAggregateKey,
 )
-from system_learning.types.healing_outcome_types import (
+#  # MOVED: from system_learning.types.healing_outcome_types import (
     HealingOutcomeEvent,
     HealingOutcomeProposal,
     HealingOutcomeStats,
@@ -232,6 +232,32 @@ class TestHealingOutcomeEvent:
     """HealingOutcomeEvent validation and immutability."""
 
     def test_valid_event_creation(self) -> None:
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
         ev = _event()
         assert ev.healer_id == "h1"
         assert ev.tier == "LOCAL_AGENT"
@@ -250,6 +276,7 @@ class TestHealingOutcomeEvent:
             _event(failure_type="")
 
     def test_frozen(self) -> None:
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
         ev = _event()
         with pytest.raises(AttributeError):
             ev.healer_id = "changed"  # type: ignore[misc]
@@ -264,6 +291,7 @@ class TestHealingOutcomeStats:
     """HealingOutcomeStats stable rounding."""
 
     def test_from_counts_basic(self) -> None:
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
         stats = HealingOutcomeStats.from_counts("h", "T", "f", 3, 1)
         assert stats.total_count == 4
         assert stats.success_count == 3
@@ -271,15 +299,18 @@ class TestHealingOutcomeStats:
         assert stats.success_rate == 0.75
 
     def test_from_counts_zero_denominator(self) -> None:
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
         stats = HealingOutcomeStats.from_counts("h", "T", "f", 0, 0)
         assert stats.success_rate == 0.0
 
     def test_stable_rounding_half_up(self) -> None:
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
         # 1/3 = 0.33333... -> round-half-up to 4 decimals = 0.3333
         stats = HealingOutcomeStats.from_counts("h", "T", "f", 1, 2)
         assert stats.success_rate == 0.3333
 
     def test_stable_rounding_2_of_3(self) -> None:
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
         # 2/3 = 0.66666... -> round-half-up to 4 decimals = 0.6667
         stats = HealingOutcomeStats.from_counts("h", "T", "f", 2, 1)
         assert stats.success_rate == 0.6667
@@ -299,6 +330,7 @@ class TestHealingOutcomeProposal:
     """HealingOutcomeProposal — Phase 1 no-op contract."""
 
     def test_default_proposal_is_empty(self) -> None:
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
         p = HealingOutcomeProposal()
         assert p.stats == ()
         assert p.recommended_actions == ()
@@ -318,14 +350,17 @@ class TestAggregatorDeterminism:
     """Deterministic behaviour proofs for HealingOutcomeAggregator."""
 
     def test_window_size_must_be_positive(self) -> None:
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
         with pytest.raises(ValueError, match="window_size"):
             HealingOutcomeAggregator(window_size=0)
 
     def test_empty_snapshot(self) -> None:
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
         agg = HealingOutcomeAggregator(window_size=10)
         assert agg.snapshot() == []
 
     def test_single_event_snapshot(self) -> None:
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
         agg = HealingOutcomeAggregator(window_size=10)
         agg.ingest(_event(success=True))
         stats = agg.snapshot()
@@ -374,6 +409,7 @@ class TestAggregatorDeterminism:
 
     def test_window_determinism_oldest_dropped(self) -> None:
         """When window overflows, oldest events are dropped deterministically."""
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
         agg = HealingOutcomeAggregator(window_size=3)
         agg.ingest(_event(success=True, ts=1))
         agg.ingest(_event(success=True, ts=2))
@@ -391,6 +427,7 @@ class TestAggregatorDeterminism:
 
     def test_snapshot_sort_key(self) -> None:
         """Stats MUST be sorted by (healer_id, tier, failure_type)."""
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
         agg = HealingOutcomeAggregator(window_size=100)
         agg.ingest(_event(healer_id="z_healer", tier="A_tier", failure_type="a_type"))
         agg.ingest(_event(healer_id="a_healer", tier="Z_tier", failure_type="z_type"))
@@ -401,6 +438,7 @@ class TestAggregatorDeterminism:
 
     def test_proposal_noop_carries_snapshot(self) -> None:
         """build_proposal returns no-op proposal with snapshot data."""
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
         agg = HealingOutcomeAggregator(window_size=100)
         agg.ingest(_event(success=True))
         agg.ingest(_event(success=False))
@@ -411,6 +449,7 @@ class TestAggregatorDeterminism:
         assert proposal.recommended_actions == ()
 
     def test_event_count_property(self) -> None:
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
         agg = HealingOutcomeAggregator(window_size=5)
         assert agg.event_count == 0
         agg.ingest(_event())
@@ -421,6 +460,8 @@ class TestAggregatorDeterminism:
 
     def test_multiple_keys_in_snapshot(self) -> None:
         """Multiple (healer_id, tier, failure_type) keys tracked independently."""
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeProposal, HealingOutcomeStats
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
         agg = HealingOutcomeAggregator(window_size=100)
         agg.ingest(_event(healer_id="h1", tier="LOCAL_AGENT", failure_type="syntax"))
         agg.ingest(_event(healer_id="h1", tier="QWEN_VLLM", failure_type="syntax"))
@@ -436,6 +477,7 @@ class TestAggregatorDeterminism:
 
 class TestPhase6Aggregation:
     """Test Phase 6 functionality with new learning types."""
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
 
     def test_aggregate_deterministic_same_sequence(self):
         """Test that same sequence produces identical aggregates."""
@@ -472,6 +514,9 @@ class TestPhase6Aggregation:
 
     def test_aggregate_permutation_invariant(self):
         """Test that order of ingestion doesn't affect results."""
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
         aggregator1 = HealingOutcomeAggregator()
         aggregator2 = HealingOutcomeAggregator()
 
@@ -506,6 +551,9 @@ class TestPhase6Aggregation:
 
     def test_success_rate_correctness(self):
         """Test success rate calculations with various inputs."""
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
         aggregator = HealingOutcomeAggregator()
 
         # Test empty case
@@ -537,7 +585,11 @@ class TestPhase6Aggregation:
         assert aggregator.compute_success_rate(key) == 0.7
 
     def test_canonical_bytes_stable(self):
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
         """Test that canonical_bytes produces stable output."""
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator, InvocationRecord
+#  # MOVED: from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregate, HealingOutcomeAggregateKey
         aggregate = HealingOutcomeAggregate(success_count=10, failure_count=5, total_count=15)
 
         bytes1 = aggregate.canonical_bytes()

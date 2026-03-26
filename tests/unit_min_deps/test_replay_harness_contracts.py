@@ -15,7 +15,7 @@ import json
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -62,7 +62,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_replay_harness_contracts", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_replay_harness_contracts", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_replay_harness_contracts", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -225,6 +225,22 @@ def _digest_bytes(obj) -> str:
     ],
 )
 def test_artifact_replay_deterministic(req, artifact):
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+    from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
+    from agentic_core.L4_state.enforcement.replay_bundle_store import ReplayBundleStore
+    from agentic_core.L4_state.types.replay_bundle_types import ReplayBundle
+    from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
+    from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
+    from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket
+    from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
+    from agentic_core.L2_execution.types.gateway_types import GenerationRequest
+    from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
+    from agentic_core.L0_routing.types.crypto_trust_types import (
+    from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
+    from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket
+    from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+    from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
     d1 = _digest(artifact)
     d2 = _digest(artifact)
     assert d1 == d2, f"{req}: replay digest mismatch"
@@ -238,9 +254,9 @@ def test_req158_reorder_tamper_detected():
 
 
 def test_req157_replay_bundle_store_deterministic():
-    from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
-    from agentic_core.L4_state.enforcement.replay_bundle_store import ReplayBundleStore
-    from agentic_core.L4_state.types.replay_bundle_types import ReplayBundle
+#  # MOVED: from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
+#  # MOVED: from agentic_core.L4_state.enforcement.replay_bundle_store import ReplayBundleStore
+#  # MOVED: from agentic_core.L4_state.types.replay_bundle_types import ReplayBundle
 
     bundle = ReplayBundle(
         schema_version=1,
@@ -319,9 +335,9 @@ def test_req289_enforcement_audit_deterministic():
 
 
 def test_req036_instruction_packet_canonical_bytes_stable():
-    from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
-    from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
-    from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket
+#  # MOVED: from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
+#  # MOVED: from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
+#  # MOVED: from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket
 
     inject_key_source(TestKeySource())
     pkt = InstructionPacket(instruction_id="CI-00000001", payload="fixed")
@@ -331,8 +347,8 @@ def test_req036_instruction_packet_canonical_bytes_stable():
 
 
 def test_req036_gateway_request_normalization_stable():
-    from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
-    from agentic_core.L2_execution.types.gateway_types import GenerationRequest
+#  # MOVED: from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
+#  # MOVED: from agentic_core.L2_execution.types.gateway_types import GenerationRequest
 
     req = GenerationRequest(agent_id="test", provider="openai", model="gpt-4o", prompt="hello")
     b1 = canonical_bytes(req)
@@ -387,19 +403,19 @@ def test_req413_provider_binding_in_digest():
 
 
 def test_req399_signature_enclave_real_round_trip():
-    from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
+#  # MOVED: from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
         sign_artifact,
         verify_signature,
     )
-    from agentic_core.L0_routing.types.crypto_trust_types import (
+#  # MOVED: from agentic_core.L0_routing.types.crypto_trust_types import (
         DeterministicTestEnclave,
         KeyRecord,
         KeyStatus,
         SigningAlgorithm,
         TrustRoot,
     )
-    from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
-    from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket
+#  # MOVED: from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
+#  # MOVED: from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket
 
     inject_key_source(TestKeySource())
     key_id = "test-key-1"
@@ -464,8 +480,8 @@ def test_req262_governance_enforcement_deterministic():
 
 
 def test_req192_semantic_clock_real_serialize():
-    from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-    from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
+#  # MOVED: from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+#  # MOVED: from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
 
     snap = SemanticClockSnapshot(tick=42, vector_clock=())
     b1 = canonical_bytes(snap)

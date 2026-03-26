@@ -10,7 +10,7 @@ import tempfile
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -93,7 +93,7 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -131,8 +131,8 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.fingerprinting.engine import FailureFingerprinter
-from system_learning.fingerprinting.types import FailureEvent
+#  # MOVED: from system_learning.fingerprinting.engine import FailureFingerprinter
+#  # MOVED: from system_learning.fingerprinting.types import FailureEvent
 
 # REMOVED: _emit_emits_metric_event("test_failure_fingerprinting", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_failure_fingerprinting", "p4obs", "metric_2")
@@ -190,6 +190,18 @@ class TestFailureFingerprinting:
     """Test failure fingerprinting deterministic behavior."""
 
     def test_deterministic_sha_same_input(self):
+        from system_learning.fingerprinting.types import FailureEvent
+        from system_learning.fingerprinting.engine import FailureFingerprinter
+        from system_learning.fingerprinting.types import FailureEvent
+        from system_learning.fingerprinting.engine import FailureFingerprinter
+        from system_learning.fingerprinting.types import FailureEvent
+        from system_learning.fingerprinting.engine import FailureFingerprinter
+        from system_learning.fingerprinting.types import FailureEvent
+        from system_learning.fingerprinting.engine import FailureFingerprinter
+        from system_learning.fingerprinting.types import FailureEvent
+        from system_learning.fingerprinting.engine import FailureFingerprinter
+        from system_learning.fingerprinting.types import FailureEvent
+        from system_learning.fingerprinting.engine import FailureFingerprinter
         """Proves same input twice yields identical SHA256."""
         fingerprinter = FailureFingerprinter()
 
@@ -211,6 +223,8 @@ class TestFailureFingerprinting:
 
     def test_permutation_invariance_symbols_metadata(self):
         """Proves shuffling symbols/metadata order yields same SHA256."""
+#  # MOVED: from system_learning.fingerprinting.types import FailureEvent
+#  # MOVED: from system_learning.fingerprinting.engine import FailureFingerprinter
         fingerprinter = FailureFingerprinter()
 
         # Create event with unsorted symbols and metadata
@@ -239,6 +253,8 @@ class TestFailureFingerprinting:
 
     def test_cross_process_determinism(self):
         """Proves subprocess SHA256 equals parent process SHA256."""
+#  # MOVED: from system_learning.fingerprinting.types import FailureEvent
+#  # MOVED: from system_learning.fingerprinting.engine import FailureFingerprinter
         # Test data
         event_data = {
             "exc_type": "TimeoutError",
@@ -250,13 +266,15 @@ class TestFailureFingerprinting:
 
         # Write test script
         script_content = f"""
+#  # MOVED: from system_learning.fingerprinting.types import FailureEvent
+#  # MOVED: from system_learning.fingerprinting.engine import FailureFingerprinter
 import sys
 import json
 import hashlib
 sys.path.insert(0, r"C:\\Git\\Agentic-Workflow")
 
-from system_learning.fingerprinting.engine import FailureFingerprinter
-from system_learning.fingerprinting.types import FailureEvent
+#  # MOVED: from system_learning.fingerprinting.engine import FailureFingerprinter
+#  # MOVED: from system_learning.fingerprinting.types import FailureEvent
 
 event = FailureEvent(**{event_data})
 fingerprinter = FailureFingerprinter()
@@ -324,6 +342,8 @@ print(f"FINGERPRINT: {{fp.fingerprint_sha256}}")
 
     def test_negative_control_symbol_sorting(self):
         """Negative control that fails if symbol normalization sorting is removed."""
+#  # MOVED: from system_learning.fingerprinting.types import FailureEvent
+#  # MOVED: from system_learning.fingerprinting.engine import FailureFingerprinter
         # This test demonstrates the importance of symbol sorting
         fingerprinter = FailureFingerprinter()
 
@@ -354,7 +374,11 @@ print(f"FINGERPRINT: {{fp.fingerprint_sha256}}")
         assert canonical_data["symbols"] == ["a_func", "m_func", "z_func"]  # Sorted
 
     def test_malformed_input_classification_stability(self):
+#  # MOVED: from system_learning.fingerprinting.types import FailureEvent
+#  # MOVED: from system_learning.fingerprinting.engine import FailureFingerprinter
         """Proves stable exception types for malformed inputs."""
+#  # MOVED: from system_learning.fingerprinting.types import FailureEvent
+#  # MOVED: from system_learning.fingerprinting.engine import FailureFingerprinter
         fingerprinter = FailureFingerprinter()
 
         # Test malformed inputs

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -87,11 +87,11 @@ DEFAULT_TIMEOUT = 300  # 5 minutes
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import (
     extract_failure_metadata,
     normalize_failure_signal,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -186,6 +186,22 @@ class TestNormalizeFailureSignal:
     """normalize_failure_signal contract tests."""
 
     def test_full_action_produces_expected_text(self) -> None:
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
         action = {
             "type": "IMPORT_BOUNDARY_VIOLATION",
             "routing_gate": "gate:import_boundary_check",
@@ -198,6 +214,7 @@ class TestNormalizeFailureSignal:
         )
 
     def test_routing_gate_included_when_present(self) -> None:
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
         action = {
             "type": "LAYER_VIOLATION",
             "routing_gate": "gate:layer_check",
@@ -208,40 +225,47 @@ class TestNormalizeFailureSignal:
         assert result.index("LAYER_VIOLATION") < result.index("gate:layer_check")
 
     def test_routing_gate_na_omitted(self) -> None:
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
         action = {"type": "LAYER_VIOLATION", "routing_gate": "N/A", "agent": "ArchGovernor"}
         result = normalize_failure_signal(action)
         assert "N/A" not in result
         assert result == "LAYER_VIOLATION ArchGovernor"
 
     def test_failure_type_uppercased(self) -> None:
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
         action = {"type": "layer_violation", "agent": "ArchGovernor"}
         result = normalize_failure_signal(action)
         assert result.startswith("LAYER_VIOLATION")
 
     def test_falls_back_to_routing_tier_when_type_missing(self) -> None:
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
         action = {"routing_tier": "DETERMINISTIC", "agent": "TestRepairAgent"}
         result = normalize_failure_signal(action)
         assert "DETERMINISTIC" in result
         assert "TestRepairAgent" in result
 
     def test_unknown_when_no_type_fields(self) -> None:
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
         action = {"agent": "SomeAgent"}
         result = normalize_failure_signal(action)
         assert "UNKNOWN" in result
         assert "SomeAgent" in result
 
     def test_empty_fix_summary_omitted(self) -> None:
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
         action = {"type": "LAYER_VIOLATION", "agent": "GovernorAgent", "fix_summary": ""}
         result = normalize_failure_signal(action)
         assert result == "LAYER_VIOLATION GovernorAgent"
 
     def test_missing_agent_uses_default(self) -> None:
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
         action = {"type": "GATEWAY_BYPASS"}
         result = normalize_failure_signal(action)
         assert "GATEWAY_BYPASS" in result
         assert "unknown_agent" in result
 
     def test_deterministic_identical_inputs(self) -> None:
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
         action = {
             "type": "LAYER_VIOLATION",
             "routing_gate": "gate:layer_check",
@@ -251,16 +275,19 @@ class TestNormalizeFailureSignal:
         assert normalize_failure_signal(action) == normalize_failure_signal(action)
 
     def test_empty_action_does_not_raise(self) -> None:
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
         result = normalize_failure_signal({})
         assert isinstance(result, str)
         assert len(result) > 0
 
     def test_whitespace_stripped(self) -> None:
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
         action = {"type": "  LAYER_VIOLATION  ", "agent": "  Agent  "}
         result = normalize_failure_signal(action)
         assert "  " not in result
 
     def test_field_order_type_gate_agent_summary(self) -> None:
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
         action = {
             "type": "IMPORT_BOUNDARY_VIOLATION",
             "routing_gate": "gate:X",
@@ -277,6 +304,7 @@ class TestExtractFailureMetadata:
     """extract_failure_metadata contract tests — metadata is kept separate from embedding text."""
 
     def test_all_fields_captured(self) -> None:
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
         action = {
             "territory": "L5_safety",
             "routing_digest": "abc123",
@@ -294,12 +322,14 @@ class TestExtractFailureMetadata:
         assert meta["timestamp"] == "2026-01-01T00:00:00"
 
     def test_missing_fields_default_to_none_or_unknown(self) -> None:
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
         meta = extract_failure_metadata({})
         assert meta["territory"] == "unknown"
         assert meta["routing_digest"] is None
         assert meta["confidence_score"] is None
 
     def test_metadata_does_not_include_embedding_fields(self) -> None:
+#  # MOVED: from agentic_core.L2_execution.healers.failure_signal_normalizer import extract_failure_metadata, normalize_failure_signal
         action = {"type": "LAYER_VIOLATION", "agent": "Healer", "fix_summary": "fixed"}
         meta = extract_failure_metadata(action)
         assert "type" not in meta

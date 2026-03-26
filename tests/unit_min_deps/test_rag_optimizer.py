@@ -2,7 +2,7 @@
 
 import pytest
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -64,7 +64,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_rag_optimizer", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_rag_optimizer", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_rag_optimizer", "exec_snapshot_link")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -102,11 +102,11 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_writes_observability_log,
     _emit_writes_through,  # noqa: E402
 )
-from system_learning.engines.rag_optimizer import (
+#  # MOVED: from system_learning.engines.rag_optimizer import (
     RAGChangePackage,
     propose_rag_param_changes,
 )
-from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
 
 # REMOVED: _emit_emits_metric_event("test_rag_optimizer", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_rag_optimizer", "p4obs", "metric_2")
@@ -171,6 +171,27 @@ pytestmark = pytest.mark.unit_min_deps
 
 class TestRAGOptimizer:
     def test_valid_proposal_passes_constraints(self):
+        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+        from system_learning.engines.rag_optimizer import RAGChangePackage, propose_rag_param_changes
+        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+        from system_learning.engines.rag_optimizer import RAGChangePackage, propose_rag_param_changes
+        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+        from system_learning.engines.rag_optimizer import RAGChangePackage, propose_rag_param_changes
+        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+        from system_learning.engines.rag_optimizer import RAGChangePackage, propose_rag_param_changes
+        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+        from system_learning.engines.rag_optimizer import RAGChangePackage, propose_rag_param_changes
+        from system_learning.engines.rag_optimizer import RAGChangePackage, propose_rag_param_changes
+        from system_learning.engines.rag_optimizer import RAGChangePackage, propose_rag_param_changes
+        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+        from system_learning.engines.rag_optimizer import RAGChangePackage, propose_rag_param_changes
+        from system_learning.engines.rag_optimizer import RAGChangePackage, propose_rag_param_changes
         """Valid proposal within bounds and delta."""
         cooldown = CooldownPolicy(min_seconds_between_updates=3600)
         sample = SampleSizePolicy(min_observations=1000)
@@ -195,6 +216,9 @@ class TestRAGOptimizer:
 
     def test_out_of_range_rejected(self):
         """Proposal exceeding max bounds raises."""
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+#  # MOVED: from system_learning.engines.rag_optimizer import RAGChangePackage, propose_rag_param_changes
         cooldown = CooldownPolicy(min_seconds_between_updates=3600)
         sample = SampleSizePolicy(min_observations=1000)
 
@@ -218,6 +242,9 @@ class TestRAGOptimizer:
 
     def test_cooldown_violated_returns_none(self):
         """Cooldown violation returns None (no proposal)."""
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+#  # MOVED: from system_learning.engines.rag_optimizer import RAGChangePackage, propose_rag_param_changes
         cooldown = CooldownPolicy(min_seconds_between_updates=3600)
         sample = SampleSizePolicy(min_observations=1000)
 
@@ -238,6 +265,9 @@ class TestRAGOptimizer:
 
     def test_sample_size_violated_returns_none(self):
         """Sample size violation returns None (no proposal)."""
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+#  # MOVED: from system_learning.engines.rag_optimizer import RAGChangePackage, propose_rag_param_changes
         cooldown = CooldownPolicy(min_seconds_between_updates=3600)
         sample = SampleSizePolicy(min_observations=1000)
 
@@ -258,6 +288,9 @@ class TestRAGOptimizer:
 
     def test_no_change_needed_returns_none(self):
         """No change needed when metrics are in acceptable range."""
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+#  # MOVED: from system_learning.engines.rag_optimizer import RAGChangePackage, propose_rag_param_changes
         cooldown = CooldownPolicy(min_seconds_between_updates=3600)
         sample = SampleSizePolicy(min_observations=1000)
 
@@ -280,6 +313,9 @@ class TestRAGOptimizer:
 class TestRAGChangePackage:
     def test_canonical_bytes_deterministic(self):
         """Same inputs produce identical canonical bytes."""
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+#  # MOVED: from system_learning.engines.rag_optimizer import RAGChangePackage, propose_rag_param_changes
         pkg1 = RAGChangePackage(
             surface_name="retrieval_top_k",
             old_value=10,
@@ -299,6 +335,7 @@ class TestRAGChangePackage:
 
     def test_content_hash_deterministic(self):
         """Same inputs produce identical content hash."""
+#  # MOVED: from system_learning.engines.rag_optimizer import RAGChangePackage, propose_rag_param_changes
         pkg1 = RAGChangePackage(
             surface_name="retrieval_top_k",
             old_value=10,
@@ -318,6 +355,7 @@ class TestRAGChangePackage:
 
     def test_different_values_produce_different_hash(self):
         """Different values produce different content hash."""
+#  # MOVED: from system_learning.engines.rag_optimizer import RAGChangePackage, propose_rag_param_changes
         pkg1 = RAGChangePackage(
             surface_name="retrieval_top_k",
             old_value=10,
@@ -338,7 +376,11 @@ class TestRAGChangePackage:
 
 class TestDeterminism:
     def test_proposal_deterministic(self):
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+#  # MOVED: from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+#  # MOVED: from system_learning.engines.rag_optimizer import RAGChangePackage, propose_rag_param_changes
         """Identical inputs produce identical proposals."""
+#  # MOVED: from system_learning.engines.rag_optimizer import RAGChangePackage, propose_rag_param_changes
         cooldown = CooldownPolicy(min_seconds_between_updates=3600)
         sample = SampleSizePolicy(min_observations=1000)
 

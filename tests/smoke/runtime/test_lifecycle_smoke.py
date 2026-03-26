@@ -4,9 +4,13 @@ import inspect
 
 @pytest.mark.smoke
 def test_lifecycle_contract_importable():
+    from agentic_core.runtime.lifecycle_trace_contract import (
+    from agentic_core.runtime.lifecycle_trace_contract import (
+    import agentic_core.runtime.lifecycle_trace_contract as ltc
+    from agentic_core.runtime.lifecycle_trace_contract import (
     """Verify lifecycle_trace_contract imports without error."""
     try:
-        from agentic_core.runtime.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.runtime.lifecycle_trace_contract import (
             _TRACE_LOG,
             _SIGN_LOG,
             _REPLAY_LOG,
@@ -41,7 +45,7 @@ def test_lifecycle_contract_importable():
 def test_emitter_functions_callable():
     """Verify all _emit_* functions exist and are callable."""
     try:
-        from agentic_core.runtime.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.runtime.lifecycle_trace_contract import (
             _emit_records_execution_trace,
             _emit_applies_guardrail,
             _emit_reads_policy_state,
@@ -81,7 +85,7 @@ def test_emitter_functions_callable():
 def test_all_exports_present():
     """Verify __all__ list matches actual module attributes."""
     try:
-        import agentic_core.runtime.lifecycle_trace_contract as ltc
+#  # MOVED: import agentic_core.runtime.lifecycle_trace_contract as ltc
 
         # Get __all__ if it exists
         if hasattr(ltc, '__all__'):
@@ -126,7 +130,7 @@ def test_all_exports_present():
 def test_p2_p3_p4_emitters_present():
     """Verify P2, P3, and P4 emitter functions are present."""
     try:
-        from agentic_core.runtime.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.runtime.lifecycle_trace_contract import (
             # P2 emitters (already imported above)
             _emit_authorize_and_execute,
             _emit_validates_capability,

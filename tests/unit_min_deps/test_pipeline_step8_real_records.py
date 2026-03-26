@@ -5,10 +5,10 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L0_routing.config.path_constants import (
+#  # MOVED: from agentic_core.L0_routing.config.path_constants import (
     SYSTEM_LEARNING_DIR,
 )
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -55,7 +55,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_applies_guardrail("p0", "test_pipeline_step8_real_records", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_pipeline_step8_real_records", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_pipeline_step8_real_records", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -194,6 +194,21 @@ def _make_deps_with_adapter(adapter=None):
 @pytest.mark.unit_min_deps
 class TestPipelineStep8RealRecords:
     def test_no_test_healer_in_source(self):
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+        from system_learning.engines.in_memory_healing_outcome_intake_store import (
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+        from system_learning.engines.in_memory_healing_outcome_intake_store import (
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+        from system_learning.engines.in_memory_healing_outcome_intake_store import (
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
     """Test no_healer_in_source runtime behavior."""
     # Arrange
     # TODO: Set up test data for no_healer_in_source
@@ -244,12 +259,12 @@ class TestPipelineStep8RealRecords:
     assert isinstance(result, object), "Result should be an object"
     # TODO: Add specific runtime behavior assertions
         """A persisted record within the window is returned by get_recent_records."""
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.in_memory_healing_outcome_intake_store import (
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+#  # MOVED: from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+#  # MOVED: from system_learning.engines.in_memory_healing_outcome_intake_store import (
             InMemoryHealingOutcomeIntakeStore,
         )
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent
 
         ts = 5_000_000
         agg = HealingOutcomeAggregator(window_size=1)
@@ -273,12 +288,12 @@ class TestPipelineStep8RealRecords:
 
     def test_multi_record_window(self):
         """Multiple records within window are all returned."""
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.in_memory_healing_outcome_intake_store import (
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+#  # MOVED: from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+#  # MOVED: from system_learning.engines.in_memory_healing_outcome_intake_store import (
             InMemoryHealingOutcomeIntakeStore,
         )
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent
 
         store = InMemoryHealingOutcomeIntakeStore()
         adapter = HealingOutcomeIntakeAdapter(store=store)
@@ -303,12 +318,12 @@ class TestPipelineStep8RealRecords:
 
     def test_single_record_boundary(self):
         """Boundary: exactly one record at window_start_utc==window_end_utc is included."""
-        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
-        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-        from system_learning.engines.in_memory_healing_outcome_intake_store import (
+#  # MOVED: from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+#  # MOVED: from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+#  # MOVED: from system_learning.engines.in_memory_healing_outcome_intake_store import (
             InMemoryHealingOutcomeIntakeStore,
         )
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+#  # MOVED: from system_learning.types.healing_outcome_types import HealingOutcomeEvent
 
         ts = 7_777_777
         agg = HealingOutcomeAggregator(window_size=1)

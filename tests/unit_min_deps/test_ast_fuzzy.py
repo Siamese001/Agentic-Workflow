@@ -3,7 +3,7 @@
 import ast
 import os
 
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -66,7 +66,7 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
 # REMOVED: _emit_stores_embedding("p4", "test_ast_fuzzy", "embedding_store")
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_ast_fuzzy", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_ast_fuzzy", "exec_snapshot_link")
-from agentic_core.utils.ast_fuzzy_util import (
+#  # MOVED: from agentic_core.utils.ast_fuzzy_util import (
     ast_dump_hash,
     normalize_repo_path,
     parse_ast_safe,
@@ -78,7 +78,7 @@ from agentic_core.utils.ast_fuzzy_util import (
 # REMOVED: _emit_applies_guardrail("p0", "test_ast_fuzzy", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_ast_fuzzy", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_ast_fuzzy", "state_snapshot")
-from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_captures_pattern,
     _emit_captures_runtime_anomaly,
@@ -185,6 +185,26 @@ class TestAstDumpHash:
     """Test AST structural hashing."""
 
     def test_hash_determinism(self):
+        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+        from agentic_core.utils import ast_fuzzy as module
+        import agentic_core.utils.ast_fuzzy as module
+        from agentic_core.utils import ast_fuzzy as module
+        import agentic_core.utils.ast_fuzzy as module
+        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
+        from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
         """Hash of same AST is deterministic."""
         code = "def foo(x): return x + 1"
         tree1 = ast.parse(code)
@@ -198,6 +218,7 @@ class TestAstDumpHash:
 
     def test_hash_differs_for_different_code(self):
         """Hash differs for different code."""
+#  # MOVED: from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
         tree1 = ast.parse("def foo(x): return x + 1")
         tree2 = ast.parse("def foo(x): return x + 2")
 
@@ -208,6 +229,7 @@ class TestAstDumpHash:
 
     def test_hash_ignores_attributes(self):
         """Hash ignores line numbers and column offsets."""
+#  # MOVED: from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
         code = "x = 1"
         tree = ast.parse(code)
         hash_val = ast_dump_hash(tree)
@@ -218,6 +240,7 @@ class TestAstDumpHash:
 
 class TestSimilarityScore:
     """Test fuzzy similarity scoring."""
+#  # MOVED: from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
 
     def test_identical_text_score_one(self):
         """Identical text has similarity 1.0."""
@@ -227,11 +250,13 @@ class TestSimilarityScore:
 
     def test_empty_text_score_zero(self):
         """Empty text has similarity 0.0."""
+#  # MOVED: from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
         score = similarity_score("", "def foo(x): return x")
         assert score == 0.0
 
     def test_similarity_symmetric(self):
         """Similarity is symmetric."""
+#  # MOVED: from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
         text_a = "def foo(x): return x + 1"
         text_b = "def foo(x): return x + 2"
 
@@ -243,6 +268,7 @@ class TestSimilarityScore:
 
     def test_similar_code_high_score(self):
         """Similar code has high similarity score."""
+#  # MOVED: from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
         text_a = "def foo(x): return x + 1"
         text_b = "def foo(x): return x + 1"
 
@@ -252,6 +278,7 @@ class TestSimilarityScore:
 
 class TestTokenizeSimple:
     """Test simple tokenization."""
+#  # MOVED: from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
 
     def test_tokenize_basic(self):
         """Basic tokenization splits on whitespace and punctuation."""
@@ -264,6 +291,7 @@ class TestTokenizeSimple:
 
     def test_tokenize_idempotency(self):
         """Tokenizing twice gives same result."""
+#  # MOVED: from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
         text = "def foo(x): return x + 1"
         tokens1 = tokenize_simple(text)
         tokens2 = tokenize_simple(text)
@@ -272,12 +300,14 @@ class TestTokenizeSimple:
 
     def test_tokenize_empty_string(self):
         """Empty string tokenizes to empty list."""
+#  # MOVED: from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
         tokens = tokenize_simple("")
         assert tokens == []
 
 
 class TestNormalizeRepoPath:
     """Test repository path normalization."""
+#  # MOVED: from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
 
     def test_normalize_backslashes(self):
         """Backslashes are converted to forward slashes."""
@@ -289,6 +319,7 @@ class TestNormalizeRepoPath:
 
     def test_normalize_already_normalized(self):
         """Already normalized paths are unchanged."""
+#  # MOVED: from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
         path = "agentic_core/utils/ast_fuzzy.py"
         normalized = normalize_repo_path(path)
 
@@ -296,6 +327,7 @@ class TestNormalizeRepoPath:
 
     def test_normalize_mixed_slashes(self):
         """Mixed slashes are normalized to forward."""
+#  # MOVED: from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
         path = "agentic_core\\utils/ast_fuzzy.py"
         normalized = normalize_repo_path(path)
 
@@ -304,6 +336,7 @@ class TestNormalizeRepoPath:
 
 class TestThresholdConfiguration:
     """Test threshold environment variable configuration."""
+#  # MOVED: from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
 
     def test_default_threshold(self):
         """Default threshold is 0.6."""
@@ -311,7 +344,7 @@ class TestThresholdConfiguration:
         old_val = os.environ.pop("AST_FUZZY_THRESHOLD", None)
         try:
             # Re-import to get fresh value
-            from agentic_core.utils import ast_fuzzy as module
+#  # MOVED: from agentic_core.utils import ast_fuzzy as module
 
             threshold = module.get_threshold()
             assert threshold == 0.6
@@ -321,13 +354,15 @@ class TestThresholdConfiguration:
 
     def test_threshold_env_override(self):
         """Threshold can be overridden via environment variable."""
+#  # MOVED: from agentic_core.utils import ast_fuzzy as module
+#  # MOVED: import agentic_core.utils.ast_fuzzy as module
         old_val = os.environ.get("AST_FUZZY_THRESHOLD")
         try:
             os.environ["AST_FUZZY_THRESHOLD"] = "0.75"
             # Re-import to get new value
             import importlib
 
-            import agentic_core.utils.ast_fuzzy as module
+#  # MOVED: import agentic_core.utils.ast_fuzzy as module
 
             importlib.reload(module)
             threshold = module.get_threshold()
@@ -341,6 +376,8 @@ class TestThresholdConfiguration:
 
 class TestParseAstSafe:
     """Test safe AST parsing."""
+#  # MOVED: from agentic_core.utils import ast_fuzzy as module
+#  # MOVED: import agentic_core.utils.ast_fuzzy as module
 
     def test_parse_valid_code(self):
         """Valid code parses successfully."""
@@ -352,13 +389,16 @@ class TestParseAstSafe:
 
     def test_parse_invalid_code_returns_none(self):
         """Invalid code returns None."""
+#  # MOVED: from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
         code = "def foo(x) return x + 1"  # Missing colon
         tree = parse_ast_safe(code)
 
         assert tree is None
 
     def test_parse_empty_string(self):
+#  # MOVED: from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
         """Empty string parses to empty module."""
+#  # MOVED: from agentic_core.utils.ast_fuzzy_util import ast_dump_hash, normalize_repo_path, parse_ast_safe, similarity_score, tokenize_simple
         tree = parse_ast_safe("")
 
         assert tree is not None
