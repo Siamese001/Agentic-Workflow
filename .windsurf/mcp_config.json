@@ -116,6 +116,34 @@
         "RUNTIME_ADG_DIR": "C:\\Git\\Agentic-Workflow\\system_learning\\meta_learning\\runtime_adg_snapshots",
         "RUNTIME_ADG_STORE": "C:\\Git\\Agentic-Workflow\\system_learning\\runtime_adg"
       }
+    },
+    "governance": {
+      "_comment": "Guardian Governance MCP \u00e2\u20ac\u201d CUSTOM: Centralizes access to 17+ guardian scripts and governance agents. Provides unified query and trigger interface for governance validations from Windsurf chat. 8 tools for status, execution, reports, manifests, healing, audit, impact analysis, and registry.",
+      "command": "python",
+      "args": [
+        "C:\\Git\\Agentic-Workflow\\tools\\governance\\guardian_mcp_server.py"
+      ],
+      "cwd": "C:\\Git\\Agentic-Workflow",
+      "disabled": false,
+      "env": {
+        "GOVERNANCE_MCP_LOG_LEVEL": "INFO",
+        "GUARDIAN_SCRIPTS_DIR": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts",
+        "GUARDIAN_REPORTS_DIR": "C:\\Git\\Agentic-Workflow\\artifacts\\governance"
+      }
+    },
+    "pytest": {
+      "_comment": "Pytest Test Orchestration MCP \u00e2\u20ac\u201d CUSTOM: ADG-aware test execution with impact analysis and governance validation. Intelligent test selection based on ADG impact analysis to reduce test execution time. 6 tools for status, ADG impact testing, governance tests, smoke tests, coverage analysis, and failure analysis.",
+      "command": "python",
+      "args": [
+        "C:\\Git\\Agentic-Workflow\\tools\\testing\\pytest_mcp_server.py"
+      ],
+      "cwd": "C:\\Git\\Agentic-Workflow",
+      "disabled": false,
+      "env": {
+        "PYTEST_MCP_LOG_LEVEL": "INFO",
+        "PYTEST_TIMEOUT": "300",
+        "COVERAGE_ENABLED": "true"
+      }
     }
   }
 }
