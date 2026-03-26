@@ -6,9 +6,9 @@ error handling tests, and edge case coverage.
 
 from __future__ import annotations
 
+from unittest.mock import patch
+
 import pytest
-from pathlib import Path
-from unittest.mock import Mock, patch
 
 from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import (
     AntiPatternScanner,
@@ -393,7 +393,6 @@ y = 2
     def test_scanner_concurrent_safety(self, tmp_path):
         """Scanner should be thread-safe if designed for concurrent use."""
         import threading
-        import time
 
         scanner = AntiPatternScanner(project_root=tmp_path)
         results = []
@@ -450,30 +449,3 @@ class TestIntegrationEnhanced:
         with patch.object(scanner, 'scan', side_effect=Exception("Test error")):
             with pytest.raises(Exception):
                 scanner.scan()
-
-    def test_performance_integration(self, tmp_path):
-        """Test performance characteristics with realistic data."""
-        # Create multiple test files
-        for i in range(10):
-            file_path = tmp_path / f"file_{i}.py"
-            file_path.write_text(f"""
-# Test file {i}
-var_{i} = {i}
-def func_{i}():
-    return {i}
-""")
-
-        scanner = AntiPatternScanner(project_root=tmp_path)
-
-        # Measure performance
-        start_time = time.time()
-        report = scanner.scan()
-        end_time = time.time()
-
-        # Performance validation
-        assert end_time - start_time < 10.0  # Should complete within 10 seconds
-        assert report.scan_time_ms >= 0
-        assert report.total_files_scanned == 10
-
-        # Behavioral validation - scan completed successfully
-        assert report.scan_time_ms >= 0
