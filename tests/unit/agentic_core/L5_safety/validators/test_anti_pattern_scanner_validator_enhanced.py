@@ -45,7 +45,7 @@ class TestScanReportEnhanced:
         assert len(report.errors) == 0  # Actual property for error count
 
         # State validation
-        assert hasattr(report, 'project_root')
+        assert hasattr(report, "project_root")
 
     def test_summary_method_returns_formatted_string(self, tmp_path):
         """Summary method should return a properly formatted string with all required sections."""
@@ -63,7 +63,7 @@ class TestScanReportEnhanced:
             "Files Scanned: 0",
             "Violations: 0",
             "Errors: 0",
-            "Status: PASSED"
+            "Status: PASSED",
         ]
 
         for section in required_sections:
@@ -96,7 +96,7 @@ class TestScanReportEnhanced:
             category=AntiPatternCategory.NAMING,
             description="Test violation",
             severity="medium",
-            suggestion="Fix it"
+            suggestion="Fix it",
         )
 
         # Add violation and validate state change
@@ -127,7 +127,7 @@ class TestScanReportEnhanced:
             line_number=10,
             category=AntiPatternCategory.NAMING,
             description="First violation",
-            severity="low"
+            severity="low",
         )
         report.add_violation(violation1)
 
@@ -145,7 +145,7 @@ class TestScanReportEnhanced:
             line_number=20,
             category=AntiPatternCategory.DOCUMENTATION,
             description="Second violation",
-            severity="high"
+            severity="high",
         )
         report.add_violation(violation2)
 
@@ -170,22 +170,22 @@ class TestScanReportEnhanced:
                 line_number=10,
                 category=AntiPatternCategory.NAMING,
                 description="Violation 1",
-                severity="low"
+                severity="low",
             ),
             AntiPatternViolation(
                 file_path=file_path,
                 line_number=20,
                 category=AntiPatternCategory.DOCUMENTATION,
                 description="Violation 2",
-                severity="medium"
+                severity="medium",
             ),
             AntiPatternViolation(
                 file_path=file_path,
                 line_number=30,
                 category=AntiPatternCategory.NAMING,
                 description="Violation 3",
-                severity="high"
-            )
+                severity="high",
+            ),
         ]
 
         for violation in violations:
@@ -223,7 +223,7 @@ class TestScanReportEnhanced:
             line_number=1,
             category=AntiPatternCategory.NAMING,
             description="Test violation",
-            severity="low"
+            severity="low",
         )
         report.add_violation(violation)
 
@@ -267,7 +267,7 @@ class TestScanReportEnhanced:
                 line_number=i + 1,
                 category=AntiPatternCategory.NAMING,
                 description=f"Violation {i}",
-                severity="low"
+                severity="low",
             )
             report.add_violation(violation)
 
@@ -294,8 +294,8 @@ class TestAntiPatternScannerEnhanced:
 
         # Basic property validation
         assert scanner.project_root == tmp_path
-        assert hasattr(scanner, 'detectors')
-        assert hasattr(scanner, 'config')
+        assert hasattr(scanner, "detectors")
+        assert hasattr(scanner, "config")
 
         # Behavioral validation
         assert scanner.is_initialized() is True
@@ -356,7 +356,7 @@ y = 2
         if report.total_violations > 0:
             assert report.passed is False
             assert len(report.all_violations) > 0
-            assert all(hasattr(v, 'file_path') for v in report.all_violations)
+            assert all(hasattr(v, "file_path") for v in report.all_violations)
 
     def test_scanner_error_handling(self, tmp_path):
         """Scanner should handle errors gracefully and report them."""
@@ -380,13 +380,13 @@ y = 2
         """Scanner should validate configuration properly."""
         # Test with default configuration
         scanner = AntiPatternScanner(project_root=tmp_path)
-        assert hasattr(scanner, 'config')
+        assert hasattr(scanner, "config")
 
         # Test configuration changes affect behavior
-        if hasattr(scanner, 'set_config'):
+        if hasattr(scanner, "set_config"):
             try:
-                scanner.set_config({'strict_mode': True})
-                assert scanner.config.get('strict_mode') is True
+                scanner.set_config({"strict_mode": True})
+                assert scanner.config.get("strict_mode") is True
             except (AttributeError, NotImplementedError):
                 pass  # Method may not be implemented
 
@@ -446,6 +446,6 @@ class TestIntegrationEnhanced:
         scanner = AntiPatternScanner(project_root=tmp_path)
 
         # Simulate error conditions
-        with patch.object(scanner, 'scan', side_effect=Exception("Test error")):
+        with patch.object(scanner, "scan", side_effect=Exception("Test error")):
             with pytest.raises(Exception):
                 scanner.scan()
