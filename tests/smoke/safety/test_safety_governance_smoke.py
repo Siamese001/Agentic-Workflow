@@ -5,14 +5,16 @@ import pytest
 
 @pytest.mark.smoke
 def test_test_quality_detector_scans_code():
-    from agentic_core.L5_safety.validators.base_detector_validator import (
-    from agentic_core.L5_safety.validators.test_quality_detector_validator import (
-    from agentic_core.L5_safety.validators.base_detector_validator import (
-    from agentic_core.L5_safety.validators.base_detector_validator import (
-    from agentic_core.runtime.boundary_validator import (
-    from agentic_core.L5_safety.config.structure_blueprint_config import (
-    """TestQualityDetector can scan a code snippet and return a result."""
-    import os
+        from agentic_core.L5_safety.validators.base_detector_validator import (
+        from agentic_core.L5_safety.validators.test_quality_detector_validator import (
+        from agentic_core.L5_safety.validators.base_detector_validator import (
+        from agentic_core.L5_safety.validators.base_detector_validator import (
+        from agentic_core.runtime.boundary_validator import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        """TestQualityDetector can scan a code snippet and return a result."""
+        import os
+        import tempfile
+
     import tempfile
 
     try:

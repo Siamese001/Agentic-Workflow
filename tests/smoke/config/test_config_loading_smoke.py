@@ -3,12 +3,14 @@ import pytest
 
 @pytest.mark.smoke
 def test_redis_config_loads():
-    from agentic_core.config.redis_config import get_redis_config
-    from agentic_core.config.redis_config import get_adg_cache_config
-    from agentic_core.config.redis_config import get_redis_windows_config
-    from agentic_core.config.redis_config import (
-    import agentic_core.config.redis_config as redis_config_module
-    """Verify get_redis_config() returns valid configuration."""
+        from agentic_core.config.redis_config import get_redis_config
+        from agentic_core.config.redis_config import get_adg_cache_config
+        from agentic_core.config.redis_config import get_redis_windows_config
+        from agentic_core.config.redis_config import (
+        import agentic_core.config.redis_config as redis_config_module
+        """Verify get_redis_config() returns valid configuration."""
+        try:
+
     try:
 #  # MOVED: from agentic_core.config.redis_config import get_redis_config
 

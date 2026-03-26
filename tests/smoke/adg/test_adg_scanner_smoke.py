@@ -3,10 +3,12 @@ import pytest
 
 @pytest.mark.smoke
 def test_scanner_importable():
-    from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
-    from agentic_core.adg.schema import RelationType
-    from agentic_core.adg.schema import EdgeKind
-    """Verify ADGStaticScanner class imports without error."""
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core.adg.schema import RelationType
+        from agentic_core.adg.schema import EdgeKind
+        """Verify ADGStaticScanner class imports without error."""
+        try:
+
     try:
 #  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
         assert ADGStaticScanner is not None

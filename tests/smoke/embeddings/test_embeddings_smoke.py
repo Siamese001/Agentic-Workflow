@@ -5,12 +5,14 @@ import pytest
 
 @pytest.mark.smoke
 def test_embeddings_package_has_known_submodules():
-    from agentic_core.embeddings.embedding_factory import (
-    from agentic_core.embeddings.embedding_factory import EmbeddingDisabledError
-    from agentic_core.embeddings.embedding_input_guard import EmbeddingInputGuard
-    from agentic_core.embeddings.tokenization_adapter import TokenCountAdapter
-    """Embeddings package contains discoverable submodules (embedding_factory, etc.)."""
-    try:
+        from agentic_core.embeddings.embedding_factory import (
+        from agentic_core.embeddings.embedding_factory import EmbeddingDisabledError
+        from agentic_core.embeddings.embedding_input_guard import EmbeddingInputGuard
+        from agentic_core.embeddings.tokenization_adapter import TokenCountAdapter
+        """Embeddings package contains discoverable submodules (embedding_factory, etc.)."""
+        try:
+            import importlib
+
         import importlib
 
         spec = importlib.util.find_spec("agentic_core.embeddings.embedding_factory")

@@ -5,12 +5,14 @@ import pytest
 
 @pytest.mark.smoke
 def test_path_constants_importable():
-    from agentic_core.L0_routing.config.path_constants import (
-    from agentic_core.L5_safety.config.structure_blueprint_config import (
-    from agentic_core.L0_routing.config.ssot_tier_constants import (
-    from agentic_core.config.core.config_loader import (
-    import agentic_core.config.agent_configs as mod
-    """Verify path_constants imports and has required constants."""
+        from agentic_core.L0_routing.config.path_constants import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L0_routing.config.ssot_tier_constants import (
+        from agentic_core.config.core.config_loader import (
+        import agentic_core.config.agent_configs as mod
+        """Verify path_constants imports and has required constants."""
+        try:
+
     try:
 #  # MOVED: from agentic_core.L0_routing.config.path_constants import (
             BATCH_SIZE,

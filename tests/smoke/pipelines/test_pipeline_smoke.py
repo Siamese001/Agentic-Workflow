@@ -7,12 +7,14 @@ import pytest
 
 @pytest.mark.smoke
 def test_adg_static_scanner_instantiable():
-    from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
-    from agentic_core import adg as pkg
-    from agentic_core.adg import schema
-    import system_learning.adapters.l1_meta_adapter as mod
-    import system_learning.config.semantic_memory_config as mod
-    """ADGStaticScanner can be instantiated with a repo root."""
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+        from agentic_core import adg as pkg
+        from agentic_core.adg import schema
+        import system_learning.adapters.l1_meta_adapter as mod
+        import system_learning.config.semantic_memory_config as mod
+        """ADGStaticScanner can be instantiated with a repo root."""
+        try:
+
     try:
 #  # MOVED: from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
     except ImportError as e:

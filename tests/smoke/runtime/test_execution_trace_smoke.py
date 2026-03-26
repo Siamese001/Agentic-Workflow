@@ -5,12 +5,14 @@ import pytest
 
 @pytest.mark.smoke
 def test_execution_trace_manager_instantiable():
-    from agentic_core.runtime.execution_trace import (
-    from agentic_core.runtime.trace_emitter import TraceEmitter
-    from agentic_core.runtime.mathematical_determinism import (
-    import agentic_core.runtime.trace_context as mod
-    import agentic_core.runtime.execution_bound_token as mod
-    """Verify ExecutionTraceManager can be instantiated and has expected interface."""
+        from agentic_core.runtime.execution_trace import (
+        from agentic_core.runtime.trace_emitter import TraceEmitter
+        from agentic_core.runtime.mathematical_determinism import (
+        import agentic_core.runtime.trace_context as mod
+        import agentic_core.runtime.execution_bound_token as mod
+        """Verify ExecutionTraceManager can be instantiated and has expected interface."""
+        try:
+
     try:
 #  # MOVED: from agentic_core.runtime.execution_trace import (
             ExecutionTrace,

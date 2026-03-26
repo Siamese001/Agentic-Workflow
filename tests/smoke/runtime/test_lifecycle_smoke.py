@@ -4,11 +4,13 @@ import inspect
 
 @pytest.mark.smoke
 def test_lifecycle_contract_importable():
-    from agentic_core.runtime.lifecycle_trace_contract import (
-    from agentic_core.runtime.lifecycle_trace_contract import (
-    import agentic_core.runtime.lifecycle_trace_contract as ltc
-    from agentic_core.runtime.lifecycle_trace_contract import (
-    """Verify lifecycle_trace_contract imports without error."""
+        from agentic_core.runtime.lifecycle_trace_contract import (
+        from agentic_core.runtime.lifecycle_trace_contract import (
+        import agentic_core.runtime.lifecycle_trace_contract as ltc
+        from agentic_core.runtime.lifecycle_trace_contract import (
+        """Verify lifecycle_trace_contract imports without error."""
+        try:
+
     try:
 #  # MOVED: from agentic_core.runtime.lifecycle_trace_contract import (
             _TRACE_LOG,

@@ -6,12 +6,14 @@ import pytest
 
 @pytest.mark.smoke
 def test_generate_full_adg_importable():
-    from agentic_core.adg.artifact.builder import ADGArtifactBuilder
-    """Verify tools.generate_full_adg imports without error."""
-    try:
-        from tools.generate_full_adg import main as generate_adg_main
-        assert callable(generate_adg_main)
-    except ImportError as e:
+        from agentic_core.adg.artifact.builder import ADGArtifactBuilder
+        """Verify tools.generate_full_adg imports without error."""
+        try:
+            from tools.generate_full_adg import main as generate_adg_main
+            assert callable(generate_adg_main)
+        except ImportError as e:
+            pytest.skip(f"adg_pipeline not available: {e}")
+
         pytest.skip(f"adg_pipeline not available: {e}")
 @pytest.mark.smoke
 def test_sqlite_artifact_exists():

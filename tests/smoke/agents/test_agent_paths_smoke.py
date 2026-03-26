@@ -5,13 +5,15 @@ import pytest
 
 @pytest.mark.smoke
 def test_base_dispatch_agent_is_class():
-    from apps_shared.reasoning.BaseDispatchAgent import BaseDispatchAgent
-    from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
-    from apps_shared.reasoning.BaseProactiveAgent import BaseProactiveAgent
-    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-    from apps_shared.config.app_guardian_registry import APP_GUARDIAN_REGISTRY
-    from apps_shared.config.environment_config import EnvironmentConfig
-    """BaseDispatchAgent is a proper class with expected interface."""
+        from apps_shared.reasoning.BaseDispatchAgent import BaseDispatchAgent
+        from apps_shared.reasoning.BaseHealingOrchestrator import BaseHealingOrchestrator
+        from apps_shared.reasoning.BaseProactiveAgent import BaseProactiveAgent
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from apps_shared.config.app_guardian_registry import APP_GUARDIAN_REGISTRY
+        from apps_shared.config.environment_config import EnvironmentConfig
+        """BaseDispatchAgent is a proper class with expected interface."""
+        try:
+
     try:
 #  # MOVED: from apps_shared.reasoning.BaseDispatchAgent import BaseDispatchAgent
     except ImportError as e:
