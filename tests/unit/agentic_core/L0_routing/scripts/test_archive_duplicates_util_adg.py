@@ -45,19 +45,19 @@ def test_datetime_is_instantiable(mod):
 
 
 def test_assert_no_persistent_write_is_callable(mod):
-"""Test assert_no_persistent_write_is_callable runtime behavior."""
-# Arrange
-# TODO: Set up execution parameters
-input_data = {}  # Replace with actual test data
+    """Test assert_no_persistent_write_is_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 
-# Act
-# TODO: Execute assert_no_persistent_write_is_callable
-"""Test emit_determinism_digest_is_callable runtime behavior."""
-# Arrange
-# TODO: Set up execution parameters
-input_data = {}  # Replace with actual test data
+    # Act
+    # TODO: Execute assert_no_persistent_write_is_callable
 
-# Act
+def test_emit_determinism_digest_is_callable(mod):
+    """Test emit_determinism_digest_is_callable runtime behavior."""
+    # Arrange
+    # TODO: Set up execution parameters
+    input_data = {}  # Replace with actual test data
 # TODO: Execute emit_determinism_digest_is_callable
 """Test emit_replay_key_is_callable runtime behavior."""
 # Arrange

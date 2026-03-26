@@ -9,12 +9,41 @@ import pytest
 
 
 
-class TestActionCapability:
-    def test_is_enum(self):
-            """Test is_enum runtime behavior."""
-            """Test has_tool_execution runtime behavior."""
-            """Test has_file_operations runtime behavior."""
-            """Test all_values_are_strings runtime behavior."""
+class GeneratedTest:
+    """Generated test class for agentic_core.L0_routing.scripts."""
+
+    def test_to_dict(self):
+        """Test to_dict function."""
+        from agentic_core.L0_routing.scripts import to_dict
+        # TODO: Implement actual test
+        result = to_dict()
+        assertIsNotNone(result)
+    def test_to_dict(self):
+        """Test to_dict function."""
+        from agentic_core.L0_routing.scripts import to_dict
+        # TODO: Implement actual test
+        result = to_dict()
+        assertIsNotNone(result)
+    def test_ActionCapability_init(self):
+        """Test ActionCapability initialization."""
+        from agentic_core.L0_routing.scripts import ActionCapability
+        # TODO: Implement actual test
+        instance = ActionCapability()
+        assertIsNotNone(instance)
+    def test_ActionRequest_init(self):
+        """Test ActionRequest initialization."""
+        from agentic_core.L0_routing.scripts import ActionRequest
+        # TODO: Implement actual test
+        instance = ActionRequest()
+        assertIsNotNone(instance)
+    def test_ActionRequest_to_dict(self):
+        """Test ActionRequest.to_dict method."""
+        from agentic_core.L0_routing.scripts import ActionRequest
+        # TODO: Implement actual test
+        instance = ActionRequest()
+        result = instance.to_dict()
+        assertIsNotNone(result)
+
 
 
     """Test creates_with_defaults runtime behavior."""
