@@ -12,20 +12,21 @@ DEFAULT_TIMEOUT = 300
 import unittest
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-    
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-    
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-    
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertIsNotNone(None)
+class GeneratedTest(unittest.TestCase):
+    """Generated test class for agentic_core.runtime.exceptions."""
+
+    def test_AgenticWorkflowError_init(self):
+        """Test AgenticWorkflowError initialization."""
+        from agentic_core.runtime.exceptions import AgenticWorkflowError
+        # TODO: Implement actual test
+        instance = AgenticWorkflowError()
+        self.assertIsNotNone(instance)
+    def test_HopExecutionError_init(self):
+        """Test HopExecutionError initialization."""
+        from agentic_core.runtime.exceptions import HopExecutionError
+        # TODO: Implement actual test
+        instance = HopExecutionError()
+        self.assertIsNotNone(instance)
 
 
 if __name__ == '__main__':
