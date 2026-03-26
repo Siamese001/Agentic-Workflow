@@ -13,8 +13,22 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class TestDeterminismAdg:
-    """Test DeterminismAdg functionality."""
+class GeneratedTest:
+    """Generated test class for agentic_core.interfaces."""
+
+    def test_canonical_bytes(self):
+        """Test canonical_bytes function."""
+        from agentic_core.interfaces import canonical_bytes
+        # TODO: Implement actual test
+        result = canonical_bytes()
+        assertIsNotNone(result)
+    def test_canonical_hash(self):
+        """Test canonical_hash function."""
+        from agentic_core.interfaces import canonical_hash
+        # TODO: Implement actual test
+        result = canonical_hash()
+        assertIsNotNone(result)
+
 
     def test_placeholder_1(self):
         """Placeholder test 1."""

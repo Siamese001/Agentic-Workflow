@@ -13,8 +13,22 @@ MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 
 @pytest.mark.unit
-class TestEmbeddingsAdg:
-    """Test EmbeddingsAdg functionality."""
+class GeneratedTest:
+    """Generated test class for agentic_core.interfaces."""
+
+    def test_query_similarity(self):
+        """Test query_similarity function."""
+        from agentic_core.interfaces import query_similarity
+        # TODO: Implement actual test
+        result = query_similarity()
+        assertIsNotNone(result)
+    def test_SimilarityResult_init(self):
+        """Test SimilarityResult initialization."""
+        from agentic_core.interfaces import SimilarityResult
+        # TODO: Implement actual test
+        instance = SimilarityResult()
+        assertIsNotNone(instance)
+
 
     def test_placeholder_1(self):
         """Placeholder test 1."""
