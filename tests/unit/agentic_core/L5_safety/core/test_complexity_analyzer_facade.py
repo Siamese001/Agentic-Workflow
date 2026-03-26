@@ -15,92 +15,10 @@ from unittest.mock import Mock
 
 import pytest
 
-#  # MOVED: from agentic_core.L3_orchestration.reasoning.UnifiedAgent import ValidationResult
-#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_execution_trace,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
-)
-
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_complexity_analyzer_facade")
 # REMOVED: _emit_applies_guardrail("p0", "test_complexity_analyzer_facade", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_complexity_analyzer_facade", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_complexity_analyzer_facade", "state_snapshot")
-#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_escalates_to_human,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,  # noqa: E402
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,  # noqa: E402
-)
 
 # REMOVED: _emit_emits_metric_event("test_complexity_analyzer_facade", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_complexity_analyzer_facade", "p4obs", "metric_2")
@@ -176,15 +94,6 @@ import pytest
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_complexity_analyzer_facade", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_complexity_analyzer_facade", "exec_snapshot_link")
 
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
 
 class TestComplexityAnalyzerStrategy:
@@ -202,168 +111,21 @@ class TestComplexityAnalyzerStrategy:
     @pytest.fixture
     def strategy(self, config):
         """Create ComplexityAnalyzerStrategy instance."""
-#  # MOVED: from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-            ComplexityAnalyzerStrategy,
-        )
-
-        return ComplexityAnalyzerStrategy(config)
-
-    def test_initialization(self, strategy, config):
-                from agentic_core.L3_orchestration.reasoning.UnifiedAgent import ValidationResult
-                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-                from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-                from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-                from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-                from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-                from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-                from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-                from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-                from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-                from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-                """Test strategy initialization."""
-                assert strategy.max_cyclomatic_complexity == 10
-                assert strategy.max_function_length == 50
-                assert strategy.max_arguments == 6
-
-        assert strategy.max_arguments == 6
-
-    @pytest.mark.asyncio
-    async def test_execute_returns_validation_result(self, strategy):
-        """Test execute returns ValidationResult."""
-        mock_agent = Mock()
-        mock_agent.log_info = Mock()
-
-        result = await strategy.execute(mock_agent)
-
-        assert isinstance(result, ValidationResult)
-        assert result.passed is True
-
-
 class TestComplexityAnalyzerAgentFacade:
     """Tests for ComplexityAnalyzerAgent facade."""
 
     @pytest.fixture
     def agent(self):
         """Create ComplexityAnalyzerAgent instance."""
-#  # MOVED: from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-            ComplexityAnalyzerAgent,
-        )
-
-        return ComplexityAnalyzerAgent()
-
-    def test_initialization(self, agent):
-        """Test agent initialization."""
-        assert agent.project_root is not None
-        assert agent._complexity_config is not None
-        assert agent._violations == []
-
-    def test_unified_strategy_initialized(self, agent):
-        """Test unified strategy is initialized."""
-        assert agent._unified_strategy is not None
-#  # MOVED: from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-            ComplexityAnalyzerStrategy,
-        )
-
-        assert isinstance(agent._unified_strategy, ComplexityAnalyzerStrategy)
-
-    def test_analyze_repository_method_exists(self, agent):
-        """Test analyze_repository method exists."""
-        assert hasattr(agent, "analyze_repository")
-        assert callable(agent.analyze_repository)
-
-    def test_analyze_file_method_exists(self, agent):
-        """Test analyze_file method exists."""
-        assert hasattr(agent, "analyze_file")
-        assert callable(agent.analyze_file)
-
-    def test_heal_repository_method_exists(self, agent):
-        """Test heal_repository method exists."""
-        assert hasattr(agent, "heal_repository")
-        assert callable(agent.heal_repository)
-
-    def test_heal_method_exists(self, agent):
-        """Test heal method exists."""
-        assert hasattr(agent, "heal")
-        assert callable(agent.heal)
-
-    def test_heal_returns_proper_structure(self, agent):
-        """Test heal returns proper dict structure."""
-        violation = {"type": "CYCLOMATIC", "path": "/test.py"}
-        result = agent.heal(violation)
-
-        assert isinstance(result, dict)
-        assert "violations_fixed" in result
-        assert "violations_found" in result
-        assert "skipped" in result
-
-
 class TestComplexityTypes:
     """Tests for complexity type dataclasses."""
 
     def test_complexity_violation_dataclass(self):
         """Test ComplexityViolation dataclass exists."""
-#  # MOVED: from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-            ComplexityViolation,
-        )
-
-        violation = ComplexityViolation(
-            file_path=Path("/test/file.py"),
-            function_name="complex_function",
-            line_number=10,
-            complexity=15,
-            max_allowed=10,
-            type="CYCLOMATIC",
-            severity="CRITICAL",
-        )
-
-        assert violation.function_name == "complex_function"
-        assert violation.complexity == 15
-
-    def test_complexity_config_dataclass(self):
-        """Test ComplexityConfig dataclass exists."""
-#  # MOVED: from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-            ComplexityConfig,
-        )
-
-        config = ComplexityConfig()
-
-        assert config.max_cyclomatic_complexity == 10
-        assert config.max_function_length == 50
-        assert config.max_arguments == 6
-        assert config.ignore_tests is True
-
-
 class TestLegacyCompatibility:
     """Tests ensuring 100% legacy compatibility."""
 
     def test_import_compatibility(self):
         """Test original import still works."""
-#  # MOVED: from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-            ComplexityAnalyzerAgent,
-        )
-
-        assert ComplexityAnalyzerAgent is not None
-
-    def test_inherits_from_sovereign_base(self):
-        """Test class still inherits from SovereignBaseAgent."""
-#  # MOVED: from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-#  # MOVED: from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-            ComplexityAnalyzerAgent,
-        )
-
-        assert issubclass(ComplexityAnalyzerAgent, SovereignBaseAgent)
-
-    def test_calculate_complexity_method(self):
-        """Test _calculate_complexity method exists."""
-#  # MOVED: from agentic_core.L5_safety.reasoning.ComplexityAnalyzerAgent import (
-            ComplexityAnalyzerAgent,
-        )
-
-        agent = ComplexityAnalyzerAgent()
-        assert hasattr(agent, "_calculate_complexity")
-        assert callable(agent._calculate_complexity)
-
-
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

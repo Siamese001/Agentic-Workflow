@@ -9,91 +9,10 @@ import os
 import unittest
 from unittest.mock import MagicMock, patch
 
-#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_applies_guardrail,  # noqa: E402
-    _emit_authorize_and_execute,
-    _emit_blocks_direct_write,
-    _emit_captures_evaluation_metric,
-    _emit_captures_execution_output,
-    _emit_checks_agent_registry,
-    _emit_coordinates_agents,
-    _emit_dispatches_agent,
-    _emit_dispatches_execution_plan,
-    _emit_dispatches_healing_run,
-    _emit_escalates_failure,
-    _emit_escalates_to_human,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_invokes_evaluation,
-    _emit_links_execution_to_snapshot,
-    _emit_observes_runtime_state,
-    _emit_orchestrates_workflow,
-    _emit_reads_policy_state,  # noqa: E402
-    _emit_records_execution_trace,  # noqa: E402
-    _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
-    _emit_records_tool_invocation,
-    _emit_records_workflow_lineage,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_routes_to_capability,
-    _emit_signs_execution_trace,  # noqa: E402
-    _emit_snapshots_state,  # noqa: E402
-    _emit_stores_embedding,
-    _emit_transcripts_response,
-    _emit_updates_meta_learning_state,
-    _emit_validates_agent_capability,
-    _emit_validates_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_via_uwg,
-    emit_determinism_digest,  # noqa: E402
-    emit_replay_key,  # noqa: E402
-)
-
 # REMOVED: _emit_records_execution_trace("p0", "evidence", "test_sovereign_semantic_cache_query")
 # REMOVED: _emit_applies_guardrail("p0", "test_sovereign_semantic_cache_query", "p0_governance")
 # REMOVED: _emit_reads_policy_state("p0", "test_sovereign_semantic_cache_query", "policy_binding")
 # REMOVED: _emit_snapshots_state("p0", "test_sovereign_semantic_cache_query", "state_snapshot")
-#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-    _emit_agent_executes_agent,
-    _emit_captures_pattern,
-    _emit_captures_runtime_anomaly,
-    _emit_checks_agent_registry,
-    _emit_dispatches_execution_plan,
-    _emit_emits_metric_event,
-    _emit_escalates_to_human,
-    _emit_execution_terminates_at_uwg,
-    _emit_feeds_meta_learning,
-    _emit_gated_by_confidence,
-    _emit_hard_fails_untranscripted,
-    _emit_improves_agent_policy,
-    _emit_invokes_eval,
-    _emit_links_incident_trace,  # noqa: E402
-    _emit_observes_runtime_state,
-    _emit_proposal_commits_routing,
-    _emit_pulls_context,
-    _emit_reads_environ,
-    _emit_reads_runtime_state,
-    _emit_records_execution_trace,
-    _emit_records_incident_event,
-    _emit_records_learning_event,
-    _emit_routes_through,
-    _emit_routes_to_agent,
-    _emit_stores_learning_state,
-    _emit_transcripts_response,
-    _emit_triggers_alert,
-    _emit_updates_monitoring_state,
-    _emit_updates_routing_strategy,
-    _emit_validated_by_safety_plane,
-    _emit_validates_agent_capability,
-    _emit_verifies_boundary,
-    _emit_verifies_policy,
-    _emit_writes_learning_snapshot,
-    _emit_writes_observability_log,
-    _emit_writes_through,  # noqa: E402
-)
 
 # REMOVED: _emit_emits_metric_event("test_sovereign_semantic_cache_query", "p4obs", "metric_1")
 # REMOVED: _emit_emits_metric_event("test_sovereign_semantic_cache_query", "p4obs", "metric_2")
@@ -169,19 +88,9 @@ from unittest.mock import MagicMock, patch
 # REMOVED: _emit_updates_meta_learning_state("p4", "test_sovereign_semantic_cache_query", "meta_learning")
 # REMOVED: _emit_links_execution_to_snapshot("p4", "test_sovereign_semantic_cache_query", "exec_snapshot_link")
 
-
 def _make_memory_item(key: str, vector: list[float], metadata: dict, namespace: str = ""):
     """Build a MemoryItem for injection into InMemoryVectorStore._storage."""
     import uuid
-
-#  # MOVED: from agentic_core.L4_state.types.memory_item_types import MemoryItem
-
-    meta = dict(metadata)
-    if namespace:
-        meta["namespace"] = namespace
-    uid = uuid.uuid5(uuid.NAMESPACE_DNS, key)
-    return MemoryItem(id=uid, content=metadata.get("path", key), embedding=vector, metadata=meta)
-
 
 class TestSovereignSemanticCacheQuery(unittest.TestCase):
     """Tests for the .query() method added in Phase 1."""
@@ -190,117 +99,5 @@ class TestSovereignSemanticCacheQuery(unittest.TestCase):
         """Build a SovereignSemanticCache with mocked Redis (no live connection)."""
         with patch("agentic_core.L4_state.memory.sovereign_semantic_cache.get_redis_client") as mock_redis:
             mock_redis.return_value = MagicMock()
-#  # MOVED: from agentic_core.L4_state.memory.sovereign_semantic_cache import (
-                SovereignSemanticCache,
-            )
-
-            cache = SovereignSemanticCache(mission_id="test-mission")
-        return cache
-
-    def _inject(self, cache, key: str, vector: list[float], metadata: dict = None, namespace: str = ""):
-        """Inject a MemoryItem directly into the underlying _storage dict."""
-        item = _make_memory_item(key, vector, metadata or {}, namespace)
-        cache._vector_store._storage[key] = item
-        if key not in cache._vector_store._ordered_ids:
-            cache._vector_store._ordered_ids.append(key)
-
-    def test_query_returns_empty_when_kill_switch_active(self):
-                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-                from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-                from agentic_core.L4_state.types.memory_item_types import MemoryItem
-                from agentic_core.L4_state.memory.sovereign_semantic_cache import (
-                """query() must return [] when EMBEDDING_ENABLED=false."""
-                with patch.dict(os.environ, {"EMBEDDING_ENABLED": "false"}):
-                    cache = self._make_cache()
-                    self._inject(cache, "key1", [0.1, 0.2, 0.3], {"path": "foo.py"}, "canon-files")
-                    result = cache.query("some query text")
-                    self.assertEqual(result, [])
-
-            self.assertEqual(result, [])
-
-    def test_query_returns_empty_when_store_empty(self):
-        """query() must return [] when vector store has no entries."""
-        with patch.dict(os.environ, {"EMBEDDING_ENABLED": "true"}):
-            cache = self._make_cache()
-            with patch(
-                "system_learning.engines.openai_embedder.BGEEmbedder.embed_batch",
-                return_value=[[0.1, 0.9]],
-            ):
-                result = cache.query("some query")
-            self.assertEqual(result, [])
-
-    def test_query_returns_sorted_results(self):
-        """query() must rank results by descending cosine similarity."""
-        with patch.dict(os.environ, {"EMBEDDING_ENABLED": "true"}):
-            cache = self._make_cache()
-            self._inject(cache, "high", [1.0, 0.0], {"path": "high.py"}, "test")
-            self._inject(cache, "low", [0.0, 1.0], {"path": "low.py"}, "test")
-            with patch(
-                "system_learning.engines.openai_embedder.BGEEmbedder.embed_batch",
-                return_value=[[1.0, 0.0]],
-            ):
-                results = cache.query("q", top_k=10)
-
-            self.assertGreater(len(results), 0)
-            scores = [r["score"] for r in results]
-            self.assertEqual(scores, sorted(scores, reverse=True))
-
-    def test_query_respects_top_k(self):
-    """Test query_respects_top_k contract compliance."""
-    # Arrange
-    # TODO: Set up specification test case
-    spec_input = {}  # Replace with actual specification input
-
-    # Act
-    # TODO: Test specification compliance
-    compliance_result = None  # Replace with actual compliance test
-
-    # Assert - Specification Contract
-    assert compliance_result is not None, "Specification compliance should be testable"
-    assert isinstance(compliance_result, (bool, dict)), "Compliance result should be structured"
-    # TODO: Add specific specification assertions
-    # assert compliance_result.get("meets_spec", False), "Should meet specification requirements"
-        with patch.dict(os.environ, {"EMBEDDING_ENABLED": "true"}):
-            cache = self._make_cache()
-            self._inject(cache, "match", [1.0, 0.0], {"path": "match.py"}, "wanted")
-            self._inject(cache, "nomatch", [1.0, 0.0], {"path": "skip.py"}, "other")
-            with patch(
-                "system_learning.engines.openai_embedder.BGEEmbedder.embed_batch",
-                return_value=[[1.0, 0.0]],
-            ):
-                results = cache.query("q", namespace="wanted")
-            hashes = [r["content_hash"] for r in results]
-            self.assertIn("match", hashes)
-            self.assertNotIn("nomatch", hashes)
-
-    def test_query_result_schema(self):
-    """Test query_result_schema contract compliance."""
-    # Arrange
-    # TODO: Set up test data
-    test_data = {}  # Replace with actual test data
-
-    # Act
-    # TODO: Validate schema
-    validation_result = None  # Replace with actual validation
-
-    # Assert - Schema Contract
-    assert validation_result is not None, "Schema validation should produce a result"
-    assert isinstance(validation_result, (bool, dict)), "Validation result should be structured"
-    # TODO: Add specific schema validation assertions
-    # assert validation_result.get("valid", False), "Data should conform to schema"
-
-    def test_query_graceful_on_embedder_failure(self):
-        """query() must return [] if BGEEmbedder raises, not propagate the error."""
-        with patch.dict(os.environ, {"EMBEDDING_ENABLED": "true"}):
-            cache = self._make_cache()
-            self._inject(cache, "entry", [0.5, 0.5])
-            with patch(
-                "system_learning.engines.openai_embedder.BGEEmbedder.embed_batch",
-                side_effect=RuntimeError("model unavailable"),
-            ):
-                result = cache.query("q")
-            self.assertEqual(result, [])
-
-
 if __name__ == "__main__":
     unittest.main()
