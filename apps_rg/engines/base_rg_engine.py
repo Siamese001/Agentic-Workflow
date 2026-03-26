@@ -234,6 +234,7 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, ABC):
 
             self.rg_specs = load_rg_specs()
         # guardian: allow-silent-swallow - optional dependency
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             self.rg_specs = None
             self.logger.warning("RG specs not available")
@@ -241,6 +242,8 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, ABC):
             from apps_rg.config.reasoning_toggles_config import DEFAULT_TOGGLES
 
             self.toggles = DEFAULT_TOGGLES
+        # guardian: allow-silent-swallow - optional dependency
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             self.toggles = None
             self.logger.warning("Reasoning toggles not available")
@@ -248,6 +251,7 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, ABC):
             from apps_rg.config.knowledge_base import FROZEN_SNAPSHOT
 
             self.knowledge = FROZEN_SNAPSHOT
+        # guardian: allow-silent-swallow - optional dependency
         except ImportError:
             self.knowledge = None
             self.logger.warning("Knowledge base not available")
