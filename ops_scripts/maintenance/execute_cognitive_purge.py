@@ -228,7 +228,8 @@ def run_cognitive_purge(
             load_dotenv(env_file)
             Logger.info(f"Loaded environment from: {env_file}")
     # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+    except ImportError:
+        Logger.info("No .env file found.")
         pass
 
     # Check for API key

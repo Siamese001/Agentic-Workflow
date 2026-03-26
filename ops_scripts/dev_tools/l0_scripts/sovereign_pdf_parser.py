@@ -35,7 +35,7 @@ try:
     import pdfplumber
     PDF_PLUMBER_AVAILABLE: Any = True
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
     PDF_PLUMBER_AVAILABLE: Any = False
     print('[!] pdfplumber not available')
 try:

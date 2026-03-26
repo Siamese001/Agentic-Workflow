@@ -426,7 +426,7 @@ class CommonChecks:
                     name="redis", status=HealthStatus.HEALTHY, message=f"Redis connected at {host}:{port}"
                 )
             # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+            except ImportError:
                 return CheckResult(
                     name="redis", status=HealthStatus.DEGRADED, message="Redis client not installed"
                 )
@@ -555,5 +555,4 @@ def get_readiness_gate() -> ReadinessGate:
     global _readiness_gate
     if _readiness_gate is None:
         _readiness_gate = ReadinessGate()
-    return _readiness_gate                except Exception as e:
-                    pass
+    return _readiness_gate
