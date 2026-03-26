@@ -101,7 +101,7 @@ class ASTComplianceChecker:
         except ValueError:
             # File is outside repo root, use absolute path
             rel_path_str = str(file_path)
-            
+
         for line_num, line in enumerate(source.splitlines(), 1):
             for pattern in self.FORBIDDEN_PATTERNS:
                 if re.search(pattern, line, re.IGNORECASE):
@@ -119,7 +119,7 @@ class ASTComplianceChecker:
         except ValueError:
             # File is outside repo root, use absolute path
             rel_path_str = str(file_path)
-            
+
         for node in ast.walk(tree):
             if not isinstance(node, ast.Call):
                 continue
