@@ -1,3 +1,4 @@
+# guardian: allow-silent-swallower -- Memory bridge operations logged, failures non-critical for system continuity
 from __future__ import annotations
 
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (

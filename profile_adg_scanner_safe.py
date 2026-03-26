@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Safe ADG scanner profiling with timeout and hang detection."""
+
 import cProfile
 import io
 import pstats
@@ -13,6 +14,7 @@ from pathlib import Path
 @contextmanager
 def timeout_context(seconds):
     """Timeout context manager to prevent hangs."""
+
     def timeout_handler(signum, frame):
         raise TimeoutError(f"Operation timed out after {seconds} seconds")
 
@@ -24,6 +26,7 @@ def timeout_context(seconds):
     finally:
         signal.alarm(0)
         signal.signal(signal.SIGALRM, old_handler)
+
 
 def profile_scanner_safe():
     """Safe profiler with timeout and progress reporting."""
@@ -42,6 +45,7 @@ def profile_scanner_safe():
 
             # Import and run scanner
             from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+
             scanner = ADGStaticScanner(repo_root=Path.cwd())
 
             # Add progress reporting
@@ -60,7 +64,7 @@ def profile_scanner_safe():
 
             # Get and analyze stats
             s = io.StringIO()
-            stats = pstats.Stats(profiler, stream=s).sort_stats('cumulative')
+            stats = pstats.Stats(profiler, stream=s).sort_stats("cumulative")
 
             print("\n🔥 Top 15 Performance Bottlenecks:")
             stats.print_stats(15)
@@ -90,8 +94,10 @@ def profile_scanner_safe():
     except (ValueError, TypeError, RuntimeError) as e:
         print(f"❌ ERROR: {e}")
         import traceback
+
         traceback.print_exc()
         return None
+
 
 def investigate_hang():
     """Investigate potential causes of scanner hangs."""
@@ -102,6 +108,7 @@ def investigate_hang():
     try:
         start = time.time()
         from agentic_core.adg.identity.normalizer import IdentityNormalizer
+
         normalizer = IdentityNormalizer(repo_root=Path.cwd())
         # This should trigger the rglob if not pre-warmed
         end = time.time()
@@ -141,18 +148,20 @@ def investigate_hang():
     # Check 4: Memory usage
     try:
         import psutil
+
         process = psutil.Process()
         memory_mb = process.memory_info().rss / (1024 * 1024)
         print(f"\n4. Memory usage: {memory_mb:.1f} MB")
     # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+    except ImportError:
         # psutil is optional for memory monitoring - this is acceptable
         print("\n4. psutil not available for memory monitoring")
+
 
 if __name__ == "__main__":
     result = profile_scanner_safe()
     if result is None:
-        print("\n❌ Profiling failed due to hang/error")
+        print("\n Profiling failed due to hang/error")
         sys.exit(1)
     else:
         print("\n✅ Profiling completed successfully")

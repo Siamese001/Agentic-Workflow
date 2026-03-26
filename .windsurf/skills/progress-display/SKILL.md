@@ -118,3 +118,8 @@ tracker.complete(f"Processed {total_items} items")
 - ❌ Monochrome output (no color coding)
 - ❌ Missing percentage completion
 - ❌ Missing ETA for operations >30s
+- ❌ **Unbounded file operations** (processing unlimited files without limits)
+- ❌ **Missing PowerShell compatibility** (Unix-only commands like `head`, `tail`)
+- ❌ **Inline Python complexity** (complex scripts in shell commands)
+- ❌ **No early termination conditions** (process all files even when patterns converge)
+- ❌ **Missing batch processing** (process files one by one without progress reporting)

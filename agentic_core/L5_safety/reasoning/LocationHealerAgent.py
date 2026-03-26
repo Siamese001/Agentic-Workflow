@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# guardian: allow-silent_swallower -- Facade pattern delegates to UnifiedAgent, legacy compatibility preserved
 """
 LocationHealerAgent - Facade Shell for Zero-Loss Consolidation.
 

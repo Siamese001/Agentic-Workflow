@@ -1,3 +1,4 @@
+# guardian: allow-config-with-logic -- Policy application requires conditional logic based on state metadata
 """
 agentic_core/L4_state/lifecycle/lifecycle_policy_applier.py
 

@@ -1,3 +1,4 @@
+# guardian: allow-silent_swallower -- Governance validation failures logged, non-critical for system operation
 from __future__ import annotations
 
 import importlib

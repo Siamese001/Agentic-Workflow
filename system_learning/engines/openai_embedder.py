@@ -31,7 +31,6 @@ from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_orchestrates_workflow,
     _emit_reads_policy_state,  # noqa: E402
     _emit_records_healing_outcome,
-    _emit_records_telemetry_event,
     _emit_records_tool_invocation,
     _emit_records_workflow_lineage,
     _emit_routes_through,
@@ -72,7 +71,6 @@ _emit_escalates_failure("p3", "openai_embedder", "failure_escalation")
 _emit_orchestrates_workflow("p3", "openai_embedder", "workflow_orchestration")
 _emit_dispatches_healing_run("p3", "openai_embedder", "healing_dispatch")
 _emit_invokes_evaluation("p3", "openai_embedder", "evaluation_signal")
-_emit_records_telemetry_event("p4", "openai_embedder", "telemetry_event")
 _emit_captures_evaluation_metric("p4", "openai_embedder", "eval_metric")
 _emit_stores_embedding("p4", "openai_embedder", "embedding_store")
 _emit_updates_meta_learning_state("p4", "openai_embedder", "meta_learning")
@@ -82,7 +80,7 @@ try:
     import openai as openai
     from openai import OpenAI
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
     openai = None
     OpenAI = None
 from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
@@ -221,6 +219,7 @@ class OpenAIEmbedder:
             List of embedding vectors as lists of floats.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "OpenAIEmbedder.embed_batch")
 
@@ -259,6 +258,7 @@ class BGEEmbedder:
             List of embedding vectors as lists of floats.
         """
         import uuid as _uuid  # noqa: PLC0415
+
         _trace_id = str(_uuid.uuid4())
         _emit_records_execution_trace(_trace_id, LayerSegment.L3_ORCHESTRATION, "BGEEmbedder.embed_batch")
 

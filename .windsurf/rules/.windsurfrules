@@ -400,6 +400,12 @@ All queries, searches, and long-running operations MUST have explicit timeout pa
 
 **Progress Display Enforcement:** Skill `progress-display` MUST be invoked for all operations >5s. Use standardized formats and color schemes from the skill protocol.
 
+**Bounded Operations Enforcement:** All file analysis operations MUST include:
+- **Maximum file limits** (default: 1000 files, configurable)
+- **Early termination conditions** (stop when patterns converge)
+- **Batch processing** with progress reporting (never process all files in one unbounded loop)
+- **PowerShell compatibility** verification (no Unix-only commands like `head`, `tail` without Windows equivalents)
+
 When timeout occurs: use ADG to isolate the bottleneck, identify root cause, rerun with targeted scope, document recovery in `## TIMEOUT_RECOVERY`. Fail-closed: if ADG cannot be built or bottleneck not identified → raise original TimeoutError.
 
 ### 5.4 CI Integrity Gates
