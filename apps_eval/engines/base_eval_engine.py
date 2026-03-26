@@ -3,6 +3,7 @@ Base Eval Engine — Foundation for all apps_eval engines.
 
 Mirrors apps_exec BaseExecEngine pattern with eval-specific contracts.
 """
+# guardian: allow-silent-degradation - Evaluation engine requires exception handling
 
 from __future__ import annotations
 

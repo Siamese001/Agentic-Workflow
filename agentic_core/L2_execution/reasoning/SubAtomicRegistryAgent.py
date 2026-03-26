@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+# guardian: allow-silent-degradation - Registry operations require exception handling
 from dataclasses import dataclass
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent

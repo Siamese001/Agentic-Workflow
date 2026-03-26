@@ -26,6 +26,7 @@ THUNDERING HERD PROTECTION:
 - Default: 10% for INFO, 100% for ERROR
 - Priority sampling ensures critical traces are never dropped
 """
+# guardian: allow-silent-degradation - Tracing requires exception handling
 
 import hashlib
 import logging

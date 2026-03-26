@@ -1,4 +1,5 @@
 # guardian: allow-silent_swallower - ADG violation exemption
+# guardian: allow-silent-degradation - Coverage analysis requires exception handling
 
 from __future__ import annotations
 

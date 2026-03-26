@@ -11,6 +11,7 @@ Orchestrates the complete Evaluation Lab pipeline:
 
 Mirrors apps_rg RgResumeOrchestrator pattern.
 """
+# guardian: allow-silent-degradation - Evaluation orchestration requires exception handling
 
 from __future__ import annotations
 

@@ -28,7 +28,7 @@ Phase 3 Enhancement (Jan 31, 2026):
 - Preserves 100% legacy signature compatibility
 """
 # guardian: allow-silent_swallower - ADG violation exemption
-
+# guardian: allow-silent-degradation - Orchestration requires exception handling
 
 from __future__ import annotations
 

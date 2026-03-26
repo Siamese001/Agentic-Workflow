@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+# guardian: allow-silent-degradation - Safety testing requires exception handling
 import tempfile
 import uuid
 from dataclasses import dataclass

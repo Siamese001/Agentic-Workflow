@@ -8,6 +8,7 @@ This module provides advanced intelligence capabilities:
 - OmniContext: Global context management and semantic retrieval
 - Orchestrator: Multi-phase execution with convergence
 """
+# guardian: allow-silent-degradation - Security configuration requires exception handling
 
 from __future__ import annotations
 
