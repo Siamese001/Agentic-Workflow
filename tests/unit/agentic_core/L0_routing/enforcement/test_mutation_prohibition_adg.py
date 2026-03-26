@@ -12,20 +12,33 @@ DEFAULT_TIMEOUT = 300
 import unittest
 
 
-class PlaceholderTest(unittest.TestCase):
-    """Placeholder test class."""
-    
-    def test_placeholder_1(self):
-        """Placeholder test method 1."""
-        self.assertTrue(True)
-    
-    def test_placeholder_2(self):
-        """Placeholder test method 2."""
-        self.assertEqual(1 + 1, 2)
-    
-    def test_placeholder_3(self):
-        """Placeholder test method 3."""
-        self.assertIsNotNone(None)
+class GeneratedTest(unittest.TestCase):
+    """Generated test class for agentic_core.L0_routing.enforcement."""
+
+    def test_get_default_protected_root_policy(self):
+        """Test get_default_protected_root_policy function."""
+        from agentic_core.L0_routing.enforcement import get_default_protected_root_policy
+        # TODO: Implement actual test
+        result = get_default_protected_root_policy()
+        self.assertIsNotNone(result)
+    def test_enforce_protected_root(self):
+        """Test enforce_protected_root function."""
+        from agentic_core.L0_routing.enforcement import enforce_protected_root
+        # TODO: Implement actual test
+        result = enforce_protected_root()
+        self.assertIsNotNone(result)
+    def test_SourceMutationBlocked_init(self):
+        """Test SourceMutationBlocked initialization."""
+        from agentic_core.L0_routing.enforcement import SourceMutationBlocked
+        # TODO: Implement actual test
+        instance = SourceMutationBlocked()
+        self.assertIsNotNone(instance)
+    def test_ProtectedRootBlockEvent_init(self):
+        """Test ProtectedRootBlockEvent initialization."""
+        from agentic_core.L0_routing.enforcement import ProtectedRootBlockEvent
+        # TODO: Implement actual test
+        instance = ProtectedRootBlockEvent()
+        self.assertIsNotNone(instance)
 
 
 if __name__ == '__main__':
