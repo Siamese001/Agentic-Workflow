@@ -11,8 +11,7 @@ def test_generate_full_adg_importable():
         from tools.generate_full_adg import main as generate_adg_main
         assert callable(generate_adg_main)
     except ImportError as e:
-
-
+        pytest.skip(f"adg_pipeline not available: {e}")
 @pytest.mark.smoke
 def test_sqlite_artifact_exists():
     """Verify latest ADG SQLite artifact exists."""

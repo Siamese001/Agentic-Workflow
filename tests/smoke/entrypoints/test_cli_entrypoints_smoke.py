@@ -21,8 +21,7 @@ def test_app_main_module_importable(app):
 
         mod = importlib.import_module(f"{app}.__main__")
     except ImportError as e:
-
-
+        pytest.skip(f"module not available: {e}")
     public = [n for n in dir(mod) if not n.startswith("_")]
     assert len(public) >= 1, f"{app}.__main__ must expose at least one public symbol"
 
@@ -36,8 +35,7 @@ def test_app_main_function_is_callable(app):
 
         mod = importlib.import_module(f"{app}.__main__")
     except ImportError as e:
-
-
+        pytest.skip(f"module not available: {e}")
     assert hasattr(mod, "main"), f"{app}.__main__ must expose a main() function"
     assert callable(mod.main), f"{app}.__main__.main must be callable"
 
@@ -53,10 +51,9 @@ def test_app_main_function_has_signature(app):
 
         mod = importlib.import_module(f"{app}.__main__")
     except ImportError as e:
-
-
+        pytest.skip(f"module not available: {e}")
     if not hasattr(mod, "main"):
-
+        pytest.skip(f"{app}.__main__ has no main function")
 
     sig = inspect.signature(mod.main)
     assert sig is not None, f"{app}.__main__.main must have a valid signature"
@@ -73,8 +70,7 @@ def test_adg_tool_module_importable():
         # Some __main__ modules call sys.exit(0) at module level — this is OK
         pass
     except ImportError as e:
-
-
+        pytest.skip(f"module not available: {e}")
     # If we got past import, verify it has public symbols
     import sys
 

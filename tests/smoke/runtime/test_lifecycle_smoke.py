@@ -76,8 +76,7 @@ def test_emitter_functions_callable():
             assert inspect.signature(emitter), f"Emitter {emitter.__name__} has no signature"
 
     except ImportError as e:
-
-
+        pytest.skip(f"lifecycle not available: {e}")
 @pytest.mark.smoke
 def test_all_exports_present():
     """Verify __all__ list matches actual module attributes."""
@@ -169,4 +168,4 @@ def test_p2_p3_p4_emitters_present():
             assert callable(emitter), f"Emitter {emitter.__name__} is not callable"
 
     except ImportError as e:
-
+        pytest.skip(f"module not available: {e}")

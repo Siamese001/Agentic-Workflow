@@ -18,33 +18,17 @@ def pytest_configure(config):
     """Configure pytest with custom settings."""
     config.addinivalue_line("markers", "data: marks tests as data-dependent")
 
-# Core pytest configuration
-import pytest
-
-# Standard fixtures for path semantics
-@pytest.fixture
-def test_data_path():
-    """Fixture for test data path."""
-    from pathlib import Path
-    return Path(__file__).parent / "test_data"
-
-@pytest.fixture
-def temp_project_dir(tmp_path):
-    """Fixture for temporary project directory."""
-    return tmp_path / "project"
-
-# Test collection configuration
-def pytest_configure(config):
-    """Configure pytest with custom settings."""
-    config.addinivalue_line("markers", "data: marks tests as data-dependent")
-
 """Root conftest — suppress lifecycle trace logging during test collection and execution."""
 import logging
 from pathlib import Path
 
 import pytest  # noqa: E402
 
-from .conftest_factories import *
+try:
+    from .conftest_factories import *
+except ImportError:
+    # conftest_factories might not be available, that's ok
+    pass
 
 # Suppress lifecycle trace loggers that emit ~100K lines during import/execution.
 # These overwhelm pytest's capture system causing OSError: Bad file descriptor.

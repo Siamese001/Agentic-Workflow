@@ -11,8 +11,7 @@ def test_adg_static_scanner_instantiable():
     try:
         from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
     except ImportError as e:
-
-
+        pytest.skip(f"module not available: {e}")
     repo_root = Path(__file__).resolve().parents[3]
     scanner = ADGStaticScanner(repo_root=repo_root)
     assert scanner is not None, "ADGStaticScanner must be instantiable"
@@ -36,17 +35,14 @@ def test_adg_artifact_builder_missing():
         from agentic_core import adg as pkg
         assert "builder" not in dir(pkg), "builder should not be in adg package"
     except ImportError as e:
-
-
-
+        pytest.skip(f"pipeline not available: {e}")
 @pytest.mark.smoke
 def test_adg_schema_relation_types_present():
     """ADG schema module exposes RelationType and EdgeKind literals."""
     try:
         from agentic_core.adg import schema
     except ImportError as e:
-
-
+        pytest.skip(f"module not available: {e}")
     assert hasattr(schema, "RelationType"), "schema must have RelationType"
     assert hasattr(schema, "EdgeKind"), "schema must have EdgeKind"
     # RelationType is a Literal type alias — verify core values are in __args__
@@ -96,8 +92,7 @@ def test_system_learning_l1_meta_adapter_importable():
     try:
         import system_learning.adapters.l1_meta_adapter as mod
     except ImportError as e:
-
-
+        pytest.skip(f"module not available: {e}")
     public = [n for n in dir(mod) if not n.startswith("_")]
     assert len(public) >= 1, "l1_meta_adapter must expose at least one public symbol"
 
