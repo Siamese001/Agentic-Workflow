@@ -80,6 +80,18 @@ from typing import Any
 class TelemetryRecorder:
     def __init__(self, config):
         self.config = config
+    
+    def record(self, event, data=None):
+        """Record a telemetry event."""
+        return f"recorded: {event}"
+    
+    def track(self, metric, value):
+        """Track a metric value."""
+        return f"tracked: {metric}={value}"
+    
+    def emit(self, signal, payload=None):
+        """Emit a telemetry signal."""
+        return f"emitted: {signal}"
 # Placeholder classes for missing dependencies
 class semantic_gatekeeper:
     def __init__(self, config): self.config = config
@@ -101,15 +113,28 @@ class ConstitutionalOverseer:
     def __init__(self, config): self.config = config
 class CostGovernor:
     def __init__(self, config): self.config = config
+class InputMembrane:
+    def __init__(self, config): self.config = config
 # Placeholder for SubatomicHop
 class SubatomicHop:
-    def __init__(self, role, config, telemetry, StructuredEngineAgent, gatekeeper, sandbox):
+    def __init__(self, role, config, telemetry, StructuredEngineAgent, gatekeeper, sandbox, 
+                 mcp_manager=None, SupremeCourt=None, storage=None, genealogy=None, 
+                 PiiVault=None, membrane=None, airlock=None, CostGovernor=None, overseer=None):
         self.role = role
         self.config = config
         self.telemetry = telemetry
         self.StructuredEngineAgent = StructuredEngineAgent
         self.gatekeeper = gatekeeper
         self.sandbox = sandbox
+        self.mcp_manager = mcp_manager
+        self.SupremeCourt = SupremeCourt
+        self.storage = storage
+        self.genealogy = genealogy
+        self.PiiVault = PiiVault
+        self.membrane = membrane
+        self.airlock = airlock
+        self.CostGovernor = CostGovernor
+        self.overseer = overseer
 
 # from agentic_core.L5_safety.enforcement.pii_vault_enforcer import PIIVault
 # Use PiiVault instead (correct class name)
