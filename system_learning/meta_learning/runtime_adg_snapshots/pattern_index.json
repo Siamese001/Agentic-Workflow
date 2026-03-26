@@ -721,5 +721,30 @@
       ],
       "slow_operations": []
     }
+  },
+  "runtime_adg_1774484538_5bb651cd": {
+    "component_distribution": {
+      "NervousSystem": 1
+    },
+    "error_patterns": [],
+    "layer_distribution": {
+      "L3_Orchestration": 1
+    },
+    "relation_patterns": {
+      "parent_child": 1
+    },
+    "span_type_distribution": {
+      "orchestrator": 1
+    },
+    "timing_patterns": {
+      "fast_operations": [
+        {
+          "component": "NervousSystem",
+          "duration_ms": 0.0,
+          "node_id": "995341530b3d388c"
+        }
+      ],
+      "slow_operations": []
+    }
   }
 }
