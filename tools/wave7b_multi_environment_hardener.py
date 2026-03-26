@@ -26,7 +26,7 @@ class EnvironmentConfig:
 
 class MultiEnvironmentHardener:
     """Hardener for multi-environment CI testing."""
-    
+
     def __init__(self):
         self.environments = []
         self.hardening_stats = {
@@ -35,11 +35,11 @@ class MultiEnvironmentHardener:
             'test_categories': 0,
             'special_configurations': 0
         }
-    
+
     def create_multi_environment_config(self) -> Dict:
         """Create comprehensive multi-environment configuration."""
         print("=== Creating Multi-Environment Testing Configuration ===")
-        
+
         # Define test environments
         environments = [
             EnvironmentConfig(
@@ -75,35 +75,35 @@ class MultiEnvironmentHardener:
                 special_requirements=["minimal-deps"]
             )
         ]
-        
+
         self.environments = environments
         self.hardening_stats['environments_created'] = len(environments)
-        
+
         # Calculate matrix combinations
         total_combinations = 0
         for env in environments:
             total_combinations += len(env.python_versions) * len(env.test_categories)
         self.hardening_stats['matrix_combinations'] = total_combinations
-        
+
         # Count unique test categories
         all_categories = set()
         for env in environments:
             all_categories.update(env.test_categories)
         self.hardening_stats['test_categories'] = len(all_categories)
-        
+
         # Count special configurations
         total_special = sum(len(env.special_requirements) for env in environments)
         self.hardening_stats['special_configurations'] = total_special
-        
+
         return {
             'environments': environments,
             'stats': self.hardening_stats
         }
-    
+
     def create_multi_environment_workflow(self) -> Dict:
         """Create multi-environment testing workflow."""
         print("=== Creating Multi-Environment Testing Workflow ===")
-        
+
         workflow = {
             'name': 'Multi-Environment Testing',
             'on': {
@@ -258,7 +258,7 @@ class MultiEnvironmentHardener:
                             import json
                             import os
                             from pathlib import Path
-                            
+
                             # Collect all results
                             results_dir = Path('all-results')
                             summary = {
@@ -269,7 +269,7 @@ class MultiEnvironmentHardener:
                                 'by_python': {},
                                 'by_category': {}
                             }
-                            
+
                             for artifact_dir in results_dir.iterdir():
                                 if artifact_dir.is_dir():
                                     # Parse artifact name to extract metadata
@@ -278,16 +278,16 @@ class MultiEnvironmentHardener:
                                         os_name = parts[2]
                                         python_ver = parts[3]
                                         category = parts[4] if len(parts) > 4 else 'unknown'
-                                        
+
                                         summary['total_runs'] += 1
                                         summary['by_os'][os_name] = summary['by_os'].get(os_name, 0) + 1
                                         summary['by_python'][python_ver] = summary['by_python'].get(python_ver, 0) + 1
                                         summary['by_category'][category] = summary['by_category'].get(category, 0) + 1
-                            
+
                             # Save summary
                             with open('multi-environment-summary.json', 'w') as f:
                                 json.dump(summary, f, indent=2)
-                            
+
                             print(f"Summary: {summary}")
                             '''
                         },
@@ -303,15 +303,15 @@ class MultiEnvironmentHardener:
                 }
             }
         }
-        
+
         return workflow
-    
+
     def create_environment_specific_workflows(self) -> List[Dict]:
         """Create environment-specific workflows."""
         print("=== Creating Environment-Specific Workflows ===")
-        
+
         workflows = []
-        
+
         # Windows-specific workflow
         windows_workflow = {
             'name': 'Windows-Specific Testing',
@@ -373,7 +373,7 @@ class MultiEnvironmentHardener:
             }
         }
         workflows.append(windows_workflow)
-        
+
         # macOS-specific workflow
         macos_workflow = {
             'name': 'macOS-Specific Testing',
@@ -437,7 +437,7 @@ class MultiEnvironmentHardener:
             }
         }
         workflows.append(macos_workflow)
-        
+
         # Ubuntu-specific workflow
         ubuntu_workflow = {
             'name': 'Ubuntu-Specific Testing',
@@ -510,30 +510,30 @@ class MultiEnvironmentHardener:
             }
         }
         workflows.append(ubuntu_workflow)
-        
+
         return workflows
-    
+
     def write_multi_environment_files(self, workflows_dir: str = ".github/workflows") -> Dict:
         """Write multi-environment workflow files."""
         print("=== Writing Multi-Environment Workflow Files ===")
-        
+
         workflows_path = Path(workflows_dir)
         workflows_path.mkdir(parents=True, exist_ok=True)
-        
+
         files_created = []
-        
+
         # Write main multi-environment workflow
         main_workflow = self.create_multi_environment_workflow()
         main_file = workflows_path / "multi_environment_testing.yml"
         with open(main_file, 'w') as f:
             yaml.dump(main_workflow, f, default_flow_style=False, sort_keys=False)
-        
+
         files_created.append({
             'name': 'Multi-Environment Testing',
             'filename': 'multi_environment_testing.yml',
             'path': str(main_file)
         })
-        
+
         # Write environment-specific workflows
         env_workflows = self.create_environment_specific_workflows()
         for i, workflow in enumerate(env_workflows):
@@ -541,30 +541,30 @@ class MultiEnvironmentHardener:
             file_path = workflows_path / filename
             with open(file_path, 'w') as f:
                 yaml.dump(workflow, f, default_flow_style=False, sort_keys=False)
-            
+
             files_created.append({
                 'name': workflow['name'],
                 'filename': filename,
                 'path': str(file_path)
             })
-        
+
         print(f"✅ Created {len(files_created)} multi-environment workflow files")
-        
+
         return {
             'files_created': files_created,
             'total_files': len(files_created)
         }
-    
+
     def generate_wave7b_report(self) -> Dict:
         """Generate Wave 7b multi-environment hardening report."""
         print("=== Wave 7b: CI Lane Hardening - Multi-Environment Testing ===")
-        
+
         # Create multi-environment configuration
         env_config = self.create_multi_environment_config()
-        
+
         # Write workflow files
         file_results = self.write_multi_environment_files()
-        
+
         # Create comprehensive report
         report = {
             'wave': 'Wave 7b',
@@ -590,11 +590,11 @@ class MultiEnvironmentHardener:
                 'files_written': file_results['total_files']
             }
         }
-        
+
         # Save report
         with open('artifacts/wave7b_multi_environment_report.json', 'w') as f:
             json.dump(report, f, indent=2, default=str)
-        
+
         # Print summary
         summary = report['summary']
         print(f"\n=== Wave 7b Summary ===")
@@ -603,9 +603,9 @@ class MultiEnvironmentHardener:
         print(f"Test categories: {summary['test_categories']}")
         print(f"Special configurations: {summary['special_configurations']}")
         print(f"Files written: {summary['files_written']}")
-        
+
         print(f"\n📄 Report saved to: artifacts/wave7b_multi_environment_report.json")
-        
+
         return report
 
 
@@ -613,11 +613,11 @@ def main():
     """Main execution for Wave 7b."""
     hardener = MultiEnvironmentHardener()
     report = hardener.generate_wave7b_report()
-    
+
     print(f"\n=== Wave 7b Summary ===")
     print(f"Multi-environment lanes: {len(report['environments'])}")
     print(f"Total matrix combinations: {report['summary']['matrix_combinations']}")
-    
+
     return report
 
 

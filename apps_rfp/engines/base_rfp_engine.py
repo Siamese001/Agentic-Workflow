@@ -7,13 +7,13 @@ Mirrors apps_exec BaseExecEngine pattern with rfp-specific contracts.
 from __future__ import annotations
 
 import logging
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from typing import Any
 
 try:
     from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
 
     class SemanticCacheMixin:  # type: ignore[no-redef]
         pass

@@ -266,12 +266,15 @@ try:
     from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin
 
     class MCPHardenedMixin(mcp_hardened_mixin):
-        pass
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self._mixin_init()
 # guardian: allow-silent-swallow - optional dependency
-        except ImportError:
+except ImportError:
 
     class MCPHardenedMixin:
-        pass
+        def __init__(self, *args, **kwargs):
+            self._mixin_init()
 
 
 try:

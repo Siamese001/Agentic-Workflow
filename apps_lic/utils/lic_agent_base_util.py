@@ -108,18 +108,11 @@ _emit_captures_evaluation_metric("p4", "lic_agent_base_util", "eval_metric")
 _emit_stores_embedding("p4", "lic_agent_base_util", "embedding_store")
 _emit_updates_meta_learning_state("p4", "lic_agent_base_util", "meta_learning")
 _emit_links_execution_to_snapshot("p4", "lic_agent_base_util", "exec_snapshot_link")
+_emit_links_execution_to_snapshot("p4", "lic_agent_base_util", "exec_snapshot_link")
 
 Logger = logging.getLogger(__name__)
 try:
     from agentic_core.interfaces.mixins import MetaLearningMixin
-# guardian: allow-silent-swallow - optional dependency
-        except ImportError:
-
-    class MetaLearningMixin:
-        pass
-
-
-try:
     from agentic_core.interfaces.mixins import HealerMixin
 except ImportError:
 
