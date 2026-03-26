@@ -102,6 +102,10 @@ class ASTComplianceChecker:
             # File is outside repo root, use absolute path
             rel_path_str = str(file_path)
 
+        # Skip pattern checking in the compliance checker itself (to avoid false positives)
+        if file_path.name == "check_ast_collection_compliance.py":
+            return
+            
         for line_num, line in enumerate(source.splitlines(), 1):
             for pattern in self.FORBIDDEN_PATTERNS:
                 if re.search(pattern, line, re.IGNORECASE):
