@@ -127,28 +127,32 @@ class TestPhase22Basic:
 
     @pytest.mark.skipif(not CAN_IMPORT, reason="Cannot import fixer")
     def test_exception_handler_creation(self, temp_workspace):
-    """Test exception_handler_creation runtime behavior."""
-    # Arrange
-    # TODO: Set up processing data
-    raw_data = []  # Replace with actual test data
+        """Test exception_handler_creation runtime behavior."""
+        # Arrange
+        # TODO: Set up processing data
+        raw_data = []  # Replace with actual test data
 
-    # Act
-    # TODO: Process data with exception_handler_creation
-    processed_result = None  # Replace with actual processing
+        # Act
+        # TODO: Process data with exception_handler_creation
+        processed_result = None  # Replace with actual processing
 
-    # Assert
-    assert processed_result is not None, "Processing should produce a result"
-    assert len(processed_result) >= 0, "Processed result should be measurable"
-    # TODO: Add specific processing assertions
-                context = "data processing"
-                types = ['ValueError', 'TypeError']
-                new_handler = fixer._create_specific_exception_handler(original, context, types)
+        # Assert
+        assert processed_result is not None, "Processing should produce a result"
+        assert len(processed_result) >= 0, "Processed result should be measurable"
+        # TODO: Add specific processing assertions
 
-                assert new_handler != original
-                assert 'ValueError' in new_handler or 'TypeError' in new_handler
-                assert 'as e' in new_handler
-            else:
-                pytest.skip("_create_specific_exception_handler not yet implemented")
+        # Test handler creation if available
+        if hasattr(fixer, '_create_specific_exception_handler'):
+            context = "data processing"
+            types = ['ValueError', 'TypeError']
+            original = "except Exception:\n    pass"
+            new_handler = fixer._create_specific_exception_handler(original, context, types)
+
+            assert new_handler != original
+            assert 'ValueError' in new_handler or 'TypeError' in new_handler
+            assert 'as e' in new_handler
+        else:
+            pytest.skip("_create_specific_exception_handler not yet implemented")
 
 
 if __name__ == "__main__":

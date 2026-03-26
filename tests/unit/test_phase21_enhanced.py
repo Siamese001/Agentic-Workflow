@@ -12,9 +12,10 @@ import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
-import pytest
-
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "tools"))
+# Add tools directory to path
+tools_dir = Path(__file__).parent.parent / "tools"
+if str(tools_dir) not in sys.path:
+    sys.path.insert(0, str(tools_dir))
 
 try:
     from fix_high_severity_silent_swallowers import HighSeveritySilentSwallowerFixer

@@ -73,21 +73,20 @@ import pytest
 )
 
 # ---------------------------------------------------------------------------
-# Skip guard
+# Redis IC CORE - ensure connection is available
 # ---------------------------------------------------------------------------
-try:
-    import redis as _redis_lib
+import redis as _redis_lib
 
+# Redis is IC CORE - must be available
+try:
     _r_probe = _redis_lib.Redis(host="localhost", port=6379, db=14, decode_responses=True)
     _r_probe.ping()
     _REDIS_OK = True
-except (ValueError, TypeError, RuntimeError) as e:
-    _REDIS_OK = False
+except Exception as e:
+    raise RuntimeError(f"Redis IC CORE dependency not available: {e}. Ensure Redis is running on localhost:6379")
 
 _emit_applies_guardrail("projection_creative_test", "test_harness", "L5")
 _emit_records_execution_trace("projection_creative_test", "L5", "test_collection")
-
-pytestmark = pytest.mark.skipif(not _REDIS_OK, reason="Redis not available on localhost:6379")
 
 # ---------------------------------------------------------------------------
 # Shared fixture data (mirror of integrity tests, same SQLite schema)
