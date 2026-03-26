@@ -71,7 +71,7 @@ class TestQualityAnalyzer:
         # Track when we're inside a test function
         current_test_start = -1
         current_test_name = None
-        
+
         for i, line in enumerate(lines, 1):
             # Check for weak assertions using proper context detection
             for pattern in self.weak_assertion_patterns:
@@ -93,7 +93,7 @@ class TestQualityAnalyzer:
                 current_test_start = i
                 current_test_name = self._extract_test_name(lines[:i])
                 continue
-                
+
             # Reset when we hit next function/class
             if line.strip().startswith(("def ", "class ", "async def ")) and current_test_start > 0:
                 current_test_start = -1
@@ -113,7 +113,7 @@ class TestQualityAnalyzer:
                     # Stop at next function/class
                     if line_content.startswith(("def ", "class ", "async def ")):
                         break
-                
+
                 if not has_assert:
                     issues.append(
                         TestQualityIssue(
