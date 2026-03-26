@@ -21,14 +21,16 @@ from pathlib import Path
 
 import pytest
 
-#  # MOVED: from agentic_core.L5_safety.validators.base_detector_validator import (
+# Import required modules
+from agentic_core.L5_safety.validators.base_detector_validator import (
     AntiPatternCategory,
     EnforcementLevel,
 )
-#  # MOVED: from agentic_core.L5_safety.validators.test_skip_detector_validator import (
+from agentic_core.L5_safety.validators.test_skip_detector_validator import (
     TestSilentSkipDetector,
 )
-#  # MOVED: from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
+# Import lifecycle trace contract
+from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
     _emit_agent_executes_agent,
     _emit_applies_guardrail,  # noqa: E402
     _emit_authorize_and_execute,
@@ -170,13 +172,6 @@ def det():
 @pytest.fixture
 def test_py(tmp_path):
     """Write content into a test_probe.py file (test file name)."""
-        from agentic_core.L5_safety.validators.base_detector_validator import (
-        from agentic_core.L5_safety.validators.test_skip_detector_validator import (
-        from agentic_core.L_CONTRACTS.lifecycle_trace_contract import (
-        from agentic_core.L4_state.enforcement.graph_memory_bridge import (
-        """Write content into a test_probe.py file (test file name)."""
-
-
     def _make(content: str) -> Path:
         p = tmp_path / "test_probe.py"
         p.write_text(content, encoding="utf-8")
@@ -215,7 +210,7 @@ try:
     from some.module import Foo, NONEXISTENT
 
 except Exception:
-
+    _AVAILABLE = False
 """
         result = det.scan_file(test_py(code))
         assert result.has_violations
@@ -227,7 +222,7 @@ try:
     from some.module import Foo
 
 except:
-
+    _AVAILABLE = False
 """
         result = det.scan_file(test_py(code))
         assert result.has_violations
@@ -239,7 +234,7 @@ try:
     from some.module import Foo
 
 except BaseException:
-
+    _AVAILABLE = False
 """
         result = det.scan_file(test_py(code))
         assert result.has_violations
@@ -252,7 +247,7 @@ try:
     from some.module import Foo
 
 except Exception as exc:
-
+    _AVAILABLE = False
     Foo = None
 """
         result = det.scan_file(test_py(code))
@@ -292,7 +287,7 @@ try:
     from mod import X
 
 except Exception:
-
+    _AVAILABLE = False
 """
         result = det.scan_file(test_py(code))
         assert result.has_violations
@@ -306,7 +301,7 @@ try:
     from mod import X
 
 except Exception:
-
+    _AVAILABLE = False
 """
         result = det.scan_file(test_py(code))
         assert all(v.severity == "error" for v in result.violations if not v.whitelisted)
@@ -317,7 +312,7 @@ try:
     from mod import X
 
 except Exception:
-
+    _AVAILABLE = False
 """
         result = det.scan_file(test_py(code))
         assert all(v.category == AntiPatternCategory.TEST_SILENT_SKIP for v in result.violations)
@@ -328,7 +323,7 @@ try:
     from mod import X
 
 except Exception:
-
+    _AVAILABLE = False
 """
         result = det.scan_file(test_py(code))
         v = result.violations[0]
@@ -341,19 +336,19 @@ from __future__ import annotations
 import pytest
 
 try:
-#  # MOVED: from agentic_core.L4_state.enforcement.graph_memory_bridge import (
+    from agentic_core.L4_state.enforcement.graph_memory_bridge import (
         EntityDefinition,
         GraphMemoryBridge,
         RelationDefinition,
         MAX_RETRIES,
         DEFAULT_SLEEP,
     )
-
+    _BRIDGE_AVAILABLE = True
 except Exception:
-
     EntityDefinition = None
     GraphMemoryBridge = None
     RelationDefinition = None
+    _BRIDGE_AVAILABLE = False
 
 class TestGraphMemoryBridgeImportability:
     def test_module_importable(self):
@@ -459,7 +454,7 @@ try:
     from mod import X
 
 except Exception:
-
+    _AVAILABLE = False
 """
         result = det.scan_file(prod_py(code))
         assert result.violation_count == 0
@@ -470,7 +465,7 @@ try:
     from mod import X
 
 except Exception:
-
+    _AVAILABLE = False
 """
         p = tmp_path / "conftest.py"
         p.write_text(code, encoding="utf-8")
@@ -484,7 +479,7 @@ try:
     from mod import X
 
 except Exception:
-
+    _AVAILABLE = False
 """
         p = tmp_path / "module_test.py"
         p.write_text(code, encoding="utf-8")
@@ -498,7 +493,7 @@ try:
     from mod import X
 
 except Exception:
-
+    _AVAILABLE = False
 """
         p = tmp_path / "test_my_module.py"
         p.write_text(code, encoding="utf-8")
@@ -519,7 +514,7 @@ try:
     from gpu_module import CUDA
 
 except Exception:
-
+    _AVAILABLE = False
 """
         result = det.scan_file(test_py(code))
         assert not result.has_violations
@@ -532,7 +527,7 @@ try:
     from mod import X
 
 except Exception:
-
+    _AVAILABLE = False
 """
         result = det.scan_file(test_py(code))
         assert result.has_violations
@@ -547,7 +542,7 @@ try:
     from mod import X
 
 except Exception:
-
+    _AVAILABLE = False
 """
         result = det.scan_file(test_py(code))
         assert result.has_violations
@@ -572,7 +567,7 @@ try:
     from mod import X
 
 except Exception:
-
+    _AVAILABLE = False
 """
         result = det.scan_file(test_py(code))
         assert result.has_violations
